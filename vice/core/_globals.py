@@ -4,8 +4,8 @@ from builtins import str
 import numbers
 import os
 
-__all__ = [b"_DEFAULT_FUNC", b"_DEFAULT_BINS", b"solar_z", b"sources", 
-	b"ccsne_yields", b"sneia_yields", b"DIRECTORY", b"RECOGNIZED_ELEMENTS"]
+__all__ = ["_DEFAULT_FUNC", "_DEFAULT_BINS", "solar_z", "sources", 
+	"ccsne_yields", "sneia_yields", "DIRECTORY", "RECOGNIZED_ELEMENTS"]
 
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 DIRECTORY = DIRECTORY[:-4] # removes 'core' to get full path to dir
