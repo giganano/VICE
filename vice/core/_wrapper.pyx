@@ -390,12 +390,16 @@ class integrator(object):
 		return self._mode
 
 	@mode.setter
-	def mode(self, char *value):
-		if value.lower() in [u"ifr", u"sfr", u"gas"]:
-			self._mode = value.lower()
-			self.__run.mode = value.lower()
+	def mode(self, value):
+		if isinstance(value, str):
+			if value.lower() in [u"ifr", u"sfr", u"gas"]:
+				self._mode = value.lower()
+				self.__run.mode = value.lower()
+			else:
+				message = u"Unrecognized mode: %s" % (value)
 		else:
-			message = u"Unrecognized mode: %s" % (value)
+			raise TypeError("Attribute name must be of type string. Got: %s" % (
+				type(value)))
 
 	# @mode.deleter
 	# def mode(self):
@@ -435,12 +439,16 @@ class integrator(object):
 		return self._imf
 
 	@imf.setter
-	def imf(self, char *value):
-		if value.lower() in _globals.RECOGNIZED_IMFS:
-			self._imf = value.lower()
-			self.__model.imf = value.lower()
+	def imf(self, value):
+		if isinstance(value, str):
+			if value.lower() in _globals.RECOGNIZED_IMFS:
+				self._imf = value.lower()
+				self.__model.imf = value.lower()
+			else:
+				raise ValueError(u"Unrecognized IMF: %s" % (value))
 		else:
-			raise ValueError(u"Unrecognized IMF: %s" % (value))
+			raise TypeError("Attribute imf must be of type string. Got: %s" % (
+				type(value)))
 
 	# @imf.deleter
 	# def imf(self):
@@ -724,9 +732,13 @@ class integrator(object):
 		return self._dtd
 
 	@dtd.setter
-	def dtd(self, char *value):
-		self._dtd = value
-		self.__model.dtd = value
+	def dtd(self, value):
+		if isinstance(value, str):
+			self._dtd = value.lower()
+			self.__model.dtd = value.lower()
+		else:
+			raise TypeError("Attribute dtd must be of type string. Got: %s" % (
+				type(value)))
 
 	# @dtd.deleter
 	# def dtd(self):
@@ -1040,7 +1052,7 @@ class integrator(object):
 		Returns True if the function passed to it takes more than one parameter 
 		or any keyword/variable/default arguments.
 		"""
-		args = inspect.getargspec(func)
+		args = inspect.getfullargspec(func)
 		if args[1] != None:
 			return True
 		elif args[2] != None:

@@ -77,10 +77,14 @@ class output(object):
 		return self._name
 
 	@name.setter
-	def name(self, char *value):
-		self._name = value
-		while self._name[-1] == u'/':
-			self._name = self._name[:-1]
+	def name(self, value):
+		if isinstance(value, str):
+			self._name = value
+			while self._name[-1] == u'/':
+				self._name = self._name[:-1]
+		else:
+			raise TypeError("Attribute name must be of type string. Got: %s" % (
+				type(value)))
 
 	@property
 	def history(self):
