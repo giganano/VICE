@@ -20,7 +20,7 @@ try:
 	import pandas as _pd
 except:
 	pass
-if sys.version_info[0] == 2:
+if sys.version_info[0] == 3:
 	from builtins import str, range, bytes
 else:
 	pass

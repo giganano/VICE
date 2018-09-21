@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 import numbers
 import sys
 import os
-if sys.version_info[0] == 2:
+if sys.version_info[0] == 3:
 	from builtins import str
 else:
 	pass

@@ -6,7 +6,7 @@ import _globals
 import numbers
 from ctypes import *
 import sys
-if sys.version_info[0] == 2:
+if sys.version_info[0] == 3:
 	from builtins import str, range, map, bytes
 else:
 	pass
