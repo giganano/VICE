@@ -36,26 +36,26 @@ def set_frame(subplot):
 	5	ax.set_xscale('log')
 	6	plt.savefig('foo.pdf')	
 	"""	
-	subplot.tick_params(direction = "in", which = "both")
-	subplot.yaxis.set_ticks_position("both")
-	subplot.xaxis.set_ticks_position("both")
+	subplot.tick_params(direction = u"in", which = u"both")
+	subplot.yaxis.set_ticks_position(u"both")
+	subplot.xaxis.set_ticks_position(u"both")
 	subplot.yaxis.set_minor_locator(_aml())
 	subplot.xaxis.set_minor_locator(_aml())
 
 
 def set_params():
-	mpl.rcParams["axes.linewidth"] = 1
-	mpl.rcParams["xtick.major.size"] = 4
-	mpl.rcParams["xtick.major.width"] = 0.75
-	mpl.rcParams["xtick.minor.size"] = 2
-	mpl.rcParams["xtick.minor.width"] = 0.375
-	mpl.rcParams["ytick.major.size"] = 4
-	mpl.rcParams["ytick.major.width"] = 0.75
-	mpl.rcParams["ytick.minor.size"] = 2.
-	mpl.rcParams["ytick.minor.width"] = 0.375
-	mpl.rcParams["axes.labelsize"] = 16
-	mpl.rcParams["xtick.labelsize"] = 14
-	mpl.rcParams["ytick.labelsize"] = 14
+	mpl.rcParams[u"axes.linewidth"] = 1
+	mpl.rcParams[u"xtick.major.size"] = 4
+	mpl.rcParams[u"xtick.major.width"] = 0.75
+	mpl.rcParams[u"xtick.minor.size"] = 2
+	mpl.rcParams[u"xtick.minor.width"] = 0.375
+	mpl.rcParams[u"ytick.major.size"] = 4
+	mpl.rcParams[u"ytick.major.width"] = 0.75
+	mpl.rcParams[u"ytick.minor.size"] = 2.
+	mpl.rcParams[u"ytick.minor.width"] = 0.375
+	mpl.rcParams[u"axes.labelsize"] = 16
+	mpl.rcParams[u"xtick.labelsize"] = 14
+	mpl.rcParams[u"ytick.labelsize"] = 14
 
 
 
