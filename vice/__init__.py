@@ -62,9 +62,16 @@ version of Anaconda.
 """
 
 from __future__ import absolute_import
+import sys
 
 __version__ = "1.0.0"
 __author__ = "James Johnson <giganano9@gmail.com>"
 
-from .core import *
-from .data import *
+
+if sys.version_info[0] not in [2, 3]:
+	message = "Only Python versions 2.6, 2.7, and >= 3.3 are "
+	message += "supported by VICE."
+	raise SystemError(message)
+else:
+	from .core import *
+	from .data import *
