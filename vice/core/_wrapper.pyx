@@ -1,7 +1,7 @@
 
 # Python Functions
 from __future__ import print_function, division, unicode_literals
-from builtins import str, range
+from builtins import str, range, bytes
 # from _agb_yields import yield_grid as agb_yield_grid
 from ..data import agb_yield_grid
 from _data_management import output
@@ -394,7 +394,7 @@ class integrator(object):
 		if isinstance(value, str):
 			if value.lower() in [u"ifr", u"sfr", u"gas"]:
 				self._mode = value.lower()
-				self.__run.mode = value.lower()
+				self.__run.mode = value.lower().encode('latin-1')
 			else:
 				message = u"Unrecognized mode: %s" % (value)
 		else:
@@ -443,7 +443,7 @@ class integrator(object):
 		if isinstance(value, str):
 			if value.lower() in _globals.RECOGNIZED_IMFS:
 				self._imf = value.lower()
-				self.__model.imf = value.lower()
+				self.__model.imf = value.lower().encode("latin-1")
 			else:
 				raise ValueError(u"Unrecognized IMF: %s" % (value))
 		else:
@@ -735,7 +735,7 @@ class integrator(object):
 	def dtd(self, value):
 		if isinstance(value, str):
 			self._dtd = value.lower()
-			self.__model.dtd = value.lower()
+			self.__model.dtd = value.lower().encode("latin-1")
 		else:
 			raise TypeError("Attribute dtd must be of type string. Got: %s" % (
 				type(value)))
