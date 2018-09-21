@@ -1,7 +1,7 @@
 
 **Overview**
 
-VICE: **V**ersatile **I**ntegrator for **C**hemical **E**volution
+VICE: Versatile Integrator for Chemical Evolution
 ==================================================
 
 VICE is a simple, user-friendly library for running numerical integrations of 
