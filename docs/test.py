@@ -110,7 +110,7 @@ except:
 try: 
 	out = vice.output("example1_1")
 	print("Reader: Success")
-else:
+except:
 	send = True
 	print("Reader: Failed")
 
