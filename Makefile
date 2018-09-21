@@ -8,10 +8,10 @@ ccsne_yields:
 	$(MAKE) -C vice/data/_ccsne_yields/
 
 tests:
-	$(MAKE) -C docs/
+	$(MAKE) -C docs/ tests
 
 tutorial: 
-	$(MAKE) -C docs/
+	$(MAKE) -C docs/ 
 
 clean:
 	cd vice/core/ && make clean && cd - 
