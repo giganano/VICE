@@ -34,10 +34,6 @@ except ImportError:
 	message += "primary author, at <giganano9@gmail.com>."
 	raise SystemError(message)
 
-# The times to have the integrator write output (just an array from 0 to 10 
-# in steps of 0.01) (units are Gyr for output times)
-times = np.linspace(0, 10, 1001)
-
 # Let's do the bolus on top an exponentially declining infall rate with 
 # non-negligible initial gas mass.
 bolus = vice.integrator(name = "bolus")
