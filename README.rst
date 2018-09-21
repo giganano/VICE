@@ -33,8 +33,11 @@ Preferred Install Method
 
 `` 
 	$ git clone https://github.com/giganano/VICE.git
+	
 	$ cd VICE
+	
 	$ make
+	
 	$ python setup.py install (--user)
 ``
 
