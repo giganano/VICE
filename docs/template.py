@@ -109,8 +109,13 @@ example.recycling = "continuous"
 """
 The bins in [X/Y] to sort the stellar metallicity distribution function into. 
 It is assumed that they're in ascending order. 
+
+We don't use NumPy to make this array because vice isn't dependent on NumPy. 
 """
-example.bins = np.linspace(-3., 1., 401)
+arr = 401 * [0.]
+for i in range(401):
+	arr[i] = -3 + 0.01 * i
+example.binspace = arr
 
 """
 The minimum time delay in Gyr between an episode of star formation rate and 
@@ -154,7 +159,7 @@ example.tau_star = 2.
 example.dt = 0.001
 
 # The power law index on the Schmidt-Law if that setting is on. 
-example.schmidt_index = 2.
+example.schmidt_index = 0.5
 
 # The normalization on the gas supply if schmidt = True. 
 example.MgSchmidt = 2.0e9
