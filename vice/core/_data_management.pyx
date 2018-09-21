@@ -13,7 +13,7 @@ cimport _readers
 from libc.stdlib cimport malloc, free
 clib = pydll.LoadLibrary("%score/enrichment.so" % (_globals.DIRECTORY))
 
-__all__ = [b"output"]
+__all__ = ["output"]
 
 # This should always be caught at import anyway
 def version_error():

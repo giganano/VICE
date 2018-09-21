@@ -28,13 +28,14 @@ from libc.stdlib cimport malloc, free
 from ctypes import *
 clib = pydll.LoadLibrary("%score/enrichment.so" % (_globals.DIRECTORY))
 
-__all__ = [b"integrator"]
+__all__ = ["integrator"]
 
 # This should always be caught at import anyway
 def version_error():
 	message = "Only Python versions 2.6, 2.7, and >= 3.3 are "
 	message += "supported by VICE."
 	raise SystemError(message)
+
 
 class integrator(object):
 	"""
