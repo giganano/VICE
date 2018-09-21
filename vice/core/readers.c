@@ -169,8 +169,9 @@ extern int dimension(char *file, int hlength) {
 	for (i = 0; i <= hlength; i++) {
 		fgets(line, LINESIZE, in);
 	}
-	for (i = 0; i < strlen(line) - 1; i++) {
-		if (isspace(line[i + 1]) && !isspace(line[i])) {
+	unsigned int j;
+	for (j = 0; j < strlen(line) - 1; j++) {
+		if (isspace(line[j + 1]) && !isspace(line[j])) {
 			dim++;
 		} else {
 			continue;
