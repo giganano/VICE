@@ -22,6 +22,10 @@ except ImportError:
 	message += "primary author, at <giganano9@gmail.com>."
 	raise SystemError(message)
 
+message = "Running tests on the integration features, output reader, and "
+message += "yield-weighted IMF-integrator. This will take a few minutes, "
+message += "depending on the processing speed of the system."
+print(message)
 send = False
 
 try:
