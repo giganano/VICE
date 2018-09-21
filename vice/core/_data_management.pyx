@@ -1,7 +1,8 @@
 
 # Python Functions
 from __future__ import with_statement, division, unicode_literals
-from builtins import str
+from builtins import str, range, map
+from io import open
 import _globals
 import numbers
 from ctypes import *
@@ -144,35 +145,36 @@ class output(object):
 			ax.set_yscale(u"log")
 			ax.set_xlabel(key[4:])
 			ax.set_ylabel(key)
-			xvals = map(lambda x, y: (x + y)/2., self._mdf[u"bin_edge_left"], 
-				self._mdf[u"bin_edge_right"])
+			xvals = list(map(lambda x, y: (x + y)/2., 
+				self._mdf[u"bin_edge_left"], 
+				self._mdf[u"bin_edge_right"]))
 			ax.step(xvals, self._mdf[key.lower()], c = u'k')
 		elif self.__flip_XoverY_mdf(key):
 			if self.__new_key_mdf(key) in self._mdf.labels:
 				ax.set_yscale(u"log")
 				ax.set_xlabel(key[4:])
 				ax.set_ylabel(key)
-				xvals = map(lambda x, y: (-x + -y)/2., 
+				xvals = list(map(lambda x, y: (-x + -y)/2., 
 					self._mdf[u"bin_edge_left"], 
-					self._mdf[u"bin_edge_right"])
+					self._mdf[u"bin_edge_right"]))
 				ax.step(xvals, self._mdf[self.__new_key_mdf(key)], c = u'k')
 			else:
 				message = u"Metallicity distribution function not found in "
 				message += u"output: %s" % (key)
 				raise ValueError(message)
 		elif key.lower() == u"tau_star":
-			tstar = map(lambda x, y: 1.e-9 * x / y, self._history[u"mgas"], 
-				self._history[u"sfr"])
+			tstar = list(map(lambda x, y: 1.e-9 * x / y, self._history[u"mgas"], 
+				self._history[u"sfr"]))
 			ax.set_xlabel(u"t [Gyr]") 
 			ax.set_ylabel(r"$\tau_{*} = M_{gas}/\dot{M}_{*}$ [Gyr]")
 			ax.plot(self._history[u"time"][1:], tstar[1:], c = u'k')
 		elif key.lower() == u"eta":
-			eta = map(lambda x, y: x / y, self._history[u"ofr"], 
-				self._history[u"sfr"])
+			eta = list(map(lambda x, y: x / y, self._history[u"ofr"], 
+				self._history[u"sfr"]))
 			ax.set_xlabel(u"t [Gyr]")
 			ax.set_ylabel(r"$\eta = \dot{M}_{out}/\dot{M}_{*}$")
 			ax.plot(self._history[u"time"][1:], eta[1:], c = u'k')
-		elif '-' in key.lower():
+		elif u'-' in key.lower():
 			if len(key.split(u'-')) != 2:
 				message = u"Can only show tracks in 2-dimensional space.\n"
 				message += u"Key: %s" % (key)
@@ -203,14 +205,14 @@ class output(object):
 		"""
 		Gets the column labels of output from the history file.
 		"""
-		with open(u"%s/history.out" % (self._name), u'r') as f:
+		with open(u"%s/history.out" % (self._name), 'rb') as f:
 			line = f.readline()
 			while line[0] == u'#' and line[:17] != u"# COLUMN NUMBERS:":
-				line = f.readline()
+				line = f.readline().decode('utf-8')
 			if line[0] == u'#':
 				labels = []
 				while line[0] == u'#':
-					line = f.readline().split()
+					line = f.readline().decode('utf-8').split()
 					labels.append(line[2].lower())
 				f.close()
 				return tuple(labels[:-1])
@@ -224,8 +226,8 @@ class output(object):
 		"""
 		Gets the column labels of output from the MDF file.
 		"""
-		with open(u"%s/mdf.out" % (self._name), u'r') as f:
-			line = f.readline().split()
+		with open(u"%s/mdf.out" % (self._name), 'rb') as f:
+			line = f.readline()decode('utf-8').split()
 			f.close()
 			if line[0] == u'#':
 				return tuple(map(lambda x: x.lower(), line[1:]))
@@ -310,7 +312,7 @@ class _dataframe(object):
 			message = u"Setting an item must be an array-like object of the "
 			message += u"same length as the dataframe itself."
 			raise TypeError(message)
-		if all(map(lambda x: isinstance(x, numbers.Numbers), value)):
+		if all(list(map(lambda x: isinstance(x, numbers.Numbers), value))):
 			if len(value) == len(self._frame[self._labels[0]]):
 				if isinstance(key, str):
 					self._frame[key] = value
@@ -348,8 +350,8 @@ class _dataframe(object):
 		dimension will correspond to the line number of the output file, and 
 		the second to the column number
 		"""
-		return [[self._frame[i][j] for i in self._labels] for j in range(
-			len(self._frame[self._labels[0]]))]
+		return [[self._frame[i][j] for i in self._labels] for j in list(range(
+			len(self._frame[self._labels[0]])))]
 
 	def read(self, labels):
 		"""
@@ -363,10 +365,11 @@ class _dataframe(object):
 		if contents == NULL:
 			raise IOError(u"File not found: %s" % (self._filename))
 		else:
-			self._frame = [[contents[i][j] for j in range(dim)] for i in 
-				range(flen - hlen)]
+			self._frame = [[contents[i][j] for j in list(range(dim))] for i in 
+				list(range(flen - hlen))]
 			free(contents)
-			cols = map(lambda x: __column(self._frame, x), range(dim))
+			cols = list(map(lambda x: __column(self._frame, x), 
+				list(range(dim))))
 			if len(labels) != dim:
 				raise ValueError(u"Must have a label for each dimension.")
 			else:
@@ -380,10 +383,10 @@ class _dataframe(object):
 		elif u"[%s/h]" % (element2.lower()) not in self._labels:
 			raise ValueError
 		else:
-			return map(lambda x, y: x - y, 
+			return list(map(lambda x, y: x - y, 
 				self._frame[u"[%s/h]" % (element1.lower())], 
 				self._frame[u"[%s/h]" % (element2.lower())]
-			)
+			))
 
 # Returns a column from a 2-D python list
 def __column(mat, ind):
