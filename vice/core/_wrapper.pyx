@@ -1,7 +1,7 @@
 
 # Python Functions
 from __future__ import print_function, division, unicode_literals
-from builtins import str
+from builtins import str, range
 # from _agb_yields import yield_grid as agb_yield_grid
 from ..data import agb_yield_grid
 from _data_management import output
@@ -772,7 +772,8 @@ class integrator(object):
 		attribute, however, is stored in an array of C doubles.
 		"""
 		# clib.set_mdf_bins(byref(self.__model))
-		return [self.__model.bins[i] for i in range(self.__model.num_bins + 1l)]
+		return [self.__model.bins[i] for i in list(range(
+			self.__model.num_bins + 1l))]
 
 	@bins.setter
 	def bins(self, value):
@@ -795,7 +796,7 @@ class integrator(object):
 		else:
 			pass
 
-		if all(map(lambda x: isinstance(x, numbers.Number), copy)):
+		if all(list(map(lambda x: isinstance(x, numbers.Number), copy))):
 			copy = [float(i) for i in copy]
 			copy = sorted(copy) # sort from least to greatest
 		else:
@@ -924,7 +925,7 @@ class integrator(object):
 		solars = ptr(*solars[:])
 		clib.setup_elements(byref(self.__run), syms, solars)
 
-		for i in range(len(_globals.RECOGNIZED_ELEMENTS)):
+		for i in list(range(len(_globals.RECOGNIZED_ELEMENTS))):
 			clib.read_agb_grid(byref(self.__run), 
 				u"%s/data/_agb_yields/%s.dat" % (_globals.DIRECTORY, 
 					_globals.RECOGNIZED_ELEMENTS[i].lower()), i)
@@ -936,23 +937,23 @@ class integrator(object):
 		eval_times = __times(output_times[-1], self._dt)
 		ptr = c_double * len(eval_times)
 		if self._mode == u"gas":
-			self.__run.spec = ptr(*map(self._func, eval_times))
+			self.__run.spec = ptr(*list(map(self._func, eval_times)))
 		else:
-			self.__run.spec = ptr(*map(lambda t: 1e9 * self._func(t), 
-				eval_times))
+			self.__run.spec = ptr(*list(map(lambda t: 1e9 * self._func(t), 
+				eval_times)))
 
 		if callable(self._eta):
-			eta = map(self._eta, eval_times)
+			eta = list(map(self._eta, eval_times))
 		else:
 			eta = len(eval_times) * [self._eta]
 
 		if callable(self._zeta):
-			zeta = map(self._zeta, eval_times)
+			zeta = list(map(self._zeta, eval_times))
 		else:
 			zeta = len(eval_times) * [self._zeta]
 			
 		if callable(self._tau_star):
-			tau_star = map(self._tau_star, eval_times)
+			tau_star = list(map(self._tau_star, eval_times))
 		else:
 			tau_star = len(eval_times) * [self._tau_star]
 
@@ -1009,7 +1010,7 @@ class integrator(object):
 			if overwrite:
 				return True
 			else:
-				if any(map(os.path.exists, outfiles)):
+				if any(list(map(os.path.exists, outfiles))):
 					question = u"At least one of the output files already "
 					question += u"exists. If you continue with the integration, "
 					question += u"then their contents will be lost.\n"
@@ -1146,7 +1147,7 @@ class __integration_struct(Structure):
 # Returns the evaluation times given a stopping time and a timestep size
 def __times(stop, dt):
 	arr = (long(stop / dt) + 2) * [0.]
-	for i in range(len(arr)):
+	for i in list(range(len(arr))):
 		arr[i] = i * dt
 	return arr
 
