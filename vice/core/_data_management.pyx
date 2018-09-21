@@ -227,7 +227,7 @@ class output(object):
 		Gets the column labels of output from the MDF file.
 		"""
 		with open(u"%s/mdf.out" % (self._name), 'rb') as f:
-			line = f.readline()decode('utf-8').split()
+			line = f.readline().decode('utf-8').split()
 			f.close()
 			if line[0] == u'#':
 				return tuple(map(lambda x: x.lower(), line[1:]))
