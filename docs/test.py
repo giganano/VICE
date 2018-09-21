@@ -118,7 +118,7 @@ try:
 	for i in vice.RECOGNIZED_ELEMENTS: 
 		a = vice.integrated_cc_yield(i, rotating = True)
 		a = vice.integrated_cc_yield(i, rotating = False)
-		a = vice.integrated_cc_yield(i, imf = "salpeter")
+		a = vice.integrated_cc_yield(i, IMF = "salpeter")
 	print("IMF-integration of stellar yields: Success")
 except:
 	send = True
