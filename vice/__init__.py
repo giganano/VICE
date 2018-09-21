@@ -61,8 +61,10 @@ chemical enrichment integration itself are completely independent of the
 version of Anaconda. 
 """
 
+from __future__ import absolute_import
+
 __version__ = "1.0.0"
 __author__ = "James Johnson <giganano9@gmail.com>"
 
-from core import *
-from data import *
+from .core import *
+from .data import *
