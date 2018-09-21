@@ -1,5 +1,6 @@
 
 from __future__ import unicode_literals
+from builtins import str
 try:
 	import matplotlib as mpl
 	import matplotlib.pyplot as plt

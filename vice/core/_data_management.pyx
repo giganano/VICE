@@ -1,6 +1,7 @@
 
 # Python Functions
 from __future__ import with_statement, division, unicode_literals
+from builtins import str
 import _globals
 import numbers
 from ctypes import *
