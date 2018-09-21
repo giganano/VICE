@@ -26,7 +26,8 @@ System Requirements
 4) Clang >= 4.2.0 or gcc >= 4.6
 
 (Note that these values are currently estimates and the authors are still 
-determining conducting tests for system requirements)
+determining conducting tests for system requirements) There are currently 
+issues with the Python 3 installation, but these will be sorted out soon. 
 
 Preferred Install Method
 ------------------------
