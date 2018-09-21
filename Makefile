@@ -8,7 +8,10 @@ ccsne_yields:
 	$(MAKE) -C vice/data/_ccsne_yields/
 
 tests:
-	python docs/test.py
+	cd docs/
+	python test.py
+	rm */
+	cd -
 
 tutorial: 
 	$(MAKE) -C docs/
