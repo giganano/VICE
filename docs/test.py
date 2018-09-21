@@ -22,11 +22,14 @@ except ImportError:
 	message += "primary author, at <giganano9@gmail.com>."
 	raise SystemError(message)
 
+send = False
+
 try:
 	first = vice.integrator(name = "example1_1")
 	out1 = first.run(times, capture = True)
 	print("First integration: Success")
 except: 
+	send = True
 	print("First integration: Failed")
 
 try:
@@ -36,6 +39,7 @@ try:
 	out2 = second.run(times, capture = True)
 	print("Second integration: Success")
 except:
+	send = True
 	print("Second integration: Failed")
 
 try:
@@ -45,7 +49,89 @@ try:
 	out3 = third.run(times, capture = True)
 	print("Third integration: Success")
 except:
+	send = True
 	print("Third integration: Failed")
+
+try:
+	bolus = vice.integrator(name = "bolus")
+	def f(t):
+		if 5 <= t < 5.001:
+			return 5000
+		else:
+			return 9.1
+	bolus.func = f
+	out1 = bolus.run(times, capture = True)
+	print("Fourth integration: Success")
+except:
+	send = True
+	print("Fourth integration: Failed")
+
+try: 
+	ifrboost = vice.integrator(name = "ifrboost", schmidt = True)
+	def f(t):
+		if 5 <= t <= 6:
+			return 14.1
+		else:
+			return 9.1
+	ifrboost.func = f
+	out2 = ifrboost.run(times, capture = True)
+	print ("Fifth integration: Success")
+except:
+	send = True
+	print("Fifth integration: Failed")
+
+try:
+	sfeboost = vice.integrator(name = "sfeboost")
+	sfeboost.func = lambda t: np.exp( -t / 3 )
+	def f(t):
+		if 5 <= t <= 6:
+			return 1.
+		else:
+			return 2.
+	sfeboost.tau_star = f
+	sfeboost.Mg0 = 1.
+	out3 = sfeboost.run(times, capture = True)
+	print("Sixth integration: Success")
+except:
+	send = True
+	print("Sixth integration: Failed")
+
+try:
+	sfe_schmidt = vice.integrator(name = "sfe_schmidt", schmidt = True)
+	sfe_schmidt.func = lambda t: np.exp( -t / 3 )
+	sfe_schmidt.tau_star = f
+	sfe_schmidt.Mg0 = 1.
+	out4 = sfe_schmidt.run(times, capture = True)
+	print("Seventh integration: Success")
+except:
+	send = True
+	print("Seventh integration: Failed")
+
+try: 
+	out = vice.output("example1_1")
+	print("Reader: Success")
+else:
+	send = True
+	print("Reader: Failed")
+
+try:
+	for i in vice.RECOGNIZED_ELEMENTS: 
+		a = vice.integrated_cc_yield(i, rotating = True)
+		a = vice.integrated_cc_yield(i, rotating = False)
+		a = vice.integrated_cc_yield(i, imf = "salpeter")
+	print("IMF-integration of stellar yields: Success")
+except:
+	send = True
+	print("IMF-integration of stellar yields: Failed")
+
+if send:
+	message = "At least one test failed. Please log which tests did not pass "
+	message += "and submit a bug report to James Johnson at <giganano9@"
+	message += "gmail.com>. Please also use 'BUG in VICE' as a subject. "
+	message += "Thank you. "
+	print(message)
+else:
+	print("All tests passed.")
 
 
 

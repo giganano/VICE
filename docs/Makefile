@@ -25,6 +25,10 @@ sfe_boost: example2.py
 sfe_schmidt: example2.py
 	python example2.py
 
+tests:
+	python test.py
+	rm -r */
+
 clean:
 	rm -r */
 

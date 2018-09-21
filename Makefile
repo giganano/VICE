@@ -7,6 +7,9 @@ enrichment:
 ccsne_yields:
 	$(MAKE) -C vice/data/_ccsne_yields/
 
+tests:
+	$(MAKE) -C docs
+
 tutorial: 
 	$(MAKE) -C docs/
 
