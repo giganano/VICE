@@ -1,6 +1,10 @@
 
 from __future__ import unicode_literals
-# from builtins import str
+import sys
+if sys.version_info[0] == 2:
+	from builtins import str
+else:
+	pass
 try:
 	import matplotlib as mpl
 	import matplotlib.pyplot as plt

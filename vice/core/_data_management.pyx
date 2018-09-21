@@ -1,12 +1,15 @@
 
 # Python Functions
 from __future__ import with_statement, division, unicode_literals
-# from builtins import str, range, map, bytes
 from io import open
 import _globals
 import numbers
 from ctypes import *
 import sys
+if sys.version_info[0] == 2:
+	from builtins import str, range, map, bytes
+else:
+	pass
 
 # C Functions
 cimport _readers

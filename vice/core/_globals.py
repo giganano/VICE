@@ -1,8 +1,12 @@
 
 from __future__ import unicode_literals
-# from builtins import str
 import numbers
+import sys
 import os
+if sys.version_info[0] == 2:
+	from builtins import str
+else:
+	pass
 
 __all__ = ["_DEFAULT_FUNC", "_DEFAULT_BINS", "solar_z", "sources", 
 	"ccsne_yields", "sneia_yields", "DIRECTORY", "RECOGNIZED_ELEMENTS"]

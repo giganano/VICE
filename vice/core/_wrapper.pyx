@@ -1,7 +1,6 @@
 
 # Python Functions
 from __future__ import print_function, division, unicode_literals
-# from builtins import str, range, bytes
 # from _agb_yields import yield_grid as agb_yield_grid
 from ..data import agb_yield_grid
 from _data_management import output
@@ -20,6 +19,10 @@ try:
 	# Pandas compatible but not Pandas dependent
 	import pandas as _pd
 except:
+	pass
+if sys.version_info[0] == 2:
+	from builtins import str, range, bytes
+else:
 	pass
 
 # C Functions
