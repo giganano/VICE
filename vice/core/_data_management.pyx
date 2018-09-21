@@ -10,9 +10,9 @@ from ctypes import *
 # C Functions
 cimport _readers
 from libc.stdlib cimport malloc, free
-clib = pydll.LoadLibrary(u"%score/enrichment.so" % (_globals.DIRECTORY))
+clib = pydll.LoadLibrary("%score/enrichment.so" % (_globals.DIRECTORY))
 
-__all__ = [u"output"]
+__all__ = [b"output"]
 
 class output(object):
 
@@ -61,11 +61,11 @@ class output(object):
 		# labels = tuple(["time", "mgas", "mstar", "sfr", "ifr", "ofr", 
 		# 	"mass(fe)", "mass(o)", "mass(sr)", "z(fe)", "z(o)", "z(sr)", 
 		# 	"[fe/h]", "[o/h]", "[sr/h]", "[o/fe]", "[sr/fe]", "eta_0", "r"])
-		self._history = _dataframe(u"%s/history.out" % (self._name), 
+		self._history = _dataframe("%s/history.out" % (self._name), 
 			self.__history_columns())
 		# labels = tuple(["bins_left", "bins_right", "dn/d[fe/h]", "dn/d[o/h]", 
 		# 	"dn/d[sr/h]", "dn/d[o/fe]", "dn/d[sr/fe]", "dn/d[sr/o]"])
-		self._mdf = _dataframe(u"%s/mdf.out" % (self._name), 
+		self._mdf = _dataframe("%s/mdf.out" % (self._name), 
 			self.__mdf_columns())
 
 	@property
@@ -80,7 +80,7 @@ class output(object):
 	def name(self, value):
 		if isinstance(value, str):
 			self._name = value
-			while self._name[-1] == u'/':
+			while self._name[-1] == '/':
 				self._name = self._name[:-1]
 		else:
 			raise TypeError("Attribute name must be of type string. Got: %s" % (
@@ -124,77 +124,77 @@ class output(object):
 			import matplotlib.pyplot as plt
 			import _mpl
 		except ImportError:
-			message = u"Error: could not import python package matplotlib. "
-			message += u"Please install matplotlib and/or anaconda and "
-			message += u"try again."
+			message = "Error: could not import python package matplotlib. "
+			message += "Please install matplotlib and/or anaconda and "
+			message += "try again."
 			raise ImportError(message)
 
 		_mpl.set_params()
 		fig = plt.figure(figsize = (7, 7))
-		ax = fig.add_subplot(111, facecolor = u"white")
+		ax = fig.add_subplot(111, facecolor = "white")
 		# ax.ticklabel_format(useOffset = False, style = "plain")
 		_mpl.set_frame(ax)
 
 		if key.lower() in self._history.labels:
-			ax.set_xlabel(u"t [Gyr]")
+			ax.set_xlabel("t [Gyr]")
 			ax.set_ylabel(key)
-			ax.plot(self._history[u"time"][1:], self._history[key.lower()][1:], 
-				c = u'k')
+			ax.plot(self._history["time"][1:], self._history[key.lower()][1:], 
+				c = 'k')
 		elif self.__new_key_history(key) in self._history.labels:
-			ax.set_xlabel(u"t [Gyr]")
+			ax.set_xlabel("t [Gyr]")
 			ax.set_ylabel(key)
-			ax.plot(self._history[u"time"][1:], self._history[key.lower()][1:], 
-				c = u'k')
+			ax.plot(self._history["time"][1:], self._history[key.lower()][1:], 
+				c = 'k')
 		elif key.lower() in self._mdf.labels[2:]:
-			ax.set_yscale(u"log")
+			ax.set_yscale("log")
 			ax.set_xlabel(key[4:])
 			ax.set_ylabel(key)
 			xvals = list(map(lambda x, y: (x + y)/2., 
-				self._mdf[u"bin_edge_left"], 
-				self._mdf[u"bin_edge_right"]))
-			ax.step(xvals, self._mdf[key.lower()], c = u'k')
+				self._mdf["bin_edge_left"], 
+				self._mdf["bin_edge_right"]))
+			ax.step(xvals, self._mdf[key.lower()], c = 'k')
 		elif self.__flip_XoverY_mdf(key):
 			if self.__new_key_mdf(key) in self._mdf.labels:
-				ax.set_yscale(u"log")
+				ax.set_yscale("log")
 				ax.set_xlabel(key[4:])
 				ax.set_ylabel(key)
 				xvals = list(map(lambda x, y: (-x + -y)/2., 
-					self._mdf[u"bin_edge_left"], 
-					self._mdf[u"bin_edge_right"]))
-				ax.step(xvals, self._mdf[self.__new_key_mdf(key)], c = u'k')
+					self._mdf["bin_edge_left"], 
+					self._mdf["bin_edge_right"]))
+				ax.step(xvals, self._mdf[self.__new_key_mdf(key)], c = 'k')
 			else:
-				message = u"Metallicity distribution function not found in "
-				message += u"output: %s" % (key)
+				message = "Metallicity distribution function not found in "
+				message += "output: %s" % (key)
 				raise ValueError(message)
-		elif key.lower() == u"tau_star":
-			tstar = list(map(lambda x, y: 1.e-9 * x / y, self._history[u"mgas"], 
-				self._history[u"sfr"]))
-			ax.set_xlabel(u"t [Gyr]") 
+		elif key.lower() == "tau_star":
+			tstar = list(map(lambda x, y: 1.e-9 * x / y, self._history["mgas"], 
+				self._history["sfr"]))
+			ax.set_xlabel("t [Gyr]") 
 			ax.set_ylabel(r"$\tau_{*} = M_{gas}/\dot{M}_{*}$ [Gyr]")
-			ax.plot(self._history[u"time"][1:], tstar[1:], c = u'k')
-		elif key.lower() == u"eta":
-			eta = list(map(lambda x, y: x / y, self._history[u"ofr"], 
-				self._history[u"sfr"]))
-			ax.set_xlabel(u"t [Gyr]")
+			ax.plot(self._history["time"][1:], tstar[1:], c = 'k')
+		elif key.lower() == "eta":
+			eta = list(map(lambda x, y: x / y, self._history["ofr"], 
+				self._history["sfr"]))
+			ax.set_xlabel("t [Gyr]")
 			ax.set_ylabel(r"$\eta = \dot{M}_{out}/\dot{M}_{*}$")
-			ax.plot(self._history[u"time"][1:], eta[1:], c = u'k')
-		elif u'-' in key.lower():
-			if len(key.split(u'-')) != 2:
-				message = u"Can only show tracks in 2-dimensional space.\n"
-				message += u"Key: %s" % (key)
+			ax.plot(self._history["time"][1:], eta[1:], c = 'k')
+		elif '-' in key.lower():
+			if len(key.split('-')) != 2:
+				message = "Can only show tracks in 2-dimensional space.\n"
+				message += "Key: %s" % (key)
 				raise ValueError(message)
 			else:
-				abundance_y = key.split(u'-')[0]
-				abundance_x = key.split(u'-')[1]
+				abundance_y = key.split('-')[0]
+				abundance_x = key.split('-')[1]
 				ax.set_xlabel(abundance_x)
 				ax.set_ylabel(abundance_y)
 				ax.plot(self._history[abundance_x][1:], 
 					self._history[abundance_y][1:], 
-					c = u'k')
+					c = 'k')
 		else:
 			plt.clf()
 			del plt
-			raise KeyError(u"Unrecognized dataframe key: %s" % (key))
+			raise KeyError("Unrecognized dataframe key: %s" % (key))
 
 		if (ax.get_ylim()[1] - ax.get_ylim()[0]) < 0.5:
 			mean = sum(ax.get_ylim()) / 2.
@@ -209,53 +209,53 @@ class output(object):
 		"""
 		Gets the column labels of output from the history file.
 		"""
-		with open(u"%s/history.out" % (self._name), 'rb') as f:
+		with open("%s/history.out" % (self._name), 'rb') as f:
 			line = f.readline()
-			while line[0] == u'#' and line[:17] != u"# COLUMN NUMBERS:":
+			while line[0] == '#' and line[:17] != "# COLUMN NUMBERS:":
 				line = f.readline().decode('utf-8')
-			if line[0] == u'#':
+			if line[0] == '#':
 				labels = []
-				while line[0] == u'#':
+				while line[0] == '#':
 					line = f.readline().decode('utf-8').split()
 					labels.append(line[2].lower())
 				f.close()
 				return tuple(labels[:-1])
 			else:
 				f.close()
-				message = u"Output history file appears to not be formatted "
-				message += u"correctly: %s/history.out" % (self._name)
+				message = "Output history file appears to not be formatted "
+				message += "correctly: %s/history.out" % (self._name)
 				raise IOError(message)
 
 	def __mdf_columns(self):
 		"""
 		Gets the column labels of output from the MDF file.
 		"""
-		with open(u"%s/mdf.out" % (self._name), 'rb') as f:
+		with open("%s/mdf.out" % (self._name), 'rb') as f:
 			line = f.readline().decode('utf-8').split()
 			f.close()
-			if line[0] == u'#':
+			if line[0] == '#':
 				return tuple(map(lambda x: x.lower(), line[1:]))
 			else:
-				message = u"Output MDF file appears to not be formatted "
-				message += u"correctly."
+				message = "Output MDF file appears to not be formatted "
+				message += "correctly."
 				raise IOError(message)
 
 	def __flip_XoverY_mdf(self, key):
-		if key[:4].lower() == u"dn/d":
+		if key[:4].lower() == "dn/d":
 			return True
 		else:
 			return False
 
 	def __new_key_mdf(self, key):
-		element1 = key[4:].split(u'/')[0][1:]
-		element2 = key[4:].split(u'/')[1][:-1]
-		return u"dn/d[%s/%s]" % (element2.lower(), element1.lower())
+		element1 = key[4:].split('/')[0][1:]
+		element2 = key[4:].split('/')[1][:-1]
+		return "dn/d[%s/%s]" % (element2.lower(), element1.lower())
 
 	def __new_key_history(self, key):
 		try:
-			element1 = key.split(u'/')[0][1:]
-			element2 = key.split(u'/')[1][:-1]
-			return u"[%s/%s]" % (element2.lower(), element1.lower())
+			element1 = key.split('/')[0][1:]
+			element2 = key.split('/')[1][:-1]
+			return "[%s/%s]" % (element2.lower(), element1.lower())
 		except IndexError:
 			return None
 
@@ -292,17 +292,17 @@ class _dataframe(object):
 				try:
 					return self.__XoverY(value)
 				except ValueError:
-					raise KeyError(u"Invalid dataframe key: %s" % (value))
+					raise KeyError("Invalid dataframe key: %s" % (value))
 		elif isinstance(value, numbers.Number):
 			if value % 1 == 0:
 				if value >= 0 and value < len(self._frame[self._labels[0]]):
 					return [self._frame[i][value] for i in self._labels]
 				else:
-					raise IndexError(u"Index out of range: %d" % (value))
+					raise IndexError("Index out of range: %d" % (value))
 			else:
-				raise ValueError(u"Indexing by number must be a valid integer.")
+				raise ValueError("Indexing by number must be a valid integer.")
 		else:
-			message = u"Index must be either a string or integer. Got: %s" % (
+			message = "Index must be either a string or integer. Got: %s" % (
 				type(value))
 			raise TypeError(message)
 
@@ -313,24 +313,24 @@ class _dataframe(object):
 		try:
 			copy = value[:]
 		except:
-			message = u"Setting an item must be an array-like object of the "
-			message += u"same length as the dataframe itself."
+			message = "Setting an item must be an array-like object of the "
+			message += "same length as the dataframe itself."
 			raise TypeError(message)
 		if all(list(map(lambda x: isinstance(x, numbers.Numbers), value))):
 			if len(value) == len(self._frame[self._labels[0]]):
 				if isinstance(key, str):
 					self._frame[key] = value
 				else:
-					message = u"Can only set item based on column with key "
-					message += u"of type string."
+					message = "Can only set item based on column with key "
+					message += "of type string."
 					raise TypeError(message)
 			else:
-				message = u"Mismatch in array size: must match that of "
-				message += u"dataframe. Dataframe size: %d. Got: %d" % (
+				message = "Mismatch in array size: must match that of "
+				message += "dataframe. Dataframe size: %d. Got: %d" % (
 					len(self._frame[self._labels[0]]), len(value))
 				raise ValueError(message)
 		else:
-			raise TypeError(u"Non-numerical value detected.")
+			raise TypeError("Non-numerical value detected.")
 
 	@property
 	def filename(self):
@@ -367,7 +367,7 @@ class _dataframe(object):
 		cdef int dim = _readers.dimension(self._filename, hlen)
 		cdef double **contents = _readers.read_output(self._filename)
 		if contents == NULL:
-			raise IOError(u"File not found: %s" % (self._filename))
+			raise IOError("File not found: %s" % (self._filename))
 		else:
 			self._frame = [[contents[i][j] for j in list(range(dim))] for i in 
 				list(range(flen - hlen))]
@@ -375,21 +375,21 @@ class _dataframe(object):
 			cols = list(map(lambda x: __column(self._frame, x), 
 				list(range(dim))))
 			if len(labels) != dim:
-				raise ValueError(u"Must have a label for each dimension.")
+				raise ValueError("Must have a label for each dimension.")
 			else:
 				self._frame = dict(zip([i.lower() for i in labels], cols))
 
 	def __XoverY(self, key):
-		element1 = key.split(u'/')[0][1:]
-		element2 = key.split(u'/')[1][:-1]
-		if u"[%s/h]" % (element1.lower()) not in self._labels:
+		element1 = key.split('/')[0][1:]
+		element2 = key.split('/')[1][:-1]
+		if "[%s/h]" % (element1.lower()) not in self._labels:
 			raise ValueError
-		elif u"[%s/h]" % (element2.lower()) not in self._labels:
+		elif "[%s/h]" % (element2.lower()) not in self._labels:
 			raise ValueError
 		else:
 			return list(map(lambda x, y: x - y, 
-				self._frame[u"[%s/h]" % (element1.lower())], 
-				self._frame[u"[%s/h]" % (element2.lower())]
+				self._frame["[%s/h]" % (element1.lower())], 
+				self._frame["[%s/h]" % (element2.lower())]
 			))
 
 # Returns a column from a 2-D python list
