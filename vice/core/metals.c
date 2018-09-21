@@ -38,14 +38,12 @@ extern int enrich(INTEGRATION *run, MODEL *m, char *name, double *times,
 	
 	write_history_header(*run, *m);
 	write_mdf_header(*run);
-	// write_breakdown_header(*run);
 	int i;
 	run -> Zall = (double **) malloc ((*run).num_elements * sizeof(double *));
 	for (i = 0; i < (*run).num_elements; i++) {
 		setup_single_AGB_grid(&((*run).elements[i]), 
 			(*run).elements[i].agb_grid, 
 			times, num_times);
-		// printf("%d of %d elements done\n", i, (*run).num_elements);
 		(*run).elements[i].m_ccsne = 0;
 		(*run).elements[i].m_sneia = 0;
 		(*run).elements[i].m_agb = 0;
@@ -53,7 +51,6 @@ extern int enrich(INTEGRATION *run, MODEL *m, char *name, double *times,
 		run -> Zall[i] = (double *) malloc (num_times * sizeof(double));
 		run -> Zall[i][0] = (*run).elements[i].m_tot / (*run).MG;
 	}
-	// printf("a\n");
 	setup_MDF(*run, m);
 	setup_R(m, times, num_times);
 	setup_H(m, times, num_times);
@@ -64,7 +61,6 @@ extern int enrich(INTEGRATION *run, MODEL *m, char *name, double *times,
 	run -> timestep = 0l;
 	setup_params(run, *m);
 	long n = 0l;
-	// printf("b\n");
 	while ((*run).current_time <= times[num_times - 1l]) {
 		if ((*run).current_time >= outtimes[n]) {
 			write_history_output(*run, *m);

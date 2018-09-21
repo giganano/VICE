@@ -30,6 +30,12 @@ clib = pydll.LoadLibrary("%score/enrichment.so" % (_globals.DIRECTORY))
 
 __all__ = [b"integrator"]
 
+# This should always be caught at import anyway
+def version_error():
+	message = "Only Python versions 2.6, 2.7, and >= 3.3 are "
+	message += "supported by VICE."
+	raise SystemError(message)
+
 class integrator(object):
 	"""
 	CLASS: integrator
@@ -277,13 +283,34 @@ class integrator(object):
 
 	@name.setter
 	def name(self, value):
-		if isinstance(value, str):
-			self._name = value
-			while self._name[-1] == '/':
-				self._name = self._name[:-1]
+		throw = False
+		# Python 2.x string treatment
+		if sys.version_info[0] == 2:
+			if isinstance(value, basestring):
+				self._name = value
+				while self._name[-1] == '/':
+					self._name = self._name[:-1]
+			else:
+				throw = True
+		# Python 3.x string treatment
+		elif sys.version_info[0] == 3:
+			if isinstance(value, str):
+				self._name = value
+				while self._name[-1] == '/':
+					self._name = self._name[:-1]
+			else:
+				throw = True
 		else:
-			raise TypeError("Attribute name must be of type string. Got: %s" % (
-				type(value)))
+			# This should be caught at import anyway
+			version_error()
+
+		#Type Error
+		if throw:
+			message = "Attribute name must be of type string. Got: %s" % (
+				type(value))
+			raise TypeError(message)
+		else:
+			pass
 
 	# @name.deleter
 	# def name(self):
@@ -391,15 +418,40 @@ class integrator(object):
 
 	@mode.setter
 	def mode(self, value):
-		if isinstance(value, str):
-			if value.lower() in [b"ifr", b"sfr", b"gas"]:
-				self._mode = value.lower()
-				self.__run.mode = value.lower().encode('latin-1')
+		throw = False
+		# Python 2.x string treatment
+		if sys.version_info[0] == 2:
+			if isinstance(value, basestring):
+				if value.lower() in ["ifr", "sfr", "gas"]:
+					self._mode = value.lower()
+					self.__run.mode = value.lower().encode("latin-1")
+				else:
+					message = "Unrecognized mode: %s" % (value)
+					raise ValueError(message)
 			else:
-				message = "Unrecognized mode: %s" % (value)
+				throw = True
+		# Python 3.x string treatment
+		elif sys.version_info[0] == 3:
+			if isinstance(value, str):
+				if value.lower() in ["ifr", "sfr", "gas"]:
+					self._mode = value.lower()
+					self.__run.mode = value.lower().encode("latin-1")
+				else:
+					message = "Unrecognized mode: %s" % (value)
+					raise ValueError(message)
+			else:
+				throw = True
 		else:
-			raise TypeError("Attribute name must be of type string. Got: %s" % (
-				type(value)))
+			# This should be caught at import anyway
+			version_error()
+
+		# TypeError
+		if throw:
+			message = "Attribute name must be of type string. Got: %s" % (
+				type(value))
+			raise TypeError(message)
+		else:
+			pass
 
 	# @mode.deleter
 	# def mode(self):
@@ -440,15 +492,38 @@ class integrator(object):
 
 	@imf.setter
 	def imf(self, value):
-		if isinstance(value, str):
-			if value.lower() in _globals.RECOGNIZED_IMFS:
-				self._imf = value.lower()
-				self.__model.imf = value.lower().encode("latin-1")
+		throw = False
+		# Python 2.x string treatment
+		if sys.version_info[0] == 2:
+			if isinstance(value, basestring):
+				if value.lower() in _globals.RECOGNIZED_IMFS:
+					self._imf = value.lower()
+					self.__model.imf = value.lower().encode("latin-1")
+				else:
+					raise ValueError("Unrecognized IMF: %s" % (value))
 			else:
-				raise ValueError("Unrecognized IMF: %s" % (value))
+				throw = True
+		# Python 3.x string treatment
+		elif sys.version_info[0] == 3:
+			if isinstance(value, str):
+				if value.lower() in _globals.RECOGNIZED_IMFS:
+					self._imf = value.lower()
+					self.__model.imf = value.lower().encode("latin-1")
+				else:
+					raise ValueError("Unrecognized IMF: %s" % (value))
+			else:
+				throw = True
 		else:
-			raise TypeError("Attribute imf must be of type string. Got: %s" % (
-				type(value)))
+			# This should be caught at import anyway
+			version_error()
+
+		# TypeError
+		if throw:
+			message = "Attribute imf must be of type string. Got: %s" % (
+				type(value))
+			raise TypeError(message)
+		else:
+			pass
 
 	# @imf.deleter
 	# def imf(self):
@@ -568,6 +643,17 @@ class integrator(object):
 				message += "0 and 1 to be physical."
 				raise ValueError(message)
 		elif isinstance(value, str):
+			if value.lower() == "continuous":
+				self._recycling = value.lower()
+				self.__model.R0 = 0
+				self.__model.continuous = 1
+			else:
+				message = "If attribute 'recycling' is to be a string, it must "
+				message += "be 'continuous' (case-insensitive). "
+				message += "Got: %s" % (value)
+				raise ValueError(message)
+		# Python 3.x will always evaluate to False before reaching basestring
+		elif sys.version_info[0] == 2 and isinstance(value, basestring):
 			if value.lower() == "continuous":
 				self._recycling = value.lower()
 				self.__model.R0 = 0
@@ -733,12 +819,38 @@ class integrator(object):
 
 	@dtd.setter
 	def dtd(self, value):
-		if isinstance(value, str):
-			self._dtd = value.lower()
-			self.__model.dtd = value.lower().encode("latin-1")
+		throw = False
+		# Python 2.x string treatment
+		if sys.version_info[0] == 2:
+			if isinstance(value, basestring):
+				if value.lower() in ["exp", "plaw"]:
+					self._dtd = value.lower()
+					self.__model.dtd = value.lower().encode("latin-1")
+				else:
+					raise ValueError("Unrecognized DTD: %s" % (value))
+			else:
+				throw = True
+		# Python 3.x string treatment
+		elif sys.version_info[0] == 3:
+			if isinstance(value, str):
+				if value.lower() in ["exp", "plaw"]:
+					self._dtd = value.lower()
+					self.__model.dtd = value.lower().encode("latin-1")
+				else:
+					raise ValueError("Unrecognized DTD: %s" % (value))
+			else:
+				throw = True
 		else:
-			raise TypeError("Attribute dtd must be of type string. Got: %s" % (
-				type(value)))
+			# This should be caught at import anyway
+			version_error()
+
+		# TypeError
+		if throw:
+			message = "Attribute dtd must be of type string. Got: %s" % (
+				type(value))
+			raise TypeError(message)
+		else:
+			pass
 
 	# @dtd.deleter
 	# def dtd(self):
@@ -934,7 +1046,6 @@ class integrator(object):
 		self.__model.m_upper = 100
 		self.__model.m_lower = 0.08
 		ptr = c_char_p * len(_globals.RECOGNIZED_ELEMENTS)
-		# syms = ptr(*list(_globals.RECOGNIZED_ELEMENTS))
 		syms = ptr(*list([i.encode(
 			"latin-1") for i in _globals.RECOGNIZED_ELEMENTS]))
 		self.__run.num_elements = len(_globals.RECOGNIZED_ELEMENTS)
@@ -945,8 +1056,8 @@ class integrator(object):
 
 		for i in list(range(len(_globals.RECOGNIZED_ELEMENTS))):
 			clib.read_agb_grid(byref(self.__run), 
-				"%s/data/_agb_yields/%s.dat" % (_globals.DIRECTORY, 
-					_globals.RECOGNIZED_ELEMENTS[i].lower()), i)
+				"%s/data/_agb_yields/%s.dat".encode("latin-1") % (
+					_globals.DIRECTORY, syms[i]), i)
 			sneia_yield = _globals.sneia_yields[_globals.RECOGNIZED_ELEMENTS[i]]
 			ccsne_yield = _globals.ccsne_yields[_globals.RECOGNIZED_ELEMENTS[i]]
 			clib.set_sneia_yield(byref(self.__run), i, c_double(sneia_yield))
@@ -989,8 +1100,11 @@ class integrator(object):
 			times = ptr(*eval_times[:])
 			ptr2 = c_double * len(output_times)
 			outtimes = ptr2(*output_times[:])
+			print("Made it to enrichment.")
 			enrichment = clib.enrich(byref(self.__run), byref(self.__model), 
-				self._name, times, c_long(len(eval_times)), outtimes)
+				self._name.encode("latin-1"), times, 
+				c_long(len(eval_times)), outtimes)
+			print("Made it through enrichment.")
 		else:
 			enrichment = 0
 

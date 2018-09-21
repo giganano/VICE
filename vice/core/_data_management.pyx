@@ -6,6 +6,7 @@ from io import open
 import _globals
 import numbers
 from ctypes import *
+import sys
 
 # C Functions
 cimport _readers
@@ -13,6 +14,12 @@ from libc.stdlib cimport malloc, free
 clib = pydll.LoadLibrary("%score/enrichment.so" % (_globals.DIRECTORY))
 
 __all__ = [b"output"]
+
+# This should always be caught at import anyway
+def version_error():
+	message = "Only Python versions 2.6, 2.7, and >= 3.3 are "
+	message += "supported by VICE."
+	raise SystemError(message)
 
 class output(object):
 
@@ -58,13 +65,8 @@ class output(object):
 				same manner. See its docstring for details.
 		"""
 		self.name = name
-		# labels = tuple(["time", "mgas", "mstar", "sfr", "ifr", "ofr", 
-		# 	"mass(fe)", "mass(o)", "mass(sr)", "z(fe)", "z(o)", "z(sr)", 
-		# 	"[fe/h]", "[o/h]", "[sr/h]", "[o/fe]", "[sr/fe]", "eta_0", "r"])
 		self._history = _dataframe("%s/history.out" % (self._name), 
 			self.__history_columns())
-		# labels = tuple(["bins_left", "bins_right", "dn/d[fe/h]", "dn/d[o/h]", 
-		# 	"dn/d[sr/h]", "dn/d[o/fe]", "dn/d[sr/fe]", "dn/d[sr/o]"])
 		self._mdf = _dataframe("%s/mdf.out" % (self._name), 
 			self.__mdf_columns())
 
@@ -78,38 +80,28 @@ class output(object):
 
 	@name.setter
 	def name(self, value): 
-		# if isinstance(value, str):
-		# 	print("a")
-		# 	self._name = value 
-		# 	while self._name[-1] == '/':
-		# 		self._name = self._name[:-1]
-		# elif isinstance(value, unicode):
-		# 	print("b")
-		# 	self.name = str(value)
-		# else:
-		# 	print("c")
-		# 	raise TypeError("Attribute name must be of type string. Got: %s" % (
-		# 		type(value)))
+		throw = False
 		# Python 2.x string treatment
 		if sys.version_info[0] == 2:
 			if isinstance(value, basestring):
-				throw = False
 				self._name = value
 				while self._name[-1] == '/':
 					self._name = self._name[:-1]
 			else:
 				throw = True
+		# Python 3.x string treatment
 		elif sys.version_info[0] == 3:
 			if isinstance(value, str):
-				throw = False
 				self._name = value
 				while self._name[-1] == '/':
 					self._name = self._name[:-1]
 			else:
 				throw = True
 		else:
-			throw = True
+			# This should be caught at import anyway
+			version_error()
 
+		# TypeError
 		if throw:
 			message = "Attribute name must be of type string. Got: %s" % (
 				type(value))
@@ -311,13 +303,21 @@ class _dataframe(object):
 	"""
 
 	def __init__(self, filename, labels):
-		self._filename = filename
+		self._filename = filename.encode("latin-1")
 		self.read(labels)
 		self._labels = tuple(labels)
 		# self.__drawn = False
 
 	def __getitem__(self, value):
-		if isinstance(value, str):
+		if sys.version_info[0] == 2 and isinstance(value, basestring):
+			if value.lower() in self._frame:
+				return self._frame[value.lower()]
+			else:
+				try:
+					return self.__XoverY(value)
+				except ValueError:
+					raise KeyError("Invalid dataframe key: %s" % (value))
+		if sys.version_infor[0] == 3 and isinstance(value, str):
 			if value.lower() in self._frame:
 				return self._frame[value.lower()]
 			else:
@@ -394,18 +394,27 @@ class _dataframe(object):
 		Reads in the dataframe given the column labels (not determined by the 
 		user).
 		"""
+		# print("a")
 		cdef long flen = _readers.num_lines(self._filename)
+		# print("b")
 		cdef int hlen = clib.header_length(self._filename)
+		# print("c")
 		cdef int dim = _readers.dimension(self._filename, hlen)
+		# print("d")
 		cdef double **contents = _readers.read_output(self._filename)
+		# print("e")
 		if contents == NULL:
 			raise IOError("File not found: %s" % (self._filename))
 		else:
+			# print("f")
 			self._frame = [[contents[i][j] for j in list(range(dim))] for i in 
 				list(range(flen - hlen))]
+			# print("g")
 			free(contents)
+			# print("h")
 			cols = list(map(lambda x: __column(self._frame, x), 
 				list(range(dim))))
+			# print("i")
 			if len(labels) != dim:
 				raise ValueError("Must have a label for each dimension.")
 			else:
