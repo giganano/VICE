@@ -1,9 +1,8 @@
 
-**Overview**
-
 VICE: Versatile Integrator for Chemical Evolution
-==================================================
+=================================================
 
+**Overview**
 VICE is a simple, user-friendly library for running numerical integrations of 
 galactic chemical enrichment under the single-zone, instantaneous mixing 
 approximation. It is designed to model the formation of elements by 
