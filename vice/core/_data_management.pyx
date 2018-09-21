@@ -1,7 +1,7 @@
 
 # Python Functions
 from __future__ import with_statement, division, unicode_literals
-from builtins import str, range, map
+from builtins import str, range, map, bytes
 from io import open
 import _globals
 import numbers
@@ -77,14 +77,46 @@ class output(object):
 		return self._name
 
 	@name.setter
-	def name(self, value):
-		if isinstance(value, str):
-			self._name = value
-			while self._name[-1] == '/':
-				self._name = self._name[:-1]
+	def name(self, value): 
+		# if isinstance(value, str):
+		# 	print("a")
+		# 	self._name = value 
+		# 	while self._name[-1] == '/':
+		# 		self._name = self._name[:-1]
+		# elif isinstance(value, unicode):
+		# 	print("b")
+		# 	self.name = str(value)
+		# else:
+		# 	print("c")
+		# 	raise TypeError("Attribute name must be of type string. Got: %s" % (
+		# 		type(value)))
+		# Python 2.x string treatment
+		if sys.version_info[0] == 2:
+			if isinstance(value, basestring):
+				throw = False
+				self._name = value
+				while self._name[-1] == '/':
+					self._name = self._name[:-1]
+			else:
+				throw = True
+		elif sys.version_info[0] == 3:
+			if isinstance(value, str):
+				throw = False
+				self._name = value
+				while self._name[-1] == '/':
+					self._name = self._name[:-1]
+			else:
+				throw = True
 		else:
-			raise TypeError("Attribute name must be of type string. Got: %s" % (
-				type(value)))
+			throw = True
+
+		if throw:
+			message = "Attribute name must be of type string. Got: %s" % (
+				type(value))
+			raise TypeError(message)
+		else:
+			pass
+
 
 	@property
 	def history(self):

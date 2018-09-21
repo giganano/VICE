@@ -21,13 +21,11 @@ file3:		The name of the file holding the breakdown output
 extern int open_files(INTEGRATION *run, char *name) {
 
 	/* Piece together the names of the files */
-	char file1[10000], file2[10000], file3[10000];
+	char file1[10000], file2[10000];
 	strcpy(file1, name);
 	strcpy(file2, name);
-	strcpy(file3, name);
 	strcat(file1, "/history.out");
 	strcat(file2, "/mdf.out");
-	// strcat(file3, "/breakdown.out");
 
 	/* Open the files */
 	run -> out1 = fopen(file1, "w");
@@ -40,8 +38,10 @@ extern int open_files(INTEGRATION *run, char *name) {
 
 	/* Check for errors opening files */
 	if ((*run).out1 == NULL) {
+		printf("a\n");
 		return 1;
 	} else if ((*run).out2 == NULL) {
+		printf("b\n");
 		return 1;
 	} else {
 	// } else if ((*run).out3 == NULL) {
