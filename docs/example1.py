@@ -31,8 +31,6 @@ except ImportError:
 	message += "primary author, at <giganano9@gmail.com>."
 	raise SystemError(message)
 
-times = np.linspace(0, 10, 1001)
-
 # The default integrator, which is a constant infall history
 message = "The default integrator is that of a constant infall history.\n"
 message += "These are the default parameters, where _DEFAULT_FUNC is just "
