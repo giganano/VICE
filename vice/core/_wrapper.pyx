@@ -25,9 +25,9 @@ except:
 cimport cython
 from libc.stdlib cimport malloc, free
 from ctypes import *
-clib = pydll.LoadLibrary(u"%score/enrichment.so" % (_globals.DIRECTORY))
+clib = pydll.LoadLibrary(b"%score/enrichment.so" % (_globals.DIRECTORY))
 
-__all__ = [u"integrator"]
+__all__ = [b"integrator"]
 
 class integrator(object):
 	"""
@@ -166,17 +166,17 @@ class integrator(object):
 	See docstring of integrator.run() for instructions on how to specify your 
 	output times. 
 	"""
-	def __init__(self, name = u"onezonemodel", 
+	def __init__(self, name = b"onezonemodel", 
 		func = _globals._DEFAULT_FUNC, 
-		mode = u"ifr", 
-		imf = u"kroupa", 
+		mode = b"ifr", 
+		imf = b"kroupa", 
 		schmidt = False, 
 		eta = 2.5, 
 		zeta = 2.5, 
-		recycling = u"continuous", 
+		recycling = b"continuous", 
 		bins = _globals._DEFAULT_BINS(),
 		delay = 0.15, 
-		dtd = u"plaw", 
+		dtd = b"plaw", 
 		Mg0 = 6.0e9, 
 		smoothing = 0., 
 		tau_ia = 1.5, 
@@ -277,7 +277,7 @@ class integrator(object):
 	@name.setter
 	def name(self, char *value):
 		self._name = value
-		while self._name[-1] == u'/':
+		while self._name[-1] == b'/':
 			self._name = self._name[:-1]
 
 	# @name.deleter
@@ -336,16 +336,16 @@ class integrator(object):
 	def func(self, value):
 		if callable(value):
 			if self.__args(value):
-				message = u"Attribute 'func' must be a callable function that "
-				message += u"takes only one parameter with no variable, "
-				message += u"keyword, or default arguments."
+				message = b"Attribute 'func' must be a callable function that "
+				message += b"takes only one parameter with no variable, "
+				message += b"keyword, or default arguments."
 				raise ValueError(message)
 			else:
 				self._func = value
 		else:
-			message = u"Attribute 'func' must be a callable function that "
-			message += u"takes only one parameter with no variable, "
-			message += u"keyword, or default arguments."
+			message = b"Attribute 'func' must be a callable function that "
+			message += b"takes only one parameter with no variable, "
+			message += b"keyword, or default arguments."
 			raise TypeError(message)
 
 	# @func.deleter
@@ -386,11 +386,11 @@ class integrator(object):
 
 	@mode.setter
 	def mode(self, char *value):
-		if value.lower() in [u"ifr", u"sfr", u"gas"]:
+		if value.lower() in [b"ifr", b"sfr", b"gas"]:
 			self._mode = value.lower()
 			self.__run.mode = value.lower()
 		else:
-			message = u"Unrecognized mode: %s" % (value)
+			message = b"Unrecognized mode: %s" % (value)
 
 	# @mode.deleter
 	# def mode(self):
@@ -435,7 +435,7 @@ class integrator(object):
 			self._imf = value.lower()
 			self.__model.imf = value.lower()
 		else:
-			raise ValueError(u"Unrecognized IMF: %s" % (value))
+			raise ValueError(b"Unrecognized IMF: %s" % (value))
 
 	# @imf.deleter
 	# def imf(self):
@@ -468,17 +468,17 @@ class integrator(object):
 	def eta(self, value):
 		if callable(value):
 			if self.__args(value):
-				message = u"Attribute 'eta', when callable, must take only one "
-				message += u"parameter and no keyword/variable/default "
-				message += u"parameters."
+				message = b"Attribute 'eta', when callable, must take only one "
+				message += b"parameter and no keyword/variable/default "
+				message += b"parameters."
 				raise ValueError(message)
 			else:
 				self._eta = value
 		elif isinstance(value, numbers.Number):
 			self._eta = float(value)
 		else:
-			message = u"Attribute 'eta' must be either a callable python "
-			message += u"function or a numerical value. Got: %s" % (
+			message = b"Attribute 'eta' must be either a callable python "
+			message += b"function or a numerical value. Got: %s" % (
 				type(value))
 			raise TypeError(message)
 
@@ -508,17 +508,17 @@ class integrator(object):
 	def zeta(self, value):
 		if callable(value):
 			if self.__args(value):
-				message = u"Attribute 'zeta', when callable, must take only one "
-				message += u"parameter and no keyword/variable/defaults "
-				message += u"parameters."
+				message = b"Attribute 'zeta', when callable, must take only one "
+				message += b"parameter and no keyword/variable/defaults "
+				message += b"parameters."
 				raise ValueError(message)
 			else:
 				self._zeta = value
 		elif isinstance(value, numbers.Number):
 			self._zeta = float(value)
 		else:
-			message = u"Attribute 'zeta' must be either a callable python "
-			message += u"function or a numerical value. Got: %s" % (type(value))
+			message = b"Attribute 'zeta' must be either a callable python "
+			message += b"function or a numerical value. Got: %s" % (type(value))
 			raise TypeError(message)
 
 	@property
@@ -551,23 +551,23 @@ class integrator(object):
 				self.__model.R0 = value
 				self.__model.continuous = 0
 			else:
-				message = u"The cumulative return fraction must be between "
-				message += u"0 and 1 to be physical."
+				message = b"The cumulative return fraction must be between "
+				message += b"0 and 1 to be physical."
 				raise ValueError(message)
 		elif isinstance(value, str):
-			if value.lower() == u"continuous":
+			if value.lower() == b"continuous":
 				self._recycling = value.lower()
 				self.__model.R0 = 0
 				self.__model.continuous = 1
 			else:
-				message = u"If attribute 'recycling' is to be a string, it must "
-				message += u"be 'continuous' (case-insensitive). "
-				message += u"Got: %s" % (value)
+				message = b"If attribute 'recycling' is to be a string, it must "
+				message += b"be 'continuous' (case-insensitive). "
+				message += b"Got: %s" % (value)
 				raise ValueError(message)
 		else:
-			message = u"Attribute recycling must be either a numerical value "
-			message += u"between 0 and 1 or the string 'continuous' (case-"
-			message += u"insensitive)."
+			message = b"Attribute recycling must be either a numerical value "
+			message += b"between 0 and 1 or the string 'continuous' (case-"
+			message += b"insensitive)."
 			raise TypeError(message)
 
 	# @recycling.deleter
@@ -635,15 +635,15 @@ class integrator(object):
 			self._tau_star = float(value)
 		elif callable(value):
 			if self.__args(value):
-				message = u"When callable, attribute 'tau_star' must take only "
-				message += u"one parameter and no keyword/variable/default "
-				message += u"arguments."
+				message = b"When callable, attribute 'tau_star' must take only "
+				message += b"one parameter and no keyword/variable/default "
+				message += b"arguments."
 				raise ValueError(message)
 			else:
 				self._tau_star = value
 		else:
-			message = u"Attribute 'tau_star' must be either a numerical value "
-			message += u"or a callable function taking one parameter."
+			message = b"Attribute 'tau_star' must be either a numerical value "
+			message += b"or a callable function taking one parameter."
 			raise TypeError(message)
 
 	# @tau_star.deleter
@@ -668,7 +668,7 @@ class integrator(object):
 			else:
 				self.__model.schmidt = 0
 		except:
-			raise TypeError(u"Attribute Schmidt must be of type boolean.")
+			raise TypeError(b"Attribute Schmidt must be of type boolean.")
 
 	@property
 	def schmidt_index(self):
@@ -776,20 +776,20 @@ class integrator(object):
 	@bins.setter
 	def bins(self, value):
 		if isinstance(value, str):
-			message = u"Attribute 'bins' must be an array-like object of "
-			message += u"numerical values."
+			message = b"Attribute 'bins' must be an array-like object of "
+			message += b"numerical values."
 			raise TypeError(message)
 		else:
 			try:
 				copy = value[:]
 			except TypeError:
-				message = u"Attribute 'bins' must be an array-like object of "
-				message = u"numerical values."
+				message = b"Attribute 'bins' must be an array-like object of "
+				message = b"numerical values."
 				raise TypeError(message)
 
-		if u"numpy" in sys.modules and isinstance(value, _np.ndarray):
+		if b"numpy" in sys.modules and isinstance(value, _np.ndarray):
 			copy = value.tolist()
-		elif u"pandas" in sys.modules and isinstance(value, _pd.DataFrame):
+		elif b"pandas" in sys.modules and isinstance(value, _pd.DataFrame):
 			copy = [i[0] for i in value.values.tolist()]
 		else:
 			pass
@@ -798,10 +798,10 @@ class integrator(object):
 			copy = [float(i) for i in copy]
 			copy = sorted(copy) # sort from least to greatest
 		else:
-			message = u"Attribute 'bins' must be an array-like object of "
-			message += u"numerical values. If you've passed a NumPy or Pandas "
-			message += u"array, ensure that it is 1-dimensional.\n"
-			message += u"Got: ", value
+			message = b"Attribute 'bins' must be an array-like object of "
+			message += b"numerical values. If you've passed a NumPy or Pandas "
+			message += b"array, ensure that it is 1-dimensional.\n"
+			message += b"Got: ", value
 			raise TypeError(message)
 
 		ptr = c_double * len(copy)
@@ -828,16 +828,16 @@ class integrator(object):
 		"""
 		Prints the current parameters of the integrator to the screen. 
 		"""
-		print(u"Current Parameters:")
-		print(u"===================")
-		print(u"Name: %s" % (self._name))
-		print(u"Func:", self._func)
-		print(u"Mode: %s" % (self._mode))
-		print(u"Eta:", self._eta)
-		print(u"Zeta:", self._zeta)
-		print(u"Recycling:", self._recycling)
+		print(b"Current Parameters:")
+		print(b"===================")
+		print(b"Name: %s" % (self._name))
+		print(b"Func:", self._func)
+		print(b"Mode: %s" % (self._mode))
+		print(b"Eta:", self._eta)
+		print(b"Zeta:", self._zeta)
+		print(b"Recycling:", self._recycling)
 		if len(self.bins) >= 10:
-			print(u"Bins: [%f, %f, %f, ... , %f, %f, %f]" % (self.bins[0], 
+			print(b"Bins: [%f, %f, %f, ... , %f, %f, %f]" % (self.bins[0], 
 				self.bins[1], 
 				self.bins[2], 
 				self.bins[-3], 
@@ -845,20 +845,20 @@ class integrator(object):
 				self.bins[-1])
 			)
 		else:
-			print(u"Bins:", self.bins)
-		print(u"Delay: %g Gyr" % (self._delay))
-		print(u"DTD: %s" % (self._dtd))
-		print(u"Mg0: %e Msun" % (self._Mg0))
-		print(u"Smoothing: %g Gyr" % (self._smoothing))
-		print(u"Tau_Ia: %g Gyr" % (self._tau_Ia))
+			print(b"Bins:", self.bins)
+		print(b"Delay: %g Gyr" % (self._delay))
+		print(b"DTD: %s" % (self._dtd))
+		print(b"Mg0: %e Msun" % (self._Mg0))
+		print(b"Smoothing: %g Gyr" % (self._smoothing))
+		print(b"Tau_Ia: %g Gyr" % (self._tau_Ia))
 		if isinstance(self._tau_star, numbers.Number):
-			print(u"Tau_star: %g Gyr" % (self._tau_star))
+			print(b"Tau_star: %g Gyr" % (self._tau_star))
 		else:
-			print(u"Tau_star:", self._tau_star)
-		print(u"Dt: %g Gyr" % (self._dt))
-		print(u"Schmidt: %r" % (self._schmidt))
-		print(u"Schmidt index: %g" % (self._schmidt_index))
-		print(u"MgSchmidt: %e" % (self._MgSchmidt))
+			print(b"Tau_star:", self._tau_star)
+		print(b"Dt: %g Gyr" % (self._dt))
+		print(b"Schmidt: %r" % (self._schmidt))
+		print(b"Schmidt index: %g" % (self._schmidt_index))
+		print(b"MgSchmidt: %e" % (self._MgSchmidt))
 
 
 	def run(self, output_times, capture = False, overwrite = False):
@@ -925,7 +925,7 @@ class integrator(object):
 
 		for i in range(len(_globals.RECOGNIZED_ELEMENTS)):
 			clib.read_agb_grid(byref(self.__run), 
-				u"%s/data/_agb_yields/%s.dat" % (_globals.DIRECTORY, 
+				b"%s/data/_agb_yields/%s.dat" % (_globals.DIRECTORY, 
 					_globals.RECOGNIZED_ELEMENTS[i].lower()), i)
 			sneia_yield = _globals.sneia_yields[_globals.RECOGNIZED_ELEMENTS[i]]
 			ccsne_yield = _globals.ccsne_yields[_globals.RECOGNIZED_ELEMENTS[i]]
@@ -934,7 +934,7 @@ class integrator(object):
 	
 		eval_times = __times(output_times[-1], self._dt)
 		ptr = c_double * len(eval_times)
-		if self._mode == u"gas":
+		if self._mode == b"gas":
 			self.__run.spec = ptr(*map(self._func, eval_times))
 		else:
 			self.__run.spec = ptr(*map(lambda t: 1e9 * self._func(t), 
@@ -963,7 +963,7 @@ class integrator(object):
 
 		if self.__outfile_check(overwrite):
 			if not os.path.exists(self._name):
-				os.system(u"mkdir %s" % (self._name))
+				os.system(b"mkdir %s" % (self._name))
 			else:
 				pass
 			times = ptr(*eval_times[:])
@@ -976,10 +976,10 @@ class integrator(object):
 
 		if enrichment == 1: 
 			# Couldn't open output files
-			message = u"Couldn't open files under directory: %s\n" % (self._name)
+			message = b"Couldn't open files under directory: %s\n" % (self._name)
 			raise IOError(message)
 		elif enrichment == 2:
-			message = u"Unrecognized SNe Ia delay time distribution: %s" % (
+			message = b"Unrecognized SNe Ia delay time distribution: %s" % (
 				self._dtd)
 			raise ValueError(message)
 		elif enrichment == 0:
@@ -990,11 +990,11 @@ class integrator(object):
 		elif enrichment == -1:
 			pass
 		else:
-			message = u"Unknown return parameter: %g\n" % (enrichment)
-			message += u"Please submit bug reports to giganano9@gmail.com.\n"
-			message += u"Please also attach a copy of the script that produced "
-			message += u"the error and a description of the variables it uses.\n"
-			message += u"Please also make the subject line 'BUG in VICE'."
+			message = b"Unknown return parameter: %g\n" % (enrichment)
+			message += b"Please submit bug reports to giganano9@gmail.com.\n"
+			message += b"Please also attach a copy of the script that produced "
+			message += b"the error and a description of the variables it uses.\n"
+			message += b"Please also make the subject line 'BUG in VICE'."
 			raise StandardError(message)
 
 	def __outfile_check(self, overwrite):
@@ -1002,23 +1002,23 @@ class integrator(object):
 		Determines if any of the output files exist and proceeds according to 
 		the user specified overwrite preference.
 		"""
-		outfiles = [u"%s/%s" % (self._name, 
-			i) for i in [u"history.out", u"mdf.out"]]
+		outfiles = [b"%s/%s" % (self._name, 
+			i) for i in [b"history.out", b"mdf.out"]]
 		if os.path.exists(self._name):
 			if overwrite:
 				return True
 			else:
 				if any(map(os.path.exists, outfiles)):
-					question = u"At least one of the output files already "
-					question += u"exists. If you continue with the integration, "
-					question += u"then their contents will be lost.\n"
-					question += u"Output directory: %s\n" % (self._name)
-					question += u"Overwrite? (y | n) "
+					question = b"At least one of the output files already "
+					question += b"exists. If you continue with the integration, "
+					question += b"then their contents will be lost.\n"
+					question += b"Output directory: %s\n" % (self._name)
+					question += b"Overwrite? (y | n) "
 					answer = raw_input(question)
-					while answer.lower() not in [u"yes", u"y", u"no", u"n"]:
-						question = u"Please enter either 'y' or 'n': "
+					while answer.lower() not in [b"yes", b"y", b"no", b"n"]:
+						question = b"Please enter either 'y' or 'n': "
 						answer = raw_input(question)
-					if answer.lower() in [u"y", u"yes"]:
+					if answer.lower() in [b"y", b"yes"]:
 						return True
 					else:
 						return False
@@ -1048,7 +1048,7 @@ class integrator(object):
 
 	def __agb_yields(self, symbol):
 		if symbol not in _globals.RECOGNIZED_ELEMENTS:
-			raise ValueError(u"Unrecognized element: %s" % (symbol))
+			raise ValueError(b"Unrecognized element: %s" % (symbol))
 		else:
 			return agb_yield_grid(symbol)
 
@@ -1064,28 +1064,28 @@ class __model_struct(Structure):
 	"""
 
 	_fields_ = [
-		(u"imf", c_char_p), 
-		(u"dtd", c_char_p), 
-		(u"mdf", POINTER(POINTER(c_double))), 
-		(u"bins", POINTER(c_double)), 
-		(u"num_bins", c_long), 
-		(u"eta", POINTER(c_double)), 
-		(u"zeta", POINTER(c_double)), 
-		(u"R", POINTER(c_double)), 
-		(u"H", POINTER(c_double)), 
-		(u"tau_star", POINTER(c_double)),
-		(u"schmidt_index", c_double), 
-		(u"mgschmidt", c_double), 
-		(u"t_d", c_double), 
-		(u"tau_ia", c_double), 
-		(u"ria", POINTER(c_double)), 
-		(u"smoothing_time", c_double), 
-		(u"m_upper", c_double), 
-		(u"m_lower", c_double), 
-		(u"R0", c_double), 
-		(u"continuous", c_int), 
-		(u"schmidt", c_int), 
-		(u"Z_solar", c_double)
+		(b"imf", c_char_p), 
+		(b"dtd", c_char_p), 
+		(b"mdf", POINTER(POINTER(c_double))), 
+		(b"bins", POINTER(c_double)), 
+		(b"num_bins", c_long), 
+		(b"eta", POINTER(c_double)), 
+		(b"zeta", POINTER(c_double)), 
+		(b"R", POINTER(c_double)), 
+		(b"H", POINTER(c_double)), 
+		(b"tau_star", POINTER(c_double)),
+		(b"schmidt_index", c_double), 
+		(b"mgschmidt", c_double), 
+		(b"t_d", c_double), 
+		(b"tau_ia", c_double), 
+		(b"ria", POINTER(c_double)), 
+		(b"smoothing_time", c_double), 
+		(b"m_upper", c_double), 
+		(b"m_lower", c_double), 
+		(b"R0", c_double), 
+		(b"continuous", c_int), 
+		(b"schmidt", c_int), 
+		(b"Z_solar", c_double)
 	]
 
 
@@ -1098,20 +1098,20 @@ class __element_struct(Structure):
 	"""
 
 	_fields_ = [
-		(u"symbol", c_char_p), 
-		(u"ccsne_yield", c_double), 
-		(u"sneia_yield", c_double), 
-		(u"agb_grid", POINTER(POINTER(c_double))), 
-		(u"agb_m", POINTER(c_double)), 
-		(u"agb_z", POINTER(c_double)), 
-		(u"num_agb_m", c_long), 
-		(u"num_agb_z", c_long),
-		(u"m_ccsne", c_double), 
-		(u"m_sneia", c_double), 
-		(u"m_agb", c_double), 
-		(u"m_tot", c_double), 
-		(u"breakdown", POINTER(POINTER(c_double))), 
-		(u"solar", c_double)
+		(b"symbol", c_char_p), 
+		(b"ccsne_yield", c_double), 
+		(b"sneia_yield", c_double), 
+		(b"agb_grid", POINTER(POINTER(c_double))), 
+		(b"agb_m", POINTER(c_double)), 
+		(b"agb_z", POINTER(c_double)), 
+		(b"num_agb_m", c_long), 
+		(b"num_agb_z", c_long),
+		(b"m_ccsne", c_double), 
+		(b"m_sneia", c_double), 
+		(b"m_agb", c_double), 
+		(b"m_tot", c_double), 
+		(b"breakdown", POINTER(POINTER(c_double))), 
+		(b"solar", c_double)
 	]
 
 
@@ -1124,21 +1124,21 @@ class __integration_struct(Structure):
 	"""
 
 	_fields_ = [
-		(u"out1", c_void_p), 
-		(u"out2", c_void_p), 
-		(u"out3", c_void_p), 
-		(u"mode", c_char_p), 
-		(u"spec", POINTER(c_double)), 
-		(u"MG", c_double), 
-		(u"SFR", c_double), 
-		(u"IFR", c_double), 
-		(u"num_elements", c_int), 
-		(u"mdotstar", POINTER(c_double)), 
-		(u"Zall", POINTER(POINTER(c_double))), 
-		(u"dt", c_double), 
-		(u"current_time", c_double), 
-		(u"timestep", c_long), 
-		(u"elements", c_void_p)
+		(b"out1", c_void_p), 
+		(b"out2", c_void_p), 
+		(b"out3", c_void_p), 
+		(b"mode", c_char_p), 
+		(b"spec", POINTER(c_double)), 
+		(b"MG", c_double), 
+		(b"SFR", c_double), 
+		(b"IFR", c_double), 
+		(b"num_elements", c_int), 
+		(b"mdotstar", POINTER(c_double)), 
+		(b"Zall", POINTER(POINTER(c_double))), 
+		(b"dt", c_double), 
+		(b"current_time", c_double), 
+		(b"timestep", c_long), 
+		(b"elements", c_void_p)
 	]
 
 
