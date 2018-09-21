@@ -32,10 +32,10 @@ Preferred Install Method
 ------------------------
 
 `` 
-$ git clone https://github.com/giganano/VICE.git
-$ cd VICE
-$ make
-$ python setup.py install (--user)
+	$ git clone https://github.com/giganano/VICE.git
+	$ cd VICE
+	$ make
+	$ python setup.py install (--user)
 ``
 
 This is currently the only install method. VICE will soon be installable via 
