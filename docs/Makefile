@@ -1,5 +1,6 @@
 
-all:  example1_1 example1_2 example1_3 example bolus ifrboost sfe_boost sfe_schmidt
+
+all: example1_1 example1_2 example1_3 example bolus ifrboost sfe_boost sfe_schmidt	
 
 example: template.py 
 	python template.py
@@ -24,10 +25,6 @@ sfe_boost: example2.py
 
 sfe_schmidt: example2.py
 	python example2.py
-
-tests:
-	python test.py
-	rm -r */
 
 clean:
 	rm -r */
