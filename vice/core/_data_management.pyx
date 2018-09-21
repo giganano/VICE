@@ -17,10 +17,6 @@ from libc.stdlib cimport malloc, free
 clib = pydll.LoadLibrary("%score/enrichment.so" % (_globals.DIRECTORY))
 
 __all__ = ["output"]
-if sys.version_info[0] == 2:
-	__all__ = [str(i) for i in __all__]
-else:
-	pass
 
 # This should always be caught at import anyway
 def version_error():

@@ -14,8 +14,8 @@ __all__ = ["_DEFAULT_FUNC", "_DEFAULT_BINS", "solar_z", "sources",
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 DIRECTORY = DIRECTORY[:-4] # removes 'core' to get full path to dir
 
-RECOGNIZED_ELEMENTS = tuple(["o", "fe", "sr", "c"])
-RECOGNIZED_IMFS = tuple(["kroupa", "salpeter"])
+RECOGNIZED_ELEMENTS = tuple([str(i) for i in ["o", "fe", "sr", "c"]])
+RECOGNIZED_IMFS = tuple([str(i) for i in ["kroupa", "salpeter"]])
 
 # The default function for an integration object. Defined here because it by 
 # design has to be a pure python function and thus cannot be ran through the 

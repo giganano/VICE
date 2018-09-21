@@ -32,10 +32,6 @@ from ctypes import *
 clib = pydll.LoadLibrary("%score/enrichment.so" % (_globals.DIRECTORY))
 
 __all__ = ["integrator"]
-if sys.version_info[0] == 2:
-	__all__ = [str(i) for i in __all__]
-else:
-	pass
 
 # This should always be caught at import anyway
 def version_error():
