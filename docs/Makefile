@@ -1,6 +1,6 @@
 
 
-tutorial: example1_1 example1_2 example1_3 example bolus ifrboost sfe_boost sfe_schmidt	
+all: example1_1 example1_2 example1_3 example bolus ifrboost sfe_boost sfe_schmidt	
 
 example: template.py 
 	python template.py
