@@ -79,7 +79,8 @@ static int dimension(char *file) {
 	FILE *in = fopen(file, "r");
 	if (in == NULL) return -1;
 
-	int i, dim = 0;
+	unsigned int i;
+	int dim = 0;
 	char *line = (char *) malloc (LINESIZE * sizeof(char));
 	do {
 		fgets(line, LINESIZE, in);

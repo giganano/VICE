@@ -163,7 +163,8 @@ extern int dimension(char *file, int hlength) {
 	in = fopen(file, "r");
 	if (in == NULL) return -1;
 
-	int i, dim = 0;
+	unsigned int i;
+	int dim = 0;
 	char *line = (char *) malloc (LINESIZE * sizeof(char));
 	for (i = 0; i <= hlength; i++) {
 		fgets(line, LINESIZE, in);
