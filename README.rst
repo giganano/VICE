@@ -31,7 +31,7 @@ determining conducting tests for system requirements)
 Preferred Install Method
 ------------------------
 
-.. code:: bash
+.. codeblock:: bash
 	$ git clone https://github.com/giganano/VICE.git
 
 	$ cd VICE
