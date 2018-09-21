@@ -12,6 +12,7 @@ tests:
 
 tutorial: 
 	$(MAKE) -C docs/ 
+	$(MAKE) -C docs/ clean
 
 clean:
 	cd vice/core/ && make clean && cd - 
