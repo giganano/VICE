@@ -10,6 +10,9 @@ ccsne_yields:
 tests:
 	$(MAKE) -C docs/ tests
 
+tests3:
+	$(MAKE) -C docs/ tests3
+
 tutorial: 
 	$(MAKE) -C docs/ 
 	$(MAKE) -C docs/ clean
