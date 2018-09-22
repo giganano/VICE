@@ -135,8 +135,10 @@ def integrate(element, rotating = True, IMF = "kroupa", method = "simpson",
 
 	cdef double *num = numerator(file, IMF.lower(), lower, upper, 
 		tolerance, method.lower(), long(Nmax), long(Nmin))
+	print("d")
 	cdef double *den = denominator(IMF.lower(), lower, upper, 
 		tolerance, method.lower(), long(Nmax), long(Nmin))
+	print("d")
 	if num[1] > tolerance: 
 		message = "Yield-weighted IMF integration did not converge. "
 		message += "Estimated fractional error: %.2e" % (num[1])
