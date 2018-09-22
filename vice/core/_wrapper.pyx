@@ -1045,7 +1045,6 @@ class integrator(object):
 		permission from the user to destroy all files with the same name that 
 		they have specified. 
 		"""
-		print("a")
 		output_times = sorted(output_times)
 		self.__run.MG = self._Mg0
 		self.__model.m_upper = 100
@@ -1059,9 +1058,7 @@ class integrator(object):
 		solars = ptr(*solars[:])
 		clib.setup_elements(byref(self.__run), syms, solars)
 
-		print("b")
 		for i in list(range(len(_globals.RECOGNIZED_ELEMENTS))):
-			print("1")
 			if sys.version_info[0] == 2:
 				clib.read_agb_grid(byref(self.__run), 
 					"%s/data/_agb_yields/%s.dat".encode("latin-1") % (
@@ -1073,13 +1070,11 @@ class integrator(object):
 			else:
 				# This should be caught at import anyway
 				version_error()
-			print("2")
 			sneia_yield = _globals.sneia_yields[_globals.RECOGNIZED_ELEMENTS[i]]
 			ccsne_yield = _globals.ccsne_yields[_globals.RECOGNIZED_ELEMENTS[i]]
 			clib.set_sneia_yield(byref(self.__run), i, c_double(sneia_yield))
 			clib.set_ccsne_yield(byref(self.__run), i, c_double(ccsne_yield))
-	
-		print("c")
+
 		eval_times = __times(output_times[-1], self._dt)
 		ptr = c_double * len(eval_times)
 		if self._mode == "gas":
@@ -1103,14 +1098,12 @@ class integrator(object):
 		else:
 			tau_star = len(eval_times) * [self._tau_star]
 
-		print("d")
 		self.__model.Z_solar = 0.014
 		self.__model.eta = ptr(*eta[:])
 		self.__model.zeta = ptr(*zeta[:])
 		self.__model.tau_star = ptr(*tau_star[:])
 		self.__run.mdotstar = ptr(*(len(eval_times) * [0.]))
 
-		print("d")
 		if self.__outfile_check(overwrite):
 			if not os.path.exists(self._name):
 				os.system("mkdir %s" % (self._name))
@@ -1119,11 +1112,9 @@ class integrator(object):
 			times = ptr(*eval_times[:])
 			ptr2 = c_double * len(output_times)
 			outtimes = ptr2(*output_times[:])
-			print("e")
 			enrichment = clib.enrich(byref(self.__run), byref(self.__model), 
 				self._name.encode("latin-1"), times, 
 				c_long(len(eval_times)), outtimes)
-			print("f")
 		else:
 			enrichment = 0
 
