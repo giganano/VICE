@@ -1063,7 +1063,7 @@ class integrator(object):
 		for i in list(range(len(_globals.RECOGNIZED_ELEMENTS))):
 			print("1")
 			clib.read_agb_grid(byref(self.__run), 
-				"%s/data/_agb_yields/%s.dat".encode("latin-1") % (
+				"%s/data/_agb_yields/%s.dat" % (
 					_globals.DIRECTORY, syms[i]), i)
 			print("2")
 			sneia_yield = _globals.sneia_yields[_globals.RECOGNIZED_ELEMENTS[i]]
