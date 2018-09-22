@@ -1058,23 +1058,27 @@ class integrator(object):
 		clib.setup_elements(byref(self.__run), syms, solars)
 
 		for i in list(range(len(_globals.RECOGNIZED_ELEMENTS))):
-			if sys.version_info[0] == 2:
-				clib.read_agb_grid(byref(self.__run), 
-					"%sdata/_agb_yields/%s.dat".encode("latin-1") % (
-						_globals.DIRECTORY, syms[i]), i)
-			elif sys.version_info[0] == 3:
-				print("1")
-				file = "%sdata/_agb_yields/%s.dat" % (_globals.DIRECTORY, 
-					_globals.RECOGNIZED_ELEMENTS[i])
-				# print("%s" % (_globals.DIRECTORY))
-				# print("%s" % (syms[i]))
-				print("%s" % (file))
-				print("2")
-				clib.read_agb_grid(byref(self.__run), file.encode("latin-1"), i)
-				print("3")
-			else:
-				# This should be caught at import anyway
-				version_error()
+			print("%s" % (_globals.RECOGNIZED_ELEMENTS[i]))
+			clib.read_agb_grid(byref(self.__run), 
+				"%sdata/_agb_yields/%s.dat".encode("latin-1") % (
+					_globals.DIRECTORY, _globals.RECOGNIZED_ELEMENTS[i]), i)
+			# if sys.version_info[0] == 2:
+			# 	clib.read_agb_grid(byref(self.__run), 
+			# 		"%sdata/_agb_yields/%s.dat".encode("latin-1") % (
+			# 			_globals.DIRECTORY, syms[i]), i)
+			# elif sys.version_info[0] == 3:
+			# 	print("1")
+			# 	file = "%sdata/_agb_yields/%s.dat" % (_globals.DIRECTORY, 
+			# 		_globals.RECOGNIZED_ELEMENTS[i])
+			# 	# print("%s" % (_globals.DIRECTORY))
+			# 	# print("%s" % (syms[i]))
+			# 	print("%s" % (file))
+			# 	print("2")
+			# 	clib.read_agb_grid(byref(self.__run), file.encode("latin-1"), i)
+			# 	print("3")
+			# else:
+			# 	# This should be caught at import anyway
+			# 	version_error()
 			sneia_yield = _globals.sneia_yields[_globals.RECOGNIZED_ELEMENTS[i]]
 			ccsne_yield = _globals.ccsne_yields[_globals.RECOGNIZED_ELEMENTS[i]]
 			clib.set_sneia_yield(byref(self.__run), i, c_double(sneia_yield))
@@ -1151,8 +1155,8 @@ class integrator(object):
 		Determines if any of the output files exist and proceeds according to 
 		the user specified overwrite preference.
 		"""
-		outfiles = [b"%s/%s" % (self._name, 
-			i) for i in [b"history.out", b"mdf.out"]]
+		outfiles = ["%s/%s" % (self._name, 
+			i) for i in ["history.out", "mdf.out"]]
 		if os.path.exists(self._name):
 			if overwrite:
 				return True
@@ -1164,10 +1168,10 @@ class integrator(object):
 					question += "Output directory: %s\n" % (self._name)
 					question += "Overwrite? (y | n) "
 					answer = raw_input(question)
-					while answer.lower() not in [b"yes", b"y", b"no", b"n"]:
+					while answer.lower() not in ["yes", "y", "no", "n"]:
 						question = "Please enter either 'y' or 'n': "
 						answer = raw_input(question)
-					if answer.lower() in [b"y", b"yes"]:
+					if answer.lower() in ["y", "yes"]:
 						return True
 					else:
 						return False
