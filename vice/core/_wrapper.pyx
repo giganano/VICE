@@ -1104,11 +1104,9 @@ class integrator(object):
 			times = ptr(*eval_times[:])
 			ptr2 = c_double * len(output_times)
 			outtimes = ptr2(*output_times[:])
-			print("Made it to enrichment.")
 			enrichment = clib.enrich(byref(self.__run), byref(self.__model), 
 				self._name.encode("latin-1"), times, 
 				c_long(len(eval_times)), outtimes)
-			print("Made it through enrichment.")
 		else:
 			enrichment = 0
 
