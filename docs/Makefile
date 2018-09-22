@@ -30,6 +30,10 @@ tests:
 	python test.py
 	rm -r */
 
+tests3:
+	python3 test.py
+	rm -r *
+
 clean:
 	rm -r */
 
