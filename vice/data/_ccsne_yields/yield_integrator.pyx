@@ -121,6 +121,11 @@ def integrate(element, rotating = True, IMF = "kroupa", method = "simpson",
 	else:
 		pass
 
+	if sys.version_info[0] == 3:
+		file = file.encode("latin-1")
+	else:
+		pass
+
 	cdef double *num = numerator(file, IMF.lower(), lower, upper, 
 		tolerance, method.lower(), long(Nmax), long(Nmin))
 	cdef double *den = denominator(IMF.lower(), lower, upper, 
