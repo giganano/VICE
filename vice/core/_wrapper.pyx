@@ -1058,27 +1058,23 @@ class integrator(object):
 		clib.setup_elements(byref(self.__run), syms, solars)
 
 		for i in list(range(len(_globals.RECOGNIZED_ELEMENTS))):
-			print("%s" % (_globals.RECOGNIZED_ELEMENTS[i]))
-			clib.read_agb_grid(byref(self.__run), 
-				"%sdata/_agb_yields/%s.dat".encode("latin-1") % (
-					_globals.DIRECTORY, _globals.RECOGNIZED_ELEMENTS[i]), i)
-			# if sys.version_info[0] == 2:
-			# 	clib.read_agb_grid(byref(self.__run), 
-			# 		"%sdata/_agb_yields/%s.dat".encode("latin-1") % (
-			# 			_globals.DIRECTORY, syms[i]), i)
-			# elif sys.version_info[0] == 3:
-			# 	print("1")
-			# 	file = "%sdata/_agb_yields/%s.dat" % (_globals.DIRECTORY, 
-			# 		_globals.RECOGNIZED_ELEMENTS[i])
-			# 	# print("%s" % (_globals.DIRECTORY))
-			# 	# print("%s" % (syms[i]))
-			# 	print("%s" % (file))
-			# 	print("2")
-			# 	clib.read_agb_grid(byref(self.__run), file.encode("latin-1"), i)
-			# 	print("3")
-			# else:
-			# 	# This should be caught at import anyway
-			# 	version_error()
+			if sys.version_info[0] == 2:
+				clib.read_agb_grid(byref(self.__run), 
+					"%sdata/_agb_yields/%s.dat".encode("latin-1") % (
+						_globals.DIRECTORY, syms[i]), i)
+			elif sys.version_info[0] == 3:
+				print("1")
+				file = "%sdata/_agb_yields/%s.dat" % (_globals.DIRECTORY, 
+					_globals.RECOGNIZED_ELEMENTS[i])
+				# print("%s" % (_globals.DIRECTORY))
+				# print("%s" % (syms[i]))
+				print("%s" % (file))
+				print("2")
+				clib.read_agb_grid(byref(self.__run), file.encode("latin-1"), i)
+				print("3")
+			else:
+				# This should be caught at import anyway
+				version_error()
 			sneia_yield = _globals.sneia_yields[_globals.RECOGNIZED_ELEMENTS[i]]
 			ccsne_yield = _globals.ccsne_yields[_globals.RECOGNIZED_ELEMENTS[i]]
 			clib.set_sneia_yield(byref(self.__run), i, c_double(sneia_yield))
