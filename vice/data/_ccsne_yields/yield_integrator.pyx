@@ -125,14 +125,15 @@ def integrate(element, rotating = True, IMF = "kroupa", method = "simpson",
 		pass
 
 	if sys.version_info[0] == 3:
-		file = file.encode("utf-8")
+		file = file.encode("latin-1")
+		method = method.lower().encode("latin-1")
 	else:
 		pass
 
 	cdef double *num = numerator(file, IMF.lower(), lower, upper, 
-		tolerance, method.lower(), long(Nmax), long(Nmin))
+		tolerance, method, long(Nmax), long(Nmin))
 	cdef double *den = denominator(IMF.lower(), lower, upper, 
-		tolerance, method.lower(), long(Nmax), long(Nmin))
+		tolerance, method, long(Nmax), long(Nmin))
 	if num[1] > tolerance: 
 		message = "Yield-weighted IMF integration did not converge. "
 		message += "Estimated fractional error: %.2e" % (num[1])
