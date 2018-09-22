@@ -72,6 +72,7 @@ def integrate(element, rotating = True, IMF = "kroupa", method = "simpson",
 	===========
 	Chieffi A., Limongi M., 2013, ApJ, 764, 21
 	"""
+	print("a")
 	if rotating:
 		file = "%srotating/%s.dat" % (PATH, element.lower())
 	else:
@@ -112,6 +113,8 @@ def integrate(element, rotating = True, IMF = "kroupa", method = "simpson",
 	else:
 		raise ValueError("Unrecognized Element: %s" % (element))
 
+	print("b")
+
 	if upper > 120:
 		message = "Supernovae yields are sampled on a grid of stellar masses "
 		message += "up to 120 Msun. Employing an upper mass limit larger "
@@ -122,9 +125,13 @@ def integrate(element, rotating = True, IMF = "kroupa", method = "simpson",
 		pass
 
 	if sys.version_info[0] == 3:
+		print("here")
 		file = file.encode("latin-1")
+		print("not here")
 	else:
 		pass
+
+	print("c")
 
 	cdef double *num = numerator(file, IMF.lower(), lower, upper, 
 		tolerance, method.lower(), long(Nmax), long(Nmin))
