@@ -29,7 +29,7 @@ print(message)
 send = False
 
 try:
-	first = vice.integrator(name = "example1_1")
+	first = vice.integrator(name = "example1_1", dt = 0.005)
 	out1 = first.run(times, capture = True)
 	print("First integration: Success")
 except: 
@@ -37,7 +37,7 @@ except:
 	print("First integration: Failed")
 
 try:
-	second = vice.integrator(name = "example1_2")
+	second = vice.integrator(name = "example1_2", dt = 0.005)
 	second.func = lambda t: np.exp( -t / 3 )
 	second.Mg0 = 1.
 	out2 = second.run(times, capture = True)
@@ -47,7 +47,7 @@ except:
 	print("Second integration: Failed")
 
 try:
-	third = vice.integrator(name = "example1_3", schmidt = True)
+	third = vice.integrator(name = "example1_3", schmidt = True, dt = 0.005)
 	third.func = lambda t: np.exp( -t / 3 )
 	third.Mg0 = 1.
 	out3 = third.run(times, capture = True)
@@ -57,7 +57,7 @@ except:
 	print("Third integration: Failed")
 
 try:
-	bolus = vice.integrator(name = "bolus")
+	bolus = vice.integrator(name = "bolus", dt = 0.005)
 	def f(t):
 		if 5 <= t < 5.001:
 			return 5000
@@ -71,7 +71,7 @@ except:
 	print("Fourth integration: Failed")
 
 try: 
-	ifrboost = vice.integrator(name = "ifrboost", schmidt = True)
+	ifrboost = vice.integrator(name = "ifrboost", schmidt = True, dt = 0.005)
 	def f(t):
 		if 5 <= t <= 6:
 			return 14.1
@@ -85,7 +85,7 @@ except:
 	print("Fifth integration: Failed")
 
 try:
-	sfeboost = vice.integrator(name = "sfeboost")
+	sfeboost = vice.integrator(name = "sfeboost", dt = 0.005)
 	sfeboost.func = lambda t: np.exp( -t / 3 )
 	def f(t):
 		if 5 <= t <= 6:
@@ -101,7 +101,8 @@ except:
 	print("Sixth integration: Failed")
 
 try:
-	sfe_schmidt = vice.integrator(name = "sfe_schmidt", schmidt = True)
+	sfe_schmidt = vice.integrator(name = "sfe_schmidt", schmidt = True, 
+		dt = 0.005)
 	sfe_schmidt.func = lambda t: np.exp( -t / 3 )
 	sfe_schmidt.tau_star = f
 	sfe_schmidt.Mg0 = 1.
