@@ -236,14 +236,14 @@ class output(object):
 		"""
 		Gets the column labels of output from the history file.
 		"""
-		with open("%s/history.out" % (self._name), 'rb') as f:
+		with open("%s/history.out" % (self._name), 'r') as f:
 			line = f.readline()
 			while line[0] == '#' and line[:17] != "# COLUMN NUMBERS:":
-				line = f.readline().decode('utf-8')
+				line = f.readline()
 			if line[0] == '#':
 				labels = []
 				while line[0] == '#':
-					line = f.readline().decode('utf-8').split()
+					line = f.readline().split()
 					labels.append(line[2].lower())
 				f.close()
 				return tuple(labels[:-1])
@@ -257,8 +257,8 @@ class output(object):
 		"""
 		Gets the column labels of output from the MDF file.
 		"""
-		with open("%s/mdf.out" % (self._name), 'rb') as f:
-			line = f.readline().decode('utf-8').split()
+		with open("%s/mdf.out" % (self._name), 'r') as f:
+			line = f.readline().split()
 			f.close()
 			if line[0] == '#':
 				return tuple(map(lambda x: x.lower(), line[1:]))
