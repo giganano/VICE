@@ -1,7 +1,6 @@
 
 # Python Functions
 from __future__ import print_function, division, unicode_literals
-# from _agb_yields import yield_grid as agb_yield_grid
 from ..data import agb_yield_grid
 from _data_management import output
 import _globals
@@ -1066,7 +1065,7 @@ class integrator(object):
 			elif sys.version_info[0] == 3:
 				print("1")
 				clib.read_agb_grid(byref(self.__run), 
-					c_char_p("%s/data/_agb_yields/%s.dat".encode("utf-8") % (
+					c_char_p(b"%s/data/_agb_yields/%s.dat".encode("utf-8") % (
 						_globals.DIRECTORY, syms[i])), i)
 				print("2")
 			else:
