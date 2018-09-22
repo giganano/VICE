@@ -1064,9 +1064,11 @@ class integrator(object):
 						_globals.DIRECTORY, syms[i]), i)
 			elif sys.version_info[0] == 3:
 				print("1")
-				print("%s" % (_globals.DIRECTORY))
-				print("%s" % (syms[i]))
-				print("%b" % (syms[i]))
+				file = "%s/data/_agb_yields/%s.dat" % (_globals.DIRECTORY, 
+					_globals.RECOGNIZED_ELEMENTS[i])
+				# print("%s" % (_globals.DIRECTORY))
+				# print("%s" % (syms[i]))
+				print("%s" % (file))
 				print("2")
 				clib.read_agb_grid(byref(self.__run), 
 					"%s/data/_agb_yields/%s.dat".encode("utf-8") % (
