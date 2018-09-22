@@ -124,9 +124,10 @@ def integrate(element, rotating = True, IMF = "kroupa", method = "simpson",
 	else:
 		pass
 
+	method = method.lower()
 	if sys.version_info[0] == 3:
 		file = file.encode("latin-1")
-		method = method.lower().encode("latin-1")
+		method = method.encode("latin-1")
 	else:
 		pass
 
