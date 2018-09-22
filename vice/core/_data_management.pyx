@@ -320,7 +320,7 @@ class _dataframe(object):
 					return self.__XoverY(value)
 				except ValueError:
 					raise KeyError("Invalid dataframe key: %s" % (value))
-		if sys.version_infor[0] == 3 and isinstance(value, str):
+		if sys.version_info[0] == 3 and isinstance(value, str):
 			if value.lower() in self._frame:
 				return self._frame[value.lower()]
 			else:
