@@ -1064,9 +1064,11 @@ class integrator(object):
 					"%s/data/_agb_yields/%s.dat".encode("latin-1") % (
 						_globals.DIRECTORY, syms[i]), i)
 			elif sys.version_info[0] == 3:
+				print("1")
 				clib.read_agb_grid(byref(self.__run), 
 					b"%s/data/_agb_yields/%s.dat" % (
 						_globals.DIRECTORY, syms[i], i))
+				print("2")
 			else:
 				# This should be caught at import anyway
 				version_error()
