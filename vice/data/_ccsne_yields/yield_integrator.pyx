@@ -72,7 +72,6 @@ def integrate(element, rotating = True, IMF = "kroupa", method = "simpson",
 	===========
 	Chieffi A., Limongi M., 2013, ApJ, 764, 21
 	"""
-	print("a")
 	if rotating:
 		file = "%srotating/%s.dat" % (PATH, element.lower())
 	else:
@@ -112,8 +111,6 @@ def integrate(element, rotating = True, IMF = "kroupa", method = "simpson",
 			raise LookupError(message)
 	else:
 		raise ValueError("Unrecognized Element: %s" % (element))
-
-	print("b")
 
 	if upper > 120:
 		message = "Supernovae yields are sampled on a grid of stellar masses "
