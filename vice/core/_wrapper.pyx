@@ -1062,9 +1062,17 @@ class integrator(object):
 		print("b")
 		for i in list(range(len(_globals.RECOGNIZED_ELEMENTS))):
 			print("1")
-			clib.read_agb_grid(byref(self.__run), 
-				"%s/data/_agb_yields/%s.dat" % (
-					_globals.DIRECTORY, syms[i]), i)
+			if sys.version_info[0] == 2:
+				clib.read_agb_grid(byref(self.__run), 
+					"%s/data/_agb_yields/%s.dat".encode("latin-1") % (
+						_globals.DIRECTORY, syms[i]), i)
+			elif sys.version_info[0] == 3:
+				clib.read_agb_grid(byref(self.__run), 
+					b"%s/data/_agb_yields/%s.dat".encode("latin-1") % (
+						_globals.DIRECTORY, syms[i], i))
+			else:
+				# This should be caught at import anyway
+				version_error()
 			print("2")
 			sneia_yield = _globals.sneia_yields[_globals.RECOGNIZED_ELEMENTS[i]]
 			ccsne_yield = _globals.ccsne_yields[_globals.RECOGNIZED_ELEMENTS[i]]
