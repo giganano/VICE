@@ -1070,9 +1070,7 @@ class integrator(object):
 				# print("%s" % (syms[i]))
 				print("%s" % (file))
 				print("2")
-				clib.read_agb_grid(byref(self.__run), 
-					"%s/data/_agb_yields/%s.dat".encode("utf-8") % (
-						_globals.DIRECTORY, syms[i]), i)
+				clib.read_agb_grid(byref(self.__run), file, i)
 				print("3")
 			else:
 				# This should be caught at import anyway
