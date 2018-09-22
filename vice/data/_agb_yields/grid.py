@@ -2,7 +2,6 @@
 Initializes the mass-metallicity grid of AGB yield parameters.
 """
 
-import numpy as np
 import inspect
 import sys
 import os
@@ -19,6 +18,16 @@ def _sort(arr):
 		new[i] = min(copy)
 		copy[copy.index(min(copy))] = max(copy)
 	return new
+
+def read_grid(filename):
+	grid = []
+	with open(filename, 'r') as f:
+		line = f.readline()
+		while line != "":
+			grid.append([float(i) for i in line.split()])
+			line = f.readline()
+		f.close()
+	return grid
 
 def yield_grid(element):
 	"""
@@ -37,7 +46,7 @@ def yield_grid(element):
 		returned[1]:		The masses on the grid sorted least to greatest
 		returned[2]:		The metallicities on the grid sorted least to greatest
 	"""
-	grid = np.genfromtxt("%s%s.dat" % (PATH, element.lower()))
+	grid = read_grid("%s%s.dat" % (PATH, element.lower()))
 	m = list(set(_column(grid, 0)))
 	z = list(set(_column(grid, 1)))
 	y = len(m) * [None]
