@@ -32,7 +32,7 @@ tests:
 
 tests3:
 	python3 test.py
-	rm -r *
+	rm -r */
 
 clean:
 	rm -r */
