@@ -20,5 +20,5 @@ tutorial:
 clean:
 	cd vice/core/ && make clean && cd - 
 	cd vice/data/_ccsne_yields && make clean && cd -	
-	rm -r build
+	# rm -r build
 	# cd docs && make clean && cd -
