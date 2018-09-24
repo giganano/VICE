@@ -176,37 +176,13 @@ Updates the mass of a single element
 static void update_single_mass(INTEGRATION run, ELEMENT *e, MODEL m, 
 	int index) {
 
-	// long i;
-	// e -> m_ccsne += mdot_ccsne(run, index) * run.dt;
-	// e -> m_sneia += mdot_ia(run, m, index) * run.dt;
-	// e -> m_agb += m_AGB(run, m, index);
-	// for (i = 0l; i < run.timestep; i++) {
-	// 	// double dm_r = run.mdotstar[run.timestep - i] * run.dt * (m.R[i + 1l] - 
-	// 	// 	m.R[i]) * run.Zall[i][run.timestep - i];
-	// }
-	// double loss = ((get_outflow_rate(run, m) + run.SFR) * run.dt * 
-	// 	(*e).m_tot / run.MG);
-
-	// e -> m_ccsne -= loss * e -> breakdown[run.timestep][0];
-	// e -> m_sneia -= loss * e -> breakdown[run.timestep][1];
-	// e -> m_agb -= loss * e -> breakdown[run.timestep][2];
-	// e -> m_tot = e -> m_ccsne + e -> m_sneia + e -> m_agb;
-	// e -> breakdown[run.timestep + 1l][0] = e -> m_ccsne / e -> m_tot;
-	// e -> breakdown[run.timestep + 1l][1] = e -> m_sneia / e -> m_tot;
-	// e -> breakdown[run.timestep + 1l][2] = e -> m_agb / e -> m_tot;
-
 	e -> m_tot += mdot_ccsne(run, index) * run.dt;
 	e -> m_tot += mdot_ia(run, m, index) * run.dt;
 	e -> m_tot += m_AGB(run, m, index);
 	e -> m_tot += m_returned(run, m, index);
 	e -> m_tot -= run.SFR * run.dt * (*e).m_tot / run.MG;
-	e -> m_tot -= (m.zeta[run.timestep] / m.eta[run.timestep] * 
-		get_outflow_rate(run, m) * run.dt / run.MG * (*e).m_tot);
-	// e -> m_tot -= ((get_outflow_rate(run, m) + run.SFR) * run.dt * 
-	// 	(*e).m_tot / run.MG); 
-	// if (!strcmp((*e).symbol, "Sr")) {
-	// 	printf("AGB Strontium added: %e\n", m_AGB(run, m, index));
-	// } else {}
+	e -> m_tot -= (m.enh[run.timestep] *  get_outflow_rate(run, m) * run.dt / 
+		run.MG * (*e).m_tot);
 
 }
 

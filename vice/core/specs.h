@@ -13,7 +13,7 @@ typedef struct model {
 	double *bins;
 	long num_bins;
 	double *eta;
-	double *zeta;
+	double *enh;
 	double *R;
 	double *H;
 	double *tau_star;

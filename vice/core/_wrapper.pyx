@@ -182,7 +182,7 @@ class integrator(object):
 		imf = "kroupa", 
 		schmidt = False, 
 		eta = 2.5, 
-		zeta = 2.5, 
+		enhancement = 1, 
 		recycling = "continuous", 
 		bins = _globals._DEFAULT_BINS(),
 		delay = 0.15, 
@@ -202,7 +202,7 @@ class integrator(object):
 		func 		= def f(t): return 9.1 [mode-dependent]
 		mode 		= "ifr"  
 		eta  		= 2.5 
-		zeta 		= 2.5 
+		enhancement = 2.5 
 		recycling 	= "continuous"
 		bins 		= [-3, -2.99, -2.98, ... , 0.98, 0.99, 1]
 		delay		= 0.15 [Gyr]
@@ -225,7 +225,7 @@ class integrator(object):
 		self.mode = mode
 		self.imf = imf
 		self.eta = eta
-		self.zeta = zeta
+		self.enhancement = enhancement
 		self.recycling = recycling
 		self.bins = bins
 		self.delay = delay
@@ -578,38 +578,31 @@ class integrator(object):
 	# 	del self._eta
 
 	@property
-	def zeta(self):
+	def enhancement(self):
 		"""
-		The unitless metal-loading factor. Along with eta, this attribute 
-		determines the metallicity of the outflowing gas in the following 
-		manner:
+		The outflow enhancement factor \xi_{enh} = Z_{out} / Z_{gas}, 
+		the ratio of the outflow metallicity to the gas metallicity
 
-		Z_out / Z_gas = zeta / eta
-
-			raise TypeError(message)
-
-	# @eta.deleter
-	# def eta(self):
-		This parameter can be a single numerical value or a callable function 
-		of time in Gyr.
+		This value may be either a single numerical value or a callable 
+		function of time.
 		"""
-		return self._zeta
+		return self._enhancement
 
-	@zeta.setter
-	def zeta(self, value):
+	@enhancement.setter
+	def enhancement(self, value):
 		if callable(value):
 			if self.__args(value):
-				message = "Attribute 'zeta', when callable, must take only one "
-				message += "parameter and no keyword/variable/defaults "
+				message = "Attribute 'enhancement', when callable, must take "
+				message += "only one parameter and no keyword/variable/default "
 				message += "parameters."
 				raise ValueError(message)
 			else:
-				self._zeta = value
+				self._enhancement = value
 		elif isinstance(value, numbers.Number):
-			self._zeta = float(value)
+			self._enhancement = float(value)
 		else:
-			message = "Attribute 'zeta' must be either a callable python "
-			message += "function or a numerical value. Got: %s" % (type(value))
+			message = "Attribute 'enhancement' must be either a callable "
+			message += "python function or a numerical value."
 			raise TypeError(message)
 
 	@property
@@ -967,7 +960,7 @@ class integrator(object):
 		print("Func:", self._func)
 		print("Mode: %s" % (self._mode))
 		print("Eta:", self._eta)
-		print("Zeta:", self._zeta)
+		print("Enhancement:", self._enhancement)
 		print("Recycling:", self._recycling)
 		if len(self.bins) >= 10:
 			print("Bins: [%f, %f, %f, ... , %f, %f, %f]" % (self.bins[0], 
@@ -1087,10 +1080,10 @@ class integrator(object):
 		else:
 			eta = len(eval_times) * [self._eta]
 
-		if callable(self._zeta):
-			zeta = list(map(self._zeta, eval_times))
+		if callable(self._enhancement):
+			enhancement = list(map(self._enhancement, eval_times))
 		else:
-			zeta = len(eval_times) * [self._zeta]
+			enhancement = len(eval_times) * [self._enhancement]
 			
 		if callable(self._tau_star):
 			tau_star = list(map(self._tau_star, eval_times))
@@ -1099,7 +1092,7 @@ class integrator(object):
 
 		self.__model.Z_solar = 0.014
 		self.__model.eta = ptr(*eta[:])
-		self.__model.zeta = ptr(*zeta[:])
+		self.__model.enh = ptr(*enhancement[:])
 		self.__model.tau_star = ptr(*tau_star[:])
 		self.__run.mdotstar = ptr(*(len(eval_times) * [0.]))
 
@@ -1220,7 +1213,7 @@ class __model_struct(Structure):
 		("bins", POINTER(c_double)), 
 		("num_bins", c_long), 
 		("eta", POINTER(c_double)), 
-		("zeta", POINTER(c_double)), 
+		("enh", POINTER(c_double)), 
 		("R", POINTER(c_double)), 
 		("H", POINTER(c_double)), 
 		("tau_star", POINTER(c_double)),

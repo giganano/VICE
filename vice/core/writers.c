@@ -108,8 +108,8 @@ extern void write_history_header(INTEGRATION run, MODEL m) {
 	fprintf(run.out1, "#\t3: SFR (Msun/yr)\t\tStar formation rate\n");
 	fprintf(run.out1, "#\t4: IFR (Msun/yr)\t\tInfall rate\n");
 	fprintf(run.out1, "#\t5: OFR (Msun/yr)\t\tOutflow rate\n");
-	// fprintf(run.out1, "#\t6: Zout\t\t\tOutflow metallicity\n");
-	int n = 6;
+	fprintf(run.out1, "#\t6: Zout\t\t\tOutflow metallicity\n");
+	int n = 7;
 	for (i = 0; i < run.num_elements; i++) {
 		fprintf(run.out1, "#\t%d: Mass(%s) (Msun)\n", n, 
 			run.elements[i].symbol);
@@ -135,7 +135,6 @@ extern void write_history_header(INTEGRATION run, MODEL m) {
 	}
 	fprintf(run.out1, "#\t%d: Eta_0\n", n);
 	fprintf(run.out1, "#\t%d: R\n", n + 1);
-	fprintf(run.out1, "#\t%d: Zeta\n", n + 2);
 
 }
 
@@ -165,7 +164,7 @@ extern void write_history_output(INTEGRATION run, MODEL m) {
 	fprintf(run.out1, "%e\t", run.IFR / 1e9);
 	double outrate = get_outflow_rate(run, m) / 1e9;
 	fprintf(run.out1, "%e\t", outrate);
-	// fprintf(run.out1, "%e\t", m.zeta[run.timestep]/m.eta[run.timestep]*Ztot);
+	fprintf(run.out1, "%e\t", m.enh[run.timestep] * Ztot);
 	for (i = 0; i < run.num_elements; i++) {
 		fprintf(run.out1, "%e\t", run.elements[i].m_tot);
 	}
@@ -183,11 +182,10 @@ extern void write_history_output(INTEGRATION run, MODEL m) {
 	}
 	fprintf(run.out1, "%e\t", m.eta[run.timestep]);
 	if (m.continuous) {
-		fprintf(run.out1, "%e\t", m_returned(run, m, -1) / (run.SFR * run.dt));
+		fprintf(run.out1, "%e\n", m_returned(run, m, -1) / (run.SFR * run.dt));
 	} else {
-		fprintf(run.out1, "%e\t", m.R0);
+		fprintf(run.out1, "%e\n", m.R0);
 	}
-	fprintf(run.out1, "%e\n", m.zeta[run.timestep]);
 	free(Z);
 	free(onH);
 
