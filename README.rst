@@ -26,8 +26,7 @@ System Requirements
 4) Clang >= 4.2.0 or gcc >= 4.6
 
 (Note that these values are currently estimates and the authors are still 
-determining conducting tests for system requirements). We appreciate your 
-patience but VICE is not yet ready for installation. 
+determining conducting tests for system requirements).
 
 Preferred Install Method
 ------------------------
