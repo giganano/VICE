@@ -112,6 +112,20 @@ except:
 	send = True
 	print("Seventh integration: Failed")
 
+try:
+	custom_dtd = vice.integrator(name = "custom_dtd", dt = 0.005)
+	def f(t):
+		if t < 1:
+			return 10
+		else:
+			return 125.89254 * t**(-1.1)
+	custom_dtd.dtd = f
+	out = custom_dtd.run(times, capture = True)
+	print("Eighth integration: Success")
+except:
+	send = True
+	print("Eighth integration: Failed")
+
 try: 
 	out = vice.output("example1_1")
 	print("Reader: Success")
@@ -131,9 +145,10 @@ except:
 
 if send:
 	message = "At least one test failed. Please log which tests did not pass "
-	message += "and submit a bug report to James Johnson at <giganano9@"
-	message += "gmail.com>. Please also use 'BUG in VICE' as a subject. "
-	message += "Thank you. "
+	message += "and either submit a bug report to James Johnson at <giganano9@"
+	message += "gmail.com> or open an issue at https://github.com/giganano/"
+	message += "VICE.git. Please also use 'BUG in VICE' as a subject if you "
+	message += "choose to send an email. Thank you. "
 	print(message)
 else:
 	print("All tests passed.")
