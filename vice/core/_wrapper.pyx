@@ -580,7 +580,7 @@ class integrator(object):
 	@property
 	def enhancement(self):
 		"""
-		The outflow enhancement factor \xi_{enh} = Z_{out} / Z_{gas}, 
+		The outflow enhancement factor xi_{enh} = Z_{out} / Z_{gas}, 
 		the ratio of the outflow metallicity to the gas metallicity
 
 		This value may be either a single numerical value or a callable 
