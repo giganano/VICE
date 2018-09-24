@@ -56,7 +56,9 @@ extern int enrich(INTEGRATION *run, MODEL *m, char *name, double *times,
 	setup_H(m, times, num_times);
 	setup_breakdown(*run, num_times);
 	setup_Zall(run, num_times);
-	if (setup_RIA(m, times, num_times)) return 2;
+	if (!strcmp((*m).dtd, "custom")) {} else {
+		if (setup_RIA(m, (*run).dt)) return 2;
+	}
 	run -> current_time = 0.0;
 	run -> timestep = 0l;
 	setup_params(run, *m);

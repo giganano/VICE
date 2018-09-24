@@ -26,7 +26,9 @@ extern void clean_structs(INTEGRATION *run, MODEL *m) {
 	free(m -> mdf);
 	free(m -> R);
 	free(m -> H);
-	free(m -> ria);
+	if (strcmp((*m).dtd, "custom")) {
+		free(m -> ria);
+	} else {}
 
 	/* Free the integration parameters setup during integration. */
 	free(run -> Zall);

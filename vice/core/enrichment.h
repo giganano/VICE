@@ -8,7 +8,8 @@ extern double get_outflow_rate(INTEGRATION run, MODEL m);
 
 /* SNe Ia enrichment functions */
 extern double mdot_ia(INTEGRATION run, MODEL m, int index);
-extern int setup_RIA(MODEL *m, double *times, long num_times);
+// extern int setup_RIA(MODEL *m, double *times, long num_times);
+extern int setup_RIA(MODEL *m, double dt);
 extern int set_sneia_yield(INTEGRATION *run, int index, double value);
 
 /* CCSNe enrichment functions. */

@@ -121,25 +121,25 @@ class integrator(object):
 	the user simply needs to wrap them in a python function. For example, the 
 	following will produce a Type Error:
 
-	>>> import onezone as oz
+	>>> import vice
 	>>> import numpy as np
-	>>> i = oz.integrator(func = np.exp)
+	>>> i = vice.integrator(func = np.exp)
 
 	If the user desires NumPy's exp function to be passed as the func 
 	attribute, then this can be implemented in the following manner:
 
-	>>> import onezone as oz
+	>>> import vice
 	>>> import numpy as np
 	>>> def f(t):
 	>>>     return np.exp(t)
-	>>> i = oz.integrator(func = f)
+	>>> i = vice.integrator(func = f)
 
 	This sort of wrapping can also be done in a single line at the time of 
 	initialization using a <lambda>:
 
-	>>> import onezone as oz
+	>>> import vice
 	>>> import numpy as np
-	>>> i = oz.integrator(func = lambda t: np.exp(t))
+	>>> i = vice.integrator(func = lambda t: np.exp(t))
 
 	See docstrings for attributes eta, tau_star, and func for more direction on 
 	how to specify these parameters according to your model.
@@ -202,7 +202,7 @@ class integrator(object):
 		func 		= def f(t): return 9.1 [mode-dependent]
 		mode 		= "ifr"  
 		eta  		= 2.5 
-		enhancement = 2.5 
+		enhancement 	= 2.5 
 		recycling 	= "continuous"
 		bins 		= [-3, -2.99, -2.98, ... , 0.98, 0.99, 1]
 		delay		= 0.15 [Gyr]
@@ -265,14 +265,14 @@ class integrator(object):
 		parameter should be initialized as the full path to the 
 		desired output file. For example:
 
-		>>> example = onezone.integrator()
+		>>> example = vice.integrator()
 		>>> example.name = "onezonemodel"
 				
 		The above will create an output file under the name 
 		onezonemodel in your current working directory at the time of 
 		integration. 
 
-		>>> example = onezone.integrator()
+		>>> example = vice.integrator()
 		>>> example.name = "/path/to/output/directory/onezonemodel"
 
 		The above, however, will create a folder named onezonemodel in 
@@ -334,31 +334,31 @@ class integrator(object):
 		Example: An exponentially declining infall rate with an e-folding 
 		timescale of 6 Gyr:
 
-		>>> import onezone as oz
+		>>> import vice
 		>>> import numpy as np
 		>>> def f(t):
 		>>>     return 9.1 * num.exp( -t / 6 )
-		>>> i = oz.integrator(mode = "ifr", func = f)
+		>>> i = vice.integrator(mode = "ifr", func = f)
 
 		Example: An exponentially declining infall rate with an e-folding 
 		timescale of 6 Gyr, but very little gas at the start of integration, 
 		emulating a linear-exponential gas history:
 
-		>>> import onezone as oz
+		>>> import vice
 		>>> import numpy as np
 		>>> def f(t):
 		>>>     return 9.1 * num.exp( -t / 6 )
 		# Specify only 1 solar mass of gas at the first timestep
-		>>> i = oz.integrator(mode = "ifr", func = f, Mg0 = 1)
+		>>> i = vice.integrator(mode = "ifr", func = f, Mg0 = 1)
 
 		Example: The previous history, but with attributes initialized in 
 		different steps rather than in one line:
 
-		>>> import onezone as oz
+		>>> import vice
 		>>> import numpy as np
 		>>> def f(t):
 		>>>     return 9.1 * num.exp( -t / 6 )
-		>>> i = oz.integrator()
+		>>> i = vice.integrator()
 		>>> i.mode = "ifr"
 		>>> i.func = f
 		>>> i.Mg0 = 1
@@ -815,38 +815,33 @@ class integrator(object):
 
 	@dtd.setter
 	def dtd(self, value):
-		throw = False
-		# Python 2.x string treatment
-		if sys.version_info[0] == 2:
-			if isinstance(value, basestring):
-				if value.lower() in ["exp", "plaw"]:
-					self._dtd = value.lower()
-					self.__model.dtd = value.lower().encode("latin-1")
-				else:
-					raise ValueError("Unrecognized DTD: %s" % (value))
+		if callable(value):
+			if self.__args(value):
+				message = "When callable, attribute 'dtd' must take only "
+				message += "one parameter and no keyword/variable/default "
+				message += "parameters."
+				raise ValueError(message)
 			else:
-				throw = True
+				self._dtd = value
+				self.__model.dtd = "custom".encode("latin-1")
 		# Python 3.x string treatment
-		elif sys.version_info[0] == 3:
-			if isinstance(value, str):
-				if value.lower() in ["exp", "plaw"]:
-					self._dtd = value.lower()
-					self.__model.dtd = value.lower().encode("latin-1")
-				else:
-					raise ValueError("Unrecognized DTD: %s" % (value))
+		elif sys.version_info[0] == 3 and isinstance(value, str):
+			if value.lower() in ["exp", "plaw"]:
+				self._dtd = value.lower()
+				self.__model.dtd = value.lower().encode("latin-1")
 			else:
-				throw = True
+				raise ValueError("Unrecognized SNe Ia DTD: %s" % (value))
+		# Python 2.x string treatment
+		elif sys.version_info[0] == 2 and isinstance(value, basestring):
+			if value.lower() in ["exp", "plaw"]:
+				self._dtd = value.lower()
+				self.__model.dtd = value.lower().encode("latin-1")
+			else:
+				raise ValueError("Unrecgonized SNe Ia DTD: %s" % (value))
 		else:
-			# This should be caught at import anyway
-			version_error()
-
-		# TypeError
-		if throw:
-			message = "Attribute dtd must be of type string. Got: %s" % (
-				type(value))
+			message = "Attribute dtd must be either a callable function, "
+			message += "the string \"exp\", or the string \"plaw\"."
 			raise TypeError(message)
-		else:
-			pass
 
 	# @dtd.deleter
 	# def dtd(self):
@@ -1021,7 +1016,7 @@ class integrator(object):
 
 		User's Warning on Overwrite:
 		============================
-		In the event that the user is running many onezone models initialized 
+		In the event that the user is running many vice models initialized 
 		in their own Python scripts, they will want to pay attention to the 
 		names of the models they're running. 
 
@@ -1089,6 +1084,11 @@ class integrator(object):
 			tau_star = list(map(self._tau_star, eval_times))
 		else:
 			tau_star = len(eval_times) * [self._tau_star]
+
+		if callable(self._dtd):
+			self.__set_ria()
+		else:
+			pass
 
 		self.__model.Z_solar = 0.014
 		self.__model.eta = ptr(*eta[:])
@@ -1195,7 +1195,24 @@ class integrator(object):
 		else:
 			return agb_yield_grid(symbol)
 
-
+	def __set_ria(self):
+		times = __times(12.5, self._dt)
+		ria = len(times) * [0.]
+		for i in list(range(len(ria))):
+			if times[i] > self._delay:
+				ria[i] = self._dtd(times[i])
+			else:
+				continue
+		norm = sum(ria)
+		for i in list(range(len(ria))):
+			ria[i] /= norm
+		if any(list(map(lambda x: x < 0, ria))):
+			message = "Custom SNe Ia DTD evaluated to negative value for at "
+			message += "least one timestep. Aborting."
+			raise ArithmeticError(message)
+		else:
+			ptr = c_double * len(ria)
+			self.__model.ria = ptr(*ria[:])
 
 
 class __model_struct(Structure):

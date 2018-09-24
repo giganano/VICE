@@ -45,18 +45,23 @@ class output(object):
 	be indexed by either a string indicating a column label or by index, which 
 	will return a line of the output file. For example:
 
-		>>> import onezone as oz
-		>>> out = oz.output("example")
+		>>> import vice
+		>>> out = vice.output("example")
 		>>> out.history["mgas"]
 		>>> out.history[14]
 		>>> out.mdf["dN/[o/fE]"]
 
 	Where we have purposefully made case errors in the last line to illustrate 
-	that these data frames are case-insensitive. 
+	that these data frames are case-insensitive. The second line will 
+	return a dictionary of dataframe keys to the values calculated by the 
+	integration at that output time. Because this is a python dictionary, 
+	however, accessing the data frame in this manner is NOT case-insensitive. 
 
 	Passing one of these strings to the show function will place that quantity 
 	on a graph and use matplotlib's pyplot.show() function to immediately 
-	display it for the user. 
+	display it for the user. This is the only function in the entire 
+	vice package which is dependent on matplotlib or any other python package 
+	associated with Anaconda. 
 	"""
 
 	def __init__(self, name):
@@ -140,8 +145,8 @@ class output(object):
 		versus x. In this way the user can show tracks in abundance space. 
 		For example:
 
-		>>> import onezone as oz
-		>>> out = oz.output("example")
+		>>> import vice
+		>>> out = vice.output("example")
 		>>> out.show("[O/Fe]-[Fe/H]")
 
 		The above will show the example integration's track in [O/Fe]-[Fe/H] 
@@ -286,10 +291,6 @@ class output(object):
 		except IndexError:
 			return None
 
-
-
-
-	
 
 class _dataframe(object):
 
