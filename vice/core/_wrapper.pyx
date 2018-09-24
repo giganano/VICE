@@ -1208,7 +1208,7 @@ class integrator(object):
 			ria[i] /= norm
 		if any(list(map(lambda x: x < 0, ria))):
 			message = "Custom SNe Ia DTD evaluated to negative value for at "
-			message += "least one timestep. Aborting."
+			message += "least one timestep."
 			raise ArithmeticError(message)
 		else:
 			ptr = c_double * len(ria)
