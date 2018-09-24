@@ -331,7 +331,9 @@ class _dataframe(object):
 		elif isinstance(value, numbers.Number):
 			if value % 1 == 0:
 				if value >= 0 and value < len(self._frame[self._labels[0]]):
-					return [self._frame[i][value] for i in self._labels]
+					# return [self._frame[i][value] for i in self._labels]
+					return dict(zip(self._labels, 
+						[self._frame[i][value] for i in self._labels]))
 				else:
 					raise IndexError("Index out of range: %d" % (value))
 			else:
