@@ -79,6 +79,42 @@ extern int enrich(INTEGRATION *run, MODEL *m, char *name, double *times,
 
 }
 
+extern double get_mstar(INTEGRATION run, MODEL m) {
+
+	double mstar = 0;
+	long i;
+	for (i = 0l; i < run.timestep; i++) {
+		// mstar += run.mdotstar[run.timestep - i] * run.dt * m.H[i];
+		mstar += run.mdotstar[run.timestep - i] * run.dt * (1 - m.R[i]);
+	}
+	return mstar;
+
+}
+
+extern double get_outflow_rate(INTEGRATION run, MODEL m) {
+
+	if (m.smoothing_time < run.dt) {
+		return m.eta[run.timestep] * run.SFR;
+	} else {
+		long num_steps = (long) (m.smoothing_time / run.dt);
+		long i;
+		double avg = 0;
+		if (num_steps > run.timestep) {
+			for (i = 0l; i < run.timestep + 1; i++) {
+				avg += run.mdotstar[run.timestep - i];
+			}
+			avg /= run.timestep + 1;
+		} else {
+			for (i = 0l; i < num_steps; i++) {
+				avg += run.mdotstar[run.timestep - i];
+			}
+			avg /= num_steps;
+		}
+		return m.eta[run.timestep] * avg;
+	}
+
+}
+
 /*
 Advances all quantities forward one timestep
 */
@@ -188,43 +224,6 @@ static void update_single_mass(INTEGRATION run, ELEMENT *e, MODEL m,
 	e -> m_tot += run.IFR * run.dt * m.Zin[index][run.timestep];
 
 }
-
-extern double get_mstar(INTEGRATION run, MODEL m) {
-
-	double mstar = 0;
-	long i;
-	for (i = 0l; i < run.timestep; i++) {
-		// mstar += run.mdotstar[run.timestep - i] * run.dt * m.H[i];
-		mstar += run.mdotstar[run.timestep - i] * run.dt * (1 - m.R[i]);
-	}
-	return mstar;
-
-}
-
-extern double get_outflow_rate(INTEGRATION run, MODEL m) {
-
-	if (m.smoothing_time < run.dt) {
-		return m.eta[run.timestep] * run.SFR;
-	} else {
-		long num_steps = (long) (m.smoothing_time / run.dt);
-		long i;
-		double avg = 0;
-		if (num_steps > run.timestep) {
-			for (i = 0l; i < run.timestep + 1; i++) {
-				avg += run.mdotstar[run.timestep - i];
-			}
-			avg /= run.timestep + 1;
-		} else {
-			for (i = 0l; i < num_steps; i++) {
-				avg += run.mdotstar[run.timestep - i];
-			}
-			avg /= num_steps;
-		}
-		return m.eta[run.timestep] * avg;
-	}
-
-}
-
 
 
 
