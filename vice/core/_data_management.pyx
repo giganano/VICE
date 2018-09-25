@@ -19,7 +19,7 @@ clib = pydll.LoadLibrary("%score/enrichment.so" % (_globals.DIRECTORY))
 __all__ = ["output"]
 
 # This should always be caught at import anyway
-def version_error():
+def __version_error():
 	message = "Only Python versions 2.6, 2.7, and >= 3.3 are "
 	message += "supported by VICE."
 	raise SystemError(message)
@@ -107,7 +107,7 @@ class output(object):
 				throw = True
 		else:
 			# This should be caught at import anyway
-			version_error()
+			__version_error()
 
 		# TypeError
 		if throw:
@@ -153,6 +153,13 @@ class output(object):
 		abundance space.
 		"""
 		try:
+			import matplotlib
+			if matplotlib.__version__[0] != '2': 
+				message = "The current implementation of VICE's show " 
+				message += "function requires matplotlib version >= 2. "
+				raise SystemError(message)
+			else:
+				pass
 			import matplotlib.pyplot as plt
 			import _mpl
 		except ImportError:
@@ -300,17 +307,18 @@ class _dataframe(object):
 	file, which is determined when the user passes the name of the integration 
 	to the output class.
 
-	Calling its attributes is case-insensitive.
+	Calling its attributes is case-insensitive, and can be done with either 
+	brackets [] or parentheses (). 
 
-	Direct access to this class by the user is discouraged lightly. It is 
-	primarily built for access via the built-in attributes of the output class. 
+	This class is primarily built for the built-in attributes of the output 
+	class. As such, we discourage the user from creating new instances of 
+	this class due to its specialized nature. 
 	"""
 
 	def __init__(self, filename, labels):
 		self._filename = filename.encode("latin-1")
 		self.read(labels)
 		self._labels = tuple(labels)
-		# self.__drawn = False
 
 	def __getitem__(self, value):
 		if sys.version_info[0] == 2 and isinstance(value, basestring):
@@ -400,27 +408,18 @@ class _dataframe(object):
 		Reads in the dataframe given the column labels (not determined by the 
 		user).
 		"""
-		# print("a")
 		cdef long flen = _readers.num_lines(self._filename)
-		# print("b")
 		cdef int hlen = clib.header_length(self._filename)
-		# print("c")
 		cdef int dim = _readers.dimension(self._filename, hlen)
-		# print("d")
 		cdef double **contents = _readers.read_output(self._filename)
-		# print("e")
 		if contents == NULL:
 			raise IOError("File not found: %s" % (self._filename))
 		else:
-			# print("f")
 			self._frame = [[contents[i][j] for j in list(range(dim))] for i in 
 				list(range(flen - hlen))]
-			# print("g")
 			free(contents)
-			# print("h")
 			cols = list(map(lambda x: __column(self._frame, x), 
 				list(range(dim))))
-			# print("i")
 			if len(labels) != dim:
 				raise ValueError("Must have a label for each dimension.")
 			else:

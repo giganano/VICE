@@ -8,6 +8,7 @@ import _globals
 import warnings
 import numbers
 import inspect
+import math as m
 import sys
 import os
 try:
@@ -34,13 +35,14 @@ clib = pydll.LoadLibrary("%score/enrichment.so" % (_globals.DIRECTORY))
 __all__ = ["integrator"]
 
 # This should always be caught at import anyway
-def version_error():
+def __version_error():
 	message = "Only Python versions 2.6, 2.7, and >= 3.3 are "
 	message += "supported by VICE."
 	raise SystemError(message)
 
 
 class integrator(object):
+
 	"""
 	CLASS: integrator
 	=================
@@ -177,8 +179,10 @@ class integrator(object):
 	See docstring of integrator.run() for instructions on how to specify your 
 	output times. 
 	"""
+
 	def __init__(self, name = "onezonemodel", 
 		func = _globals._DEFAULT_FUNC, 
+		elements = ["fe", "o", "sr"], 
 		mode = "ifr", 
 		imf = "kroupa", 
 		schmidt = False, 
@@ -207,6 +211,7 @@ class integrator(object):
 		============================
 		name 		= "onezonemodel"
 		func 		= def f(t): return 9.1 [mode-dependent]
+		elements 	= ["fe", "o", "sr"]
 		mode 		= "ifr"  
 		eta  		= 2.5 
 		enhancement 	= 2.5 
@@ -234,6 +239,7 @@ class integrator(object):
 		self._auto_recalc = False
 		self.name = name
 		self.func = func
+		self.elements = elements
 		self.mode = mode
 		self.imf = imf
 		self.eta = eta
@@ -331,7 +337,7 @@ class integrator(object):
 				throw = True
 		else:
 			# This should be caught at import anyway
-			version_error()
+			__version_error()
 
 		#Type Error
 		if throw:
@@ -359,7 +365,7 @@ class integrator(object):
 		>>> import vice
 		>>> import numpy as np
 		>>> def f(t):
-		>>>     return 9.1 * num.exp( -t / 6 )
+		>>>     return 9.1 * np.exp( -t / 6 )
 		>>> i = vice.integrator(mode = "ifr", func = f)
 
 		Example: An exponentially declining infall rate with an e-folding 
@@ -369,7 +375,7 @@ class integrator(object):
 		>>> import vice
 		>>> import numpy as np
 		>>> def f(t):
-		>>>     return 9.1 * num.exp( -t / 6 )
+		>>>     return 9.1 * np.exp( -t / 6 )
 		# Specify only 1 solar mass of gas at the first timestep
 		>>> i = vice.integrator(mode = "ifr", func = f, Mg0 = 1)
 
@@ -379,7 +385,7 @@ class integrator(object):
 		>>> import vice
 		>>> import numpy as np
 		>>> def f(t):
-		>>>     return 9.1 * num.exp( -t / 6 )
+		>>>     return 9.1 * np.exp( -t / 6 )
 		>>> i = vice.integrator()
 		>>> i.mode = "ifr"
 		>>> i.func = f
@@ -404,6 +410,37 @@ class integrator(object):
 			message += "takes only one parameter with no variable, "
 			message += "keyword, or default arguments."
 			raise TypeError(message)
+
+	@property
+	def elements(self):
+		"""
+		The elements that are to be modeled while the integration is running. 
+		They're encoded as their one- or two-letter symbols (case-insensitive). 
+		This attribute accepts array-like objects and stores them in a python 
+		tuple. 
+		"""
+		return self._elements
+
+	@elements.setter
+	def elements(self, value):
+		if "numpy" in sys.modules and isinstance(value, _np.ndarray):
+			copy = value.tolist()
+		elif "pandas" in sys.modules and isinstance(value, _pd.DataFrame):
+			copy = [i[0] for i in value.values.tolist()]
+		elif type(value) in [list, tuple]:
+			copy = value[:]
+		else:
+			message = "Attribute 'elements' must be either a NumPy array, "
+			message += "Pandas DataFrame, python list, or python tuple. "
+			raise TypeError(message)
+
+		for i in copy:
+			if i.lower() not in _globals.RECOGNIZED_ELEMENTS: 
+				message = "Unrecognized element: %s" % (i)
+				raise ValueError(message)
+			else:
+				continue
+		self._elements = tuple(copy[:])
 
 	@property
 	def mode(self):
@@ -464,7 +501,7 @@ class integrator(object):
 				throw = True
 		else:
 			# This should be caught at import anyway
-			version_error()
+			__version_error()
 
 		# TypeError
 		if throw:
@@ -542,7 +579,7 @@ class integrator(object):
 				throw = True
 		else:
 			# This should be caught at import anyway
-			version_error()
+			__version_error()
 
 		# TypeError
 		if throw:
@@ -665,9 +702,12 @@ class integrator(object):
 			raise TypeError(message)
 
 		if is_array:
-			if len(value) != len(_globals.RECOGNIZED_ELEMENTS):
+			if len(value) != len(self._elements):
 				message = "Attribute 'Zin', when initialized as an array, "
-				message += "must have one entry for each element. "
+				message += "must have one entry for each element. Please "
+				message += "modify the attribute 'elements' first if you "
+				message += "wish to add or remove elements from the " 
+				message += "integration. "
 				raise ValueError(message)
 			else:
 				pass
@@ -692,7 +732,7 @@ class integrator(object):
 					message += "found at index %d. Got %s" % (i, 
 						type(value[i]))
 					raise TypeError(message)
-			self._Zin = dict(zip(_globals.RECOGNIZED_ELEMENTS, dummy))
+			self._Zin = dict(zip(self._elements, dummy))
 		else:
 			pass
 
@@ -1206,7 +1246,7 @@ class integrator(object):
 	def auto_recalc(self):
 		"""
 		A boolean describing whether or not to automatically recalculate 
-		yields following a respecification of upper/lower mass limit for 
+		CCSNe yields following a respecification of upper/lower mass limit for 
 		star formation, IMF, or CCSNe rotating vs. nonrotating model. 
 		"""
 		return self._auto_recalc
@@ -1225,6 +1265,11 @@ class integrator(object):
 			message += "boolean. Got: %s" % (type(value))
 			raise TypeError(message) 
 
+		if self._auto_recalc:
+			self.recalculate_cc_yields()
+		else:
+			pass
+
 	def settings(self):
 		"""
 		Prints the current parameters of the integrator to the screen. 
@@ -1233,6 +1278,7 @@ class integrator(object):
 		print("===================")
 		print("Name: %s" % (self._name))
 		print("Func:", self._func)
+		print("Elements:", self._elements)
 		print("Mode: %s" % (self._mode))
 		print("Eta:", self._eta)
 		print("Enhancement:", self._enhancement)
@@ -1338,33 +1384,40 @@ class integrator(object):
 		permission from the user to destroy all files with the same name that 
 		they have specified. 
 		"""
+		if isinstance(self._Zin, dict) and len(self._Zin) != len(
+			self._elements):
+			message = "Please modify attribute 'Zin' to match the new "
+			message += "settings of attribute 'elements'."
+			raise AttributeError(message)
+		else:
+			pass
 		output_times = self.__output_times_check(output_times)
 		self.__run.MG = self._Mg0
 		self.__model.m_upper = self._m_upper
 		self.__model.m_lower = self._m_lower
-		ptr = c_char_p * len(_globals.RECOGNIZED_ELEMENTS)
+		ptr = c_char_p * len(self._elements)
 		syms = ptr(*list([i.encode(
-			"latin-1") for i in _globals.RECOGNIZED_ELEMENTS]))
-		self.__run.num_elements = len(_globals.RECOGNIZED_ELEMENTS)
-		ptr = c_double * len(_globals.RECOGNIZED_ELEMENTS)
-		solars = [_globals.solar_z[i] for i in _globals.RECOGNIZED_ELEMENTS]
+			"latin-1") for i in self._elements]))
+		self.__run.num_elements = len(self._elements)
+		ptr = c_double * len(self._elements)
+		solars = [_globals.solar_z[i] for i in self._elements]
 		solars = ptr(*solars[:])
 		clib.setup_elements(byref(self.__run), syms, solars)
 
-		for i in list(range(len(_globals.RECOGNIZED_ELEMENTS))):
+		for i in list(range(len(self._elements))):
 			if sys.version_info[0] == 2:
 				clib.read_agb_grid(byref(self.__run), 
 					"%sdata/_agb_yields/%s.dat".encode("latin-1") % (
 						_globals.DIRECTORY, syms[i]), i)
 			elif sys.version_info[0] == 3:
 				file = "%sdata/_agb_yields/%s.dat" % (_globals.DIRECTORY, 
-					_globals.RECOGNIZED_ELEMENTS[i])
+					self._elements[i])
 				clib.read_agb_grid(byref(self.__run), file.encode("latin-1"), i)
 			else:
 				# This should be caught at import anyway
-				version_error()
-			sneia_yield = _globals.sneia_yields[_globals.RECOGNIZED_ELEMENTS[i]]
-			ccsne_yield = _globals.ccsne_yields[_globals.RECOGNIZED_ELEMENTS[i]]
+				__version_error()
+			sneia_yield = _globals.sneia_yields[self._elements[i]]
+			ccsne_yield = _globals.ccsne_yields[self._elements[i]]
 			clib.set_sneia_yield(byref(self.__run), i, c_double(sneia_yield))
 			clib.set_ccsne_yield(byref(self.__run), i, c_double(ccsne_yield))
 
@@ -1531,6 +1584,12 @@ class integrator(object):
 		for i in list(range(len(ria))):
 			if times[i] > self._delay:
 				ria[i] = self._dtd(times[i])
+				if (m.isnan(ria[i]) or m.isinf(ria[i]) or ria[i] < 0): 
+					message = "Custom SNe Ia DTD evaluated to negative, nan, "
+					message += "or inf for at least one timestep. "
+					raise ArithmeticError(message)
+				else:
+					continue
 			else:
 				continue
 		norm = sum(ria)
@@ -1545,26 +1604,44 @@ class integrator(object):
 			self.__model.ria = ptr(*ria[:])
 
 	def __set_zin(self, eval_times):
-		dummy = (len(eval_times) * len(_globals.RECOGNIZED_ELEMENTS)) * [0.]
+		"""
+		Passes the inflow metallicity information to C.
+		"""
+		dummy = (len(eval_times) * len(self._elements)) * [0.]
 		ptr = c_double * len(dummy)
 		if isinstance(self._Zin, float):
-			for i in list(range(len(_globals.RECOGNIZED_ELEMENTS))):
+			for i in list(range(len(self._elements))):
 				for j in list(range(len(eval_times))):
 					dummy[len(eval_times) * i + j] = self._Zin
 		elif callable(self._Zin):
-			for i in list(range(len(_globals_RECOGNIZED_ELEMENTS))):
+			for i in list(range(len(self._elements))):
 				for j in list(range(len(eval_times))):
-					dummy[len(eval_times) * i + j] = self._Zin(eval_times[j])
+					if (m.isnan(self._Zin(eval_times[j])) or 
+						m.isinf(self._Zin(eval_times[j])) or 
+						self._Zin(eval_times[j]) < 0):
+						message = "Inflow metallicity evaluated to negative, "
+						message += "nan, or inf for at least one timestep. "
+						raise ArithmeticError(message)
+					else:
+						dummy[len(eval_times) * i + j] = self._Zin(
+							eval_times[j])
 		elif isinstance(self._Zin, dict):
-			for i in list(range(len(_globals.RECOGNIZED_ELEMENTS))):
-				sym = _globals.RECOGNIZED_ELEMENTS[i]
+			for i in list(range(len(self._elements))):
+				sym = self._elements[i]
 				if isinstance(self._Zin[sym], float):
 					for j in list(range(len(eval_times))):
 						dummy[len(eval_times) * i + j] = self._Zin[sym]
 				elif callable(self._Zin[sym]):
 					for j in list(range(len(eval_times))):
-						dummy[len(eval_times) * i + j] = self._Zin[sym](
-							eval_times[j])
+						if (m.isnan(self._Zin[sym](eval_times[j])) or 
+							m.isinf(self._Zin[sym](eval_times[j])) or 
+							self._Zin[sym](eval_times[j]) < 0): 
+							message = "Infow metallicity evaluated to negative, " 
+							message += "nan, or inf for at least one timestep." 
+							raise ArithmeticError(message)
+						else:
+							dummy[len(eval_times) * i + j] = self._Zin[sym](
+								eval_times[j])
 				else:
 					raise SystemError("This error shouldn't be raised.")
 		else:

@@ -33,6 +33,24 @@ def _DEFAULT_BINS():
 
 class _case_insensitive_dataframe(object):
 
+	"""
+	An simple implementation of a Pandas-like dataframe that is keyed 
+	like a python dictionary, except in a case-insensitive manner. It can 
+	also be called like a function, and will return the same values in 
+	either case.  
+
+	An example, using some of the instances of this class that are 
+	included in vice: 
+
+	>>> import vice
+	>>> vice.solar_z["fe"]
+	0.0012
+	>>> vice.sources["O"]
+	["CCSNE"]
+	>>> vice.ccsne_yields("sR")
+	4.43e-08
+	"""
+
 	def __init__(self, frame, name, customizable):
 		self._frame = dict(frame)
 		self._name = name
@@ -63,6 +81,14 @@ class _case_insensitive_dataframe(object):
 			message += "parameters."
 			raise StandardError(message)
 
+	@property
+	def customizable(self):
+		"""
+		A boolean describing whether or not this data-structure supports 
+		user-specified parameters. 
+		"""
+		return self._customizable
+
 	def todict(self):
 		"""
 		Returns this objects as a standard python dictionary. Note that by 
@@ -78,6 +104,8 @@ class _case_insensitive_dataframe(object):
 		self._frame = self.__defaults
 
 
+# Instances of the _case_insensitive_dataframe for both user lookup as well 
+# as customization, depending on the instance. 
 solar_z = _case_insensitive_dataframe({
 	"fe":		0.0012, 
 	"o":		0.0056, 
