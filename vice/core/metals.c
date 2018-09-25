@@ -185,6 +185,7 @@ static void update_single_mass(INTEGRATION run, ELEMENT *e, MODEL m,
 	e -> m_tot -= run.SFR * run.dt * (*e).m_tot / run.MG;
 	e -> m_tot -= (m.enh[run.timestep] *  get_outflow_rate(run, m) * run.dt / 
 		run.MG * (*e).m_tot);
+	e -> m_tot += run.IFR * run.dt * m.Zin[index][run.timestep];
 
 }
 

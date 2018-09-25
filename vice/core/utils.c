@@ -6,6 +6,21 @@
 #include "utils.h"
 
 
+extern int setup_Zin(INTEGRATION run, MODEL *m, double *arr, long num_times) {
+
+	int i;
+	long j;
+	m -> Zin = (double **) malloc (run.num_elements * sizeof(double *));
+	for (i = 0; i < run.num_elements; i++) {
+		m -> Zin[i] = (double *) malloc (num_times * sizeof(double));
+		for (j = 0l; j < num_times; j++) {
+			m -> Zin[i][j] = arr[i * num_times + j];
+		}
+	}
+	return 1;
+
+}
+
 extern int setup_elements(INTEGRATION *run, char **symbols, double *solars) {
 
 	int i;

@@ -2,6 +2,7 @@
 # Python Functions
 from __future__ import print_function, division, unicode_literals
 from ..data import agb_yield_grid
+from ..data import integrated_cc_yield
 from _data_management import output
 import _globals
 import warnings
@@ -183,6 +184,7 @@ class integrator(object):
 		schmidt = False, 
 		eta = 2.5, 
 		enhancement = 1, 
+		Zin = 0, 
 		recycling = "continuous", 
 		bins = _globals._DEFAULT_BINS(),
 		delay = 0.15, 
@@ -193,7 +195,12 @@ class integrator(object):
 		tau_star = 2., 
 		dt = 0.001, 
 		schmidt_index = 0.5, 
-		MgSchmidt = 6.0e9):
+		MgSchmidt = 6.0e9, 
+		m_upper = 100, 
+		m_lower = 0.08, 
+		Z_solar = 0.014, 
+		rotating_ccsne = True, 
+		auto_recalc = False):
 
 		"""
 		Kwargs, Defaults, and Units:
@@ -203,6 +210,7 @@ class integrator(object):
 		mode 		= "ifr"  
 		eta  		= 2.5 
 		enhancement 	= 2.5 
+		Zin			= 0
 		recycling 	= "continuous"
 		bins 		= [-3, -2.99, -2.98, ... , 0.98, 0.99, 1]
 		delay		= 0.15 [Gyr]
@@ -212,6 +220,9 @@ class integrator(object):
 		tau_Ia		= 1.5 [Gyr]
 		tau_star 	= 2.0 [Gyr]
 		dt 		= .001 [Gyr]
+		m_upper 	= 100 [M_sun]
+		m_lower 	= 0.08 [M_sun]
+		Z_solar 	= 0.014 
 		"""
 
 		# The integration and model structs from the C-wrapping
@@ -220,12 +231,14 @@ class integrator(object):
 		self.__run = __integration_struct()
 
 		# Call the setter methods for each attribute for type-checking
+		self._auto_recalc = False
 		self.name = name
 		self.func = func
 		self.mode = mode
 		self.imf = imf
 		self.eta = eta
 		self.enhancement = enhancement
+		self.Zin = Zin
 		self.recycling = recycling
 		self.bins = bins
 		self.delay = delay
@@ -238,6 +251,19 @@ class integrator(object):
 		self.schmidt_index = schmidt_index 
 		self.MgSchmidt = MgSchmidt
 		self.dt = dt
+		self.m_upper = m_upper
+		self.m_lower = m_lower
+		self.Z_solar = Z_solar
+		self.rotating_ccsne = rotating_ccsne
+		self.auto_recalc = auto_recalc
+		if self._auto_recalc:
+			if any(list(map(lambda x: x in kwargs, 
+				["imf", "m_upper", "m_lower", "rotating_ccsne"]))):
+				self.recalculate_yields()
+			else:
+				pass
+		else:
+			pass
 
 	@property
 	def recognized_elements(self):
@@ -315,10 +341,6 @@ class integrator(object):
 		else:
 			pass
 
-	# @name.deleter
-	# def name(self):
-	# 	del self._name
-
 	@property
 	def func(self):
 		"""
@@ -382,10 +404,6 @@ class integrator(object):
 			message += "takes only one parameter with no variable, "
 			message += "keyword, or default arguments."
 			raise TypeError(message)
-
-	# @func.deleter
-	# def func(self):
-	# 	del self._func
 
 	@property
 	def mode(self):
@@ -456,10 +474,6 @@ class integrator(object):
 		else:
 			pass
 
-	# @mode.deleter
-	# def mode(self):
-	# 	del self._mode
-
 	@property
 	def Mg0(self):
 		"""
@@ -473,13 +487,21 @@ class integrator(object):
 		return self._Mg0
 
 	@Mg0.setter
-	def Mg0(self, double value):
-		self._Mg0 = value
-		self.__run.MG = value
-
-	# @Mg0.deleter
-	# def Mg0(self):
-	# 	del self._Mg0
+	def Mg0(self, value):
+		if isinstance(value, numbers.Number):
+			if value > 0: 
+				self._Mg0 = float(value)
+				self.__run.MG = float(value)
+			elif value == 0:
+				self._Mg0 = 1.e-12
+				self.__run.MG = 1.e-12
+			else:
+				message = "Initial gas supply must be a positive float."
+				raise ValueError(message)
+		else:
+			message = "Attribute 'Mg0' must be a numerical value. Got: %s" % (
+				type(value))
+			raise TypeError(message)
 
 	@property
 	def imf(self):
@@ -500,6 +522,7 @@ class integrator(object):
 		if sys.version_info[0] == 2:
 			if isinstance(value, basestring):
 				if value.lower() in _globals.RECOGNIZED_IMFS:
+					if self._auto_recalc: self.recalculate_cc_yields()
 					self._imf = value.lower()
 					self.__model.imf = value.lower().encode("latin-1")
 				else:
@@ -510,6 +533,7 @@ class integrator(object):
 		elif sys.version_info[0] == 3:
 			if isinstance(value, str):
 				if value.lower() in _globals.RECOGNIZED_IMFS:
+					if self._auto_recalc: self.recalculate_cc_yields()
 					self._imf = value.lower()
 					self.__model.imf = value.lower().encode("latin-1")
 				else:
@@ -527,10 +551,6 @@ class integrator(object):
 			raise TypeError(message)
 		else:
 			pass
-
-	# @imf.deleter
-	# def imf(self):
-	# 	del self._imf
 
 	@property
 	def eta(self):
@@ -573,10 +593,6 @@ class integrator(object):
 				type(value))
 			raise TypeError(message)
 
-	# @eta.deleter
-	# def eta(self):
-	# 	del self._eta
-
 	@property
 	def enhancement(self):
 		"""
@@ -604,6 +620,81 @@ class integrator(object):
 			message = "Attribute 'enhancement' must be either a callable "
 			message += "python function or a numerical value."
 			raise TypeError(message)
+
+	@property
+	def Zin(self):
+		"""
+		The inflow metallicity Z_x = M_x / M_infall
+
+		This parameter can be either a numerical value, a list of numerical 
+		values, a callable function of time, or a list of callable functions 
+		of time. In the case of lists or other array like objects like 
+		NumPy arrays, it will immediately be converted into a dictionary 
+		keyed on by the element abbreviation in lower case (e.g. 'fe' for 
+		iron). 
+		"""
+		return self._Zin
+
+	@Zin.setter
+	def Zin(self, value):
+		is_array = False
+		if isinstance(value, numbers.Number):
+			self._Zin = float(value)
+		elif callable(value):
+			if self.__args(value):
+				message = "Attribute 'Zin', when callable, must take only one "
+				message += "parameter and no keyword/variable/default "
+				message += "parameters."
+				raise ValueError(message)
+			else:
+				self._Zin = value
+		# Array treatment of Zin from here on out
+		elif "numpy" in sys.modules and isinstance(value, _np.ndarray):
+			copy = value.tolist()
+			is_array = True
+		elif "pandas" in sys.modules and isinstance(value, _pd.DataFrame):
+			copy = [i[0] for i in value.values.tolist()]
+			is_array = True
+		elif isinstance(value, list):
+			copy = value[:]
+			is_array = True
+		else:
+			message = "Attribute Zin must be either a callable function of "
+			message += "time, a numerical value, or a list of any combination "
+			message += "of the two. "
+			raise TypeError(message)
+
+		if is_array:
+			if len(value) != len(_globals.RECOGNIZED_ELEMENTS):
+				message = "Attribute 'Zin', when initialized as an array, "
+				message += "must have one entry for each element. "
+				raise ValueError(message)
+			else:
+				pass
+			dummy = len(value) * [None]
+			for i in range(len(dummy)):
+				if isinstance(value[i], numbers.Number):
+					dummy[i] = float(value[i])
+				elif callable(value[i]):
+					if self.__args(value[i]):
+						message = "Attribute 'Zin', when passed as an array "
+						message += "containing callable functions of time, "
+						message += "must contain functions which each take "
+						message += "exactly one parameter with no keyword/"
+						message += "variable/default arguments." 
+						raise ValueError(message)
+					else:
+						dummy[i] = value[i]
+				else:
+					message = "Attribute 'Zin', when passed as an array, "
+					message += "must contain only numerical values and " 
+					message += "functions of time as array elements. Error "
+					message += "found at index %d. Got %s" % (i, 
+						type(value[i]))
+					raise TypeError(message)
+			self._Zin = dict(zip(_globals.RECOGNIZED_ELEMENTS, dummy))
+		else:
+			pass
 
 	@property
 	def recycling(self):
@@ -665,10 +756,6 @@ class integrator(object):
 			message += "insensitive)."
 			raise TypeError(message)
 
-	# @recycling.deleter
-	# def recycling(self):
-	# 	del self._recycling
-
 	@property
 	def delay(self):
 		"""
@@ -680,13 +767,18 @@ class integrator(object):
 		return self._delay
 
 	@delay.setter
-	def delay(self, double value):
-		self._delay = value
-		self.__model.t_d = value
-
-	# @delay.deleter
-	# def delay(self):
-	# 	del self._delay
+	def delay(self, value):
+		if isinstance(value, numbers.Number):
+			if value >= 0: 
+				self._delay = value 
+				self.__model.t_d = value
+			else:
+				message = "Attribute 'delay' must be a positive value."
+				raise ValueError(message)
+		else:
+			message = "Attribute 'delay' must be a positive numerical value. "
+			message += "Got: %s" % (type(value))
+			raise TypeError(message)
 
 	@property
 	def tau_Ia(self):
@@ -701,13 +793,18 @@ class integrator(object):
 		return self._tau_Ia
 
 	@tau_Ia.setter
-	def tau_Ia(self, double value):
-		self._tau_Ia = value
-		self.__model.tau_ia = value
-
-	# @tau_Ia.deleter
-	# def tau_Ia(self):
-	# 	del self._tau_Ia
+	def tau_Ia(self, value):
+		if isinstance(value, numbers.Number):
+			if value > 0: 
+				self._tau_Ia = value
+				self.__model.tau_ia = value
+			else:
+				message = "Attribute 'tau_Ia' must be a positive value. "
+				raise ValueError(message)
+		else:
+			message = "Attribute 'tau_Ia' must be a positive numerical value." 
+			message += "Got: %s" % (type(value))
+			raise TypeError(message)
 
 	@property
 	def tau_star(self):
@@ -727,7 +824,11 @@ class integrator(object):
 	@tau_star.setter
 	def tau_star(self, value):
 		if isinstance(value, numbers.Number):
-			self._tau_star = float(value)
+			if value > 0:
+				self._tau_star = float(value)
+			else:
+				message = "Attribute 'tau_star' must be positive value. "
+				raise ValueError(message)
 		elif callable(value):
 			if self.__args(value):
 				message = "When callable, attribute 'tau_star' must take only "
@@ -741,10 +842,6 @@ class integrator(object):
 			message += "or a callable function taking one parameter."
 			raise TypeError(message)
 
-	# @tau_star.deleter
-	# def tau_star(self):
-	# 	del self._tau_star
-
 	@property
 	def schmidt(self):
 		"""
@@ -756,14 +853,23 @@ class integrator(object):
 
 	@schmidt.setter
 	def schmidt(self, value):
-		try:
-			self._schmidt = bool(value)
-			if self._schmidt:
+		if isinstance(value, numbers.Number):
+			if value:
+				self._schmidt = True
+				self.__model.schmidt = 1
+			else:
+				self._schmidt = False
+				self.__model.schmidt = 0
+		if isinstance(value, bool):
+			self._schmidt = value
+			if value:
 				self.__model.schmidt = 1
 			else:
 				self.__model.schmidt = 0
-		except:
-			raise TypeError("Attribute Schmidt must be of type boolean.")
+		else:
+			message = "Attribute 'schmidt' must be interpretable as a "
+			message += "boolean. Got: %s" % (type(value))
+			raise TypeError(message)
 
 	@property
 	def schmidt_index(self):
@@ -776,16 +882,24 @@ class integrator(object):
 		return self._schmidt_index
 
 	@schmidt_index.setter
-	def schmidt_index(self, double value):
-		self._schmidt_index = value
-		self.__model.schmidt_index = value
+	def schmidt_index(self, value):
+		if isinstance(value, numbers.Number):
+			self._schmidt_index = value
+			self.__model.schmidt_index = value
+		else:
+			message = "Attribute 'schmidt_index' must be a numerical value."
+			raise TypeError(message)
+		if self._schmidt_index < 0:
+			message = "Attribute 'schmidt_index' is now a negative value. "
+			message += "This may introduce numerical artifacts. "
+			warnings.warn(message, UserWarning)
 
 	@property
 	def MgSchmidt(self):
 		"""
 		The normalization on the Schmidt-Law: 
 
-		SFE \propto (Mgas / MgSchmidt)**(schmidt_index)
+		SFE \\propto (Mgas / MgSchmidt)**(schmidt_index)
 
 		In practice, this should be some fiducial gas mass. In that case, the 
 		star-formation efficiency is close to what the user specifies as the 
@@ -794,9 +908,18 @@ class integrator(object):
 		return self._MgSchmidt
 
 	@MgSchmidt.setter
-	def MgSchmidt(self, double value):
-		self._MgSchmidt = value
-		self.__model.mgschmidt = value
+	def MgSchmidt(self, value):
+		if isinstance(value, numbers.Number):
+			if value > 0:
+				self._MgSchmidt = value
+				self.__model.mgschmidt = value
+			else:
+				message = "Attribute 'MgSchmidt' must be a positive definite "
+				message += "value."
+				raise ValueError(message)
+		else:
+			message = "Attribute 'MgSchmidt' must be a numerical value."
+			raise TypeError(message)
 
 	@property
 	def dtd(self):
@@ -843,10 +966,6 @@ class integrator(object):
 			message += "the string \"exp\", or the string \"plaw\"."
 			raise TypeError(message)
 
-	# @dtd.deleter
-	# def dtd(self):
-	# 	del self._dtd
-
 	@property
 	def smoothing(self):
 		"""
@@ -871,13 +990,17 @@ class integrator(object):
 		return self._smoothing
 
 	@smoothing.setter
-	def smoothing(self, double value):
-		self._smoothing = value
-		self.__model.smoothing_time = value
-
-	# @smoothing.deleter
-	# def smoothing(self):
-	# 	del self._smoothing
+	def smoothing(self, value):
+		if isinstance(value, numbers.Number):
+			if value >= 0:
+				self._smoothing = value
+				self.__model.smoothing_time = value
+			else:
+				message = "Attribute 'smoothing' must be non-negative."
+				raise ValueError(message)
+		else:
+			message = "Attribute 'smoothing' must be a numerical value."
+			raise TypeError(message)
 
 	@property
 	def bins(self):
@@ -896,7 +1019,9 @@ class integrator(object):
 
 	@bins.setter
 	def bins(self, value):
-		if isinstance(value, str):
+		# Python 3.x will evaluate to True before reacing basestring and 
+		# throwing an error so no extra lines necessary here 
+		if isinstance(value, str) or isinstance(value, basestring):
 			message = "Attribute 'bins' must be an array-like object of "
 			message += "numerical values."
 			raise TypeError(message)
@@ -937,13 +1062,168 @@ class integrator(object):
 		return self._dt
 
 	@dt.setter
-	def dt(self, double value):
-		self._dt = value
-		self.__run.dt = value
+	def dt(self, value):
+		if isinstance(value, numbers.Number):
+			if value > 0:
+				self._dt = value
+				self.__run.dt = value
+			else:
+				message = "Attribute 'dt' must be positive definite."
+				raise ValueError(message)
+		else:
+			message = "Attribute 'dt' must be a numerical value."
+			raise TypeError(message)
 
-	# @dt.deleter
-	# def dt(self):
-	# 	del self._dt
+	@property
+	def m_upper(self):
+		"""
+		The upper mass limit on star formation in solar masses. 
+
+		Modifying this attribute will automatically recalculate the yields 
+		from core-collapse supernovae off of the built-in grid from 
+		Chieffi & Limongi (2013) ApJ, 764, 21 provided that the class 
+		attribute 'auto_recalc' is set to True. 
+
+		Users' Warning: 
+		===============
+		Mass yields for core collapse supernovae are only sampled up to 
+		120 Msun. We therefore recommend the user not implement upper mass 
+		limits above 120 as it may introduce numerical artifacts. 
+		"""
+		return self._m_upper
+
+	@m_upper.setter
+	def m_upper(self, value):
+		if isinstance(value, numbers.Number):
+			if value > 0: 
+				if self._auto_recalc: self.recalculate_cc_yields()
+				self._m_upper = float(value)
+			else: 
+				message = "Attribute m_upper must be positive."
+				raise ValueError(message)
+			if self._m_upper < 80:
+				message = "This a low upper mass limit on star formation. "
+				message += "This may introduce numerical artifacts. " 
+				message += "Disregard this message if this is intentional."
+				warnings.warn(message, UserWarning)
+			else:
+				pass
+		else:
+			message = "Attribute m_upper must be a numerical value. Got: %s" % (
+				type(value))
+			raise TypeError(message)
+
+	@property
+	def m_lower(self):
+		"""
+		The lower mass limit on star formation in solar masses. 
+
+		Modifying this attribute will automatically recalculate the yields 
+		from core-collapse supernovae off of the built-in grid from 
+		Chieffi & Limongi (2013) ApJ, 764, 21 provided that the class 
+		attribute 'auto_recalc' is set to True. 
+		"""
+		return self._m_lower
+
+	@m_lower.setter
+	def m_lower(self, value):
+		if isinstance(value, numbers.Number):
+			if value > 0:
+				if self._auto_recalc: self.recalculate_cc_yields()
+				self._m_lower = float(value)
+			else:
+				message = "Attribute m_lower must be positive."
+				raise ValueError(message)
+			if self._m_lower > 0.2:
+				message = "This is a high lower limit on star formation. "
+				message += "This may introduce numerical artifacts. "
+				message += "Disregard this message if this is intentional."
+				warnings.warn(message, UserWarning)
+			else:
+				pass
+		else:
+			message = "Attribute m_lower must be a numerical value. Got: %s" % (
+				type(value))
+			raise TypeError(message)
+
+	@property
+	def Z_solar(self):
+		"""
+		The total solar metallicity Z_sun = M_metals / M_sun
+		"""
+		return self._Z_solar
+
+	@Z_solar.setter
+	def Z_solar(self, value):
+		if isinstance(value, numbers.Number):
+			if 0 < value < 1:
+				self._Z_solar = float(value)
+			else: 
+				message = "Attribute 'Z_solar' must be between 0 and 1." 
+				raise ValueError(message)
+			if self._Z_solar > 0.018: 
+				message = "Vice implements AGB enrichment up to metallicities "
+				message += "of 0.02. We recommend avoiding modeling parameter "
+				message += "spaces yielding total metallicities significantly "
+				message += "above solar. "
+				warnings.warn(message, UserWarning)
+			else:
+				pass
+		else:
+			message = "Attribute Z_solar must be a numerical value between 0 "
+			message += "an 1. Got: %s" % (type(value))
+			raise TypeError(message)
+
+	@property
+	def rotating_ccsne(self):
+		"""
+		A boolean describing whether or not to use a rotating model for CCSNe. 
+
+		Modifying this attribute will automatically recalculate the yields 
+		from core-collapse supernovae off of the built-in grid from 
+		Chieffi & Limongi (2013) ApJ, 764, 21 provided that the class 
+		attribute 'auto_recalc' is set to True. 
+		"""
+		return self._rotating_ccsne
+
+	@rotating_ccsne.setter
+	def rotating_ccsne(self, value):	
+		if isinstance(value, numbers.Number):
+			if self._auto_recalc: self.recalculate_cc_yields()
+			if value:
+				self._rotating_ccsne = True
+			else:
+				self._rotating_ccsne = False
+		elif isinstance(value, bool):
+			if self._auto_recalc: self.recalculate_cc_yields()
+			self._rotating_ccsne = value
+		else:
+			message = "Attribute 'rotating_ccsne' must be interpretable as "
+			message += "a boolean. Got: %s" % (type(value))
+			raise TypeError(message) 
+
+	@property
+	def auto_recalc(self):
+		"""
+		A boolean describing whether or not to automatically recalculate 
+		yields following a respecification of upper/lower mass limit for 
+		star formation, IMF, or CCSNe rotating vs. nonrotating model. 
+		"""
+		return self._auto_recalc
+
+	@auto_recalc.setter
+	def auto_recalc(self, value):
+		if isinstance(value, numbers.Number):
+			if value:
+				self._auto_recalc = True
+			else:
+				self._auto_recalc = False
+		elif isinstance(value, bool):
+			self._auto_recalc = value
+		else:
+			message = "Attribute 'auto_recalc' must be interpretable as a " 
+			message += "boolean. Got: %s" % (type(value))
+			raise TypeError(message) 
 
 	def settings(self):
 		"""
@@ -980,7 +1260,33 @@ class integrator(object):
 		print("Schmidt: %r" % (self._schmidt))
 		print("Schmidt index: %g" % (self._schmidt_index))
 		print("MgSchmidt: %e" % (self._MgSchmidt))
+		print("Zin:", self._Zin)
+		print("M_upper: %g Msun" % (self._m_upper))
+		print("M_lower: %g Msun" % (self._m_lower))
+		print("Z_solar: %g" % (self._Z_solar))
+		print("Rotating CCSNe model: %r" % (self._rotating_ccsne))
 
+	def recalculate_cc_yields(self):
+		"""
+		Recalculates the core-collapse supernovae yields under the current 
+		settings that affect them. 
+
+		If the class attribute 'auto_recalc' is set to True, modifying any 
+		attributes of "imf", "m_upper", "m_lower", or "rotatint_ccsne" 
+		will automatically call this function. 
+		"""
+		for i in list(range(len(_globals.RECOGNIZED_ELEMENTS))):
+			_globals.ccsne_yields[
+				_globals.RECOGNIZED_ELEMENTS[i]] = integrated_cc_yield(
+					_globals.RECOGNIZED_ELEMENTS[i], 
+					rotating = self._rotating_ccsne, 
+					IMF = self.imf, 
+					method = "simpson", 
+					lower = self._m_lower, 
+					upper = self._m_upper, 
+					tolerance = 1e-3, 
+					Nmin = 64, 
+					Nmax = 2e8)
 
 	def run(self, output_times, capture = False, overwrite = False):
 		"""
@@ -1032,10 +1338,10 @@ class integrator(object):
 		permission from the user to destroy all files with the same name that 
 		they have specified. 
 		"""
-		output_times = sorted(output_times)
+		output_times = self.__output_times_check(output_times)
 		self.__run.MG = self._Mg0
-		self.__model.m_upper = 100
-		self.__model.m_lower = 0.08
+		self.__model.m_upper = self._m_upper
+		self.__model.m_lower = self._m_lower
 		ptr = c_char_p * len(_globals.RECOGNIZED_ELEMENTS)
 		syms = ptr(*list([i.encode(
 			"latin-1") for i in _globals.RECOGNIZED_ELEMENTS]))
@@ -1090,11 +1396,12 @@ class integrator(object):
 		else:
 			pass
 
-		self.__model.Z_solar = 0.014
+		self.__model.Z_solar = self._Z_solar
 		self.__model.eta = ptr(*eta[:])
 		self.__model.enh = ptr(*enhancement[:])
 		self.__model.tau_star = ptr(*tau_star[:])
 		self.__run.mdotstar = ptr(*(len(eval_times) * [0.]))
+		self.__set_zin(eval_times)
 
 		if self.__outfile_check(overwrite):
 			if not os.path.exists(self._name):
@@ -1132,6 +1439,29 @@ class integrator(object):
 			message += "the error and a description of the variables it uses.\n"
 			message += "Please also make the subject line 'BUG in VICE'."
 			raise StandardError(message)
+
+	@staticmethod
+	def __output_times_check(output_times):
+		if "numpy" in sys.modules and isinstance(output_times, _np.ndarray):
+			output_times = output_times.tolist()
+		elif "pandas" in sys.modules and isinstance(output_times, 
+			_pdf.DataFrame): 
+			output_times = [i[0] for i in value.values.tolist()]
+		elif isinstance(output_times, list):
+			output_times = output_times[:]
+		else:
+			message = "Argument 'output_times' must be an array-like object."
+			raise TypeError(message)
+		if not all(list(map(lambda x: isinstance(x, numbers.Number), 
+			output_times))):
+			message = "All output times must be numerical values. "
+			message += "Non-numerical value detected."
+			raise TypeError(message)
+		elif not all(list(map(lambda x: x >= 0, output_times))):
+			message = "All output times must be non-negative. "
+			raise ValueError(message)
+		else:
+			return output_times
 
 	def __outfile_check(self, overwrite):
 		"""
@@ -1214,6 +1544,34 @@ class integrator(object):
 			ptr = c_double * len(ria)
 			self.__model.ria = ptr(*ria[:])
 
+	def __set_zin(self, eval_times):
+		dummy = (len(eval_times) * len(_globals.RECOGNIZED_ELEMENTS)) * [0.]
+		ptr = c_double * len(dummy)
+		if isinstance(self._Zin, float):
+			for i in list(range(len(_globals.RECOGNIZED_ELEMENTS))):
+				for j in list(range(len(eval_times))):
+					dummy[len(eval_times) * i + j] = self._Zin
+		elif callable(self._Zin):
+			for i in list(range(len(_globals_RECOGNIZED_ELEMENTS))):
+				for j in list(range(len(eval_times))):
+					dummy[len(eval_times) * i + j] = self._Zin(eval_times[j])
+		elif isinstance(self._Zin, dict):
+			for i in list(range(len(_globals.RECOGNIZED_ELEMENTS))):
+				sym = _globals.RECOGNIZED_ELEMENTS[i]
+				if isinstance(self._Zin[sym], float):
+					for j in list(range(len(eval_times))):
+						dummy[len(eval_times) * i + j] = self._Zin[sym]
+				elif callable(self._Zin[sym]):
+					for j in list(range(len(eval_times))):
+						dummy[len(eval_times) * i + j] = self._Zin[sym](
+							eval_times[j])
+				else:
+					raise SystemError("This error shouldn't be raised.")
+		else:
+			raise SystemError("This error shouldn't be raised.")
+		clib.setup_Zin(self.__run, byref(self.__model), ptr(*dummy[:]), 
+			len(eval_times))
+
 
 class __model_struct(Structure):
 
@@ -1231,6 +1589,7 @@ class __model_struct(Structure):
 		("num_bins", c_long), 
 		("eta", POINTER(c_double)), 
 		("enh", POINTER(c_double)), 
+		("Zin", POINTER(POINTER(c_double))), 
 		("R", POINTER(c_double)), 
 		("H", POINTER(c_double)), 
 		("tau_star", POINTER(c_double)),

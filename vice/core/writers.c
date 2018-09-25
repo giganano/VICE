@@ -111,6 +111,11 @@ extern void write_history_header(INTEGRATION run, MODEL m) {
 	fprintf(run.out1, "#\t6: Zout\t\t\tOutflow metallicity\n");
 	int n = 7;
 	for (i = 0; i < run.num_elements; i++) {
+		fprintf(run.out1, "#\t%d: Z_in(%s)\t\tInflow %s metallicity\n", 
+			n, run.elements[i].symbol, run.elements[i].symbol);
+		n++;
+	}
+	for (i = 0; i < run.num_elements; i++) {
 		fprintf(run.out1, "#\t%d: Mass(%s) (Msun)\n", n, 
 			run.elements[i].symbol);
 		n++;
@@ -165,6 +170,9 @@ extern void write_history_output(INTEGRATION run, MODEL m) {
 	double outrate = get_outflow_rate(run, m) / 1e9;
 	fprintf(run.out1, "%e\t", outrate);
 	fprintf(run.out1, "%e\t", m.enh[run.timestep] * Ztot);
+	for (i = 0; i < run.num_elements; i++) {
+		fprintf(run.out1, "%e\t", m.Zin[i][run.timestep]);
+	}
 	for (i = 0; i < run.num_elements; i++) {
 		fprintf(run.out1, "%e\t", run.elements[i].m_tot);
 	}

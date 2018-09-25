@@ -14,6 +14,7 @@ typedef struct model {
 	long num_bins;
 	double *eta;
 	double *enh;
+	double **Zin;
 	double *R;
 	double *H;
 	double *tau_star;
