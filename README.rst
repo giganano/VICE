@@ -54,8 +54,8 @@ Preferred Install Method
 	$ cd VICE
 	$ make
 	$ python setup.py install [--user]
-	$ make tests
 	$ make clean
+	$ make tests
 	$ [make]
 	$ [python3 setup.py install [--user]]
 	$ [make clean]
@@ -63,8 +63,11 @@ Preferred Install Method
 	$ [cd ..]
 	$ [rm -rf VICE]
 
-This is currently the only install method. VICE will soon be installable via 
-pip. 
+
+Optional elements of the installation process are bound in brackets. The 
+option ``[--user]`` should be invoked when the user wishes to install to 
+their ``~/.local/`` ``python`` library. The final lines are those which will 
+install the ``python 3`` version of ``VICE``. 
 
 Implementation
 ==============
