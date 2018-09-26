@@ -1,6 +1,6 @@
 
 ``VICE: Versatile Integrator for Chemical Evolution``
-=================================================
+=====================================================
 
 Overview
 --------
@@ -14,7 +14,7 @@ stars.
 Why You Should Use It
 ---------------------
 
-``VICE`` is designed to recognized infall histories, gas histories, star 
+``VICE`` is designed to recognize infall histories, gas histories, star 
 formation histories, outflow models, outflow metallicity models, inflow 
 metallicities, and star formation efficiency histories as callable functions 
 of time, allowing for the integration of arbitrarily complex models under the 
@@ -74,6 +74,8 @@ If the user wishes to install both ``python 2`` and ``python 3`` versions of
 ``VICE``, they must run ``make clean && make`` between calls to 
 ``python setup.py install [--user]``. Failing to do so will cause a 
 compiler error during subsequent calls to the ``setup.py`` file. 
+``make tests3`` runs the tests for only the ``python 3`` version of ``VICE``, 
+while ``make tests`` runs them for ``python 2``. 
 
 This is currently the only install method for ``VICE``. It is not installable 
 via ``pip``. 
