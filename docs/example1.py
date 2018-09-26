@@ -6,9 +6,10 @@ this script.
 
 # __future__ is for python 3.x compatibility
 from __future__ import print_function
+import math as m
 try:
 	"""
-	NumPy is not necessary to use vice. Vice is NumPy- and Pandas- compatible, 
+	NumPy is not necessary to use VICE. VICE is NumPy- and Pandas- compatible, 
 	but neither NumPy- nor Pandas- dependent. It is independent of the user's 
 	version of Anaconda. 
 	"""
@@ -23,8 +24,8 @@ except ImportError:
 try:
 	import vice 
 except ImportError:
-	# Vice either not installed or doesn't meet system requirements
-	message = "Vice is not installed. Please see <https//github.com/giganano/"
+	# VICE either not installed or doesn't meet system requirements
+	message = "VICE is not installed. Please see <https//github.com/giganano/"
 	message += "VICE> for installation instructions. If you have followed "
 	message += "the proper steps to install and are still receiving this " 
 	message += "message, please submit a bug report to James Johnson, the "
@@ -70,7 +71,7 @@ message += "The new settings look like this: "
 print(message)
 second = vice.integrator(name = "example1_2")
 # An exponential decay with an e-folding timescale of 6 Gyr
-second.func = lambda t: np.exp( -t / 3 )
+second.func = lambda t: m.exp( -t / 3 )
 second.Mg0 = 1. # A very small initial gas supply. 
 second.settings()
 
@@ -116,7 +117,7 @@ message += "overall normalization of the Schmidt Law 1/tau_star(t) can be a "
 message += "function of time. The new settings:"
 print(message)
 third = vice.integrator(name = "example1_3", schmidt = True)
-third.func = lambda t: np.exp( -t / 3 )
+third.func = lambda t: m.exp( -t / 3 )
 third.Mg0 = 1.
 third.settings()
 out3 = third.run(times, capture = True)
@@ -132,6 +133,6 @@ message += "example2.py. Template.py will help them get their own "
 message += "integrations running, and example2.py will show them some "
 message += "examples of slightly more sophisticated examples. However, "
 message += "because the class attributes of an integrator can be callable "
-message += "functions of time, Vice is built to integrate galactic chemical "
+message += "functions of time, VICE is built to integrate galactic chemical "
 message += "evolution models with any degree of sophistication."
 print(message)

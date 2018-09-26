@@ -4,6 +4,7 @@ that there are no errors.
 """
 
 from __future__ import print_function
+import math as m
 try:
 	import numpy as np
 	times = np.linspace(0, 10, 1001)
@@ -38,7 +39,7 @@ except:
 
 try:
 	second = vice.integrator(name = "example1_2", dt = 0.005)
-	second.func = lambda t: np.exp( -t / 3 )
+	second.func = lambda t: m.exp( -t / 3 )
 	second.Mg0 = 1.
 	out2 = second.run(times, capture = True)
 	print("Second integration: Success")
@@ -48,7 +49,7 @@ except:
 
 try:
 	third = vice.integrator(name = "example1_3", schmidt = True, dt = 0.005)
-	third.func = lambda t: np.exp( -t / 3 )
+	third.func = lambda t: m.exp( -t / 3 )
 	third.Mg0 = 1.
 	out3 = third.run(times, capture = True)
 	print("Third integration: Success")
@@ -86,7 +87,7 @@ except:
 
 try:
 	sfeboost = vice.integrator(name = "sfeboost", dt = 0.005)
-	sfeboost.func = lambda t: np.exp( -t / 3 )
+	sfeboost.func = lambda t: m.exp( -t / 3 )
 	def f(t):
 		if 5 <= t <= 6:
 			return 1.
@@ -103,7 +104,7 @@ except:
 try:
 	sfe_schmidt = vice.integrator(name = "sfe_schmidt", schmidt = True, 
 		dt = 0.005)
-	sfe_schmidt.func = lambda t: np.exp( -t / 3 )
+	sfe_schmidt.func = lambda t: m.exp( -t / 3 )
 	sfe_schmidt.tau_star = f
 	sfe_schmidt.Mg0 = 1.
 	out4 = sfe_schmidt.run(times, capture = True)
@@ -125,6 +126,19 @@ try:
 except:
 	send = True
 	print("Eighth integration: Failed")
+try:
+	custom_ria = vice.integrator(name = "custom_ria", dt = 0.005)
+	custom_ria.dtd = lambda t: (t - custom_ria.delay) * m.exp( -(t - 
+		custom_ria.delay) / 2 )
+	custom_ria.elements = ['o', 'fe']
+	custom_ria.Zin = len(custom_ria.elements) * [0]
+	custom_ria.Zin['fe'] = 0.1 * vice.solar_z['fe']
+	custom_ria.Zin['o'] = lambda t: 0.1 * vice.solar_z['o'] * (t / 10.0)
+	out5 = custom_ria.run(times, capture = True, overwrite = True)
+	print("Ninth integration: Success")
+except:
+	send = True
+	print("Ninth integration: Failed")
 
 try: 
 	out = vice.output("example1_1")

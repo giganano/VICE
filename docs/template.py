@@ -23,9 +23,10 @@ See the docstrings of individual object attributes in the event that more
 documentation than what is given here be needed.
 """
 
+import math as m
 try:
 	"""
-	NumPy is not necessary to use vice. Vice is NumPy- and Pandas- compatible, 
+	NumPy is not necessary to use VICE. VICE is NumPy- and Pandas- compatible, 
 	but neither NumPy- nor Pandas- dependent. It is independent of the user's 
 	version of Anaconda. 
 	"""
@@ -40,8 +41,8 @@ except ImportError:
 try:
 	import vice 
 except ImportError:
-	# Vice either not installed or doesn't meet system requirements
-	message = "Vice is not installed. Please see <https//github.com/giganano/"
+	# VICE either not installed or doesn't meet system requirements
+	message = "VICE is not installed. Please see <https//github.com/giganano/"
 	message += "VICE> for installation instructions. If you have followed "
 	message += "the proper steps to install and are still receiving this " 
 	message += "message, please submit a bug report to James Johnson, the "
@@ -66,7 +67,7 @@ The func attribute - t is always in Gyr
 See user's warning in integrator class docstring for user's note on why 
 NumPy functions must be wrapped in a python function
 """
-example.func = lambda t: np.exp( -t / 3. )
+example.func = lambda t: m.exp( -t / 3. )
 
 """
 The mode - this means that func is specifying an infall rate in Msun/yr. 
@@ -110,7 +111,7 @@ example.recycling = "continuous"
 The bins in [X/Y] to sort the stellar metallicity distribution function into. 
 It is assumed that they're in ascending order. 
 
-We don't use NumPy to make this array because vice isn't dependent on NumPy. 
+We don't use NumPy to make this array because VICE isn't dependent on NumPy. 
 """
 arr = 401 * [0.]
 for i in range(401):
