@@ -23,8 +23,8 @@ time to specify their own SNe Ia delay-time distribution, as well as the
 fractional yields of all recognized elements. On a system with a 2.7GHz Intel 
 Core i5 processor with 8 GB of DDR3 RAM (e.g. a base-model 2015 Macbook Pro), 
 an integration over the default parameter space with hyperfine timestepping 
-(i.e. ``~``1 Myr timesteps) takes ``~``75 MB of RAM and is finished in 
-``~``20 seconds. With only slightly coarser timestepping (i.e. ``~``5 Myr) on 
+(i.e. ~1 Myr timesteps) takes ~75 MB of RAM and is finished in 
+~20 seconds. With only slightly coarser timestepping (i.e. ~5 Myr) on 
 the same system is finished in less than a second.  
 
 
