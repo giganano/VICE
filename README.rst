@@ -24,9 +24,9 @@ user-specified fractional yields for both core-collapse and type Ia
 supernovae. On a system with a 2.7GHz Intel Core i5 processor with 8 GB of 
 DDR3 RAM (e.g. a base-model 2015 Macbook Pro), an integration over the default 
 parameter space with hyperfine timestepping (i.e. ~1 Myr timesteps) takes ~75 
-MB of RAM and is finished in ~20 seconds. With only slightly coarser 
-timestepping (i.e. ~5 Myr), the integration finishes on the same system in 
-less than a second. 
+MB of RAM and finishes in approximately 19.6 seconds. With only slightly 
+coarser timestepping (i.e. ~5 Myr), the integration finishes on the same 
+system in approximately 800 milliseconds. 
 
 Installation
 ============
