@@ -1,6 +1,4 @@
 
-|Release| |Issues| 
-
 
 ``VICE: Versatile Integrator for Chemical Evolution``
 =====================================================
