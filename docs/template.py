@@ -56,6 +56,20 @@ attributes.
 example = vice.integrator()
 
 """
+Whether or not to automatically recalculate the yields from CCSNe off of the 
+current settings of example for lower mass limit on star formation, upper 
+mass limit on star formation, imf, and rotating vs. nonrotating CCSNe model. 
+The yields used to calculate the IMF-integrated fractional yields are 
+derived from Chieffi & Limongi (2013), ApJ, 764, 21
+"""
+example.auto_recalc = False
+
+"""
+Track only iron and oxygen. 
+"""
+example.elements = ["fe", "o"]
+
+"""
 The name of your model, as a string. The output of the integration will be 
 stored in a folder under this name. If you don't want the output in your 
 current working directory, simply put the full path here. 
@@ -100,6 +114,12 @@ smoothing times.
 example.eta = 2.5
 
 """
+The ratio of the outflow metallicity to the ISM metallicity. This can be 
+either a single numerical value or a callable function of time. 
+"""
+example.enhancement = 1.
+
+"""
 The recycling specification. This can either be a numerical value between 0 
 and 1, representing mass fraction of star formation that is immediately 
 returned to the ISM after star formation. If specified "continuous," this is 
@@ -126,8 +146,9 @@ example.delay = 0.15
 
 """
 The delay-time distribution in SNe Ia. This is either "plaw" for a power 
-law going as t^(-1.1) or an exponential with timescale tau_ia (another 
-attribute)
+law going as t^(-1.1) or "exp" for an exponential with timescale tau_ia 
+(another attribute). The may also specify their own function of time here, and 
+they needn't worry about its normalization. 
 """
 example.dtd = "plaw"
 
@@ -164,6 +185,16 @@ example.schmidt_index = 0.5
 
 # The normalization on the gas supply if schmidt = True. 
 example.MgSchmidt = 2.0e9
+
+# The lower mass limit on star formation in Msun
+example.m_lower = 0.08
+
+# The upper mass limit on star formation in Msun
+example.m_upper = 100
+
+# Whether to adopt the rotatin vs. non-rotating model for CCSNe in the 
+# Chieffi & Limongi (2013) yields
+example.rotating_ccsne = True
 
 # Runs the integration
 example.run(times)

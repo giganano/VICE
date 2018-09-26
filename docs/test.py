@@ -134,6 +134,7 @@ try:
 	custom_ria.Zin = len(custom_ria.elements) * [0]
 	custom_ria.Zin['fe'] = 0.1 * vice.solar_z['fe']
 	custom_ria.Zin['o'] = lambda t: 0.1 * vice.solar_z['o'] * (t / 10.0)
+	vice.ccsne_yields['fe'] /= 2
 	out5 = custom_ria.run(times, capture = True, overwrite = True)
 	print("Ninth integration: Success")
 except:
