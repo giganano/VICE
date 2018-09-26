@@ -676,7 +676,7 @@ class integrator(object):
 			else:
 				self._enhancement = value
 		elif isinstance(value, numbers.Number):
-			if self._enhancement >= 0:
+			if value >= 0:
 				self._enhancement = float(value)
 			else:
 				message = "Attribute enhancement must be non-negative." 
