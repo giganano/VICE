@@ -1,0 +1,10 @@
+
+# Ignore any local builds during modification
+./build/*
+
+# Ignore any .pyc files and local *.o files that get created during local 
+# development as well
+*.o
+*.pyc
+
+
