@@ -32,14 +32,14 @@ def integrate(element, rotating = True, IMF = "kroupa", method = "simpson",
 	=======
 	rotating = True:	Use rotating vs. non-rotating model
 	IMF = "kroupa":		The IMF to use (either Kroupa or Salpeter)
-					(case-insensitive)
+				(case-insensitive)
 	method = "simpson":	The desired method of quadrature 
-					Can be either "simpson", "midpoint", "trapezoid", 
-					or "euler" (case-insensitive)
+				Can be either "simpson", "midpoint", "trapezoid", 
+				or "euler" (case-insensitive)
 	lower = 0.08:		The lower mass limit on star formation in units of 
-					solar masses
+				solar masses
 	upper = 100:		The upper mass limit on star formation in units of 
-					solar masses
+				solar masses
 	tolerance = 1e-3:	The maximum allowed fractional error on the yield
 	Nmin = 64:		The minimum number of bins in quadrature
 	Nmax = 2e8:		The maximum number of bins in quadrature
@@ -53,13 +53,13 @@ def integrate(element, rotating = True, IMF = "kroupa", method = "simpson",
 
 	Details:
 	========
-	Mass yields are sampled from Chieffi & Limongi (2013) at stellar masses of 
-	13, 15, 20, 25, 30, 40, 60, 80, and 120 Msun for each isotope of each 
-	element in their study. At intermediate masses, mass yields are computed 
-	from linear interpolation between those sampled. The fractional yield is 
-	calculated from: 
+	Mass yields are sampled from Chieffi & Limongi (2013), ApJ, 764, 21 at 
+	stellar masses of 13, 15, 20, 25, 30, 40, 60, 80, and 120 Msun for each 
+	isotope of each element in their study. At intermediate masses, mass 
+	yields are computed from linear interpolation between those sampled. The 
+	fractional yield is calculated from: 
 
-	y = \int_lower^upper m_x dn/dm dm / \int_lower^upper m dn/dm dm
+	y = \int_8^upper m_x dn/dm dm / \int_lower^upper m dn/dm dm
 
 	where y is the fractional yield, m_x is the mass of the isotope ejected 
 	to ISM in their model, and dn/dm is the IMF that is assumed.

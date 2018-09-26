@@ -173,7 +173,7 @@ class integrator(object):
 	USERS' WARNING ON EMULATING DELTA FUNCTIONS IN ATTRIBUTES:
 	==========================================================
 	Here we detail a simple warning on emulating delta function in attributes. 
-	Vice is a timestep-style integrator, and therefore, these can be 
+	VICE is a timestep-style integrator, and therefore, these can be 
 	achieved by letting a quantity take on some very high value for one 
 	timestep. If the user wishes to build a delta function into their model, 
 	they need to make sure that: 
@@ -197,7 +197,7 @@ class integrator(object):
 	used. 
 
 	For the purpose of minimizing disk-space usage while still maintaining 
-	high time-step resolution, Vice does not require that output be written 
+	high time-step resolution, VICE does not require that output be written 
 	to disk at every timestep. See docstring of integrator.run for 
 	instructions on how to specify your output times.
 	"""
@@ -297,8 +297,8 @@ class integrator(object):
 	def recognized_elements(self):
 		"""
 		The symbols of the elements whose enrichment properties are built into 
-		this software. This is also the order in which they will appear in the 
-		output files.
+		this software. The user can specify which elements are tracked in 
+		each integration via the 'elements' attribute.
 		"""
 		return _globals.RECOGNIZED_ELEMENTS
 
@@ -306,6 +306,7 @@ class integrator(object):
 	def recognized_imfs(self):
 		"""
 		The initial mass functions (IMFs) that are built into this software. 
+		The user can specify which one to use via the attribute 'imf'.
 		"""
 		return _globals.RECOGNIZED_IMFS
 
@@ -374,7 +375,7 @@ class integrator(object):
 		"""
 		The specified function of time. This can represent either the 
 		infall rate in Msun/yr, the star formation rate in Msun/yr, or the gas 
-		gass in Msun. The specification between these is set by the 
+		mass in Msun. The specification between these is set by the 
 		attribute 'mode'. Note that the parameter this function takes will 
 		always be interpreted as time in Gyr. 
 
@@ -539,7 +540,7 @@ class integrator(object):
 		The gas mass in Msun at time = 0, when the integration will start. 
 
 		Note that this parameter is only relevant in infall mode. When in 
-		gas mode, the initial gas supply will simply be taken as self._func(0), 
+		gas mode, the initial gas supply will simply be taken as self.func(0), 
 		and in sfr mode, the initial gas supply is taken from the star 
 		formation rate at time 0 times the depletion time at time 0.
 		"""
@@ -569,7 +570,7 @@ class integrator(object):
 		parameter is case-insensitive and will always be converted to a 
 		lower-case string.
 
-		Note that this software currently only recognized Salpeter and 
+		Note that this software currently only recognizes Salpeter and 
 		Kroupa IMFs. 
 		"""
 		return self._imf
@@ -659,7 +660,8 @@ class integrator(object):
 		the ratio of the outflow metallicity to the gas metallicity
 
 		This value may be either a single numerical value or a callable 
-		function of time.
+		function of time. It's value will be the same for all elements in 
+		the integration. 
 		"""
 		return self._enhancement
 
@@ -690,7 +692,27 @@ class integrator(object):
 		of time. In the case of lists or other array like objects like 
 		NumPy arrays, it will immediately be converted into a dictionary 
 		keyed on by the element abbreviation in lower case (e.g. 'fe' for 
-		iron). 
+		iron), and will be treated component-wise with the attribute 
+		'elements' to assign the individual infall metallicities to each 
+		element. 
+
+		When this attribute is a dictionary, it's elements may also be 
+		modified as such. For example, the following will implement solar 
+		iron infall at all times and a linearly increasing oxygen infall 
+		metallicity that reaches solar at 10 Gyr: 
+
+		>>> import vice
+		>>> example = vice.integrator()
+		>>> example.Zin = len(example.elements) * [0.]
+		>>> example.Zin
+		{"fe": 0.0, "o": 0.0, "sr": 0.0}
+		>>> example.Zin["fe"] = vice.solar_z["fe"]
+		>>> example.Zin["o"] = lambda t: vice.solar_z["o"] * (t / 10.0)
+		>>> example.Zin
+		{"fe": 0.0012, "o": <function <lambda> at XXXXXXX>, "sr": 0.0}
+
+		Note that keying this attribute as a dictionary is case-sensitive and 
+		must be done with lower-case strings, as illustrated in the sample. 
 		"""
 		return self._Zin
 
@@ -767,7 +789,7 @@ class integrator(object):
 
 		If a numerical value is specified, this will be treated as the an 
 		instantaneous return fraction. For example, if recycling = 0.4, then 
-		at all timesteps, the integrator will return 40%% of all mass that 
+		at all timesteps, the integrator will return 40% of all mass that 
 		goes into star formation back to the ISM at that timestep. 
 
 		Otherwise, the user may specify the string "continuous" (case-
@@ -776,7 +798,8 @@ class integrator(object):
 		initial mass function and the mass in stellar remnants following a 
 		single episode of star formation. 
 
-		See seciont ##.## of Johnson & Weinberg (2018, in prep) for details.
+		See appendix A2 and figure A1 of Johnson & Weinberg (2018, in prep) 
+		for details.
 		"""
 		return self._recycling
 
@@ -849,8 +872,9 @@ class integrator(object):
 		relevant if the delay-time distribution (attribute dtd) is set to 
 		"exp", in which case, the SNe Ia rate goes as exp( -t / tau_Ia ).
 
-		If a power law DTD is used (i.e. if self.dtd == "plaw"), then this 
-		parameter plays no role in the integration.
+		If a power law DTD is used (i.e. if self.dtd == "plaw"), or if the 
+		user specifies their own custom DTD, then this parameter plays no role 
+		in the integration.
 		"""
 		return self._tau_Ia
 
@@ -880,6 +904,12 @@ class integrator(object):
 		This parameter may be a simple numerical value or a callable function 
 		of time. See class docstring for Users' warning on specifying functions 
 		as attribute values.
+
+		When the attribute 'schmidt' = True, this parameter is used as the 
+		normalization on Schmidt-Law star formation efficiency, whereby the 
+		SFE is proportional to the gas supply. That is: 
+
+		SFE = tau_star(t)^-1 * (Mgas / MgSchmidt)^(schmidt_index)
 		"""
 		return self._tau_star
 
@@ -907,9 +937,11 @@ class integrator(object):
 	@property
 	def schmidt(self):
 		"""
-		A boolean describing whether or not to use Schmidt-law efficiency, the 
-		specifications for which are set by the attributes schmidt_index and 
-		MgSchmidt.
+		A boolean describing whether or not to use and implementation of 
+		Schmidt-law efficiency, whereby the star-formation efficiency is 
+		proportional to the gas supply. The specifics of this behavior are 
+		specified by the attributes 'tau_star', 'schmidt_index', and 
+		'MgSchmidt'.
 		"""
 		return self._schmidt
 
@@ -986,15 +1018,26 @@ class integrator(object):
 	@property
 	def dtd(self):
 		"""
-		The delay-time distribution (DTD) of SNe Ia passed as a string. It must 
-		be either "exp" for an exponential DTD or "plaw" for a power-law. 
+		The SNe Ia delay-time distribution (DTD). There are two built-in 
+		DTDs that VICE will automatically treat, and to use one of these 
+		this attribute must be set to a particular string. 
 
-		In the case of an exponential DTD, attribute tau_ia sets the e-folding 
-		timescale. See its docstring for details.
+		"exp": An exponential DTD with e-folding timescale set by the 
+		attribute 'tau_Ia'
 
-		In the case of a power-law DTD, the power law index is -1.1. That is, 
-		the integrator will treat the SNe Ia rate as t^-1.1 following every 
-		episode of star formation.
+		"plaw": A power-law dtd proportional to t^-1.1
+
+		In addition to these built-in DTDs, the user also has the option to 
+		pass their own function of time. Like all other attributes that 
+		accept functions as parameters in VICE, it must take only one 
+		parameter and no keyword/default/variable arguments. It will be 
+		interpreted as the rate R as a function of time in Gyr. 
+
+		The user need not worry about the normalization of their DTD. Prior 
+		to the integration, VICE will integrate the DTD up to 12.5 Gyr and 
+		normalize it automatically. Therefore, the user also need not worry 
+		about how long their integrations run - the DTD will always be 
+		treated the same. 
 		"""
 		return self._dtd
 
@@ -1046,7 +1089,7 @@ class integrator(object):
 		dummy value - a negative value, zero, or some value smaller than the 
 		timestep will all achieve this effect.
 
-		See section ##.## of Johnson & Weinberg (2018, in prep) for more details 
+		See appendix A2 of Johnson & Weinberg (2018, in prep) for more details 
 		on smoothing timescales.
 		"""
 		return self._smoothing
@@ -1119,7 +1162,7 @@ class integrator(object):
 	@property
 	def dt(self):
 		"""
-		The time difference to use in the integration in Gyr.
+		The time difference in Gyr to use in the integration.
 		"""
 		return self._dt
 
@@ -1211,7 +1254,22 @@ class integrator(object):
 	@property
 	def Z_solar(self):
 		"""
-		The total solar metallicity Z_sun = M_metals / M_sun
+		The total solar metallicity Z_sun = M_metals / M_sun to adopt. 
+
+		This parameter only plays a role in scaling the total metallicity 
+		of stars for the sake of modelling AGB enrichment. That is, the total 
+		metallicity will always be low for integrations that only trace a 
+		few elements, and this can introduce numerical artifacts in the 
+		enrichment of AGB stars. We therefore employ the following scaling 
+		relation: 
+
+		Z = Z_solar * sum(Z_x) / sum(Z_x_solar)
+
+		to estimate the total metallicity at each timestep and therefore 
+		mitigate this numerical issue. We nonetheless recommend that if the 
+		user is interested in the enrichment of metals from AGB stars, that 
+		they include multiple elements in their integration so that the 
+		overall metallicity is better determined at each timestep. 
 		"""
 		return self._Z_solar
 
@@ -1224,7 +1282,7 @@ class integrator(object):
 				message = "Attribute 'Z_solar' must be between 0 and 1." 
 				raise ValueError(message)
 			if self._Z_solar > 0.018: 
-				message = "Vice implements AGB enrichment up to metallicities "
+				message = "VICE implements AGB enrichment up to metallicities "
 				message += "of 0.02. We recommend avoiding modeling parameter "
 				message += "spaces yielding total metallicities significantly "
 				message += "above solar. "
@@ -1339,8 +1397,14 @@ class integrator(object):
 		Recalculates the core-collapse supernovae yields under the current 
 		settings that affect them. 
 
+		Calling this function will modify the values stored in the 
+		'ccsne_yields' instance of the _case_insensitive_dataframe implemented 
+		in VICE. It will thus affect all subsequent integrations ran by all 
+		instances of the integrator class, because this dataframe is 
+		package-wide.
+
 		If the class attribute 'auto_recalc' is set to True, modifying any 
-		attributes of "imf", "m_upper", "m_lower", or "rotatint_ccsne" 
+		attributes of "imf", "m_upper", "m_lower", or "rotating_ccsne" 
 		will automatically call this function. 
 		"""
 		for i in list(range(len(_globals.RECOGNIZED_ELEMENTS))):
@@ -1373,11 +1437,7 @@ class integrator(object):
 					history file. This need not be an array of uniform 
 					timesteps, or even in ascending order. The integrator will 
 					take care of all of that for you. The only requirement is 
-					that it all elements be numerical values. The user may even 
-					specify that they would like output at time 'inf', 
-					which, unless one of their attributes would result in an 
-					overflow error, would result in an indefinitely running 
-					integration. They may specify this if they so wish. 
+					that all elements be numerical values. 
 
 		Kwargs:
 		=======
@@ -1386,25 +1446,24 @@ class integrator(object):
 					type 'output' for details.
 		overwrite = False:	Whether or not to force overwrite any files that 
 					may be under the same name, perhaps from previous 
-					integrations.
+					integrations. 
 
-		User's Warning on Overwrite:
+		User's Warning on overwrite:
 		============================
-		In the event that the user is running many vice models initialized 
+		In the event that the user is running many VICE models initialized 
 		in their own Python scripts, they will want to pay attention to the 
-		names of the models they're running. 
+		names of the models they're running, and to potentially specify 
+		overwrite = True. 
 
-		This acts as a halting function in that if it finds any files under the 
-		same name that it is attempting to create and write to, then it will 
-		stop and wait for the user's input on whether or not to continue. 
-		However, if many models are running with potentially the same name, 
-		then it is to the user's advantage to set overwrite = True so that 
-		their code doesn't halt and wait for their input.
-
-		This feature can be turned off by simply specifying overwrite = True 
-		when this function is called, and this software will take that as 
-		permission from the user to destroy all files with the same name that 
-		they have specified. 
+		When overwrite = False, and in the event that VICE finds any output 
+		files in the user's system under the same name that it is designed 
+		to write to, this acts as a halting function. That is, the integrator 
+		will stop and wait for the user's input on whether or not to 
+		continue and overwrite the existing files. When overwrite = True, 
+		VICE interprets this as permission to overwrite any existing files 
+		that it finds. If the user is running many integrations with 
+		potentially similar names, it is to their advantage to specify 
+		overwrite = True so that their integrations do not stall. 
 		"""
 		if isinstance(self._Zin, dict) and len(self._Zin) != len(
 			self._elements):

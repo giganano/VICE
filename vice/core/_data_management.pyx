@@ -43,7 +43,8 @@ class output(object):
 
 	The history and mdf attributes are coded as dataframes. That is, they can 
 	be indexed by either a string indicating a column label or by index, which 
-	will return a line of the output file. For example:
+	will return a python dictionary for that line of the output file. 
+	For example:
 
 		>>> import vice
 		>>> out = vice.output("example")
@@ -55,22 +56,22 @@ class output(object):
 	that these data frames are case-insensitive. The second line will 
 	return a dictionary of dataframe keys to the values calculated by the 
 	integration at that output time. Because this is a python dictionary, 
-	however, accessing the data frame in this manner is NOT case-insensitive. 
+	however, accessing the data frame by row number and then column label is 
+	case-sensitive. 
 
 	Passing one of these strings to the show function will place that quantity 
 	on a graph and use matplotlib's pyplot.show() function to immediately 
 	display it for the user. This is the only function in the entire 
-	vice package which is dependent on matplotlib or any other python package 
-	associated with Anaconda. 
+	VICE package which is dependent on matplotlib or any other python package 
+	associated with Anaconda, and requires matplotlib version >= 2.
 	"""
 
 	def __init__(self, name):
 		"""
 		Args:
 		=====
-		name:		The name of the output. This attribute is inherited from 
-				the integrator class, and so it is initialized in the exact 
-				same manner. See its docstring for details.
+		name:		The name of the output. This can also be the full path to 
+				the output directory. 
 		"""
 		self.name = name
 		self._history = _dataframe("%s/history.out" % (self._name), 
