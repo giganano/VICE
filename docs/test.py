@@ -150,9 +150,9 @@ except:
 
 try:
 	for i in vice.RECOGNIZED_ELEMENTS: 
-		a = vice.integrated_cc_yield(i, rotating = True)
-		a = vice.integrated_cc_yield(i, rotating = False)
-		a = vice.integrated_cc_yield(i, IMF = "salpeter")
+		a = vice.fractional_cc_yield(i, rotating = True)
+		a = vice.fractional_cc_yield(i, rotating = False)
+		a = vice.fractional_cc_yield(i, IMF = "salpeter")
 	print("IMF-integration of stellar yields: Success")
 except:
 	send = True

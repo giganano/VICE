@@ -2,7 +2,7 @@
 # Python Functions
 from __future__ import print_function, division, unicode_literals
 from ..data import agb_yield_grid
-from ..data import integrated_cc_yield
+from ..data import fractional_cc_yield
 from _data_management import output
 import _globals
 import warnings
@@ -1413,7 +1413,7 @@ class integrator(object):
 		"""
 		for i in list(range(len(_globals.RECOGNIZED_ELEMENTS))):
 			_globals.ccsne_yields[
-				_globals.RECOGNIZED_ELEMENTS[i]] = integrated_cc_yield(
+				_globals.RECOGNIZED_ELEMENTS[i]] = fractional_cc_yield(
 					_globals.RECOGNIZED_ELEMENTS[i], 
 					rotating = self._rotating_ccsne, 
 					IMF = self.imf, 

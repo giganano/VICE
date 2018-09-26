@@ -122,7 +122,9 @@ Specifies a customized SNe Ia delay-time distribution according to a
 linear-exponential model along with inflow of iron that is 
 10% of the solar abundance at all times, and an inflow of oxygen that 
 increases linearly to 10% of solar at 10 Gyr. We will also neglect the 
-strontium enrichment in this model by specifying the attribute 'elements'.
+strontium enrichment in this model by specifying the attribute 'elements'. For 
+illustrative purposes, we're also going to decrement the iron yield from 
+core-collapse supernovae by a factor of 2. 
 """
 custom_ria = vice.integrator(name = "custom_ria")
 custom_ria.dtd = lambda t: (t - custom_ria.delay) * m.exp( -(t - 
@@ -131,6 +133,7 @@ custom_ria.elements = ['o', 'fe']
 custom_ria.Zin = len(custom_ria.elements) * [0]
 custom_ria.Zin['fe'] = 0.1 * vice.solar_z['fe']
 custom_ria.Zin['o'] = lambda t: 0.1 * vice.solar_z['o'] * (t / 10.0)
+vice.ccsne_yields['fe'] /= 2
 out5 = custom_ria.run(times, capture = True, overwrite = True)
 out5.show("[O/Fe]-[Fe/H]")
 out5.show("dN/d[O/Fe]")
