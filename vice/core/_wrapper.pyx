@@ -676,7 +676,11 @@ class integrator(object):
 			else:
 				self._enhancement = value
 		elif isinstance(value, numbers.Number):
-			self._enhancement = float(value)
+			if self._enhancement >= 0:
+				self._enhancement = float(value)
+			else:
+				message = "Attribute enhancement must be non-negative." 
+				raise ValueError(message)
 		else:
 			message = "Attribute 'enhancement' must be either a callable "
 			message += "python function or a numerical value."
