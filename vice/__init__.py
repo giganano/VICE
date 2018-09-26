@@ -34,7 +34,7 @@ row number. Calling these dataframes by column labels is case-insensitive.
 
 Also included in this package are several look-up functions for the convenience 
 of the user. They are scaled-down implementations of the same case-insensitive 
-dataframes are included in the output class. They are named "solar_z", 
+dataframes included in the output class. They are named "solar_z", 
 "sources", "ccsne_yields", and "sneia_yields", and they are meant for the user 
 to lookup background information on certain elements. "solar_z" will tell the 
 user the mass fraction of each element found in the sun. "sources" describes 
@@ -43,22 +43,24 @@ the astrophysical channels through which each element is synthesized.
 element produced by core-collapse supernovae (CCSNe). Lastly, "sneia_yields" 
 tell the user the IMF-integrated fractional yield of each element produced by 
 Type Ia supernovae (SNe Ia). The user may simply call todict() on these 
-objects as well to receive them in Pythin dictionary format. 
+objects as well to receive them in Python dictionary format. Using these 
+dataframes, the user can also specify custom yield values for both SNe Ia and 
+CCSNe. 
 
 The interactive visualization features of the output dataframe object (see 
 output.show docstring for details) are implemented using matplotlib. 
-There for, if the user wishes to use these built-in features, an installation 
-of either matplotlib or Anaconda is required. 
+This feature requires matplotlib version >= 2, and is the only function in 
+Vice which is dependent on any non-standard library Python package.
 
 The integration features themselves, however, are NumPy- and Pandas- 
 compatible, but neither NumPy- nor Pandas-dependent. That is, when imported, 
 this software will attempt to import NumPy and Pandas, but if either are not 
 found in the user's system, then it will move on assuming that the user will 
-not be using their object types. When given NumPy and Pandas object types, it 
-will immediately convert them into Python objects or native C-types, depending 
-on the attribute being specified. Therefore, the functions that run the 
-chemical enrichment integration itself are completely independent of the 
-version of Anaconda. 
+not be using their object types. When given NumPy and Pandas data types, it 
+will immediately convert them into Python objects and/or native C-types, 
+depending on the attribute being specified. Therefore, the functions that run 
+the chemical enrichment integration itself are completely independent of the 
+user's version of Anaconda, or lackthereof. 
 """
 
 from __future__ import absolute_import

@@ -57,25 +57,40 @@ class integrator(object):
 	play in the integration.
 
 
-
 	User-specified Attributes:
 	==========================
 	name:				The name of the model being run. 
 	func:				A built-in default function that always return 9.1
 	mode:				The physical value being specified by func
+	elements:			The symbols of the elements to track in the integration 
 	imf:				The initial mass function
+	schmidt:			A boolean describing whether or not to use an 
+					implementation of gas-mass dependent 
+					star formation efficiency 
 	eta:				The mass loading factor
+	enhancement: 			The ratio of outflow metallicity to ISM metallicity
+	Zin: 				The inflow metallicity
 	recycling:			The instantaneous recycling parameter
 	bins:				The bins in [X/Y] to sort the final stellar metallicity 
-						distribution function into
+					distribution function into
 	delay:				The minimum delay time of SNe Ia in Gyr.
 	dtd:				The delay time distribution (DTD) of SNe Ia
 	Mg0:				The initial gas mass of the system
 	smoothing:			The mass loading factor smoothing timescale in Gyr
 	tau_ia:				The e-folding timescale of SNe Ia
-						(only relevant for exponential SNe Ia DTD models)
+					(only relevant for exponential SNe Ia DTD models)
 	tau_star:			The depletion timescale in Gyr
 	dt:				The size of timesteps in Gyr
+	schmidt_index:			The power-law index on gas-mass dependent SFE
+	MgSchmidt:			The normalization factor on gas-mass dependent SFE
+	m_upper:			Upper mass limit on star formation in Msun
+	m_lower:			Lower mass limit on star formation in Msun
+	Z_solar:			The value to adopt for solar metallicity by mass Z
+	rotating_ccsne:			Whether or not to adopt the Chieffie & Limongi (2013) 
+					rotating CCSNe yields or nonrotating. Default yields 
+					are those used in Johnson & Weinberg (2018, in prep). 
+	auto_recalc:			Whether or not to auto-recalculate and set the 
+					CCSNe yields from the current parameter settings. 
 
 
 
@@ -90,20 +105,27 @@ class integrator(object):
 
 	Functions:
 	==========
-	settings:			Prints the current model parameters
-	run:				Runs the integration functions on the parameters
+	settings:				Prints the current model parameters
+	run:					Runs the integration functions on the parameters
+	recalculate_cc_yields: 			Recalculates the CCSNe yields from current 
+						settings of an instance of an integrator object. 
 
 
 
 	While the attribute func must be a function of time in Gyr, the user has 
-	the option to do the same with attributes eta and tau_star. If the user 
-	passes a numerical value for these parameters, then it will be that 
-	numerical value at all times in the integration. However, in the event that 
-	the user initializes one of these attributes as a callable python function, 
-	then this software will let that parameter take on the value the function 
-	returns at all times during the integration. This allows the user to 
-	specify models of star formation efficiency and mass loading parameters 
-	that are time-dependent with arbitrary degrees of complexity. 
+	the option to do the same with attributes eta, enhancement, Zin 
+	(which can also contain different functions for each element), dtd, 
+	and tau_star. If the user passes a numerical value for these parameters, 
+	then it will be that numerical value at all times in the integration. 
+	However, in the event that the user initializes one of these attributes 
+	as a callable python function, then this software will let that parameter 
+	take on the value the function returns at all times during the 
+	integration. This allows the user to specify models of mass loading 
+	factors, outflow enhancement factors, inflow metallicity, and 
+	star formation efficiency that are time-dependent with arbitrary degrees 
+	of complexity. The user may also specify an entirely customized SNe Ia 
+	delay-time distribution (DTD). The full flexibility of each of these 
+	parameters can be also be used simultaneously. 
 
 
 
@@ -144,28 +166,26 @@ class integrator(object):
 	>>> import numpy as np
 	>>> i = vice.integrator(func = lambda t: np.exp(t))
 
-	See docstrings for attributes eta, tau_star, and func for more direction on 
-	how to specify these parameters according to your model.
-
+	See docstrings for individual attributes for more direction on how to 
+	specify these parameters according to your model. 
 
 
 	USERS' WARNING ON EMULATING DELTA FUNCTIONS IN ATTRIBUTES:
 	==========================================================
-	Here we simply wish to make the user aware of a couple things so that when 
-	they emulate delta functions, the output of their integration properly 
-	reflects that. These can be done in effect by letting one quantity take on 
-	some very high value for one timestep. If the user wishes to build a delta 
-	function into their model, they simply need to make sure that:
+	Here we detail a simple warning on emulating delta function in attributes. 
+	Vice is a timestep-style integrator, and therefore, these can be 
+	achieved by letting a quantity take on some very high value for one 
+	timestep. If the user wishes to build a delta function into their model, 
+	they need to make sure that: 
 
 	1) They let their delta function have an intrinsic finite width of at 
 	   least one timestep. Otherwise, it is not guaranteed that the numerical 
 	   integrator will find the delta function. 
 
 	2) They have set their output times such that the integrator will write 
-	   to the output file at the time of the delta function. Otherwise, the 
-	   integrator will still exhibit the behavior of the delta function 
-	   they've built in, but it will not be shown in the output file in the 
-	   quantity in which they've built-in a delta function. 
+	   to the output file at the time of the delta function. If this is not 
+	   ensured, the output will still show the behavior induced by the delta 
+	   function, but not in the parameter which was meant to exhibit one. 
 
 	Delta functions of any kind tend to make any physical system behave 
 	eradically for a brief period. Thus we recommend that when you employ a 
@@ -176,14 +196,16 @@ class integrator(object):
 	discontinuities where there are none when finer output time intervals are 
 	used. 
 
-	See docstring of integrator.run() for instructions on how to specify your 
-	output times. 
+	For the purpose of minimizing disk-space usage while still maintaining 
+	high time-step resolution, Vice does not require that output be written 
+	to disk at every timestep. See docstring of integrator.run for 
+	instructions on how to specify your output times.
 	"""
 
 	def __init__(self, name = "onezonemodel", 
 		func = _globals._DEFAULT_FUNC, 
-		elements = ["fe", "o", "sr"], 
 		mode = "ifr", 
+		elements = ["fe", "o", "sr"], 
 		imf = "kroupa", 
 		schmidt = False, 
 		eta = 2.5, 
@@ -215,7 +237,7 @@ class integrator(object):
 		mode 		= "ifr"  
 		eta  		= 2.5 
 		enhancement 	= 2.5 
-		Zin			= 0
+		Zin		= 0
 		recycling 	= "continuous"
 		bins 		= [-3, -2.99, -2.98, ... , 0.98, 0.99, 1]
 		delay		= 0.15 [Gyr]
@@ -239,8 +261,8 @@ class integrator(object):
 		self._auto_recalc = False
 		self.name = name
 		self.func = func
-		self.elements = elements
 		self.mode = mode
+		self.elements = elements
 		self.imf = imf
 		self.eta = eta
 		self.enhancement = enhancement
@@ -391,7 +413,7 @@ class integrator(object):
 		>>> i.func = f
 		>>> i.Mg0 = 1
 
-		See docstring of attribute mode for more details.
+		See docstring of attribute 'mode' for more details.
 		"""
 		return self._func
 
@@ -410,37 +432,6 @@ class integrator(object):
 			message += "takes only one parameter with no variable, "
 			message += "keyword, or default arguments."
 			raise TypeError(message)
-
-	@property
-	def elements(self):
-		"""
-		The elements that are to be modeled while the integration is running. 
-		They're encoded as their one- or two-letter symbols (case-insensitive). 
-		This attribute accepts array-like objects and stores them in a python 
-		tuple. 
-		"""
-		return self._elements
-
-	@elements.setter
-	def elements(self, value):
-		if "numpy" in sys.modules and isinstance(value, _np.ndarray):
-			copy = value.tolist()
-		elif "pandas" in sys.modules and isinstance(value, _pd.DataFrame):
-			copy = [i[0] for i in value.values.tolist()]
-		elif type(value) in [list, tuple]:
-			copy = value[:]
-		else:
-			message = "Attribute 'elements' must be either a NumPy array, "
-			message += "Pandas DataFrame, python list, or python tuple. "
-			raise TypeError(message)
-
-		for i in copy:
-			if i.lower() not in _globals.RECOGNIZED_ELEMENTS: 
-				message = "Unrecognized element: %s" % (i)
-				raise ValueError(message)
-			else:
-				continue
-		self._elements = tuple(copy[:])
 
 	@property
 	def mode(self):
@@ -510,6 +501,37 @@ class integrator(object):
 			raise TypeError(message)
 		else:
 			pass
+
+	@property
+	def elements(self):
+		"""
+		The elements that are to be modeled while the integration is running. 
+		They're encoded as their one- or two-letter symbols (case-insensitive). 
+		This attribute accepts array-like objects and stores them in a python 
+		tuple. 
+		"""
+		return self._elements
+
+	@elements.setter
+	def elements(self, value):
+		if "numpy" in sys.modules and isinstance(value, _np.ndarray):
+			copy = value.tolist()
+		elif "pandas" in sys.modules and isinstance(value, _pd.DataFrame):
+			copy = [i[0] for i in value.values.tolist()]
+		elif type(value) in [list, tuple]:
+			copy = value[:]
+		else:
+			message = "Attribute 'elements' must be either a NumPy array, "
+			message += "Pandas DataFrame, python list, or python tuple. "
+			raise TypeError(message)
+
+		for i in copy:
+			if i.lower() not in _globals.RECOGNIZED_ELEMENTS: 
+				message = "Unrecognized element: %s" % (i)
+				raise ValueError(message)
+			else:
+				continue
+		self._elements = tuple(copy[:])
 
 	@property
 	def Mg0(self):
@@ -1278,8 +1300,8 @@ class integrator(object):
 		print("===================")
 		print("Name: %s" % (self._name))
 		print("Func:", self._func)
-		print("Elements:", self._elements)
 		print("Mode: %s" % (self._mode))
+		print("Elements:", self._elements)
 		print("Eta:", self._eta)
 		print("Enhancement:", self._enhancement)
 		print("Recycling:", self._recycling)
