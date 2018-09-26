@@ -1,12 +1,12 @@
 
-VICE: Versatile Integrator for Chemical Evolution
+``VICE: Versatile Integrator for Chemical Evolution``
 =================================================
 
 Overview
 --------
 
-VICE is a simple, user-friendly library for running numerical integrations of 
-galactic chemical enrichment under the single-zone, instantaneous mixing 
+``VICE`` is a simple, user-friendly library for running numerical integrations 
+of galactic chemical enrichment under the single-zone, instantaneous mixing 
 approximation. It is designed to model the formation of elements by 
 core-collapse supernovae, type Ia supernovae, and asymptotic giant branch 
 stars. 
@@ -14,10 +14,10 @@ stars.
 Why You Should Use It
 ---------------------
 
-VICE is designed to recognized infall histories, gas histories, star formation 
-histories, outflow models, outflow metallicity models, inflow metallicities, 
-and star formation efficiency histories as callable functions of time, 
-allowing for the integration of arbitrarily complex models under the 
+``VICE`` is designed to recognized infall histories, gas histories, star 
+formation histories, outflow models, outflow metallicity models, inflow 
+metallicities, and star formation efficiency histories as callable functions 
+of time, allowing for the integration of arbitrarily complex models under the 
 single-zone approximation. It also allows the user to pass a function of 
 time to specify their own SNe Ia delay-time distribution, as well as the 
 fractional yields of all recognized elements. On a system with a 2.7GHz Intel 
@@ -95,5 +95,5 @@ Please submit bug reports to <giganano9@gmail.com>
 LICENSE
 =======
 
-VICE is free software. You may use, redistribute, or modify as you see fit 
+``VICE`` is free software. You may use, redistribute, or modify as you see fit 
 under the terms of the LICENSE. See LICENSE for copyright information. 
