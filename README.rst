@@ -17,13 +17,13 @@ Installation
 System Requirements
 -------------------
 
-1) Cython version >= 0.25.2
+1) ``Cython version >= 0.25.2``
 
-2) Python version 2.6, 2.7, or >= 3.3
+2) ``Python version 2.6, 2.7, or >= 3.3``
 
-3) Make version >= 3.80
+3) ``Make version >= 3.80``
 
-4) Clang >= 4.2.0 or gcc >= 4.6
+4) ``Clang >= 4.2.0 or gcc >= 4.6``
 
 (Note that these values are currently estimates and the authors are still 
 determining conducting tests for system requirements).
