@@ -24,7 +24,7 @@ except ImportError:
 	raise SystemError(message)
 
 message = "Running tests on the integration features, output reader, and "
-message += "yield-weighted IMF-integrator. This will take a few minutes, "
+message += "yield-weighted IMF-integrator. This may take a few minutes, "
 message += "depending on the processing speed of the system."
 print(message)
 send = False
