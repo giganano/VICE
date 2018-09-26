@@ -99,7 +99,9 @@ Usage
 
 See under the docs/ for instructions and examples on how to use this library. 
 
-Please submit bug reports to <giganano9@gmail.com>
+For bug reports, users may either open an issue on the github webpage for 
+this software <https://github.com/giganano/VICE.git>. Bug reports can also be 
+emailed with the subject 'BUG in VICE' to <giganano9@gmail.com>.
 
 LICENSE
 =======
