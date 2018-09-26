@@ -89,10 +89,12 @@ software packages. All internal data types are stored and handled using the
 C and Python standard libraries. The integration features are therefore 
 independent of the user's version of Anaconda or lackthereof. 
 
-The only feature in this software requiring the use of Anaconda is the 'show' 
-function associated with 'output' data type, which the authors built using 
-matplotlib. Use of this feature is therefore dependent on the user having 
-installed matplotlib version 2.0.0 or later. 
+The only feature in this software requiring the use of Anaconda is the ``show`` 
+function associated with ``output`` class, which requires 
+``matplotlib >= 2``. This function is however not a part of the integration 
+features associated with chemical evolution modeling, and is purely intended 
+so that the user may inspect the results of their integrations visually in 
+``ipython`` without having to plot it themselves. 
 
 Usage
 =====
