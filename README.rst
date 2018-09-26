@@ -75,6 +75,9 @@ If the user wishes to install both ``python 2`` and ``python 3`` versions of
 ``python setup.py install [--user]``. Failing to do so will cause a 
 compiler error during subsequent calls to the ``setup.py`` file. 
 
+This is currently the only install method for ``VICE``. It is not installable 
+via ``pip``. 
+
 Implementation
 ==============
 
