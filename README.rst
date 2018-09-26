@@ -42,11 +42,11 @@ System Requirements
 
 4) ``Clang >= 4.2.0 or gcc >= 4.6``
 
-(Note that these values are currently estimates and the authors are still 
-determining conducting tests for system requirements).
-
 Preferred Install Method
 ------------------------
+
+We recommend users install ``VICE`` from a terminal using the following 
+sequence of commands:
 
 :: 
 
