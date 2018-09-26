@@ -74,19 +74,3 @@ if __name__ == "__main__":
 		package_data = find_package_data(packdirs)
 	)
 
-	
-		# package_dir = {
-		# 	"vice":				"vice", 
-		# 	"vice.core":		"vice/core", 
-		# 	"vice.data":		"vice/data", 
-		# 	"vice.data._agb_yields":	"vice/data/_agb_yields", 
-		# 	"vice.data._ccsne_yields":	"vice/data/_ccsne_yields", 
-		# 	"vice.data._ccsne_yields.rotating":	"vice/data/_ccsne_yields/rotating", 
-		# 	"vice.data._ccsne_yields.nonrotating":	"vice/data/_ccsne_yields/nonrotating"
-		# }, 
-		# packages = ["vice", "vice.core", "vice.data", "vice.data._agb_yields", 
-		# 	"vice.data._ccsne_yields", 
-		# 	"vice.data._ccsne_yields.rotating", 
-		# 	"vice.data._ccsne_yields.nonrotating"], 
-
-
