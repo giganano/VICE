@@ -1,11 +1,17 @@
 
 # Ignore any local builds during modification
-./build/*
+build/*
 
 # Ignore any .pyc files and local .o/.so files that get created during local 
 # development as well
 *.o
 *.so
 *.pyc
+
+# Ignore local copies of Cython compiler outputs
+vice/core/_data_management.c
+vice/core/_mpl.c
+vice/core/_wrapper.c 
+vice/data/_ccsne_yields/yield_integrator.c
 
 
