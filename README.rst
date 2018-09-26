@@ -31,14 +31,19 @@ determining conducting tests for system requirements).
 Preferred Install Method
 ------------------------
 
-$ git clone https://github.com/giganano/VICE.git
-
-$ cd VICE
-
-$ make
-
-$ python setup.py install (--user)
-
+.. code-block:: bash
+	git clone https://github.com/giganano/VICE.git
+	cd VICE
+	make
+	python setup.py install [--user]
+	make tests
+	make clean
+	[make]
+	[python3 setup.py install [--user]]
+	[make clean]
+	[make tests3]
+	[cd ..]
+	[rm -rf VICE]
 
 This is currently the only install method. VICE will soon be installable via 
 pip. 
