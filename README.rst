@@ -67,7 +67,8 @@ Preferred Install Method
 Optional elements of the installation process are bound in brackets. The 
 option ``[--user]`` should be invoked when the user wishes to install to 
 their ``~/.local/`` ``python`` library. The final lines are those which will 
-install the ``python 3`` version of ``VICE``. 
+install the ``python 3`` version of ``VICE`` and remove the local copy of 
+``VICE``'s source code. 
 
 Implementation
 ==============
