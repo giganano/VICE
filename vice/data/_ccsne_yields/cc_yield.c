@@ -28,18 +28,21 @@ extern double *numerator(char *file, char *IMF, double lower, double upper,
 	double tolerance, char *method, long Nmax, long Nmin) {
 
 	GRID = yields(file);
+	double *num;
 	if (!strcmp(IMF, "kroupa")) {
-		return quad(weighted_kroupa_integrand, lower, upper, tolerance, 
+		num = quad(weighted_kroupa_integrand, lower, upper, tolerance, 
 			method, Nmax, Nmin);
 	} else if (!strcmp(IMF, "salpeter")) {
-		return quad(weighted_salpeter_integrand, lower, upper, tolerance, 
+		num = quad(weighted_salpeter_integrand, lower, upper, tolerance, 
 			method, Nmax, Nmin);
 	} else {
 		printf("ERROR in IMF-INTEGRATOR. Please submit bug report to ");
 		printf("giganano9@gmail.com.\n");
+		free(GRID);
 		exit(0);
 	}
 	free(GRID);
+	return num;
 
 }
 

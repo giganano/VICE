@@ -51,6 +51,9 @@ def integrate(element, rotating = True, IMF = "kroupa", method = "simpson",
 	A two-element python list
 	returned[0]:		The fractional yield itself
 	returned[1]:		The estimated fractional error on the reported yield
+				Note that this is purely the error associated with the 
+				numerical calculation and does not quantify the error 
+				associated with the physical model 
 
 	Details:
 	========
