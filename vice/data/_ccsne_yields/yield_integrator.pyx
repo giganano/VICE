@@ -5,6 +5,7 @@ from ...core._globals import RECOGNIZED_ELEMENTS
 PATH = "%sdata/_ccsne_yields/" % (DIRECTORY)
 from libc.stdlib cimport free
 import warnings
+import math as m
 import sys
 import os
 
@@ -147,9 +148,12 @@ def integrate(element, rotating = True, IMF = "kroupa", method = "simpson",
 	else:
 		pass
 	y = num[0] / den[0]
+	errnum = num[1] * num[0]
+	errden = den[1] * den[0]
+	err = m.sqrt(errnum**2 / den[0]**2 + num[0]**2/den[0]**4 * errden**2)
 	free(num)
 	free(den)
-	return y
+	return [y, err]
 
 def __name(symbol):
 	return {
