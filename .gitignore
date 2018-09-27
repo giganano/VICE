@@ -14,4 +14,7 @@ vice/core/_mpl.c
 vice/core/_wrapper.c 
 vice/data/_ccsne_yields/yield_integrator.c
 
+# This file will be released after the accompanying paper
+JW18/*
+
 
