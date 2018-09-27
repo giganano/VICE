@@ -285,11 +285,7 @@ class integrator(object):
 		self.rotating_ccsne = rotating_ccsne
 		self.auto_recalc = auto_recalc
 		if self._auto_recalc:
-			if any(list(map(lambda x: x in kwargs, 
-				["imf", "m_upper", "m_lower", "rotating_ccsne"]))):
-				self.recalculate_yields()
-			else:
-				pass
+			self.recalculate_cc_yields()
 		else:
 			pass
 
@@ -1332,6 +1328,12 @@ class integrator(object):
 		A boolean describing whether or not to automatically recalculate 
 		CCSNe yields following a respecification of upper/lower mass limit for 
 		star formation, IMF, or CCSNe rotating vs. nonrotating model. 
+
+		WARNING:
+		========
+		We strongly advise against using the tabulated yields for iron peak 
+		elements as they are highly uncertain and generally need to be 
+		using relative abundances of other elements
 		"""
 		return self._auto_recalc
 
@@ -1410,7 +1412,20 @@ class integrator(object):
 		If the class attribute 'auto_recalc' is set to True, modifying any 
 		attributes of "imf", "m_upper", "m_lower", or "rotating_ccsne" 
 		will automatically call this function. 
+
+		WARNING:
+		========
+		We strongly advise against using this feature, but include it in 
+		VICE for its convenience and utility. The CCSNe yields of iron peak 
+		elements are highly uncertain, and are therefore not well-suited to 
+		accurate quantitative chemical evolution modeling.
 		"""
+		message = "The yields of iron peak elements from CCSNe are highly "
+		message += "uncertain, and for that reason, we strongly advise "
+		message += "against using the tabulated yields of these elements "
+		message += "for quantitatively accurate chemical evolution modeling."
+		warnings.warn(message, UserWarning)
+
 		for i in list(range(len(_globals.RECOGNIZED_ELEMENTS))):
 			_globals.ccsne_yields[
 				_globals.RECOGNIZED_ELEMENTS[i]] = fractional_cc_yield(
@@ -1422,7 +1437,7 @@ class integrator(object):
 					upper = self._m_upper, 
 					tolerance = 1e-3, 
 					Nmin = 64, 
-					Nmax = 2e8)
+					Nmax = 2e8)[0]
 
 	def run(self, output_times, capture = False, overwrite = False):
 		"""
