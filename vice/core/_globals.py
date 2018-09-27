@@ -119,9 +119,9 @@ sources = _case_insensitive_dataframe({
 	"c":		["CCSNE", "AGB"]
 	}, "element", False)
 ccsne_yields = _case_insensitive_dataframe({
-	"fe":		0.0012, # 3.61e-4
-	"o":		0.015, # 0.0246
-	"sr":		3.53e-8, # 2.86e08
+	"fe":		0.0012, 
+	"o":		0.015, 
+	"sr":		3.53e-8, 
 	"c":		1.11e-2
 	}, "element", True)
 sneia_yields = _case_insensitive_dataframe({
