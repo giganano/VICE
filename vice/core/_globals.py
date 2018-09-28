@@ -121,7 +121,7 @@ sources = _case_insensitive_dataframe({
 ccsne_yields = _case_insensitive_dataframe({
 	"fe":		0.0012, 
 	"o":		0.015, 
-	"sr":		3.53e-8, 
+	"sr":		2.20e-8, 
 	"c":		1.11e-2
 	}, "element", True)
 sneia_yields = _case_insensitive_dataframe({
