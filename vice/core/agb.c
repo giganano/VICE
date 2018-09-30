@@ -61,13 +61,24 @@ static double get_AGB_yield(INTEGRATION run, int index, long time_index,
 	int *bounds = get_bounds(run.elements[index].agb_z, zto, 
 		run.elements[index].num_agb_z);
 	if (bounds[0] == -1) {
-		// free(bounds);
-		// return 0;
+		/*
+		These lines used to tie the yields down to 0 at z = 0. This is probably 
+		a good assumption for s-process elements like strontium, but not for 
+		others like carbon, where the yields decrease with increasing 
+		metallicity 
+
 		double yield = interpolate(0, zto, 
 			run.elements[index].agb_z[bounds[1]], 
 			0, run.elements[index].agb_grid[time_index][bounds[1]]);
-		free(bounds);
+		free(bound);
 		return yield;
+		*/
+
+		free(bounds);
+		return interpolate(run.elements[index].agb_z[0], zto, 
+			run.elements[index].agb_z[1], 
+			run.elements[index].agb_grid[time_index][0], 
+			run.elements[index].agb_grid[time_index][1]);
 	} else {
 		if (bounds[1] == run.elements[index].num_agb_z) {
 			bounds[0]--;
@@ -138,29 +149,23 @@ extern void setup_single_AGB_grid(ELEMENT *e, double **grid, double *times,
 		double mto = m_turnoff(times[i]);
 		int *bounds = get_bounds(e -> agb_m, mto, e -> num_agb_m);
 		for (j = 0; j < (*e).num_agb_z; j++) {
-			// printf("%d\n", j);
 			if (mto > 8) {
 				/* Tie it doen to 0 at m > 8 Msun */
-				// printf("This should get printed.\n");
 				e -> agb_grid[i][j] = 0;
 			} else if (bounds[0] == -1) {
 				/* Tie it down to y = 0 at m = 0 */
-				// printf("b\n");
 				e -> agb_grid[i][j] = interpolate(0, mto, e -> agb_m[0], 
 					0, grid[0][j]);
 			} else if (bounds[1] == (*e).num_agb_m) {
 				/* Tie it down to y = 0 at 8 Msun */
-				// printf("c\n");
 				e -> agb_grid[i][j] = interpolate((*e).agb_m[bounds[0]], mto, 
 					8, grid[bounds[0]][j], 0);
 			} else {
 				/* Interpolate normally otherwise */ 
-				// printf("d\n");
 				e -> agb_grid[i][j] = interpolate(e -> agb_m[bounds[0]], mto, 
 					e -> agb_m[bounds[1]], grid[bounds[0]][j], 
 					grid[bounds[1]][j]);
 			}
-			// printf("%s %ld yield = %lf\n", (*e).symbol, i, (*e).agb_grid[i][j]);
 		}
 		free(bounds);
 	}
@@ -219,8 +224,6 @@ y2:			The yield at mz2
 static double interpolate(double mz1, double mzto, double mz2, double y1, 
 	double y2) {
 
-	// printf("=========================================\n");
-	// printf("%lf %lf %lf %lf %lf\n", mz1, mzto, mz2, y1, y2);
 	return y1 + (y2 - y1) / (mz2 - mz1) * (mzto - mz1);
 
 }
