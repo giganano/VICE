@@ -1365,6 +1365,7 @@ class integrator(object):
 		print("Name: %s" % (self._name))
 		print("Func:", self._func)
 		print("Mode: %s" % (self._mode))
+		print("IMF: %s" % (self._imf)) 
 		print("Elements:", self._elements)
 		print("Eta:", self._eta)
 		print("Enhancement:", self._enhancement)
