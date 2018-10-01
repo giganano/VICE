@@ -1599,7 +1599,7 @@ class integrator(object):
 		if "numpy" in sys.modules and isinstance(output_times, _np.ndarray):
 			output_times = output_times.tolist()
 		elif "pandas" in sys.modules and isinstance(output_times, 
-			_pdf.DataFrame): 
+			_pd.DataFrame): 
 			output_times = [i[0] for i in value.values.tolist()]
 		elif isinstance(output_times, list):
 			output_times = output_times[:]
