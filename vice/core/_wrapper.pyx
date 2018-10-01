@@ -1606,6 +1606,7 @@ class integrator(object):
 		else:
 			message = "Argument 'output_times' must be an array-like object."
 			raise TypeError(message)
+		output_times = sorted(output_times)
 		if not all(list(map(lambda x: isinstance(x, numbers.Number), 
 			output_times))):
 			message = "All output times must be numerical values. "
