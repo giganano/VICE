@@ -1600,7 +1600,7 @@ class integrator(object):
 			output_times = output_times.tolist()
 		elif "pandas" in sys.modules and isinstance(output_times, 
 			_pd.DataFrame): 
-			output_times = [i[0] for i in value.values.tolist()]
+			output_times = [i[0] for i in output_times.values.tolist()]
 		elif isinstance(output_times, list):
 			output_times = output_times[:]
 		else:
