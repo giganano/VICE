@@ -205,7 +205,7 @@ class integrator(object):
 	def __init__(self, name = "onezonemodel", 
 		func = _globals._DEFAULT_FUNC, 
 		mode = "ifr", 
-		elements = ["fe", "o", "sr"], 
+		elements = ["fe", "sr", "o"], 
 		imf = "kroupa", 
 		schmidt = False, 
 		eta = 2.5, 
@@ -506,6 +506,10 @@ class integrator(object):
 		They're encoded as their one- or two-letter symbols (case-insensitive). 
 		This attribute accepts array-like objects and stores them in a python 
 		tuple. 
+
+		The order in which the elements appear in this tuple will dictate the 
+		ratios that are quoted in the MDF. If element X appears before element 
+		Y in this tuple, then VICE will determine the mdf in dN/d[Y/X]. 
 		"""
 		return self._elements
 
