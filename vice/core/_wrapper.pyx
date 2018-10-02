@@ -1616,6 +1616,15 @@ class integrator(object):
 			message = "All output times must be non-negative. "
 			raise ValueError(message)
 		else:
+			if output_times[-1] > 15:
+				message = "VICE only determines SNe Ia rate out to 15 Gyr, "
+				message += "and therefore does not support integrations over "
+				message += "this long of timescales. This integrations will "
+				message += "either have numerical errors or produce a "
+				message += "segmentation fault."
+				warnings.warn(message, UserWarning)
+			else:
+				pass
 			return output_times
 
 	def __outfile_check(self, overwrite):
