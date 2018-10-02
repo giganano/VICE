@@ -1621,7 +1621,7 @@ class integrator(object):
 				message += "and therefore does not support integrations over "
 				message += "this long of timescales. This integrations will "
 				message += "either have numerical errors or produce a "
-				message += "segmentation fault."
+				message += "segmentation fault at late times."
 				warnings.warn(message, UserWarning)
 			else:
 				pass
