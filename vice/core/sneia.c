@@ -91,10 +91,14 @@ extern int setup_RIA(MODEL *m, double dt) {
 		return 1;
 	} else {
 		long i;
-		long length = (long) 12.5 / dt;
+		long length = (long) (15.0 / dt);
 		m -> ria = (double *) malloc (length * sizeof(double));
 		for (i = 0l; i < length; i++) {
-			m -> ria[i] = R_SNe_Ia(*m, i * dt);
+			if (i * dt <= 12.5) {
+				m -> ria[i] = R_SNe_Ia(*m, i * dt);
+			} else {
+				m -> ria[i] = 0;
+			}
 		}
 		double sum = 0;
 		for (i = 0l; i < length; i++) {

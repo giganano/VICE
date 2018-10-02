@@ -1681,11 +1681,14 @@ class integrator(object):
 			return agb_yield_grid(symbol)
 
 	def __set_ria(self):
-		times = __times(12.5, self._dt)
+		times = __times(15, self._dt)
 		ria = len(times) * [0.]
 		for i in list(range(len(ria))):
 			if times[i] > self._delay:
-				ria[i] = self._dtd(times[i])
+				if times[i] <= 12.5:
+					ria[i] = self._dtd(times[i])
+				else:
+					ria[i] = 0
 				if (m.isnan(ria[i]) or m.isinf(ria[i]) or ria[i] < 0): 
 					message = "Custom SNe Ia DTD evaluated to negative, nan, "
 					message += "or inf for at least one timestep. "
