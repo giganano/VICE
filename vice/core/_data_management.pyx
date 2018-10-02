@@ -78,6 +78,7 @@ class output(object):
 			self.__history_columns())
 		self._mdf = _dataframe("%s/mdf.out" % (self._name), 
 			self.__mdf_columns())
+		self.__find_elements(self.__history_columns())
 
 	@property
 	def name(self):
@@ -118,6 +119,13 @@ class output(object):
 		else:
 			pass
 
+	@property
+	def elements(self):
+		"""
+		The elements whose enrichment was modeled to produce the output file. 
+		This attribute is set automatically upon instantiation. 
+		"""
+		return self._elements
 
 	@property
 	def history(self):
@@ -298,6 +306,16 @@ class output(object):
 			return "[%s/%s]" % (element2.lower(), element1.lower())
 		except IndexError:
 			return None
+
+	def __find_elements(self, history_columns):
+		elements = []
+		for i in history_columns:
+			if "mass(" in i: 
+				elements.append(str("%s") % (i.split('(')[1][:-1]))
+			else:
+				continue
+		self._elements = elements
+
 
 
 class _dataframe(object):
