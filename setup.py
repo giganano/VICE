@@ -5,12 +5,6 @@ from Cython.Build import cythonize
 import sys
 import os
 
-if os.name != "posix":
-	message = "VICE does not support Windows."
-	raise OSError(message)
-else:
-	pass
-
 def find_c_extensions(subdir, base):
 	sub = "vice/%s/" % (subdir)
 	contents = os.listdir(sub)
@@ -66,6 +60,14 @@ def find_package_data(packdirs):
 	return data
 
 if __name__ == "__main__":
+
+	# We do not support windows
+	if os.name != "posix": 
+		raise OSError("VICE does not support Windows.")
+	else:
+		pass
+
+	# Install python extensions
 	compile_extensions()
 	packages = find_packages()
 	packdirs = find_directories(packages)
