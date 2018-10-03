@@ -43,6 +43,12 @@ on ``Windows``. Users can open a request at
 <https://github.com/giganano/VICE/issues> for ``Windows`` compatibility, and 
 it will be fulfilled if there is sufficient demand. 
 
+The user must have the following softwares installed on their computer for 
+``VICE`` to run properly. The authors note that these software versions are 
+currently estimates, and they are working on integrating ``VICE`` into 
+``Travis-CI``, which will provide a much more comprehensive range of tests 
+for dependencies. 
+
 1) ``Cython version >= 0.25.2``
 
 2) ``Python version 2.6, 2.7, or >= 3.3``
@@ -86,8 +92,8 @@ compiler error during subsequent calls to the ``setup.py`` file.
 ``make tests3`` runs the tests for only the ``python 3`` version of ``VICE``, 
 while ``make tests`` runs them for ``python 2``. 
 
-This is currently the only install method for ``VICE``. It is not installable 
-via ``pip``. 
+This is currently the only install method for ``VICE``. It is currently not 
+installable via ``pip``. 
 
 Implementation
 ==============
@@ -114,7 +120,8 @@ See under the docs/ for instructions and examples on how to use this library.
 
 For bug reports, users may either open an issue on the github webpage for 
 this software <https://github.com/giganano/VICE>. Bug reports can also be 
-emailed with the subject 'BUG in VICE' to <giganano9@gmail.com>.
+emailed with the subject 'BUG in VICE' to <giganano9@gmail.com>. It is however 
+preferred by the authors that users open issues rather than sending email. 
 
 LICENSE
 =======
