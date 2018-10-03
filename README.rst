@@ -1,5 +1,5 @@
 
-|MIT Licensed|
+|version||MIT Licensed|
 
 ``VICE: Versatile Integrator for Chemical Evolution``
 =====================================================
