@@ -35,6 +35,13 @@ Installation
 System Requirements
 -------------------
 
+``VICE`` supports linux and Mac OS X. Because ``VICE`` is implemented using 
+only ``C`` and ``python`` standard libraries, it is technically entirely 
+cross-platform. However, ``VICE`` is currently not packaged for installation 
+on ``Windows``. Users can open a request at 
+<https://github.com/giganano/VICE/issues> for ``Windows`` compatibility, and 
+it will be fulfilled if there is sufficient demand. 
+
 1) ``Cython version >= 0.25.2``
 
 2) ``Python version 2.6, 2.7, or >= 3.3``
@@ -113,3 +120,7 @@ LICENSE
 
 ``VICE`` is free software. You may use, redistribute, or modify as you see fit 
 under the terms of the LICENSE. See LICENSE for copyright information. 
+
+..	|MIT Licensed| image:: https://img.shields.io/badge/license-MIT-blue.svg
+	:target: https://raw.githubusercontent.com/giganano/VICE/master/LICENSE
+	:alt: MIT License
