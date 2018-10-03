@@ -92,7 +92,7 @@ compiler error during subsequent calls to the ``setup.py`` file.
 ``make tests3`` runs the tests for only the ``python 3`` version of ``VICE``, 
 while ``make tests`` runs them for ``python 2``. 
 
-This is currently the only install method for ``VICE``. It is currently not 
+This is the only install method for ``VICE``. It is currently not 
 installable via ``pip``. 
 
 Implementation
