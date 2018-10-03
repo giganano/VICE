@@ -122,6 +122,9 @@ LICENSE
 ``VICE`` is free software. You may use, redistribute, or modify as you see fit 
 under the terms of the LICENSE. See LICENSE for copyright information. 
 
+..	|version| image:: https://img.shields.io/badge/release-v1.0.0-blue.svg
+	:target: https://img.shields.io/badge/release-v1.0.0-blue.svg
+	:alt: version
 ..	|MIT Licensed| image:: https://img.shields.io/badge/license-MIT-blue.svg
 	:target: https://raw.githubusercontent.com/giganano/VICE/master/LICENSE
 	:alt: MIT License
