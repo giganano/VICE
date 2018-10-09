@@ -14,6 +14,10 @@ vice/core/_mpl.c
 vice/core/_wrapper.c 
 vice/data/_ccsne_yields/yield_integrator.c
 
+# A local script that takes the output from the FRUITY database and processes 
+# it into the .dat files packaged with VICE
+vice/data/_agb_yields/yield_processor.py
+
 # This file will be released after the accompanying paper
 JW18/*
 
