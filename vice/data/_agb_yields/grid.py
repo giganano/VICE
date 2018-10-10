@@ -1,6 +1,11 @@
 """
-Initializes the mass-metallicity grid of AGB yield parameters.
+This file, included with the VICE package, is protected under the terms of the 
+associated MIT License, and any use or redistribution of this file in original 
+or altered form is subject to the copyright terms therein. 
 """
+
+# Reads in the AGB grid to either be used in the integrations or returned to 
+# the user
 
 import inspect
 import sys

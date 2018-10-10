@@ -1,3 +1,7 @@
+# This file, included with the VICE package, is protected under the terms of the 
+# associated MIT License, and any use or redistribution of this file in original 
+# or altered form is subject to the copyright terms therein. 
+
 """
 VICE: Versatile Integrator for Chemical Evolution
 =================================================
@@ -7,9 +11,10 @@ models.
 See LICENSE for copyright information and citation requirements. 
 Documentation for this package is available in several forms: 
 	1) In the docstrings of the objects and functions
-	2) In the git repository for this project: URL HERE
+	2) In the git repository for this project: 
+		<https://github.com/giganano/VICE>
 	3) In the appendix of the associated publication 
-	   Johnson & Weinberg (2018, in prep)
+		Johnson & Weinberg (2018, in prep)
 Within the git repository the user will find example and template scripts to 
 guide them through getting started with this software. 
 
