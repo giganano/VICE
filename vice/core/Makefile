@@ -7,6 +7,8 @@ CFLAGS = -c -fPIC
 
 all: enrichment.so
 
+.PHONY: clean
+
 enrichment.so: agb.o ccsne.o mdf.o metals.o readers.o recycling.o sneia.o writers.o utils.o
 	gcc -shared -o enrichment.so agb.o ccsne.o mdf.o metals.o readers.o recycling.o sneia.o utils.o writers.o 
 

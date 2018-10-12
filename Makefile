@@ -1,6 +1,8 @@
 
 all: enrichment ccsne_yields
 
+.PHONY: enrichment ccsne_yields tests tests3 tutorial clean
+
 enrichment:
 	$(MAKE) -C vice/core/
 

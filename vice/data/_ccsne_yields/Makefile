@@ -7,6 +7,8 @@ CFLAGS = -c -fPIC
 
 all: quadrature.o imf.o reader.o cc_yield.o
 
+.PHONY: clean
+
 quadrature.o: quadrature.c cc_yields.h 
 	$(CC) $(CFLAGS) quadrature.c -o quadrature.o
 
