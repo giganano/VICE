@@ -2,6 +2,9 @@
 # Ignore any local builds during modification
 build/*
 
+# Not yet finished with Travis-CI integration
+.travis.yml
+
 # Ignore any .pyc files and local .o/.so files that get created during local 
 # development as well
 *.o
