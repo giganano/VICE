@@ -21,4 +21,10 @@ vice/data/_agb_yields/yield_processor.py
 # This file will be released after the accompanying paper
 JW18/*
 
+# Elements for which we’re getting yields
+vice/data/_agb_yields/c.dat
+vice/data/_agb_yields/n.dat
+vice/data/_ccsne_yields/rotating/c.dat
+vice/data/_ccsne_yields/nonrotating/c.dat
+
 
