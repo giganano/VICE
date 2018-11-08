@@ -4,9 +4,13 @@ associated MIT License, and any use or redistribution of this file in original
 or altered form is subject to the copyright terms therein. 
 """
 
+try:
+	from Cython.Build import cythonize
+except ImportError:
+	message = "Please install Cython version >= 0.25.2 before installing VICE."
+	raise ImportError(message)
 from distutils.core import setup
 from distutils.extension import Extension
-from Cython.Build import cythonize
 import sys
 import os
 
