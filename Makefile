@@ -20,5 +20,6 @@ tutorial:
 	$(MAKE) -C docs/ clean
 
 clean:
-	cd vice/core/ && make clean && cd - 
-	cd vice/data/_ccsne_yields && make clean && cd -	
+	$(MAKE) -C vice/core/ clean
+	$(MAKE) -C vice/data/_ccsne_yields clean
+	
