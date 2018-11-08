@@ -21,5 +21,5 @@ tutorial:
 
 clean:
 	$(MAKE) -C vice/core/ clean
-	$(MAKE) -C vice/data/_ccsne_yields clean
+	$(MAKE) -C vice/data/_ccsne_yields/ clean
 	
