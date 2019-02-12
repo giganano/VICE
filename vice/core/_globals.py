@@ -53,7 +53,7 @@ class _case_insensitive_dataframe(object):
 	>>> vice.sources["O"]
 	["CCSNE"]
 	>>> vice.ccsne_yields("sR")
-	4.43e-08
+	3.5e-8
 	"""
 
 	def __init__(self, frame, name, customizable):
@@ -115,25 +115,21 @@ solar_z = _case_insensitive_dataframe({
 	"fe":		0.0012, 
 	"o":		0.0056, 
 	"sr":		4.474e-8 
-	# "c":		0.0024
 	}, "element", False)
 sources = _case_insensitive_dataframe({
 	"fe":		["CCSNE", "SNEIA"], 
 	"o":		["CCSNE"], 
 	"sr":		["CCSNE", "AGB"] 
-	# "c":		["CCSNE", "AGB"]
 	}, "element", False)
 ccsne_yields = _case_insensitive_dataframe({
 	"fe":		0.0012, 
 	"o":		0.015, 
 	"sr":		3.5e-8 
-	# "c":		1.11e-2
 	}, "element", True)
 sneia_yields = _case_insensitive_dataframe({
 	"fe":		0.0017, 
 	"o":		0.0, 
 	"sr":		0.0 
-	# "c":		0.0
 	}, "element", True)
 
 
