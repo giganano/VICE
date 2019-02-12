@@ -146,14 +146,14 @@ static void setup_params(INTEGRATION *run, MODEL m) {
 	if (!strcmp((*run).mode, "gas")) {
 		run -> MG = (*run).spec[0];
 		run -> SFR = (*run).MG / get_tau_star(*run, m);
-		run -> IFR = NAN; // No idea what the infall history is prior to t = 0 
+		run -> IFR = 0.0; // No idea what the infall history is prior to t = 0 
 	} else if (!strcmp((*run).mode, "ifr")) {
 		run -> IFR = (*run).spec[0];
 		run -> SFR = (*run).MG / get_tau_star(*run, m);
 	} else {
 		run -> SFR = (*run).spec[0];
 		run -> MG = (*run).SFR * get_tau_star(*run, m);
-		run -> IFR = NAN;
+		run -> IFR = 0.0; // NO idea what the infall history is prior to t = 0
 	}
 
 }
