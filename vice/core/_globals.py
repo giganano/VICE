@@ -76,7 +76,7 @@ class _case_insensitive_dataframe(object):
 		if self._customizable:
 			if key.lower() in self._frame:
 				if isinstance(value, numbers.Number):
-					self._frame[key] = float(value)
+					self._frame[key.lower()] = float(value)
 				else:
 					raise TypeError("Value must be a numerical value.")
 			else:
