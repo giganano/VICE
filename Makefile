@@ -1,7 +1,7 @@
 
 all: src
 
-.PHONY: src tests tests3 tutorial jw19plots clean 
+.PHONY: src tests tests3 jw19plots tutorial clean 
 
 src: 
 	$(MAKE) -C vice/src/ 
