@@ -151,9 +151,9 @@ authors_ for details.
 Implementation
 ==============
 ``VICE`` is implemented entirely in ``ANSI/ISO C`` and standard library 
-``python``, and is therefore entirely cross-platform. It is NumPy- and 
-Pandas-compatible, but neither NumPy- nor Pandas-dependent. That is, it will 
-recognized user input from NumPy and Pandas data types but will run 
+``python`` and ``Cython``. It is therefore entirely cross-platform. It is 
+NumPy- and Pandas-compatible, but neither NumPy- nor Pandas-dependent. That is, 
+it will recognized user input from NumPy and Pandas data types but will run 
 independently of these software packages. All internal data is stored and 
 handled using C and Python standard libraries. It is thus independent of the 
 user's version of Anaconda, or lackthereof. 
