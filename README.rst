@@ -155,8 +155,8 @@ Implementation
 NumPy- and Pandas-compatible, but neither NumPy- nor Pandas-dependent. That is, 
 it will recognize user input from NumPy and Pandas data types but will run 
 independently of these software packages. All internal data is stored and 
-handled using C and Python standard libraries. It is thus independent of the 
-user's version of Anaconda, or lackthereof. 
+handled using ``C`` and ``python`` standard libraries. It is thus independent 
+of the user's version of Anaconda, or lackthereof. 
 
 The only feature in this software requiring the user of Anaconda is the 
 ``show`` function assocaited with the ``output`` class, which requires 
