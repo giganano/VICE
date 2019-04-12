@@ -4,44 +4,117 @@ associated MIT License, and any use or redistribution of this file in original
 or altered form is subject to the copyright terms therein. 
 """
 
-try:
-	from Cython.Build import cythonize
+try: 
+	import Cython
+	from Cython.Build import cythonize 
+	min_cython_major = 0
+	min_cython_minor = 25
+	min_cython_micro = 2
+	
+	# Tuple comparison of major/minor/micro components for version check
+	if tuple([int(i) for i in Cython.__version__.split('.')]) < tuple([
+		min_cython_major, 
+		min_cython_minor, 
+		min_cython_micro]): 
+		
+		message = "VICE requires Cython >= %d.%d.%d. Current Version: %s\n" % (
+			min_cython_major, 
+			min_cython_minor, 
+			min_cython_micro, 
+			Cython.__version__)
+		message += "Please install Cython >= %d.%d.%d before installing VICE." % (
+			min_cython_major, 
+			min_cython_minor, 
+			min_cython_micro)
+		raise RuntimeError(message) 
+	else: 
+		pass 
+
 except ImportError:
-	message = "Please install Cython version >= 0.25.2 before installing VICE."
+	message = "VICE requires Cython version >= %d.%d.%d for installation" % (
+		min_cython_major, min_cython_minor, min_cython_micro)
 	raise ImportError(message)
+
 from distutils.core import setup
 from distutils.extension import Extension
 import sys
 import os
 
-def find_c_extensions(subdir, base):
-	sub = "vice/%s/" % (subdir)
-	contents = os.listdir(sub)
-	ext = [base]
-	for i in os.listdir(sub):
-		if i.split('.')[-1] == "c" and i.split('.')[0] not in [
-			"_data_management", "_wrapper", "_mpl"]:
-			ext.append("%s%s" % (sub, i))
-		else:
-			continue
-	return ext
+if sys.version_info[0] < 3: 
+	import __builtin__ as builtins
+else:
+	import builtins
 
-def compile_extensions():
-	setup(ext_modules = cythonize([Extension(
-		"vice.core._data_management", 
-		find_c_extensions("core", "vice/core/_data_management.pyx"))]))
-	setup(ext_modules = cythonize([Extension(
-		"vice.core._wrapper", 
-		find_c_extensions("core", "vice/core/_wrapper.pyx")
-	)]))
-	setup(ext_modules = cythonize("./vice/core/_mpl.pyx"))
-	setup(ext_modules = cythonize([Extension(
-		"vice.data._ccsne_yields.yield_integrator", 
-		find_c_extensions("data/_ccsne_yields", 
-			"vice/data/_ccsne_yields/yield_integrator.pyx")
-	)]))
+if sys.version_info[:2] < (3, 5) and sys.version_info[:2] != (2, 7): 
+	raise RuntimeError("VICE requires python version 2.7 or >= 3.5.")
+else:
+	pass
+
+# We do not support windows
+if os.name != "posix": 
+	raise OSError("VICE does not support Windows.")
+else:
+	pass
+
+package_name = "VICE" 
+base_url = "http://github.com/giganano/VICE"
+
+# partial import 
+builtins.__VICE_SETUP__ = True
+import vice 
+
+CLASSIFIERS = """
+Development Status :: 4 - Beta 
+Intended Audience :: Developers 
+Intended Audience :: Science/Research 
+License :: OSI Approved :: MIT License 
+Natural Language :: English 
+Operating System :: POSIX 
+Operating System :: Mac OS 
+Operating System :: Mac OS :: Mac OS X 
+Operating System :: Unix 
+Programming Language :: C 
+Programming Language :: Cython 
+Programming Language :: Python 
+Programming Language :: Python :: 2 
+Programming Language :: Python :: 2.7 
+Programming Language :: Python :: 3  
+Programming Language :: Python :: 3.5 
+Programming Language :: Python :: 3.6 
+Programming Language :: Python :: 3.7 
+Programming Language :: Python :: Implementation :: CPython 
+Topic :: Scientific/Engineering
+Topic :: Scientific/Engineering :: Astronomy 
+Topic :: Scientific/Engineering :: Physics
+"""
+
+MAJOR 			= 1
+MINOR 			= 0
+MICRO 			= 0
+ISRELEASED		= True
+VERSION 		= "%d.%d.%d" % (MAJOR, MINOR, MICRO)
+
+def compile_extensions(): # Compiles each Cython extension 
+	# Each C extension lives in vice/src/ ---> find the *.c files 
+	c_extensions = list(filter(lambda x: x[-2:] == ".c", 
+		["vice/src/%s" % (i) for i in os.listdir("vice/src/")]))
+	for root, dirs, files in os.walk('.'): 
+		for i in files: 
+			# If this is Cython code
+			if i[-4:] == ".pyx": 
+				# Produce the extension linked with the C extensions 
+				ext = "%s.%s" % (root[2:].replace('/', '.'), i.split('.')[0])
+				files = ["%s/%s" % (root[2:], i)] + c_extensions
+				setup(ext_modules = cythonize([Extension(ext, files)]))
+			else:
+				continue
 
 def find_packages(path = '.'):
+	"""
+	# Finds each subpackage given the presence of an __init__.py file 
+	
+	path: 			The relative patch to the directory 
+	"""
 	packages = []
 	for root, dirs, files in os.walk(path):
 		if "__init__.py" in files:
@@ -50,44 +123,107 @@ def find_packages(path = '.'):
 			continue
 	return packages
 
-def find_directories(packages):
-	dirs = len(packages) * [None]
-	for i in range(len(packages)):
-		dirs[i] = packages[i].replace('.', '/')
-	return dirs
-
-def find_package_data(packdirs):
+def find_package_data(): # Finds data files associated with each package 
+	packages = find_packages()
 	data = {}
-	for i in packdirs:
-		if i == "vice/core":
-			# Copy the enrichment.so shared object file for integrator class
-			data["vice.core"] = ["enrichment.so"] 
-		elif any(map(lambda x: x.split('.')[-1] == "dat", os.listdir(i))):
-			data[i.replace('/', '.')] = ["*.dat"]
+	for i in packages: 
+		"""
+		C library stored in a shared object ---> moving .so files with data 
+		ensures that it will be moved to the install directory as well. Build 
+		data is stored in a .obj output file ---> moving that allows the 
+		show_build() function to work properly. 
+		"""
+		if any(map(lambda x: x.split('.')[-1] in ["dat", "so", "obj"], 
+			os.listdir(i.replace('.', '/')))): 
+			data[i] = ["*.dat", "*.so", "*.obj"]
 		else:
 			continue
 	return data
 
-if __name__ == "__main__":
+def write_version_info(filename = "vice/version.py"): 
+	"""
+	Writes the version info to filename
+	"""
+	cnt = """
+# This file is generated from vice setup.py %(version)s
 
-	# We do not support windows
-	if os.name != "posix": 
-		raise OSError("VICE does not support Windows.")
+version = '%(version)s'
+release = %(isreleased)s
+"""
+	with open(filename, 'w') as f: 
+		try:
+			f.write(cnt % {
+					"version": 		VERSION, 
+					"isreleased": 	str(ISRELEASED)
+				})
+		finally: 
+			f.close()
+
+def set_path_variable(filename = "~/.bash_profile"):
+	"""
+	Permanently adds ~/.local/bin/ to the user's $PATH if they are installing 
+	via --user, allowing them to run vice from the command line without having 
+	to set this environment variable themselves.
+	"""
+	if ("--user" in sys.argv and "%s/.local/bin" % (os.environ["HOME"]) not in 
+		os.environ["PATH"].split(':')): 
+		cnt = """
+
+# This line added by vice setup.py %(version)s
+export PATH=$PATH:$HOME/.local/bin
+
+"""
+		cmd = "echo \'%s\' >> %s" % (cnt % {"version": VERSION}, filename)
+		os.system(cmd)
 	else:
 		pass
 
-	# Install python extensions
-	compile_extensions()
-	packages = find_packages()
-	packdirs = find_directories(packages)
-	setup(
-		name = "VICE", 
-		version = "1.0.0", 
-		description = "Single-Zone Galactic Chemical Evolution Integrator", 
+def setup_package(): 
+	src_path = os.path.dirname(os.path.abspath(sys.argv[0])) 
+	old_path = os.getcwd() 
+	os.chdir(src_path)
+	sys.path.insert(0, src_path)
+
+	write_version_info()	# Write the version file 
+	vice._write_build() 	# Save version info for packages used to build VICE 
+	compile_extensions()	# Compile Cython extensions
+
+	# Keywords to the setup() call 
+	metadata = dict(
+		name = package_name, 
+		version = VERSION, 
 		author = "James W. Johnson", 
 		author_email = "giganano9@gmail.com", 
-		packages = packages, 
-		package_dir = dict(zip(packages, packdirs)), 
-		package_data = find_package_data(packdirs)
+		maintainer = "James W. Johnson", 
+		maintainer_email = "giganano9@gmail.com", 
+		url = base_url, 
+		description = "Single-Zone Galactic Chemical Evolution Integrator", 
+		long_description = vice._LONG_DESCRIPTION_, 
+		classifiers = CLASSIFIERS, 
+		license = "MIT", 
+		platforms = ["Linux", "Mac OS X", "Unix"], 
+		keywords = ["galaxies", "simulations", "abundances"], 
+		provides = [package_name], 
+		packages = find_packages(), 
+		package_data = find_package_data(), 
+		install_requires = ["Cython>=%d.%d.%d" % (
+			min_cython_major, min_cython_minor, min_cython_micro)], 
+		python_requires = ">=2.7, !=3.0.*, !=3.1.*, !=3.3.*, !=3.4.*, <4", 
+		zip_safe = False, 
+		scripts = ["bin/%s" % (i) for i in os.listdir("./bin/")]
 	)
+
+	try:
+		setup(**metadata)
+		set_path_variable()
+	finally: 
+		del sys.path[0]
+		os.system("rm -f vice/version.py")
+		os.chdir(old_path)
+	return 
+
+if __name__ == "__main__":
+	setup_package()
+	del builtins.__VICE_SETUP__
+
 

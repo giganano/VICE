@@ -1,5 +1,5 @@
 
-|version| |MIT Licensed|
+|version| |MIT Licensed| |docs| |Authors| 
 
 ``VICE: Versatile Integrator for Chemical Evolution``
 =====================================================
@@ -7,28 +7,34 @@
 Overview
 --------
 
-``VICE`` is a simple, user-friendly library for running numerical integrations 
-of galactic chemical enrichment under the single-zone, instantaneous mixing 
-approximation. It is designed to model the formation of elements by 
-core-collapse supernovae, type Ia supernovae, and asymptotic giant branch 
-stars. 
+``VICE`` is a user-friendly library designed to model the chemical enrichment 
+of galaxies. It is capable of calculating nucleosynethetic yields of various 
+elements, running simulations of enrichment under the single-zone, 
+instantaneous mixing approximation, as well as simulating the enrichment of 
+a given element from a single star cluster of given mass and metallicity. It 
+is designed to model enrichment via core-collapse supernovae, type Ia 
+supernovae, and asymptotic giant branch stars. 
 
 Why You Should Use It
 ---------------------
-
 ``VICE`` is designed to recognize infall histories, gas histories, star 
-formation histories, outflow models, outflow metallicity models, inflow 
-metallicities, and star formation efficiency histories as callable functions 
-of time, allowing for the integration of arbitrarily complex models under the 
-single-zone approximation. It also allows the user to pass a function of 
-time to specify their own SNe Ia delay-time distribution, and can handle 
+formation histories, galactic outflows, outflow metallicities, inflow 
+metallicities, and star formation efficiencies as arbitrary, callable functions 
+of time in ``python``. It also allows the user to pass a function of time to 
+specify their own supernovae Ia delay-time distribution, and supports 
 user-specified fractional yields for both core-collapse and type Ia 
-supernovae. On a system with a 2.7GHz Intel Core i5 processor with 8 GB of 
-DDR3 RAM (e.g. a base-model 2015 Macbook Pro), an integration over the default 
-parameter space with hyperfine timestepping (i.e. ~1 Myr timesteps) takes ~75 
-MB of RAM and finishes in approximately 19.6 seconds. With only slightly 
-coarser timestepping (i.e. ~5 Myr), the integration finishes on the same 
-system in approximately 800 milliseconds. 
+supernovae. In the case of core-collapse supernovae, ``VICE`` allows users to 
+construct their own arbitrary, callable functions of metallicity. This wide 
+range of customizability allows ``VICE`` to simulate galactic chemical 
+enrichment for highly complex parameter spaces in nearly full generality. 
+
+Furthermore, ``VICE`` achieves powerful computing speeds. On a system with a 
+2.7 GHz Intal Core i5 processor with 8 GB of DDR3 RAM (e.g. a base-model 
+2015 Macbook Pro), a simulation over the default parameter space with 
+typical timesteps (e.g. 10 Myr) finishes in 82 milliseconds per simulated 
+element. With finer timestepping (e.g. 1 Myr), the simulation finishes in ~6.0 
+seconds per simulated element. These simulations require only ~3 and ~25 MB of 
+RAM, respectively, and are thus not memory-limited. 
 
 Installation
 ============
@@ -43,19 +49,17 @@ on ``Windows``. Users can open a request at
 <https://github.com/giganano/VICE/issues> for ``Windows`` compatibility, and 
 it will be fulfilled if there is sufficient demand. 
 
-The user must have the following softwares installed on their computer for 
-``VICE`` to run properly. The authors note that these software versions are 
-currently estimates, and they are working on integrating ``VICE`` into 
-``Travis-CI``, which will provide a much more comprehensive range of tests 
-for dependencies. 
+The following system requirements must be satisfied for ``VICE`` to install 
+properly: 
 
 1) ``Cython version >= 0.25.2``
 
-2) ``Python version 2.6, 2.7, or >= 3.3``
+2) ``Python version 2.7, or >= 3.5``
 
 3) ``Make version >= 3.80``
 
 4) ``Clang >= 4.2.0 or gcc >= 4.6``
+
 
 Preferred Install Method
 ------------------------
@@ -76,7 +80,8 @@ sequence of commands:
 	$ [make clean]
 	$ [make tests3]
 	$ [cd ..]
-	$ [rm -rf VICE]
+	$ [rm -rf VICE] 
+	$ [make tutorial]
 
 
 Optional elements of the installation process are bound in brackets. The 
@@ -89,39 +94,87 @@ If the user wishes to install both ``python 2`` and ``python 3`` versions of
 ``VICE``, they must run ``make clean && make`` between calls to 
 ``python setup.py install [--user]``. Failing to do so will cause a 
 compiler error during subsequent calls to the ``setup.py`` file. 
-``make tests3`` runs the tests for only the ``python 3`` version of ``VICE``, 
-while ``make tests`` runs them for ``python 2``. 
+
+The final line ``make tutorial`` will launch the Quick Start Tutorial intended 
+to help user's familiarize themselves with ``VICE``. 
+
+If the user is installing to their ``~/.local/`` directory, then 
+``~/.local/bin/`` must be on their ``PATH`` for ``VICE`` to run from the 
+command-line. ``VICE`` will permanently add this to the user's ``PATH`` along 
+with the installation process if it is not already there. This may require 
+running ``source ~/.bash_profile`` after installation or restarting the 
+``linux`` shell before properly working.
 
 This is the only install method for ``VICE``. It is currently not 
 installable via ``pip``. 
 
-Implementation
-==============
-
-All integration sub-routines are written in ANSI/ISO C and are therefore 
-completely cross-platform. This software is NumPy- and Pandas-compatible but 
-neither NumPy- nor Pandas-dependent. That is, it will recognize user input 
-from NumPy and Pandas data types but will run independently of these 
-software packages. All internal data types are stored and handled using the 
-C and Python standard libraries. The integration features are therefore 
-independent of the user's version of Anaconda or lackthereof. 
-
-The only feature in this software requiring the use of Anaconda is the ``show`` 
-function associated with ``output`` class, which requires 
-``matplotlib >= 2``. This function is however not a part of the integration 
-features associated with chemical evolution modeling, and is purely intended 
-so that the user may inspect the results of their integrations visually in 
-``ipython`` without having to plot it themselves. 
-
 Usage
 =====
 
-See under the docs/ for instructions and examples on how to use this library. 
+After installation, we recommand that users run ``make tutorial`` in a 
+terminal from inside ``VICE``'s root directory. This will launch a 
+``jupyter notebook`` which is intended to provide users with a primer on how to 
+use ``VICE``. 
 
-For bug reports, users may either open an issue on the github webpage for 
-this software <https://github.com/giganano/VICE>. Bug reports can also be 
-emailed with the subject 'BUG in VICE' to <giganano9@gmail.com>. It is however 
-preferred by the authors that users open issues rather than sending email. 
+We also provide here the ``python`` code which produces all of the figures in 
+Johnson & Weinberg (2019). From ``VICE``'s root directory, users can run 
+``make jw19plots`` in a terminal, which will automatically run the simulations 
+and produce the figures exactly as they appear in that paper. Users may also 
+use these scrips as example code if they so choose. 
+
+After installation, users can run simple simulations using ``VICE`` from the 
+command line. Run ``vice --help`` in a terminal from any directory for 
+instructions on how to use this functionality. We however caution users that 
+``VICE``'s functionality is severely limited when ran from the command line in 
+comparison to its full ``python`` capabilities. 
+
+If users have installed to their ``~/.local/`` library and ``VICE`` does not 
+run properly from the command line, they may need to restart their ``linux`` 
+shell (or, alternatively, run ``source ~/.bash_profile`` in a terminal from any 
+directory). If this also does not work, it is likely that the user needs to add 
+``~/.local/bin/`` to their ``PATH``. 
+
+See under docs/ for copies of ``VICE``'s User's Guide and Science 
+Documentation. 
+
+To submit a bug report, please open an issue at 
+<https://github.com/giganano/VICE/issues>. 
+
+Authors & Maintainers
+=====================
+The current version of ``VICE`` was written by James W. Johnson and David H. 
+Weinberg at The Ohio State University Department of Astronomy. See 
+authors_ for details. 
+
+Implementation
+==============
+``VICE`` is implemented entirely in ``ANSI/ISO C`` and standard library 
+``python``, and is therefore entirely cross-platform. It is NumPy- and 
+Pandas-compatible, but neither NumPy- nor Pandas-dependent. That is, it will 
+recognized user input from NumPy and Pandas data types but will run 
+independently of these software packages. All internal data is stored and 
+handled using C and Python standard libraries. It is thus independent of the 
+user's version of Anaconda, or lackthereof. 
+
+The only feature in this software requiring the user of Anaconda is the 
+``show`` function assocaited with the ``output`` class, which requires 
+``matplotlib >= 2``. This function is however not a part of the integration 
+features associated with chemical evolution modeling, and is purely intended 
+so that the user may inspect the results of their integrations visually in 
+``ipython``, a ``jupyter notebook``, or similar without having to plot it 
+themselves. This functionality is not intended to produce publication-quality 
+figures, and is included purely for user convenience. 
+
+We recommend that users install dill_ if they have not already. This package 
+is required for encoding functional attributes in ``VICE`` outputs. ``VICE`` 
+will run independetly of this package, but functional attributes are not able 
+to be saved without it.  
+
+Citing
+======
+Usage of ``VICE`` leading to a publication should cite Johnson & Weinberg 
+(2019, in prep). A ``BibTex`` entry will be added here once the paper is 
+announced. 
 
 LICENSE
 =======
@@ -135,3 +188,15 @@ under the terms of the LICENSE. See LICENSE for copyright information.
 ..	|MIT Licensed| image:: https://img.shields.io/badge/license-MIT-blue.svg
 	:target: https://raw.githubusercontent.com/giganano/VICE/master/LICENSE
 	:alt: MIT License
+
+..	|docs| image:: https://img.shields.io/badge/-docs-brightgreen.svg
+	:target: https://github.com/giganano/VICE/tree/master/docs
+	:alt: docs
+
+..	|authors| image:: https://img.shields.io/badge/-Authors-brightgreen.svg
+	:target: https://github.com/giganano/VICE/blob/master/Authors.rst
+	:alt: authors 
+
+..	_authors: https://github.com/giganano/VICE/blob/master/Authors.rst
+
+.. _dill: https://pypi.org/project/dill/

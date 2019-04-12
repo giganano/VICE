@@ -2,135 +2,83 @@
 This file, included with the VICE package, is protected under the terms of the 
 associated MIT License, and any use or redistribution of this file in original 
 or altered form is subject to the copyright terms therein. 
+
+This file scripts the settings for the user's simulations which should be 
+independent of the galaxy evolution parameters that they build in. We 
+discourage the user from modifying any of the source code of these 
+structures for use within VICE. 
 """
 
-from __future__ import unicode_literals
+import warnings
 import numbers
+import inspect
+import pickle
+try: 
+	# Allows functions to be written to config files and stored as defaults 
+	import dill
+except ImportError:
+	pass
 import sys
 import os
-if sys.version_info[0] == 3:
-	from builtins import str
-else:
-	pass
 
-__all__ = ["_DEFAULT_FUNC", "_DEFAULT_BINS", "solar_z", "sources", 
-	"ccsne_yields", "sneia_yields", "DIRECTORY", "RECOGNIZED_ELEMENTS"]
+__all__ = ["_DEFAULT_FUNC", "_DEFAULT_BINS", "_RECOGNIZED_ELEMENTS", 
+	"_RECOGNIZED_IMFS", "ScienceWarning"] 
+__all__ = [str(i) for i in __all__] # appease python 2 strings 
 
-DIRECTORY = os.path.dirname(os.path.abspath(__file__))
-DIRECTORY = DIRECTORY[:-4] # removes 'core' to get full path to dir
+# The path to the directory after installation 
+_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+_DIRECTORY = _DIRECTORY[:-4] # removes 'core' to get full path to dir
 
-RECOGNIZED_ELEMENTS = tuple([str(i) for i in ["fe", "o", "sr"]])
-RECOGNIZED_IMFS = tuple([str(i) for i in ["kroupa", "salpeter"]])
+"""
+The default bins into which a stellar metallicity distribution function 
+will be sorted by the singlezone class. It spans the range from -3 to 1 in each 
+[X/H] abundance and [X/Y] abundance ratio with 0.01-dex width bins. 
+"""
+_DEFAULT_BINS = 81 * [0.]
+for i in range(81): 
+	_DEFAULT_BINS[i] = -3. + 0.05 * i 
 
-# The default function for an integration object. Defined here because it by 
-# design has to be a pure python function and thus cannot be ran through the 
-# cython integrator.
+"""
+Elements and initial mass functions built into VICE. The user cannot simply 
+modify these fields and have new elements or IMFs built into the software. As 
+such, we do not recommend the user modify these attributes. 
+"""
+_RECOGNIZED_ELEMENTS = tuple(["c", "n", "o", "f", "ne", "na", 
+	"mg", "al", "si", "p", "s", "cl", "ar", "k", "ca", "sc", "ti", "v", "cr", 
+	"mn", "fe", "co", "ni", "cu", "zn", "ga", "ge", "as", "se", "br", "kr", 
+	"rb", "sr", "y", "zr", "nb", "mo", "ru", "rh", "pd", "ag", "cd", "in", 
+	"sn", "sb", "te", "i", "xe", "cs", "ba", "la", "ce", "pr", "nd", "sm", 
+	"eu", "gd", "tb", "dy", "ho", "er", "tm", "yb", "lu", "hf", "ta", "w", 
+	"re", "os", "ir", "pt", "au", "hg", "tl", "pb", "bi"])
+_RECOGNIZED_IMFS = tuple(["kroupa", "salpeter"])
+
+
 def _DEFAULT_FUNC(t):
+	"""
+	The default function for an singlezone object. This function takes time as 
+	an argument and always returns the value of 9.1. By default, 
+	singlezone runs in infall mode, meaning that this corresponds to an 
+	infall rate of 9.1 Msun yr^-1 at all times. 
+	"""
 	return 9.1
 
-# The default stellar MDF bins for the integration object. 
-def _DEFAULT_BINS():
-	bins = 401 * [0.]
-	for i in range(401):
-		bins[i] = -3. + .01 * i
-	return bins
-
-
-class _case_insensitive_dataframe(object):
-
+def _version_error():
 	"""
-	An simple implementation of a Pandas-like dataframe that is keyed 
-	like a python dictionary, except in a case-insensitive manner. It can 
-	also be called like a function, and will return the same values in 
-	either case.  
-
-	An example, using some of the instances of this class that are 
-	included in VICE: 
-
-	>>> import vice
-	>>> vice.solar_z["fe"]
-	0.0012
-	>>> vice.sources["O"]
-	["CCSNE"]
-	>>> vice.ccsne_yields("sR")
-	3.5e-8
+	Raises a RuntimeError in the event that the user has import VICE into a 
+	python interpreter that is not version 2.7 or >= 3.5. This is included as 
+	a failsafe against errors related to unsupported python interpreters. 
 	"""
+	message = "Only python version 2.7 and >= 3.5 are supported by VICE" 
+	raise RuntimeError(message)	
 
-	def __init__(self, frame, name, customizable):
-		self._frame = dict(frame)
-		self._name = name
-		self._customizable = customizable
-		self.__defaults = dict(frame)
-
-	def __getitem__(self, value):
-		if value.lower() in self._frame:
-			return self._frame[value.lower()]
-		else:
-			message = "Unrecognized %s: %s" % (self._name, value)
-			raise KeyError(message)
-
-	def __call__(self, value):
-		return self.__getitem__(value)
-
-	def __setitem__(self, key, value):
-		if self._customizable:
-			if key.lower() in self._frame:
-				if isinstance(value, numbers.Number):
-					self._frame[key.lower()] = float(value)
-				else:
-					raise TypeError("Value must be a numerical value.")
-			else:
-				raise ValueError("Unrecognized %s: %s" % (self._name, value))
-		else:
-			message = "This data structure does not support user-specified "
-			message += "parameters."
-			raise StandardError(message)
-
-	@property
-	def customizable(self):
-		"""
-		A boolean describing whether or not this data-structure supports 
-		user-specified parameters. 
-		"""
-		return self._customizable
-
-	def todict(self):
-		"""
-		Returns this objects as a standard python dictionary. Note that by 
-		design, Python dictionaries are case-sensitive, and are thus less 
-		versatile than this object. 
-		"""
-		return self._frame
-
-	def restore_defaults(self):
-		"""
-		Restores the data structure to its default parameters.
-		"""
-		self._frame = self.__defaults
+class ScienceWarning(UserWarning): 
+	"""
+	A custom warning class designed to separate VICE warnings from other 
+	types of warnings. 
+	"""
+	pass 
 
 
-# Instances of the _case_insensitive_dataframe for both user lookup as well 
-# as customization, depending on the instance. 
-solar_z = _case_insensitive_dataframe({
-	"fe":		0.0012, 
-	"o":		0.0056, 
-	"sr":		4.474e-8 
-	}, "element", False)
-sources = _case_insensitive_dataframe({
-	"fe":		["CCSNE", "SNEIA"], 
-	"o":		["CCSNE"], 
-	"sr":		["CCSNE", "AGB"] 
-	}, "element", False)
-ccsne_yields = _case_insensitive_dataframe({
-	"fe":		0.0012, 
-	"o":		0.015, 
-	"sr":		3.5e-8 
-	}, "element", True)
-sneia_yields = _case_insensitive_dataframe({
-	"fe":		0.0017, 
-	"o":		0.0, 
-	"sr":		0.0 
-	}, "element", True)
 
 
 

@@ -5,9 +5,14 @@ or altered form is subject to the copyright terms therein.
 """
 
 from __future__ import absolute_import
+from ._agb_yields import *
+from ._ccsne_yields import *
+from ._sneia_yields import *
 
-__all__ = [str("agb_yield_grid"), str("fractional_cc_yield")]
+__all__ = []
+__all__.extend(_agb_yields.__all__)
+__all__.extend(_ccsne_yields.__all__)
+__all__.extend(_sneia_yields.__all__) 
 
-from ._agb_yields import yield_grid as agb_yield_grid
-from ._ccsne_yields import fractional_cc_yield
+
 

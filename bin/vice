@@ -1,0 +1,247 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
+try: 
+	import vice
+except ImportError:
+	message = "This software requires the Versatile Integrator for Chemical "
+	message += "Evolution (VICE). Source code and installation instructions "
+	message += "can be found at <http://github.com/giganano/VICE.git>."
+	raise ImportError(message) 
+import math as m 
+import sys 
+import os 
+
+try: 
+	input = raw_input 
+except NameError: 
+	pass 
+import argparse 
+
+uninstall = False
+if "-u" in sys.argv: 
+	uninstall = True
+	sys.argv.remove("-u")
+elif "--uninstall" in sys.argv:
+	uninstall = True 
+	sys.argv.remove("--uninstall") 
+else:
+	pass 
+if uninstall: 
+	message = "Uninstall VICE. Are you sure?\n" 
+	message += "Please type uninstall (case-insensitive) to confirm: "
+	answer = input(message) 
+	if answer.lower() == "uninstall": 
+		os.system("rm -rf %s" % (vice.__path__[0])) 
+		sys.exit()
+	else:
+		print("Aborting.") 
+		sys.exit()
+else:
+	pass 
+
+
+if "-r" in sys.argv: 
+	print(vice._RECOGNIZED_ELEMENTS)
+	sys.argv.remove("-r")
+	if len(sys.argv) == 1: 
+		sys.exit()
+	else:
+		pass 
+elif "--recognized" in sys.argv:
+	print(vice._RECOGNIZED_ELEMENTS)
+	sys.argv.remove("--recognized") 
+	if len(sys.argv) == 1: 
+		sys.exit()
+	else:
+		pass
+else:
+	pass
+
+parser = argparse.ArgumentParser(
+	description = """Run simple simulations of single-zone models of galactic 
+chemical evolution from the linux command line.""", 
+	epilog = """The functionality available on the command line is severely 
+limited compared to the full python capabilities of VICE. In python, the user 
+can specify their own functions of time as well as change their nucleosynthetic 
+yield settings. From the command line, users are restricted to smooth 
+evolutionary histories and their default yield settings.
+
+For details on the implementation of VICE, see the associated science 
+documentation at <https://github.com/giganano/VICE/tree/master/docs>.""") 
+
+parser.add_argument("-s", "--schmidt", 
+	help = """Implement star formation efficiency driven by the 
+Kennicutt-Schmidt\n(i.e. SFE ~ Mgas^n)""", 
+	action = "store_true") 
+
+parser.add_argument("-f", "--force", 
+	help = "Force overwrite existing VICE outputs of the same name", 
+	action = "store_true") 
+
+parser.add_argument("-r", "--recognized", 
+	help = "Print elements recognized by VICE", 
+	action = "store_true") 
+
+parser.add_argument("--timedep", 
+	help = """The time dependence of the evolutionary model. Either 
+'constant', 'exp' (exponential decay), or 'linexp' (linear-exponential)""", 
+	type = str, 
+	default = "constant") 
+
+parser.add_argument("--mode", 
+	help = """The specification of the evolutionary model. Either 'ifr' for 
+a specified infall rate, 'sfr' for a specified star formation rate, or 
+'gas' for a specified gas supply. The time evolution of this parameter is set 
+by the argument --timedep""", 
+	type = str, 
+	default = "ifr") 
+
+parser.add_argument("--name", 
+	help = "The name of the output (Default: \"onezonemodel\")", 
+	type = str, 
+	default = "onezonemodel")  
+
+parser.add_argument("--normalization", 
+	help = """A fiducial value for the infall rate, gas supply, or star 
+formation rate in Msun [yr^-1] (Default: 9.1). In the case of a constant 
+time dependence, this will be the value of the constant itself. For exponential 
+and linear-exponential time dependencies, this sets the prefactor.""", 
+	type = float, 
+	default = 9.1) 
+
+parser.add_argument("--timescale", 
+	help = """The e-folding timescale of the infall rate, gas supply, or star 
+formation rate in Gyr (Default: 4.0)""", 
+	type = float, 
+	default = 4.) 
+
+parser.add_argument("--elements", 
+	help = """Elements to simulate the enrichment for separated by 
+underscores (Default: \"fe_sr_o\")""",
+	type = str, 
+	default = "fe_sr_o") 
+
+parser.add_argument("--imf", 
+	help = "The stellar initial mass function to assume (Default: \"kroupa\")", 
+	type = str, 
+	default = "kroupa") 
+
+parser.add_argument("--eta", 
+	help = """The mass loading factor (ratio of outflow to star formation 
+rates) (Default: 2.5)""", 
+	type = float, 
+	default = 2.5) 
+
+parser.add_argument("--enhancement", 
+	help = "The ratio of outflow to gas-phase metallicities (Default: 1.0)", 
+	type = float, 
+	default = 1.0) 
+
+parser.add_argument("--delay", 
+	help = "Minimum delay time for type Ia supernovae in Gyr (Default: 0.15)", 
+	type = float, 
+	default = 0.15) 
+
+parser.add_argument("--ria", 
+	help = """The delay-time distribution for SNe Ia to adopt ('exp' or 
+'plaw') (Default: \"plaw\")""", 
+	type = str, 
+	default = "plaw") 
+
+parser.add_argument("--mg0", 
+	help = """The gas supply at time 0 in Msun (only relevant for infall 
+histories) (Default: 6.0e9)""", 
+	type = float, 
+	default = 6.0e9) 
+
+parser.add_argument("--smoothing", 
+	help = "The outflow smoothing timescale in Gyr (Default: 0)", 
+	type = float, 
+	default = 0)
+
+parser.add_argument("--tau_ia", 
+	help = """The e-folding timescale for SNe Ia in Gyr (only relevant for 
+--ria=\"exp\") (Default: 1.5)""", 
+	type = float, 
+	default = 1.5) 
+
+parser.add_argument("--tau_star", 
+	help = "Gas supply per unit star formation rate in Gyr (Default: 2)", 
+	type = float, 
+	default = 2.) 
+
+parser.add_argument("--dt", 
+	help = "The timestep size in Gyr (Default: 0.01)", 
+	type = float, 
+	default = 0.01) 
+
+parser.add_argument("--recycling", 
+	help = """The recycling fraction (continuous if a negative number) 
+(Default: -1)""", 
+	type = float, 
+	default = -1)
+
+parser.add_argument("--MgSchmidt", 
+	help = """The normalization of the gas supply in Msun when implementing 
+Kennicutt-Schmidt Law star formation efficiency (Default: 6.0e9)""", 
+	type = float, 
+	default = 6.0e9) 
+
+parser.add_argument("--schmidt_index", 
+	help = """The power law index on Kennicutt-Schidt Law star formation 
+efficiency (Default: 0.5)""", 
+	type = float, 
+	default = 0.5) 
+
+parser.add_argument("--end", 
+	help = "The end time of the simulation in Gyr (Default: 10)", 
+	type = float, 
+	default = 10.) 
+
+parser.add_argument("-u", "--uninstall", 
+	help = "Uninstall VICE",  
+	action = "store_true") 
+ 
+if len(sys.argv) == 1: 
+	parser.print_usage() 
+	print("""To run VICE over the default parameters here, adding '-f' will 
+achieve this, overwriting an existing onezonemodel.vice output in the current 
+working directory.""") 
+	parser.exit()
+else:
+	args = parser.parse_args() 
+
+	if args.timedep == "constant": 
+		function = lambda t: args.normalization 
+	elif args.timedep == "exp": 
+		function = lambda t: args.normalization * m.exp( -t / args.timescale ) 
+	elif args.timedep == "linexp": 
+		function = lambda t: args.normalization * t * m.exp( -t / args.timescale ) 
+	else: 
+		raise ValueError("Unrecognized time dependence: %s" % (args.timedep)) 
+
+	metadata = dict(
+		name = args.name, 
+		func = function, 
+		mode = args.mode, 
+		elements = [i.lower() for i in args.elements.split('_')], 
+		imf = args.imf, 
+		eta = args.eta, 
+		enhancement = args.enhancement, 
+		delay = args.delay, 
+		ria = args.ria, 
+		Mg0 = args.mg0, 
+		smoothing = args.smoothing, 
+		tau_ia = args.tau_ia, 
+		tau_star = args.tau_star, 
+		dt = args.dt, 
+		recycling = "continuous" if args.recycling < 0 else args.recycling, 
+		schmidt = args.schmidt, 
+		MgSchmidt = args.MgSchmidt, 
+		schmidt_index = args.schmidt_index, 
+	)
+
+	outtimes = [i * args.dt for i in range(int(args.end / args.dt) + 1)] 
+	vice.integrator(**metadata).run(outtimes, overwrite = args.force)
+

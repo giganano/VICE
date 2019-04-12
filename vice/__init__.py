@@ -6,79 +6,120 @@
 VICE: Versatile Integrator for Chemical Evolution
 =================================================
 A software built for numerical integration of single-zone chemical evolution 
-models. 
+models. Future versions of VICE will include built-in modeling functions and 
+multi-zone simulations. 
 
 See LICENSE for copyright information and citation requirements. 
 Documentation for this package is available in several forms: 
 	1) In the docstrings of the objects and functions
-	2) In the git repository for this project: 
-		<https://github.com/giganano/VICE>
+	2) Under docs/ in VICE's git repository at: 
+		<https://github.com/giganano/VICE/tree/master/docs>
 	3) In the appendix of the associated publication 
-		Johnson & Weinberg (2018, in prep)
-Within the git repository the user will find example and template scripts to 
-guide them through getting started with this software. 
+		Johnson & Weinberg (2019, in prep)
+Within the git repository the user will find a QuickStartTutorial.ipynb 
+intended to quickly get the user familiar with how to use VICE. 
 
 In all docstrings, examples of code are represented by three > signs:
 
 	>>> a = 5
 	>>> a += 10
 
-The majority of the power of this module is in the "integrator" class, which 
-runs numerical simulations of chemical enrichment of galaxies under the single 
-zone approximation, and is designed to do so for arbitrarily complex models. 
-It is able to do this by allowing the user to specify callable functions of 
-time for its attributes. See the docstrings of this class and its attributes 
-for details and instructions on how to do so. If the user were to only use the 
-integrator object, they would still have the full versatility of the chemical 
-evolution functions included here. 
+Included Features:
+==================
+VICE dataframes: 
+	atomic_number: 
+		The number of protons in the nucles of each recognized element 
+	ccsne_yields: 
+		User-specified yield settings from core collapse supernovae 
+	sneia_yields: 
+		User-specified yield settings from type Ia supernovae 
+	solar_z: 
+		The solar abundance by mass of each element calibrated by Asplund 
+		et al. (2009), ARA&A, 47, 481
+	sources: 
+		The dominant enrichment sources for each element 
 
-However, in addition to this, the class "output" is included. It is designed 
-explicitly for reading in the output of the "integrator" class and presenting 
-it to the user in the form of dataframes callable either by column label or 
-row number. Calling these dataframes by column labels is case-insensitive. 
+Classes: 
+	integrator: 
+		Run simulations of single-zone galactic chemical evolution models 
+	output: 
+		Handle the output of the integrator class 
 
-Also included in this package are several look-up functions for the convenience 
-of the user. They are scaled-down implementations of the same case-insensitive 
-dataframes included in the output class. They are named "solar_z", 
-"sources", "ccsne_yields", and "sneia_yields", and they are meant for the user 
-to lookup background information on certain elements. "solar_z" will tell the 
-user the mass fraction of each element found in the sun. "sources" describes 
-the astrophysical channels through which each element is synthesized. 
-"ccsne_yields" tell the user the IMF-integrated fractional yield of each 
-element produced by core-collapse supernovae (CCSNe). Lastly, "sneia_yields" 
-tell the user the IMF-integrated fractional yield of each element produced by 
-Type Ia supernovae (SNe Ia). The user may simply call todict() on these 
-objects as well to receive them in Python dictionary format. Using these 
-dataframes, the user can also specify custom yield values for both SNe Ia and 
-CCSNe. 
+Functions: 
+	agb_yield_grid: 
+		Returns a built-in mass-metallicity yield grid for a given element 
+	fractional_cc_yield: 
+		Returns an IMF-integrated yield for a given element from core-collapse 
+		supernovae 
+	fractional_sneia_yield: 
+		Returns an IMF-integrated yield for a give nelement from type Ia 
+		supernovae 
+	mirror: 
+		Given an output object, returns an integrator with the same properties 
+		as that which produced the output 
+	single_sneia_yield: 
+		Returns the mass of a given element produced by a single instance of 
+		a type Ia supernova on average 
+	single_stellar_population: 
+		Returns the mass of a given element produced over time by a single 
+		episode of star formation
 
-The interactive visualization features of the output dataframe object (see 
-output.show docstring for details) are implemented using matplotlib. 
-This feature requires matplotlib version >= 2, and is the only function in 
-VICE which is dependent on any non-standard library Python package.
-
-The integration features themselves, however, are NumPy- and Pandas- 
-compatible, but neither NumPy- nor Pandas-dependent. That is, when imported, 
-this software will attempt to import NumPy and Pandas, but if either are not 
-found in the user's system, then it will move on assuming that the user will 
-not be using their object types. When given NumPy and Pandas data types, it 
-will immediately convert them into Python objects and/or native C-types, 
-depending on the attribute being specified. Therefore, the functions that run 
-the chemical enrichment integration itself are completely independent of the 
-user's version of Anaconda, or lackthereof. 
+Command Line: 
+=============
+VICE also allows users to run simulations of simple evolutionary histories 
+directly from the command line. Type "vice -h" in a terminal for instructions 
+on how to do so. 
 """
 
 from __future__ import absolute_import
+import warnings 
 import sys
+import os
 
-__version__ = "1.0.0"
-__author__ = "James Johnson <giganano9@gmail.com>"
+__author__ = "James W. Johnson <giganano9@gmail.com>"
 
+try: 
+	__VICE_SETUP__ 
+except NameError:
+	__VICE_SETUP__ = False
 
-if sys.version_info[0] not in [2, 3]:
-	message = "Only Python versions 2.6, 2.7, and >= 3.3 are "
-	message += "supported by VICE."
-	raise SystemError(message)
+if __VICE_SETUP__: 
+	from ._build_utils import *
+	_LONG_DESCRIPTION_ = __doc__
 else:
-	from .core import *
-	from .data import *
+	try:
+		from .version import version as __version__
+		from .version import release as __release
+	except: 
+		message = "Error importing VICE. You should not try to run VICE from " 
+		message += "within its source directory. Please exit the VICE source "
+		message += "tree and relaunch your python interpreter from there." 
+		raise ImportError(message)
+
+	if not __release: 
+		warnings.warn("Using un-released version of VICE", UserWarning)
+
+	__all__ = ["__author__", "__version__"]
+
+	from .core import * 
+	from .data import * 
+	from ._build_utils import *
+
+	__all__.extend(core.__all__)
+	__all__.extend(data.__all__)
+	__all__.extend(_build_utils.__all__)
+
+	"""
+	Remove locally imported variables that aren't needed, but leave the user 
+	the ability to call vice.warnings to get only VICE to keep quiet and let 
+	the rest of python raise warnings. 
+	"""
+	del core
+	del data
+	del _build_utils
+	del version
+	del __release
+	del absolute_import
+	del sys
+	del os
+
