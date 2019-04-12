@@ -2,9 +2,6 @@
 # Ignore any local builds during modification
 build/*
 
-# Not yet finished with Travis-CI integration
-.travis.yml
-
 # Ignore any .pyc files and local .o/.so files that get created during local 
 # development as well
 *.o
@@ -22,7 +19,7 @@ vice/data/_ccsne_yields/yield_integrator.c
 vice/data/_agb_yields/yield_processor.py
 
 # This file will be released after the accompanying paper
-JW18/*
+JW19/*
 
 # Elements for which we’re getting yields
 vice/data/_agb_yields/c.dat
