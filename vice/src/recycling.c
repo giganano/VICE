@@ -418,42 +418,6 @@ extern void setup_H(MODEL *m, double *times, long num_times) {
 
 }
 
-#if 0 
-/*
-Sets up the breakdown array for each element struct within the run.
-
-Args:
-=====
-run:		The INTEGRATION struct for this iteration of the code
-num_times:	The number of times that the iteration will evaluate at
-*/
-extern void setup_breakdown(INTEGRATION run, long num_times) {
-
-	int i;
-	for (i = 0; i < run.num_elements; i++) {
-		setup_single_breakdown(&run.elements[i], num_times);
-	}
-
-}
-
-/*
-Sets up the breakdown array for a single element struct.
-
-Args:
-=====
-e:			The element struct
-num_times:	The number of times that the iteration will evaluate at
-*/
-static void setup_single_breakdown(ELEMENT *e, long num_times) {
-
-	long i;
-	e -> breakdown = (double **) malloc (num_times * sizeof(double *));
-	for (i = 0l; i < num_times; i++) {
-		e -> breakdown[i] = (double *) malloc (3 * sizeof(double));
-	}
-
-}
-#endif
 
 
 

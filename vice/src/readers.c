@@ -99,22 +99,6 @@ extern int read_agb_grid(INTEGRATION *run, char *file, int index) {
 
 }
 
-#if 0
-/* An old reader test function */ 
-extern int test_agb_reader(INTEGRATION *run) {
-
-	int i, j;
-	for (i = 0; i < (*run).elements[0].num_agb_m; i++) {
-		for (j = 0; j < (*run).elements[0].num_agb_z; j++) {
-			printf("%lf %lf %e\n", (*run).elements[0].agb_m[i], 
-				(*run).elements[0].agb_z[j], 
-				(*run).elements[0].agb_grid[i][j]);
-		}
-	}
-	return 0;
-}
-#endif
-
 /*
  * Reads in a square output file given the destination pointer to store it at in 
  * the memory, the file name, the dimensionality of the output, and the 

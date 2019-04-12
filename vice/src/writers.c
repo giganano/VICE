@@ -255,33 +255,6 @@ extern void write_mdf_header(INTEGRATION run) {
 
 }
 
-#if 0
-/*
-Writes the header to the mdf output file.
-
-Args:
-=====
-run:		The INTEGRATION struct for the current execution.
-
-header: io.h
-*/
-extern void write_mdf_header(INTEGRATION run) {
-
-	fprintf(run.out2, "# bin_edge_left\t");
-	fprintf(run.out2, "bin_edge_right\t");
-	int i;
-	for (i = 0; i < run.num_elements; i++) {
-		fprintf(run.out2, "dN/d[%s/H]\t", run.elements[i].symbol);
-	}
-	for (i = 1; i < run.num_elements; i++) {
-		fprintf(run.out2, "dN/d[%s/%s]\t", run.elements[i].symbol, 
-			run.elements[0].symbol);
-	}
-	fprintf(run.out2, "\n");
-
-}
-#endif
-
 /*
  * Writes output to the mdf output file at the final timestep. 
  * 
@@ -310,75 +283,5 @@ extern void write_mdf_output(INTEGRATION run, MODEL m) {
 	}
 
 }
-
-#if 0
-/*
-Writes output to the mdf output file at the final timestep.
-
-Args:
-=====
-run:		The INTEGRATION struct for the current execution.
-m:			The MODEL struct for the current execution.
-
-header: io.h
-*/
-extern void write_mdf_output(INTEGRATION run, MODEL m) {
-
-	long i;
-	int j;
-	for (i = 0l; i < m.num_bins; i++) {
-		fprintf(run.out2, "%e\t%e\t", m.bins[i], m.bins[i + 1]);
-		for (j = 0; j < 2 * run.num_elements - 1; j++) {
-			fprintf(run.out2, "%e\t", m.mdf[j][i]);
-		}
-		fprintf(run.out2, "\n");
-	}
-
-}
-
-
-/*
-Writes the header to the breakdown output file. 
-
-Args:
-=====
-run:		The INTEGRATION struct for the current execution.
-*/
-extern void write_breakdown_header(INTEGRATION run) {
-
-	fprintf(run.out3, "# Time\t");
-	int i;
-	for (i = 0; i < run.num_elements; i++) {
-		fprintf(run.out3, "f_CCSNe(%s)\t", run.elements[i].symbol);
-		fprintf(run.out3, "f_SNeIa(%s)\t", run.elements[i].symbol);
-		fprintf(run.out3, "f_AGB(%s)\t", run.elements[i].symbol);
-	}
-	fprintf(run.out3, "\n");
-
-}
-
-/*
-Writes to the breakdown output file at the current timestep.
-
-Args:
-=====
-run:		The INTEGRATION struct for the current execution.
-*/
-extern void write_breakdown_output(INTEGRATION run) {
-
-	int i;
-	fprintf(run.out3, "%e\t", run.current_time);
-	for (i = 0; i < run.num_elements; i++) {
-		fprintf(run.out3, "%e\t", run.elements[i].breakdown[run.timestep][0]);
-		fprintf(run.out3, "%e\t", run.elements[i].breakdown[run.timestep][1]);
-		fprintf(run.out3, "%e\t", run.elements[i].breakdown[run.timestep][2]);
-	}
-	fprintf(run.out3, "\n");
-
-}
-#endif
-
-
-
 
 

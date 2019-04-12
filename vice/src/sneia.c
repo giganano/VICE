@@ -54,40 +54,6 @@ static double mdotstarIa(INTEGRATION run, MODEL m) {
 
 }
 
-#if 0
-/*
-Sets up the array RIA containing the SNe Ia rate at all times following the 
-formation of a single stellar population at time 0.
-
-Args:
-=====
-m:			The MODEL struct for this execution
-times:		The times that the INTEGRATION will evaluate at
-num_times:	The number of elements in the times array
-*/
-extern int setup_RIA(MODEL *m, double *times, long num_times) {
-
-	if (R_SNe_Ia(*m, times[0]) == -1) {
-		return 1;
-	} else {
-		long i;
-		m -> ria = (double *) malloc (num_times * sizeof(double));
-		for (i = 0l; i < num_times; i++) {
-			m -> ria[i] = R_SNe_Ia(*m, times[i]);
-		}
-		double sum = 0;
-		for (i = 0l; i < num_times; i++) {
-			sum += (*m).ria[i];
-		}
-		for (i = 0l; i < num_times; i++) {
-			m -> ria[i] /= sum;
-		}
-		return 0;
-	}
-
-}
-#endif
-
 /*
  * Sets up the array RIA containing the SNe Ia rate at all times following the 
  * formation of a single stellar population at time 0. 

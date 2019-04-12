@@ -74,59 +74,6 @@ extern double m_AGB(INTEGRATION run, MODEL m, int index) {
 
 }
 
-#if 0
-/*
-Returns the effective fractional AGB yield of the given element at the 
-lookback time time_index timesteps ago.
-
-Args:
-=====
-run:		The integration struct for the current execution
-index:		The index of the element being enriched
-time_index:	The number of timesteps ago that the stellar population formed
-zto:		The metallicity of the stellar population that formed.
-*/
-static double get_AGB_yield(INTEGRATION run, int index, long time_index, 
-	double zto) {
-
-	int *bounds = get_bounds(run.elements[index].agb_z, zto, 
-		run.elements[index].num_agb_z);
-	if (bounds[0] == -1) {
-		/*
-		These lines used to tie the yields down to 0 at z = 0. This is probably 
-		a good assumption for s-process elements like strontium, but not for 
-		others like carbon, where the yields decrease with increasing 
-		metallicity 
-
-		double yield = interpolate(0, zto, 
-			run.elements[index].agb_z[bounds[1]], 
-			0, run.elements[index].agb_grid[time_index][bounds[1]]);
-		free(bound);
-		return yield;
-		*/
-
-		free(bounds);
-		return interpolate(run.elements[index].agb_z[0], zto, 
-			run.elements[index].agb_z[1], 
-			run.elements[index].agb_grid[time_index][0], 
-			run.elements[index].agb_grid[time_index][1]);
-	} else {
-		if (bounds[1] == run.elements[index].num_agb_z) {
-			bounds[0]--;
-			bounds[1]--;
-		} else {}
-		double yield = interpolate(run.elements[index].agb_z[bounds[0]], zto, 
-			run.elements[index].agb_z[bounds[1]], 
-			run.elements[index].agb_grid[time_index][bounds[0]], 
-			run.elements[index].agb_grid[time_index][bounds[1]]
-		);
-		free(bounds);
-		return yield;
-	}
-
-}
-#endif
-
 /*
  * Returns the effective fractional AGB yield of the given element at the 
  * lookback time time_index timesteps ago. 
@@ -184,29 +131,6 @@ extern double get_AGB_yield(ELEMENT e, long time_index, double zto) {
 	}
 
 }
-
-#if 0
-Sets up the AGB yield grids for each element.
-
-Args:
-=====
-run:		The integration struct for the current execution
-grids:		The grids sampled at various inital stellar masses and 
-			metallicities
-times:		The times that the integration will evaluate at
-num_times:	The number of elements in the array times
-
-extern int setup_AGB_grids(integration *run, double ***grids, double *times, 
-	long num_times) {
-
-	int i;
-	for (i = 0; i < (*run).num_elements; i++) {
-		setup_single_AGB_grid(&(*run).elements[i], grids[i], times, num_times);
-	}
-	return 0;
-
-}
-#endif
 
 /*
  * Sets up the yield grid for a single element.

@@ -55,44 +55,6 @@ extern double mdot_ccsne(INTEGRATION run, MODEL m, int index) {
 
 }
 
-#if 0
-/*
-OLD VERSION OF MDOT_CCSNE
-
-Returns the time derivative of the mass of an element from CCSNe at the 
-current timestep. 
-
-Args:
-=====
-run:		The INTEGRATION structure for the current execution
-index:		The index of the element
-*/
-extern double mdot_ccsne(INTEGRATION run, int index) {
-
-	return run.elements[index].ccsne_yield * run.SFR;
-
-}
-
-/* 
-OLD VERSION OF SET_CCSNE_YIELD
-
-Sets the elements IMF-integrated CCSNe yield parameter to the specified value.
-
-Args:
-=====
-run:		A pointer to the INTEGRATION struct for this integration
-index:		The index of the element to set the yield for
-value:		The yield itself
-*/
-extern int set_ccsne_yield(INTEGRATION *run, int index, double value) {
-
-	ELEMENT *e = &((*run).elements[index]);
-	e -> ccsne_yield = value;
-	return 1;
-
-}
-#endif
-
 /*
  * Fills the core-collapse yield grid as a function of metallicity up to 
  * Z = 0.5. 
