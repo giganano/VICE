@@ -194,9 +194,9 @@ under the terms of the LICENSE. See LICENSE for copyright information.
 	:alt: docs
 
 ..	|authors| image:: https://img.shields.io/badge/-Authors-brightgreen.svg
-	:target: https://github.com/giganano/VICE/blob/master/Authors.rst
+	:target: https://github.com/giganano/VICE/blob/master/AUTHORS.rst
 	:alt: authors 
 
-..	_authors: https://github.com/giganano/VICE/blob/master/Authors.rst
+..	_authors: https://github.com/giganano/VICE/blob/master/AUTHORS.rst
 
 .. _dill: https://pypi.org/project/dill/
