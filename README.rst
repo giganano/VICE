@@ -180,7 +180,7 @@ LICENSE
 =======
 
 ``VICE`` is free software. You may use, redistribute, or modify as you see fit 
-under the terms of the LICENSE. See LICENSE for copyright information. 
+under the terms of the LICENSE_. See LICENSE_ for copyright information. 
 
 ..	|version| image:: https://img.shields.io/badge/version-1.0.0-blue.svg
 	:target: https://img.shields.io/badge/version-1.0.0-blue.svg
@@ -200,3 +200,5 @@ under the terms of the LICENSE. See LICENSE for copyright information.
 ..	_authors: https://github.com/giganano/VICE/blob/master/AUTHORS.rst
 
 .. _dill: https://pypi.org/project/dill/
+
+.. _LICENSE: https://raw.githubusercontent.com/giganano/VICE/master/LICENSE
