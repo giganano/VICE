@@ -33,7 +33,7 @@ static double M0;
  */
 extern double m_turnoff(double t) {
 
-	/* t_MS = (t/10 Gyr)^(-1/3.5) */
+	/* m_to = (t/10 Gyr)^(-1/3.5) */
 	return powf( t/10 , -1.0/3.5);
 
 }
