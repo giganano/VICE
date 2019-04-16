@@ -36,7 +36,7 @@ Furthermore, ``VICE`` achieves powerful computing speeds. On a system with a
 typical timesteps (e.g. 10 Myr) finishes in 82 milliseconds per simulated 
 element. With finer timestepping (e.g. 1 Myr), the simulation finishes in ~6.0 
 seconds per simulated element. These simulations require only ~3 and ~25 MB of 
-RAM, respectively, and are thus not memory-limited. 
+RAM per simulated element, respectively, and are thus not memory-limited. 
 
 Installation
 ============
