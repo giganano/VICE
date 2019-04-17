@@ -118,6 +118,9 @@ installable via ``pip``.
 Usage
 =====
 
+We recommend that user's maintain copies of ``VICE``'s user's guide and 
+science documentation for reference. These are available under ``docs/``. 
+
 After installation, we recommand that users run ``make tutorial`` in a 
 terminal from inside ``VICE``'s root directory. This will launch a 
 ``jupyter notebook`` which is intended to provide users with a primer on how to 

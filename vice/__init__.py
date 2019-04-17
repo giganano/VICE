@@ -15,8 +15,10 @@ Documentation for this package is available in several forms:
 		<https://github.com/giganano/VICE/tree/master/docs>
 	3) In the appendix of the associated publication 
 		Johnson & Weinberg (2019, in prep)
-Within the git repository the user will find a QuickStartTutorial.ipynb 
-notebook intended for quick familiarization with the structure of VICE. 
+We recommend first-time users visit the git repository to obtain copies of the 
+User's Guide and Science Documentation. There under the docs/ directory, they 
+will a QuickStartTutorial.ipynb notebook intended for quick familiarization 
+with the structure of VICE. 
 
 In all docstrings, examples of code are represented by three > signs:
 
