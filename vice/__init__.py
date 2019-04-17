@@ -16,8 +16,8 @@ Documentation for this package is available in several forms:
 	3) In the appendix of the associated publication 
 		Johnson & Weinberg (2019, in prep)
 We recommend first-time users visit the git repository to obtain copies of the 
-User's Guide and Science Documentation. Under the docs/ directory, they 
-will a QuickStartTutorial.ipynb notebook intended for quick familiarization 
+User's Guide and Science Documentation. Under the docs/ directory, they will 
+find a QuickStartTutorial.ipynb notebook intended for quick familiarization 
 with the structure of VICE. 
 
 In all docstrings, examples of code are represented by three > signs:
