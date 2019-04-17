@@ -1,5 +1,5 @@
 
-|version| |MIT Licensed| |docs| |Authors| |userguide| |scidocs| 
+|version| |MIT Licensed| |Authors| |userguide| |scidocs| 
 
 ``VICE: Versatile Integrator for Chemical Evolution``
 =====================================================
