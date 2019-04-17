@@ -139,9 +139,8 @@ To submit a bug report, please open an issue at
 
 Authors & Maintainers
 =====================
-The current version of ``VICE`` was written by James W. Johnson and David H. 
-Weinberg at The Ohio State University Department of Astronomy. See 
-authors_ for details. 
+The current version of ``VICE`` was written by James W. Johnson at The Ohio 
+State University. See authors_ for details. 
 
 Implementation
 ==============
