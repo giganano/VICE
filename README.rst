@@ -118,7 +118,7 @@ installable via ``pip``.
 Usage
 =====
 
-We recommend that user's maintain copies of ``VICE``'s user's guide and 
+We recommend that user's retain copies of ``VICE``'s user's guide and 
 science documentation for reference. These are available under ``docs/``. 
 
 After installation, we recommand that users run ``make tutorial`` in a 
