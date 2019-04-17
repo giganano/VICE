@@ -13,7 +13,8 @@ tests3:
 	$(MAKE) -C docs/ tests3
 
 jw19plots: 
-	$(MAKE) -C JW19/ 
+	# $(MAKE) -C JW19/ 
+	echo "Johnson & Weinberg (2019) plots will be released with the paper."
 
 tutorial: 
 	$(MAKE) -C docs/ tutorial
