@@ -72,7 +72,7 @@ documentation at <https://github.com/giganano/VICE/tree/master/docs>.""")
 
 parser.add_argument("-s", "--schmidt", 
 	help = """Implement star formation efficiency driven by the 
-Kennicutt-Schmidt\n(i.e. SFE ~ Mgas^n)""", 
+Kennicutt-Schmidt Law (i.e. SFE ~ Mgas^n)""", 
 	action = "store_true") 
 
 parser.add_argument("-f", "--force", 
