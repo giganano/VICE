@@ -6,8 +6,7 @@
 VICE: Versatile Integrator for Chemical Evolution
 =================================================
 A software built for numerical integration of single-zone chemical evolution 
-models. Future versions of VICE will include built-in modeling functions and 
-multi-zone simulations. 
+models. 
 
 See LICENSE for copyright information and citation requirements. 
 Documentation for this package is available in several forms: 
@@ -17,47 +16,56 @@ Documentation for this package is available in several forms:
 	3) In the appendix of the associated publication 
 		Johnson & Weinberg (2019, in prep)
 Within the git repository the user will find a QuickStartTutorial.ipynb 
-intended to quickly get the user familiar with how to use VICE. 
+notebook intended for quick familiarization with the structure of VICE. 
 
 In all docstrings, examples of code are represented by three > signs:
 
 	>>> a = 5
 	>>> a += 10
 
+
 Included Features:
 ==================
-VICE dataframes: 
-	atomic_number: 
-		The number of protons in the nucles of each recognized element 
-	ccsne_yields: 
-		User-specified yield settings from core collapse supernovae 
-	sneia_yields: 
-		User-specified yield settings from type Ia supernovae 
-	solar_z: 
-		The solar abundance by mass of each element calibrated by Asplund 
-		et al. (2009), ARA&A, 47, 481
-	sources: 
-		The dominant enrichment sources for each element 
+
+The VICE Dataframe: 
+-------------------
+	A data storing object meant for case-insensitive lookup 
+
+	Instances of this class included with VICE:
+	-------------------------------------------
+		atomic_number: 
+			The number of protons in the nucles of each recognized element 
+		ccsne_yields: 
+			User-specified yield settings from core collapse supernovae 
+		sneia_yields: 
+			User-specified yield settings from type Ia supernovae 
+		solar_z: 
+			The solar abundance by mass of each element calibrated by Asplund 
+			et al. (2009), ARA&A, 47, 481
+		sources: 
+			The dominant enrichment sources for each element 
 
 Classes: 
-	integrator: 
+--------
+	singlezone: 
 		Run simulations of single-zone galactic chemical evolution models 
 	output: 
 		Handle the output of the integrator class 
 
 Functions: 
+----------
 	agb_yield_grid: 
 		Returns a built-in mass-metallicity yield grid for a given element 
 	fractional_cc_yield: 
 		Returns an IMF-integrated yield for a given element from core-collapse 
 		supernovae 
-	fractional_sneia_yield: 
+	fractional_ia_yield: 
 		Returns an IMF-integrated yield for a give nelement from type Ia 
 		supernovae 
 	mirror: 
 		Given an output object, returns an integrator with the same properties 
 		as that which produced the output 
-	single_sneia_yield: 
+	single_ia_yield: 
 		Returns the mass of a given element produced by a single instance of 
 		a type Ia supernova on average 
 	single_stellar_population: 
