@@ -1,6 +1,8 @@
 
 all: src
 
+JW19MESSAGE="Johnson & Weinberg (2019) plots will be released with the paper." 
+
 .PHONY: src tests tests3 jw19plots tutorial clean 
 
 src: 
@@ -14,7 +16,7 @@ tests3:
 
 jw19plots: 
 	# $(MAKE) -C JW19/ 
-	echo "Johnson & Weinberg (2019) plots will be released with the paper."
+	echo $(JW19MESSAGE)
 
 tutorial: 
 	$(MAKE) -C docs/ tutorial
