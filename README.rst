@@ -97,11 +97,6 @@ their ``~/.local/`` ``python`` library. The final lines are those which will
 install the ``python 3`` version of ``VICE`` and remove the local copy of 
 ``VICE``'s source code. 
 
-If the user wishes to install both ``python 2`` and ``python 3`` versions of 
-``VICE``, they must run ``make clean && make`` between calls to 
-``python setup.py install [--user]``. Failing to do so will cause a 
-compiler error during subsequent calls to the ``setup.py`` file. 
-
 The final line ``make tutorial`` will launch the Quick Start Tutorial intended 
 to help user's familiarize themselves with ``VICE``. 
 
