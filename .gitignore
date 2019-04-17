@@ -18,9 +18,6 @@ vice/data/_ccsne_yields/yield_integrator.c
 # it into the .dat files packaged with VICE
 vice/data/_agb_yields/yield_processor.py
 
-# This file will be released after the accompanying paper
-JW19/*
-
 # Elements for which we’re getting yields
 vice/data/_agb_yields/c.dat
 vice/data/_agb_yields/n.dat
