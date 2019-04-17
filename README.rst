@@ -75,30 +75,22 @@ We recommend users install ``VICE`` from a terminal using the following
 sequence of commands:
 
 :: 
-
-	$ git clone https://github.com/giganano/VICE.git
+	
+	$ git clone https://github.com/giganano/VICE.git 
 	$ cd VICE
-	$ make
+	$ make 
 	$ python setup.py install [--user]
-	$ [make clean]
-	$ [make tests]
-	$ [make]
 	$ [python3 setup.py install [--user]]
-	$ [make clean]
+	$ [make clean] 
+	$ [make tests]
 	$ [make tests3]
-	$ [cd ..]
-	$ [rm -rf VICE] 
 	$ [make tutorial]
-
 
 Optional elements of the installation process are bound in brackets. The 
 option ``[--user]`` should be invoked when the user wishes to install to 
-their ``~/.local/`` ``python`` library. The final lines are those which will 
-install the ``python 3`` version of ``VICE`` and remove the local copy of 
-``VICE``'s source code. 
-
-The final line ``make tutorial`` will launch the Quick Start Tutorial intended 
-to help user's familiarize themselves with ``VICE``. 
+their ``~/.local/`` ``python`` library. The final line ``make tutorial`` will 
+launch the Quick Start Tutorial intended to help user's familiarize themselves 
+with ``VICE``. 
 
 If the user is installing to their ``~/.local/`` directory, then 
 ``~/.local/bin/`` must be on their ``PATH`` for ``VICE`` to run from the 
