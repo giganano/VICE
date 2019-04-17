@@ -44,6 +44,11 @@ Installation
 System Requirements
 -------------------
 
+To install ``VICE``, 38 MB of disk space are required. The source code stored 
+in this repository is 24 MB, with 14 being copied to the desired install 
+directory. If there is not adequate disk space, it is likely that the 
+installation process will fail. 
+
 ``VICE`` supports linux and Mac OS X. Because ``VICE`` is implemented using 
 only ``C`` and ``python`` standard libraries, it is technically entirely 
 cross-platform. However, ``VICE`` is currently not packaged for installation 
