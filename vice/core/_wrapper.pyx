@@ -347,7 +347,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	else:
 		message = "The associated AGB star yield file was not found. "
 		message += "Please re-install VICE."
-		raise LookupError(message)
+		raise IOError(message)
 
 	# Construct time arrays
 	eval_times = __times(time + 10 * dt, dt)[:-1]
@@ -377,48 +377,10 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	ria = list(map(lambda x: x / norm, ria))[:len(eval_times)]
 
 	# Setup the core-collapse yield of the element
-	ccsne_yield = _yields.ccsne_yields[element.lower()]
-	if callable(ccsne_yield):
-		# If the core-collapse yield is callable, need to check its args 
-		if singlezone()._singlezone__args(ccsne_yield):
-			message = "Yields from core-collapse supernovae, when passed as a "
-			message += "function of metallicity, must take only one parameter "
-			message += "and no variable/keyword/default arguments."
-			raise ValueError(message)
-		else:
-			"""
-			These lines need changed if the user modifies their copy of VICE 
-			and changes the step size of the core-collapse yield grid. By 
-			default it is 1e-5, and the treatment of this in C at the top of 
-			the ccsne.c file. 
-			"""
-			z_arr = __times(0.5 + 1.e-5, 1.e-5)
-			ptr = c_double * len(z_arr)
-			arr = list(map(ccsne_yield, z_arr))
-			if not all(list(map(lambda x: isinstance(x, numbers.Number), arr))):
-				message = "Yield as a function of metallicity mapped "
-				message += "to non-numerical value."
-				raise TypeError(message)
-			elif any(list(map(lambda x: x < 0, arr))):
-				message = "Yield as a function of metallicity mapped to "
-				message += "negative value."
-				raise ValueError(message)
-			else:
-				clib.fill_cc_yield_grid(byref(r), 0, ptr(*arr[:]))
-	elif isinstance(ccsne_yield, numbers.Number):
-		# If its just a number, this is a lot easier 
-		if ccsne_yield < 0:
-			message = "Yield from core-collapse supernovae must be " 
-			message += "non-negative."
-			raise ValueError(message)
-		else:
-			arr = len(__times(0.5 + 1.e-5, 1.e-5)) * [ccsne_yield]
-			ptr = c_double * len(arr)
-			clib.fill_cc_yield_grid(byref(r), 0, ptr(*arr[:]))
-	else:
-		message = "IMF-integrated yield from core-collapse supernovae must "
-		message += "be either a numerical value or a function of metallicity."
-		raise TypeError(message)
+	ccyield = singlezone()._singlezone__setup_ccsne_yield(element)
+	ptr = c_double * len(ccyield) 
+	clib.fill_cc_yield_grid(byref(r), 0, ptr(*ccyield[:]))
+
 	# Setting the SNe Ia yield is a lot easier with the current version of VICE 
 	clib.set_sneia_yield(byref(r), 0, 
 		c_double(_yields.sneia_yields[element.lower()]))
@@ -1969,59 +1931,9 @@ class singlezone(object):
 			clib.set_sneia_yield(byref(self.__run), i, c_double(sneia_yield))
 			
 			# CCSNe yields, however, can be functions of metallicity Z 
-			ccsne_yield = _yields.ccsne_yields[self._elements[i]]
-			if callable(ccsne_yield): 
-				if self.__args(ccsne_yield): 
-					message = "Yields from core-collapse supernovae, when " 
-					message += "passed as a function of metallicity, must "
-					message += "take only one parameter and no variable/"
-					message += "keyword/default arguments."
-					raise ValueError(message)
-				else:
-					"""
-					VICE maps the CCSNe yields onto a grid every 1e-5 step in 
-					Z between Z = 0 and Z = 0.5. These values are copied over 
-					from ccsne.c ---> if this structure ever changes, the 
-					following line needs to change. 
-					"""
-					z_arr = __times(0.5 + 1.e-5, 1.e-5)
-					ptr = c_double * len(z_arr)
-					arr = list(map(ccsne_yield, z_arr))
-
-					# Check for Type- and ValueErrors in the mapped function 
-					if not all(list(map(lambda x: isinstance(x, numbers.Number), 
-						arr))):
-						message = "Yield as a function of metallicity mapped "
-						message += "to non-numerical value." 
-						raise TypeError(message)
-					elif any(list(map(lambda x: x < 0, arr))):
-						message = "Yield as a function of metallicity mapped "
-						message += "to negative value. This is unphysical for " 
-						message += "the current set of elements recognized " 
-						message += "by VICE."
-						raise ValueError(message)
-					else:
-						clib.fill_cc_yield_grid(byref(self.__run), i, 
-							ptr(*arr[:]))
-
-			# If the user passed only a number 
-			elif isinstance(ccsne_yield, numbers.Number):
-				if ccsne_yield < 0: 
-					message = "Yield from core-collapse supernovae must be "
-					message += "non-negative. This is unphysical for the " 
-					message += "current set of elements recognized by VICE."
-					raise ValueError(message)
-				else:
-					arr = len(__times(0.5 + 1.e-5, 1.e-5)) * [ccsne_yield]
-					ptr = c_double * len(arr)
-					clib.fill_cc_yield_grid(byref(self.__run), i, ptr(*arr[:]))
-
-			else:
-				# Otherwise it's a TypeError 
-				message = "IMF-integrated yield from core collapse supernovae "
-				message += "must be either a numerical value or a function "
-				message += "of metallicity."
-				raise TypeError(message)
+			ccyield = self.__setup_ccsne_yield(self._elements[i])
+			ptr = c_double * len(ccyield)
+			clib.fill_cc_yield_grid(byref(self.__run), i, ptr(*ccyield[:]))
 
 		"""
 		Construct the array of times at which the integration will evaluate, 
@@ -2201,6 +2113,54 @@ class singlezone(object):
 
 		return arr[:(n + 1)]
 
+
+	def __setup_ccsne_yield(self, element): 
+		"""
+		Allow CCSNe yields to be functions of metallicity Z
+		"""
+		ccyield = _yields.ccsne_yields[element]
+		if callable(ccyield): 
+			if self.__args(ccyield): 
+				message = "Yields from core-collapse supernovae, when " 
+				message += "passed as a function of metallicity, must "
+				message += "take only one parameter and no variable/"
+				message += "keyword/default arguments."
+				raise ValueError(message)
+			else: 
+				"""
+				VICE maps the CCSNe yields onto a grid every 1e-5 step in 
+				Z between Z = 0 and Z = 0.5. These values are copied over 
+				from ccsne.c ---> if this structure ever changes, the 
+				following line needs to change. 
+				"""
+				z_arr = __times(0.5 + 1.e-5, 1.e-5) 
+				ptr = c_double * len(z_arr) 
+				arr = list(map(ccsne_yield, z_arr)) 
+
+				# Check for Type- and ValueErrors in the mapped function 
+				if not all(list(map(lambda x: isinstance(x, numbers.Number), 
+					arr))): 
+					message = "Yield as a function of metallicity mapped "
+					message += "to non-numerical value." 
+					raise ArithmeticError(message) 
+				elif any(list(map(lambda x: m.isnan(x) or m.isinf(x), arr))): 
+					message = "Yield as a function of metallicity mapped to " 
+					message += "NaN or inf for at least one metallicity." 
+					raise ArithmeticError(message) 
+				else:
+					# Allow all numerical values, even negative values
+					return arr
+		elif isinstance(ccyield, numbers.Number): 
+			# Allow all values, even negative values 
+			return len(__times(0.5 + 1.e-5, 1.e-5)) * [ccyield]
+		else:
+			# Otherwise it's a TypeError 
+			message = "IMF-integrated yield from core collapse supernovae "
+			message += "must be either a numerical value or a function "
+			message += "of metallicity."
+			raise TypeError(message)
+
+
 	def __outfile_check(self, overwrite):
 		"""
 		Determines if any of the output files exist and proceeds according to 
@@ -2210,7 +2170,7 @@ class singlezone(object):
 		# The names of the output files 
 		outfiles = ["%s/%s" % (self._name, 
 			i) for i in ["history.out", "mdf.out", "ccsne_yields.config", 
-				"sneia_yields.config"]]
+				"sneia_yields.config", "params.config"]]
 		if os.path.exists(self._name):
 			# If the output path exists, but the user specified overwrite 
 			if overwrite:
@@ -2348,11 +2308,14 @@ class singlezone(object):
 				for j in list(range(len(eval_times))): 
 					# Make sure there's no infs or nans along the way
 					if (m.isnan(self._zin(eval_times[j])) or 
-						m.isinf(self._zin(eval_times[j])) or 
-						self._zin(eval_times[j]) < 0): 
-						message = "Inflow metallicity evaluated to negative, " 
-						message += "nan, or inf for at least one timestep. "
+						m.isinf(self._zin(eval_times[j]))): 
+						message = "Inflow metallicity evaluated to NaN or inf " 
+						message += "for at least one timestep." 
 						raise ArithmeticError(message) 
+					elif self._zin(eval_times[j]) < 0: 
+						message = "Inflow metallicity evaluated to negative " 
+						message += "value for at least one timestep." 
+						raise ValueError(message)
 					else:
 						dummy[j] = self._zin(eval_times[j]) 
 				# If it gets here, everything went fine ---> pass to C 
@@ -2373,12 +2336,15 @@ class singlezone(object):
 					for j in list(range(len(eval_times))): 
 						# Check for infs and nans along the way 
 						if (m.isnan(self._zin[sym](eval_times[j])) or 
-							m.isinf(self._zin[sym](eval_times[j])) or 
-							self._zin[sym](eval_times[j]) < 0): 
-							message = "Inflow metallicity evaluated to "
-							message += "negative, nan, or inf for at least "
-							message += "one timestep." 
+							m.isinf(self._zin[sym](eval_times[j]))): 
+							message = "Inflow metallicity evaluated to NaN or " 
+							message += "inf for at least one timestep." 
 							raise ArithmeticError(message) 
+						elif self._zin[sym](eval_times[j]) < 0: 
+							message = "Inflow metallicity evaluated to " 
+							message += "negative value for at least one " 
+							message += "timestep." 
+							raise ValueError(message)
 						else:
 							dummy[j] = self._zin[sym](eval_times[j]) 
 					# If it gets here, everything went fine ---> pass to C 

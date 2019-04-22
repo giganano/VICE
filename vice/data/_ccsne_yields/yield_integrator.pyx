@@ -211,14 +211,14 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		# The study had to have reported yields at that metallicity 
 		message = "The %s study does not have yields for [M/H] = %s" % (
 			studies[study.upper()], MoverHstr)
-		raise ValueError(message)
+		raise LookupError(message)
 	elif not os.path.exists("%s%s/FeH%s/v%d" % (PATH, study.upper(), MoverHstr, 
 		rotation)):
 		# The study had to have reported yields at this rotational velocity 
 		message = "The %s study does not have yields for v = %d km/s and " % (
 			study.upper(), rotation)
 		message += "[M/H] = %s" % (MoverHstr)
-		raise ValueError(message)
+		raise LookupError(message)
 	elif tolerance < 0 or tolerance > 1:
 		# Tolerance must be between 0 and 1 
 		message = "Tolerance must be a floating point value between 0 and 1."

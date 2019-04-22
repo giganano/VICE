@@ -99,7 +99,7 @@ def single_detonation(element, study = "Seitenzahl13", model = "N1"):
 		# If the study didn't use this model 
 		message = "Model not recognized for the %s study: %s" % (
 			studies[study.lower()], recognized_models[study.lower()]) 
-		raise ValueError(message) 
+		raise LookupError(message) 
 	else:
 		pass 
 

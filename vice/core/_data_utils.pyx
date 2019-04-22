@@ -405,6 +405,12 @@ class output(object):
 			message += "try again."
 			raise ImportError(message)
 
+		if not isinstance(key, strcomp):
+			message = "Argument must be of type str. Got: %s" % (type(key)) 
+			raise TypeError(message)
+		else:
+			pass 
+
 		# dark background, make a figure and axes 
 		plt.style.use("dark_background") 
 		fig = plt.figure() 
