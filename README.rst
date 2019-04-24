@@ -165,6 +165,8 @@ Example Code: A Simulation of a Galaxy with Known Star Formation Hisotry
 
 	# Read in the output holding the stellar metallicity distribution 
 	zdist = vice.mdf("known_sfh") 
+
+	# Plot the [O/Fe] stellar probability density 
 	bin_centers = [np.mean(i) for i in zip(zdist["bin_edge_left"], 
 		zdist["bin_edge_right"])] 
 	plt.plot(bin_centers, zdist["dn/d[o/fe]"], c = 'k') 
