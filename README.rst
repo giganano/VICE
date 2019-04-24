@@ -154,13 +154,21 @@ Example Code: A Simulation of a Galaxy with Known Star Formation Hisotry
 	hist = vice.history("known_sfh") 
 
 	# plot the track in the [Mg/Fe]-[Fe/H] plane 
-	plt.plot(out["[fe/h]"], out["[mg/fe]"], c = 'k') 
+	plt.plot(hist["[fe/h]"], hist["[mg/fe]"], c = 'k') 
 	plt.show() 
 	plt.clf() 
 
 	# plot the track in the [N/Mg]-[Mg/H] plane 
-	plt.plot(out["[mg/h]"], out["[n/mg]"], c = 'k') 
+	plt.plot(hist["[mg/h]"], hist["[n/mg]"], c = 'k') 
 	plt.show()
+	plt.clf() 
+
+	# Read in the output holding the stellar metallicity distribution 
+	zdist = vice.mdf("known_sfh") 
+	bin_centers = [np.mean(i) for i in zip(zdist["bin_edge_left"], 
+		zdist["bin_edge_right"])] 
+	plt.plot(bin_centers, zdist["dn/d[o/fe]"], c = 'k') 
+	plt.show() 
 	plt.clf() 
 
 Journal-Related Features
