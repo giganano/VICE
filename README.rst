@@ -101,6 +101,8 @@ installable via ``pip``.
 
 Usage 
 =====
+We recommend that users retain copies of ``VICE``'s `user's guide`__ and 
+`science documentation`__ for reference. These are available under ``docs/``. 
 
 Tutorial
 --------
@@ -160,11 +162,6 @@ Example Code: A Simulation of a Galaxy with Known Star Formation Hisotry
 	plt.plot(out["[mg/h]"], out["[n/mg]"], c = 'k') 
 	plt.show()
 	plt.clf() 
-
-Documentation 
--------------
-We recommend that users retain copies of ``VICE``'s `user's guide`__ and 
-`science documentation`__ for reference. These are available under ``docs/``. 
 
 Journal-Related Features
 ========================
