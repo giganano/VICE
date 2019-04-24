@@ -97,21 +97,26 @@ running ``source ~/.bash_profile`` after installation or restarting the
 ``linux`` shell before properly working.
 
 This is the only install method for ``VICE``. It is currently not 
-installable via ``pip``. 
+installable via ``pip``, but will be uploaded to ``PyPI`` in the coming weeks. 
 
 Usage 
 =====
 All of ``VICE``'s documentation is stored here under ``docs/``. 
 We recommend that users retain copies of ``VICE``'s `user's guide`__ and 
-`science documentation`__ for reference. 
+`science documentation`__ for reference. These are PDFs with embedded 
+hyperlinks for ease of use. If installed via ``git``, the contents of this 
+directory will download automatically with the source code. Users who install 
+via ``pip`` will need to either clone this repository via ``git`` anyway or 
+download the documentation separately in order to obtain copies. 
 
 Tutorial
 --------
 Under ``docs/``, we provide ``QuickStartTutorial.ipynb``, a 
 ``jupyter notebook`` intended to provide first-time users with a primer on how 
-to use all of ``VICE``'s features. If installed via the ``linux`` command 
-line, users can run ``make tutorial`` after installing to launch it 
-automatically. 
+to use all of ``VICE``'s features. If installed via ``git``, users can launch 
+the tutorial immediately via ``make tutorial``. If installed via ``pip``, users 
+must either clone this repository via ``git`` anyway or download the notebook 
+separately in order to obtain a copy. 
 
 From the Command Line 
 ---------------------
