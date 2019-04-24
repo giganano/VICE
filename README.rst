@@ -99,24 +99,19 @@ running ``source ~/.bash_profile`` after installation or restarting the
 This is the only install method for ``VICE``. It is currently not 
 installable via ``pip``. 
 
-Usage & Tutorial
-================
+Usage 
+=====
 
+Tutorial
+--------
 Under ``docs/``, we provide ``QuickStartTutorial.ipynb``, a 
 ``jupyter notebook`` intended to provide first-time users with a primer on how 
 to use all of ``VICE``'s features. If installed via the ``linux`` command 
 line, users can run ``make tutorial`` after installing to launch it 
 automatically. 
 
-We recommend that user's retain copies of ``VICE``'s `user's guide`__ and 
-`science documentation`__ for reference. These are available under ``docs/``. 
-
-We also provide here the ``python`` code which produces all of the figures in 
-Johnson & Weinberg (2019). From ``VICE``'s root directory, users can run 
-``make jw19plots`` in a terminal, which will automatically run the simulations 
-and produce the figures exactly as they appear in that paper. Users may also 
-use these scrips as example code if they so choose. 
-
+From the Command Line 
+---------------------
 After installation, users can run simple simulations using ``VICE`` from the 
 command line. Run ``vice --help`` in a terminal from any directory for 
 instructions on how to use this functionality. We however caution users that 
@@ -129,9 +124,58 @@ shell (or, alternatively, run ``source ~/.bash_profile`` in a terminal from any
 directory). If this also does not work, it is likely that the user needs to add 
 ``~/.local/bin/`` to their ``PATH``. 
 
-See under docs/ for copies of ``VICE``'s User's Guide and Science 
-Documentation. 
+Example Code: A Simulation of a Galaxy with Known Star Formation Hisotry 
+------------------------------------------------------------------------
+.. code:: python 
 
+	import matplotlib.pyplot as plt 
+	import numpy as np 
+	import vice 
+
+	def SFH(t): 
+		"""
+		The galaxy's star formation rate in Msun/yr as a function of 
+		cosmic time in Gyr. 
+		""" 
+		return 8.7 * np.exp( -t / 5.2 ) 
+
+	# Give a singlezone object the star formation history, some elements, and 
+	# an array of output times in Gyr. 
+	sz = vice.singlezone() 
+	sz.name = "known_sfh" 
+	sz.func = SFH 
+	sz.tau_star = 1.7 
+	sz.elements = ["mg", "fe", "c", "n", "o", "s", "sr"] 
+	sz.run(np.linspace(0, 10, 1001)) 
+
+	# Read in the output holding the time-evolution of the ISM metallicity  
+	out = vice.history("known_sfh") 
+
+	# plot the track in the [Mg/Fe]-[Fe/H] plane 
+	plt.plot(out["[fe/h]"], out["[mg/fe]"], c = 'k') 
+	plt.show() 
+	plt.clf() 
+
+	# plot the track in the [N/Mg]-[Mg/H] plane 
+	plt.plot(out["[mg/h]"], out["[n/mg]"], c = 'k') 
+	plt.show()
+	plt.clf() 
+
+Documentation 
+-------------
+We recommend that users retain copies of ``VICE``'s `user's guide`__ and 
+`science documentation`__ for reference. These are available under ``docs/``. 
+
+Journal-Related Features
+========================
+We provide here the ``python`` code which produces all of the figures in 
+Johnson & Weinberg (2019). From ``VICE``'s root directory, users can run 
+``make jw19plots`` in a terminal, which will automatically run the simulations 
+and produce the figures exactly as they appear in that paper. Users may also 
+use these scrips as example code if they so choose. 
+
+Submit a Bug Report 
+===================
 To submit a bug report, please open an issue at 
 <https://github.com/giganano/VICE/issues>. 
 
