@@ -151,7 +151,7 @@ Example Code: A Simulation of a Galaxy with Known Star Formation Hisotry
 	sz.run(np.linspace(0, 10, 1001)) 
 
 	# Read in the output holding the time-evolution of the ISM metallicity  
-	out = vice.history("known_sfh") 
+	hist = vice.history("known_sfh") 
 
 	# plot the track in the [Mg/Fe]-[Fe/H] plane 
 	plt.plot(out["[fe/h]"], out["[mg/fe]"], c = 'k') 
