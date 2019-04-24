@@ -84,13 +84,10 @@ sequence of commands:
 	$ [make clean] 
 	$ [make tests]
 	$ [make tests3]
-	$ [make tutorial]
 
 Optional elements of the installation process are bound in brackets. The 
 option ``[--user]`` should be invoked when the user wishes to install to 
-their ``~/.local/`` ``python`` library. The final line ``make tutorial`` will 
-launch the Quick Start Tutorial intended to help user's familiarize themselves 
-with ``VICE``. 
+their ``~/.local/`` ``python`` library. 
 
 If the user is installing to their ``~/.local/`` directory, then 
 ``~/.local/bin/`` must be on their ``PATH`` for ``VICE`` to run from the 
@@ -102,16 +99,16 @@ running ``source ~/.bash_profile`` after installation or restarting the
 This is the only install method for ``VICE``. It is currently not 
 installable via ``pip``. 
 
-Usage
-=====
+Usage & Tutorial
+================
 
-We recommend that user's retain copies of ``VICE``'s user's guide and 
-science documentation for reference. These are available under ``docs/``. 
+Under ``docs/``, we provide ``QuickStartTutorial.ipynb``, intended to provide 
+first-time users with a primer on how to use all of ``VICE``'s features. If 
+installed via the ``linux`` command line, users can run ``make tutorial`` 
+after installing to launch it automatically. 
 
-After installation, we recommand that users run ``make tutorial`` in a 
-terminal from inside ``VICE``'s root directory. This will launch a 
-``jupyter notebook`` which is intended to provide users with a primer on how to 
-use ``VICE``. 
+We recommend that user's retain copies of ``VICE``'s `user's guide`__ and 
+`science documentation`__ for reference. These are available under ``docs/``. 
 
 We also provide here the ``python`` code which produces all of the figures in 
 Johnson & Weinberg (2019). From ``VICE``'s root directory, users can run 
@@ -207,3 +204,9 @@ under the terms of the LICENSE_. See LICENSE_ for copyright information.
 .. _dill: https://pypi.org/project/dill/
 
 .. _LICENSE: https://raw.githubusercontent.com/giganano/VICE/master/LICENSE
+
+.. _userguide: https://github.com/giganano/VICE/blob/master/docs/users_guide.pdf 
+.. _scidocs: https://github.com/giganano/VICE/blob/master/docs/science_documentation.pdf
+
+__ userguide_
+__ scidocs_
