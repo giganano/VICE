@@ -101,8 +101,9 @@ installable via ``pip``.
 
 Usage 
 =====
+All of ``VICE``'s documentation is stored here under ``docs/``. 
 We recommend that users retain copies of ``VICE``'s `user's guide`__ and 
-`science documentation`__ for reference. These are available under ``docs/``. 
+`science documentation`__ for reference. 
 
 Tutorial
 --------
@@ -224,8 +225,9 @@ announced.
 LICENSE
 =======
 
-``VICE`` is free software. You may use, redistribute, or modify as you see fit 
-under the terms of the LICENSE_. See LICENSE_ for copyright information. 
+``VICE`` is open source software released under the MIT License. We invite 
+researchers and developers to use, modify, and redistribute how they see fit 
+under the terms of the associated LICENSE_. 
 
 ..	|version| image:: https://img.shields.io/badge/version-1.0.0-blue.svg
 	:target: https://img.shields.io/badge/version-1.0.0-blue.svg
