@@ -126,7 +126,7 @@ shell (or, alternatively, run ``source ~/.bash_profile`` in a terminal from any
 directory). If this also does not work, it is likely that the user needs to add 
 ``~/.local/bin/`` to their ``PATH``. 
 
-Example Code: A Simulation of a Galaxy with Known Star Formation Hisotry 
+Example Code: A Simulation of a Galaxy with Known Star Formation History   
 ------------------------------------------------------------------------
 .. code:: python 
 
