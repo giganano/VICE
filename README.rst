@@ -151,9 +151,9 @@ Example Code: A Simulation of a Galaxy with Known Star Formation History
 	# an array of output times in Gyr. 
 	sz = vice.singlezone() 
 	sz.name = "known_sfh" 
-	sz.mode = "sfr"
+	sz.mode = "sfr" # f now represents star formation rate 
 	sz.func = f 
-	sz.tau_star = 1.7 
+	sz.tau_star = 1.7 # star formation per unit gas supply in yr^-1
 	sz.elements = ["mg", "fe", "c", "n", "o", "s", "sr"] 
 	sz.run(np.linspace(0, 10, 1001)) 
 
