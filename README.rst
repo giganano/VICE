@@ -140,7 +140,7 @@ Example Code: A Simulation of a Galaxy with Known Star Formation History
 	import numpy as np 
 	import vice 
 
-	def SFH(t): 
+	def f(t): 
 		"""
 		The galaxy's star formation rate in Msun/yr as a function of 
 		cosmic time in Gyr. 
@@ -151,7 +151,8 @@ Example Code: A Simulation of a Galaxy with Known Star Formation History
 	# an array of output times in Gyr. 
 	sz = vice.singlezone() 
 	sz.name = "known_sfh" 
-	sz.func = SFH 
+	sz.mode = "sfr"
+	sz.func = f 
 	sz.tau_star = 1.7 
 	sz.elements = ["mg", "fe", "c", "n", "o", "s", "sr"] 
 	sz.run(np.linspace(0, 10, 1001)) 
