@@ -44,5 +44,14 @@ We recommend that first-time users read through the QuickStartTutorial
 all of ``VICE``'s features. 
 
 
+Figures
+=======
+We also provide separate copies of the figures in ``VICE``'s 
+`science documentation`__. See sections 2.2, 2.3, and 7 for the relevant 
+details.  
+
+.. Hyperlink the science documentation 
+.. _scidocs: https://github.com/giganano/VICE/blob/master/docs/science_documentation.pdf
+__ scidocs_ 
 
 
