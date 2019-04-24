@@ -300,6 +300,7 @@ static void setup_gas_evolution(INTEGRATION *run, MODEL m) {
 		run -> SFR = (*run).MG / get_tau_star(*run, m);
 		run -> IFR = 0.0; // No idea what the infall history is prior to t = 0 
 	} else if (!strcmp((*run).mode, "ifr")) {
+		/* The initial gas supply set in python in this case */ 
 		run -> IFR = (*run).spec[0];
 		run -> SFR = (*run).MG / get_tau_star(*run, m);
 	} else {
