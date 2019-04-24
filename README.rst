@@ -102,10 +102,11 @@ installable via ``pip``.
 Usage & Tutorial
 ================
 
-Under ``docs/``, we provide ``QuickStartTutorial.ipynb``, intended to provide 
-first-time users with a primer on how to use all of ``VICE``'s features. If 
-installed via the ``linux`` command line, users can run ``make tutorial`` 
-after installing to launch it automatically. 
+Under ``docs/``, we provide ``QuickStartTutorial.ipynb``, a 
+``jupyter notebook`` intended to provide first-time users with a primer on how 
+to use all of ``VICE``'s features. If installed via the ``linux`` command 
+line, users can run ``make tutorial`` after installing to launch it 
+automatically. 
 
 We recommend that user's retain copies of ``VICE``'s `user's guide`__ and 
 `science documentation`__ for reference. These are available under ``docs/``. 
