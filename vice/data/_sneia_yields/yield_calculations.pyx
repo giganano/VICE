@@ -39,10 +39,10 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 	Parameters 
 	========== 
 	element :: str [case-insensitive] 
-		The symbol for the element to look up the yield for 
+		The symbol for the element to look up the yield for.  
 	study :: str [case-insensitive] [default :: "seitenzahl13"] 
 		A keyword denoting which study to adopt the yield from 
-		Keyword and their Assocaited Studies
+		Keyword and their Associated Studies
 		------------------------------------ 
 		"seitenzahl13" :: Seitenzahl et al. (2013), MNRAS, 429, 1156 
 		"iwamoto99" :: Iwamoto et al. (1999), ApJ, 124, 439 
@@ -179,25 +179,24 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 	Parameters 
 	========== 
 	element :: str [case-insensitive] 
-		The symbol of the element to calculate the yield for 
+		The symbol of the element to calculate the yield for. 
 	study :: str [case-insensitive] [default :: "seitenzahl13"] 
 		A keyword denoting which study to adopt single Ia yields from. 
-		Keywords and their associated studies
+		Keywords and their Associated Studies
 		------------------------------------- 
 		"seitenzahl13" :: Seitenzahl et al. (2013), MNRAS, 429, 1156 
 		"iwamoto99" :: Iwamoto et al. (1999), ApJ, 124, 439 
 	model :: str [case-insensitive] [default :: "N1"] 
 		The model from the associated study to adopt. 
-		Keywords and their associated models 
+		Keywords and their Associated Models 
 		------------------------------------
 		"seitenzahl13" :: N1, N3, N5, N10, N40, N100H, N100, N100L, N150, 
 			N200, N300C 
 		"iwamoto99" :: W7, W70, WDD1, WDD2, WDD3, CDD1, CDD2 
 	n :: real number [default :: 2.2e-03] 
 		The average number of type Ia supernovae produced per unit stellar 
-		mass formed (N_ia/M_*). This parameter has units of Msun^{-1}. I 
-		recommend the default value of 2.2e-03 in accordance with Maoz & 
-		Mannucci (2012), PASA, 29, 447. 
+		mass formed (N_ia/M_*). This parameter has units of Msun^{-1}. The 
+		default value is derived from Maoz & Mannucci (2012), PASA, 29, 447. 
 
 	Returns
 	=======
@@ -209,18 +208,18 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 	Raises
 	======
 	ValueError :: 
-		:: 	The element is not built into VICE 
-		:: 	The study is not built into VICE 
+		:: 	The element is not built into VICE. 
+		:: 	The study is not built into VICE. 
 		::	n < 0  
 	LookupError :: 
-		:: The model is not recognized for the given study 
-	IOError :: [occurs only if VICE's file structure has been tampered with] 
+		:: The model is not recognized for the given study. 
+	IOError :: [Occurs only if VICE's file structure has been tampered with] 
 		:: 	The parameters passed to this function are allowed but the data 
 			file is not found. 
 
 	Notes
 	=====
-	This function evaluates the soluation to the following equation: 
+	This function evaluates the solution to the following equation: 
 	
 	y_x^Ia = (N_Ia/M_*)M_x
 
