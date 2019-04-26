@@ -13,13 +13,13 @@ from __future__ import (print_function, division, unicode_literals,
 	absolute_import)
 from . import _yields 
 from . import _data_utils as _du
-from ._globals import _RECOGNIZED_ELEMENTS
-from ._globals import _RECOGNIZED_IMFS
-from ._globals import _version_error
+from ._globals import _RECOGNIZED_ELEMENTS_
+from ._globals import _RECOGNIZED_IMFS_
+from ._globals import _VERSION_ERROR_
 from ._globals import ScienceWarning
-from ._globals import _DEFAULT_FUNC 
-from ._globals import _DEFAULT_BINS
-from ._globals import _DIRECTORY
+from ._globals import _DEFAULT_FUNC_ 
+from ._globals import _DEFAULT_BINS_
+from ._globals import _DIRECTORY_
 import math as m
 import warnings
 import numbers
@@ -46,7 +46,7 @@ except ImportError:
 # C Functions
 from libc.stdlib cimport malloc, free
 from ctypes import *
-clib = pydll.LoadLibrary("%ssrc/enrichment.so" % (_DIRECTORY))
+clib = pydll.LoadLibrary("%ssrc/enrichment.so" % (_DIRECTORY_))
 
 __all__ = ["singlezone", "single_stellar_population", "mirror"] 
 __all__ = [str(i) for i in __all__] # appease python 2 strings  
@@ -56,25 +56,82 @@ if sys.version_info[0] == 2:
 elif sys.version_info[0] == 3:
 	strcomp = str
 else:
-	_version_error()
+	_VERSION_ERROR_()
 
 
 
 #------------------------------ MIRROR FUNCTION ------------------------------# 
 def mirror(output_obj): 
 	"""
-	Returns a singlezone integrator with the same attributes as that which 
-	ran a given VICE output. 
+	Obtain an instance of the vice.singlezone class given only an instance of 
+	the vice.output class. The returned singlezone object will have the same 
+	parameters as that which produced the output, allowing re-simulation with 
+	whatever modifications the user desires. 
 
-	Args:
-	=====
-	output_obj: 		An instance of the vice.output class 
+	Parameters 
+	========== 
+	output_obj :: vice.output 
+		Any vice.output object. 
 
-	Encoding functional parameters from VICE output objects as well as 
-	re-loading them back into a singlezone integrator object depends on the 
-	package dill (installable via pip). If the user does not have dill installed, 
-	functional attributes of the singlezone class (including the attribute 
-	'func') will be initialized according to the default parameters. 
+	Returns 
+	======= 
+	sz :: vice.singlezone 
+		A vice.singlezone object with the same attributes as that which 
+		produced the given output. 
+
+	Raises 
+	====== 
+	ImportError :: 
+		:: 	The output has encoded functional attributes and the user does not 
+			have dill installed 
+	UserWarning :: 
+		::	The output was produced with functional attributes, but was ran on 
+			a system without dill, and they have thus been lost. 
+
+	Notes 
+	===== 
+	VICE stores attributes of integrator objects in a pickle within the output 
+	directory. Encoding functions along with the rest of the attributes 
+	requires the package dill, an extension to pickle which makes this 
+	possible. If dill is not installed, these attributes will not be encoded 
+	with the output. 
+
+	It is recommended that users install dill in order to make use of these 
+	features. It is installable via 'pip install dill'. 
+
+	Example 
+	======= 
+	>>> out = vice.output("example") 
+	>>> new = vice.mirror(out) 
+	>>> new.settings() 
+	    Current Settings:
+	    =================
+	    tau_ia ---------> 1.5
+	    recycling ------> continuous
+	    z_solar --------> 0.014
+	    enhancement ----> 1.0
+	    agb_model ------> cristallo11
+	    ria ------------> plaw
+	    delay ----------> 0.15
+	    imf ------------> kroupa
+	    smoothing ------> 0.0
+	    schmidt_index --> 0.5
+	    eta ------------> 2.5
+	    zin ------------> 0.0
+	    schmidt --------> False
+	    elements -------> (u’fe’, u’sr’, u’o’)
+	    MgSchmidt ------> 6000000000.0
+	    func -----------> <function _DEFAULT_FUNC at 0x1109e06e0> 
+	    dt -------------> 0.01
+	    tau_star -------> 2.0
+	    name -----------> onezonemodel
+	    m_lower --------> 0.08
+	    m_upper --------> 100.0
+	    Mg0 ------------> 6000000000.0
+	    mode -----------> ifr
+	    bins -----------> [-3, -2.95, -2.9, ... , 0.9, 0.95, 1]
+	>>> import numpy as np 
+	>>> new.run(np.linspace(0, 10, 1001)) 
 	"""
 	# First Type-check the parameter 
 	if isinstance(output_obj, _du.output): 
@@ -152,40 +209,97 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	dt = 0.01, m_upper = 100, m_lower = 0.08, IMF = "kroupa", RIa = "plaw", 
 	delay = 0.15, agb_model = "cristallo11"):
 	"""
-	Calculates the mass of a given element produced by a single stellar 
-	population from core-collapse supernovae, type Ia supernovae, and asymptotic 
-	giant branch stars as a function of time.
+	Simulate the nucleosynthesis of a given element from a single star cluster 
+	of given mass and metallicity. This does not take into account galactic 
+	evolution - whether or not it is depleted from inflows or ejected in winds 
+	is not considered. Only the mass of the given element produced by the star 
+	cluster is determined. See section 2.4 of VICE's science documentation at 
+	https://github.com/giganano/VICE/tree/master/docs for further details. 
 
-	Args:
-	=====
-	element:		A string for the symbol of the element to simulate
+	Parameters 
+	========== 
+	element :: str [case-insensitive] 
+		The symbol of the element to simulate the enrichment for 
+	mstar :: real number [default :: 1.0e+06] 
+		The birth mass of the star cluster in solar masses. 
+	Z :: real number [default :: 0.014] 
+		The metallicity by mass of the stars in the cluster. 
+		(i.e. Z = mass of metals / total mass) 
+	time :: real number [default :: 10] 
+		The amount of time in Gyr to run the simulation for 
+	dt :: real number [default :: 0.01]
+		The size of each timestep in Gyr 
+	m_upper :: real number [default :: 100] 
+		The upper mass limit on star formation in solar masses. 
+	m_lower :: real number [default :: 0.08] 
+		The lower mass limit on star formation in solar masses. 
+	IMF :: str [case-insensitive] [default :: "kroupa"]
+		The stellar initial mass function (IMF) to assume. This must be either 
+		"kroupa" (1) or "salpeter" (2). 
+	RIa :: str [case-insensitive] or <function> [default :: "plaw"] 
+		The delay-time distribution for type Ia supernovae to adopt. VICE will 
+		automatically normalize any function that is passed. Alternatively, 
+		VICE has built-in distributions: "plaw" (power-law, \\propto t^-1.1) 
+		and "exp" (exponential, \\propto e^(-t/1.5 Gyr)). 
+	delay :: real number [default :: 0.15] 
+		The minimum delay time following the formation of a single stellar 
+		population before the onset of type Ia supernovae in Gyr. 
+	agb_model :: str [case-insensitive] [default :: "cristallo11"] 
+		A keyword denoting which table of nucleosynthetic yields from AGB stars 
+		to adopt. 
+		Recognized keywords and their associated studies 
+		------------------------------------------------
+		"cristallo11" :: Cristallo et al. (2011), ApJS, 197, 17 
+		"karakas10" :: Karakas (2010), MNRAS, 403, 1413 
 
-	Kwargs:
+	Returns 
 	=======
-	mstar = 1e6:		The mass of the stellar population that forms at t = 0
-	Z = 0.014:		The metallicity by mass of the stellar population
-	time = 10:		The amount of time in Gyr to simulate
-					This value, by VICE's design, must be < 15 Gyr. 
-	dt = 0.01:		The timestep size in Gyr to use
-	m_upper = 100:		The upper mass limit on star formation in Msun
-	m_lower = 0.08:		The lower mass limit on star formation in Msun
-	IMF = "kroupa":		A string denoting the IMF to assume
-	RIa = "plaw":		The SNe Ia delay-time distribution to assume
-				Can be either "plaw", "exp", or a custom function of time in Gyr
-	delay = 0.15:		The minimum delay time on SNe Ia in Gyr
-	agb_model = "cristallo11":	The keyword for the AGB yield model to adopt. 
-					See below for a list of recognized keywords
+	mass :: list 
+		The net mass of the element in solar masses produced by the star 
+		cluster at each timestep. 
+	times :: list 
+		The times in Gyr corresponding to each mass yield. 
 
-	Returns:
-	========
-	A 2-element python list ---> Both elements of type <list> 
-	returned[0]: 		The mass of the given element in Msun at each time in Gyr 
-	returned[1]: 		The times in Gyr 
-	
-	AGB yield models and their keywords:
-	====================================
-	cristallo11:		Cristallo et al. (2011), ApJS, 197, 17
-	karakas10:		Karakas et al. (2010), MNRAS, 403, 1413
+	Raises 
+	====== 
+	ValueError :: 
+		::	The element is not built into VICE 
+		::	mstar < 0 
+		::	Z < 0 
+		::	time < 0 or time > 15 [VICE does not simulate enrichment on 
+			timescales longer than the age of the universe] 
+		::	dt < 0 
+		:: 	m_upper < 0 
+		::	m_lower < 0 
+		::	m_lower > m_upper 
+		::	The IMF is not built into VICE 
+		::	delay < 0 
+		::	agb_model is not built into VICE 
+	LookupError :: 
+		::	agb_model == "karakas10" and the atomic number of the element is 
+			larger than 29. The Karakas (2010), MNRAS, 403, 1413 study did not 
+			report yields for elements heavier than nickel. 
+	IOError :: [Only occurs if VICE's file structure has been tampered with] 
+		::	The AGB yield file is not found. 
+	ArithmeticError :: 
+		::	A functional RIa evaluated to a negative value, inf, or NaN at any 
+			given timestep. 
+
+	Example 
+	======= 
+	>>> mass, times = vice.single_stellar_population("sr", Z = 0.008) 
+	>>> mass[-1] 
+	    0.04808964406448721
+	>>> mass, times = vice.single_stellar_population("fe") 
+	>>> mass[-1] 
+	    2679.816051685778
+
+	References 
+	========== 
+	Cristallo et al. (2011), ApJS, 197, 17
+	(1) Kroupa (2001), MNRAS, 322, 231 
+	Karakas (2010), MNRAS, 403, 1413
+	(2) Salpeter (1955) ApJ, 121, 161 
 	"""
 	
 	# Type error checks
@@ -285,7 +399,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	Also of note is that the Karakas et al. (2010) study of AGB star 
 	nucleosynthetic yields did not study elements heavier than nickel.  
 	"""
-	if element.lower() not in _RECOGNIZED_ELEMENTS:
+	if element.lower() not in _RECOGNIZED_ELEMENTS_:
 		message = "Unrecognized element: %s" % (element)
 		raise ValueError(message)
 	elif mstar <= 0:
@@ -313,7 +427,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	elif m_lower >= m_upper:
 		message = "Keyword arg 'm_upper' must be larger than 'm_lower'."
 		raise ValueError(message)
-	elif IMF.lower() not in _RECOGNIZED_IMFS:
+	elif IMF.lower() not in _RECOGNIZED_IMFS_:
 		raise ValueError("Unrecognized IMF: %s" % (IMF))
 	elif delay < 0:
 		message = "Keyword arg 'delay' must be non-negative."
@@ -340,7 +454,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	ms.imf = IMF.lower().encode("latin-1")
 
 	# Find the file associated with the AGB yield grid
-	agbfile = ("%sdata/_agb_yields/%s/%s.dat" % (_DIRECTORY, 
+	agbfile = ("%sdata/_agb_yields/%s/%s.dat" % (_DIRECTORY_, 
 		agb_model.lower(), element.lower()))
 	if os.path.exists(agbfile):
 		clib.read_agb_grid(byref(r), agbfile.encode("latin-1"), 0)
@@ -403,160 +517,108 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 class singlezone(object):
 
 	"""
-	CLASS: singlezone
-	=================
-	This class runs numerical integrations of one-zone chemical evolution 
-	models according to user specified parameters. Default parameters are 
-	set according to a constant infall rate into a system of initially clean 
-	gas with fiducial parameters that yield near-solar abundances for each 
-	element by the end of the integration. 
+	Runs simulations of chemical enrichment under the single-zone approximation 
+	for user-specified parameters. The organizational structure of this class 
+	is very simple; every attribute encodes information on a given galaxy 
+	evolution parameter. 
 
-	See docstrings for individual parameters on how to initialize them 
-	according to your preferences as well as more details on the role they 
-	play in the integration.
+	Each attribute can be initialized via a keyword argument to the __init__ 
+	function of this class. 
 
+	Attributes 
+	========== 
+	name :: str [default :: "onezonemodel"] 
+		The name of the simulation. 
+	func :: <function> 
+		A function of time describing some evolutionary parameter of the 
+		galaxy. Interpretation set by the attribute "mode". 
+	mode :: str [default :: "ifr"] 
+		The interpretation of the attribute "func". Either "ifr" for infall 
+		rate, "sfr" for star formation rate, or "gas" for the gas supply. 
+	elements :: array-like [default :: ("fe", "sr", "o")] 
+		An array-like object of strings denoting the symbols of the elements to 
+		track the enrichment for 
+	imf :: str [default :: "kroupa"] 
+		A string denoting which stellar initial mass function to adopt. This 
+		must be either "kroupa" (1) or "salpeter" (2). 
+	eta :: real number [default :: 2.5] 
+		The mass-loading parameter - ratio of outflow to star formation rates. 
+		This relationship gets more complicated when the attribute smoothing is 
+		nonzero. See docstring for further details. 
+	enhancement :: real number or <function> [default :: 1] 
+		The ratio of outflow to ISM metallicities. If a callable function is 
+		passed, it will be interpreted as taking time in Gyr as a parameter. 
+	zin :: real number, <function>, or dict [default :: 0] 
+		The infall metallicity. See docstring for further details. 
+	recycling :: str or real number [default :: "continuous"] 
+		Either the string "continuous" or a real number between 0 and 1 
+		denoting the treatment of recycling from previous generations of stars. 
+	bins :: array-like [default :: [-3.0, -2.95, -2.9, ... , 0.9, 0.95, 1.0]] 
+		The binspace within which to sort the normalized stellar metallicity 
+		distribution function in each [X/H] abundance and [X/Y] abundance 
+		ratio measurement. 
+	delay :: real number [default :: 0.15] 
+		The minimum delay time in Gyr before the onset of type Ia supernovae 
+		associated with a single stellar population 
+	ria :: str or <function> [default :: "plaw"] 
+		The delay-time distribution (DTD) to adopt. See docstring for further 
+		details. 
+	Mg0 :: real number [default :: 6.0e+09] 
+		The initial gas supply of the galaxy in solar masses. Only relevant 
+		when the simulation is ran in infall mode (i.e. mode == "ifr") 
+	smoothing :: real number [default :: 0] 
+		The smoothing timescale in Gyr. See docstring for further details. 
+	tau_ia :: real number [default :: 1.5] 
+		The e-folding timescale of type Ia supernovae in Gyr when ria == "exp". 
+	tau_star :: real number or <function> [default :: 2.0] 
+		The star formation rate per unit gas mass in the galaxy in Gyr. This 
+		can either be a number which will be treated as a constant, or a 
+		function of time in Gyr. This becomes the normalization of the star 
+		formation efficiency when the attribute schmidt == True. 
+	dt :: real number [default :: 0.01] 
+		The timestep size in Gyr. 
+	schmidt :: bool [default :: False] 
+		A boolean switch describing whether or not to implement star formation 
+		efficiency dependent on the gas-supply (3; 4). 
+	MgSchmidt :: real number [default :: 6.0e+09] 
+		The normalization of the gas-supply when attribute schmidt == True. 
+	m_upper :: real number [default :: 100] 
+		The upper mass limit on star formation in solar masses 
+	m_lower :: real number [default :: 0.08] 
+		The lower mass limit on star formation in solar masses 
+	z_solar :: real number [default :: 0.014] 
+		The adopted solar metallicity by mass. 
+	agb_model :: str [default :: "cristallo11"] 
+		A keyword denoting which AGB yield grid to adopt. Must be either 
+		"cristallo11" (5) or "karakas10" (6). 
 
-	User-specified Attributes:
-	==========================
-	name:				The name of the model being run. 
-	func:				A built-in default function that always return 9.1
-	mode:				The physical value being specified by func
-	elements:			The symbols of the elements to track in the integration 
-	imf:				The initial mass function
-	schmidt:			A boolean describing whether or not to use an 
-					implementation of gas-mass dependent 
-					star formation efficiency 
-	eta:				The mass loading factor
-	enhancement: 			The ratio of outflow metallicity to ISM metallicity
-	zin: 				The inflow metallicity
-	recycling:			The instantaneous recycling parameter
-	bins:				The bins in [X/Y] to sort the final stellar metallicity 
-					distribution function into
-	delay:				The minimum delay time of SNe Ia in Gyr.
-	ria:				The delay time distribution (DTD) of SNe Ia
-	Mg0:				The initial gas mass of the system
-	smoothing:			The mass loading factor smoothing timescale in Gyr
-	tau_ia:				The e-folding timescale of SNe Ia
-					(only relevant for exponential SNe Ia DTD models)
-	tau_star:			The depletion timescale in Gyr
-	dt:				The size of timesteps in Gyr
-	schmidt_index:			The power-law index on gas-mass dependent SFE
-	MgSchmidt:			The normalization factor on gas-mass dependent SFE
-	m_upper:			Upper mass limit on star formation in Msun
-	m_lower:			Lower mass limit on star formation in Msun
-	agb_model:			A keyword denoting which model for AGB enrichment to adopt
-	z_solar:			The value to adopt for solar metallicity by mass Z
+	Functions 
+	========= 
+	run :: 			Run the simulation 
+	settings :: 	Print the current settings 
 
+	See also 	[https://github.com/giganano/VICE/tree/master/docs]
+	========
+	Sections 3 - 6 of science documentation 
 
-	Built-in Attributes:
-	====================
-	recognized_elements:		The elements that this software is built to 
-					model the enrichment for
-	recognized_imfs:		The stellar initial mass functions that this 
-					software has built in
+	It is recommended that user's read the User's Notes on functional 
+	attributes in VICE as well as the warning on implementing numerical delta 
+	functions in VICE's User's Guide, available with the source code at 
+	https://github.com/giganano/VICE/tree/master/docs. 
 
-
-
-	Functions:
-	==========
-	settings:			Prints the current model parameters
-	run:				Runs the integration functions on the parameters
-
-
-
-	While the attribute func must be a function of time in Gyr, the user has 
-	the option to do the same with attributes eta, enhancement, zin 
-	(which can also contain different functions for each element), dtd, 
-	and tau_star. If the user passes a numerical value for these parameters, 
-	then it will be that numerical value at all times in the integration. 
-	However, in the event that the user initializes one of these attributes 
-	as a callable python function, then this software will let that parameter 
-	take on the value the function returns at all times during the 
-	integration. This allows the user to specify models of mass loading 
-	factors, outflow enhancement factors, inflow metallicity, and 
-	star formation efficiency that are time-dependent with arbitrary degrees 
-	of complexity. The user may also specify an entirely customized SNe Ia 
-	delay-time distribution (DTD). The full flexibility of each of these 
-	parameters can be also be used simultaneously. 
-
-
-
-	USERS' WARNING REGARDING PASSING FUNCTIONS AS ATTRIBUTES:
-	=========================================================
-	As noted above, two attributes of this class can be set to callable 
-	functions of time (eta and tau_star). The attribute func, by default, 
-	is required to be one. 
-
-	The functions that these parameters take must be pure python functions. 
-	That is, a Type Error will be raised in the event that it receives a 
-	built-in funciton. That also includes any and all functions whose original 
-	source code is implemented in a language other than Python, such as many 
-	NumPy mathematical functions as well as Python code that has been ran 
-	through a Cython compiler. 
-
-	However, to implement an attribute involving any of these functions, 
-	the user simply needs to wrap them in a python function. For example, the 
-	following will produce a Type Error:
-
-	>>> import vice
-	>>> import numpy as np
-	>>> i = vice.singlezone(func = np.exp)
-
-	If the user desires NumPy's exp function to be passed as the func 
-	attribute, then this can be implemented in the following manner:
-
-	>>> import vice
-	>>> import numpy as np
-	>>> def f(t):
-	>>>     return np.exp(t)
-	>>> i = vice.singlezone(func = f)
-
-	This sort of wrapping can also be done in a single line at the time of 
-	initialization using a <lambda>:
-
-	>>> import vice
-	>>> import numpy as np
-	>>> i = vice.singlezone(func = lambda t: np.exp(t))
-
-	See docstrings for individual attributes for more direction on how to 
-	specify these parameters according to your model. 
-
-
-	USERS' WARNING ON EMULATING DELTA FUNCTIONS IN ATTRIBUTES:
-	==========================================================
-	Here we detail a simple warning on emulating delta function in attributes. 
-	VICE is a timestep-style singlezone, and therefore, these can be 
-	achieved by letting a quantity take on some very high value for one 
-	timestep. If the user wishes to build a delta function into their model, 
-	they need to make sure that: 
-
-	1) They let their delta function have an intrinsic finite width of at 
-	   least one timestep. Otherwise, it is not guaranteed that the numerical 
-	   integrator will find the delta function. 
-
-	2) They have set their output times such that the simulation will write 
-	   to the output file at the time of the delta function. If this is not 
-	   ensured, the output will still show the behavior induced by the delta 
-	   function, but not in the parameter which was meant to exhibit one. 
-
-	Delta functions of any kind tend to make any physical system behave 
-	eradically for a brief period. Thus we recommend that when you employ a 
-	delta function, you set your integration to write output at every timestep 
-	following the delta function for a brief time interval. This merely 
-	ensures that the output and subsequent plots will show the full behavior 
-	of the integration. Otherwise the output may show breaks and 
-	discontinuities where there are none when finer output time intervals are 
-	used. 
-
-	For the purpose of minimizing disk-space usage while still maintaining 
-	high time-step resolution, VICE does not require that output be written 
-	to disk at every timestep. See docstring of singlezone.run for 
-	instructions on how to specify your output times.
+	References 
+	========== 
+	(5) Cristallo et al. (2011), ApJS, 197, 17 
+	(6) Karakas (2010), MNRAS, 403, 1413 
+	(1) Kroupa (2001), MNRAS, 322, 231 
+	(4) Leroy et al. (2008), AJ, 136, 2782 
+	(2) Salpeter (1955), ApJ, 121, 161 
+	(3) Schmidt (1959), ApJ, 129, 243 
 	"""
 
 	def __init__(self, 
 		name = "onezonemodel", 
-		func = _DEFAULT_FUNC, 
+		func = _DEFAULT_FUNC_, 
 		mode = "ifr", 
 		elements = ["fe", "sr", "o"], 
 		imf = "kroupa", 
@@ -564,7 +626,7 @@ class singlezone(object):
 		enhancement = 1, 
 		zin = 0, 
 		recycling = "continuous", 
-		bins = _DEFAULT_BINS,
+		bins = _DEFAULT_BINS_,
 		delay = 0.15, 
 		ria = "plaw", 
 		Mg0 = 6.0e9, 
@@ -579,39 +641,8 @@ class singlezone(object):
 		m_lower = 0.08, 
 		z_solar = 0.014, 
 		agb_model = "cristallo11"):
-		"""
-		Kwargs, Defaults, and Units:
-		============================
-		name 		= "onezonemodel"
-		func 		= def f(t): return 9.1 [mode-dependent]
-		mode 		= "ifr"  
-		elements 	= ["fe", "o", "sr"]
-		imf 		= "kroupa" 
-		eta  		= 2.5 
-		enhancement 	= 2.5 
-		zin		= 0
-		recycling 	= "continuous"
-		bins 		= [-3, -2.99, -2.98, ... , 0.98, 0.99, 1]
-		delay		= 0.15 [Gyr]
-		ria			= "plaw"
-		Mg0		= 6.0e9 [Msun]
-		smoothing 	= 0.0 [Gyr]
-		tau_ia		= 1.5 [Gyr]
-		tau_star 	= 2.0 [Gyr]
-		dt 		= .001 [Gyr]
-		schmidt 	= False 
-		schmidt_index	= 0.5 
-		MgSchmidt 	= 6.0e9
-		m_upper 	= 100 [M_sun]
-		m_lower 	= 0.08 [M_sun]
-		z_solar 	= 0.014 
-		agb_model 	= "cristallo11"
-		"""
 
-		"""
-		The integration and model structs from the C-wrapping
-		User access of these parameters is strongly discouraged
-		"""
+		# wrap the C strcuts 
 		self.__model = __model_struct()
 		self.__run = __integration_struct()
 
@@ -646,48 +677,16 @@ class singlezone(object):
 		self.agb_model = agb_model
 
 	@property
-	def recognized_elements(self):
-		"""
-		The symbols of the elements whose enrichment properties are built into 
-		this software. The user can specify which elements are tracked in 
-		each integration via the 'elements' attribute.
-		"""
-		return _RECOGNIZED_ELEMENTS
-
-	@property
-	def recognized_imfs(self):
-		"""
-		The initial mass functions (IMFs) that are built into this software. 
-		The user can specify which one to use via the attribute 'imf'.
-		"""
-		return _RECOGNIZED_IMFS
-
-	@property
 	def name(self):
 		"""
-		The name of the model being run. The output of the 
-		integration will be placed in a file in the user's 
-		current working directory under the same name. To place the 
-		output file under a different directory, then this 
-		parameter should be initialized as the full path to the 
-		desired output file. For example:
+		Type :: str 
+		Default :: "onezonemodel" 
 
-		>>> example = vice.singlezone()
-		>>> example.name = "onezonemodel"
-				
-		The above will create an output file under the name 
-		onezonemodel in your current working directory at the time of 
-		integration. 
-
-		>>> example = vice.singlezone()
-		>>> example.name = "/path/to/output/directory/onezonemodel"
-
-		The above, however, will create a folder named onezonemodel in 
-		the directory /path/to/output/directory/ at the time of 
-		integration and the output will be stored there. 
-
-		It does not matter whether or not the user places a '/' at the end of 
-		the name; this possibility is taken into account.
+		The name of the simulation. The output will be stored in a directory 
+		under this name with the extension ".vice". This can also be of the 
+		form /path/to/directory/name and the output will be stored there. 
+		The user need not interact with any of the output files; the output 
+		object is designed to read in all of the results automatically. 
 		"""
 		return self._name[:-5] # remove the '.vice' extension 
 
@@ -713,48 +712,34 @@ class singlezone(object):
 	@property
 	def func(self):
 		"""
-		The specified function of time. This can represent either the 
-		infall rate in Msun/yr, the star formation rate in Msun/yr, or the gas 
-		mass in Msun. The specification between these is set by the 
-		attribute 'mode'. Note that the parameter this function takes will 
-		always be interpreted as time in Gyr. 
+		Type :: <function> 
+		Default :: _DEFAULT_FUNC_ 
 
-		See class docstring for users' note on setting functions as attribute 
-		values.
+		A callable python function of time which returns a real number. 
+		This must take only one parameter, which will be interpreted as time 
+		in Gyr. The value returned by this function will represent either the 
+		gas infall history in Msun/yr, the star formation history in Msun/yr, 
+		or the gas supply in Msun. 
 
-		Example: An exponentially declining infall rate with an e-folding 
-		timescale of 6 Gyr:
+		The default function returns the value of 9.1 always. With a default 
+		mode of "ifr", if these attributes are not changed, the simulation 
+		will run with an infall rate of 9.1 Msun/yr at all times. 
 
-		>>> import vice
-		>>> import numpy as np
-		>>> def f(t):
-		>>>     return 9.1 * np.exp( -t / 6 )
-		>>> i = vice.singlezone(mode = "ifr", func = f)
+		Notes 
+		===== 
+		Encoding this functional attribute into VICE outputs requires the 
+		package dill, an extension to pickle in the python standard library. 
+		Without this, the outputs will not have memory of this parameter. 
+		It is recommended that VICE users install dill if they have not already 
+		so that they can make use of this feature; this can be done via 
+		'pip install dill'. 
 
-		Example: An exponentially declining infall rate with an e-folding 
-		timescale of 6 Gyr, but very little gas at the start of integration, 
-		emulating a linear-exponential gas history:
-
-		>>> import vice
-		>>> import numpy as np
-		>>> def f(t):
-		>>>     return 9.1 * np.exp( -t / 6 )
-		# Specify only 1 solar mass of gas at the first timestep
-		>>> i = vice.singlezone(mode = "ifr", func = f, Mg0 = 1)
-
-		Example: The previous history, but with attributes initialized in 
-		different steps rather than in one line:
-
-		>>> import vice
-		>>> import numpy as np
-		>>> def f(t):
-		>>>     return 9.1 * np.exp( -t / 6 )
-		>>> i = vice.singlezone()
-		>>> i.mode = "ifr"
-		>>> i.func = f
-		>>> i.Mg0 = 1
-
-		See docstring of attribute 'mode' for more details.
+		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
+		======== 
+		Section 3 of science documentation 
+		Notes on functional attributes and numerical delta functions in user's 
+			guide 
+		Attribute mode 
 		"""
 		return self._func
 
@@ -766,8 +751,8 @@ class singlezone(object):
 			one parameter. 
 			"""
 			if self.__args(value):
-				message = "Attribute 'func' must be a callable function that "
-				message += "takes only one parameter with no variable, "
+				message = "Attribute 'func' must be a callable function  "
+				message += "that takes only one parameter with no variable, "
 				message += "keyword, or default arguments."
 				raise ValueError(message)
 			else:
@@ -782,32 +767,33 @@ class singlezone(object):
 	@property
 	def mode(self):
 		"""
-		The specification of the attribute 'func' (as a string). This parameter 
-		is case-insensitive and will always be converted to a lower-case string. 
-		There are three possible values:
+		Type :: str [case-insensitive] 
+		Default :: "ifr" 
 
-		mode = "ifr":
-		=============
-		Attribute func is a callable function of time, where the argument is 
-		given in Gyr. It then returns the rate of gas infall into the galaxy 
-		in Msun/yr at that time.
+		The interpretation of the attribute 'func'. This parameter is 
+		case-insensitive. 
 
-		mode = "sfr":
-		=============
-		Attribute func is a callabe function of time, where the arguement is 
-		given in Gyr. It then returns a star formation rate in Msun/yr at that 
-		time. 
+		mode = "ifr" 
+		------------ 
+		The values returned from the attribute func represent the rate of 
+		gas infall into the galaxy in Msun/yr. 
 
-		mode = "gas":
-		=============
-		Attribute func is a callable function of time, where the argument is 
-		given in Gyr. It then returns a gas mass in Msun at that time. 
+		mode = "sfr" 
+		------------ 
+		The values returned from the attribute func represent the star 
+		formation rate in Msun/yr. 
 
-		Note the differences in units - the time is specified in Gyr, while the 
-		infall and star formation rates are always specified in Msun/yr 
-		according to convention. 
+		mode = "gas" 
+		------------ 
+		The values returned from the attribute func represent the mass of the 
+		ISM gas in Msun. 
 
-		Note also that the integration will always start at time = 0.
+		Notes 
+		===== 
+		Units :: The attribute func will always be interpreted as taking 
+			time in Gyr as a parameter. However, infall and star formation 
+			rates will be interpreted as having units of Msun/yr according to 
+			convention. 
 		"""
 		return self._mode
 
@@ -829,14 +815,22 @@ class singlezone(object):
 	@property
 	def elements(self):
 		"""
-		The elements that are to be modeled while the integration is running. 
-		They're encoded as their one- or two-letter symbols (case-insensitive). 
-		This attribute accepts array-like objects and stores them in a python 
-		tuple. 
+		Type :: tuple [elements of type str [case-insensitive]] 
+		Default :: ("fe", "sr", "o") 
 
+		The symbols for the elements to track the enrichment for. The more 
+		elements that are tracked, the more precisely calibrated is the ISM 
+		metallicity at each timestep, but the longer the simulation will take. 
+
+		In its current state, VICE recognizes all 76 astrophysically produced 
+		elements between carbon ("c") and bismuth ("bi") 
+
+		Notes
+		=====
 		The order in which the elements appear in this tuple will dictate the 
-		ratios that are quoted in the MDF. If element X appears before element 
-		Y in this tuple, then VICE will determine the mdf in dN/d[Y/X]. 
+		ratios that are quoted in the output stellar metallicity distribution 
+		function. That is, if element X appears before element Y, then VICE 
+		will determine the MDF in dN/d[Y/X]. 
 		"""
 		return self._elements
 
@@ -859,7 +853,7 @@ class singlezone(object):
 
 		for i in copy:
 			# Make sure each element is recognized by VICE first 
-			if i.lower() not in _RECOGNIZED_ELEMENTS: 
+			if i.lower() not in _RECOGNIZED_ELEMENTS_: 
 				message = "Unrecognized element: %s" % (i)
 				raise ValueError(message)
 			else:
@@ -869,49 +863,34 @@ class singlezone(object):
 		self._elements = tuple(copy[:])
 
 	@property
-	def Mg0(self):
-		"""
-		The gas mass in Msun at time = 0, when the integration will start. 
-
-		Note that this parameter is only relevant in infall mode. When in 
-		gas mode, the initial gas supply will simply be taken as self.func(0), 
-		and in sfr mode, the initial gas supply is taken from the star 
-		formation rate at time 0 times the depletion time at time 0.
-		"""
-		return self._Mg0
-
-	@Mg0.setter
-	def Mg0(self, value):
-		if isinstance(value, numbers.Number):
-			if value > 0: 
-				self._Mg0 = float(value)
-				self.__run.MG = float(value)
-			elif value == 0:
-				""" 
-				Set the initial gas supply to be barely above zero in this 
-				case to avoid numerical errors  
-				"""
-				self._Mg0 = 1.e-12
-				self.__run.MG = 1.e-12
-			else:
-				# Negative gas supply is unphysical 
-				message = "Initial gas supply must be a positive float."
-				raise ValueError(message)
-		else:
-			# Otherwise throw a TypeError ---> Mg0 must be a number 
-			message = "Attribute 'Mg0' must be a numerical value. Got: %s" % (
-				type(value))
-			raise TypeError(message)
-
-	@property
 	def imf(self):
 		"""
-		The initial mass function (IMF) to use in the model as a string. This 
-		parameter is case-insensitive and will always be converted to a 
-		lower-case string.
+		Type :: str [case-insensitive] 
+		Default :: "kroupa" 
 
-		Note that this software currently only recognizes Salpeter and 
-		Kroupa IMFs. 
+		The assumed stellar initial mass function (IMF). This must be either 
+		"kroupa" (1) or "salpeter" (2). These IMFs have the following form: 
+
+		"kroupa" 
+		-------- 
+		dN/dM ~ M^-a 
+			a = 2.3 [M > 0.5 Msun] 
+			a = 1.3 [0.08 Msun <= M <= 0.5 Msun] 
+			a = 0.3 [M < 0.08 Msun] 
+
+		"salpeter" 
+		----------
+		dN/dM ~ M^-2.35 
+
+		Notes 
+		===== 
+		A future update to VICE will likely include functionality for a wider 
+		sample of IMFs. 
+
+		References
+		========== 
+		(1) Kroupa (2001), MNRAS, 322, 231 
+		(2) Salpeter (1955), ApJ, 121, 161 
 		"""
 		return self._imf
 
@@ -919,7 +898,7 @@ class singlezone(object):
 	def imf(self, value):
 		if isinstance(value, strcomp): 
 			# Make sure it's recognized 
-			if value.lower() in _RECOGNIZED_IMFS:
+			if value.lower() in _RECOGNIZED_IMFS_:
 				# Save the copy  
 				self._imf = value.lower() 
 				self.__model.imf = value.lower().encode("latin-1") 
@@ -934,23 +913,30 @@ class singlezone(object):
 	@property
 	def eta(self):
 		"""
-		The unitless mass loading factor (eta = outflow rate / star formation 
-		rate). This can either be a single numerical value or a callable 
-		function of time in Gyr.
+		Type :: real number or <function> 
+		Default :: 2.5 
 
-		Users' Note Regarding Smoothing Timescales:
-		===========================================
-		In the case of a callable function of time with a nonzero smoothing 
-		time, note that at all timesteps the instantaneous value of eta is used 
-		to determine the outflow rate. That is, it is ONLY the star formation 
-		rate that is smoothed over the specified timescale, not the mass 
-		loading factor.
+		The mass loading parameter: the ratio of the outflow rate to the star 
+		formation rate. 
 
-		See docstring to attribute smoothing for more details on smoothing 
-		timescales.
+		Notes 
+		===== 
+		If the smoothing timescale is nonzero, this relationship is more 
+		complicated. See associated docstring for further details. 
 
-		See class docstring for Users' warning on specifying functions as 
-		attribute values. 
+		If type <function> 
+		------------------ 
+		Encoding this functional attribute into VICE outputs requires the 
+		package dill, an extension to pickle in the python standard library. 
+		Without this, the outputs will not have memory of this parameter. 
+		It is recommended that VICE users install dill if they have not already 
+		so that they can make use of this feature; this can be done via 
+		'pip install dill'. 
+		
+		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
+		======== 
+		Section 3.2 of science documentation. 
+		Note on function attributes in VICE in user's guide. 
 		"""
 		return self._eta
 
@@ -997,12 +983,30 @@ class singlezone(object):
 	@property
 	def enhancement(self):
 		"""
-		The outflow enhancement factor xi_{enh} = Z_{out} / Z_{gas}, 
-		the ratio of the outflow metallicity to the gas metallicity
+		Type :: real number or <function> 
+		Default :: 1.0 
 
-		This value may be either a single numerical value or a callable 
-		function of time. It's value will be the same for all elements in 
-		the integration. 
+		The ratio of the outflow to ISM metallicities. This can also be a 
+		callable function of time in Gyr. 
+
+		Notes
+		===== 
+		This multiplicative factor will apply to all elements tracked by the 
+		simulation. 
+
+		If type <function> 
+		------------------ 
+		Encoding this functional attribute into VICE outputs requires the 
+		package dill, an extension to pickle in the python standard library. 
+		Without this, the outputs will not have memory of this parameter. 
+		It is recommended that VICE users install dill if they have not already 
+		so that they can make use of this feature; this can be done via 
+		'pip install dill'. 
+
+		References 
+		========== 
+		Chisholm, Tremonti & Leitherer (2018), MNRAS, 481, 1690 
+		Christensen et al. (2018), ApJ, 867, 142
 		"""
 		return self._enhancement
 
@@ -1036,31 +1040,46 @@ class singlezone(object):
 	@property
 	def zin(self):
 		"""
-		The inflow metallicity Z_x = M_x / M_infall
+		Type :: real number, <function>, or vice.dataframe 
+		Default :: 0.0 
 
-		This parameter can be either a numerical value, a list of numerical 
-		values, a callable function of time, or a list of callable functions 
-		of time. In the case of lists or other array like objects like 
-		NumPy arrays, it will immediately be converted into a dictionary 
-		keyed on by the element abbreviation in lower case (e.g. 'fe' for 
-		iron), and will be treated component-wise with the attribute 
-		'elements' to assign the individual infall metallicities to each 
-		element. 
+		The metallicity of gas inflow. If this is a number or function, it will 
+		apply to all elements tracked by the simulation. Any python dictionary 
+		or VICE dataframe can also be passed, and real numbers and functions 
+		can be assigned to each individual element. 
 
-		When this attribute is a dictionary, it's elements may also be 
-		modified as such. For example, the following will implement solar 
-		iron infall at all times and a linearly increasing oxygen infall 
-		metallicity that reaches solar at 10 Gyr: 
+		Notes 
+		===== 
+		The easiest way to switch this attribute to a dataframe is by passing 
+		an empty python dictionary (i.e. '{}'). 
 
-			>>> import vice
-			>>> example = vice.singlezone()
-			>>> example.zin = len(example.elements) * [0.]
-			>>> example.zin
-			{"fe": 0.0, "o": 0.0, "sr": 0.0}
-			>>> example.zin["fe"] = vice.solar_z["fe"]
-			>>> example.zin["o"] = lambda t: vice.solar_z["o"] * (t / 10.0)
-			>>> example.zin
-			{"fe": 0.0012, "o": <function <lambda> at XXXXXXX>, "sr": 0.0}
+		If type <function> 
+		------------------ 
+		Encoding this functional attribute into VICE outputs requires the 
+		package dill, an extension to pickle in the python standard library. 
+		Without this, the outputs will not have memory of this parameter. 
+		It is recommended that VICE users install dill if they have not already 
+		so that they can make use of this feature; this can be done via 
+		'pip install dill'. 
+
+		Example 
+		======= 
+		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.zin = {} 
+		>>> sz.zin
+		    vice.dataframe{
+		        sr -------------> 0.0 
+		        fe -------------> 0.0 
+		        o --------------> 0.0 
+		    }
+		>>> sz.zin["fe"] = vice.solar_z["fe"] 
+		>>> sz.zin["o"] = lambda t: vice.solar_z["o"] * (t / 10.0) 
+		>>> sz.zin
+		    vice.dataframe{
+		        sr -------------> 0.0 
+		        fe -------------> 0.00129 
+		        o --------------> <function <lambda> at 0x115591aa0> 
+		    }
 		"""
 		return self._zin
 
@@ -1116,7 +1135,7 @@ class singlezone(object):
 			for i in self._elements: 
 				# Check to see if the element is tracked 
 				if i.lower() not in [j.lower() for j in self._elements]: 
-					if i.lower() in _RECOGNIZED_ELEMENTS: 
+					if i.lower() in _RECOGNIZED_ELEMENTS_: 
 						message = "Element not tracked by current " 
 						message += "settings: %s" % (i) 
 						raise ValueError(message)
@@ -1198,23 +1217,46 @@ class singlezone(object):
 	@property
 	def recycling(self):
 		"""
-		The recycling specification. This represents the cumulative return 
-		fraction following a single episode of star formation (i.e. the 
-		mass fraction that is returned to the ISM from stars). 
+		Type :: real number or str [case-insensitive] 
+		Default :: "continuous" 
 
-		If a numerical value is specified, this will be treated as the an 
-		instantaneous return fraction. For example, if recycling = 0.4, then 
-		at all timesteps, the simulation will return 40% of all mass that 
-		goes into star formation back to the ISM at that timestep. 
+		The cumulative return fraction r. This is the mass fraction of a 
+		single stellar population returned to the ISM as gas at the birth 
+		metallicity of the stars. 
 
-		Otherwise, the user may specify the string "continuous" (case-
-		insensitive) and VICE will use a more sophisticated time-
-		dependent formulation of the cumulative return fraction given the 
-		initial mass function and the mass in stellar remnants following a 
-		single episode of star formation. 
+		If this attribute is a string, it must be "continuous". In this case 
+		VICE will treat recycling from each episode of star formation 
+		individually via a treatment of the stellar initial mass function 
+		and the remnant mass model of Kalirai et al. (2008). 
 
-		See appendix A2 and figure A1 of Johnson & Weinberg (2018, in prep) 
-		for details.
+		If this attribute is a real number, it must be a value between 0 and 1. 
+		VICE will implement instantaneous recycling in this case, and this 
+		parameter will represent the fraction of a single stellar population's 
+		mass that is returned instantaneously the ISM. 
+
+		Notes 
+		===== 
+		It is recommended that user's adopt r = 0.4 (0.2) if they desire 
+		instantaneous recycling with a Kroupa (1) (Salpeter (2)) IMF, based 
+		on the analytical model of Weinberg, Andrews & Freudenburg (2017). 
+
+		See also 	[https://github.com/giganano/VICE/tree/master/docs]
+		======== 
+		Section 3.3 of science documentation 
+
+		Example 
+		======= 
+		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.recycling = 0.4 
+		>>> sz.imf = "salpeter" 
+		>>> sz.recycling = 0.2 
+
+		References 
+		========== 
+		Kalirai et al (2008), ApJ, 676, 594 
+		(1) Kroupa (2001), MNRAS, 322, 231 
+		(2) Salpeter (1955), ApJ, 131, 161 
+		Weinberg, Andrews & Freudenburg (2017), ApJ, 837, 183 
 		"""
 		return self._recycling
 
@@ -1222,10 +1264,11 @@ class singlezone(object):
 	def recycling(self, value):
 		if isinstance(value, numbers.Number):
 			# The cumulative return fraction is by definition between 0 and 1 ... 
-			if 0 <= value <= 1:
+			if 0 <= value <= 1: 
+				self.__recycling_warnings(value) 
 				self._recycling = float(value)
 				self.__model.R0 = value
-				self.__model.continuous = 0
+				self.__model.continuous = 0 
 			else:
 				# ... or else it's unphysical
 				message = "The cumulative return fraction must be between "
@@ -1250,309 +1293,55 @@ class singlezone(object):
 			message += "insensitive)."
 			raise TypeError(message)
 
-	@property
-	def delay(self):
+	def __recycling_warnings(self, value): 
 		"""
-		The minimum time-delay in Gyr of SNe Ia following the formation of a 
-		single stellar population. That is, following any given episode of 
-		star formation, SNe Ia enrichment of any element will not set in until 
-		this much time has passed in the simulation.
+		Raises a ScienceWarning if the instananeous recycling parameter is 
+		significantly different from that derived in WAF17. 
 		"""
-		return self._delay
-
-	@delay.setter
-	def delay(self, value):
-		if isinstance(value, numbers.Number):
-			# Minimum delay time must be non-negative
-			if value >= 0: 
-				self._delay = value 
-				self.__model.t_d = value
-			else:
-				message = "Attribute 'delay' must be a positive value."
-				raise ValueError(message)
-		else:
-			# If it's not a number, throw a TypeError 
-			message = "Attribute 'delay' must be a positive numerical value. "
-			message += "Got: %s" % (type(value))
-			raise TypeError(message)
-
-	@property
-	def tau_ia(self):
-		"""
-		The e-folding timescale of SNe Ia in Gyr. This attribute is only 
-		relevant if the delay-time distribution (attribute dtd) is set to 
-		"exp", in which case, the SNe Ia rate goes as exp( -t / tau_ia ).
-
-		If a power law DTD is used (i.e. if self.dtd == "plaw"), or if the 
-		user specifies their own custom DTD, then this parameter plays no role 
-		in the integration.
-		"""
-		return self._tau_ia
-
-	@tau_ia.setter
-	def tau_ia(self, value):
-		if isinstance(value, numbers.Number):
-			# A physical e-folding timescale must be positive definite 
-			if value > 0: 
-				self._tau_ia = value
-				self.__model.tau_ia = value
-			else:
-				message = "Attribute 'tau_ia' must be a positive value. "
-				raise ValueError(message)
-		else:
-			# If it's not a number, throw a TypeError 
-			message = "Attribute 'tau_ia' must be a positive numerical value." 
-			message += "Got: %s" % (type(value))
-			raise TypeError(message)
-
-	@property
-	def tau_star(self):
-		"""
-		The depletion timescale tau_star in Gyr (also the inverse of the 
-		star formation efficiency). In all modes, this is the value relating 
-		the gas mass to the star-formation rate: 
-
-		tau_star = M_gas / SFR
-
-		This parameter may be a simple numerical value or a callable function 
-		of time. See class docstring for Users' warning on specifying functions 
-		as attribute values.
-
-		When the attribute 'schmidt' = True, this parameter is used as the 
-		normalization on Schmidt-Law star formation efficiency, whereby the 
-		SFE is proportional to the gas supply. That is: 
-
-		SFE = tau_star(t)^-1 * (Mgas / MgSchmidt)^(schmidt_index)
-		"""
-		return self._tau_star
-
-	@tau_star.setter
-	def tau_star(self, value):
-		if isinstance(value, numbers.Number):
-			# Depletion times must be positive definite 
-			if value > 0:
-				self._tau_star = float(value)
-			else:
-				message = "Attribute 'tau_star' must be positive value. "
-				raise ValueError(message)
-		elif callable(value):
+		if isinstance(value, numbers.Number) and 0 <= value <= 1: 
 			"""
-			If the user passes a function, it must take only parameter, which 
-			will be interpreted as time in Gyr. 
-			"""
-			if self.__args(value):
-				message = "When callable, attribute 'tau_star' must take only "
-				message += "one parameter and no keyword/variable/default "
-				message += "arguments."
-				raise ValueError(message)
-			else:
-				self._tau_star = value
-		else:
-			# Otherwise throw a TypeError 
-			message = "Attribute 'tau_star' must be either a numerical value "
-			message += "or a callable function taking one parameter."
-			raise TypeError(message)
-
-	@property
-	def schmidt(self):
-		"""
-		A boolean describing whether or not to use and implementation of 
-		Schmidt-law efficiency, whereby the star-formation efficiency is 
-		proportional to the gas supply. The specifics of this behavior are 
-		specified by the attributes 'tau_star', 'schmidt_index', and 
-		'MgSchmidt'.
-		"""
-		return self._schmidt
-
-	@schmidt.setter
-	def schmidt(self, value):
-		if isinstance(value, numbers.Number):
-			# Numbers can be interpreted as booleans 
-			if value:
-				self._schmidt = True
-				self.__model.schmidt = 1
-			else:
-				self._schmidt = False
-				self.__model.schmidt = 0
-		if isinstance(value, bool):
-			# If it's a boolean, that'll obviously work too
-			self._schmidt = value
-			if value:
-				self.__model.schmidt = 1
-			else:
-				self.__model.schmidt = 0
-		else:
-			# Otherwise a TypeError needs thrown. 
-			message = "Attribute 'schmidt' must be interpretable as a "
-			message += "boolean. Got: %s" % (type(value))
-			raise TypeError(message)
-
-	@property
-	def schmidt_index(self):
-		"""
-		The power-law index for the depletion time derived from a schmidt-law 
-		star formation efficiency:
-
-		SFE = tau_star(t)^-1 * (Mgas / MgSchmidt)**(schmidt_index)
-		"""
-		return self._schmidt_index
-
-	@schmidt_index.setter
-	def schmidt_index(self, value):
-		# Power law index must be a numerical value 
-		if isinstance(value, numbers.Number):
-			self._schmidt_index = value
-			self.__model.schmidt_index = value
-		else:
-			message = "Attribute 'schmidt_index' must be a numerical value."
-			raise TypeError(message)
-		if self._schmidt_index < 0:
-			"""
-			A negative power law index for the Kennicutt-Schmidt law isn't 
-			necessarily unphysical, but definitely unrealistic. Warn the 
-			user if they passed one in case it's a bug in their code. 
-			"""
-			message = "Attribute 'schmidt_index' is now a negative value. "
-			message += "This may introduce numerical artifacts. "
-			warnings.warn(message, ScienceWarning)
-
-	@property
-	def MgSchmidt(self):
-		"""
-		The normalization on the Schmidt-Law: 
-
-		SFE \\propto (Mgas / MgSchmidt)**(schmidt_index)
-
-		In practice, this should be some fiducial gas mass. In that case, the 
-		star-formation efficiency is close to what the user specifies as the 
-		normalization constant tau_star(t).
-		"""
-		return self._MgSchmidt
-
-	@MgSchmidt.setter
-	def MgSchmidt(self, value):
-		if isinstance(value, numbers.Number):
-			# Normalization of Kennicutt-Schmidt Law must be positive definite 
-			if value > 0:
-				self._MgSchmidt = value
-				self.__model.mgschmidt = value
-			else:
-				message = "Attribute 'MgSchmidt' must be a positive definite "
-				message += "value."
-				raise ValueError(message)
-		else:
-			# Otherwise throw a TypeError 
-			message = "Attribute 'MgSchmidt' must be a numerical value."
-			raise TypeError(message)
-
-	@property
-	def ria(self):
-		"""
-		The SNe Ia delay-time distribution (DTD). There are two built-in 
-		DTDs that VICE will automatically treat, and to use one of these 
-		this attribute must be set to a particular string. 
-
-		"exp": An exponential DTD with e-folding timescale set by the 
-		attribute 'tau_ia'
-
-		"plaw": A power-law dtd proportional to t^-1.1
-
-		In addition to these built-in DTDs, the user also has the option to 
-		pass their own function of time. Like all other attributes that 
-		accept functions as parameters in VICE, it must take only one 
-		parameter and no keyword/default/variable arguments. It will be 
-		interpreted as the rate R as a function of time in Gyr. 
-
-		The user need not worry about the normalization of their DTD. Prior 
-		to the integration, VICE will integrate the DTD up to 13.8 Gyr and 
-		normalize it automatically. Therefore, the user also need not worry 
-		about how long their integrations run - the DTD will always be 
-		treated the same. 
-		"""
-		return self._ria
-
-	@ria.setter
-	def ria(self, value):
-		if callable(value):
-			"""
-			Allow functionality for user-specified delay-time distributions. 
-			As usual, the specified function must take only one parameter, 
-			which will be interpreted as time in Gyr. 
-			"""
-			if self.__args(value):
-				message = "When callable, attribute 'ria' must take only "
-				message += "one parameter and no keyword/variable/default "
-				message += "parameters."
-				raise ValueError(message)
-			else:
-				self._ria = value
-				"""
-				This next line just lets the C routines know that it doesn't 
-				need to automatically calculate the DTD 
-				"""
-				self.__model.dtd = "custom".encode("latin-1")
-		elif isinstance(value, strcomp):
-			if value.lower() in ["exp", "plaw"]:
-				# Automated functionality for exponential and power law DTDs
-				self._ria = value.lower()
-				self.__model.dtd = value.lower().encode("latin-1")
-			else:
-				raise ValueError("Unrecognized SNe Ia DTD: %s" % (value))
-		else:
-			message = "Attribute dtd must be either a callable function, "
-			message += "the string \"exp\", or the string \"plaw\"."
-			raise TypeError(message)
-
-	@property
-	def smoothing(self):
-		"""
-		The smoothing timescale in Gyr. This is the timescale on which the 
-		star-formation rate is averaged to determine the outflow rate. That is, 
-		at all timesteps: 
-
-		outflow rate = eta * <star formation rate>_(smoothing)
-
-		where the average is over the previous timesteps leading up to the 
-		current timestep. In the cases where the current time is less than the 
-		smoothing time, which is inevitable at early times during integration, 
-		the average is truncated at t = 0 to avoid numerical errors.
-
-		If the user wishes to not have any smoothing time, it can be set to some 
-		dummy value - a negative value, zero, or some value smaller than the 
-		timestep will all achieve this effect.
-
-		See appendix A2 of Johnson & Weinberg (2018, in prep) for more details 
-		on smoothing timescales.
-		"""
-		return self._smoothing
-
-	@smoothing.setter
-	def smoothing(self, value):
-		if isinstance(value, numbers.Number):
-			# The smoothing time must be a positive definite float
-			if value >= 0:
-				self._smoothing = value
-				self.__model.smoothing_time = value
-			else:
-				message = "Attribute 'smoothing' must be non-negative."
-				raise ValueError(message)
-		else:
-			# If it's not a number it's a TypeError 
-			message = "Attribute 'smoothing' must be a numerical value."
-			raise TypeError(message)
+			Check for > 10% deviations from WAF17. 
+			"""	
+			if self._imf == "kroupa": 
+				if value <= 0.36 or value >= 0.44: 
+					message = "Weinberg, Andrews & Freudenburg (2017), ApJ, "
+					message += "837, 183 recommend an instantaneous recycling " 
+					message += "parameter of r = 0.4 for a Kroupa IMF. Got "
+					message += "value with a >10%  discrepancy from this "
+					message += "value: %g" % (value) 
+					warnings.warn(message, ScienceWarning) 
+				else: 
+					pass 
+			elif self._imf == "salpeter": 
+				if value <= 0.18 or value >= 0.22: 
+					message = "Weinberg, Andrews & Freudenburg (2017), ApJ, "
+					message += "837, 183 recommend an instantaneous recycling " 
+					message += "parameter of r = 0.2 for a Salpeter IMF. Got "
+					message += "value with a >10%  discrepancy from this "
+					message += "value: %g" % (value) 
+					warnings.warn(message, ScienceWarning) 
+				else: 
+					pass 
+			else: 
+				# failsafe 
+				raise SystemError("This should be raised.")  
 
 	@property
 	def bins(self):
 		"""
-		The bins within which the stellar metallicity distribution function will 
-		be determined. This value must be an array-like object of numerical 
-		values. NumPy and Pandas arrays are supported, but this software is not 
-		dependent on them. 
+		Type :: array-like [elements are real numbers] 
+		Default :: [-3, -2.95, -2.9, ... , 0.9, 0.95, 1.0] 
 
-		Note: Calling this attribute returns a python list object. The actual 
-		attribute, however, is stored in an array of C doubles.
+		The bins in each [X/H] abundance and [X/Y] abundance ratio to sort the 
+		normalized stellar metallicity distribution function into. By default, 
+		VICE sorts everything into 0.05-dex width bins between [X/H] and 
+		[X/Y] = -3 and +1. 
+
+		Notes 
+		===== 
+		This attribute is compatible with the NumPy array and Pandas DataFrame, 
+		but is not dependent on either package. 
 		"""
-		# clib.set_mdf_bins(byref(self.__model))
 		return [self.__model.bins[i] for i in list(range(
 			self.__model.num_bins + 1l))]
 
@@ -1610,9 +1399,288 @@ class singlezone(object):
 		self.__model.num_bins = len(value) - 1l
 
 	@property
+	def delay(self):
+		"""
+		Type :: real number 
+		Default :: 0.15 
+
+		The minimum delay time in Gyr for the onset of type Ia sueprnovae 
+		associated with a single stellar population. 
+		"""
+		return self._delay
+
+	@delay.setter
+	def delay(self, value):
+		if isinstance(value, numbers.Number):
+			# Minimum delay time must be non-negative
+			if value >= 0: 
+				self._delay = value 
+				self.__model.t_d = value
+			else:
+				message = "Attribute 'delay' must be a positive value."
+				raise ValueError(message)
+		else:
+			# If it's not a number, throw a TypeError 
+			message = "Attribute 'delay' must be a positive numerical value. "
+			message += "Got: %s" % (type(value))
+			raise TypeError(message)
+
+	@property
+	def ria(self):
+		"""
+		Type :: <function> or str [case-insensitive] 
+		Default :: "plaw" 
+
+		The delay-time distribution (DTD) for type Ia supernovae to adopt. If 
+		type str, VICE will use built-in DTDs: 
+			"exp"
+			----- 
+			RIa ~ e^-t  [e-folding timescale set by attribute tau_ia] 
+
+			"plaw"
+			------
+			RIa ~ t^-1.1 
+
+		Alternative, the user may pass their own function of time in Gyr, and 
+		the normalization of the custom DTD will be taken care of 
+		automatically. 
+
+		If type <function> 
+		------------------ 
+		Encoding this functional attribute into VICE outputs requires the 
+		package dill, an extension to pickle in the python standard library. 
+		Without this, the outputs will not have memory of this parameter. 
+		It is recommended that VICE users install dill if they have not already 
+		so that they can make use of this feature; this can be done via 
+		'pip install dill'. 
+
+		See also [https://github.com/giganano/VICE/tree/master/docs] 
+		======== 
+		Note on functional attributes in user's guide 
+		Section 4.3 of science documentation 
+		"""
+		return self._ria
+
+	@ria.setter
+	def ria(self, value):
+		if callable(value):
+			"""
+			Allow functionality for user-specified delay-time distributions. 
+			As usual, the specified function must take only one parameter, 
+			which will be interpreted as time in Gyr. 
+			"""
+			if self.__args(value):
+				message = "When callable, attribute 'ria' must take only "
+				message += "one parameter and no keyword/variable/default "
+				message += "parameters."
+				raise ValueError(message)
+			else:
+				self._ria = value
+				"""
+				This next line just lets the C routines know that it doesn't 
+				need to automatically calculate the DTD 
+				"""
+				self.__model.dtd = "custom".encode("latin-1")
+		elif isinstance(value, strcomp):
+			if value.lower() in ["exp", "plaw"]:
+				# Automated functionality for exponential and power law DTDs
+				self._ria = value.lower()
+				self.__model.dtd = value.lower().encode("latin-1")
+			else:
+				raise ValueError("Unrecognized SNe Ia DTD: %s" % (value))
+		else:
+			message = "Attribute dtd must be either a callable function, "
+			message += "the string \"exp\", or the string \"plaw\"."
+			raise TypeError(message)
+
+	@property
+	def Mg0(self):
+		"""
+		Type :: real number 
+		Default :: 6.0e+09 
+
+		The mass of the ISM gas at time t = 0 in solar masses. 
+
+		Notes 
+		===== 
+		This parameter only matters when the simulation is in infall mode. In 
+		gas mode, func(0) specifies the initial gas supply, and in star 
+		formation mode, it is func(0) * tau_star(0) (modulo the prefactors 
+		imposed by gas-dependent star formation efficiency)  
+		"""
+		return self._Mg0
+
+	@Mg0.setter
+	def Mg0(self, value):
+		if isinstance(value, numbers.Number):
+			if value > 0: 
+				self._Mg0 = float(value)
+				self.__run.MG = float(value)
+			elif value == 0:
+				""" 
+				Set the initial gas supply to be barely above zero in this 
+				case to avoid numerical errors  
+				"""
+				self._Mg0 = 1.e-12
+				self.__run.MG = 1.e-12
+			else:
+				# Negative gas supply is unphysical 
+				message = "Initial gas supply must be a positive float."
+				raise ValueError(message)
+		else:
+			# Otherwise throw a TypeError ---> Mg0 must be a number 
+			message = "Attribute 'Mg0' must be a numerical value. Got: %s" % (
+				type(value))
+			raise TypeError(message)
+
+	@property
+	def smoothing(self):
+		"""
+		Type :: real number 
+		Default :: 0.0 
+
+		The smoothing time in Gyr to adopt. This is the timescale on which the 
+		star formation rate is time-averaged before determining the outflow 
+		rate via the mass loading parameter (attribute eta). For an outflow 
+		rate (OFR) and star formation rate (SFR) with smoothing time s: 
+
+		OFR = eta * <SFR>_s
+
+		The traditional relationship of OFR = eta * SFR is recovered when the 
+		user specifies a smoothing time that is smaller than the timestep size.  
+
+		Notes 
+		===== 
+		While this parameter time-averages the star formation rate, it does 
+		NOT time-average the mass-loading parameter. 
+
+		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
+		======== 
+		Section 3.2 of science documentation 
+		""" 
+		return self._smoothing
+
+	@smoothing.setter
+	def smoothing(self, value):
+		if isinstance(value, numbers.Number):
+			# The smoothing time must be a positive definite float
+			if value >= 0:
+				self._smoothing = value
+				self.__model.smoothing_time = value
+			else:
+				message = "Attribute 'smoothing' must be non-negative."
+				raise ValueError(message)
+		else:
+			# If it's not a number it's a TypeError 
+			message = "Attribute 'smoothing' must be a numerical value."
+			raise TypeError(message)
+
+	@property
+	def tau_ia(self):
+		"""
+		Type :: real number 
+		Default :: 1.5 
+
+		The e-folding timescale in Gyr of an exponentially decaying delay-time 
+		distribution for type Ia supernovae. 
+
+		Notes 
+		===== 
+		Because this is an e-folding timescale, it only matters when the 
+		attribute ria == "exp". 
+
+		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
+		======== 
+		Section 4.3 of science documentation 
+		"""
+		return self._tau_ia
+
+	@tau_ia.setter
+	def tau_ia(self, value):
+		if isinstance(value, numbers.Number):
+			# A physical e-folding timescale must be positive definite 
+			if value > 0: 
+				self._tau_ia = value
+				self.__model.tau_ia = value
+			else:
+				message = "Attribute 'tau_ia' must be a positive value. "
+				raise ValueError(message)
+		else:
+			# If it's not a number, throw a TypeError 
+			message = "Attribute 'tau_ia' must be a positive numerical value." 
+			message += "Got: %s" % (type(value))
+			raise TypeError(message)
+
+	@property
+	def tau_star(self):
+		"""
+		Type :: real number or <function> 
+		Default :: 2.0 
+
+		The star formation rate per unit gas supply in Gyr (Mgas / SFR). In 
+		observational journal articles, this is sometimes referred to as the 
+		"depletion time". This parameter is how the gas supply and star 
+		formation rate are determined off of one another at each timestep. 
+
+		Notes 
+		===== 
+		When attribute schmidt = True, this is interpreted as the prefactor 
+		on gas-dependent star formation efficiency. 
+
+		If type <function> 
+		------------------ 
+		Encoding this functional attribute into VICE outputs requires the 
+		package dill, an extension to pickle in the python standard library. 
+		Without this, the outputs will not have memory of this parameter. 
+		It is recommended that VICE users install dill if they have not already 
+		so that they can make use of this feature; this can be done via 
+		'pip install dill'. 
+
+		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
+		======== 
+		Section 3.1 of science documentation 
+		"""
+		return self._tau_star
+
+	@tau_star.setter
+	def tau_star(self, value):
+		if isinstance(value, numbers.Number):
+			# Depletion times must be positive definite 
+			if value > 0:
+				self._tau_star = float(value)
+			else:
+				message = "Attribute 'tau_star' must be positive value. "
+				raise ValueError(message)
+		elif callable(value):
+			"""
+			If the user passes a function, it must take only parameter, which 
+			will be interpreted as time in Gyr. 
+			"""
+			if self.__args(value):
+				message = "When callable, attribute 'tau_star' must take only "
+				message += "one parameter and no keyword/variable/default "
+				message += "arguments."
+				raise ValueError(message)
+			else:
+				self._tau_star = value
+		else:
+			# Otherwise throw a TypeError 
+			message = "Attribute 'tau_star' must be either a numerical value "
+			message += "or a callable function taking one parameter."
+			raise TypeError(message)
+
+	@property
 	def dt(self):
 		"""
-		The time difference in Gyr to use in the integration.
+		Type :: real number 
+		Default :: 0.01 
+
+		The timestep size in Gyr to use in the integration.
+
+		Notes 
+		===== 
+		For fine timesteps with a given ending time in the simulation, this 
+		affects the total integration time with a dt^-2 dependence. 
 		"""
 		return self._dt
 
@@ -1633,15 +1701,132 @@ class singlezone(object):
 			raise TypeError(message)
 
 	@property
+	def schmidt(self):
+		"""
+		Type :: bool 
+		Default :: False 
+
+		A boolean describing whether or not to use an implementation of 
+		gas-dependent star formation efficiency (i.e. the Kennicutt-Schmidt 
+		Law: Schmidt (1959); Leroy et al. (2008)). At each timestep, the 
+		attributes tau_star, MgSchmidt, and schmidt_index determine the 
+		star formation efficiency at that timestep via: 
+
+		SFE = tau_star(t)^-1 (Mgas / MgSchmidt)^schmidt_index 
+
+		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
+		======== 
+		Section 3.1 of science documentation 
+
+		References 
+		========== 
+		Schmidt (1959), ApJ, 129, 243 
+		Leroy et al. (2008), AJ, 136, 2782 
+		"""
+		return self._schmidt
+
+	@schmidt.setter
+	def schmidt(self, value):
+		if isinstance(value, numbers.Number):
+			# Numbers can be interpreted as booleans 
+			if value:
+				self._schmidt = True
+				self.__model.schmidt = 1
+			else:
+				self._schmidt = False
+				self.__model.schmidt = 0
+		if isinstance(value, bool):
+			# If it's a boolean, that'll obviously work too
+			self._schmidt = value
+			if value:
+				self.__model.schmidt = 1
+			else:
+				self.__model.schmidt = 0
+		else:
+			# Otherwise a TypeError needs thrown. 
+			message = "Attribute 'schmidt' must be interpretable as a "
+			message += "boolean. Got: %s" % (type(value))
+			raise TypeError(message)
+
+	@property
+	def schmidt_index(self):
+		"""
+		Type :: real number 
+		Default :: 0.5 
+
+		The power-law index on gas-dependent star formation efficiency.
+
+		See also 	[https://github.com/giganano/VICE/tree/master/docs]
+		======== 
+		Section 3.1 of science documentation
+		Attribute schmidt 
+		"""
+		return self._schmidt_index
+
+	@schmidt_index.setter
+	def schmidt_index(self, value):
+		# Power law index must be a numerical value 
+		if isinstance(value, numbers.Number):
+			self._schmidt_index = value
+			self.__model.schmidt_index = value
+		else:
+			message = "Attribute 'schmidt_index' must be a numerical value."
+			raise TypeError(message)
+		if self._schmidt_index < 0:
+			"""
+			A negative power law index for the Kennicutt-Schmidt law isn't 
+			necessarily unphysical, but definitely unrealistic. Warn the 
+			user if they passed one in case it's a bug in their code. 
+			"""
+			message = "Attribute 'schmidt_index' is now a negative value. "
+			message += "This may introduce numerical artifacts. "
+			warnings.warn(message, ScienceWarning)
+
+	@property
+	def MgSchmidt(self):
+		"""
+		Type :: real number 
+		Default :: 6.0e+09 
+
+		The normalization of the gas supply when star formation efficiency is 
+		dependent on the gas supply. 
+
+		Notes 
+		===== 
+		In practice, this quantity should be comparable to a typical gas supply 
+		of the simulated galaxy so that the actual star formation efficiency at 
+		a given timestep is near the user-specified value. 
+
+		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
+		======== 
+		Section 3.1 of science documentation 
+		Attribute schmidt 
+		"""
+		return self._MgSchmidt
+
+	@MgSchmidt.setter
+	def MgSchmidt(self, value):
+		if isinstance(value, numbers.Number):
+			# Normalization of Kennicutt-Schmidt Law must be positive definite 
+			if value > 0:
+				self._MgSchmidt = value
+				self.__model.mgschmidt = value
+			else:
+				message = "Attribute 'MgSchmidt' must be a positive definite "
+				message += "value."
+				raise ValueError(message)
+		else:
+			# Otherwise throw a TypeError 
+			message = "Attribute 'MgSchmidt' must be a numerical value."
+			raise TypeError(message)
+
+	@property
 	def m_upper(self):
 		"""
-		The upper mass limit on star formation in solar masses.
+		Type :: real number 
+		Default :: 100 
 
-		Users' Warning: 
-		===============
-		Mass yields for core collapse supernovae are only sampled up to 
-		120 Msun. We therefore recommend the user not implement upper mass 
-		limits above 120 as it may introduce numerical artifacts. 
+		The upper mass limit on star formation in solar masses. 
 		"""
 		return self._m_upper
 
@@ -1674,6 +1859,9 @@ class singlezone(object):
 	@property
 	def m_lower(self):
 		"""
+		Type :: real number 
+		Default :: 0.08 
+
 		The lower mass limit on star formation in solar masses. 
 		"""
 		return self._m_lower
@@ -1707,26 +1895,21 @@ class singlezone(object):
 	@property
 	def z_solar(self):
 		"""
-		The total solar metallicity Z_sun = M_metals / M_sun to adopt. 
+		Type :: real number 
+		Default :: 0.014 (Asplund et al. 2009) 
 
-		This parameter only plays a role in scaling the total metallicity 
-		of stars for the sake of modelling AGB enrichment. That is, the total 
-		metallicity will always be low for integrations that only trace a 
-		few elements, and this can introduce numerical artifacts in the 
-		enrichment of AGB stars. We therefore employ the following scaling 
-		relation: 
+		The metallicity by mass of the sun. This is used in calibrating the 
+		total metallicity of the ISM, which is necessary when there are only a 
+		few elements tracked by the simulation. 
 
-		Z = z_solar * sum(Z_x) / sum(Z_x_solar)
+		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
+		======== 
+		Section 5.4 of science documentation 
 
-		to estimate the total metallicity at each timestep and therefore 
-		mitigate this numerical issue. We nonetheless recommend that if the 
-		user is interested in the enrichment of metals from AGB stars, that 
-		they include multiple elements in their integration so that the 
-		overall metallicity is better determined at each timestep. 
-
-		The default value is Z_sun = 0.014 (Asplund et al. 2009, ARA&A, 47, 
-		481). 
-		"""
+		References 
+		========== 
+		Asplund et al. (2009), ARA&A, 47, 481 
+		""" 
 		return self._z_solar
 
 	@z_solar.setter
@@ -1762,13 +1945,29 @@ class singlezone(object):
 	@property
 	def agb_model(self):
 		"""
-		A keyword denoting which model of asymptotic giant branch star 
-		enrichment to employ. 
+		Type :: str [case-insensitive] 
+		Default :: "cristallo11"
 
-		Recognized keywords and their associated papers: 
-		================================================
+		A keyword denoting which stellar mass-metallicity grid of fractional 
+		nucleosynthetic yields from asymptotic giant branch stars to adopt 
+		in the simulation. 
+
+		Recognized Keywords and their Associated Studies 
+		------------------------------------------------ 
 		cristallo11:		Cristallo et al. (2011), ApJS, 197, 17
 		karakas10:			Karakas (2010), MNRAS, 403, 1413
+
+		Notes 
+		===== 
+		If the Karakas (2010) set of yields are adopted and any elements 
+		tracked by the simulation are heavier than nickel, a LookupError will 
+		be raised. The Karakas (2010) study did not report yields for elements 
+		heavier than nickel. 
+
+		References 
+		========== 
+		Cristallo et al. (2011), ApJS, 197, 17 
+		Karakas (2010), MNRAS, 403, 1413 
 		"""
 		return self._agb_model
 
@@ -1843,51 +2042,68 @@ class singlezone(object):
 			print(rep)
 		del frame
 
-
 	def run(self, output_times, capture = False, overwrite = False):
 		"""
-		Runs the integration according to the current values of attributes that 
-		the user has specified. Calling this function will always produce two 
-		output files:
+		Run's the built-in timestep integration routines over the parameters 
+		built into the attributes of this class. Whether or not the user sets 
+		capture = True, the output files will be produced and can be read into 
+		an output object at any time. 
 
-		self.name/history.out: 	The full-time evolution of the simulation
-		self.name/mdf.out:  	The resulting stellar metallicity distribution
-					function (MDF) at the final timestep.
+		Parameters 
+		========== 
+		output_times :: array-like [elements are real numbers] 
+			The times in Gyr at which VICE should record output from the 
+			simulation. These need not be sorted in any way; VICE will take 
+			care of that automatically. 
+		capture :: bool [default :: False] 
+			A boolean describing whether or not to return an output object 
+			from the results of the simulation. 
+		overwrite :: bool [default :: False] 
+			A boolean describing whether or not to force overwrite any existing 
+			files under the same name as this simulation's output files. 
 
-		Args:
+		Returns 
+		======= 
+		out :: output [only returned if capture = True] 
+			An output object produced from this simulation's output. 
+
+		Raises 
+		====== 
+		ValueError :: 
+			::	Any element of output_times is negative 
+			:: 	An inflow metallicity evaluates to a negative value 
+		ArithmeticError :: 
+			::	An inflow metallicity evaluates to NaN or inf 
+		UserWarning :: 
+			::	If any yield settings or class attributes are callable 
+				functions and the user does not have dill installed 
+		ScienceWarning :: 
+			::	Any element tracked by the simulation is enriched in 
+				significant part by the r-process 
+			::	Any element tracked by the simulation has a weakly constrained 
+				solar abundance measurement 
+
+		Notes
 		=====
-		output_times:		An array-like object detailing at what times in the 
-					simulation that VICE should write output to the 
-					history file. This need not be an array of uniform 
-					timesteps, or even in ascending order. VICE will 
-					take care of all of that for you. The only requirement is 
-					that all elements be numerical values. 
+		Encoding functional attributes into VICE outputs requires the 
+		package dill, an extension to pickle in the python standard library. 
+		Without this, the outputs will not have memory of any functional 
+		attributes stored in this class. It is recommended that VICE users 
+		install dill if they have not already so that they can make use of this 
+		feature; this can be done via 'pip install dill'. 
 
-		Kwargs:
-		=======
-		capture = False:	Whether or not to return an output object for the 
-					results of the integration. See class docstring for 
-					type 'output' for details.
-		overwrite = False:	Whether or not to force overwrite any files that 
-					may be under the same name, perhaps from previous 
-					integrations. 
+		When overwrite = False, and there are files under the same name as the 
+		output produced, this acts as a halting function. VICE will wait for 
+		the user's approval to overwrite existing files in this case. If 
+		user's are running multiple simulations and need their integrations 
+		not to stall, they must specify overwrite = True. 
 
-		User's Warning on overwrite:
-		============================
-		In the event that the user is running many VICE models initialized 
-		in their own Python scripts, they will want to pay attention to the 
-		names of the models they're running, and to potentially specify 
-		overwrite = True. 
-
-		When overwrite = False, and in the event that VICE finds any output 
-		files in the user's system under the same name that it is designed 
-		to write to, this acts as a halting function. That is, the simulation 
-		will stop and wait for the user's input on whether or not to 
-		continue and overwrite the existing files. When overwrite = True, 
-		VICE interprets this as permission to overwrite any existing files 
-		that it finds. If the user is running many integrations with 
-		potentially similar names, it is to their advantage to specify 
-		overwrite = True so that their integrations do not stall. 
+		Example 
+		======= 
+		>>> import numpy as np 
+		>>> sz = vice.singlezone(name = "example") 
+		>>> outtimes = np.linspace(0, 10, 1001) 
+		>>> sz.run(outtimes) 
 		"""
 
 		# Make sure the output times are as they should be 
@@ -1918,7 +2134,7 @@ class singlezone(object):
 		"""
 		for i in list(range(len(self._elements))):
 			# AGB yield grids are stored in files 
-			agbfile = ("%sdata/_agb_yields/%s/%s.dat" % (_DIRECTORY, 
+			agbfile = ("%sdata/_agb_yields/%s/%s.dat" % (_DIRECTORY_, 
 				self._agb_model.lower(), 
 				self._elements[i].lower())).encode("latin-1")
 			clib.read_agb_grid(byref(self.__run), agbfile, i)
@@ -2215,13 +2431,27 @@ class singlezone(object):
 		"""
 		if sys.version_info[0] == 2:
 			# Python 2.x argspec function 
-			args = inspect.getargspec(func)
+			try: 
+				args = inspect.getargspec(func)
+			except TypeError: 
+				message = "Functional attributes in VICE must be python " 
+				message += "functions. This excludes pre-compiled functions. " 
+				message += "This function must be wrapped by a def statement " 
+				message += "in order to be used in VICE. " 
+				raise TypeError(message) 
 		elif sys.version_info[0] == 3:
 			# Python 3.x argspec function 
-			args = inspect.getfullargspec(func)
+			try: 
+				args = inspect.getfullargspec(func)
+			except TypeError: 
+				message = "Functional attributes in VICE must be python " 
+				message += "functions. This excludes pre-compiled functions. " 
+				message += "This function must be wrapped by a def statement " 
+				message += "in order to be used in VICE. " 
+				raise TypeError(message) 
 		else:
 			# This should be caught at import anyway 
-			_version_error() 
+			_VERSION_ERROR_() 
 
 		# Return True only if the function takes exactly one parameter 
 		if args[1] != None:

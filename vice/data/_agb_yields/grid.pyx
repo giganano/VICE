@@ -11,11 +11,11 @@ from __future__ import absolute_import
 import inspect
 import sys
 import os
-from ...core._globals import _DIRECTORY
-from ...core._globals import _RECOGNIZED_ELEMENTS
-from ...core._globals import _version_error
+from ...core._globals import _DIRECTORY_
+from ...core._globals import _RECOGNIZED_ELEMENTS_
+from ...core._globals import _VERSION_ERROR_
 from ...core._yields import atomic_number 
-PATH = "%sdata/_agb_yields/" % (_DIRECTORY)
+PATH = "%sdata/_agb_yields/" % (_DIRECTORY_)
 if sys.version_info[0] == 3:
 	from builtins import str
 else:
@@ -26,7 +26,7 @@ if sys.version_info[0] == 2:
 elif sys.version_info[0] == 3: 
 	strcomp = str
 else:
-	_version_error()
+	_VERSION_ERROR_()
 
 
 
@@ -50,29 +50,63 @@ def read_grid(filename):
 #-------------------------- AGB_YIELD_GRID FUNCTION --------------------------# 
 def yield_grid(element, study = "cristallo11"):
 	"""
-	Returns the mass-metallicity yield grid for the element.
+	Obtain the stellar mass-metallicity grid of fractional nucleosynthetic 
+	yields from asymptotic giant branch (AGB) stars. VICE includes yields 
+	from Cristallo et al. (2011), ApJS, 197, 17 and Karakas (2010), MNRAS, 403, 
+	1413, allowing users the choice of which to adopt in their simulations. 
 
-	Args:
-	=====
-	element:				An elemental symbol (case-insensitive)
+	Parameters
+	==========
+	element :: str [case-insensitive] 
+		The symbol of the element to obtain the yield grid for. 
+	study :: str [case-insensitive] [optional]
+		A keyword denoting which AGB yield study to pull the yield table from 
+		Keywords and their Associated Studies: 
+		--------------------------------------
+		"cristallo11" [default] :: Cristallo et al. (2011), ApJS, 197, 17 
+		"karakas10" :: Karakas (2010), MNRAS, 403, 1413 
 
-	Kwargs:
+	Returns
 	=======
-	study = "Cristallo11":	A keyword denoting the AGB star yield study to use
+	grid :: tuple (2-D)
+		The yield grid itself; elements are tuples of fractional 
+		nucleosynthetic yields at constant stellar mass, but varying 
+		metallicity. It should be indexed with the rule: 
+		arr[mass_index][z_index]
+	masses :: tuple 
+		The masses in terms of the sun that the yield grid is sampled on. 
+	z :: tuple 
+		The metallicity by mass Z of the star's simulated yields.
 
-	Returns:
-	========
-	A 3-element array
-		returned[0]:		The 2D grid itself, which can be accessed by giving 
-					indexing in the following manner:
-					yield = returned[mass_index][z_index]
-		returned[1]:		The masses on the grid sorted least to greatest
-		returned[2]:		The metallicities on the grid sorted least to greatest
+	Raises
+	====== 
+	ValueError :: 
+		::	The study or the element are not built into VICE 
+	LookupError :: 
+		:: 	study == "karakas10" and the atomic number of the element is 
+			greater than or equal to 29. The Karakas (2010), MNRAS, 403, 1413 
+			study did not report yields from AGB stars for elements heavier 
+			than nickel. 
+	IOError :: [Occurs only if VICE's file structure has been tampered with] 
+		:: 	The parameters passed to this function are allowed but the data 
+			file is not found. This should only happen if the user has tampered 
+			with VICE's internal file structure. 
 
-	Studies and their Keywords:
-	===========================
-	cristallo11:		Cristallo et al. (2011), ApJS, 197, 17
-	karakas10:		Karakas et al. (2010), MNRAS, 403, 1413
+	Example
+	=======
+	>>> y, m, z = vice.agb_yield_grid("sr") 
+	>>> m 
+	    (1.3, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0) 
+	>>> z 
+	    (0.0001, 0.0003, 0.001, 0.002, 0.003, 0.006, 0.008, 0.01, 0.014, 0.02) 
+	>>> # the fractional yield from 1.3 Msun stars at Z = 0.001 
+	>>> y[0][2] 
+	    2.32254e-09
+
+	References 
+	========== 
+	Cristallo et al. (2011), ApJS, 197, 17 
+	Karakas (2010), MNRAS, 403, 1413 
 	"""
 
 	# Type check errors
@@ -99,7 +133,7 @@ def yield_grid(element, study = "cristallo11"):
 		raise ValueError(message)
 	else:
 		pass
-	if element.lower() not in _RECOGNIZED_ELEMENTS: 
+	if element.lower() not in _RECOGNIZED_ELEMENTS_: 
 		message = "Unrecognized element: %s" % (element)
 		raise ValueError(message)
 	else:
@@ -130,7 +164,7 @@ def yield_grid(element, study = "cristallo11"):
 				arr[j] = grid[len(z) * i + j][2]
 			y[i] = arr
 		# return the grid 
-		return [y, sorted(m), sorted(z)]
+		return [tuple([tuple(i) for i in y]), tuple(sorted(m)), tuple(sorted(z))]
 	else:
 		"""
 		File not found ---> unless VICE was tampered with, this shouldn't 

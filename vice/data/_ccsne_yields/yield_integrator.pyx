@@ -8,13 +8,13 @@ of core collapse supernovae yields.
 """
 
 from __future__ import absolute_import, unicode_literals 
-from ...core._globals import _DIRECTORY
-from ...core._globals import _RECOGNIZED_ELEMENTS
-from ...core._globals import _RECOGNIZED_IMFS
+from ...core._globals import _DIRECTORY_
+from ...core._globals import _RECOGNIZED_ELEMENTS_
+from ...core._globals import _RECOGNIZED_IMFS_
 from ...core._globals import ScienceWarning
-from ...core._globals import _version_error
+from ...core._globals import _VERSION_ERROR_
 from ...core._yields import atomic_number
-PATH = "%sdata/_ccsne_yields/" % (_DIRECTORY)
+PATH = "%sdata/_ccsne_yields/" % (_DIRECTORY_)
 from libc.stdlib cimport free
 import warnings
 import numbers
@@ -27,7 +27,7 @@ if sys.version_info[0] == 2:
 elif sys.version_info[0] == 3: 
 	strcomp = str
 else:
-	_version_error()
+	_VERSION_ERROR_()
 
 # Recognzied methods of numerical quadrature 
 _RECOGNIZED_METHODS_ = tuple(["simpson", "midpoint", "trapezoid", "euler"])
@@ -57,78 +57,134 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	IMF = "kroupa", method = "simpson", lower = 0.08, upper = 100, 
 	tolerance = 1e-3, Nmin = 64, Nmax = 2e8):
 	"""
-	Calculates an IMF-integrated core-collapse supernovae fractional yield for 
-	the given element. As implemented in the integrator class, the value 
-	reported represents the fraction of the mass of a stellar population 
-	that is immediately converted into the given element. In the case of a 
-	zero yield, the returned error will be NaN. This is also the value that 
-	will be returned in the event that a study did not report yields for a 
-	given element (which is taken as an indication that it did not make up a 
-	significant portion of the nucleosynthetic products). 
+	Calculates an IMF-integrated fractional nucleosynthetic yield of a given 
+	element from core-collapse supernovae. VICE has built-in functions which 
+	implement Gaussian quadrature to evaluate these integrals numerically. 
+	See section 5.2 of VICE's science documentation at http://github.com/gigana
+	no/VICE/tree/master/docs for further details. 
 
-	Args:
+	Parameters
+	========== 
+	element :: str 
+		The symbol of the element to calculate the IMF-integrated fractional 
+		yield for. 
+	study :: str [case-insensitive] [default :: "LC18"]
+		A keyword denoting which study to adopt the yield from 
+		Keywords and their associated studies
+		-------------------------------------
+		"LC18" :: Limongi & Chieffi (2018), ApJS, 237, 13
+		"CL13" :: Chieffi & Limongi (2013), ApJ, 764, 21 
+		"CL04" :: Chieffi & Limongi (2004), ApJ, 608, 405 
+		"WW95" :: Woosley & Weaver (1995) ApJ, 101, 181 
+	MoverH :: real number [default :: 0] 
+		The total metallicity [M/H] of the exploding stars. There are only a 
+		handful of metallicities recognized by each study, and VICE will 
+		raise a LookupError if this value is not one of them. 
+		Keywords and their Associated Metallicities
+		-------------------------------------------
+		"LC18" :: [M/H] = -3, -2, -1, 0 
+		"CL13" :: [M/H] = 0 
+		"CL04" :: [M/H] = -inf, -4, -2, -1, -0.37, 0.15 
+		"WW95" :: [M/H] = -inf, -4, -2, -1, 0
+	rotation :: real number [default :: 0] 
+		The rotational velocity of the exploding stars in km/s. There are only 
+		a handful of rotational velocities recognized by each study, and 
+		VICE will raise a LookupError if this value is not one of them. 
+		Keywords and their Associated Rotational Velocities
+		---------------------------------------------------
+		"LC18" :: v = 0, 150, 300 
+		"CL13" :: v = 0, 300 
+		"CL04" :: v = 0 
+		"WW95" :: v = 0 
+	IMF :: str [case-insensitive] [default :: "kroupa"] 
+		The stellar initial mass function (IMF) to adopt. This must be either 
+		"kroupa" (1) or "salpeter" (2). 
+	method :: str [case-insensitive] [default :: "simpson"] 
+		The method of quadrature. The numerical rules implemented here are of 
+		the forms outlined in chapter 4 of Numerical Recipes (Press, Teukolsky, 
+		Vetterling & Flannery). 
+		Recognized Methods
+		------------------ 
+		"simpson"  
+		"trapezoid" 
+		"midpoint" 
+		"euler" 
+	lower :: real number [default :: 0.08] 
+		The lower mass limit on star formation in solar masses. 
+	upper :: real number [default :: 100] 
+		The upper mass limit on star formation in solar masses. 
+	tolerance :: real number [default :: 0.001] 
+		The numerical tolerance. The subroutins implementing Gaussian quadrature 
+		in VICE will not return a result until the fractional change between 
+		two successive integrations is smaller than this value. 
+	Nmin :: real number [default :: 64] 
+		The minimum number of bins in quadrature. 
+	Nmax :: real number [default :: 2e+08] 
+		The maximum number of bins in quadrature. Included as a failsafe 
+		against solutions that don't converge numerically. 
+
+	Returns 
+	======= 
+	yield :: real number 
+		The numerically determined solution. 
+	error :: real number 
+		The estimated fractional numerical error. 
+
+	Raises
+	======
+	ValueError :: 
+		:: 	The element is not built into VICE 
+		:: 	The study is not built into VICE 
+		:: 	The tolerance is not between 0 and 1 
+		:: 	lower > upper 
+		::	The IMF is not built into VICE 
+		:: 	The method of quadrature is not built into VICE 
+		:: 	Nmin > Nmax 
+	LookupError :: 
+		:: 	The study did not report yields at the specified metallicity 
+		:: 	The study did not report yields at the specified rotational
+			velocity 
+	ScienceWarning :: 
+		:: 	upper is larger than the largest mass on the grid reported by the 
+			specified study. VICE extrapolates to high masses in this case. 
+		:: 	study is either "CL04" or "CL13" and the atomic number of the 
+			element is between 24 and 28 (inclusive). VICE warns against 
+			adopting these yields for iron peak elements. 
+		:: 	Numerical quadrature did not converge within the maximum number 
+			of allowed quadrature bins to within the specified tolerance. 
+
+	Notes
 	=====
-	element:		The elemental symbol (case-insensitive)
+	This function evaluates the solution to the following equation under the 
+	assumption that all stars above 8 solar masses and below the upper mass 
+	limit on star formation explode as a core-collapse supernova. 
 
-	Kwargs:
+	y_x^CC = \\frac{
+		\\int_8^u m_x\\frac{dN}{dm}dm
+	}{
+		\\int_l^u m\\frac{dN}{dm}dm
+	}
+
+	where m_x is the mass of the element x produced in the super of a star 
+	with initial mass m, and dN/dm is the stellar IMF. 
+
+	Example
 	=======
-	study = "LC18":		The name of the study to pull yields from (see below)
-	MoverH = 0:		The total metallicity of the model [M/H]
-	rotation = 0:		The rotational velocity from the study in km/s
-	IMF = "kroupa":		The IMF to use (either Kroupa or Salpeter)
-				(case-insensitive)
-	method = "simpson":	The desired method of quadrature 
-				Can be either "simpson", "midpoint", "trapezoid", 
-				or "euler" (case-insensitive)
-	lower = 0.08:		The lower mass limit on star formation in units of 
-				solar masses
-	upper = 100:		The upper mass limit on star formation in units of 
-				solar masses
-	tolerance = 1e-3:	The maximum allowed fractional error on the yield
-	Nmin = 64:		The minimum number of bins in quadrature
-	Nmax = 2e8:		The maximum number of bins in quadrature
-				(A safeguard against divergent solutions)
+	>>> y, err = vice.fractional_cc_yield("o")
+	>>> y
+	    0.005643252355030168
+	>>> err 
+	    4.137197161389483e-06
+	>>> y, err = vice.fractional_cc_yield("mg", study = "CL13") 
+	>>> y 
+	    0.000496663271667762 
 
-	Returns:
-	========
-	A two-element python list
-	returned[0]:		The fractional yield itself
-	returned[1]:		The estimated fractional error on the reported yield
-				WARNING:	The reported error is a pure numerical error, 
-						associated only with the numerical integration. It does 
-						not quantify the error associated with the physical 
-						model. 
-
-	Studies, their Keywords, Rotational Velocities, and Metallicities:
-	==================================================================
-	LC18:		Limongi & Chieffi (2018), ApJS, 237, 13
-		rotation:		0, 150, 300 
-		MoverH:			-3, -2, -1, 0
-	CL13:		Chieffi & Limongi (2013), ApJ, 764, 21
-		rotation: 		0, 300 
-		MoverH:			0
-	CL04:		Chieffi & Limongi (2004), ApJ, 608, 405
-		rotation:		0
-		MoverH:			-inf, -4, -2, -1, -0.37, 0.15
-	WW95:		Woosley & Weaver (1995), ApJ, 101, 181
-		rotation: 		0 
-		MoverH: 		-inf, -4, -2, -1, 0
-
-	Details:
-	========
-	Mass yields are sampled at various initial zero-age main sequence masses for 
-	various metallicities and rotational velocities. At intermediate masses, mass 
-	yields are computed from linear interpolation between those sampled. The 
-	fractional yield is calculated from: 
-
-	y = \int_8^upper m_x dn/dm dm / \int_lower^upper m dn/dm dm
-
-	where y is the fractional yield, m_x is the mass of the isotope ejected 
-	to ISM in their model, and dn/dm is the IMF that is assumed.
-
-	VICE models core-collapse supernovae as coming from stars above 8 Msun, 
-	and therefore all elements are assumed to have a mass yield of 0 for 
-	each isotope at 8 Msun.  
+	References
+	==========
+	(1) Kroupa (2001), MNRAS, 322, 231 
+	Press, Teukolsky, Vetterling & Flannery, Numerical Recipes, (2007), 
+		Cambridge University Press 
+	(2) Salpeter (1955), ApJ, 121, 161 
 	"""
 
 	# The study keywords and their full citations
@@ -201,7 +257,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		pass
 
 	# Value checking errors
-	if element.lower() not in _RECOGNIZED_ELEMENTS:
+	if element.lower() not in _RECOGNIZED_ELEMENTS_:
 		# Element has to be recognized by VICE 
 		raise ValueError("Unrecognized element: %s" % (element))
 	elif study.upper() not in studies:
@@ -227,7 +283,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		# Upper mass limit has to be larger than lower mass limit 
 		message = "Lower mass limit greater than upper mass limit." 
 		raise ValueError(message)
-	elif IMF.lower() not in _RECOGNIZED_IMFS:
+	elif IMF.lower() not in _RECOGNIZED_IMFS_:
 		# IMF must be recognized by the software 
 		raise ValueError("Unrecognized IMF: %s" % (IMF))
 	elif method.lower() not in _RECOGNIZED_METHODS_:

@@ -8,8 +8,8 @@ This file handles the VICE dataframe and the outputs of the singlezone class.
 
 # Python Functions 
 from __future__ import division, unicode_literals, absolute_import 
-from ._globals import _DIRECTORY
-from ._globals import _version_error
+from ._globals import _DIRECTORY_
+from ._globals import _VERSION_ERROR_
 from ._globals import ScienceWarning
 import math as m 
 import warnings 
@@ -37,7 +37,7 @@ except ImportError:
 # C Functions 
 from ctypes import * 
 from libc.stdlib cimport malloc, free 
-clib = pydll.LoadLibrary("%ssrc/enrichment.so" % (_DIRECTORY)) 
+clib = pydll.LoadLibrary("%ssrc/enrichment.so" % (_DIRECTORY_)) 
 
 """
 <--------------- C routine comment headers not duplicated here --------------->
@@ -56,7 +56,7 @@ if sys.version_info[0] == 2:
 elif sys.version_info[0] == 3: 
 	strcomp = str 
 else: 
-	_version_error() 
+	_VERSION_ERROR_() 
 
 __all__ = ["mdf", "history", "output", "dataframe"] 
 __all__ = [str(i) for i in __all__] # appease python 2 strings 
@@ -66,11 +66,67 @@ __all__ = [str(i) for i in __all__] # appease python 2 strings
 #------------- STELLAR METALLICITY DISTRIBUTION FUNCTION READER -------------#
 def mdf(name): 
 	"""
-	Obtain a VICE mdf given the name of the output 
+	Read in the normalized stellar metallicity distribution functions at the 
+	final timestep of the simulation. 
 
-	Args:
-	=====
-	name:		The name of the VICE output (the .vice file) 
+	Parameters 
+	========== 
+	name :: str 
+		The name of the simulation to read output from, with or without the 
+		'.vice' extension. 
+
+	Returns 
+	=======
+	zdist :: VICE dataframe 
+		A VICE dataframe containing the bin edges and the values of the 
+		normalized stellar metallicity distribution in each [X/H] abundance 
+		and [X/Y] abundance ratio. 
+
+	Raises 
+	====== 
+	IOError :: [Occurs only if the output has been tampered with] 
+		:: The output file is not found. 
+		:: The output file is not formatted correctly. 
+		:: Other VICE output files are missing from the output. 
+
+	Notes 
+	===== 
+	For an output under a given name, this file will be stored under 
+	name.vice/mdf.out, and it is a simple ascii text file with a comment header 
+	detailing each column. By storing the output in this manner, user's may 
+	analyze the results of VICE simulations in languages other than python. 
+
+	VICE normalizes stellar metallicity distribution functions such that the 
+	area under the user-specified binspace is equal to 1. Because of this, they 
+	should be interpreted as probability densities. See section 6 of VICE's 
+	science documentation at https://github.com/giganano/VICE/tree/master/docs 
+	for further details. 
+
+	If any [X/H] abundances or [X/Y] abundance ratios determined by VICE never 
+	pass within the user's specified binspace, then the associated MDF will be 
+	NaN at all values. 
+
+	Because the user-specified bins that the stellar MDF is sorted into may 
+	not be symmetric, if the simulation tracks the abundance ratios of stars in 
+	[X/Y], the returned dataframe will not determine the distribution in the 
+	inverse abundance ratio [Y/X] automatically. 
+
+	Example 
+	======= 
+	>>> zdist = vice.mdf("example") 
+	>>> zdist.keys() 
+	    [“dn/d[sr/h],”,
+	    “dn/d[sr/fe],”
+	    “bin_edge_left,”
+	    “dn/d[o/h],”
+	    “dn/d[o/fe],”
+	    “dn/d[fe/h],”
+	    “bin_edge_right,”
+	    “dn/d[o/sr]”]	
+	>>> print("dN/d[O/Fe] in the 65th bin: %.2e" % (zdist["dn/d[o/fe]"][65])) 
+	    dN/d[O/Fe] in the 65th bin: 1.41e-01 
+	>>> [zdist[65]["bin_edge_left"], zdist[65]["bin_edge_right"]] 
+	    [2.50e-01, 3.00e-01] 
 	"""
 	name = __get_name(name) # format the name off of the user's specification 
 	__check_output(name) # make sure the files are there 
@@ -90,15 +146,92 @@ def mdf(name):
 #------------------------------ HISTORY READER ------------------------------#
 def history(name): 
 	"""
-	Obtain a VICE history given the name of the output 
+	Read in the part of a simulation's output that records the time-evolution 
+	of the ISM metallicity. 
 
-	Args:
-	=====
-	name: 		The name of the VICE output (the .vice file)
+	Parameters
+	==========
+	name :: str 
+		The name of the output to read the history from, with or without the 
+		'.vice' extension. 
 
-	Returns: 
-	========
-	A VICE dataframe containing the time-evolution of the gas-phase metallicity 
+	Returns 
+	======= 
+	hist :: VICE dataframe 
+		A VICE history object (a subclass of the VICE dataframe), which 
+		contains the time in Gyr, gas and stellar masses in solar masses, star 
+		formation and infall rates in Msun/yr, inflow and outflow 
+		metallicities for each element, gas-phase mass and metallicities of 
+		each element, and every [X/Y] combination of abundance ratios for each 
+		output timestep. 
+
+	Raises 
+	====== 
+	IOError :: [Only occurs if the output has been tampered with]  
+		:: The output file is not found. 
+		:: The output file is not formatted correctly. 
+		:: Other VICE output files are missing from the output 
+
+	Notes 
+	===== 
+	For an output under a given name, the history file is stored under 
+	name.vice/history.out, and it is a simple ascii text file with a comment 
+	header detailing each column. By storing the output in this manner, user's 
+	may analyze the results of VICE simulations in languages other than 
+	python. 
+
+	In addition to the abundance and dynamical evolution information, history 
+	objects will also record the effective recycling parameter and the 
+	specified mass loading parameter at all times. These ar ethe actual 
+	recycling rate divided by the star formation rate and the instantaneous 
+	mass loading parameter \\eta that the user has specified regardless of the 
+	smoothing time, respectively. 
+
+	In addition to the keys present in history dataframes, users may also 
+	index them with 'z' and '[m/h]' [case-insensitive]. This will determine 
+	the total metallicity by mass as well as the logarithmic abundance 
+	relative to solar. Both are scaled in the following manner: 
+
+	Z = Z_solar * (\\sum_i Z_i / \\sum_i Z_i^solar) 
+
+	This is the scaling of the total metallicity that is encoded into VICE's 
+	timestep integrator, which prevents the simulation from behaving as if it 
+	has a systematically low metallicity when enrichment is tracked for only 
+	a small number of elements. See section 5.4 of VICE's science documentation 
+	at https://github.com/giganano/VICE/tree/master/docs for further details. 
+
+	Example 
+	=======
+	>>> history = vice.history("example") 
+	>>> hist.keys() 
+	    [“z(fe)”,
+	    “mass(fe)”,
+	    “[o/fe]”,
+	    “z_in(sr)”,
+	    “z_in(fe)”,
+	    “z(sr)”,
+	    “[sr/fe]”,
+	    “z_out(o)”,
+	    “mgas”,
+	    “mass(sr)”,
+	    “z_out(sr)”,
+	    “time”,
+	    “sfr”,
+	    “z_out(fe)”,
+	    “eta_0”,
+	    “[o/sr]”,
+	    “z(o)”,
+	    “[o/h]”,
+	    “ifr”,
+	    “z_in(o)”,
+	    “ofr”,
+	    “[sr/h]”,
+	    “[fe/h]”,
+	    “r_eff”,
+	    “mass(o)”,
+	    “mstar”]
+	>>> print ("[O/Fe] at end of simulation: %.2e" % (hist["[o/fe]"][-1])) 
+	    [O/Fe] at end of simulation: -3.12e-01 
 	"""
 	name = __get_name(name) # format the name off of the user's specification 
 	__check_output(name) # make sure the files are there 
@@ -219,55 +352,62 @@ def __load_elements(filename):
 class output(object): 
 
 	"""
-	CLASS: output
-	=============
-	A class designed explicitly for handling the output of the singlezone class. 
+	Reads in the output from the singlezone class and allows the user to access 
+	it easily via VICE dataframes. The results are read in automatically. 
 
-	Attributes:
-	===========
-	history:			A VICE dataframe storing the output in name/history.out 
-	mdf:				A VICE dataframe storing the output in name/mdf.out 
-	name:				The name of the integration that produced the outputs
-	elements: 			The elements that the integration tracked 
-	ccsne_yields:		The core-collapse supernova yield settings at the time
-				the simulation was ran 
-	sneia_yields:		The supernova type Ia yield settings at the time 
-				the simulation was ran 
-
-	Functions:
+	Attributes 
 	==========
-	show
+	name :: str 
+		The name of the .vice directory containing the output of a singlezone 
+		object. 
+	elements :: tuple 
+		The symbols of the elements whose enrichment was tracked by the 
+		simulation. 
+	history :: VICE dataframe 
+		The abundances at all output times as well as the time-evolution of 
+		the galaxy, such as the star formation rate, gas mass, and star 
+		formation efficiency. 
+	mdf :: VICE dataframe 
+		The normalized stellar metallicity distribution function at the final 
+		timestep of the simulation. 
+	ccsne_yields :: VICE dataframe 
+		The yield settings from core-collapse supernovae at the time the 
+		simulation was ran. 
+	sneia_yields :: VICE dataframe 
+		The yield settings from type Ia supernovae at the time the simulation 
+		was ran. 
 
-	The history and mdf attributes are coded as dataframes. That is, they can 
-	be indexed by either a string indicating a column label or by index, which 
-	will return a python dictionary for that line of the output file. 
-	For example:
+	Functions 
+	=========
+	show :: 		Show a plot of a given quantity stored in the output 
 
-		>>> import vice
-		>>> out = vice.output("example")
-		>>> out.history["mgas"]
-		>>> out.history[14]
-		>>> out.mdf["dN/[o/fE]"]
+	Notes 
+	===== 
+	Reinstancing functional attributes from VICE outputs requires the package 
+	dill, an extension to pickle in the python standard library. It is 
+	recommended that VICE users install dill if they have not already so that 
+	they can make use of this feature; this can be done via 'pip install dill'. 
 
-	Where we have purposefully made case errors in the last line to illustrate 
-	that these data frames are case-insensitive. The second line will 
-	return a dictionary of dataframe keys to the values calculated by the 
-	VICE that output time. Because this is a python dictionary, 
-	however, accessing the data frame by row number and then column label is 
-	case-sensitive. 
+	VICE outputs are stored in directories with a .vice extension following the 
+	name of the simulation assigned to the singlezone object that produced it. 
+	Because the history and mdf outputs are stored in pure ascii text, this 
+	allows users to open them in languages other than python while retaining 
+	the ability to run <command> *.vice in a linux terminal to run operations 
+	on all VICE outputs in a given directory. 
 
-	Passing one of these strings to the show function will place that quantity 
-	on a graph and use matplotlib's pyplot.show() function to immediately 
-	display it for the user. This is the only function in the entire 
-	VICE package which is dependent on matplotlib or any other python package 
-	associated with Anaconda, and requires matplotlib version >= 2.
+	See also 
+	======== 
+	vice.history 
+	vice.mdf 
 	"""
 	def __init__(self, name): 
 		"""
-		Args:
-		=====
-		name:		The name of the output. This can also be the full path to 
-				the output directory. 
+		Parameters
+		==========
+		name :: str 
+			The name of the .vice directory containing the output. This can 
+			also be the full path to the output directory. The '.vice' 
+			extension need not be included. 
 		"""
 		self.name = name # Call the setter function 
 
@@ -282,8 +422,8 @@ class output(object):
 	@property
 	def name(self): 
 		"""
-		The name of the integration that was ran. This is also the path to 
-		its directory.
+		The name of the .vice directory containing the output of a singlezone 
+		object. 
 		"""
 		return self._name[:-5]
 
@@ -346,25 +486,40 @@ class output(object):
 		return self._sneia_yields 
 
 	def show(self, key): 
-		"""
-		Show the quantity within the output object referenced by its key. If 
-		this is a parameter from the history output, it will be shown on a 
-		graph plotted against time. If it a parameter from the mdf output, it 
-		will show the corresponding stellar metallicity distribution function. 
+		""" 
+		Show a plot of the given quantity referenced by a keyword argument. 
 
-		The user can also specify a key as y-x, in which case it will look for 
-		x and y within the history attribute for the quantities to plot on 
-		each axis.
+		Parameters 
+		========== 
+		key :: str [case-insensitive] 
+			The keyword argument. If this is a quantity stored in the history 
+			attribute, it will be plotted against time by default. Conversely, 
+			if it is stored in the mdf attribute, it will show the 
+			corresponding stellar metallicity distribution function. 
+			Users can also specify an argument of the format key1-key2 where 
+			key1 and key2 are elements of the history output. It will then 
+			plot key1 against key2 and show it to the user. 
 
-		>>> import vice
-		>>> out = vice.output("example")
-		>>> out.show("[O/Fe]-[Fe/H]")
+		Raises 
+		====== 
+		KeyError :: 
+			::	Key is not found in either history or mdf attributes 
+		ImportError :: 
+			::	matplotlib version >= 2 is not found in the user's system. 
 
-		The above will show the example integration's track in [O/Fe]-[Fe/H] 
-		abundance space.
+		Notes 
+		===== 
+		This function is NOT intended to generate publication quality plots for 
+		users. It is included purely as a convenience function for users to be 
+		able to read in and immediately inspect the results of their simulations 
+		in a plot with only a few lines of code. 
 
-		This function requires matplotlib version >= 2, and is the only 
-		feature in VICE dependent on any derivative of anaconda.  
+		Example 
+		======= 
+		>>> out = vice.output("example") 
+		>>> out.show("dn/d[o/fe]") 
+		>>> out.show("sfr") 
+		>>> out.show("[o/fe]-[fe/h]") 
 		"""
 		try: 
 			import matplotlib as mpl
@@ -604,27 +759,130 @@ class output(object):
 class dataframe(object): 
 	
 	"""
-	The VICE dataframe:
-	===================
 	Provides a means of storing data indexed by strings in a case-insensitive 
 	manner. VICE includes several instances of this class at the global level, 
 	some of which have features specific to their instance. Users may call 
 	these dataframes as a function using parentheses rather than square 
 	brackets and it will return the same thing. 
 
-	Functions:
-	==========
-	keys:		Returns all of the keys in lower-case format 
-	todict: 	Returns a native python dictionary with the same keys and fields 
-			as the dataframe. Note however that python dictionaries are 
-			case-sensitive and are thus less versatile than this object 
+	Functions
+	=========
+	keys		
+	todict
+
+	Built-in dataframes 
+	===================
+	VICE provides the following built-in dataframes. 
+
+	atomic_number
+	------------- 
+	Stores the number of protons in the nucleus of each of VICE's recognized 
+	elements. By design, this dataframe does not support item assignment 
+
+	ccsne_yields 
+	------------ 
+	Stores the current nucleosynthetic yield settings from core collapse 
+	supernovae. This dataframe is customizable and allows users to pass 
+	callable python functions, which will be interpreted as functions of the 
+	metallicity by mass Z. At the time an instance of the singlezone class is 
+	ran, the nucleosynthetic yield settings adopted by the simulation for each 
+	element are pulled from here. 
+
+		ccsne_yields.factory_defaults() 
+		------------------------------- 
+		Revert the nucleosynthetic yield settings for core collapse supernovae 
+		to their original defaults (when VICE was first installed). This will 
+		not save these settings as the new defaults; that can be achieved by 
+		calling ccsne_yields.save_defaults() immediately following this 
+		function. 
+
+		ccsne_yields.restore_defaults() 
+		------------------------------- 
+		Revert the nucleosynthetic yield settings for core collapse supernovae 
+		to their current defaults (which may not be the original defaults). 
+		This will not save these settings as the new defaults; that can be 
+		achieved by calling ccsne_yields.save_defaults() immediately following 
+		this function. 
+
+		ccsne_yields.save_defaults() 
+		---------------------------- 
+		Save the current nucleosynthetic yield settings for core collapse 
+		supernovae as the new defaults. Regardless of future changes in the 
+		user's current python interpreter, calling this function will make it 
+		so that the current settings are what VICE adopts upon import. 
+
+	sneia_yields 
+	------------  
+	Stores the current nucleosynthetic yield settings for type Ia supernovae. 
+	This dataframe is customizable but does not allow users to pass callable 
+	functions. At the time an instance of the singlezone class is ran, the 
+	nucleosynthetic yield settings adopted by the simulation for each element 
+	are pulled from here. 
+
+		sneia_yields.factory_defaults() 
+		------------------------------- 
+		Revert the nucleosynthetic yield settings for type Ia supernovae 
+		to their original defaults (when VICE was first installed). This will 
+		not save these settings as the new defaults; that can be achieved by 
+		calling ccsne_yields.save_defaults() immediately following this 
+		function. 
+
+		sneia_yields.restore_defaults() 
+		------------------------------- 
+		Revert the nucleosynthetic yield settings for type Ia supernovae 
+		to their current defaults (which may not be the original defaults). 
+		This will not save these settings as the new defaults; that can be 
+		achieved by calling ccsne_yields.save_defaults() immediately following 
+		this function. 
+
+		sneia_yields.save_defaults() 
+		---------------------------- 
+		Save the current nucleosynthetic yield settings for type Ia supernovae 
+		as the new defaults. Regardless of future changes in the user's 
+		current python interpreter, calling this function will make it so that 
+		the current settings are what VICE adopts upon import. 
+
+	solar_z 
+	-------  
+	Stores the abundance by mass of elements in the sun. By nature, this 
+	dataframe does not support user customization. Solar abundances are 
+	derived from Asplund et al. (2009) and have been converted to a mass 
+	fraction via: 
+
+		Z_x,sun = (mu_x)(X_sun)10^((X/H) - 12) 
+
+	where mu_x is the mean molecular weight of the element in amu, X_sun is 
+	the solar hydrogen abundance by mass, and (X/H) = log10(Nx/NH) + 12, 
+	which is what Asplund et al. (2009) reports. These calculations adopt 
+	X_sun = 0.73 as the solar hydrogen abundances, also from Asplund et al. 
+	(2009). 
+
+	sources 
+	-------  
+	Stores strings denoting what astronomers generally believe to be the 
+	dominant enrichment channels for each element. These are included purely 
+	for convenience, and are adopted from Johnson (2019). This dataframe does 
+	not support user customization.
+
+		Enrichment Channels 
+		------------------- 
+		"CCSNE" :: core collapse supernovae 
+		"SNEIA" :: type Ia supernovae 
+		"AGB" :: asymptotic giant branch stars 
+		"NSNS" :: binary neutron star mergers / r-process 
+
+	References 
+	========== 
+	Asplund et al. (2009), ARA&A, 47, 481 
+	Johnson (2019), Science, 6426, 474 
 	"""
 
 	def __init__(self, frame): 
 		"""
-		Args:
-		=====
-		frame:		A dictionary to construct the dataframe from 
+		Parameters 
+		==========
+		frame :: dict 
+			A python dictionary to construct the dataframe from 
 		"""
 		try:
 			keys = tuple([i.lower() for i in frame.keys()])
@@ -747,25 +1005,19 @@ class dataframe(object):
 #------------------------- VICE DATAFRAME SUBCLASSES -------------------------#
 class _noncustomizable_dataframe(dataframe): 
 
-	"""
-	A subclass of the VICE dataframe which does not support customization of 
-	individual fields. These dataframes do not allow the user to modify 
-	each element. 
-
-	User access or modification of this class is discouraged. 
-	"""
 
 	def __init__(self, frame): 
 		"""
-		Args:
-		=====
-		frame:		A dictionary to construct the dataframe from 
+		Parameters 
+		==========
+		frame :: dict 
+			A python dictionary to construct the dataframe from 
 		"""
-
 		dataframe.__init__(self, frame) 
 		keys = tuple([i.lower() for i in frame.keys()]) 
 		fields = tuple([frame[i] for i in frame.keys()]) 
 		self._frame = dict(zip(keys, fields)) 
+		self.__doc__ = dataframe.__doc__ 
 
 	def __setitem__(self, key, value): 
 		"""	
@@ -791,33 +1043,37 @@ class _noncustomizable_dataframe(dataframe):
 
 
 class _customizable_yield_table(dataframe): 
-	
-	"""
-	A subclass of the VICE dataframe specifically designed to store 
-	user-specified nucleosynthetic yield settings. Depending on the instance, 
-	some support functional attributes and others don't. These instances also 
-	allow the user to save new default yield settings. 
-
-	User access or modification of this class is discouraged. 
-	"""
 
 	def __init__(self, frame, allow_funcs, config_field): 
 
 		"""
-		Args:
-		=====
-		frame:			A python dictionary to construct the dataframe from 
-		allow_funcs:		A boolean describing whether or not functional 
-					attributes are allowed 
-		config_field: 		The name of the ".config" file that is stored 
-					whenever the user saves new default yield settings 
+		Parameters 
+		==========
+		frame :: dict 
+			A python dictionary to construct the dataframe from 
+		"""
+
+		"""
+		The above docstring entered purely to keep the __init__ docstring 
+		consistent across built-in dataframes. The following is the actual 
+		docstring of this class: 
+
+		Parameters
+		==========
+		frame :: dict 
+			A python dictionary to construct the dataframe from 
+		allow_funcs :: bool 
+			A boolean describing whether or not functional attribute are allowed 
+		config_field :: str 
+			The name of the '.config' file that is stored whenever the user 
+			saves new default yield settings. 
 		"""
 
 		if "%s.config" % (config_field) in os.listdir("%score" % (
-			_DIRECTORY)): 
+			_DIRECTORY_)): 
 			# If saved yields are found, load those 
 			self._frame = pickle.load(open("%score/%s.config" % (
-				_DIRECTORY, config_field), "rb"))
+				_DIRECTORY_, config_field), "rb"))
 		else:
 			# Or else use the ones that were passed 
 			keys = tuple([i.lower() for i in frame.keys()]) 
@@ -831,6 +1087,7 @@ class _customizable_yield_table(dataframe):
 		self.__defaults = dict(zip(keys, fields))
 		self._allow_funcs = allow_funcs 
 		self._config_field = config_field 
+		self.__doc__ = dataframe.__doc__ 
 
 	def __setitem__(self, key, value): 
 		if isinstance(key, strcomp): # If it's a string 
@@ -873,9 +1130,9 @@ class _customizable_yield_table(dataframe):
 		Restores the dataframe to its default parameters. 
 		"""
 		if "%s.config" % (self._config_field) in os.listdir("%score" % (
-			_DIRECTORY)): 
+			_DIRECTORY_)): 
 			self._frame = pickle.load(open("%score/%s.config" % (
-				_DIRECTORY, self._config_field))) 
+				_DIRECTORY_, self._config_field))) 
 		else: 
 			self._frame = dict(self.__defaults) 
 
@@ -900,12 +1157,12 @@ class _customizable_yield_table(dataframe):
 			imported, go ahead and save
 			"""
 			pickle.dump(self._frame, open("%score/%s.config" % (
-				_DIRECTORY, self._config_field), "wb")) 
+				_DIRECTORY_, self._config_field), "wb")) 
 		elif all(list(map(lambda x: not callable(self._frame[x]), 
 			self.keys()))): 
 			# Dill is not imported, but nothing is callable anyway 
 			pickle.dump(self._frame, open("%score/%s.config" % (
-				_DIRECTORY, self._config_field), "wb")) 
+				_DIRECTORY_, self._config_field), "wb")) 
 		else: 
 			message = "Package 'dill' not found. At least one element is set " 
 			message += "to have a functional yield, and saving that requires " 
@@ -927,7 +1184,7 @@ class _customizable_yield_table(dataframe):
 		elif sys.version_info[0] == 3: 
 			args = inspect.getfullargspec(func) 
 		else:
-			_version_error()
+			_VERSION_ERROR_()
 		if args[1] != None: 
 			return True 
 		elif args[2] != None: 
@@ -943,21 +1200,27 @@ class _customizable_yield_table(dataframe):
 
 class _history(dataframe): 
 
-	"""
-	A subclass of the VICE dataframe specifically designed to handle the 
-	history output of the singlezone class. 
-
-	User access or modification of this class is discouraged. 
-	"""
-
 	def __init__(self, frame, adopted_solar_z): 
 
 		"""
-		Args:
-		=====
-		frame:			A python dictionary to construct the dataframe from 
-		adopted_solar_z:	The metallicity by mass Z of the sun that the 
-					user adopted in their simulation. 
+		Parameters 
+		==========
+		frame :: dict 
+			A python dictionary to construct the dataframe from 
+		"""
+
+		"""
+		The above docstring entered purely to keep the __init__ docstring 
+		consistent across built-in dataframes. Below is the actual 
+		docstring: 
+
+		Parameters
+		==========
+		frame :: dict 
+			A python dictionary to construct the dataframe from 
+		adopted_solar_z :: real number 
+			The metallicity by mass Z of the sun that the user adopted in 
+			their simulation
 		"""
 
 		"""
@@ -977,6 +1240,7 @@ class _history(dataframe):
 		self._frame = dict(zip(keys, fields))  
 		self.__original_keys = self.keys()
 		dataframe.__init__(self, frame) 
+		self.__doc__ = dataframe.__doc__ 
 
 	def __getitem__(self, key): 
 		"""

@@ -7,10 +7,10 @@ This file handles the integration of nucleosynthetic yields from SNe Ia
 """
 
 from __future__ import absolute_import
-from ...core._globals import _RECOGNIZED_ELEMENTS
-from ...core._globals import _DIRECTORY
-from ...core._globals import _version_error
-PATH = "%sdata/_sneia_yields/" % (_DIRECTORY)
+from ...core._globals import _RECOGNIZED_ELEMENTS_
+from ...core._globals import _DIRECTORY_
+from ...core._globals import _VERSION_ERROR_
+PATH = "%sdata/_sneia_yields/" % (_DIRECTORY_)
 import numbers 
 import sys 
 import os
@@ -20,7 +20,7 @@ if sys.version_info[0] == 2:
 elif sys.version_info[0] == 3: 
 	strcomp = str 
 else:
-	_version_error()
+	_VERSION_ERROR_()
 
 _RECOGNIZED_STUDIES_ = ["seitenzahl13", "iwamoto99"]
 
@@ -29,29 +29,63 @@ _RECOGNIZED_STUDIES_ = ["seitenzahl13", "iwamoto99"]
 
 
 #-------------------------- SINGLE_IA_YIELD FUNCTION --------------------------# 
-def single_detonation(element, study = "Seitenzahl13", model = "N1"):
+def single_detonation(element, study = "seitenzahl13", model = "N1"):
 	"""
-	Calculates the mass in solar masses of a given element produced by a single 
-	instance of a type Ia supernova from the results of previous theoretical 
-	studies. 
+	Lookup the mass yield in solar masses of a given element from a single 
+	instance of a type Ia supernovae as determined by a given study and 
+	explosion model. See section 5.2 of VICE's science documentation at 
+	https://github.com/giganano/VICE/tree/master/docs for further details. 
 
-	Args:
-	=====
-	element:		The elemental symbol
+	Parameters 
+	========== 
+	element :: str [case-insensitive] 
+		The symbol for the element to look up the yield for 
+	study :: str [case-insensitive] [default :: "seitenzahl13"] 
+		A keyword denoting which study to adopt the yield from 
+		Keyword and their Assocaited Studies
+		------------------------------------ 
+		"seitenzahl13" :: Seitenzahl et al. (2013), MNRAS, 429, 1156 
+		"iwamoto99" :: Iwamoto et al. (1999), ApJ, 124, 439 
+	model :: str [case-insensitive] [default :: N1] 
+		A keyword denoting the model from the associated study to adopt. 
 
-	Kwargs:
-	=======
-	study = "seitenzahl13":		The name of the study to pull yields from
-	model = "W7":			The name of the model from the study
+	Returns 
+	======= 
+	yield :: real number 
+		The mass yield of the given element in solar masses as determined for 
+		the specified model from the specified study. 
 
-	Studies and their keywords:
-	===========================
-	Iwamoto99:				Iwamoto et al. (1999), ApJ, 124, 439
-		Associated Models:		W7, W70, WDD1, WDD2, WDD3, CDD1, CDD2
-	Seitenzahl13: 				Seitenzahl et al. (2013), MNRAS, 429, 1156
-		Associated Models: 		N1, N3, N5, N10, N20, N40, N100H, N100, N100L, 
-								N150, N200, N300C, N1600, N100_Z0.5, N100_Z0.1, 
-								N100_Z0.01
+	Raises 
+	====== 
+	ValueError :: 
+		::	The element is not built into VICE 
+		::	The study is not built into VICE 
+	LookupError :: 
+		::	The study is recognized, but the model is not recognized for that 
+			particular study 
+	IOError :: [Occurs only if VICE's file structure has been tampered with] 
+		::	The data file is not found. 
+
+	Notes 
+	===== 
+	The only calculation performed by this function is a sum of the mass yields 
+	of all isotopes of the given element reported by the study. Other than 
+	that, it is a simple lookup function through the file tree built into 
+	VICE. 
+
+	Example 
+	======= 
+	>>> vice.single_ia_yield("fe") 
+	    1.17390714 
+	>>> vice.single_ia_yield("fe", study = "iwamoto99", model = "W70") 
+	    0.77516 
+	>>> vice.single_ia_yield("ni", model = "n100l") 
+	    0.0391409000000526
+
+	References 
+	========== 
+	Iwamoto et al. (1999), ApJ, 124, 439 
+	Seitenzahl et al. (2013), MNRAS, 429, 1156 
 	"""
 
 	# Type check errors ---> element, study, and model must be of type string 
@@ -71,7 +105,7 @@ def single_detonation(element, study = "Seitenzahl13", model = "N1"):
 		pass 
 
 	# Value check errors 
-	if element.lower() not in _RECOGNIZED_ELEMENTS: 
+	if element.lower() not in _RECOGNIZED_ELEMENTS_: 
 		# The element has to be recognized 
 		raise ValueError("Unrecognized element: %s" % (element))
 	elif study.lower() not in _RECOGNIZED_STUDIES_: 
@@ -133,48 +167,79 @@ def single_detonation(element, study = "Seitenzahl13", model = "N1"):
 
 
 #------------------------ FRACTIONAL_IA_YIELD FUNCTION ------------------------# 
-def integrated_yield(element, study = "Seitenzahl13", model = "N1", 
+def integrated_yield(element, study = "seitenzahl13", model = "N1", 
 	n = 2.2e-3):
 	"""
-	Calculates the IMF-integrated SNe Ia yield for a given element given a 
-	number of SNe Ia detonations per unit solar mass formed n = N_Ia/M_*.
+	Calculate an IMF-integrated fractional nucleosynthetic yield of a given 
+	element from type Ia supernovae. Unlike vice.fractional_cc_yield, this 
+	function does not require numerical quadrature. See section 5.2 of VICE's 
+	science documentation at https://github.com/giganano/VICE/tree/master/docs 
+	for futher details. 
 
-	The reported yield is simple: the mass of the element formed on average 
-	by one SN Ia multiplied by the number of SNe Ia per unit mass of stars 
-	formed. It thus has the sample form: 
+	Parameters 
+	========== 
+	element :: str [case-insensitive] 
+		The symbol of the element to calculate the yield for 
+	study :: str [case-insensitive] [default :: "seitenzahl13"] 
+		A keyword denoting which study to adopt single Ia yields from. 
+		Keywords and their associated studies
+		------------------------------------- 
+		"seitenzahl13" :: Seitenzahl et al. (2013), MNRAS, 429, 1156 
+		"iwamoto99" :: Iwamoto et al. (1999), ApJ, 124, 439 
+	model :: str [case-insensitive] [default :: "N1"] 
+		The model from the associated study to adopt. 
+		Keywords and their associated models 
+		------------------------------------
+		"seitenzahl13" :: N1, N3, N5, N10, N40, N100H, N100, N100L, N150, 
+			N200, N300C 
+		"iwamoto99" :: W7, W70, WDD1, WDD2, WDD3, CDD1, CDD2 
+	n :: real number [default :: 2.2e-03] 
+		The average number of type Ia supernovae produced per unit stellar 
+		mass formed (N_ia/M_*). This parameter has units of Msun^{-1}. I 
+		recommend the default value of 2.2e-03 in accordance with Maoz & 
+		Mannucci (2012), PASA, 29, 447. 
 
-	y_Ia(x) = M_Ia(x) * n 
-
-	where M_Ia(x) is the single detonation yield and n is the mass-metric 
-	number of SNe Ia. This function defaults to n = 2.2 x 10^-3 Msun^-1 as 
-	found by Maoz & Mannucci (2012), which was also employed by the 
-	Andrews et al. (2017) and Weinberg et al. (2017) studies. 
-
-	Args:
-	=====
-	element:			The elemental symbol
-
-	Kwargs:
+	Returns
 	=======
-	study = "Iwamoto99":		The name of the study to pull yields from
-	model = "W7":			The name of the model from the study
-	n = 2.2e-3: 			The number of SNe Ia per unit stellar mass formed 
-					in Msun^-1 
+	yield :: real number 
+		The IMF-integrated yield. Unlike vice.fractional_cc_yield, there is 
+		no associated numerical error with this function, because the 
+		solution is analytic. 
 
-	Studies and their Keywords:
-	===========================
-	Iwamoto99:				Iwamoto et al. (1999), ApJ, 124, 439
-		Associated Models:		W7, W70, WDD1, WDD2, WDD3, CDD1, CDD2
-	Seitenzahl13: 			Seitenzahl et al. (2013), MNRAS, 429, 1156
-		Associated Models: 		N1, N3, N5, N10, N20, N40, N100H, N100, N100L, 
-						N150, N200, N300C, N1600, N100_Z0.5, N100_Z0.1, 
-						N100_Z0.01
+	Raises
+	======
+	ValueError :: 
+		:: 	The element is not built into VICE 
+		:: 	The study is not built into VICE 
+		::	n < 0  
+	LookupError :: 
+		:: The model is not recognized for the given study 
+	IOError :: [occurs only if VICE's file structure has been tampered with] 
+		:: 	The parameters passed to this function are allowed but the data 
+			file is not found. 
 
-	References: 
-	===========
-	Andrews, Weinberg, Schoenrich, & Johnson (2017), ApJ, 835, 224 
+	Notes
+	=====
+	This function evaluates the soluation to the following equation: 
+	
+	y_x^Ia = (N_Ia/M_*)M_x
+
+	where M_x is the value returned by vice.single_ia_yield. 
+
+	Example 
+	=======
+	>>> vice.fractional_ia_yield("fe")
+	    0.0025825957080000002
+	>>> vice.fractional_ia_yield("ca") 
+	    8.935489894764334e-06
+	>>> vice.fractional_ia_yield("ni") 
+	    0.00016576890932800003
+
+	References 
+	========== 
+	Iwamoto et al. (1999), ApJ, 124, 439 
 	Maoz & Mannucci (2012), PASA, 29, 447 
-	Weinberg, Andrews, & Freudenberg (2017), ApJ, 837, 183
+	Seitenzahl et al. (2013), MNRAS, 429, 1156 
 	"""
 
 	# n must be a number 

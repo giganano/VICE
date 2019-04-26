@@ -28,10 +28,10 @@ message = "Running tests on the integration features, output reader, and "
 message += "yield-weighted IMF-integrator. This may take a few minutes, "
 message += "depending on the processing speed of the system."
 print(message)
-send = False
+send = False 
 
 try:
-	for i in vice._RECOGNIZED_ELEMENTS: 
+	for i in vice._RECOGNIZED_ELEMENTS_: 
 		a = vice.agb_yield_grid(i)
 		a = vice.fractional_cc_yield(i)
 		a = vice.fractional_cc_yield(i, study = "WW95")
@@ -46,7 +46,7 @@ except:
 	print("IMF-integration of stellar yields: Failed")
 	
 try:
-	for i in vice._RECOGNIZED_ELEMENTS:
+	for i in vice._RECOGNIZED_ELEMENTS_:
 		a = vice.single_stellar_population(i)
 		a = vice.single_stellar_population(i, Z = 0.001)
 	print("Single Stellar Population Enrichment: Success")
