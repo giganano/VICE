@@ -39,7 +39,7 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 	Parameters 
 	========== 
 	element :: str [case-insensitive] 
-		The symbol for the element to look up the yield for.  
+		The symbol of the element to look up the yield for.  
 	study :: str [case-insensitive] [default :: "seitenzahl13"] 
 		A keyword denoting which study to adopt the yield from 
 		Keyword and their Associated Studies
