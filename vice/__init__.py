@@ -9,16 +9,20 @@ A software built for numerical integration of single-zone chemical evolution
 models. 
 
 See LICENSE for copyright information and citation requirements. 
-Documentation for this package is available in several forms: 
+
+Documentation for this package is available in two forms: 
 	1) In the docstrings of the objects and functions
 	2) Under docs/ in VICE's git repository at: 
 		<https://github.com/giganano/VICE/tree/master/docs>
-	3) In the appendix of the associated publication 
-		Johnson & Weinberg (2019, in prep)
+
 We recommend first-time users visit the git repository to obtain copies of the 
 User's Guide and Science Documentation. Under the docs/ directory, they will 
 find a QuickStartTutorial.ipynb notebook intended for quick familiarization 
 with the structure of VICE. 
+
+It is also recommended that VICE users install the package dill, an extension 
+of the python standard library package pickle. This enables VICE to encode 
+functional attributes with its output, and can be achieved via pip. 
 
 In all docstrings, examples of code are represented by three > signs:
 
@@ -26,11 +30,11 @@ In all docstrings, examples of code are represented by three > signs:
 	>>> a += 10
 
 
-Included Features:
-==================
+Included Features
+=================
 
-The VICE Dataframe: 
--------------------
+The VICE Dataframe 
+------------------
 	A data storing object meant for case-insensitive lookup 
 
 	Instances of this class included with VICE:
@@ -47,15 +51,15 @@ The VICE Dataframe:
 		sources: 
 			The dominant enrichment sources for each element 
 
-Classes: 
---------
+Classes 
+-------
 	singlezone: 
 		Run simulations of single-zone galactic chemical evolution models 
 	output: 
 		Handle the output of the integrator class 
 
-Functions: 
-----------
+Functions 
+---------
 	agb_yield_grid: 
 		Returns a built-in mass-metallicity yield grid for a given element 
 	fractional_cc_yield: 
@@ -64,6 +68,10 @@ Functions:
 	fractional_ia_yield: 
 		Returns an IMF-integrated yield for a give nelement from type Ia 
 		supernovae 
+	history: 
+		Read in simulation output containing the time-evolution of the ISM 
+	mdf: 
+		Read in the stellar metallicity distribution function from a simulation 
 	mirror: 
 		Given an output object, returns an integrator with the same properties 
 		as that which produced the output 
@@ -74,8 +82,8 @@ Functions:
 		Returns the mass of a given element produced over time by a single 
 		episode of star formation
 
-Command Line: 
-=============
+Command Line 
+============
 VICE also allows users to run simulations of simple evolutionary histories 
 directly from the command line. Type "vice -h" in a terminal for instructions 
 on how to do so. 
