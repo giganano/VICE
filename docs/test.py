@@ -209,6 +209,15 @@ if send:
 else:
 	print("All tests passed.")
 
+try: 
+	import dill 
+except ImportError: 
+	message = "Package 'dill' not found. This package is required for encoding " 
+	message += "functional attributes with VICE outputs. It is recommended " 
+	message += "that VICE users install this package to make use of these " 
+	message += "features. This can be done via 'pip install dill'." 
+	print(message) 
+
 
 
 

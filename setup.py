@@ -226,4 +226,14 @@ if __name__ == "__main__":
 	setup_package()
 	del builtins.__VICE_SETUP__
 
+	# tell them if dill isn't installed 
+	try: 
+		import dill 
+	except ImportError: 
+		message = "Package 'dill' not found. This package is required for "
+		message += "encoding functional attributes with VICE outputs. It is "
+		message += "recommended that VICE users install this package to make "
+		message += "use of these features. This can be done via 'pip install "
+		message += "dill'." 
+		print(message) 
 
