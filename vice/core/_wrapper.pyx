@@ -90,7 +90,7 @@ def mirror(output_obj):
 
 	Notes 
 	===== 
-	VICE stores attributes of integrator objects in a pickle within the output 
+	VICE stores attributes of singlezone objects in a pickle within the output 
 	directory. Encoding functions along with the rest of the attributes 
 	requires the package dill, an extension to pickle which makes this 
 	possible. If dill is not installed, these attributes will not be encoded 
@@ -247,7 +247,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	agb_model :: str [case-insensitive] [default :: "cristallo11"] 
 		A keyword denoting which table of nucleosynthetic yields from AGB stars 
 		to adopt. 
-		Recognized keywords and their associated studies 
+		Recognized Keywords and their Associated Studies 
 		------------------------------------------------
 		"cristallo11" :: Cristallo et al. (2011), ApJS, 197, 17 
 		"karakas10" :: Karakas (2010), MNRAS, 403, 1413 
@@ -263,7 +263,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	Raises 
 	====== 
 	ValueError :: 
-		::	The element is not built into VICE 
+		::	The element is not built into VICE. 
 		::	mstar < 0 
 		::	Z < 0 
 		::	time < 0 or time > 15 [VICE does not simulate enrichment on 
@@ -279,11 +279,11 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 		::	agb_model == "karakas10" and the atomic number of the element is 
 			larger than 29. The Karakas (2010), MNRAS, 403, 1413 study did not 
 			report yields for elements heavier than nickel. 
-	IOError :: [Only occurs if VICE's file structure has been tampered with] 
-		::	The AGB yield file is not found. 
 	ArithmeticError :: 
 		::	A functional RIa evaluated to a negative value, inf, or NaN at any 
 			given timestep. 
+	IOError :: [Only occurs if VICE's file structure has been tampered with] 
+		::	The AGB yield file is not found. 
 
 	Example 
 	======= 
