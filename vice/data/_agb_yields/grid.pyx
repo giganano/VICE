@@ -59,11 +59,11 @@ def yield_grid(element, study = "cristallo11"):
 	==========
 	element :: str [case-insensitive] 
 		The symbol of the element to obtain the yield grid for. 
-	study :: str [case-insensitive] [optional]
-		A keyword denoting which AGB yield study to pull the yield table from 
+	study :: str [case-insensitive] [default :: "cristallo11"]
+		A keyword denoting which AGB yield study to pull the yield table from. 
 		Keywords and their Associated Studies: 
 		--------------------------------------
-		"cristallo11" [default] :: Cristallo et al. (2011), ApJS, 197, 17 
+		"cristallo11" :: Cristallo et al. (2011), ApJS, 197, 17 
 		"karakas10" :: Karakas (2010), MNRAS, 403, 1413 
 
 	Returns
@@ -76,7 +76,7 @@ def yield_grid(element, study = "cristallo11"):
 	masses :: tuple 
 		The masses in terms of the sun that the yield grid is sampled on. 
 	z :: tuple 
-		The metallicity by mass Z of the star's simulated yields.
+		The metallicities by mass Z on that the yield grid is sampled on. 
 
 	Raises
 	====== 
@@ -89,8 +89,7 @@ def yield_grid(element, study = "cristallo11"):
 			than nickel. 
 	IOError :: [Occurs only if VICE's file structure has been tampered with] 
 		:: 	The parameters passed to this function are allowed but the data 
-			file is not found. This should only happen if the user has tampered 
-			with VICE's internal file structure. 
+			file is not found. 
 
 	Example
 	=======
