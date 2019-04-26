@@ -230,10 +230,11 @@ if __name__ == "__main__":
 	try: 
 		import dill 
 	except ImportError: 
-		message = "Package 'dill' not found. This package is required for "
-		message += "encoding functional attributes with VICE outputs. It is "
-		message += "recommended that VICE users install this package to make "
-		message += "use of these features. This can be done via 'pip install "
-		message += "dill'." 
-		print(message) 
+		print("""\
+================================================================================
+Package 'dill' not found. This package is required for encoding functional 
+attributes with VICE outputs. It is recommended that VICE users install this 
+package to make use of these features. This can be done via 'pip install dill'. 
+================================================================================\
+""")
 
