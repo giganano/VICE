@@ -70,7 +70,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		yield for. 
 	study :: str [case-insensitive] [default :: "LC18"]
 		A keyword denoting which study to adopt the yield from 
-		Keywords and their associated studies
+		Keywords and their Associated Studies
 		-------------------------------------
 		"LC18" :: Limongi & Chieffi (2018), ApJS, 237, 13
 		"CL13" :: Chieffi & Limongi (2013), ApJ, 764, 21 
@@ -114,9 +114,9 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	upper :: real number [default :: 100] 
 		The upper mass limit on star formation in solar masses. 
 	tolerance :: real number [default :: 0.001] 
-		The numerical tolerance. The subroutins implementing Gaussian quadrature 
-		in VICE will not return a result until the fractional change between 
-		two successive integrations is smaller than this value. 
+		The numerical tolerance. The subroutines implementing Gaussian 
+		quadrature in VICE will not return a result until the fractional 
+		change between two successive integrations is smaller than this value. 
 	Nmin :: real number [default :: 64] 
 		The minimum number of bins in quadrature. 
 	Nmax :: real number [default :: 2e+08] 
@@ -160,13 +160,13 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	limit on star formation explode as a core-collapse supernova. 
 
 	y_x^CC = \\frac{
-		\\int_8^u m_x\\frac{dN}{dm}dm
+		\\int_8^u M_x\\frac{dN}{dM}dM
 	}{
-		\\int_l^u m\\frac{dN}{dm}dm
+		\\int_l^u M\\frac{dN}{dM}dM
 	}
 
-	where m_x is the mass of the element x produced in the super of a star 
-	with initial mass m, and dN/dm is the stellar IMF. 
+	where M_x is the mass of the element x produced in the super of a star 
+	with initial mass M, and dN/dM is the stellar IMF. 
 
 	Example
 	=======
