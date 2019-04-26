@@ -87,7 +87,10 @@ sequence of commands:
 
 Optional elements of the installation process are bound in brackets. The 
 option ``[--user]`` should be invoked when the user wishes to install to 
-their ``~/.local/`` ``python`` library. 
+their ``~/.local/`` ``python`` library. If users are installing both python 2 
+and python 3 versions of VICE, they should not run the setup file in separate 
+terminals simultaneously. It is likely that this will cause at least one of 
+the installations to fail. 
 
 If the user is installing to their ``~/.local/`` directory, then 
 ``~/.local/bin/`` must be on their ``PATH`` for ``VICE`` to run from the 
