@@ -81,8 +81,8 @@ sequence of commands:
 	$ make 
 	$ python setup.py install [--user]
 	$ [python3 setup.py install [--user]]
-	$ [make clean] 
-	$ [make tests]
+	$ make clean 
+	$ make tests
 	$ [make tests3]
 
 Optional elements of the installation process are bound in brackets. The 
