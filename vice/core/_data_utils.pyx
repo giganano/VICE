@@ -763,7 +763,9 @@ class dataframe(object):
 	manner. VICE includes several instances of this class at the global level, 
 	some of which have features specific to their instance. Users may call 
 	these dataframes as a function using parentheses rather than square 
-	brackets and it will return the same thing. 
+	brackets and it will return the same thing. If a dataframe stores 
+	array-like attributes, it may also be indexed via an integer to pull that 
+	element from each field. 
 
 	Functions
 	=========
