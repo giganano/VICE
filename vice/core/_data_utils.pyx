@@ -772,77 +772,28 @@ class dataframe(object):
 	keys		
 	todict
 
-	Built-in dataframes 
-	===================
-	VICE provides the following built-in dataframes. 
+	Yield Setting Dataframes 
+	======================== 
+	The following dataframes store the user's settings for nucleosynthetic 
+	yields from core collapse and type Ia supernovae. 
+
+	yields.ccsne.settings :: Yield settings from core collapse supernovae 
+	yields.sneia.settings :: Yield settings from type Ia supernovae 
+
+	Functions Associated with these Dataframes 
+	------------------------------------------ 
+	factory_defaults :: Revert to VICE's original defaults 
+	restore_defaults :: Revert to user's specified defaults 
+	save_defaults :: Save current settings as defaults 
+
+	Other Built-in dataframes 
+	========================= 
+	VICE provides the following dataframes. 
 
 	atomic_number
 	------------- 
 	Stores the number of protons in the nucleus of each of VICE's recognized 
 	elements. By design, this dataframe does not support item assignment 
-
-	ccsne_yields 
-	------------ 
-	Stores the current nucleosynthetic yield settings from core collapse 
-	supernovae. This dataframe is customizable and allows users to pass 
-	callable python functions, which will be interpreted as functions of the 
-	metallicity by mass Z. At the time an instance of the singlezone class is 
-	ran, the nucleosynthetic yield settings adopted by the simulation for each 
-	element are pulled from here. 
-
-		ccsne_yields.factory_defaults() 
-		------------------------------- 
-		Revert the nucleosynthetic yield settings for core collapse supernovae 
-		to their original defaults (when VICE was first installed). This will 
-		not save these settings as the new defaults; that can be achieved by 
-		calling ccsne_yields.save_defaults() immediately following this 
-		function. 
-
-		ccsne_yields.restore_defaults() 
-		------------------------------- 
-		Revert the nucleosynthetic yield settings for core collapse supernovae 
-		to their current defaults (which may not be the original defaults). 
-		This will not save these settings as the new defaults; that can be 
-		achieved by calling ccsne_yields.save_defaults() immediately following 
-		this function. 
-
-		ccsne_yields.save_defaults() 
-		---------------------------- 
-		Save the current nucleosynthetic yield settings for core collapse 
-		supernovae as the new defaults. Regardless of future changes in the 
-		user's current python interpreter, calling this function will make it 
-		so that the current settings are what VICE adopts upon import. 
-
-	sneia_yields 
-	------------  
-	Stores the current nucleosynthetic yield settings for type Ia supernovae. 
-	This dataframe is customizable but does not allow users to pass callable 
-	functions. At the time an instance of the singlezone class is ran, the 
-	nucleosynthetic yield settings adopted by the simulation for each element 
-	are pulled from here. 
-
-		sneia_yields.factory_defaults() 
-		------------------------------- 
-		Revert the nucleosynthetic yield settings for type Ia supernovae 
-		to their original defaults (when VICE was first installed). This will 
-		not save these settings as the new defaults; that can be achieved by 
-		calling ccsne_yields.save_defaults() immediately following this 
-		function. 
-
-		sneia_yields.restore_defaults() 
-		------------------------------- 
-		Revert the nucleosynthetic yield settings for type Ia supernovae 
-		to their current defaults (which may not be the original defaults). 
-		This will not save these settings as the new defaults; that can be 
-		achieved by calling ccsne_yields.save_defaults() immediately following 
-		this function. 
-
-		sneia_yields.save_defaults() 
-		---------------------------- 
-		Save the current nucleosynthetic yield settings for type Ia supernovae 
-		as the new defaults. Regardless of future changes in the user's 
-		current python interpreter, calling this function will make it so that 
-		the current settings are what VICE adopts upon import. 
 
 	solar_z 
 	-------  
