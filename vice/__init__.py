@@ -41,9 +41,9 @@ The VICE Dataframe
 	-------------------------------------------
 		atomic_number: 
 			The number of protons in the nucles of each recognized element 
-		ccsne_yields: 
+		yields.ccsne.settings: 
 			User-specified yield settings from core collapse supernovae 
-		sneia_yields: 
+		yields.sneia.settings: 
 			User-specified yield settings from type Ia supernovae 
 		solar_z: 
 			The solar abundance by mass of each element calibrated by Asplund 
@@ -60,12 +60,12 @@ Classes
 
 Functions 
 ---------
-	agb_yield_grid: 
+	yields.agb.grid: 
 		Returns a built-in mass-metallicity yield grid for a given element 
-	fractional_cc_yield: 
+	yields.ccsne.fractional: 
 		Returns an IMF-integrated yield for a given element from core-collapse 
 		supernovae 
-	fractional_ia_yield: 
+	yields.sneia.fractional: 
 		Returns an IMF-integrated yield for a give nelement from type Ia 
 		supernovae 
 	history: 
@@ -75,7 +75,7 @@ Functions
 	mirror: 
 		Given an output object, returns an integrator with the same properties 
 		as that which produced the output 
-	single_ia_yield: 
+	yields.sneia.single: 
 		Returns the mass of a given element produced by a single instance of 
 		a type Ia supernova on average 
 	single_stellar_population: 
