@@ -11,7 +11,7 @@ interacts with is scripted in this file.
 # Python Functions
 from __future__ import (print_function, division, unicode_literals, 
 	absolute_import)
-from . import _yields 
+# from . import _yields 
 from . import _data_utils as _du
 from ._globals import _RECOGNIZED_ELEMENTS_
 from ._globals import _RECOGNIZED_IMFS_
@@ -20,6 +20,11 @@ from ._globals import ScienceWarning
 from ._globals import _DEFAULT_FUNC_ 
 from ._globals import _DEFAULT_BINS_
 from ._globals import _DIRECTORY_
+from ._yields import atomic_number 
+from ._yields import solar_z 
+from ._yields import sources 
+from ..yields import ccsne 
+from ..yields import sneia 
 import math as m
 import warnings
 import numbers
@@ -437,7 +442,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 		message = "See docstring for list of recognized models." 
 		raise ValueError(message)
 	elif (agb_model.lower() == "karakas10" and 
-		_yields.atomic_number[element.lower()] > 28):
+		atomic_number[element.lower()] > 28):
 		message = "The %s study did not report yields for elements: " % (
 			studies["karakas10"])
 		message += "heavier than nickel."
@@ -454,8 +459,8 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	ms.imf = IMF.lower().encode("latin-1")
 
 	# Find the file associated with the AGB yield grid
-	agbfile = ("%sdata/_agb_yields/%s/%s.dat" % (_DIRECTORY_, 
-		agb_model.lower(), element.lower()))
+	agbfile = "%syields/agb/%s/%s.dat" % (_DIRECTORY_, 
+		agb_model.lower(), element.lower())
 	if os.path.exists(agbfile):
 		clib.read_agb_grid(byref(r), agbfile.encode("latin-1"), 0)
 	else:
@@ -497,7 +502,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 
 	# Setting the SNe Ia yield is a lot easier with the current version of VICE 
 	clib.set_sneia_yield(byref(r), 0, 
-		c_double(_yields.sneia_yields[element.lower()]))
+		c_double(sneia.settings[element.lower()]))
 	ptr = c_double * len(eval_times)
 
 	# Set up a pointer to a double to modify in the C code 
@@ -1975,7 +1980,7 @@ class singlezone(object):
 	def agb_model(self, value):
 		# The recognized AGB yield studies 
 		recognized = ["cristallo11", "karakas10"] 
-		if any(list(map(lambda x: _yields.atomic_number[x] > 28, 
+		if any(list(map(lambda x: atomic_number[x] > 28, 
 			self._elements))) and value.lower() == "karakas10":
 			# The Karakas (2010) yields do not go heavier than nickel 
 			message = "The Karakas et al. (2010), MNRAS, 403, 1413 study "
@@ -2123,18 +2128,17 @@ class singlezone(object):
 			"latin-1") for i in self._elements]))
 		self.__run.num_elements = len(self._elements)
 		ptr = c_double * len(self._elements)
-		solars = [_yields.solar_z[i] for i in self._elements]
+		solars = [solar_z[i] for i in self._elements]
 		solars = ptr(*solars[:])
 		clib.setup_elements(byref(self.__run), syms, solars)
 
 		"""
 		Setup each element's AGB yield grid, SNe Ia yield, and CCSNe yield. 
-		These are declared in the vice/core/_yields.pyx file. This for-loop 
-		pulls all of the appropriate values from those dataframes. 
+		This for-loop pulls all of the user's presets. 
 		"""
 		for i in list(range(len(self._elements))):
 			# AGB yield grids are stored in files 
-			agbfile = ("%sdata/_agb_yields/%s/%s.dat" % (_DIRECTORY_, 
+			agbfile = ("%syields/agb/%s/%s.dat" % (_DIRECTORY_, 
 				self._agb_model.lower(), 
 				self._elements[i].lower())).encode("latin-1")
 			clib.read_agb_grid(byref(self.__run), agbfile, i)
@@ -2143,7 +2147,7 @@ class singlezone(object):
 			Under the current version of VICE, SNe Ia yields can only be 
 			numbers. 
 			"""
-			sneia_yield = _yields.sneia_yields[self._elements[i]]
+			sneia_yield = sneia.settings[self._elements[i]]
 			clib.set_sneia_yield(byref(self.__run), i, c_double(sneia_yield))
 			
 			# CCSNe yields, however, can be functions of metallicity Z 
@@ -2334,7 +2338,7 @@ class singlezone(object):
 		"""
 		Allow CCSNe yields to be functions of metallicity Z
 		"""
-		ccyield = _yields.ccsne_yields[element]
+		ccyield = ccsne.settings[element]
 		if callable(ccyield): 
 			if self.__args(ccyield): 
 				message = "Yields from core-collapse supernovae, when " 
@@ -2604,8 +2608,8 @@ class singlezone(object):
 		ccsne_yields = len(self._elements) * [None]
 		sneia_yields = len(self._elements) * [None]
 		for i in range(len(self._elements)): 
-			ccsne_yields[i] = _yields.ccsne_yields[self._elements[i]]
-			sneia_yields[i] = _yields.sneia_yields[self._elements[i]]
+			ccsne_yields[i] = ccsne.settings[self._elements[i]]
+			sneia_yields[i] = sneia.settings[self._elements[i]]
 
 		# Turn them back into dictionaries
 		ccsne_yields = dict(zip(self._elements, ccsne_yields))
@@ -2716,7 +2720,7 @@ class singlezone(object):
 		r-process. In this case, VICE raises a warning that these elements will 
 		be under-abundant in the simulation. 
 		"""
-		rprocess = list(filter(lambda x: "NSNS" in _yields.sources[x], 
+		rprocess = list(filter(lambda x: "NSNS" in sources[x], 
 			self._elements))
 		# If anything survived the filter, it comes from the r-process 
 		if len(rprocess) > 0: 

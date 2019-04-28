@@ -1071,16 +1071,21 @@ class _customizable_yield_table(dataframe):
 			saves new default yield settings. 
 		"""
 
-		if "%s.config" % (config_field) in os.listdir("%score" % (
-			_DIRECTORY_)): 
+		if config_field == "foo": 
+			# allows dummy dataframes to be passed under the hood 
+			keys = tuple([i.lower() for i in frame.keys()]) 
+			fields = tuple([frame[i] for i in frame.keys()]) 
+			self._frame = dict(zip(keys, fields)) 
+		elif "settings.config" in os.listdir("%syields/%s" % (_DIRECTORY_, 
+			config_field)): 
 			# If saved yields are found, load those 
-			self._frame = pickle.load(open("%score/%s.config" % (
-				_DIRECTORY_, config_field), "rb"))
-		else:
+			self._frame = pickle.load(open("%syields/%s/settings.config" % (
+				_DIRECTORY_, config_field), "rb")) 
+		else: 
 			# Or else use the ones that were passed 
 			keys = tuple([i.lower() for i in frame.keys()]) 
 			fields = tuple([frame[i] for i in frame.keys()]) 
-			self._frame = dict(zip(keys, fields))   
+			self._frame = dict(zip(keys, fields)) 
 
 		# Call super and save all of the attributes 
 		dataframe.__init__(self, self._frame)

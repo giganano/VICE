@@ -10,7 +10,7 @@ from __future__ import absolute_import
 from ...core._globals import _RECOGNIZED_ELEMENTS_
 from ...core._globals import _DIRECTORY_
 from ...core._globals import _VERSION_ERROR_
-PATH = "%sdata/_sneia_yields/" % (_DIRECTORY_)
+PATH = "%syields/sneia/" % (_DIRECTORY_)
 import numbers 
 import sys 
 import os

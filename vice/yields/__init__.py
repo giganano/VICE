@@ -5,7 +5,10 @@ or altered form is subject to the copyright terms therein.
 """
 
 from __future__ import absolute_import
-from .grid import yield_grid as agb_yield_grid
+from . import agb 
+from . import ccsne 
+from . import sneia 
 
-__all__ = ["agb_yield_grid"]
-__all__ = [str(i) for i in __all__] # appease python 2 strings 
+__all__ = ["agb", "ccsne", "sneia"] 
+
+del absolute_import 

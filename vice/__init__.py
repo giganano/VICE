@@ -117,14 +117,13 @@ else:
 	if not __release: 
 		warnings.warn("Using un-released version of VICE", UserWarning)
 
-	__all__ = ["__author__", "__version__"]
+	__all__ = ["__author__", "__version__", "yields"] 
 
 	from .core import * 
-	from .data import * 
 	from ._build_utils import *
+	from . import yields
 
 	__all__.extend(core.__all__)
-	__all__.extend(data.__all__)
 	__all__.extend(_build_utils.__all__)
 
 	"""
@@ -133,7 +132,6 @@ else:
 	the rest of python raise warnings. 
 	"""
 	del core
-	del data
 	del _build_utils
 	del version
 	del __release

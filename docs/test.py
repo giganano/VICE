@@ -32,14 +32,14 @@ send = False
 
 try:
 	for i in vice._RECOGNIZED_ELEMENTS_: 
-		a = vice.agb_yield_grid(i)
-		a = vice.fractional_cc_yield(i)
-		a = vice.fractional_cc_yield(i, study = "WW95")
-		a = vice.fractional_ia_yield(i, model = "N1")
-		a = vice.fractional_ia_yield(i, model = "N100")
-		a = vice.fractional_ia_yield(i, model = "N5")
-		a = vice.fractional_ia_yield(i, study = "iwamoto99", model = "W70")
-		a = vice.fractional_ia_yield(i, study = "iwamoto99", model = "WDD1") 
+		a = vice.yields.agb.grid(i)
+		a = vice.yields.ccsne.fractional(i)
+		a = vice.yields.ccsne.fractional(i, study = "WW95")
+		a = vice.yields.sneia.fractional(i, model = "N1")
+		a = vice.yields.sneia.fractional(i, model = "N100")
+		a = vice.yields.sneia.fractional(i, model = "N5")
+		a = vice.yields.sneia.fractional(i, study = "iwamoto99", model = "W70")
+		a = vice.yields.sneia.fractional(i, study = "iwamoto99", model = "WDD1") 
 	print("IMF-integration of stellar yields: Success")
 except:
 	send = True
@@ -160,7 +160,7 @@ try:
 	custom_ria.zin = len(custom_ria.elements) * [0]
 	custom_ria.zin['fe'] = 0.1 * vice.solar_z['fe']
 	custom_ria.zin['o'] = lambda t: 0.1 * vice.solar_z['o'] * (t / 10.0)
-	vice.ccsne_yields['fe'] /= 2
+	vice.yields.ccsne.settings['fe'] /= 2
 	out5 = custom_ria.run(times, capture = True, overwrite = True)
 	print("Ninth integration: Success")
 except:
@@ -208,17 +208,6 @@ if send:
 	print(message)
 else:
 	print("All tests passed.")
-
-try: 
-	import dill 
-except ImportError: 
-	print("""\
-================================================================================
-Package 'dill' not found. This package is required for encoding functional 
-attributes with VICE outputs. It is recommended that VICE users install this 
-package to make use of these features. This can be done via 'pip install dill'. 
-================================================================================\
-""")
 
 
 

@@ -22,7 +22,7 @@ import sys
 import os
 
 __all__ = ["_DEFAULT_FUNC_", "_DEFAULT_BINS_", "_RECOGNIZED_ELEMENTS_", 
-	"_RECOGNIZED_IMFS_", "ScienceWarning"] 
+	"_RECOGNIZED_IMFS_", "ScienceWarning"]  
 __all__ = [str(i) for i in __all__] # appease python 2 strings 
 
 # The path to the directory after installation 
@@ -89,5 +89,4 @@ class ScienceWarning(UserWarning):
 		>>> warnings.filterwarnings("ignore") 
 	"""
 	pass 
-
 
