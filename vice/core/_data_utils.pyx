@@ -1136,10 +1136,12 @@ class _customizable_yield_table(dataframe):
 		"""
 		Restores the dataframe to its default parameters. 
 		"""
-		if "%s.config" % (self._config_field) in os.listdir("%score" % (
-			_DIRECTORY_)): 
-			self._frame = pickle.load(open("%score/%s.config" % (
-				_DIRECTORY_, self._config_field))) 
+		if self._config_field == "foo": 
+			raise TypeError("This dataframe does not support defaults.") 
+		elif "settings.config" in os.listdir("%syields/%s" % (_DIRECTORY_, 
+			self._config_field)): 
+			self._frame = pickle.load(open("%syields/%s/settings.config" % (
+				_DIRECTORY_, self._config_field), "rb")) 
 		else: 
 			self._frame = dict(self.__defaults) 
 
@@ -1163,12 +1165,12 @@ class _customizable_yield_table(dataframe):
 			Regardless of the presence of callable functions, if dill is 
 			imported, go ahead and save
 			"""
-			pickle.dump(self._frame, open("%score/%s.config" % (
+			pickle.dump(self._frame, open("%syields/%s/settings.config" % (
 				_DIRECTORY_, self._config_field), "wb")) 
 		elif all(list(map(lambda x: not callable(self._frame[x]), 
 			self.keys()))): 
 			# Dill is not imported, but nothing is callable anyway 
-			pickle.dump(self._frame, open("%score/%s.config" % (
+			pickle.dump(self._frame, open("%syields/%s/settings.config" % (
 				_DIRECTORY_, self._config_field), "wb")) 
 		else: 
 			message = "Package 'dill' not found. At least one element is set " 
