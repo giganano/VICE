@@ -12,8 +12,12 @@ IMF-integrated yields from the results of supernovae simulations ran by
 Woosley & Weaver (1995), Chieffi & Limongi (2004), Chieffi & Limongi (2013), 
 and Limongi & Chieffi (2018). 
 
-fractional :: Calculates IMF-integrated yields of a given element 
-settings :: Stores the user's current settings these yields. 
+Inclued Features 
+================ 
+fractional :: <function> 
+	Calculates IMF-integrated yields of a given element 
+settings :: VICE dataframe 
+	Stores the user's current settings these yields. 
 
 References 
 ========== 

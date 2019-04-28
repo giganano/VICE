@@ -11,9 +11,14 @@ which VICE will adopt in their simulations. VICE has built-in talbes allowing
 users to calculate yields from the Iwamoto et al. (1999) and Seitenzahl et 
 al. (2013). 
 
-fractional :: Calculate an IMF-integrated yield of a given element 
-settings :: Stores the user's current settings for these yields 
-single :: Lookup the mass yield of a given element from a single type Ia 
+Included Features
+=================
+fractional :: <function> 
+	Calculate an IMF-integrated yield of a given element 
+settings :: VICE dataframe 
+	Stores the user's current settings for these yields 
+single :: <function> 
+	Lookup the mass yield of a given element from a single type Ia 
 	supernova from a given study 
 
 References 

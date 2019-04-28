@@ -9,9 +9,10 @@ In the current version of VICE, nucleosynthetic yields from AGB stars allows
 users to select between the tables published in the Karakas (2010) and the 
 Cristallo et al. (2011) studies. 
 
-Functions 
-========= 
-grid :: Return the stellar mass-metallicity grid of fractional nucleosynethetic 
+Included Features 
+================= 
+grid :: <function> 
+	Return the stellar mass-metallicity grid of fractional nucleosynethetic 
 	yields for a given element and study to the user. 
 
 References 
