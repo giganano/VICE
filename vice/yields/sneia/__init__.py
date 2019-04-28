@@ -1,7 +1,25 @@
+# This file, included with the VICE package, is protected under the terms of the 
+# associated MIT License, and any use or redistribution of this file in original 
+# or altered form is subject to the copyright terms therein. 
+
 """
-This file, included with the VICE package, is protected under the terms of the 
-associated MIT License, and any use or redistribution of this file in original 
-or altered form is subject to the copyright terms therein. 
+Type Ia Supernovae Nucleosynthetic Yield Tools 
+============================================== 
+Here user's can calculate nucleosynthetic yields from type Ia supernoave (both 
+single detonation and IMF-integrated) as well as modify their adopted settings, 
+which VICE will adopt in their simulations. VICE has built-in talbes allowing 
+users to calculate yields from the Iwamoto et al. (1999) and Seitenzahl et 
+al. (2013). 
+
+fractional :: Calculate an IMF-integrated yield of a given element 
+settings :: Stores the user's current settings for these yields 
+single :: Lookup the mass yield of a given element from a single type Ia 
+	supernova from a given study 
+
+References 
+========== 
+Seitenzahl et al. (2013), MNRAS, 429, 1156 
+Iwamoto et al. (1999), ApJ, 124, 439 
 """
 
 from __future__ import absolute_import
