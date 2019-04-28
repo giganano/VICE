@@ -13,8 +13,7 @@ tests3:
 	$(MAKE) -C docs/ tests3
 
 jw19plots: 
-	# $(MAKE) -C JW19/ 
-	python JW19
+	$(MAKE) -C JW19/ 
 
 tutorial: 
 	$(MAKE) -C docs/ tutorial
@@ -22,8 +21,8 @@ tutorial:
 clean:
 	$(MAKE) -C vice/_build_utils/ clean
 	$(MAKE) -C vice/core/ clean
-	$(MAKE) -C vice/data/_agb_yields/ clean
-	$(MAKE) -C vice/data/_ccsne_yields/ clean
-	$(MAKE) -C vice/data/_sneia_yields/ clean
+	$(MAKE) -C vice/yields/agb/ clean
+	$(MAKE) -C vice/yields/ccsne/ clean
+	$(MAKE) -C vice/yields/sneia/ clean
 	$(MAKE) -C vice/src/ clean
 	rm -rf build
