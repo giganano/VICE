@@ -1,7 +1,15 @@
+# This file, included with the VICE package, is protected under the terms of the 
+# associated MIT License, and any use or redistribution of this file in original 
+# or altered form is subject to the copyright terms therein. 
+
 """
-This file, included with the VICE package, is protected under the terms of the 
-associated MIT License, and any use or redistribution of this file in original 
-or altered form is subject to the copyright terms therein. 
+Core Collapse Supernovae Nucleosynthetic Yield Tools 
+==================================================== 
+Here users can both calculate IMF-integrated nucleosynthetic yields from CCSNe 
+and declare their own yields, which will be adopted in VICE's simulations. 
+
+fractional :: Calculates IMF-integrated yields of a given element 
+settings :: Stores the user's current settings for CCSNe yields 
 """
 
 from __future__ import absolute_import

@@ -32,61 +32,20 @@ In all docstrings, examples of code are represented by three > signs:
 
 Included Features
 =================
-
-The VICE Dataframe 
-------------------
-	A data storing object meant for case-insensitive lookup 
-
-	Instances of this class included with VICE:
-	-------------------------------------------
-		atomic_number: 
-			The number of protons in the nucles of each recognized element 
-		yields.ccsne.settings: 
-			User-specified yield settings from core collapse supernovae 
-		yields.sneia.settings: 
-			User-specified yield settings from type Ia supernovae 
-		solar_z: 
-			The solar abundance by mass of each element calibrated by Asplund 
-			et al. (2009), ARA&A, 47, 481
-		sources: 
-			The dominant enrichment sources for each element 
-
-Classes 
--------
-	singlezone: 
-		Run simulations of single-zone galactic chemical evolution models 
-	output: 
-		Handle the output of the integrator class 
-
-Functions 
----------
-	yields.agb.grid: 
-		Returns a built-in mass-metallicity yield grid for a given element 
-	yields.ccsne.fractional: 
-		Returns an IMF-integrated yield for a given element from core-collapse 
-		supernovae 
-	yields.sneia.fractional: 
-		Returns an IMF-integrated yield for a give nelement from type Ia 
-		supernovae 
-	history: 
-		Read in simulation output containing the time-evolution of the ISM 
-	mdf: 
-		Read in the stellar metallicity distribution function from a simulation 
-	mirror: 
-		Given an output object, returns an integrator with the same properties 
-		as that which produced the output 
-	yields.sneia.single: 
-		Returns the mass of a given element produced by a single instance of 
-		a type Ia supernova on average 
-	single_stellar_population: 
-		Returns the mass of a given element produced over time by a single 
-		episode of star formation
-
-Command Line 
-============
-VICE also allows users to run simulations of simple evolutionary histories 
-directly from the command line. Type "vice -h" in a terminal for instructions 
-on how to do so. 
+::	A dataframe object meant for case-insensitive lookup. 
+::	Simulations of galactic chemical enrichment under the single-zone 
+	approximation with support for user-specified parameters, many of which 
+	can be functions of time.  
+::	Simulations of enrichment from single stellar populations 
+::	Built-in yield tables from two recent studies of nucleosynthetic yields 
+	from asymptotic giant branch stars. 
+::	Calculations of IMF-integrated nucleosynthetic yields from both core 
+	collapse and type Ia supernovae. 
+:: 	User-specified yields from core-collapse supernovae, which may be callable 
+	functions of metallicity. 
+::	User-specified yields from type Ia supernovae. 
+::	A command-line entry allowing users to run simulations of simple 
+	evoluationary histories directly from a linux terminal. 
 """
 
 from __future__ import absolute_import
