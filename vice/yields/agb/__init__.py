@@ -18,8 +18,8 @@ grid :: <function>
 
 References 
 ========== 
-Karakas (2010), MNRAS, 403, 1413 
 Cristallo (2011), ApJS, 197, 17 
+Karakas (2010), MNRAS, 403, 1413 
 """
 
 from __future__ import absolute_import
