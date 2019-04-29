@@ -23,12 +23,16 @@ Cristallo (2011), ApJS, 197, 17
 
 from __future__ import absolute_import
 from .grid import yield_grid as grid
+import sys 
 
 __all__ = ["grid"]
 __all__ = [str(i) for i in __all__] # appease python 2 strings 
 
-
 del absolute_import 
-del i 
+if sys.version_info[0] < 3: 
+	del i 
+else:
+	pass 
+del sys 
 
 

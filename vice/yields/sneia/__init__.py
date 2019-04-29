@@ -31,6 +31,7 @@ from __future__ import absolute_import
 from .yield_calculations import single_detonation as single
 from .yield_calculations import integrated_yield as fractional 
 from ...core._data_utils import _customizable_yield_table
+import sys 
 
 __all__ = ["single", "fractional", "settings"] 
 __all__ = [str(i) for i in __all__] # appease python 2 strings 
@@ -115,9 +116,11 @@ settings = _customizable_yield_table({
 	"bi":	0, 
 }, False, "sneia")
 
-
 del absolute_import 
-del i 
 del yield_calculations 
-del _customizable_yield_table
+del _customizable_yield_table 
+if sys.version_info[0] < 3: 
+	del i
+else:
+	pass 
 

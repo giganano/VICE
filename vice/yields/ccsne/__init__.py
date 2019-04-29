@@ -30,6 +30,7 @@ Woosley & Weaver (1995) ApJ, 101, 181
 from __future__ import absolute_import
 from .yield_integrator import integrate as fractional
 from ...core._data_utils import _customizable_yield_table 
+import sys 
 
 __all__ = ["fractional", "settings"] 
 __all__ = [str(i) for i in __all__] # appease python 2 strings 
@@ -114,7 +115,10 @@ settings = _customizable_yield_table({
 }, True, "ccsne")
 
 del absolute_import 
-del i 
 del yield_integrator
 del _customizable_yield_table
+if sys.version_info[0] < 3: 
+	del i 
+else:
+	pass 
 
