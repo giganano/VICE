@@ -224,6 +224,7 @@ extern int file_dimension(char *file, int hlength) {
 			continue;
 		}
 	}
+	fclose(in); 
 	return dim;
 
 }
@@ -305,12 +306,13 @@ extern double **yields(char *file) {
  */ 
 extern int gridsize(char *file) { 
 
+	printf("a\n"); 
+	int i, n = 1, hlen = header_length(file); 
+
 	printf("[gridsize] file = %s\n", file); 
 	FILE *in = fopen(file, "r"); 
 	if (in == NULL) return -1; 
 
-	printf("a\n"); 
-	int i, n = 1, hlen = header_length(file); 
 	printf("b, hlen = %d\n", hlen); 
 	char *line = (char *) malloc (LINESIZE * sizeof(char));
 	if (fgets(line, LINESIZE, in) == NULL) {
