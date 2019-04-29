@@ -8,17 +8,17 @@ VICE: Versatile Integrator for Chemical Evolution
 A software built for numerical integration of single-zone chemical evolution 
 models. 
 
-See LICENSE for copyright information and citation requirements. 
-
-Documentation for this package is available in two forms: 
-	1) In the docstrings of the objects and functions
-	2) Under docs/ in VICE's git repository at: 
-		<https://github.com/giganano/VICE/tree/master/docs>
+Documentation for this package is available in several forms: 
+	1) In the docstrings of the objects and functions 
+	2) A user's guide, available at: 
+	https://github.com/giganano/VICE/tree/master/docs/users_guide.pdf 
+	3) Science documentation, available at: 
+	https://github.com/giganano/VICE/tree/master/docs/science_documentation.pdf
 
 We recommend first-time users visit the git repository to obtain copies of the 
 User's Guide and Science Documentation. Under the docs/ directory, they will 
-find a QuickStartTutorial.ipynb notebook intended for quick familiarization 
-with the structure of VICE. 
+also find a QuickStartTutorial.ipynb notebook intended for quick 
+familiarization with the structure of VICE. 
 
 It is also recommended that VICE users install the package dill, an extension 
 of the python standard library package pickle. This enables VICE to encode 
@@ -46,7 +46,18 @@ Included Features
 ::	User-specified yields from type Ia supernovae. 
 ::	A command-line entry allowing users to run simulations of simple 
 	evoluationary histories directly from a linux terminal. 
-"""
+
+LICENSE 
+======= 
+VICE is open-source software released under the MIT license. See LICENSE for 
+further details and copyright information. 
+
+Citing
+====== 
+If usage of this software leads to a publication, please cite Johnson & 
+Weinberg (2019, in prep). A BibTeX entry will be added to the git repository 
+once the paper is announced. 
+""" 
 
 from __future__ import absolute_import
 import warnings 
