@@ -13,7 +13,7 @@ from ...core._globals import _RECOGNIZED_ELEMENTS_
 from ...core._globals import _RECOGNIZED_IMFS_
 from ...core._globals import ScienceWarning
 from ...core._globals import _VERSION_ERROR_
-from ...core._yields import atomic_number
+from ...core._dataframes import atomic_number
 PATH = "%syields/ccsne/" % (_DIRECTORY_)
 from libc.stdlib cimport free
 import warnings

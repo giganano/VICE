@@ -14,7 +14,7 @@ import os
 from ...core._globals import _DIRECTORY_
 from ...core._globals import _RECOGNIZED_ELEMENTS_
 from ...core._globals import _VERSION_ERROR_
-from ...core._yields import atomic_number 
+from ...core._dataframes import atomic_number 
 PATH = "%syields/agb/" % (_DIRECTORY_)
 if sys.version_info[0] == 3:
 	from builtins import str
