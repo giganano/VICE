@@ -28,6 +28,7 @@ from .. import fractional as __fractional
 from ....core._globals import _RECOGNIZED_ELEMENTS_ 
 
 for i in range(len(_RECOGNIZED_ELEMENTS_)): 
+	print(_RECOGNIZED_ELEMENTS_[i]) 
 	__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(_RECOGNIZED_ELEMENTS_[i], 
 		study = "WW95")[0] 
 del i 
