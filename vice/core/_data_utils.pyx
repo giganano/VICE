@@ -724,7 +724,7 @@ class output(object):
 				dataframe here, but this doesn't cause nested import errors and 
 				works in only one line. 
 				"""
-				from ._yields import ccsne_yields
+				from ..yields.ccsne import settings
 				message = "Re-instancing functional yields from a VICE output " 
 				message += "requires the python package dill (included with "
 				message += "anaconda). The following elements tracked by this "
@@ -733,12 +733,12 @@ class output(object):
 				message += "settings at the time of integration: " 
 				for i in self._elements: 
 					if yields[i] == None: 
-						yields[i] = ccsne_yields[i]
+						yields[i] = settings[i]
 						message += "%s " % (i) 
 					else:
 						continue 
 
-				del ccsne_yields
+				del settings
 				warnings.warn(message, ScienceWarning)
 
 			else:
@@ -1186,14 +1186,14 @@ class _history(dataframe):
 		"""
 
 		"""
-		Import the solar_z dataframe from the _yields file. Not the most 
+		Import the solar_z dataframe from the _dataframes file. Not the most 
 		elegant solution to needing that here, but it works with only one line 
 		and doesn't cause a nested import error. Store it as an attribute 
 		then get rid of the global variable. 
 
 		Otherwise just construct the dataframe, call super, and move on. 
 		"""
-		from ._yields import solar_z 
+		from ._dataframes import solar_z 
 		self._solar_z = solar_z 
 		del solar_z 
 		self._adopted_solar_z = adopted_solar_z 
