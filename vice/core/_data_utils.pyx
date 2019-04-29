@@ -759,9 +759,8 @@ class output(object):
 class dataframe(object): 
 	
 	"""
-								The VICE Dataframe 
-	===========================================================================
-
+                                 The VICE Dataframe 
+	==========================================================================
 	Provides a means of storing data indexed by strings in a case-insensitive 
 	manner. VICE includes several instances of this class at the global level, 
 	some of which have features specific to their instance. Users may call 

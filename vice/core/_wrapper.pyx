@@ -20,9 +20,9 @@ from ._globals import ScienceWarning
 from ._globals import _DEFAULT_FUNC_ 
 from ._globals import _DEFAULT_BINS_
 from ._globals import _DIRECTORY_
-from ._yields import atomic_number 
-from ._yields import solar_z 
-from ._yields import sources 
+from ._dataframes import atomic_number 
+from ._dataframes import solar_z 
+from ._dataframes import sources 
 from ..yields import ccsne 
 from ..yields import sneia 
 import math as m
