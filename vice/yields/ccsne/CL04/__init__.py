@@ -14,14 +14,15 @@ et al. 2009).
 VICE achieves this by calling yields.ccsne.fractional for every 
 element built into the software. 
 
-set_params :: update the parameters with which the yields are calculated 
+set_params :: Update the parameters with which the yields are calculated 
 
 Notes 
 ===== 
 By importing this module, the user does not sacrifice the flexibility of 
-VICE's user specified yields. After importing this module, the fields of 
-vice.yields.ccsne.settings can still be modified in whatever manner the 
-user sees fit. 
+VICE's user specified yields. The fields of vice.yields.ccsne.settings can 
+still be modified in whatever manner the user sees fit. 
+
+This module is not imported with the simple 'import vice' statement. 
 
 References 
 ========== 
