@@ -161,7 +161,6 @@ extern double **read_output(char *file) {
 extern int header_length(char *file) {
 
 	FILE *in; 
-	printf("[hlen] file = %s\n", file); 
 	in = fopen(file, "r");					// open the file 
 	if (in == NULL) return -1; 
 
@@ -306,20 +305,16 @@ extern double **yields(char *file) {
  */ 
 extern int gridsize(char *file) { 
 
-	printf("a\n"); 
 	int i, n = 1, hlen = header_length(file); 
 
-	printf("[gridsize] file = %s\n", file); 
 	FILE *in = fopen(file, "r"); 
 	if (in == NULL) return -1; 
 
-	printf("b, hlen = %d\n", hlen); 
 	char *line = (char *) malloc (LINESIZE * sizeof(char));
 	if (fgets(line, LINESIZE, in) == NULL) {
 		printf("ERROR reading file: %s\n", file); 
 		exit(0); 
 	} else {} 
-	printf("c\n"); 
 
 	/* Read passed the header */ 
 	for (i = 0; i < hlen; i++) {
@@ -328,7 +323,6 @@ extern int gridsize(char *file) {
 			exit(0); 
 		} else {} 
 	}
-	printf("d\n"); 
 
 	/* 
 	 * Increment the number of elements on the grid based on the number of 
@@ -337,11 +331,8 @@ extern int gridsize(char *file) {
 	while (fgets(line, LINESIZE, in) != NULL) {
 		n++; 
 	}
-	printf("e\n"); 
 	fclose(in);
-	printf("f\n"); 
 	free(line);
-	printf("g\n"); 
 	return n;
 
 }
