@@ -161,6 +161,7 @@ extern double **read_output(char *file) {
 extern int header_length(char *file) {
 
 	FILE *in; 
+	printf("[hlen] file = %s\n", file); 
 	in = fopen(file, "r");					// open the file 
 	if (in == NULL) return -1; 
 
@@ -304,6 +305,7 @@ extern double **yields(char *file) {
  */ 
 extern int gridsize(char *file) { 
 
+	printf("[gridsize] file = %s\n", file); 
 	FILE *in = fopen(file, "r"); 
 	if (in == NULL) return -1; 
 
