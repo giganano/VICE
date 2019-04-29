@@ -269,16 +269,11 @@ extern long num_lines(char *file) {
  */
 extern double **yields(char *file) {
 
-	printf("a\n"); 
 	double **raw = read_grid(file); 	// The data as is 
-	printf("b\n"); 
 	int size = gridsize(file);			// The number of masses on the grid 
-	printf("c, size = %d\n", size); 
 	double **grid = (double **) malloc (size * sizeof(double *));
-	printf("d\n"); 
 	/* File dimensionality */ 
 	int i, j, dim = file_dimension(file, header_length(file)); 
-	printf("e\n"); 
 	for (i = 0; i < size; i++) {
 		/* 
 		 * At each element on the grid, store the stellar mass as the 0th element
@@ -291,9 +286,7 @@ extern double **yields(char *file) {
 			grid[i][1] += raw[i][j];
 		}
 	}
-	printf("f\n"); 
 	free(raw);
-	printf("g\n"); 
 	return grid;
 
 }
@@ -314,12 +307,15 @@ extern int gridsize(char *file) {
 	FILE *in = fopen(file, "r"); 
 	if (in == NULL) return -1; 
 
+	printf("a\n"); 
 	int i, n = 1, hlen = header_length(file); 
+	printf("b, hlen = %d\n", hlen); 
 	char *line = (char *) malloc (LINESIZE * sizeof(char));
 	if (fgets(line, LINESIZE, in) == NULL) {
 		printf("ERROR reading file: %s\n", file); 
 		exit(0); 
 	} else {} 
+	printf("c\n"); 
 
 	/* Read passed the header */ 
 	for (i = 0; i < hlen; i++) {
@@ -328,6 +324,7 @@ extern int gridsize(char *file) {
 			exit(0); 
 		} else {} 
 	}
+	printf("d\n"); 
 
 	/* 
 	 * Increment the number of elements on the grid based on the number of 
@@ -336,8 +333,11 @@ extern int gridsize(char *file) {
 	while (fgets(line, LINESIZE, in) != NULL) {
 		n++; 
 	}
+	printf("e\n"); 
 	fclose(in);
+	printf("f\n"); 
 	free(line);
+	printf("g\n"); 
 	return n;
 
 }
