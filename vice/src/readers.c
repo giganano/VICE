@@ -269,11 +269,16 @@ extern long num_lines(char *file) {
  */
 extern double **yields(char *file) {
 
+	printf("a\n"); 
 	double **raw = read_grid(file); 	// The data as is 
+	printf("b\n"); 
 	int size = gridsize(file);			// The number of masses on the grid 
+	printf("c, size = %d\n", size); 
 	double **grid = (double **) malloc (size * sizeof(double *));
+	printf("d\n"); 
 	/* File dimensionality */ 
 	int i, j, dim = file_dimension(file, header_length(file)); 
+	printf("e\n"); 
 	for (i = 0; i < size; i++) {
 		/* 
 		 * At each element on the grid, store the stellar mass as the 0th element
@@ -286,7 +291,9 @@ extern double **yields(char *file) {
 			grid[i][1] += raw[i][j];
 		}
 	}
+	printf("f\n"); 
 	free(raw);
+	printf("g\n"); 
 	return grid;
 
 }

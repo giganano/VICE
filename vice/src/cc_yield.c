@@ -50,21 +50,15 @@ static int GRIDSIZE;
 extern double *numerator(char *file, char *IMF, double lower, double upper, 
 	double tolerance, char *method, long Nmax, long Nmin) {
 
-	printf("a\n"); 
 	GRIDSIZE = gridsize(file);		// Determine the gridsize globally 
-	printf("b\n"); 
 	GRID = yields(file); 			// fill the grid 
-	printf("c\n"); 
 	double *num;
-	printf("d\n"); 
 	if (!strcmp(IMF, "kroupa")) {
-		printf("e\n"); 
 		/* Assume a Kroupa IMF, weight by the yield, and integrate */ 
 		num = quad(weighted_kroupa_integrand, lower, upper, tolerance, 
 			method, Nmax, Nmin);
 	} else if (!strcmp(IMF, "salpeter")) {
 		/* Assume a Salpeter IMF, weight by the yield, and integrate */ 
-		printf("f\n"); 
 		num = quad(weighted_salpeter_integrand, lower, upper, tolerance, 
 			method, Nmax, Nmin);
 	} else {
@@ -74,10 +68,8 @@ extern double *numerator(char *file, char *IMF, double lower, double upper,
 		free(GRID);
 		exit(0);
 	}
-	printf("g\n"); 
 	/* Free up the memory and return the results */ 
 	free(GRID);
-	printf("h\n"); 
 	return num;
 
 }
