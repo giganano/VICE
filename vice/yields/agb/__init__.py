@@ -5,9 +5,10 @@
 """
 Asymptotic Giant Branch Star Nucleosynthetic Yield Tools 
 ========================================================
-In the current version of VICE, nucleosynthetic yields from AGB stars allows 
-users to select between the tables published in the Karakas (2010) and the 
-Cristallo et al. (2011) studies. 
+In the current version of VICE, users are allowed to select 
+between two tables of nucleosynthetic yields from asymptotic 
+giant branch stars - those published by the Karakas (2010) and 
+Cristallo et al. (2011) studies.  
 
 Included Features 
 ================= 
