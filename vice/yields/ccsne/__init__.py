@@ -9,8 +9,8 @@ Here users can both calculate IMF-integrated nucleosynthetic yields from CCSNe
 as well as modify their adopted settings, which VICE will adopt in their 
 simulations. VICE has built-in tables allowing users to calculate 
 IMF-integrated yields from the results of supernovae simulations ran by 
-Woosley & Weaver (1995), Chieffi & Limongi (2004), Chieffi & Limongi (2013), 
-and Limongi & Chieffi (2018). 
+four different studies, which can also be directly imported as the yield 
+settings. 
 
 Inclued Features 
 ================ 
@@ -19,12 +19,19 @@ fractional :: <function>
 settings :: VICE dataframe 
 	Stores the user's current settings these yields. 
 
+Built-in Yield Tables Available for Import
+========================================== 
+CL04 :: Chieffi & Limongi (2004) 
+CL13 :: Chieffi & Limongi (2013) 
+LC18 :: Limongi & Chieffi (2018) 
+WW95 :: Woosley & Weaver (1995) 
+
 References 
 ========== 
 Chieffi & Limongi (2004), ApJ, 608, 405 
 Chieffi & Limongi (2013), ApJ, 764, 21 
 Limongi & Chieffi (2018), ApJS, 237, 13
-Woosley & Weaver (1995) ApJ, 101, 181 
+Woosley & Weaver (1995), ApJ, 101, 181 
 """
 
 from __future__ import absolute_import

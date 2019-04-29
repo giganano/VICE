@@ -338,10 +338,11 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 
 	if ( study.upper() in ["CL04", "CL13"] and 
 		24 <= atomic_number[element.lower()] <= 28 ): 
-		message = "The %s study assumed a fixed yield of nickel-56. " % (
-			studies[study.upper()])
-		message += "For this reason, we caution the user on their yields of "
-		message += "iron peak elements."  
+		message = "The %s study published only the results which adopted" % (
+			studies[study.upper()]) 
+		message += "a fixed yield of nickel-56, and these are the yields which "
+		message += "are included in VICE. For this reason, we caution the user " 
+		message += "on their yields of iron peak elements." 
 		warnings.warn(message, ScienceWarning)
 	else:
 		pass

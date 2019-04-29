@@ -3,23 +3,23 @@
 # or altered form is subject to the copyright terms therein. 
 
 """
-Seitenzahl et al. (2013), MNRAS, 429, 1156 Nucleosynthetic Yield Tools 
-====================================================================== 
-Importing this module will automatically set all yield settings from 
-type Ia supernovae to the IMF-integrated yields as determined from 
-the simulations ran by Seitenzahl et al. (2013). It will default to 
-the N1 explosion model. 
+Chieffi & Limongi (2013), ApJ, 764, 21 Nucleosynthetic Yield Tools 
+================================================================== 
+Importing this module will automatically set all yield settings 
+from core collapse supernovae to the IMF-integrated yields as 
+determined from the simulations ran by Chieffi & Limongi (2013) 
+at solar metallicity. 
 
-VICE achieves this by calling yields.sneia.fractional for every 
+VICE achieves this by calling yields.ccsne.fractional for every 
 element built into the software. 
 
-set_params :: Update the parameters with which the yields are calculated 
+set_params :: update the parameters with which the yields are calculated 
 
 Notes 
 ===== 
 By importing this module, the user does not sacrifice the flexibility of 
 VICE's user specified yields. After importing this module, the fields of 
-vice.yields.sneia.settings can still be modified in whatever manner the 
+vice.yields.ccsne.settings can still be modified in whatever manner the 
 user sees fit. 
 """
 
@@ -29,38 +29,38 @@ from ....core._globals import _RECOGNIZED_ELEMENTS_
 
 for i in range(len(_RECOGNIZED_ELEMENTS_)): 
 	__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(_RECOGNIZED_ELEMENTS_[i], 
-		study = "seitenzahl13", model = "N1") 
+		study = "CL13")[0] 
 del i 
 
 def set_params(**kwargs): 
 	"""
 	Update the parameters with which the yields are calculated from the 
-	Seitenzahl et al. (2013) data. 
+	Chieffi & Limongi (2013) data. 
 
 	Parameters 
 	========== 
-	Kwargs :: varying types 
-		Keyword arguments to pass to yields.sneia.fractional 
+	kwargs :: varying types 
+		Keyword arguments to pass to yields.ccsne.fractional 
 
-	Raises 
+	Raises
 	====== 
-	TypeError :: 	
+	TypeError :: 
 		::	The user has specified a keyword argument "study" 
-	Other exceptions are raised by yields.sneia.fractional 
+	Other exceptions are raised by yields.ccsne.fractional 
 
 	See also 
 	======== 
-	yields.sneia.fractional docstring 
+	yields.ccsne.fractional docstring 
 
 	References 
 	========== 
-	Seitenzahl et al. (2013), ApJ, 124, 439 
+	Chieffi & Limongi (2013), ApJ, 764, 21 
 	"""
 	if "study" in kwargs.keys(): 
-		raise TypeError("set_params got an unexpected keyword argument 'study'") 
+		raise TypeError("set_params got an unexpected keyword argument: 'study'") 
 	else: 
 		for i in range(len(_RECOGNIZED_ELEMENTS_)): 
 			__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(
-				_RECOGNIZED_ELEMENTS_[i], study = "seitenzahl13", **kwargs) 
+				_RECOGNIZED_ELEMENTS_[i], study = "CL13", **kwargs)[0] 
 		del i 
 

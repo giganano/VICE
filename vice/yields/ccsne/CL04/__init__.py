@@ -3,25 +3,30 @@
 # or altered form is subject to the copyright terms therein. 
 
 """
-Iwamoto et al. (1999), ApJ, 124, 439 Nucleosynthetic Yield Tools 
-================================================================ 
+Chieffi & Limongi (2014), ApJ, 608, 405 Nucleosynthetic Yield Tools 
+=================================================================== 
 Importing this module will automatically set all yield settings 
-from type Ia supernovae to the IMF-integrated yields as 
-determined from the simulations ran by Iwamoto et al. (1999). It 
-will default to the W70 explosion model.  
+from core collapse supernovae to the IMF-integrated yields as 
+determined from the simulations ran by Chieffi & Limongi (2004) at 
+Z = 0.02 ([M/H] = 0.15 if the solar abundance is Z = 0.014; Asplund 
+et al. 2009). 
 
-VICE achieves this by calling yields.sneia.fractional for 
-every element built into the software. 
+VICE achieves this by calling yields.ccsne.fractional for every 
+element built into the software. 
 
-set_params :: Update the parameters with which the yields are calculated 
+set_params :: update the parameters with which the yields are calculated 
 
 Notes 
 ===== 
 By importing this module, the user does not sacrifice the flexibility of 
 VICE's user specified yields. After importing this module, the fields of 
-vice.yields.sneia.settings can still be modified in whatever manner the 
+vice.yields.ccsne.settings can still be modified in whatever manner the 
 user sees fit. 
-""" 
+
+References 
+========== 
+Asplund et al. (2009), ARA&A, 47, 481 
+"""
 
 from .. import settings as __settings 
 from .. import fractional as __fractional 
@@ -29,44 +34,38 @@ from ....core._globals import _RECOGNIZED_ELEMENTS_
 
 for i in range(len(_RECOGNIZED_ELEMENTS_)): 
 	__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(_RECOGNIZED_ELEMENTS_[i], 
-		study = "iwamoto99", model = "W70") 
+		study = "CL04", MoverH = 0.15)[0] 
 del i 
 
 def set_params(**kwargs): 
 	"""
 	Update the parameters with which the yields are calculated from the 
-	Iwamoto et al. (1999) data. 
+	Chieffi & Limongi (2004) data. 
 
 	Parameters 
 	========== 
-	Kwargs :: varying types
-		Keyword arguments to pass to yields.sneia.fractional 
+	kwargs :: varying types 
+		Keyword arguments to pass to yields.ccsne.fractional 
 
 	Raises 
 	====== 
 	TypeError :: 
 		::	The user has specified a keyword argument "study" 
-	Other exceptions are raised by yields.sneia.fractional 
-
-	See also 
-	======== 
-	yields.sneia.fractional docstring 
+	Other exceptions are raised by yields.ccsne.fractional 
 
 	References 
 	========== 
-	Iwamoto et al. (1999), ApJ, 124, 439 
+	Chieffi & Limongi (2004), ApJ, 608, 405 
 	"""
 	if "study" in kwargs.keys(): 
-		raise TypeError("set_params got an unexpected keyword argument 'study'") 
+		raise TypeError("set_params got an unexpected keyword argument: 'study'") 
 	else: 
-		if "model" not in kwargs.keys(): 
-			kwargs["model"] = "W70" # Default to W70 unless told otherwise 
+		if "MoverH" not in kwargs.keys(): 
+			kwargs["MoverH"] = 0.15 
 		else:
 			pass 
 		for i in range(len(_RECOGNIZED_ELEMENTS_)): 
 			__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(
-				_RECOGNIZED_ELEMENTS_[i], study = "iwamoto99", **kwargs) 
+				_RECOGNIZED_ELEMENTS_[i], study = "CL04", **kwargs)[0] 
 		del i 
-
-
 
