@@ -373,13 +373,10 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	IMF = IMF.lower().encode("latin-1")
 
 	# Call the quadrature functions 
-	print("a")
 	cdef double *num = numerator(filename, IMF, lower, 
 		upper, tolerance, method, long(Nmax), long(Nmin))
-	print("b")
 	cdef double *den = denominator(IMF, lower, upper, 
 		tolerance, method, long (Nmax), long (Nmin))
-	print("c")
 
 	if num[1] > tolerance: 
 		# If the numerator didn't converge 
