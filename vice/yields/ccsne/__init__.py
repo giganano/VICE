@@ -5,19 +5,19 @@
 """
 Core Collapse Supernovae Nucleosynthetic Yield Tools 
 ==================================================== 
-Here users can both calculate IMF-integrated nucleosynthetic yields from CCSNe 
-as well as modify their adopted settings, which VICE will adopt in their 
-simulations. VICE has built-in tables allowing users to calculate 
-IMF-integrated yields from the results of supernovae simulations ran by 
-four different studies, which can also be directly imported as the yield 
+Here users can both calculate IMF-integrated nucleosynthetic yields from core 
+collapse supernovae as well as modify their yield settings, which VICE will 
+adopt in their simulations. VICE has built-in tables allowing users to 
+calculate IMF-integrated yields from the results of supernovae simulations ran 
+by four different studies, which can also be directly imported as the yield 
 settings. 
 
-Inclued Features 
+Included Features 
 ================ 
 fractional :: <function> 
-	Calculates IMF-integrated yields of a given element 
+	Calculates IMF-integrated yields of a given element.  
 settings :: VICE dataframe 
-	Stores the user's current settings these yields. 
+	Stores the user's current settings for these yields. 
 
 Built-in Yield Tables Available for Import
 ========================================== 
@@ -128,4 +128,5 @@ if sys.version_info[0] < 3:
 	del i 
 else:
 	pass 
+del sys 
 
