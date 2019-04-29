@@ -24,6 +24,11 @@ still be modified in whatever manner the user sees fit.
 
 This module is not imported with the simple 'import vice' statement. 
 
+Example 
+======= 
+>>> from vice.yields.ccsne import CL04 
+>>> CL04.set_params(lower = 0.3, upper = 40, IMF = "salpeter") 
+
 References 
 ========== 
 Asplund et al. (2009), ARA&A, 47, 481 
@@ -53,6 +58,11 @@ def set_params(**kwargs):
 	TypeError :: 
 		::	The user has specified a keyword argument "study" 
 	Other exceptions are raised by yields.ccsne.fractional 
+
+	Example 
+	======= 
+	>>> from vice.yields.ccsne import CL04 
+	>>> CL04.set_params(lower = 0.3, upper = 40, IMF = "salpeter") 
 
 	References 
 	========== 
