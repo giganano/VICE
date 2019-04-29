@@ -29,7 +29,7 @@ static double salpeter_integrand(double m);
  * GRIDSIZE:	The number of stellar masses on which the yield grid is sampled 
  */
 static double **GRID;
-static int GRIDSIZE; 
+static int GRIDSIZE = 0; 
 
 /*
  * Returns the yield-weighted integrated IMF 
@@ -70,6 +70,7 @@ extern double *numerator(char *file, char *IMF, double lower, double upper,
 	}
 	/* Free up the memory and return the results */ 
 	free(GRID);
+	GRIDSIZE = 0; 
 	return num;
 
 }
