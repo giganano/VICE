@@ -12,7 +12,8 @@ Z = 0.02 ([M/H] = 0.15 if the solar abundance is Z = 0.014; Asplund
 et al. 2009). 
 
 VICE achieves this by calling yields.ccsne.fractional for every 
-element built into the software. 
+element built into the software and storing the returned value in 
+yields.ccsne.settings.  
 
 set_params :: Update the parameters with which the yields are calculated 
 

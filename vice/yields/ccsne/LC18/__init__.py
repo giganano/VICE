@@ -11,16 +11,24 @@ determined from the simulations ran by Limongi & Chieffi (2018) at
 solar metallicity. 
 
 VICE achieves this by calling yields.ccsne.fractional for every 
-element built into the software. 
+element built into the software and storing the retured value in 
+yields.ccsne.settings.  
 
-set_params :: update the parameters with which the yields are calculated 
+set_params :: Update the parameters with which the yields are calculated. 
 
 Notes 
 ===== 
 By importing this module, the user does not sacrifice the flexibility of 
-VICE's user specified yields. After importing this module, the fields of 
+VICE's user-specified yields. After importing this module, the fields of 
 vice.yields.ccsne.settings can still be modified in whatever manner the 
 user sees fit. 
+
+This module is not imported with the simple 'import vice' statement. 
+
+Example 
+======= 
+>>> from vice.yields.ccsne import LC18 
+>>> LC18.set_params(lower = 0.3, upper = 40, IMF = "salpeter") 
 """
 
 from .. import settings as __settings 

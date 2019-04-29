@@ -6,7 +6,7 @@
 Type Ia Supernovae Nucleosynthetic Yield Tools 
 ============================================== 
 Here user's can calculate nucleosynthetic yields from type Ia supernoave (both 
-single detonation and IMF-integrated) as well as modify their adopted settings, 
+single detonation and IMF-integrated) as well as modify their yield settings, 
 which VICE will adopt in their simulations. VICE has built-in tables allowing 
 users to calculate IMF-integrated yields from the results of supernovae 
 simulations ran by two different studies, which can also be directly imported 
@@ -15,12 +15,12 @@ as the yield settings.
 Included Features
 =================
 fractional :: <function> 
-	Calculate an IMF-integrated yield of a given element 
+	Calculate an IMF-integrated yield of a given element. 
 settings :: VICE dataframe 
-	Stores the user's current settings for these yields 
+	Stores the user's current settings for these yields. 
 single :: <function> 
-	Lookup the mass yield of a given element from a single type Ia 
-	supernova from a given study 
+	Look up the mass yield of a given element from a single type Ia 
+	supernova from a given study. 
 
 Built-in Yield Tables Available for Import 
 ========================================== 
@@ -129,4 +129,5 @@ if sys.version_info[0] < 3:
 	del i
 else:
 	pass 
+del sys 
 

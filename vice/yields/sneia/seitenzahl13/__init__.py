@@ -11,16 +11,24 @@ the simulations ran by Seitenzahl et al. (2013). It will default to
 the N1 explosion model. 
 
 VICE achieves this by calling yields.sneia.fractional for every 
-element built into the software. 
+element built into the software and storing the returned value in 
+yields.sneia.settings. 
 
-set_params :: Update the parameters with which the yields are calculated 
+set_params :: Update the parameters with which the yields are calculated. 
 
 Notes 
 ===== 
 By importing this module, the user does not sacrifice the flexibility of 
-VICE's user specified yields. After importing this module, the fields of 
+VICE's user-specified yields. After importing this module, the fields of 
 vice.yields.sneia.settings can still be modified in whatever manner the 
 user sees fit. 
+
+This module is not imported with the simple 'import vice' statement. 
+
+Example 
+======= 
+>>> from vice.yields.sneia import seitenzahl13 
+>>> seitenzahl13.set_params(n = 1.5e-03) 
 """
 
 from .. import settings as __settings 
@@ -40,17 +48,22 @@ def set_params(**kwargs):
 	Parameters 
 	========== 
 	Kwargs :: varying types 
-		Keyword arguments to pass to yields.sneia.fractional 
+		Keyword arguments to pass to yields.sneia.fractional.  
 
 	Raises 
 	====== 
 	TypeError :: 	
-		::	The user has specified a keyword argument "study" 
-	Other exceptions are raised by yields.sneia.fractional 
+		::	The user has specified a keyword argument "study". 
+	Other exceptions are raised by yields.sneia.fractional.  
 
 	See also 
 	======== 
 	yields.sneia.fractional docstring 
+
+	Example 
+	======= 
+	>>> from vice.yields.sneia import seitenzahl13 
+	>>> seitenzahl13.set_params(n = 1.5e-03) 
 
 	References 
 	========== 
