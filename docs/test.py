@@ -45,6 +45,26 @@ except:
 	send = True
 	print("IMF-integration of stellar yields: Failed")
 	
+try: 
+	from vice.yields.sneia import seitenzahl13 
+	seitenzahl13.set_params(n = 2.e-03) 
+	from vice.yields.sneia import iwamoto99 
+	iwamoto99.set_params(n = 2.e-03) 
+	from vice.yields.ccsne import LC18 
+	LC18.set_params(upper = 40) 
+	from vice.yields.ccsne import CL13 
+	CL13.set_params(upper = 40) 
+	from vice.yields.ccsne import CL04 
+	CL04.set_params(upper = 40) 
+	from vice.yields.ccsne import WW95 
+	WW95.set_params(upper = 40) 
+	vice.yields.ccsne.settings.restore_defaults() 
+	vice.yields.sneia.settings.restore_defaults() 
+	print("Preset Yield Import: Success") 
+except: 
+	send = True 
+	print("Preset Yield Import: Failed") 
+
 try:
 	for i in vice._RECOGNIZED_ELEMENTS_:
 		a = vice.single_stellar_population(i)
