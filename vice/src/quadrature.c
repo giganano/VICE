@@ -213,7 +213,7 @@ static double midpt(double (*func)(double), double a, double b, long N) {
 	for (i = 0l; i < N; i++) {
 		eval[i] = func(mids[i]);
 	}
-	double total = sum(eval, N + 1l);
+	double total = sum(eval, N);
 	free(x);
 	free(mids);
 	free(eval);
@@ -243,8 +243,9 @@ static double simp(double (*func)(double), double a, double b, long N) {
 }
 
 /*
- * Returns a pointer to an array of linearly spaced doubles between to specified 
- * values. For a binspace with n bins, the resulting array is of length n + 1. 
+ * Returns a pointer to an array of linearly spaced doubles between two 
+ * specified values. For a binspace with n bins, the resulting array is of 
+ * length N + 1. 
  * 
  * Args: 
  * =====
