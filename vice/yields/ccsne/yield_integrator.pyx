@@ -63,6 +63,20 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	See section 5.2 of VICE's science documentation at http://github.com/gigana
 	no/VICE/tree/master/docs for further details. 
 
+	Signature: vice.yields.ccsne.fractional(
+		element, 
+		study = "LC18", 
+		MoverH = 0, 
+		rotation = 0, 
+		IMF = "kroupa", 
+		method = "simpson", 
+		lower = 0.08, 
+		upper = 100, 
+		tolerance = 1.0e-03, 
+		Nmin = 64, 
+		Nmax = 2.0e+08
+	)
+
 	Parameters
 	========== 
 	element :: str 

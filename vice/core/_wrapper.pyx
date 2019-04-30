@@ -73,6 +73,8 @@ def mirror(output_obj):
 	parameters as that which produced the output, allowing re-simulation with 
 	whatever modifications the user desires. 
 
+	Signature: vice.mirror(output_obj) 
+
 	Parameters 
 	========== 
 	output_obj :: vice.output 
@@ -220,6 +222,20 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	is not considered. Only the mass of the given element produced by the star 
 	cluster is determined. See section 2.4 of VICE's science documentation at 
 	https://github.com/giganano/VICE/tree/master/docs for further details. 
+
+	Signature: vice.single_stellar_population(
+		element, 
+		mstar = 1.0e+06, 
+		Z = 0.014, 
+		time = 10, 
+		dt = 0.01, 
+		m_upper = 100, 
+		m_lower = 0.08, 
+		IMF = "kroupa", 
+		RIa = "plaw", 
+		delay = 0.15, 
+		agb_model = "cristallo11"
+	)
 
 	Parameters 
 	========== 
@@ -2119,6 +2135,9 @@ class singlezone(object):
 		capture = True, the output files will be produced and can be read into 
 		an output object at any time. 
 
+		Signature: vice.singlezone.run(output_times, capture = False, 
+			overwrite = False) 
+
 		Parameters 
 		========== 
 		output_times :: array-like [elements are real numbers] 
@@ -2139,13 +2158,18 @@ class singlezone(object):
 
 		Raises 
 		====== 
+		TypeError :: 
+			::	Any functional attribute evaluates to a non-numerical value 
+				at any timestep 
 		ValueError :: 
 			::	Any element of output_times is negative 
 			:: 	An inflow metallicity evaluates to a negative value 
 		ArithmeticError :: 
 			::	An inflow metallicity evaluates to NaN or inf 
+			::	Any functional attribute evaluates to NaN or inf at any 
+				timestep 
 		UserWarning :: 
-			::	If any yield settings or class attributes are callable 
+			::	Any yield settings or class attributes are callable 
 				functions and the user does not have dill installed 
 		ScienceWarning :: 
 			::	Any element tracked by the simulation is enriched in 
@@ -2556,6 +2580,10 @@ class singlezone(object):
 				name)
 			message += "value." 
 			raise TypeError(message) 
+		elif any(list(map(lambda x: m.isinf(x) or m.isnan(x), arr))): 
+			message = "Functional attribute %s evaluated to inf or NaN." % (
+				name) 
+			raise ArithmeticError(message) 
 		else: 
 			pass
 

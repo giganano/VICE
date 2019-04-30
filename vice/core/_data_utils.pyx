@@ -69,6 +69,8 @@ def mdf(name):
 	Read in the normalized stellar metallicity distribution functions at the 
 	final timestep of the simulation. 
 
+	Signature: vice.mdf(name) 
+
 	Parameters 
 	========== 
 	name :: str 
@@ -148,6 +150,8 @@ def history(name):
 	"""
 	Read in the part of a simulation's output that records the time-evolution 
 	of the ISM metallicity. 
+
+	Signature: vice.history(name) 
 
 	Parameters
 	==========
@@ -355,6 +359,8 @@ class output(object):
 	Reads in the output from the singlezone class and allows the user to access 
 	it easily via VICE dataframes. The results are read in automatically. 
 
+	Signature: vice.output.__init__(name)
+
 	Attributes 
 	==========
 	name :: str 
@@ -388,9 +394,9 @@ class output(object):
 	recommended that VICE users install dill if they have not already so that 
 	they can make use of this feature; this can be done via 'pip install dill'. 
 
-	VICE outputs are stored in directories with a .vice extension following the 
-	name of the simulation assigned to the singlezone object that produced it. 
-	Because the history and mdf outputs are stored in pure ascii text, this 
+	VICE outputs are stored in directories with a '.vice' extension following 
+	the name of the simulation assigned to the singlezone object that produced 
+	it. Because the history and mdf outputs are stored in pure ascii text, this 
 	allows users to open them in languages other than python while retaining 
 	the ability to run <command> *.vice in a linux terminal to run operations 
 	on all VICE outputs in a given directory. 
@@ -422,8 +428,11 @@ class output(object):
 	@property
 	def name(self): 
 		"""
-		The name of the .vice directory containing the output of a singlezone 
-		object. 
+		Type :: str 
+
+		The name of the ".vice" directory containing the output of a 
+		singlezone object. The ".vice" extension need not be specified with 
+		the name. 
 		"""
 		return self._name[:-5]
 
@@ -447,47 +456,73 @@ class output(object):
 
 	@property
 	def elements(self):
-		"""
-		The elements whose enrichment was modeled to produce the output file. 
-		This attribute is set automatically upon instantiation. 
+		""" 
+		Type :: tuple 
+
+		The symbols for the elements whose enrichment was modeled to produce 
+		the output file. 
 		"""
 		return self._elements
 
 	@property
 	def history(self):
 		"""
-		The dataframe that has been read in from the history output file of the 
-		integration. 
+		Type :: dataframe 
+
+		The dataframe read in via vice.history(name). 
+
+		See Also
+		======== 
+		Function vice.history
 		"""
 		return self._history
 
 	@property
 	def mdf(self):
 		"""
-		The dataframe that has been read in from the mdf output file of the 
-		integration.
+		Type :: dataframe 
+
+		The dataframe read in via vice.mdf(name). 
+
+		See Also 
+		======== 
+		Function vice.mdf 
 		"""
 		return self._mdf
 
 	@property
 	def ccsne_yields(self): 
 		"""
-		A VICE dataframe encoding the settings for nucleosynthetic yields from 
-		core-collapse supernovae at the time the simulation was ran. 
+		Type :: dataframe 
+
+		A dataframe encoding the settings for nucleosynthetic yields from 
+		core collapse supernovae at the time the simulation was ran. 
+
+		See Also 
+		======== 
+		vice.yields.ccsne.settings 
 		"""
 		return self._ccsne_yields 
 
 	@property
 	def sneia_yields(self): 
 		"""
-		A VICE dataframe encoding the settings for nucleosynthetic yields from 
+		Type :: dataframe 
+
+		A dataframe encoding the settings for nucleosynthetic yields from 
 		type Ia supernovae at the time the simulation was ran. 
+
+		See Also 
+		======== 
+		vice.yields.sneia.settings 
 		"""
 		return self._sneia_yields 
 
 	def show(self, key): 
 		""" 
 		Show a plot of the given quantity referenced by a keyword argument. 
+
+		Signature: vice.output.show(key) 
 
 		Parameters 
 		========== 
@@ -496,6 +531,7 @@ class output(object):
 			attribute, it will be plotted against time by default. Conversely, 
 			if it is stored in the mdf attribute, it will show the 
 			corresponding stellar metallicity distribution function. 
+
 			Users can also specify an argument of the format key1-key2 where 
 			key1 and key2 are elements of the history output. It will then 
 			plot key1 against key2 and show it to the user. 
@@ -769,6 +805,8 @@ class dataframe(object):
 	array-like attributes, it may also be indexed via an integer to pull that 
 	element from each field. 
 
+	Signature: vice.dataframe.__init__(frame) 
+
 	Functions
 	=========
 	keys		
@@ -942,12 +980,16 @@ class dataframe(object):
 
 	def keys(self): 
 		"""
+		Signature: vice.dataframe.keys() 
+
 		Returns the dataframe keys in lower-case format. 
 		"""
 		return [i.lower() for i in self._frame.keys()] 
 
 	def todict(self): 
 		"""
+		Signature: vice.dataframe.todict() 
+
 		Returns the dataframe as a standard python dictionary. Note however 
 		that python dictionaries are case-sensitive, and are thus less 
 		versatile than this object. 

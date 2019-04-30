@@ -55,6 +55,8 @@ def yield_grid(element, study = "cristallo11"):
 	from Cristallo et al. (2011), ApJS, 197, 17 and Karakas (2010), MNRAS, 403, 
 	1413, allowing users the choice of which to adopt in their simulations. 
 
+	Signature: vice.yields.agb.grid(element, study = "cristallo11") 
+
 	Parameters
 	==========
 	element :: str [case-insensitive] 

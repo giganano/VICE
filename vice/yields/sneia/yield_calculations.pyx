@@ -36,6 +36,9 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 	explosion model. See section 5.2 of VICE's science documentation at 
 	https://github.com/giganano/VICE/tree/master/docs for further details. 
 
+	Signature: vice.yields.sneia.single(element, study = "seitenzahl13", 
+		model = "N1") 
+
 	Parameters 
 	========== 
 	element :: str [case-insensitive] 
@@ -175,6 +178,9 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 	function does not require numerical quadrature. See section 5.2 of VICE's 
 	science documentation at https://github.com/giganano/VICE/tree/master/docs 
 	for futher details. 
+
+	Signature: vice.yields.sneia.fractional(element, study = "seitenzahl13", 
+		model = "N1", n = 2.2e-03) 
 
 	Parameters 
 	========== 
