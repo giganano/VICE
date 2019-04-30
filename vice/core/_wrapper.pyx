@@ -1281,10 +1281,11 @@ class singlezone(object):
 		single stellar population returned to the ISM as gas at the birth 
 		metallicity of the stars. 
 
-		If this attribute is a string, it must be "continuous". In this case 
-		VICE will treat recycling from each episode of star formation 
-		individually via a treatment of the stellar initial mass function 
-		and the remnant mass model of Kalirai et al. (2008). 
+		If this attribute is a string, it must be "continuous" 
+		[case-insensitive]. In this case VICE will treat recycling from each 
+		episode of star formation individually via a treatment of the stellar 
+		initial mass function and the remnant mass model of Kalirai et al. 
+		(2008). 
 
 		If this attribute is a real number, it must be a value between 0 and 1. 
 		VICE will implement instantaneous recycling in this case, and this 
@@ -1297,7 +1298,7 @@ class singlezone(object):
 		instantaneous recycling with a Kroupa (1) (Salpeter (2)) IMF, based 
 		on the analytical model of Weinberg, Andrews & Freudenburg (2017). 
 
-		See also 	[https://github.com/giganano/VICE/tree/master/docs]
+		See Also 	[https://github.com/giganano/VICE/tree/master/docs]
 		======== 
 		Section 3.3 of science documentation 
 
@@ -1398,6 +1399,10 @@ class singlezone(object):
 		===== 
 		This attribute is compatible with the NumPy array and Pandas DataFrame, 
 		but is not dependent on either package. 
+
+		See Also 	[https://github.com/giganano/VICE/tree/master/docs] 
+		======== 
+		Section 6 of science documentation 
 		"""
 		return [self.__model.bins[i] for i in list(range(
 			self.__model.num_bins + 1l))]
@@ -1461,8 +1466,18 @@ class singlezone(object):
 		Type :: real number 
 		Default :: 0.15 
 
-		The minimum delay time in Gyr for the onset of type Ia sueprnovae 
-		associated with a single stellar population. 
+		The minimum delay time in Gyr for the onset of type Ia supernovae 
+		associated with a single stellar population. The default parameter 
+		is adopted from Weinberg, Andrews & Freudenburg (2017).  
+
+		See Also 	[https://github.com/giganano/VICE/tree/master/docs]
+		======== 
+		Attribute ria 
+		Section 4.3 of science documentation 
+
+		References 
+		========== 
+		Weinberg, Andrews & Freudenburg (2017), ApJ, 837, 183 
 		"""
 		return self._delay
 
@@ -1498,8 +1513,8 @@ class singlezone(object):
 			------
 			RIa ~ t^-1.1 
 
-		Alternative, the user may pass their own function of time in Gyr, and 
-		the normalization of the custom DTD will be taken care of 
+		Alternatively, the user may pass their own function of time in Gyr, 
+		and the normalization of the custom DTD will be taken care of 
 		automatically. 
 
 		If type <function> 
@@ -1513,8 +1528,9 @@ class singlezone(object):
 
 		See also [https://github.com/giganano/VICE/tree/master/docs] 
 		======== 
-		Note on functional attributes in user's guide 
 		Section 4.3 of science documentation 
+		Note on functional attributes and numerical delta functions in user's 
+			guide 
 		"""
 		return self._ria
 
@@ -1560,10 +1576,11 @@ class singlezone(object):
 
 		Notes 
 		===== 
-		This parameter only matters when the simulation is in infall mode. In 
-		gas mode, func(0) specifies the initial gas supply, and in star 
-		formation mode, it is func(0) * tau_star(0) (modulo the prefactors 
-		imposed by gas-dependent star formation efficiency)  
+		This parameter only matters when the simulation is in infall mode (i.e. 
+		mode = "ifr"). In gas mode, func(0) specifies the initial gas supply, 
+		and in star formation mode, it is func(0) * tau_star(0) (modulo the 
+		prefactors imposed by gas-dependent star formation efficiency, if 
+		applicable). 
 		"""
 		return self._Mg0
 
@@ -1644,7 +1661,7 @@ class singlezone(object):
 		Notes 
 		===== 
 		Because this is an e-folding timescale, it only matters when the 
-		attribute ria == "exp". 
+		attribute ria = "exp". 
 
 		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
 		======== 
@@ -2021,10 +2038,9 @@ class singlezone(object):
 		be raised. The Karakas (2010) study did not report yields for elements 
 		heavier than nickel. 
 
-		References 
-		========== 
-		Cristallo et al. (2011), ApJS, 197, 17 
-		Karakas (2010), MNRAS, 403, 1413 
+		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
+		======== 
+		Sections 4.4 and 5.3 of science documentation 
 		"""
 		return self._agb_model
 
