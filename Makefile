@@ -7,10 +7,10 @@ src:
 	$(MAKE) -C vice/src/ 
 
 tests:
-	$(MAKE) -C docs/ tests
+	$(MAKE) -C vice/tests/ tests 
 
 tests3:
-	$(MAKE) -C docs/ tests3
+	$(MAKE) -C vice/tests/ tests3 
 
 jw19plots: 
 	$(MAKE) -C JW19/ 

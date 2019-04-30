@@ -141,6 +141,11 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 		pass 
 
 	# The full path to the yield file 
+	if '.' in model: 
+		# replace '.' with 'p' for lookup
+		model = model.replace('.', 'p')
+	else:
+		pass
 	yield_file = "%s%s/%s/%s.dat" % (PATH, study.lower(), model.upper(), 
 		element.lower()) 
 	if os.path.exists(yield_file): 
