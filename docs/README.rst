@@ -1,4 +1,6 @@
 
+|userguide| |scidocs|
+
 ``VICE Documentation``
 ======================
 
@@ -53,5 +55,16 @@ details.
 .. Hyperlink the science documentation 
 .. _scidocs: https://github.com/giganano/VICE/blob/master/docs/science_documentation.pdf
 __ scidocs_ 
+
+
+..	|userguide| image:: https://img.shields.io/badge/-User's%20Guide-brightgreen.svg
+	:target: https://github.com/giganano/VICE/blob/master/docs/users_guide.pdf 
+	:alt: userguide
+
+..	|scidocs| image:: https://img.shields.io/badge/-Science%20Documentation-brightgreen.svg
+	:target: https://github.com/giganano/VICE/blob/master/docs/science_documentation.pdf
+	:alt: scidocs
+
+
 
 
