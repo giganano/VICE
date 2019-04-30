@@ -524,11 +524,34 @@ class singlezone(object):
 	"""
 	Runs simulations of chemical enrichment under the single-zone approximation 
 	for user-specified parameters. The organizational structure of this class 
-	is very simple; every attribute encodes information on a given galaxy 
+	is very simple; every attribute encodes information on a relevant galaxy 
 	evolution parameter. 
 
-	Each attribute can be initialized via a keyword argument to the __init__ 
-	function of this class. 
+	Signature: vice.singlezone.__init__(name = "onezonemodel", 
+		func = "_DEFAULT_FULC_", 
+		mode = "ifr", 
+		elements = ("fe", "sr", "o"), 
+		imf = "kroupa", 
+		eta = 2.5, 
+		ehancement = 1, 
+		zin = 0, 
+		recycling = "continuous", 
+		bins = _DEFAULT_FUNC_, 
+		delay = 0.15, 
+		ria = "plaw", 
+		Mg0 = 6.0e+09, 
+		smoothing = 0.0, 
+		tau_ia = 1.5, 
+		tau_star = 2.0, 
+		dt = 0.01, 
+		schmidt = False, 
+		schmidt_index = 0.5, 
+		MgSchmidt = 6.0e+09, 
+		m_upper = 100, 
+		m_lower = 0.08, 
+		z_solar = 0.014, 
+		agb_model = "cristallo11" 
+	)
 
 	Attributes 
 	========== 
@@ -625,7 +648,7 @@ class singlezone(object):
 		name = "onezonemodel", 
 		func = _DEFAULT_FUNC_, 
 		mode = "ifr", 
-		elements = ["fe", "sr", "o"], 
+		elements = ("fe", "sr", "o"), 
 		imf = "kroupa", 
 		eta = 2.5, 
 		enhancement = 1, 
@@ -690,8 +713,22 @@ class singlezone(object):
 		The name of the simulation. The output will be stored in a directory 
 		under this name with the extension ".vice". This can also be of the 
 		form /path/to/directory/name and the output will be stored there. 
+
+		Notes 
+		===== 
 		The user need not interact with any of the output files; the output 
 		object is designed to read in all of the results automatically. 
+
+		Most of the relevant physical information stored in VICE 
+		outputs are in the history.out and mdf.out output files. They are 
+		simple ascii text files, allowing users to open them in languages other 
+		than python if they so choose. The other output files store the yield 
+		settings at the time of simulation and the integrator parameters which 
+		produced it. 
+
+		By forcing a ``.vice'' extension on the output file, users can run 
+		'<command> *.vice' in a linux terminal to run commands over 
+		all vice outputs in a given directory. 		
 		"""
 		return self._name[:-5] # remove the '.vice' extension 
 
@@ -733,7 +770,7 @@ class singlezone(object):
 		Notes 
 		===== 
 		Encoding this functional attribute into VICE outputs requires the 
-		package dill, an extension to pickle in the python standard library. 
+		package 'dill', an extension to pickle in the python standard library. 
 		Without this, the outputs will not have memory of this parameter. 
 		It is recommended that VICE users install dill if they have not already 
 		so that they can make use of this feature; this can be done via 
@@ -775,12 +812,11 @@ class singlezone(object):
 		Type :: str [case-insensitive] 
 		Default :: "ifr" 
 
-		The interpretation of the attribute 'func'. This parameter is 
-		case-insensitive. 
+		The interpretation of the attribute 'func'. 
 
 		mode = "ifr" 
 		------------ 
-		The values returned from the attribute func represent the rate of 
+		The values returned from the attribute func represents the rate of 
 		gas infall into the galaxy in Msun/yr. 
 
 		mode = "sfr" 
@@ -795,10 +831,15 @@ class singlezone(object):
 
 		Notes 
 		===== 
-		Units :: The attribute func will always be interpreted as taking 
-			time in Gyr as a parameter. However, infall and star formation 
-			rates will be interpreted as having units of Msun/yr according to 
-			convention. 
+		The attribute func will always be interpreted as taking 
+		time in Gyr as a parameter. However, infall and star formation 
+		rates will be interpreted as having units of Msun/yr according to 
+		convention. 
+
+		See Also 
+		======== 
+		Section 3.1 of science documentation 
+		Attribute func 
 		"""
 		return self._mode
 
@@ -836,6 +877,10 @@ class singlezone(object):
 		ratios that are quoted in the output stellar metallicity distribution 
 		function. That is, if element X appears before element Y, then VICE 
 		will determine the MDF in dN/d[Y/X]. 
+
+		See Also 
+		======== 
+		Section 6 of science documentation 
 		"""
 		return self._elements
 
@@ -892,6 +937,10 @@ class singlezone(object):
 		A future update to VICE will likely include functionality for a wider 
 		sample of IMFs. 
 
+		See Also 
+		======== 
+		The IMF is relevant in many sections of VICE's science documentation. 
+
 		References
 		========== 
 		(1) Kroupa (2001), MNRAS, 322, 231 
@@ -935,13 +984,15 @@ class singlezone(object):
 		package dill, an extension to pickle in the python standard library. 
 		Without this, the outputs will not have memory of this parameter. 
 		It is recommended that VICE users install dill if they have not already 
-		so that they can make use of this feature; this can be done via 
+		in order to make use of this feature; this can be done via 
 		'pip install dill'. 
 		
 		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
 		======== 
-		Section 3.2 of science documentation. 
-		Note on function attributes in VICE in user's guide. 
+		Section 3.2 of science documentation  
+		Attribute smoothing 
+		Notes on function attributes and numerical delta functions in User's 
+			guide 
 		"""
 		return self._eta
 
@@ -1008,10 +1059,11 @@ class singlezone(object):
 		so that they can make use of this feature; this can be done via 
 		'pip install dill'. 
 
-		References 
-		========== 
-		Chisholm, Tremonti & Leitherer (2018), MNRAS, 481, 1690 
-		Christensen et al. (2018), ApJ, 867, 142
+		See Also 
+		========
+		Sections 3.2 and 4.1 of science documentation 
+		Attribute eta 
+		Attribute smoothing 
 		"""
 		return self._enhancement
 
@@ -1049,9 +1101,9 @@ class singlezone(object):
 		Default :: 0.0 
 
 		The metallicity of gas inflow. If this is a number or function, it will 
-		apply to all elements tracked by the simulation. Any python dictionary 
-		or VICE dataframe can also be passed, and real numbers and functions 
-		can be assigned to each individual element. 
+		apply to all elements tracked by the simulation. A python dictionary 
+		or VICE dataframe can also be passed, allowing real numbers and 
+		functions to be assigned to each individual element. 
 
 		Notes 
 		===== 
@@ -2163,25 +2215,29 @@ class singlezone(object):
 		"""
 		eval_times = __times(output_times[-1] + 10 * self._dt, self._dt)
 		ptr = c_double * len(eval_times)
-		if self._mode == "gas":
-			self.__run.spec = ptr(*list(map(self._func, eval_times)))
+		if self._mode == "gas": 
+			spec = list(map(self._func, eval_times)) 
 		else:
-			self.__run.spec = ptr(*list(map(lambda t: 1e9 * self._func(t), 
-				eval_times)))
+			spec = list(map(lambda t: 1.e9 * self._func(t), eval_times)) 
+		self.__numeric_check(spec, "func")  
+		self.__run.spec = ptr(*spec[:]) 
 
 		# Map the mass loading factor across eval_times
 		if callable(self._eta):
-			eta = list(map(self._eta, eval_times))
+			eta = list(map(self._eta, eval_times)) 
+			self.__numeric_check(eta, "eta") 
 		else:
 			eta = len(eval_times) * [self._eta]
 		# Map the enhancement factor across eval_times 
 		if callable(self._enhancement):
-			enhancement = list(map(self._enhancement, eval_times))
+			enhancement = list(map(self._enhancement, eval_times)) 
+			self.__numeric_check(enhancement, "enhancement") 
 		else:
 			enhancement = len(eval_times) * [self._enhancement]
 		# Map the SFE timescale across eval_times
 		if callable(self._tau_star):
-			tau_star = list(map(self._tau_star, eval_times))
+			tau_star = list(map(self._tau_star, eval_times)) 
+			self.__numeric_check(tau_star, "tau_star") 
 		else:
 			tau_star = len(eval_times) * [self._tau_star]
 
@@ -2282,7 +2338,6 @@ class singlezone(object):
 		Sort the output times from least to greatest. The user need not do 
 		this themselves. 
 		"""
-		output_times = sorted(output_times)
 		if not all(list(map(lambda x: isinstance(x, numbers.Number), 
 			output_times))):
 			# Make sure they're all numbers 
@@ -2294,6 +2349,7 @@ class singlezone(object):
 			message = "All output times must be non-negative. "
 			raise ValueError(message)
 		else:
+			output_times = sorted(output_times)
 			if output_times[-1] > 15:
 				"""
 				For reasons relating to the SNe Ia DTD numerical 
@@ -2467,7 +2523,28 @@ class singlezone(object):
 		elif len(args[0]) != 1:
 			return True
 		else:
-			return False
+			return False 
+
+	@staticmethod
+	def __numeric_check(arr, name): 
+		"""
+		Determines if a given array has all numerical valus in it and raises a 
+		TypeError if it doesn't. 
+
+		Parameters 
+		========== 
+		arr :: array-like 
+			The array to check 
+		name :: string 
+			The name of the object (for raising the TypeError). 
+		"""
+		if not all(list(map(lambda x: isinstance(x, numbers.Number), arr))): 
+			message = "Functional attribute %s evaluated to non-numerical " % (
+				name)
+			message += "value." 
+			raise TypeError(message) 
+		else: 
+			pass
 
 	def __set_ria(self):
 		"""
