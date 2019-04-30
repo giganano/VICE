@@ -628,11 +628,8 @@ class singlezone(object):
 	See also 	[https://github.com/giganano/VICE/tree/master/docs]
 	========
 	Sections 3 - 6 of science documentation 
-
-	It is recommended that user's read the User's Notes on functional 
-	attributes in VICE as well as the warning on implementing numerical delta 
-	functions in VICE's User's Guide, available with the source code at 
-	https://github.com/giganano/VICE/tree/master/docs. 
+	Notes on functional attributes and numerical delta functions in User's 
+		guide 
 
 	References 
 	========== 
