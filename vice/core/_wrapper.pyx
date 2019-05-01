@@ -495,12 +495,17 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 		elif i * dt >= 13.8:
 			continue
 		else:
-			if RIa.lower() == "plaw":
-				ria[i] = (ria_times[i] + 1.e-12)**(-1.1)
-			elif RIa.lower() == "exp":
-				ria[i] = m.exp( -ria_times[i] / 1.5)
+			if isinstance(RIa, strcomp):
+				if RIa.lower() == "plaw":
+					ria[i] = (ria_times[i] + 1.e-12)**(-1.1)
+				elif RIa.lower() == "exp":
+					ria[i] = m.exp( -ria_times[i] / 1.5) 
+				else:
+					raise SystemError("This shouldn't be raised.") 
 			elif callable(RIa):
-				ria = RIa(ria_times[i])
+				ria[i] = RIa(ria_times[i]) 
+			else:
+				raise SystemError("This shouldn't be raised.") 
 	# Check the RIa array for any numerical artifacts ... 
 	if any(list(map(lambda x: m.isnan(x) or m.isinf(x) or x < 0, ria))):
 		message = "Custon SNe Ia DTD evaluated to negative, nan, or inf for at "

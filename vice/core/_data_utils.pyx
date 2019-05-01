@@ -978,6 +978,26 @@ class dataframe(object):
 		# Same as __repr__ 
 		return self.__repr__() 
 
+	def __eq__(self, other): 
+		"""
+		Test if the dataframes are identical 
+		"""
+		test = len(self.keys()) * [None] 
+		for i in range(len(self.keys())): 
+			try: 
+				test[i] = other[self.keys()[i]] 
+			except KeyError: 
+				return False 
+		if all(list(map(lambda x: test[x] == self._frame[self.keys()[x]], 
+			range(len(self.keys()))))): 
+			return True 
+		else:
+			return False 
+
+
+	def __ne__(self, other): 
+		return not self.__eq__(other) 
+
 	def keys(self): 
 		"""
 		Signature: vice.dataframe.keys() 

@@ -8,11 +8,11 @@ warnings.filterwarnings("ignore")
 
 try: 
 	import numpy as np 
-	_N_ = np.linspace(1, 3, 100) 
+	_N_ = np.linspace(.001, .003, 100) 
 except ImportError: 
 	_N_ = 100 * [0]
 	for i in range(100): 
-		_N_[i] = 1 + (3 - 1) / 100. * i
+		_N_[i] = (1 + (3 - 1) / 100. * i) * 1.e-3
 
 _STUDY_ = ["iwamoto99", "seitenzahl13"] 
 _MODEL_ = {
@@ -43,6 +43,7 @@ if __name__ == "__main__":
 				for n in _N_: 
 					try: 
 						foo = fractional(k, n = n, **metadata) 
+						assert 0 <= foo < 1
 					except: 
 						success_fractional = False 
 			message = "%s :: %s :: " % (i, j)

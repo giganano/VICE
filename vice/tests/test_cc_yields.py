@@ -4,6 +4,7 @@ from vice.yields.ccsne import fractional
 from vice import _RECOGNIZED_ELEMENTS_ 
 import warnings 
 warnings.filterwarnings("ignore") 
+import math as m 
 
 _STUDY_ = ["LC18", "CL13", "CL04", "WW95"] 
 _MOVERH_ = {
@@ -42,6 +43,11 @@ if __name__ == "__main__":
 						for elem in _RECOGNIZED_ELEMENTS_: 
 							try: 
 								foo = fractional(elem, **metadata) 
+								assert 0 <= foo[0] < 1
+								if foo[0] == 0: 
+									assert m.isnan(foo[1])
+								else: 
+									pass 
 							except: 
 								sucess = False 
 						if success: 
