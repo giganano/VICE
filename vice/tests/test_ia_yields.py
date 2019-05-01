@@ -62,6 +62,21 @@ def main():
 				message += "fractional: Failed" 
 			print(message) 
 			out.write("%s\n" % (message)) 
+
+	try: 
+		from vice.yields.sneia import iwamoto99 
+		print("Iwamoto99 import: Success") 
+		out.write("Iwamoto99 import: Success\n")
+	except: 
+		print("Iwamoto99 import: Failure") 
+		out.write("Iwamoto99 import: Failure\n")
+	try: 
+		from vice.yields.sneia import seitenzahl13 
+		print("Seitenzahl13 import: Success") 
+		out.write("Seitenzahl13 import: Success\n") 
+	except: 
+		print("Seitenzahl13 import: Failure")
+		out.write("Seitenzahl13 import: Failure\n")
 	out.close() 
 
 if __name__ == "__main__": 
