@@ -14,13 +14,12 @@ except ImportError:
 	_OUTTIMES_ = 201 * [0.] 
 	for i in range(201): 
 		_OUTTIMES_[i] = 0.05 * i 
-finally: 
+
+def main(): 
 	print("=================================================================")
 	print("TESTING: vice.singlezone") 
 	print("         vice.output") 
 	print("         vice.mirror") 
-
-def main(): 
 	out = open("test_sz_output_mirror.out", 'w') 
 	_MODES_ = ["ifr", "sfr", "gas"] 
 	_IMF_ = ["kroupa", "salpeter"] 

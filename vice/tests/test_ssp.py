@@ -13,13 +13,6 @@ except ImportError:
 	_Z_ = 11 * [0] 
 	for i in range(11): 
 		_Z_[i] = 0.025 / 10 * i 
-finally: 
-	print("""\
-Running tests on VICE's included features. This will take a few minutes, \
-depending on the processing speed of the system. \
-""")
-	print("=================================================================")
-	print("TESTING: vice.single_stellar_population") 
 
 _MSTAR_ = 1.e6 
 _IMF_ = ["kroupa", "salpeter"] 
@@ -27,6 +20,12 @@ _RIA_ = ["plaw", "exp", lambda t: t**-1.5]
 _AGB_MODEL_ = ["cristallo11", "karakas10"] 
 
 def main(): 
+	print("""\
+Running tests on VICE's included features. This will take a few minutes, \
+depending on the processing speed of the system. \
+""")
+	print("=================================================================")
+	print("TESTING: vice.single_stellar_population") 
 	out = open("test_ssp.out", 'w') 
 	for i in _AGB_MODEL_: 
 		for j in _RIA_: 

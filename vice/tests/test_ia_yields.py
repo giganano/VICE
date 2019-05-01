@@ -13,10 +13,6 @@ except ImportError:
 	_N_ = 100 * [0]
 	for i in range(100): 
 		_N_[i] = (1 + (3 - 1) / 100. * i) * 1.e-3 
-finally: 
-	print("=================================================================")
-	print("TESTING: vice.yields.sneia.fractional") 
-	print("         vice.yields.sneia.single") 
 
 _STUDY_ = ["iwamoto99", "seitenzahl13"] 
 _MODEL_ = {
@@ -28,6 +24,9 @@ _MODEL_ = {
 }
 
 def main(): 
+	print("=================================================================")
+	print("TESTING: vice.yields.sneia.fractional") 
+	print("         vice.yields.sneia.single") 
 	out = open("test_ia_yields.out", 'w') 
 	for i in _STUDY_: 
 		for j in _MODEL_[i]: 

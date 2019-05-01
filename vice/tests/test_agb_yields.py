@@ -8,6 +8,9 @@ import numbers
 _STUDY_ = ["cristallo11", "karakas10"] 
 
 def main(): 
+	"""
+	Tests the import on the 
+	"""
 	print("=================================================================")
 	print("TESTING: vice.yields.agb.grid") 
 	out = open("test_agb_yields.out", 'w') 
