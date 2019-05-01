@@ -11,8 +11,8 @@ from test_sz_output_mirror import main as test_sz_output_mirror
 
 if __name__ == "__main__": 
 	print("""\
-Running comprehensive tests. This will take a minute, the exact duration \
-depending on the processing speed of the system. \
+Running comprehensive tests. This will take several minutes, the exact \
+duration depending on the processing speed of the system. \
 """)
 	test_sz_output_mirror() 
 	test_agb_yields() 

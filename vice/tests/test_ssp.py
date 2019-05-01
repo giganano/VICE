@@ -23,10 +23,6 @@ def main():
 	"""
 	Runs the tests on VICE's single stellar population function. 
 	"""
-	print("""\
-Running tests on VICE's included features. This will take a few minutes, \
-depending on the processing speed of the system. \
-""")
 	print("=================================================================")
 	print("TESTING: vice.single_stellar_population") 
 	out = open("test_ssp.out", 'w') 

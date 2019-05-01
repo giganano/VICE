@@ -132,8 +132,8 @@ vice.singlezone :: %d successes :: %d failures
 vice.history :: %d successes :: %d failures 
 vice.mdf :: %d successes :: %d failures 
 vice.output :: %d successes :: %d failures 
-vice.mirror :: %d successes :: %d failures 
-	""" % (
+vice.mirror :: %d successes :: %d failures \
+""" % (
 		singlezone_tracker["success"], singlezone_tracker["failure"], 
 		history_tracker["success"], history_tracker["failure"], 
 		mdf_tracker["success"], mdf_tracker["failure"], 
