@@ -4,36 +4,24 @@ associated MIT License, and any use or redistribution of this file in original
 or altered form is subject to the copyright terms therein. 
 """
 
-try: 
-	import Cython
-	from Cython.Build import cythonize 
-	min_cython_major = 0
-	min_cython_minor = 25
-	min_cython_micro = 2
-	
-	# Tuple comparison of major/minor/micro components for version check
-	if tuple([int(i) for i in Cython.__version__.split('.')]) < tuple([
-		min_cython_major, 
-		min_cython_minor, 
-		min_cython_micro]): 
-		
-		message = "VICE requires Cython >= %d.%d.%d. Current Version: %s\n" % (
-			min_cython_major, 
-			min_cython_minor, 
-			min_cython_micro, 
-			Cython.__version__)
-		message += "Please install Cython >= %d.%d.%d before installing VICE." % (
-			min_cython_major, 
-			min_cython_minor, 
-			min_cython_micro)
-		raise RuntimeError(message) 
-	else: 
-		pass 
+_MIN_CYTHON_MAJOR_ = 0
+_MIN_CYTHON_MINOR_ = 25 
+_MIN_CYTHON_MICRO_ = 2 
 
-except ImportError:
-	message = "VICE requires Cython version >= %d.%d.%d for installation" % (
-		min_cython_major, min_cython_minor, min_cython_micro)
-	raise ImportError(message)
+try: 
+	import Cython 
+	from Cython.Build import cythonize 
+except (ImportError, ModuleNotFoundError): 
+	message = "Please install Cython >= %d.%d.%d before installing VICE." % (
+		_MIN_CYTHON_MAJOR_, _MIN_CYTHON_MINOR_, _MIN_CYTHON_MICRO_) 
+	raise RuntimeError(message) 
+if tuple([int(i) for i in Cython.__version__.split('.')]) < tuple([
+	_MIN_CYTHON_MAJOR_, _MIN_CYTHON_MINOR_, _MIN_CYTHON_MICRO_]): 
+	message = "Building VICE requires Cython >= %d.%d.%d. Current version: %s" % (
+		_MIN_CYTHON_MAJOR_, _MIN_CYTHON_MINOR_, _MIN_CYTHON_MICRO_) 
+	raise RuntimeError(message) 
+else:
+	pass 
 
 from distutils.core import setup
 from distutils.extension import Extension
@@ -207,7 +195,7 @@ def setup_package():
 		packages = find_packages(), 
 		package_data = find_package_data(), 
 		install_requires = ["Cython>=%d.%d.%d" % (
-			min_cython_major, min_cython_minor, min_cython_micro)], 
+			_MIN_CYTHON_MAJOR_, _MIN_CYTHON_MINOR_, _MIN_CYTHON_MICRO_)], 
 		python_requires = ">=2.7, !=3.0.*, !=3.1.*, !=3.3.*, !=3.4.*, <4", 
 		zip_safe = False, 
 		scripts = ["bin/%s" % (i) for i in os.listdir("./bin/")]
