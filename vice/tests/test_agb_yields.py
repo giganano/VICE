@@ -9,7 +9,7 @@ _STUDY_ = ["cristallo11", "karakas10"]
 
 def main(): 
 	"""
-	Tests the import on the 
+	Runs the tests on the AGB yield grid functions. 
 	"""
 	print("=================================================================")
 	print("TESTING: vice.yields.agb.grid") 

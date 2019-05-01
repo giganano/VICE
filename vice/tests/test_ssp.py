@@ -20,6 +20,9 @@ _RIA_ = ["plaw", "exp", lambda t: t**-1.5]
 _AGB_MODEL_ = ["cristallo11", "karakas10"] 
 
 def main(): 
+	"""
+	Runs the tests on VICE's single stellar population function. 
+	"""
 	print("""\
 Running tests on VICE's included features. This will take a few minutes, \
 depending on the processing speed of the system. \

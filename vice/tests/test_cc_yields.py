@@ -23,6 +23,10 @@ _IMF_ = ["kroupa", "salpeter"]
 _METHOD_ = ["simpson", "trapezoid", "midpoint", "euler"] 
 
 def main(): 
+	"""
+	Runs the tests on functions which numerically evaluate IMF-integrated 
+	nucleosynthetic yields from core collapse supernovae. 
+	"""
 	print("=================================================================")
 	print("TESTING: vice.yields.ccsne.fractional")  
 	out = open("test_cc_yields.out", 'w') 

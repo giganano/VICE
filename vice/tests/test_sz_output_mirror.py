@@ -16,6 +16,10 @@ except ImportError:
 		_OUTTIMES_[i] = 0.05 * i 
 
 def main(): 
+	"""
+	Runs the tests on the singlezone object, the output object, and the 
+	mirror function. 
+	"""
 	print("=================================================================")
 	print("TESTING: vice.singlezone") 
 	print("         vice.output") 

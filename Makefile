@@ -10,11 +10,9 @@ src:
 	$(MAKE) -C vice/src/ 
 
 tests:
-	# $(MAKE) -C vice/tests/ tests 
 	cd vice && python tests && cd - 
 
 tests3:
-	# $(MAKE) -C vice/tests/ tests3 
 	cd vice && python tests && cd - 
 
 jw19plots: 
@@ -29,5 +27,6 @@ clean:
 	$(MAKE) -C vice/yields/agb/ clean
 	$(MAKE) -C vice/yields/ccsne/ clean
 	$(MAKE) -C vice/yields/sneia/ clean
-	$(MAKE) -C vice/src/ clean
+	$(MAKE) -C vice/src/ clean 
+	$(MAKE) -C vice/ clean 
 	rm -rf build

@@ -84,6 +84,9 @@ def test_dummy(x):
 		assert x[i] == dataframe(row) 
 
 def main(): 
+	"""
+	Runs the tests on the VICE dataframe. 
+	"""
 	out = open("test_dataframes.out", 'w') 
 
 	print("=================================================================")

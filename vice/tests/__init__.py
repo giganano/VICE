@@ -26,6 +26,9 @@ from test_ssp import main as test_ssp
 from test_sz_output_mirror import main as test_sz_output_mirror 
 
 def run_comprehensive_tests(): 
+	"""
+	Runs the full comprehensive set of tests. 
+	"""
 	print("""\
 Running comprehensive tests. This will take a minute, the exact duration \
 depending on the processing speed of the system. \

@@ -24,6 +24,10 @@ _MODEL_ = {
 }
 
 def main(): 
+	"""
+	Runs the tests on the functions which look up single detonation yields and 
+	calculate IMF-integrated yields from type Ia supernovae. 
+	"""
 	print("=================================================================")
 	print("TESTING: vice.yields.sneia.fractional") 
 	print("         vice.yields.sneia.single") 
