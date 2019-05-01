@@ -8,6 +8,7 @@ build/*
 *.so
 *.pyc
 *.out 
+*.vice 
 
 # Ignore local copies of Cython compiler outputs
 vice/core/*.c 
