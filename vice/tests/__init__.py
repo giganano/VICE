@@ -18,12 +18,13 @@ test_ssp
 test_sz_output_mirror
 """
 
-from test_agb_yields import main as test_agb_yields 
-from test_cc_yields import main as test_cc_yields 
-from test_dataframes import main as test_dataframes 
-from test_ia_yields import main as test_ia_yields 
-from test_ssp import main as test_ssp 
-from test_sz_output_mirror import main as test_sz_output_mirror 
+from __future__ import absolute_import 
+from .test_agb_yields import main as test_agb_yields 
+from .test_cc_yields import main as test_cc_yields 
+from .test_dataframes import main as test_dataframes 
+from .test_ia_yields import main as test_ia_yields 
+from .test_ssp import main as test_ssp 
+from .test_sz_output_mirror import main as test_sz_output_mirror 
 
 def run_comprehensive_tests(): 
 	"""
@@ -40,4 +41,5 @@ duration depending on the processing speed of the system. \
 	test_ia_yields() 
 	test_ssp() 
 
+del absolute_import
 
