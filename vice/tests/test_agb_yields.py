@@ -7,7 +7,8 @@ import numbers
 
 _STUDY_ = ["cristallo11", "karakas10"] 
 
-if __name__ == "__main__": 
+def main(): 
+	print("=================================================================")
 	print("TESTING: vice.yields.agb.grid") 
 	out = open("test_agb_yields.out", 'w') 
 	for i in _STUDY_: 
@@ -34,7 +35,8 @@ if __name__ == "__main__":
 		out.write("%s\n" % (message)) 
 	out.close() 
 
-
+if __name__ == "__main__": 
+	main()
 
 
 

@@ -42,28 +42,28 @@ cristallo11 :: exp :: salpeter :: 0.0175 :: Success
 cristallo11 :: exp :: salpeter :: 0.02 :: Success
 cristallo11 :: exp :: salpeter :: 0.0225 :: Success
 cristallo11 :: exp :: salpeter :: 0.025 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: kroupa :: 0 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: kroupa :: 0.0025 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: kroupa :: 0.005 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: kroupa :: 0.0075 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: kroupa :: 0.01 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: kroupa :: 0.0125 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: kroupa :: 0.015 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: kroupa :: 0.0175 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: kroupa :: 0.02 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: kroupa :: 0.0225 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: kroupa :: 0.025 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: salpeter :: 0 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: salpeter :: 0.0025 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: salpeter :: 0.005 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: salpeter :: 0.0075 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: salpeter :: 0.01 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: salpeter :: 0.0125 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: salpeter :: 0.015 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: salpeter :: 0.0175 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: salpeter :: 0.02 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: salpeter :: 0.0225 :: Success
-cristallo11 :: <function <lambda> at 0x10f028500> :: salpeter :: 0.025 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0.0025 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0.005 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0.0075 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0.01 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0.0125 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0.015 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0.0175 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0.02 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0.0225 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0.025 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0.0025 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0.005 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0.0075 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0.01 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0.0125 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0.015 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0.0175 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0.02 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0.0225 :: Success
+cristallo11 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0.025 :: Success
 karakas10 :: plaw :: kroupa :: 0 :: Success
 karakas10 :: plaw :: kroupa :: 0.0025 :: Success
 karakas10 :: plaw :: kroupa :: 0.005 :: Success
@@ -108,25 +108,25 @@ karakas10 :: exp :: salpeter :: 0.0175 :: Success
 karakas10 :: exp :: salpeter :: 0.02 :: Success
 karakas10 :: exp :: salpeter :: 0.0225 :: Success
 karakas10 :: exp :: salpeter :: 0.025 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: kroupa :: 0 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: kroupa :: 0.0025 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: kroupa :: 0.005 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: kroupa :: 0.0075 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: kroupa :: 0.01 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: kroupa :: 0.0125 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: kroupa :: 0.015 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: kroupa :: 0.0175 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: kroupa :: 0.02 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: kroupa :: 0.0225 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: kroupa :: 0.025 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: salpeter :: 0 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: salpeter :: 0.0025 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: salpeter :: 0.005 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: salpeter :: 0.0075 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: salpeter :: 0.01 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: salpeter :: 0.0125 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: salpeter :: 0.015 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: salpeter :: 0.0175 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: salpeter :: 0.02 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: salpeter :: 0.0225 :: Success
-karakas10 :: <function <lambda> at 0x10f028500> :: salpeter :: 0.025 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0.0025 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0.005 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0.0075 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0.01 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0.0125 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0.015 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0.0175 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0.02 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0.0225 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: kroupa :: 0.025 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0.0025 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0.005 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0.0075 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0.01 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0.0125 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0.015 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0.0175 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0.02 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0.0225 :: Success
+karakas10 :: <function <lambda> at 0x114cf8500> :: salpeter :: 0.025 :: Success

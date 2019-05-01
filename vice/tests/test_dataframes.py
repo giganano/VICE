@@ -83,27 +83,33 @@ def test_dummy(x):
 	for i in range(10): 
 		assert x[i] == dataframe(row) 
 
-if __name__ == "__main__":  
+def main(): 
 	out = open("test_dataframes.out", 'w') 
 
+	print("=================================================================")
 	print("TESTING: vice.atomic_number")
 	test_frame(atomic_number, "vice.atomic_number", out, 
 		atomic_number_assertions) 
 
+	print("=================================================================")
 	print("TESTING: vice.sources") 
 	test_frame(sources, "vice.sources", out, sources_assertions) 
 
+	print("=================================================================")
 	print("TESTING: vice.solar_z") 
 	test_frame(solar_z, "vice.solar_z", out, solar_z_assertions) 
 
+	print("=================================================================")
 	print("TESTING: vice.yields.ccsne.settings") 
 	test_frame(cc_settings, "vice.yields.ccsne.settings", out, 
 		cc_settings_assertions) 
 
+	print("=================================================================")
 	print("TESTING: vice.yields.sneia.settings") 
 	test_frame(ia_settings, "vice.yields.sneia.settings", out, 
 		ia_settings_assertions) 
 
+	print("=================================================================")
 	print("TESTING: vice.dataframe") 
 	message = "vice.dataframe :: "
 	success = True 
@@ -129,6 +135,9 @@ if __name__ == "__main__":
 	print(message) 
 	out.write("%s\n" % (message)) 
 	out.close() 
+
+if __name__ == "__main__": 
+	main() 
 	
 
 

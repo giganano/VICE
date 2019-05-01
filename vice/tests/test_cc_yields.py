@@ -22,7 +22,8 @@ _ROTATION_ = {
 _IMF_ = ["kroupa", "salpeter"] 
 _METHOD_ = ["simpson", "trapezoid", "midpoint", "euler"] 
 
-if __name__ == "__main__": 
+def main(): 
+	print("=================================================================")
 	print("TESTING: vice.yields.ccsne.fractional")  
 	out = open("test_cc_yields.out", 'w') 
 	for i in _STUDY_: 
@@ -83,5 +84,6 @@ if __name__ == "__main__":
 		print("WW95 import: Failed") 
 
 
-
+if __name__ == "__main__": 
+	main() 
 

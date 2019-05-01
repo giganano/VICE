@@ -8,7 +8,9 @@ Woosley & Weaver (1995), ApJ, 101, 181 Nucleosynthetic Yield Tools
 Importing this module will automatically set all yield settings 
 from core collapse supernovae to the IMF-integrated yields as 
 determined from the simulations ran by Woosley & Weaver (1995) at 
-solar metallicity. 
+solar metallicity. In doing so, it will default to an upper mass limit on star 
+formation of 40 Msun. This is done to minimize numerical artifacts; this is 
+the highest mass on the Woosley & Weaver (1995) grid. 
 
 VICE achieves this by calling yields.ccsne.fractional for every 
 element built into the software and storing the returned value in 
@@ -37,7 +39,7 @@ from ....core._globals import _RECOGNIZED_ELEMENTS_
 
 for i in range(len(_RECOGNIZED_ELEMENTS_)): 
 	__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(_RECOGNIZED_ELEMENTS_[i], 
-		study = "WW95")[0] 
+		study = "WW95", upper = 40)[0] 
 del i 
 
 def set_params(**kwargs): 
