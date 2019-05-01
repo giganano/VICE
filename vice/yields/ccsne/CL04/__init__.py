@@ -9,7 +9,9 @@ Importing this module will automatically set all yield settings
 from core collapse supernovae to the IMF-integrated yields as 
 determined from the simulations ran by Chieffi & Limongi (2004) at 
 Z = 0.02 ([M/H] = 0.15 if the solar abundance is Z = 0.014; Asplund 
-et al. 2009). 
+et al. 2009). In doing so, it will default to an upper mass limit on star 
+formation of 35 Msun. This is done to minimize numerical artifacts; this is 
+the highest mass on the Chieffi & Limongi (2004) grid. 
 
 VICE achieves this by calling yields.ccsne.fractional for every 
 element built into the software and storing the returned value in 
@@ -41,7 +43,7 @@ from ....core._globals import _RECOGNIZED_ELEMENTS_
 
 for i in range(len(_RECOGNIZED_ELEMENTS_)): 
 	__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(_RECOGNIZED_ELEMENTS_[i], 
-		study = "CL04", MoverH = 0.15)[0] 
+		study = "CL04", MoverH = 0.15, upper = 35)[0] 
 del i 
 
 def set_params(**kwargs): 

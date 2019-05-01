@@ -4,6 +4,7 @@ from vice.yields.ccsne import fractional
 from vice import _RECOGNIZED_ELEMENTS_ 
 import warnings 
 warnings.filterwarnings("ignore") 
+import math as m 
 
 _STUDY_ = ["LC18", "CL13", "CL04", "WW95"] 
 _MOVERH_ = {
@@ -21,7 +22,12 @@ _ROTATION_ = {
 _IMF_ = ["kroupa", "salpeter"] 
 _METHOD_ = ["simpson", "trapezoid", "midpoint", "euler"] 
 
-if __name__ == "__main__": 
+def main(): 
+	"""
+	Runs the tests on functions which numerically evaluate IMF-integrated 
+	nucleosynthetic yields from core collapse supernovae. 
+	"""
+	print("=================================================================")
 	print("TESTING: vice.yields.ccsne.fractional")  
 	out = open("test_cc_yields.out", 'w') 
 	for i in _STUDY_: 
@@ -42,6 +48,11 @@ if __name__ == "__main__":
 						for elem in _RECOGNIZED_ELEMENTS_: 
 							try: 
 								foo = fractional(elem, **metadata) 
+								assert 0 <= foo[0] < 1
+								if foo[0] == 0: 
+									assert m.isnan(foo[1])
+								else: 
+									pass 
 							except: 
 								sucess = False 
 						if success: 
@@ -77,5 +88,6 @@ if __name__ == "__main__":
 		print("WW95 import: Failed") 
 
 
-
+if __name__ == "__main__": 
+	main() 
 

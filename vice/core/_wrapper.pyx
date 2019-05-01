@@ -166,7 +166,24 @@ def mirror(output_obj):
 			raise ImportError(message) 
 		
 		if "dill" in sys.modules: 
-			# Proceed without hesitation about functional attributes 
+			"""
+			Functional attributes, when stored in a dictionary, come out of a 
+			pickle encoded. This means that functional attributes stored in 
+			the singlezone.zin attribute will need to be re-wrapped. 
+			Fortunately, if they made it through an integrator once and passed 
+			the argspec checks, it can be safely assumed that they will again. 
+			"""
+			if isinstance(params["zin"], _du.dataframe): 
+				for i in params["elements"]: 
+					if callable(params["zin"][i.lower()]): 
+						params["zin"][i.lower()] = __pyfunc_generator(
+							params["zin"][i.lower()]) 
+					else:
+						continue 
+				params["zin"] = params["zin"].todict()
+			else: 
+				pass 
+
 			return singlezone(**params) 
 
 		else: 
@@ -209,6 +226,28 @@ def mirror(output_obj):
 			type(output_obj)) 
 		raise TypeError(message)
 
+
+def __pyfunc_generator(func): 
+	"""
+	Generates python function which wraps a compiled function in order to 
+	unwrap output objects. 
+
+	In a future version of VICE, this may be incorporated into all functional 
+	attributes to allow more flexibility. 
+
+	Parameters 
+	==========
+	func :: <function> 
+		The compiled function 
+
+	Returns 
+	======= 
+	A python function which wraps the compiled function 
+	"""
+	def pyfunc(t): 
+		return func(t) 
+
+	return pyfunc 
 
 
 #--------------- SINGLE STELLAR POPULATION ENRICHMENT FUNCTION ---------------# 
@@ -495,12 +534,17 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 		elif i * dt >= 13.8:
 			continue
 		else:
-			if RIa.lower() == "plaw":
-				ria[i] = (ria_times[i] + 1.e-12)**(-1.1)
-			elif RIa.lower() == "exp":
-				ria[i] = m.exp( -ria_times[i] / 1.5)
+			if isinstance(RIa, strcomp):
+				if RIa.lower() == "plaw":
+					ria[i] = (ria_times[i] + 1.e-12)**(-1.1)
+				elif RIa.lower() == "exp":
+					ria[i] = m.exp( -ria_times[i] / 1.5) 
+				else:
+					raise SystemError("This shouldn't be raised.") 
 			elif callable(RIa):
-				ria = RIa(ria_times[i])
+				ria[i] = RIa(ria_times[i]) 
+			else:
+				raise SystemError("This shouldn't be raised.") 
 	# Check the RIa array for any numerical artifacts ... 
 	if any(list(map(lambda x: m.isnan(x) or m.isinf(x) or x < 0, ria))):
 		message = "Custon SNe Ia DTD evaluated to negative, nan, or inf for at "
@@ -1215,6 +1259,9 @@ class singlezone(object):
 				# Check to see if they secified a value for this element 
 				elif i.lower() in copy.keys(): 
 					frame[i.lower()] = copy[i.lower()] 
+				# If there's no frame yet, default to zero 
+				elif not hasattr(self, "zin"): 
+					frame[i.lower()] = 0.0
 				# Else adopt the current setting for this element 
 				elif isinstance(self._zin, float) or callable(self._zin): 
 					frame[i.lower()] = self._zin
@@ -2524,43 +2571,18 @@ class singlezone(object):
 	def __args(func):
 		"""
 		Returns True if the function passed to it takes more than one parameter 
-		or any keyword/variable/default arguments.
-		"""
-		if sys.version_info[0] == 2:
-			# Python 2.x argspec function 
-			try: 
-				args = inspect.getargspec(func)
-			except TypeError: 
-				message = "Functional attributes in VICE must be python " 
-				message += "functions. This excludes pre-compiled functions. " 
-				message += "This function must be wrapped by a def statement " 
-				message += "in order to be used in VICE. " 
-				raise TypeError(message) 
-		elif sys.version_info[0] == 3:
-			# Python 3.x argspec function 
-			try: 
-				args = inspect.getfullargspec(func)
-			except TypeError: 
-				message = "Functional attributes in VICE must be python " 
-				message += "functions. This excludes pre-compiled functions. " 
-				message += "This function must be wrapped by a def statement " 
-				message += "in order to be used in VICE. " 
-				raise TypeError(message) 
-		else:
-			# This should be caught at import anyway 
-			_VERSION_ERROR_() 
+		or any keyword/variable/default arguments. 
 
-		# Return True only if the function takes exactly one parameter 
-		if args[1] != None:
-			return True
-		elif args[2] != None:
-			return True
-		elif args[3] != None:
-			return True
-		elif len(args[0]) != 1:
-			return True
-		else:
-			return False 
+		All functional attributes in this software take a numerical value as 
+		the only parameter, so this is done with a simple try statement that 
+		passes the value of 1. This allows pre-compiled code to run. 
+		"""
+		x = False
+		try: 
+			foo = func(1) 
+		except TypeError: 
+			x = True 
+		return x
 
 	@staticmethod
 	def __numeric_check(arr, name): 

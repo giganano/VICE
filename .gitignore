@@ -3,16 +3,18 @@
 build/*
 
 # Ignore any .pyc files and local .o/.so files that get created during local 
-# development as well
+# development as well as the .out files from the test scripts 
 *.o
 *.so
 *.pyc
+*.out 
+*.vice 
 
 # Ignore local copies of Cython compiler outputs
-vice/core/_data_management.c
-vice/core/_mpl.c
-vice/core/_wrapper.c 
-vice/data/_ccsne_yields/yield_integrator.c
+vice/core/*.c 
+vice/yields/agb/*.c 
+vice/yields/ccsne/*.c 
+vice/yields/sneia/*.c 
 
 # A local script that takes the output from the FRUITY database and processes 
 # it into the .dat files packaged with VICE

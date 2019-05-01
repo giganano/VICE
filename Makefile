@@ -1,3 +1,6 @@
+# This file, included with the VICE package, is protected under the terms of the 
+# associated MIT License, and any use or redistribution of this file in original 
+# or altered form is subject to the copyright terms therein. 
 
 all: src
 
@@ -7,10 +10,10 @@ src:
 	$(MAKE) -C vice/src/ 
 
 tests:
-	$(MAKE) -C vice/tests/ tests 
+	cd vice && python tests && cd - 
 
 tests3:
-	$(MAKE) -C vice/tests/ tests3 
+	cd vice && python tests && cd - 
 
 jw19plots: 
 	$(MAKE) -C JW19/ 
@@ -24,5 +27,6 @@ clean:
 	$(MAKE) -C vice/yields/agb/ clean
 	$(MAKE) -C vice/yields/ccsne/ clean
 	$(MAKE) -C vice/yields/sneia/ clean
-	$(MAKE) -C vice/src/ clean
+	$(MAKE) -C vice/src/ clean 
+	$(MAKE) -C vice/ clean 
 	rm -rf build

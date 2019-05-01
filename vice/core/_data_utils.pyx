@@ -978,6 +978,26 @@ class dataframe(object):
 		# Same as __repr__ 
 		return self.__repr__() 
 
+	def __eq__(self, other): 
+		"""
+		Test if the dataframes are identical 
+		"""
+		test = len(self.keys()) * [None] 
+		for i in range(len(self.keys())): 
+			try: 
+				test[i] = other[self.keys()[i]] 
+			except KeyError: 
+				return False 
+		if all(list(map(lambda x: test[x] == self._frame[self.keys()[x]], 
+			range(len(self.keys()))))): 
+			return True 
+		else:
+			return False 
+
+
+	def __ne__(self, other): 
+		return not self.__eq__(other) 
+
 	def keys(self): 
 		"""
 		Signature: vice.dataframe.keys() 
@@ -1179,26 +1199,20 @@ class _customizable_yield_table(dataframe):
 	def __args(func): 
 		"""
 		Returns True if the function passed to it takes more than one parameter 
-		or any keyword/variable/default arguments.
-		This function is copied from the singlezone class, which applies this 
-		same prescription to functional attributes. 
+		or any keyword/variable/default arguments. 
+
+		All functional attributes in this software take a numerical value as 
+		the only parameter, so this is done with a simple try statement that 
+		passes the value of 1. This allows pre-compiled code to run. 
+
+		This function is copied from the _wrapper file. 
 		"""
-		if sys.version_info[0] == 2: 
-			args = inspect.getargspec(func) 
-		elif sys.version_info[0] == 3: 
-			args = inspect.getfullargspec(func) 
-		else:
-			_VERSION_ERROR_()
-		if args[1] != None: 
-			return True 
-		elif args[2] != None: 
-			return True 
-		elif args[3] != None: 
-			return True 
-		elif len(args[0]) != 1: 
-			return True 
-		else:
-			return False  
+		x = False
+		try: 
+			foo = func(1) 
+		except TypeError: 
+			x = True 
+		return x
 
 
 
