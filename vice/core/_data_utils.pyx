@@ -251,7 +251,7 @@ def history(name):
 	data = list(map(lambda x: [row[x] for row in data], range(len(data[0]))))
 	keys = __history_keys("%s/history.out" % (name)) 
 	return _history(dict(zip(keys, data)), 
-		pickle.load(open("%s/params.config" % (name), "rb"))["z_solar"])
+		pickle.load(open("%s/params.config" % (name), "rb"))["Z_solar"])
 
 
 

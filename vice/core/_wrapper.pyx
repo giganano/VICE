@@ -120,16 +120,16 @@ def mirror(output_obj):
 	    =================
 	    tau_ia ---------> 1.5
 	    recycling ------> continuous
-	    z_solar --------> 0.014
+	    Z_solar --------> 0.014
 	    enhancement ----> 1.0
 	    agb_model ------> cristallo11
-	    ria ------------> plaw
+	    RIa ------------> plaw
 	    delay ----------> 0.15
-	    imf ------------> kroupa
+	    IMF ------------> kroupa
 	    smoothing ------> 0.0
 	    schmidt_index --> 0.5
 	    eta ------------> 2.5
-	    zin ------------> 0.0
+	    Zin ------------> 0.0
 	    schmidt --------> False
 	    elements -------> (u’fe’, u’sr’, u’o’)
 	    MgSchmidt ------> 6000000000.0
@@ -178,14 +178,14 @@ def mirror(output_obj):
 			Fortunately, if they made it through an integrator once and passed 
 			the argspec checks, it can be safely assumed that they will again. 
 			"""
-			if isinstance(params["zin"], _du.dataframe): 
+			if isinstance(params["Zin"], _du.dataframe): 
 				for i in params["elements"]: 
-					if callable(params["zin"][i.lower()]): 
-						params["zin"][i.lower()] = __pyfunc_generator(
-							params["zin"][i.lower()]) 
+					if callable(params["Zin"][i.lower()]): 
+						params["Zin"][i.lower()] = __pyfunc_generator(
+							params["Zin"][i.lower()]) 
 					else:
 						continue 
-				params["zin"] = params["zin"].todict()
+				params["Zin"] = params["Zin"].todict()
 			else: 
 				pass 
 
@@ -203,16 +203,16 @@ def mirror(output_obj):
 					# Only copy those which aren't functional 
 					copy[i] = params[i]  
 
-			if isinstance(params["zin"], dict): 
+			if isinstance(params["Zin"], dict): 
 				# check for callable functions in the zin object 
 				for i in params["elements"]: 
-					if params["zin"][i.lower()] == None:  
-						functional.append("zin(%s)" % (i))
-						copy["zin"][i.lower()] = 0 
+					if params["Zin"][i.lower()] == None:  
+						functional.append("Zin(%s)" % (i))
+						copy["Zin"][i.lower()] = 0 
 					else:
-						copy["zin"][i.lower()] = params["zin"][i.lower()] 
+						copy["Zin"][i.lower()] = params["Zin"][i.lower()] 
 				# Cast it back to a list for the integrator 
-				copy["zin"] = [copy["zin"][i.lower()] for i in copy["elements"]]
+				copy["Zin"] = [copy["Zin"][i.lower()] for i in copy["elements"]]
 
 			message = "Re-instancing functional attributes from VICE output " 
 			message += "objects requires the python package dill (included "
@@ -596,14 +596,14 @@ class singlezone(object):
 		func = "_DEFAULT_FULC_", 
 		mode = "ifr", 
 		elements = ("fe", "sr", "o"), 
-		imf = "kroupa", 
+		IMF = "kroupa", 
 		eta = 2.5, 
 		ehancement = 1, 
 		zin = 0, 
 		recycling = "continuous", 
 		bins = _DEFAULT_FUNC_, 
 		delay = 0.15, 
-		ria = "plaw", 
+		RIa = "plaw", 
 		Mg0 = 6.0e+09, 
 		smoothing = 0.0, 
 		tau_ia = 1.5, 
@@ -614,7 +614,7 @@ class singlezone(object):
 		MgSchmidt = 6.0e+09, 
 		m_upper = 100, 
 		m_lower = 0.08, 
-		z_solar = 0.014, 
+		Z_solar = 0.014, 
 		agb_model = "cristallo11" 
 	)
 
@@ -631,7 +631,7 @@ class singlezone(object):
 	elements :: array-like [default :: ("fe", "sr", "o")] 
 		An array-like object of strings denoting the symbols of the elements to 
 		track the enrichment for 
-	imf :: str [default :: "kroupa"] 
+	IMF :: str [default :: "kroupa"] 
 		A string denoting which stellar initial mass function to adopt. This 
 		must be either "kroupa" (1) or "salpeter" (2). 
 	eta :: real number [default :: 2.5] 
@@ -653,7 +653,7 @@ class singlezone(object):
 	delay :: real number [default :: 0.15] 
 		The minimum delay time in Gyr before the onset of type Ia supernovae 
 		associated with a single stellar population 
-	ria :: str or <function> [default :: "plaw"] 
+	RIa :: str or <function> [default :: "plaw"] 
 		The delay-time distribution (DTD) to adopt. See docstring for further 
 		details. 
 	Mg0 :: real number [default :: 6.0e+09] 
@@ -679,7 +679,7 @@ class singlezone(object):
 		The upper mass limit on star formation in solar masses 
 	m_lower :: real number [default :: 0.08] 
 		The lower mass limit on star formation in solar masses 
-	z_solar :: real number [default :: 0.014] 
+	Z_solar :: real number [default :: 0.014] 
 		The adopted solar metallicity by mass. 
 	agb_model :: str [default :: "cristallo11"] 
 		A keyword denoting which AGB yield grid to adopt. Must be either 
@@ -711,14 +711,14 @@ class singlezone(object):
 		func = _DEFAULT_FUNC_, 
 		mode = "ifr", 
 		elements = ("fe", "sr", "o"), 
-		imf = "kroupa", 
+		IMF = "kroupa", 
 		eta = 2.5, 
 		enhancement = 1, 
-		zin = 0, 
+		Zin = 0, 
 		recycling = "continuous", 
 		bins = _DEFAULT_BINS_,
 		delay = 0.15, 
-		ria = "plaw", 
+		RIa = "plaw", 
 		Mg0 = 6.0e9, 
 		smoothing = 0., 
 		tau_ia = 1.5, 
@@ -729,7 +729,7 @@ class singlezone(object):
 		MgSchmidt = 6.0e9, 
 		m_upper = 100, 
 		m_lower = 0.08, 
-		z_solar = 0.014, 
+		Z_solar = 0.014, 
 		agb_model = "cristallo11"):
 
 		# wrap the C strcuts 
@@ -745,14 +745,14 @@ class singlezone(object):
 		self.func = func
 		self.mode = mode
 		self.elements = elements
-		self.imf = imf
+		self.IMF = IMF
 		self.eta = eta
 		self.enhancement = enhancement
-		self.zin = zin
+		self.Zin = Zin
 		self.recycling = recycling
 		self.bins = bins
 		self.delay = delay
-		self.ria = ria
+		self.RIa = RIa
 		self.Mg0 = Mg0
 		self.smoothing = smoothing
 		self.tau_ia = tau_ia
@@ -763,7 +763,7 @@ class singlezone(object):
 		self.dt = dt
 		self.m_upper = m_upper
 		self.m_lower = m_lower
-		self.z_solar = z_solar
+		self.Z_solar = Z_solar
 		self.agb_model = agb_model
 
 	@property
@@ -975,7 +975,7 @@ class singlezone(object):
 		self._elements = tuple(copy[:])
 
 	@property
-	def imf(self):
+	def IMF(self):
 		"""
 		Type :: str [case-insensitive] 
 		Default :: "kroupa" 
@@ -1010,8 +1010,8 @@ class singlezone(object):
 		"""
 		return self._imf
 
-	@imf.setter
-	def imf(self, value):
+	@IMF.setter
+	def IMF(self, value):
 		if isinstance(value, strcomp): 
 			# Make sure it's recognized 
 			if value.lower() in _RECOGNIZED_IMFS_:
@@ -1022,7 +1022,7 @@ class singlezone(object):
 				raise ValueError("Unrecognized IMF: %s" % (value))
 		else: 
 			# If it's not a string it's a TypeError
-			message = "Attribute imf must be of type string. Got: %s" % (
+			message = "Attribute 'IMF' must be of type string. Got: %s" % (
 				type(value))
 			raise TypeError(message) 
 
@@ -1067,8 +1067,7 @@ class singlezone(object):
 			"""
 			if self.__args(value):
 				message = "Attribute 'eta', when callable, must take only one "
-				message += "parameter and no keyword/variable/default "
-				message += "parameters."
+				message += "parameter."
 				raise ValueError(message)
 			else:
 				self._eta = value
@@ -1138,8 +1137,7 @@ class singlezone(object):
 			""" 
 			if self.__args(value):
 				message = "Attribute 'enhancement', when callable, must take "
-				message += "only one parameter and no keyword/variable/default "
-				message += "parameters."
+				message += "only one parameter."
 				raise ValueError(message)
 			else:
 				self._enhancement = value
@@ -1157,7 +1155,7 @@ class singlezone(object):
 			raise TypeError(message)
 
 	@property
-	def zin(self):
+	def Zin(self):
 		"""
 		Type :: real number, <function>, or vice.dataframe 
 		Default :: 0.0 
@@ -1184,16 +1182,16 @@ class singlezone(object):
 		Example 
 		======= 
 		>>> sz = vice.singlezone(name = "example") 
-		>>> sz.zin = {} 
-		>>> sz.zin
+		>>> sz.Zin = {} 
+		>>> sz.Zin
 		    vice.dataframe{
 		        sr -------------> 0.0 
 		        fe -------------> 0.0 
 		        o --------------> 0.0 
 		    }
-		>>> sz.zin["fe"] = vice.solar_z["fe"] 
-		>>> sz.zin["o"] = lambda t: vice.solar_z["o"] * (t / 10.0) 
-		>>> sz.zin
+		>>> sz.Zin["fe"] = vice.solar_z["fe"] 
+		>>> sz.Zin["o"] = lambda t: vice.solar_z["o"] * (t / 10.0) 
+		>>> sz.Zin
 		    vice.dataframe{
 		        sr -------------> 0.0 
 		        fe -------------> 0.00129 
@@ -1202,8 +1200,8 @@ class singlezone(object):
 		"""
 		return self._zin
 
-	@zin.setter
-	def zin(self, value):
+	@Zin.setter
+	def Zin(self, value):
 		is_array = False		# Tracking whether or not an array was passed 
 		if isinstance(value, numbers.Number):
 			# This must be a positive definite number 
@@ -1219,8 +1217,7 @@ class singlezone(object):
 			"""
 			if self.__args(value):
 				message = "Attribute zin, when callable, must take only one "
-				message += "parameter and no keyword/variable/default "
-				message += "parameters."
+				message += "parameter."
 				raise ValueError(message)
 			else:
 				self._zin = value 
@@ -1265,7 +1262,7 @@ class singlezone(object):
 				elif i.lower() in copy.keys(): 
 					frame[i.lower()] = copy[i.lower()] 
 				# If there's no frame yet, default to zero 
-				elif not hasattr(self, "zin"): 
+				elif not hasattr(self, "Zin"): 
 					frame[i.lower()] = 0.0
 				# Else adopt the current setting for this element 
 				elif isinstance(self._zin, float) or callable(self._zin): 
@@ -1314,8 +1311,7 @@ class singlezone(object):
 						message = "Attribute 'zin', when passed as an array "
 						message += "containing callable functions of time, "
 						message += "must contain functions which each take "
-						message += "exactly one parameter with no keyword/"
-						message += "variable/default arguments." 
+						message += "exactly one parameter." 
 						raise ValueError(message)
 					else:
 						dummy[i] = value[i]
@@ -1563,7 +1559,7 @@ class singlezone(object):
 			raise TypeError(message)
 
 	@property
-	def ria(self):
+	def RIa(self):
 		"""
 		Type :: <function> or str [case-insensitive] 
 		Default :: "plaw" 
@@ -1599,8 +1595,8 @@ class singlezone(object):
 		"""
 		return self._ria
 
-	@ria.setter
-	def ria(self, value):
+	@RIa.setter
+	def RIa(self, value):
 		if callable(value):
 			"""
 			Allow functionality for user-specified delay-time distributions. 
@@ -1608,9 +1604,8 @@ class singlezone(object):
 			which will be interpreted as time in Gyr. 
 			"""
 			if self.__args(value):
-				message = "When callable, attribute 'ria' must take only "
-				message += "one parameter and no keyword/variable/default "
-				message += "parameters."
+				message = "When callable, attribute 'RIa' must take only "
+				message += "one parameter."
 				raise ValueError(message)
 			else:
 				self._ria = value
@@ -2032,7 +2027,7 @@ class singlezone(object):
 			raise TypeError(message)
 
 	@property
-	def z_solar(self):
+	def Z_solar(self):
 		"""
 		Type :: real number 
 		Default :: 0.014 (Asplund et al. 2009) 
@@ -2051,8 +2046,8 @@ class singlezone(object):
 		""" 
 		return self._z_solar
 
-	@z_solar.setter
-	def z_solar(self, value):
+	@Z_solar.setter
+	def Z_solar(self, value):
 		if isinstance(value, numbers.Number):
 			# This value is a fraction, and as such must be between 0 and 1. 
 			if 0 < value < 1:
@@ -2141,7 +2136,7 @@ class singlezone(object):
 		frame["name"] = self._name[:-5]
 		frame["func"] = self._func
 		frame["mode"] = self._mode 
-		frame["imf"] = self._imf 
+		frame["IMF"] = self._imf 
 		frame["elements"] = self._elements
 		frame["eta"] = self._eta
 		frame["enhancement"] = self._enhancement
@@ -2154,7 +2149,7 @@ class singlezone(object):
 		else:
 			frame["bins"] = self.bins
 		frame["delay"] = self._delay
-		frame["ria"] = self._ria
+		frame["RIa"] = self._ria
 		frame["Mg0"] = self._Mg0
 		frame["smoothing"] = self._smoothing
 		frame["tau_ia"] = self._tau_ia 
@@ -2163,10 +2158,10 @@ class singlezone(object):
 		frame["schmidt"] = self._schmidt 
 		frame["schmidt_index"] = self._schmidt_index 
 		frame["MgSchmidt"] = self._MgSchmidt 
-		frame["zin"] = self._zin
+		frame["Zin"] = self._zin
 		frame["m_upper"] = self._m_upper 
 		frame["m_lower"] = self._m_lower 
-		frame["z_solar"] = self._z_solar
+		frame["Z_solar"] = self._z_solar
 		frame["agb_model"] = self._agb_model
 
 		print("Current Settings:")
@@ -2800,12 +2795,12 @@ class singlezone(object):
 			"bins": 				self.bins, 
 			"delay": 				self.delay, 
 			"dt": 					self.dt, 
-			"ria": 					self.ria, 
+			"RIa": 					self.RIa, 
 			"elements": 			self.elements, 
 			"enhancement": 			self.enhancement, 
 			"eta": 					self.eta, 
 			"func": 				self.func, 
-			"imf": 					self.imf, 
+			"IMF": 					self.IMF, 
 			"m_lower": 				self.m_lower, 
 			"m_upper": 				self.m_upper, 
 			"Mg0":					self.Mg0, 
@@ -2818,8 +2813,8 @@ class singlezone(object):
 			"smoothing": 			self.smoothing, 
 			"tau_ia": 				self.tau_ia, 
 			"tau_star": 			self.tau_star, 
-			"z_solar": 				self.z_solar, 
-			"zin": 					self.zin
+			"Z_solar": 				self.Z_solar, 
+			"Zin": 					self.Zin
 		}
 
 		if "dill" in sys.modules: 
@@ -2837,11 +2832,11 @@ class singlezone(object):
 					continue 
 
 			# Check for callable functions in the infall metallicity 
-			if isinstance(self.zin, dict): 
+			if isinstance(self.Zin, dict): 
 				# cast a copy of it 
-				params["zin"] = dict(self.zin)
-				for i in self.zin: 
-					if callable(self.zin[i]): 
+				params["zin"] = dict(self.Zin)
+				for i in self.Zin: 
+					if callable(self.Zin[i]): 
 						params["zin"][i] = None 
 						functional.append("zin(%s)" % (i))
 					else:

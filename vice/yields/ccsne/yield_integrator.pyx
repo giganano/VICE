@@ -54,7 +54,7 @@ cdef extern from "../../src/cc_yields.h":
 
 #----------------------- FRACTIONAL_CC_YIELD FUNCTION -----------------------#
 def integrate(element, study = "LC18", MoverH = 0, rotation = 0, 
-	IMF = "kroupa", method = "simpson", lower = 0.08, upper = 100, 
+	IMF = "kroupa", method = "simpson", m_lower = 0.08, m_upper = 100, 
 	tolerance = 1e-3, Nmin = 64, Nmax = 2e8):
 	"""
 	Calculates an IMF-integrated fractional nucleosynthetic yield of a given 
@@ -70,8 +70,8 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		rotation = 0, 
 		IMF = "kroupa", 
 		method = "simpson", 
-		lower = 0.08, 
-		upper = 100, 
+		m_lower = 0.08, 
+		m_upper = 100, 
 		tolerance = 1.0e-03, 
 		Nmin = 64, 
 		Nmax = 2.0e+08
@@ -123,9 +123,9 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		"trapezoid" 
 		"midpoint" 
 		"euler" 
-	lower :: real number [default :: 0.08] 
+	m_lower :: real number [default :: 0.08] 
 		The lower mass limit on star formation in solar masses. 
-	upper :: real number [default :: 100] 
+	m_upper :: real number [default :: 100] 
 		The upper mass limit on star formation in solar masses. 
 	tolerance :: real number [default :: 0.001] 
 		The numerical tolerance. The subroutines implementing Gaussian 
@@ -150,7 +150,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		:: 	The element is not built into VICE 
 		:: 	The study is not built into VICE 
 		:: 	The tolerance is not between 0 and 1 
-		:: 	lower > upper 
+		:: 	m_lower > m_upper 
 		::	The IMF is not built into VICE 
 		:: 	The method of quadrature is not built into VICE 
 		:: 	Nmin > Nmax 
@@ -159,7 +159,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		:: 	The study did not report yields at the specified rotational
 			velocity 
 	ScienceWarning :: 
-		:: 	upper is larger than the largest mass on the grid reported by the 
+		:: 	m_upper is larger than the largest mass on the grid reported by the 
 			specified study. VICE extrapolates to high masses in this case. 
 		:: 	study is either "CL04" or "CL13" and the atomic number of the 
 			element is between 24 and 28 (inclusive). VICE warns against 
@@ -239,13 +239,13 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		pass
 	__string_check(IMF, 'IMF')			# IMF must be a string 
 	__string_check(method, 'method')	# method must be a string 
-	if not isinstance(lower, numbers.Number):
+	if not isinstance(m_lower, numbers.Number):
 		# Lower stellar mass limit must be a number 
-		message = "Keyword Arg 'lower' must be a floating point value."
+		message = "Keyword Arg 'm_lower' must be a floating point value."
 		raise TypeError(message)
 	else:
 		pass
-	if not isinstance(upper, numbers.Number):
+	if not isinstance(m_upper, numbers.Number):
 		# Upper stellar mass limit must be a number 
 		message = "Keyword Arg 'upper' must be a floating point value."
 		raise TypeError(message)
@@ -293,7 +293,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		# Tolerance must be between 0 and 1 
 		message = "Tolerance must be a floating point value between 0 and 1."
 		raise ValueError(message)
-	elif lower > upper: 
+	elif m_lower > m_upper: 
 		# Upper mass limit has to be larger than lower mass limit 
 		message = "Lower mass limit greater than upper mass limit." 
 		raise ValueError(message)
@@ -327,21 +327,22 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	3) The Woosley & Weaver (1995) study reported yields up to 40 Msun. Warn 
 	the user about extrapolation to higher initial masses. 
 	"""
-	if study.upper() in ["LC18", "CL13"] and upper > 120:
+	if study.upper() in ["LC18", "CL13"] and m_upper > 120:
 		message = "Supernovae yields from the %s study are sampled on a grid " % (
 			studies[study.upper()]) 
 		message += "of stellar masses up to 120 Msun. Employing an upper mass "
 		message += "limit larger than this may introduce numerical artifacts. "
-		message += "Got: %g" % (upper) 
+		message += "Got: %g" % (m_upper) 
 		warnings.warn(message, ScienceWarning)
-	elif study.upper() == "CL04" and upper > 35: 
+	elif study.upper() == "CL04" and m_upper > 35: 
 		message = "Supernovae yields from the %s study are only sampled up to " % (
 			studies["CL04"])
-		message += "35 Msun. With an upper mass limit of %g, linear " % (upper)
+		message += "35 Msun. With an upper mass limit of %g, linear " % (
+			m_upper)
 		message += "extrapolation of the yields may introduce numerical " 
 		message += "artifacts." 
 		warnings.warn(message, ScienceWarning)
-	elif study.upper() == "WW95" and upper > 40: 
+	elif study.upper() == "WW95" and m_upper > 40: 
 		message = "Supernovae yields from the %s study are sampled on a grid " % (
 			studies["WW95"])
 		message += "of stellar masses up to 40 Msun. Employing an upper mass " 
@@ -387,9 +388,9 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	IMF = IMF.lower().encode("latin-1")
 
 	# Call the quadrature functions 
-	cdef double *num = numerator(filename, IMF, lower, 
-		upper, tolerance, method, long(Nmax), long(Nmin))
-	cdef double *den = denominator(IMF, lower, upper, 
+	cdef double *num = numerator(filename, IMF, m_lower, 
+		m_upper, tolerance, method, long(Nmax), long(Nmin))
+	cdef double *den = denominator(IMF, m_lower, m_upper, 
 		tolerance, method, long (Nmax), long (Nmin))
 
 	if num[1] > tolerance: 
