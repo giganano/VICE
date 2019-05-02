@@ -32,4 +32,6 @@ clean:
 	$(MAKE) -C vice/yields/sneia/ clean
 	$(MAKE) -C vice/src/ clean 
 	$(MAKE) -C vice/ clean 
+	rm -rf *.egg-info
+	rm -rf dist
 	rm -rf build
