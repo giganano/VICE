@@ -93,7 +93,7 @@ their ``~/.local/`` ``python`` library. If users are installing to multiple
 versions of ``python``, they should not run the setup file in separate 
 terminals simultaneously. It is likely that this will cause at least one of 
 the installations to fail. In this case, tests over a specific version can be 
-ran from the ``Makefil`` as indicated above. 
+ran from the ``Makefile`` as indicated above. 
 
 If the user is installing to their ``~/.local/`` directory, then 
 ``~/.local/bin/`` must be on their ``PATH`` for ``VICE`` to run from the 
