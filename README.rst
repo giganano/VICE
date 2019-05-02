@@ -44,8 +44,8 @@ Installation
 System Requirements
 -------------------
 
-Installing ``VICE`` requires 38 MB of disk space. The source code stored 
-in this repository is 24 MB, with 14 being copied to the desired install 
+Installing ``VICE`` requires 60 MB of disk space. The source code stored 
+in this repository is 45 MB, with 15 being copied to the desired install 
 directory. If there is not adequate disk space, it is likely that the 
 installation process will fail. 
 
