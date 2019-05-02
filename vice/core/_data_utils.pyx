@@ -5,7 +5,6 @@ or altered form is subject to the copyright terms therein.
 
 This file handles the VICE dataframe and the outputs of the singlezone class. 
 """
-
 # Python Functions 
 from __future__ import division, unicode_literals, absolute_import 
 from ._globals import _DIRECTORY_
@@ -18,6 +17,10 @@ import numbers
 import pickle 
 import sys 
 import os 
+try: 
+	ModuleNotFoundError 
+except NameError: 
+	ModuleNotFoundError = ImportError 
 try: 
 	# NumPy compatible but not NumPy dependent 
 	import numpy as np 

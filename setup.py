@@ -9,6 +9,10 @@ _MIN_CYTHON_MINOR_ = 25
 _MIN_CYTHON_MICRO_ = 2 
 
 try: 
+	ModuleNotFoundError 
+except NameError: 
+	ModuleNotFoundError = ImportError 
+try: 
 	import Cython 
 	from Cython.Build import cythonize 
 except (ImportError, ModuleNotFoundError): 
@@ -18,7 +22,8 @@ except (ImportError, ModuleNotFoundError):
 if tuple([int(i) for i in Cython.__version__.split('.')]) < tuple([
 	_MIN_CYTHON_MAJOR_, _MIN_CYTHON_MINOR_, _MIN_CYTHON_MICRO_]): 
 	message = "Building VICE requires Cython >= %d.%d.%d. Current version: %s" % (
-		_MIN_CYTHON_MAJOR_, _MIN_CYTHON_MINOR_, _MIN_CYTHON_MICRO_) 
+		_MIN_CYTHON_MAJOR_, _MIN_CYTHON_MINOR_, _MIN_CYTHON_MICRO_, 
+		Cython.__version__)  
 	raise RuntimeError(message) 
 else:
 	pass 

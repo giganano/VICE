@@ -14,6 +14,10 @@ import numbers
 import inspect
 import pickle
 try: 
+	ModuleNotFoundError 
+except: 
+	ModuleNotFoundError = ImportError 
+try: 
 	"""
 	dill extends the pickle module and allows functional attributes to be 
 	encoded. In later version of python 3, dill.dump must be called instead 

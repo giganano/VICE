@@ -39,7 +39,7 @@ from ....core._globals import _RECOGNIZED_ELEMENTS_
 
 for i in range(len(_RECOGNIZED_ELEMENTS_)): 
 	__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(_RECOGNIZED_ELEMENTS_[i], 
-		study = "WW95", upper = 40)[0] 
+		study = "WW95", m_upper = 40)[0] 
 del i 
 
 def set_params(**kwargs): 

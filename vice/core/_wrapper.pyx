@@ -11,7 +11,6 @@ interacts with is scripted in this file.
 # Python Functions
 from __future__ import (print_function, division, unicode_literals, 
 	absolute_import)
-# from . import _yields 
 from . import _data_utils as _du
 from ._globals import _RECOGNIZED_ELEMENTS_
 from ._globals import _RECOGNIZED_IMFS_
@@ -32,6 +31,10 @@ import inspect
 import pickle
 import sys
 import os
+try: 
+	ModuleNotFoundError 
+except NameError: 
+	ModuleNotFoundError = ImportError 
 try:
 	# NumPy compatible but not NumPy dependent
 	import numpy as _np

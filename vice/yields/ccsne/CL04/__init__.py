@@ -43,7 +43,7 @@ from ....core._globals import _RECOGNIZED_ELEMENTS_
 
 for i in range(len(_RECOGNIZED_ELEMENTS_)): 
 	__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(_RECOGNIZED_ELEMENTS_[i], 
-		study = "CL04", MoverH = 0.15, upper = 35)[0] 
+		study = "CL04", MoverH = 0.15, m_upper = 35)[0] 
 del i 
 
 def set_params(**kwargs): 
