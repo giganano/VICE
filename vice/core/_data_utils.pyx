@@ -21,17 +21,22 @@ import os
 try: 
 	# NumPy compatible but not NumPy dependent 
 	import numpy as np 
-except ImportError: 
+except (ImportError, ModuleNotFoundError): 
 	pass 
 try: 
 	# Pandas compatible but not Pandas dependent 
 	import pandas as pd 
-except ImportError: 
+except (ImportError, ModuleNotFoundError): 
 	pass 
 try: 
-	# dill for function encoding 
-	import dill 
-except ImportError: 
+	"""
+	dill extends the pickle module and allows functional attributes to be 
+	encoded. In later version of python 3, dill.dump must be called instead 
+	of pickle.dump. All cases can be taken care of by overriding the native 
+	pickle module and letting dill masquerade as pickle. 
+	"""
+	import dill as pickle 
+except (ImportError, ModuleNotFoundError): 
 	pass 
 
 # C Functions 

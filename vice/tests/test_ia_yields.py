@@ -9,7 +9,7 @@ warnings.filterwarnings("ignore")
 try: 
 	import numpy as np 
 	_N_ = np.linspace(.001, .003, 100) 
-except ImportError: 
+except (ImportError, ModuleNotFoundError): 
 	_N_ = 100 * [0]
 	for i in range(100): 
 		_N_[i] = (1 + (3 - 1) / 100. * i) * 1.e-3 

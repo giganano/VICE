@@ -13,7 +13,7 @@ tests:
 	cd vice && python tests && cd - 
 
 tests3:
-	cd vice && python tests && cd - 
+	cd vice && python3 tests && cd - 
 
 jw19plots: 
 	$(MAKE) -C JW19/ 

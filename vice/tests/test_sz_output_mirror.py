@@ -10,7 +10,7 @@ sys.stdout.flush()
 try: 
 	import numpy as np 
 	_OUTTIMES_ = np.linspace(0, 10, 201) 
-except ImportError: 
+except (ImportError, ModuleNotFoundError): 
 	_OUTTIMES_ = 201 * [0.] 
 	for i in range(201): 
 		_OUTTIMES_[i] = 0.05 * i 

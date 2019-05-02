@@ -9,7 +9,7 @@ warnings.filterwarnings("ignore")
 try: 
 	import numpy as np 
 	_Z_ = np.linspace(0, 0.025, 11) 
-except ImportError: 
+except (ImportError, ModuleNotFoundError): 
 	_Z_ = 11 * [0] 
 	for i in range(11): 
 		_Z_[i] = 0.025 / 10 * i 

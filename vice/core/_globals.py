@@ -14,9 +14,14 @@ import numbers
 import inspect
 import pickle
 try: 
-	# Allows functions to be written to config files and stored as defaults 
-	import dill
-except ImportError:
+	"""
+	dill extends the pickle module and allows functional attributes to be 
+	encoded. In later version of python 3, dill.dump must be called instead 
+	of pickle.dump. All cases can be taken care of by overriding the native 
+	pickle module and letting dill masquerade as pickle. 
+	"""
+	import dill as pickle 
+except (ImportError, ModuleNotFoundError):
 	pass
 import sys
 import os
