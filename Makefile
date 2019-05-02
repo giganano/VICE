@@ -4,13 +4,16 @@
 
 all: src
 
-.PHONY: src tests tests3 jw19plots tutorial clean 
+.PHONY: src tests tests2 tests3 jw19plots tutorial clean 
 
 src: 
 	$(MAKE) -C vice/src/ 
 
 tests:
 	cd vice && python tests && cd - 
+
+tests2: 
+	cd vice && python2 tests && cd - 
 
 tests3:
 	cd vice && python3 tests && cd - 
