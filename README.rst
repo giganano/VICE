@@ -113,7 +113,7 @@ not be placed in the correct install directory, and ``VICE`` will not run.
 only the standard library ``ctypes`` module, making it entirely ``anaconda`` 
 independent. For this reason, it does not make sense to install in a ``conda`` 
 environment anyway. ``VICE`` may be ran in whatever ``conda`` environments 
-users desire, but the installation process should not be ran in such a manner. 
+users desire, but the installation process must not be ran in such a manner. 
 
 If the user is installing to their ``~/.local/`` directory, then 
 ``~/.local/bin/`` must be on their ``PATH`` for ``VICE`` to run from the 
