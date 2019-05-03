@@ -67,6 +67,17 @@ properly:
 
 4) ``Clang >= 4.2.0 or gcc >= 4.6``
 
+**NOTE**: It is strongly recommended that users install ``dill`` along with 
+``VICE`` if they have not already. This can be achieved via ``pip install 
+dill``. ``VICE`` will run independently of ``dill``, but certain useful 
+features are made possible with ``dill``. As such, ``VICE`` is not dependent 
+on ``dill``, but users will miss out on certain features if they do not have 
+it. 
+
+``VICE``'s tutorial is dependent on ``numpy`` only weakly in that it 
+uses ``numpy``'s ``linspace`` function. However, ``VICE`` is also independent 
+of ``numpy``, and users may replace these lines in the tutorial if they so 
+choose. 
 
 Preferred Install Method
 ------------------------
@@ -95,6 +106,14 @@ terminals simultaneously. It is likely that this will cause at least one of
 the installations to fail. In this case, tests over a specific version can be 
 ran from the ``Makefile`` as indicated above. 
 
+Users should **NOT** install ``VICE`` in a ``conda`` environment. In this case, 
+the installation process will run smoothly, but the compiled extensions will 
+not be placed in the correct install directory, and ``VICE`` will not run. 
+``VICE`` is implemented in ``C`` and wrapped for calling from python using 
+only the standard library ``ctypes`` module, making it entirely ``anaconda`` 
+independent. For this reason, it does not make sense to install in a ``conda`` 
+environment anyway. 
+
 If the user is installing to their ``~/.local/`` directory, then 
 ``~/.local/bin/`` must be on their ``PATH`` for ``VICE`` to run from the 
 command-line. ``VICE`` will permanently add this to the user's ``PATH`` along 
@@ -117,7 +136,7 @@ download the documentation separately in order to obtain copies.
 
 Tutorial
 --------
-Under ``docs/``, we provide ``QuickStartTutorial.ipynb``, a 
+Under ``docs/``, we provide `QuickStartTutorial.ipynb`__, a 
 ``jupyter notebook`` intended to provide first-time users with a primer on how 
 to use all of ``VICE``'s features. If installed via ``git``, users can launch 
 the tutorial immediately via ``make tutorial``. If installed via ``pip``, users 
@@ -274,5 +293,8 @@ under the terms of the associated LICENSE_.
 .. _userguide: https://github.com/giganano/VICE/blob/master/docs/users_guide.pdf 
 .. _scidocs: https://github.com/giganano/VICE/blob/master/docs/science_documentation.pdf
 
+.. _tutorial: https://github.com/giganano/VICE/blob/master/docs/QuickStartTutorial.ipynb
+
 __ userguide_
 __ scidocs_
+__ tutorial_ 
