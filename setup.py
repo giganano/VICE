@@ -28,7 +28,10 @@ if tuple([int(i) for i in Cython.__version__.split('.')]) < tuple([
 else:
 	pass 
 
-from distutils.core import setup, Extension 
+try: 
+	from setuptools import setup, Extension 
+except:
+	from distutils.core import setup, Extension 
 import sys
 import os
 
