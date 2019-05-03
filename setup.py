@@ -9,10 +9,6 @@ _MIN_CYTHON_MINOR_ = 25
 _MIN_CYTHON_MICRO_ = 2 
 
 try: 
-	from setuptools import setup, Extension 
-except:
-	from distutils.core import setup, Extension 
-try: 
 	ModuleNotFoundError 
 except NameError: 
 	ModuleNotFoundError = ImportError 
@@ -31,6 +27,8 @@ if tuple([int(i) for i in Cython.__version__.split('.')]) < tuple([
 	raise RuntimeError(message) 
 else:
 	pass 
+
+from distutils.core import setup, Extension 
 import sys
 import os
 
