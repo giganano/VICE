@@ -27,6 +27,7 @@ if tuple([int(i) for i in Cython.__version__.split('.')]) < tuple([
 	raise RuntimeError(message) 
 else:
 	pass 
+
 try:
 	from setuptools import setup, Extension 
 except: 
