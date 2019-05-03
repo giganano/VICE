@@ -64,6 +64,14 @@ import warnings
 import sys
 import os
 
+if sys.version_info[0] == 2: 
+	warnings.warn("""\
+Python 2 is set to be deprecated on January 1, 2020. A future version of VICE \
+will drop support for Python 2. \
+""", PendingDeprecationWarning) 
+else:
+	pass 
+
 __author__ = "James W. Johnson <giganano9@gmail.com>"
 
 try: 
@@ -89,7 +97,24 @@ else:
 
 	__all__ = ["__author__", "__version__", "yields"] 
 
-	from .core import * 
+	try: 
+		from .core import * 
+	except: 
+		raise ImportError("""\
+Error importing VICE. If you have attempted an alternate installation method, \
+please visit https://github.com/giganano/VICE.git and follow the preferred \
+installation method. \
+
+Alternatively, if you have installed VICE in a conda environment, the \
+installation process will run, but its compiled extensions will not be placed \
+in the correct directories. If this is the case, please deactivate the conda \
+environment and install VICE globally. VICE is implemented independently of \
+anaconda, and for this reason a conda environment not necessary. \
+
+If you have followed the preferred installation method outside of a conda \
+environment, then please open an issue at \
+https://github.com/giganano/VICE.git. \
+""")
 	from ._build_utils import *
 	from . import yields
 
