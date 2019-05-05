@@ -135,6 +135,9 @@ directory will download automatically with the source code. Users who install
 via ``pip`` will need to either clone this repository via ``git`` anyway or 
 download the documentation separately in order to obtain copies. 
 
+If users find ``VICE`` useful, we kindly request that they star this 
+repository. This also helps us keep track of an approximate number of users. 
+
 Tutorial
 --------
 Under ``docs/``, we provide `QuickStartTutorial.ipynb`__, a 
@@ -242,11 +245,6 @@ so that the user may inspect the results of their integrations visually in
 ``ipython``, a ``jupyter notebook``, or similar without having to plot it 
 themselves. This functionality is not intended to produce publication-quality 
 figures, and is included purely for user convenience. 
-
-We recommend that users install dill_ if they have not already. This package 
-is required for encoding functional attributes in ``VICE`` outputs. ``VICE`` 
-will run independetly of this package, but functional attributes are not able 
-to be saved without it.  
 
 Citing
 ======
