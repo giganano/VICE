@@ -25,10 +25,6 @@ dist/*
 # it into the .dat files packaged with VICE
 vice/data/_agb_yields/yield_processor.py
 
-# Elements for which we’re getting yields
-vice/data/_agb_yields/c.dat
-vice/data/_agb_yields/n.dat
-vice/data/_ccsne_yields/rotating/c.dat
-vice/data/_ccsne_yields/nonrotating/c.dat
-
+# tutorial checkpoints 
+vice/docs/.ipynb_checkpoints/*
 
