@@ -28,10 +28,7 @@ if tuple([int(i) for i in Cython.__version__.split('.')]) < tuple([
 else:
 	pass 
 
-try:
-	from setuptools import setup, Extension 
-except: 
-	from distutils.core import setup, Extension 
+from distutils.core import setup, Extension 
 import sys
 import os
 
@@ -221,7 +218,7 @@ if __name__ == "__main__":
 	setup_package()
 	del builtins.__VICE_SETUP__
 
-	# tell them if dill isn't installed 
+	# tell them if di
 	try: 
 		import dill 
 	except (ImportError, ModuleNotFoundError): 
