@@ -4,7 +4,8 @@
 
 CC = gcc
 CFLAGS = -c -fPIC
-OBJECTS = agb.o ccsne.o cc_yield.o imf.o mdf.o metals.o quadrature.o readers.o recycling.o sneia.o utils.o writers.o 
+OBJECTS = agb.o ccsne.o cc_yield.o imf.o mdf.o metals.o quadrature.o readers.o \
+	recycling.o sneia.o utils.o writers.o 
 
 all: enrichment.so 
 
