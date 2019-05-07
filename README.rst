@@ -44,17 +44,14 @@ Installation
 System Requirements
 -------------------
 
-Installing ``VICE`` requires 60 MB of disk space. The source code stored 
-in this repository is 45 MB, with 15 being copied to the desired install 
-directory. If there is not adequate disk space, it is likely that the 
-installation process will fail. 
-
-``VICE`` supports linux and Mac OS X. Because ``VICE`` is implemented using 
-only ``C`` and ``python`` standard libraries, it is technically entirely 
-cross-platform. However, ``VICE`` is currently not packaged for installation 
-on ``Windows``. Users can open a request at 
-<https://github.com/giganano/VICE/issues> for ``Windows`` compatibility, and 
-it will be fulfilled if there is sufficient demand. 
+``VICE`` is implemented using only ``C`` and ``python`` standard libraries; 
+for this reason it is entirely cross-platform. ``VICE`` is however only 
+packaged for installation on ``linux`` kernels, meaning that ``Windows`` users 
+must install and run ``VICE`` entirely from within the upcoming ``Windows 
+terminal``. Users running any derivative of ``Mac OS X`` or any linux operating 
+systems such as ``CentOS`` or ``Ubuntu`` should be able to install ``VICE`` 
+from any terminal included with the source distribution of their operating 
+system. 
 
 The following system requirements must be satisfied for ``VICE`` to install 
 properly: 
@@ -156,7 +153,7 @@ instructions on how to use this functionality. We however caution users that
 comparison to its full ``python`` capabilities. 
 
 If users have installed to their ``~/.local/`` library and ``VICE`` does not 
-run properly from the command line, they may need to restart their ``linux`` 
+run properly from the command line, they may need to restart their linux 
 shell (or, alternatively, run ``source ~/.bash_profile`` in a terminal from any 
 directory). If this also does not work, it is likely that the user needs to add 
 ``~/.local/bin/`` to their ``PATH``. 
