@@ -102,7 +102,7 @@ else:
 	__all__ = ["__author__", "__version__", "yields"] 
 
 	try: 
-		from .core improt * 
+		from .core import * 
 		from ._build_utils import * 
 		from . import yields 
 	except (ImportError, ModuleNotFoundError): 
