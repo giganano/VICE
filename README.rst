@@ -48,7 +48,7 @@ System Requirements
 for this reason it is entirely cross-platform. ``VICE`` is however only 
 packaged for installation on ``linux`` kernels, meaning that ``Windows`` users 
 must install and run ``VICE`` entirely from within the upcoming ``Windows 
-terminal``. Users running any derivative of ``Mac OS X`` or any linux operating 
+Terminal``. Users running any derivative of ``Mac OS X`` or any linux operating 
 systems such as ``CentOS`` or ``Ubuntu`` should be able to install ``VICE`` 
 from any terminal included with the source distribution of their operating 
 system. 
