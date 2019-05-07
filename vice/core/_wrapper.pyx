@@ -1,3 +1,4 @@
+# cython: language_level=3, boundscheck=False
 """
 This file, included with the VICE package, is protected under the terms of the 
 associated MIT License, and any use or redistribution of this file in original 
@@ -2498,7 +2499,7 @@ class singlezone(object):
 				"""
 				z_arr = __times(0.5 + 1.e-5, 1.e-5) 
 				ptr = c_double * len(z_arr) 
-				arr = list(map(ccsne_yield, z_arr)) 
+				arr = list(map(ccyield, z_arr)) 
 
 				# Check for Type- and ValueErrors in the mapped function 
 				if not all(list(map(lambda x: isinstance(x, numbers.Number), 

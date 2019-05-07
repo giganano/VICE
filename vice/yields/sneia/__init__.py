@@ -40,8 +40,6 @@ from ...core._data_utils import _customizable_yield_table
 import sys 
 
 __all__ = ["single", "fractional", "settings"] 
-__all__ = [str(i) for i in __all__] # appease python 2 strings 
-
 
 settings = _customizable_yield_table({
 	"c":	5.74e-6, 
@@ -126,6 +124,7 @@ del absolute_import
 del yield_calculations 
 del _customizable_yield_table 
 if sys.version_info[0] < 3: 
+	__all__ = [str(i) for i in __all__] # appease python 2 strings 
 	del i
 else:
 	pass 

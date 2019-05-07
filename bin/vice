@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
+from __future__ import print_function 
+try: 
+	ModuleNotFoundError 
+except NameError: 
+	ModuleNotFoundError = ImportError
 try: 
 	import vice
-except ImportError:
+except (ImportError, ModuleNotFoundError):
 	message = "This software requires the Versatile Integrator for Chemical "
 	message += "Evolution (VICE). Source code and installation instructions "
 	message += "can be found at <http://github.com/giganano/VICE.git>."
@@ -17,29 +21,6 @@ try:
 except NameError: 
 	pass 
 import argparse 
-
-uninstall = False
-if "-u" in sys.argv: 
-	uninstall = True
-	sys.argv.remove("-u")
-elif "--uninstall" in sys.argv:
-	uninstall = True 
-	sys.argv.remove("--uninstall") 
-else:
-	pass 
-if uninstall: 
-	message = "Uninstall VICE. Are you sure?\n" 
-	message += "Please type uninstall (case-insensitive) to confirm: "
-	answer = input(message) 
-	if answer.lower() == "uninstall": 
-		os.system("rm -rf %s" % (vice.__path__[0])) 
-		sys.exit()
-	else:
-		print("Aborting.") 
-		sys.exit()
-else:
-	pass 
-
 
 if "-r" in sys.argv: 
 	print(vice._RECOGNIZED_ELEMENTS)
@@ -198,10 +179,6 @@ parser.add_argument("--end",
 	help = "The end time of the simulation in Gyr (Default: 10)", 
 	type = float, 
 	default = 10.) 
-
-parser.add_argument("-u", "--uninstall", 
-	help = "Uninstall VICE",  
-	action = "store_true") 
  
 if len(sys.argv) == 1: 
 	parser.print_usage() 

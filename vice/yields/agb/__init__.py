@@ -27,10 +27,10 @@ from .grid import yield_grid as grid
 import sys 
 
 __all__ = ["grid"]
-__all__ = [str(i) for i in __all__] # appease python 2 strings 
 
 del absolute_import 
 if sys.version_info[0] < 3: 
+	__all__ = [str(i) for i in __all__]
 	del i 
 else:
 	pass 

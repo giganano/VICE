@@ -1,3 +1,4 @@
+# cython: language_level=3, boundscheck=False
 """
 This file, included with the VICE package, is protected under the terms of the 
 associated MIT License, and any use or redistribution of this file in original 
@@ -10,6 +11,7 @@ This includes the global dataframes like sources and solar_z.
 from . import _data_utils as _du
 
 __all__ = ["atomic_number", "solar_z", "sources"]
+__all__ = [str(i) for i in __all__]
 
 """
 The following are instances of VICE's dataframe intended for both user 
