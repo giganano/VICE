@@ -31,6 +31,7 @@ clean:
 	$(MAKE) -C vice/yields/ccsne/ clean
 	$(MAKE) -C vice/yields/sneia/ clean
 	$(MAKE) -C vice/src/ clean 
+	$(MAKE) -C vice/tests clean
 	$(MAKE) -C vice/ clean 
 	rm -rf build
 	rm -rf *.egg-info
