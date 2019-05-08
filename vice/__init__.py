@@ -46,6 +46,8 @@ Included Features
 ::	User-specified yields from type Ia supernovae. 
 ::	A command-line entry allowing users to run simulations of simple 
 	evoluationary histories directly from a linux terminal. 
+::	A custom warning class (ScienceWarning) separating warnings about 
+	scientific accuracy and precision from those purely related to code. 
 
 LICENSE 
 ======= 
@@ -105,6 +107,8 @@ else:
 		from .core import * 
 		from ._build_utils import * 
 		from . import yields 
+		from . import _globals
+		from ._globals import ScienceWarning
 	except (ImportError, ModuleNotFoundError): 
 		raise ImportError("""\
 Error importing VICE. If you have attempted an alternate installation method, \

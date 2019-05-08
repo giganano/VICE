@@ -13,13 +13,13 @@ interacts with is scripted in this file.
 from __future__ import (print_function, division, unicode_literals, 
 	absolute_import)
 from . import _data_utils as _du
-from ._globals import _RECOGNIZED_ELEMENTS_
-from ._globals import _RECOGNIZED_IMFS_
-from ._globals import _VERSION_ERROR_
-from ._globals import ScienceWarning
-from ._globals import _DEFAULT_FUNC_ 
-from ._globals import _DEFAULT_BINS_
-from ._globals import _DIRECTORY_
+from .._globals import _RECOGNIZED_ELEMENTS_
+from .._globals import _RECOGNIZED_IMFS_
+from .._globals import _VERSION_ERROR_
+from .._globals import ScienceWarning
+from .._globals import _DEFAULT_FUNC_ 
+from .._globals import _DEFAULT_BINS_
+from .._globals import _DIRECTORY_
 from ._dataframes import atomic_number 
 from ._dataframes import solar_z 
 from ._dataframes import sources 

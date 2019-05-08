@@ -12,9 +12,9 @@ from __future__ import absolute_import
 import inspect
 import sys
 import os
-from ...core._globals import _DIRECTORY_
-from ...core._globals import _RECOGNIZED_ELEMENTS_
-from ...core._globals import _VERSION_ERROR_
+from ..._globals import _DIRECTORY_
+from ..._globals import _RECOGNIZED_ELEMENTS_
+from ..._globals import _VERSION_ERROR_
 from ...core._dataframes import atomic_number 
 PATH = "%syields/agb/" % (_DIRECTORY_)
 if sys.version_info[0] == 3:

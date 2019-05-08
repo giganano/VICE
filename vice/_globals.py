@@ -1,12 +1,32 @@
-"""
-This file, included with the VICE package, is protected under the terms of the 
-associated MIT License, and any use or redistribution of this file in original 
-or altered form is subject to the copyright terms therein. 
+# This file, included with the VICE package, is protected under the terms of the 
+# associated MIT License, and any use or redistribution of this file in original 
+# or altered form is subject to the copyright terms therein. 
 
-This file scripts the settings for the user's simulations which should be 
-independent of the galaxy evolution parameters that they build in. We 
-discourage the user from modifying any of the source code of these 
-structures for use within VICE. 
+"""
+VICE global variables 
+===================== 
+This module contains variables that are global to the VICE package. 
+
+Contents 
+======== 
+_DEFAULT_FUNC_ :: <function> 
+	The default func attribute of the singlezone class. It takes in one 
+	parameter and returns the value of 9.1 always. 
+_DEFAULT_BINS_ :: list 
+	The default bins attribute of the singlezone class. It is all values 
+	between -3 and +1 (inclusive) in steps of 0.05. 
+_RECOGNIZED_ELEMENTS_ :: tuple 
+	The elements for which VICE is capable of simulating the enrichment and 
+	calculating nucleosynthetic yields. This includes all astrophysically 
+	produced elements between carbon and bismuth. 
+_RECOGNIZED_IMFS_ :: tuple 
+	The stellar initial mass functions built into VICE. Currently this 
+	includes only the Kroupa (1) and Salpeter (2) IMFs. 
+
+References 
+========== 
+(1) Kroupa (2001), MNRAS, 322, 231 
+(2) Salpeter (1955), ApJ, 121, 161 
 """
 
 import warnings
@@ -31,12 +51,11 @@ import sys
 import os
 
 __all__ = ["_DEFAULT_FUNC_", "_DEFAULT_BINS_", "_RECOGNIZED_ELEMENTS_", 
-	"_RECOGNIZED_IMFS_", "ScienceWarning"]  
+	"_RECOGNIZED_IMFS_"] 
 __all__ = [str(i) for i in __all__] # appease python 2 strings 
 
 # The path to the directory after installation 
-_DIRECTORY_ = os.path.dirname(os.path.abspath(__file__))
-_DIRECTORY_ = _DIRECTORY_[:-4] # removes 'core' to get full path to dir
+_DIRECTORY_ = "%s/" % (os.path.dirname(os.path.abspath(__file__)))
 
 """
 The default bins into which a stellar metallicity distribution function 

@@ -9,9 +9,9 @@ This file handles the VICE dataframe and the outputs of the singlezone class.
 
 # Python Functions 
 from __future__ import division, unicode_literals, absolute_import 
-from ._globals import _DIRECTORY_
-from ._globals import _VERSION_ERROR_
-from ._globals import ScienceWarning
+from .._globals import _DIRECTORY_
+from .._globals import _VERSION_ERROR_
+from .._globals import ScienceWarning
 import math as m 
 import warnings 
 import inspect 

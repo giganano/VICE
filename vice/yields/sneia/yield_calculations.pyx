@@ -8,9 +8,9 @@ This file handles the integration of nucleosynthetic yields from SNe Ia
 """
 
 from __future__ import absolute_import
-from ...core._globals import _RECOGNIZED_ELEMENTS_
-from ...core._globals import _DIRECTORY_
-from ...core._globals import _VERSION_ERROR_
+from ..._globals import _RECOGNIZED_ELEMENTS_
+from ..._globals import _DIRECTORY_
+from ..._globals import _VERSION_ERROR_
 PATH = "%syields/sneia/" % (_DIRECTORY_)
 import numbers 
 import sys 

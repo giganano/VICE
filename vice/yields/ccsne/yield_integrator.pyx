@@ -9,11 +9,11 @@ of core collapse supernovae yields.
 """
 
 from __future__ import absolute_import, unicode_literals 
-from ...core._globals import _DIRECTORY_
-from ...core._globals import _RECOGNIZED_ELEMENTS_
-from ...core._globals import _RECOGNIZED_IMFS_
-from ...core._globals import ScienceWarning
-from ...core._globals import _VERSION_ERROR_
+from ..._globals import _DIRECTORY_
+from ..._globals import _RECOGNIZED_ELEMENTS_
+from ..._globals import _RECOGNIZED_IMFS_
+from ..._globals import ScienceWarning
+from ..._globals import _VERSION_ERROR_
 from ...core._dataframes import atomic_number
 PATH = "%syields/ccsne/" % (_DIRECTORY_)
 from libc.stdlib cimport free
