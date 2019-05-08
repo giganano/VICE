@@ -8,6 +8,7 @@ from vice import singlezone
 from vice import dataframe 
 from vice.yields.ccsne import settings as cc_settings
 from vice.yields.sneia import settings as ia_settings 
+import warnings 
 import numbers 
 import sys 
 
@@ -87,6 +88,7 @@ def main():
 	"""
 	Runs the tests on the VICE dataframe. 
 	"""
+	warnings.filterwarnings("ignore")
 	out = open("test_dataframes.out", 'w') 
 
 	print("=================================================================")

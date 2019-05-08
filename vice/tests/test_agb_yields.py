@@ -4,6 +4,7 @@ from vice.yields.agb import grid
 from vice import _RECOGNIZED_ELEMENTS_ 
 from vice import atomic_number 
 import numbers 
+import warnings 
 
 _STUDY_ = ["cristallo11", "karakas10"] 
 
@@ -11,6 +12,7 @@ def main():
 	"""
 	Runs the tests on the AGB yield grid functions. 
 	"""
+	warnings.filterwarnings("ignore")
 	print("=================================================================")
 	print("TESTING: vice.yields.agb.grid") 
 	out = open("test_agb_yields.out", 'w') 

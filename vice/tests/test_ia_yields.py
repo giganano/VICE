@@ -4,7 +4,6 @@ from vice.yields.sneia import single
 from vice.yields.sneia import fractional 
 from vice import _RECOGNIZED_ELEMENTS_ 
 import warnings 
-warnings.filterwarnings("ignore") 
 
 try: 
 	import numpy as np 
@@ -28,6 +27,7 @@ def main():
 	Runs the tests on the functions which look up single detonation yields and 
 	calculate IMF-integrated yields from type Ia supernovae. 
 	"""
+	warnings.filterwarnings("ignore") 
 	print("=================================================================")
 	print("TESTING: vice.yields.sneia.fractional") 
 	print("         vice.yields.sneia.single") 

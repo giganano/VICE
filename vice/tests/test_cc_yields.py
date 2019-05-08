@@ -3,7 +3,6 @@ from __future__ import print_function
 from vice.yields.ccsne import fractional 
 from vice import _RECOGNIZED_ELEMENTS_ 
 import warnings 
-warnings.filterwarnings("ignore") 
 import math as m 
 
 _STUDY_ = ["LC18", "CL13", "CL04", "WW95"] 
@@ -27,6 +26,7 @@ def main():
 	Runs the tests on functions which numerically evaluate IMF-integrated 
 	nucleosynthetic yields from core collapse supernovae. 
 	"""
+	warnings.filterwarnings("ignore") 
 	print("=================================================================")
 	print("TESTING: vice.yields.ccsne.fractional")  
 	out = open("test_cc_yields.out", 'w') 

@@ -3,7 +3,6 @@ from __future__ import print_function, division
 import math 
 import vice 
 import warnings 
-warnings.filterwarnings("ignore") 
 import sys 
 sys.stdout.flush() 
 
@@ -20,6 +19,7 @@ def main():
 	Runs the tests on the singlezone object, the output object, and the 
 	mirror function. 
 	"""
+	warnings.filterwarnings("ignore") 
 	print("=================================================================")
 	print("TESTING: vice.singlezone") 
 	print("         vice.output") 

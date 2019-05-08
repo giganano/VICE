@@ -4,7 +4,6 @@ from vice import single_stellar_population as ssp
 from vice import _RECOGNIZED_ELEMENTS_ 
 from vice import atomic_number 
 import warnings 
-warnings.filterwarnings("ignore") 
 
 try: 
 	import numpy as np 
@@ -23,6 +22,7 @@ def main():
 	"""
 	Runs the tests on VICE's single stellar population function. 
 	"""
+	warnings.filterwarnings("ignore") 
 	print("=================================================================")
 	print("TESTING: vice.single_stellar_population") 
 	out = open("test_ssp.out", 'w') 
