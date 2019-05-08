@@ -4,7 +4,10 @@ from vice import single_stellar_population as ssp
 from vice import _RECOGNIZED_ELEMENTS_ 
 from vice import atomic_number 
 import warnings 
-
+try: 
+	ModuleNotFoundError 
+except NameError: 
+	ModuleNotFoundError = ImportError
 try: 
 	import numpy as np 
 	_Z_ = np.linspace(0, 0.025, 11) 

@@ -7,6 +7,10 @@ import sys
 sys.stdout.flush() 
 
 try: 
+	ModuleNotFoundError 
+except NameError: 
+	ModuleNotFoundError = ImportError
+try: 
 	import numpy as np 
 	_OUTTIMES_ = np.linspace(0, 10, 201) 
 except (ImportError, ModuleNotFoundError): 

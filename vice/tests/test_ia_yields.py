@@ -4,7 +4,10 @@ from vice.yields.sneia import single
 from vice.yields.sneia import fractional 
 from vice import _RECOGNIZED_ELEMENTS_ 
 import warnings 
-
+try: 
+	ModuleNotFoundError 
+except NameError: 
+	ModuleNotFoundError = ImportError
 try: 
 	import numpy as np 
 	_N_ = np.linspace(.001, .003, 100) 
