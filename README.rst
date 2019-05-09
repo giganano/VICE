@@ -243,6 +243,12 @@ so that the user may inspect the results of their integrations visually in
 themselves. This functionality is not intended to produce publication-quality 
 figures, and is included purely for user convenience. 
 
+Acknowledgements 
+================
+J.W.J. acknowledges the valuable guidance on the implementation of the 
+cumulative return fraction contributed by Jenna Freudenburg at The Ohio State 
+University. 
+
 Citing
 ======
 Usage of ``VICE`` leading to a publication should cite Johnson & Weinberg 
@@ -251,7 +257,6 @@ announced.
 
 LICENSE
 =======
-
 ``VICE`` is open source software released under the MIT License. We invite 
 researchers and developers to use, modify, and redistribute how they see fit 
 under the terms of the associated LICENSE_. 
