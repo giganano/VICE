@@ -42,12 +42,6 @@ if sys.version_info[:2] < (3, 5) and sys.version_info[:2] != (2, 7):
 else:
 	pass
 
-# We do not support windows
-if os.name != "posix": 
-	raise OSError("VICE does not support Windows.")
-else:
-	pass
-
 package_name = "VICE" 
 base_url = "http://github.com/giganano/VICE"
 
