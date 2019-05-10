@@ -33,6 +33,7 @@ Example
 >>> WW95.set_params(lower = 0.3, upper = 40, IMF = "salpeter") 
 """
 
+from __future__ import absolute_import 
 from .. import settings as __settings
 from .. import fractional as __fractional
 from ...._globals import _RECOGNIZED_ELEMENTS_ 
@@ -41,6 +42,7 @@ for i in range(len(_RECOGNIZED_ELEMENTS_)):
 	__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(_RECOGNIZED_ELEMENTS_[i], 
 		study = "WW95", m_upper = 40)[0] 
 del i 
+del absolute_import 
 
 def set_params(**kwargs): 
 	"""
