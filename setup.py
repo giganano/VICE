@@ -212,7 +212,7 @@ if __name__ == "__main__":
 	setup_package()
 	del builtins.__VICE_SETUP__
 
-	# tell them if di
+	# tell them if dill isn't installed
 	try: 
 		import dill 
 	except (ImportError, ModuleNotFoundError): 
