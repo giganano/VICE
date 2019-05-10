@@ -6,13 +6,11 @@ or altered form is subject to the copyright terms therein.
 
 from __future__ import absolute_import 
 from ._wrapper import * 
-from ._globals import * 
 from ._data_utils import * 
 from ._dataframes import * 
 
 __all__ = []
 __all__.extend(_wrapper.__all__)
-__all__.extend(_globals.__all__)
 __all__.extend(_data_utils.__all__) 
 __all__.extend(_dataframes.__all__) 
 
