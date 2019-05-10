@@ -35,7 +35,7 @@ Example
 
 from .. import settings as __settings
 from .. import fractional as __fractional
-from ....core._globals import _RECOGNIZED_ELEMENTS_ 
+from ...._globals import _RECOGNIZED_ELEMENTS_ 
 
 for i in range(len(_RECOGNIZED_ELEMENTS_)): 
 	__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(_RECOGNIZED_ELEMENTS_[i], 
