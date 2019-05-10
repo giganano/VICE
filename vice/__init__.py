@@ -101,7 +101,8 @@ else:
 	if not __release: 
 		warnings.warn("Using un-released version of VICE", UserWarning)
 
-	__all__ = ["__author__", "__version__", "yields"] 
+	__all__ = ["__author__", "__version__", "yields", "_globals", 
+		"ScienceWarning"] 
 
 	try: 
 		from .core import * 
