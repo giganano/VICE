@@ -26,5 +26,8 @@ dist/*
 vice/data/_agb_yields/yield_processor.py
 
 # tutorial checkpoints 
-vice/docs/.ipynb_checkpoints/*.ipynb
+docs/.ipynb_checkpoints/*.ipynb
+
+*.sublime-workspace 
+*.sublime-project
 
