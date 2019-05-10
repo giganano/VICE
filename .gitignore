@@ -26,5 +26,5 @@ dist/*
 vice/data/_agb_yields/yield_processor.py
 
 # tutorial checkpoints 
-vice/docs/.ipynb_checkpoints/*
+vice/docs/.ipynb_checkpoints/*.ipynb
 

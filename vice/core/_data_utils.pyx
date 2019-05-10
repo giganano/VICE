@@ -577,6 +577,7 @@ class output(object):
 			else:
 				pass 
 
+
 			# Set the rcParams 
 			import matplotlib.pyplot as plt 
 			mpl.rcParams["errorbar.capsize"] = 5
@@ -605,7 +606,6 @@ class output(object):
 			message += "Please install matplotlib and/or anaconda and "
 			message += "try again."
 			raise ImportError(message)
-
 		if not isinstance(key, strcomp):
 			message = "Argument must be of type str. Got: %s" % (type(key)) 
 			raise TypeError(message)
@@ -645,7 +645,7 @@ class output(object):
 			try: 
 				# One last shot in the dark before throwing a KeyError 
 				x = self._history[x_key.lower()] 
-			except KeyError:
+			except KeyError: 
 				plt.clf() 
 				del mpl
 				del plt 
@@ -700,12 +700,12 @@ class output(object):
 		Returns [Y/X] if the user passes [X/Y], else it just spits the 
 		key right back at them 
 		"""
-		try: 
-			element1 = key.split('/')[0][1:]
+		if '/' in key: 
+			element1 = key.split('/')[0][1:] 
 			element2 = key.split('/')[1][:-1] 
 			return "[%s/%s]" % (element2.lower(), element1.lower()) 
-		except IndexError: 
-			return key
+		else: 
+			return key 
 
 	def __flip_key_mdf(self, key): 
 		"""
@@ -764,7 +764,7 @@ class output(object):
 			Check for forgotten functional attributes if the user doesn't have 
 			dill 
 			"""
-			if any(map(lambda x: yields[x] == None, self._elements)): 
+			if any(list(map(lambda x: yields[x] == None, self._elements))): 
 				"""
 				Not the most elegant solution to needing an instance of a yield 
 				dataframe here, but this doesn't cause nested import errors and 
