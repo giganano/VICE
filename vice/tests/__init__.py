@@ -26,6 +26,10 @@ from .test_ia_yields import main as test_ia_yields
 from .test_ssp import main as test_ssp 
 from .test_sz_output_mirror import main as test_sz_output_mirror 
 
+__all__ = ["test_agb_yields", "test_cc_yields", "test_dataframes", 
+	"test_ia_yields", "test_ssp", "test_sz_output_mirror", 
+	"run_comprehensive_tests"] 
+
 def run_comprehensive_tests(): 
 	"""
 	Runs the full comprehensive set of tests. 
