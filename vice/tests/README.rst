@@ -9,7 +9,7 @@ both ``python 2`` and ``python 3`` via ``make tests2`` and ``make tests3``.
 Alternatively, users may open ``ipython``, a ``jupyter notebook``, or some 
 other variant thereof to run the tests. For example: 
 
-..code:: python 
+.. code:: python 
 
 	from vice.tests import * 
 
