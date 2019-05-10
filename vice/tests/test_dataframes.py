@@ -1,6 +1,6 @@
 
 from __future__ import print_function 
-from vice import _RECOGNIZED_ELEMENTS_ 
+from vice._globals import _RECOGNIZED_ELEMENTS_ 
 from vice import atomic_number 
 from vice import sources 
 from vice import solar_z 

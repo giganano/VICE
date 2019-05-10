@@ -1,7 +1,7 @@
 
 from __future__ import print_function 
 from vice import single_stellar_population as ssp 
-from vice import _RECOGNIZED_ELEMENTS_ 
+from vice._globals import _RECOGNIZED_ELEMENTS_ 
 from vice import atomic_number 
 import warnings 
 try: 

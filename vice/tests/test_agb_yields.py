@@ -1,7 +1,7 @@
 
 from __future__ import print_function 
 from vice.yields.agb import grid 
-from vice import _RECOGNIZED_ELEMENTS_ 
+from vice._globals import _RECOGNIZED_ELEMENTS_ 
 from vice import atomic_number 
 import numbers 
 import warnings 

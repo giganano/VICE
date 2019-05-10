@@ -2,7 +2,7 @@
 from __future__ import print_function 
 from vice.yields.sneia import single 
 from vice.yields.sneia import fractional 
-from vice import _RECOGNIZED_ELEMENTS_ 
+from vice._globals import _RECOGNIZED_ELEMENTS_ 
 import warnings 
 try: 
 	ModuleNotFoundError 

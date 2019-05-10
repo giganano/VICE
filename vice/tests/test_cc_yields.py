@@ -1,7 +1,7 @@
 
 from __future__ import print_function 
 from vice.yields.ccsne import fractional 
-from vice import _RECOGNIZED_ELEMENTS_ 
+from vice._globals import _RECOGNIZED_ELEMENTS_ 
 import warnings 
 import math as m 
 
