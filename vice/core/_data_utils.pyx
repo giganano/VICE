@@ -255,9 +255,14 @@ def history(name):
 	# pull the columns, stitch it into a dataframe, return, call it a day 
 	data = list(map(lambda x: [row[x] for row in data], range(len(data[0]))))
 	keys = __history_keys("%s/history.out" % (name)) 
-	return _history(dict(zip(keys, data)), 
-		pickle.load(open("%s/params.config" % (name), "rb"))["Z_solar"])
-
+	try:
+		return _history(dict(zip(keys, data)), 
+			pickle.load(open("%s/params.config" % (name), "rb"))["Z_solar"])
+	except TypeError: 
+		raise SystemError("""\
+Error reading encoded parameters stored in output. It appears this output \
+was produced in a version of python other than the current interpreter. \
+""")
 
 
 
@@ -568,44 +573,46 @@ class output(object):
 		>>> out.show("[o/fe]-[fe/h]") 
 		"""
 		try: 
-			import matplotlib as mpl
-			# Version check on matplotlib
-			if int(mpl.__version__.split('.')[0]) < 2: 
-				message = "The current implementation of VICE's show function " 
-				message += "requires matplotlib version >= 2." 
-				ImportError(message) 
-			else:
-				pass 
+			import matplotlib as mpl 
+		except (ImportError, ModuleNotFoundError): 
+			# matplotlib not found 
+			raise ModuleNotFoundError("""\
+Matplotlib not found. This function requires matplotlib >= 2.0.0. \
+""") 
 
+		if int(mpl.__version__[0]) < 2: 
+			warnings.warn("""\
+This function requires matplotlib >= 2.0.0. Got: %s. This may cause this \
+function to fail. Install matplotlib >= 2 to prevent this in the future. \
+""" % (mpl.__version__), 
+				DeprecationWarning)
+		else:
+			pass 
 
-			# Set the rcParams 
-			import matplotlib.pyplot as plt 
-			mpl.rcParams["errorbar.capsize"] = 5
-			mpl.rcParams["axes.linewidth"] = 2
-			mpl.rcParams["xtick.major.size"] = 16
-			mpl.rcParams["xtick.major.width"] = 2 
-			mpl.rcParams["xtick.minor.size"] = 8 
-			mpl.rcParams["xtick.minor.width"] = 1 
-			mpl.rcParams["ytick.major.size"] = 16
-			mpl.rcParams["ytick.major.width"] = 2 
-			mpl.rcParams["ytick.minor.size"] = 8 
-			mpl.rcParams["ytick.minor.width"] = 1 
-			mpl.rcParams["axes.labelsize"] = 30
-			mpl.rcParams["xtick.labelsize"] = 25
-			mpl.rcParams["ytick.labelsize"] = 25
-			mpl.rcParams["legend.fontsize"] = 25
-			mpl.rcParams["xtick.direction"] = "in"
-			mpl.rcParams["ytick.direction"] = "in"
-			mpl.rcParams["ytick.right"] = True
-			mpl.rcParams["xtick.top"] = True
-			mpl.rcParams["xtick.minor.visible"] = True
-			mpl.rcParams["ytick.minor.visible"] = True
-		except ImportError: 
-			# Matplotlib not found 
-			message = "Error: could not import python package matplotlib. "
-			message += "Please install matplotlib and/or anaconda and "
-			message += "try again."
-			raise ImportError(message)
+		# Set the rcParams 
+		import matplotlib.pyplot as plt 
+		mpl.rcParams["errorbar.capsize"] = 5
+		mpl.rcParams["axes.linewidth"] = 2
+		mpl.rcParams["xtick.major.size"] = 16
+		mpl.rcParams["xtick.major.width"] = 2 
+		mpl.rcParams["xtick.minor.size"] = 8 
+		mpl.rcParams["xtick.minor.width"] = 1 
+		mpl.rcParams["ytick.major.size"] = 16
+		mpl.rcParams["ytick.major.width"] = 2 
+		mpl.rcParams["ytick.minor.size"] = 8 
+		mpl.rcParams["ytick.minor.width"] = 1 
+		mpl.rcParams["axes.labelsize"] = 30
+		mpl.rcParams["xtick.labelsize"] = 25
+		mpl.rcParams["ytick.labelsize"] = 25
+		mpl.rcParams["legend.fontsize"] = 25
+		mpl.rcParams["xtick.direction"] = "in"
+		mpl.rcParams["ytick.direction"] = "in"
+		mpl.rcParams["ytick.right"] = True
+		mpl.rcParams["xtick.top"] = True
+		mpl.rcParams["xtick.minor.visible"] = True
+		mpl.rcParams["ytick.minor.visible"] = True
+
+		# Type check the key 
 		if not isinstance(key, strcomp):
 			message = "Argument must be of type str. Got: %s" % (type(key)) 
 			raise TypeError(message)
@@ -615,7 +622,10 @@ class output(object):
 		# dark background, make a figure and axes 
 		plt.style.use("dark_background") 
 		fig = plt.figure() 
-		ax = fig.add_subplot(111, facecolor = "black") 
+		if int(mpl.__version__[0]) < 2: 
+			ax = fig.add_subplot(111, axisbg = "black") 
+		else: 
+			ax = fig.add_subplot(111, facecolor = "black") 
 
 		if '-' in key:  # if they've specified a the x-y axes 
 			y_key = key.split('-')[0]
