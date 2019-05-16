@@ -557,7 +557,7 @@ class output(object):
 			::	Key is not found in either history or mdf attributes 
 		ImportError/ModuleNotFoundError :: 
 			::	matplotlib version >= 2 is not found in the user's system. 
-				(ModuleNotFoundError for python >= 3.6) 
+				(The ModuleNotFoundError is raised in python version >= 3.6.) 
 
 		Notes 
 		===== 
