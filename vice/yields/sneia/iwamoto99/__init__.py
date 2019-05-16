@@ -1,7 +1,3 @@
-# This file, included with the VICE package, is protected under the terms of the 
-# associated MIT License, and any use or redistribution of this file in original 
-# or altered form is subject to the copyright terms therein. 
-
 """
 Iwamoto et al. (1999), ApJ, 124, 439 Nucleosynthetic Yield Tools 
 ================================================================ 

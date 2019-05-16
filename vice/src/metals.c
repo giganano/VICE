@@ -1,8 +1,4 @@
 /*
- * This file, included with the VICE package, is protected under the terms of 
- * the associated MIT License, and any use or redistribution of this file in 
- * original or altered form is subject to the copyright terms therein. 
- * 
  * This script handles the central functions to VICE's simulations of galactic 
  * chemical enrichment, stitching all of the numerical implementations of the 
  * model components into each timestep. 

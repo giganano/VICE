@@ -1,8 +1,4 @@
 /*
- * This file, included with the VICE package, is protected under the terms of 
- * the associated MIT License, and any use or redistribution of this file in 
- * original or altered form is subject to the copyright terms therein. 
- * 
  * This header contains extern declarations for functions which run the 
  * integrations as well as model type Ia supernovae, core collapse supernovae, 
  * and AGB star enrichment channels. 

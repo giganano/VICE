@@ -1,9 +1,5 @@
 # cython: language_level=3, boundscheck=False
 """
-This file, included with the VICE package, is protected under the terms of the 
-associated MIT License, and any use or redistribution of this file in original 
-or altered form is subject to the copyright terms therein. 
-
 This file wraps the C subroutines of the single_stellar_population function 
 and the singlezone class. Most of the scientific utility of VICE that the user 
 interacts with is scripted in this file. 

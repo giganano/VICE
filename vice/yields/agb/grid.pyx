@@ -1,9 +1,5 @@
 # cython: language_level=3, boundscheck=False
 """
-This file, included with the VICE package, is protected under the terms of the 
-associated MIT License, and any use or redistribution of this file in original 
-or altered form is subject to the copyright terms therein. 
-
 This file handles file I/O of the built in AGB grids either for use in 
 integrations or returning to the user 
 """

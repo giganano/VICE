@@ -1,7 +1,3 @@
-# This file, included with the VICE package, is protected under the terms of the 
-# associated MIT License, and any use or redistribution of this file in original 
-# or altered form is subject to the copyright terms therein. 
-
 """
 Chieffi & Limongi (2014), ApJ, 608, 405 Nucleosynthetic Yield Tools 
 =================================================================== 
