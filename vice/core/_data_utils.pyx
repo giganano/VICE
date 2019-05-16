@@ -555,8 +555,9 @@ class output(object):
 		====== 
 		KeyError :: 
 			::	Key is not found in either history or mdf attributes 
-		ImportError :: 
+		ImportError/ModuleNotFoundError :: 
 			::	matplotlib version >= 2 is not found in the user's system. 
+				(ModuleNotFoundError for python >= 3.6) 
 
 		Notes 
 		===== 
