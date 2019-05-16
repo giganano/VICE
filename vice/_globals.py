@@ -35,7 +35,7 @@ import inspect
 import pickle
 try: 
 	ModuleNotFoundError 
-except: 
+except NameError: 
 	ModuleNotFoundError = ImportError 
 try: 
 	"""
