@@ -4,7 +4,6 @@ import math
 import vice 
 import warnings 
 import sys 
-import gc 
 sys.stdout.flush() 
 
 try: 
@@ -18,6 +17,48 @@ except (ImportError, ModuleNotFoundError):
 	_OUTTIMES_ = 201 * [0.] 
 	for i in range(201): 
 		_OUTTIMES_[i] = 0.05 * i 
+
+def test_parameters(**kwargs): 
+	"""
+	kwargs: keyword arguments to pass to vice.singlezone 
+	""" 
+	tracker = {
+		"singlezone":		True, 
+		"mirror":			True, 
+		"output":			True, 
+		"history":			True, 
+		"mdf": 				True 
+	}
+	try: 
+		vice.singlezone(**kwargs).run(_OUTTIMES_, overwrite = True) 
+	except: 
+		tracker["singlezone"] = False 
+	try: 
+		assert(isinstance(vice.history("onezonemodel"), vice.dataframe)) 
+	except: 
+		tracker["history"] = False 
+	try: 
+		assert(isinstance(vice.mdf("onezonemodel"), vice.dataframe)) 
+	except: 
+		tracker["mdf"] = False 
+	try: 
+		foo = vice.output("onezonemodel") 
+		assert(isinstance(foo, vice.output)) 
+		assert(isinstance(foo.history, vice.dataframe)) 
+		assert(isinstance(foo.mdf, vice.dataframe)) 
+		assert(isinstance(foo.ccsne_yields, vice.dataframe)) 
+		assert(isinstance(foo.sneia_yields, vice.dataframe)) 
+		assert(isinstance(foo.element, tuple)) 
+	except: 
+		tracker["output"] = False 
+	try: 
+		assert(isinstance(vice.mirror(vice.output("onezonemodel")), 
+			vice.singlezone)) 
+	except: 
+		tracker["mirror"] = False 
+	return tracker 
+
+
 
 def main(): 
 	"""
@@ -73,69 +114,33 @@ def main():
 											agb_model = q, 
 											dt = 0.05
 										) 
-										try: 
-											foo = vice.singlezone(**metadata)
-											foo.run(_OUTTIMES_, 
-												overwrite = True) 
-											singlezone_tracker["success"] += 1 
-											del foo 
-										except: 
+										results = test_parameters(**metadata) 
+										if results["singlezone"]: 
+											singlezone_tracker["success"] += 1
+										else:
 											singlezone_tracker["failure"] += 1 
-										try: 
-											foo = vice.history(
-												"onezonemodel") 
-											assert isinstance(foo, 
-												vice.dataframe) 
-											history_tracker["success"] += 1 
-											del foo 
-										except: 
+										if results["mirror"]: 
+											mirror_tracker["success"] += 1
+										else:
+											mirror_tracker["failure"] += 1 
+										if results["output"]: 
+											output_tracker["success"] += 1
+										else:
+											output_tracker["failure"] += 1 
+										if results["history"]: 
+											history_tracker["success"] += 1
+										else:
 											history_tracker["failure"] += 1 
-										try: 
-											foo = vice.mdf(
-												"onezonemodel") 
-											assert isinstance(foo, 
-												vice.dataframe) 
-											mdf_tracker["success"] += 1 
-											del foo 
-										except: 
+										if results["mdf"]: 
+											mdf_tracker["success"] += 1
+										else:
 											mdf_tracker["failure"] += 1 
-										success = True 
-										try: 
-											foo = vice.output(
-												"onezonemodel") 
-											assert isinstance(foo, 
-												vice.output) 
-											assert isinstance(foo.history, 
-												vice.dataframe) 
-											assert isinstance(foo.mdf, 
-												vice.dataframe) 
-											assert isinstance(
-												foo.ccsne_yields, 
-												vice.dataframe) 
-											assert isinstance(
-												foo.sneia_yields, 
-												vice.dataframe) 
-											assert isinstance(
-												foo.elements, 
-												tuple) 
-											output_tracker["success"] += 1 
-											try: 
-												mir = vice.mirror(foo) 
-												assert isinstance(mir, 
-													vice.singlezone) 	
-												mirror_tracker["success"] += 1 
-												del mir 
-											except: 
-												mirror_tracker["failure"] += 1 
-											del foo 
-										except: 
-											output_tracker["failure"] += 1
 
+										del metadata
 										a += 1
 										sys.stdout.write("Progress: %.1f%%\r" % (
 											a / b * 100)) 
 										sys.stdout.flush() 
-										gc.collect() 
 										
 	#######
 	message = """\
