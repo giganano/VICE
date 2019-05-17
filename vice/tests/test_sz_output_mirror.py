@@ -4,6 +4,7 @@ import math
 import vice 
 import warnings 
 import sys 
+import gc 
 sys.stdout.flush() 
 
 try: 
@@ -97,6 +98,7 @@ def main():
 	output_tracker = dict(zip(keys, [0, 0])) 
 	history_tracker = dict(zip(keys, [0, 0])) 
 	mdf_tracker = dict(zip(keys, [0, 0])) 
+	metadata = {} 
 	for i in _MODES_: 
 		for j in _IMF_: 
 			for k in _ETA_: 
@@ -106,19 +108,17 @@ def main():
 							for o in _TAU_STAR_: 
 								for p in _SCHMIDT_: 
 									for q in _AGB_MODEL_: 
-										metadata = dict(
-											elements = ["fe", "o", "c"], 
-											mode = i, 
-											IMF = j, 
-											eta = k, 
-											Zin = l, 
-											recycling = m, 
-											RIa = n, 
-											tau_star = o, 
-											schmidt = p, 
-											agb_model = q, 
-											dt = 0.05
-										) 
+										metadata["elements"] = ["fe", "o", "c"]  
+										metadata["mode"] = i 
+										metadata["IMF"] = j 
+										metadata["eta"] = k 
+										metadata["Zin"] = l 
+										metadata["recycling"] = m 
+										metadata["RIa"] = n 
+										metadata["tau_star"] = o 
+										metadata["schmidt"] = p 
+										metadata["agb_model"] = q 
+										metadata["dt"] = 0.05
 										results = test_parameters(**metadata) 
 										if results["singlezone"]: 
 											singlezone_tracker["success"] += 1
@@ -141,11 +141,11 @@ def main():
 										else:
 											mdf_tracker["failure"] += 1 
 
-										del metadata
 										a += 1
 										sys.stdout.write("Progress: %.1f%%\r" % (
 											a / b * 100)) 
 										sys.stdout.flush() 
+										gc.collect() 
 										
 	#######
 	message = """\
