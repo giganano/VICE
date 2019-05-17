@@ -769,7 +769,34 @@ class singlezone(object):
 		return self 
 
 	def __exit__(self, exc_type, exc_value, exc_tb): 
-		return exc_value == None
+		return exc_value == None 
+
+	def __del__(self): 
+		del self._name 
+		del self._func 
+		del self._mode 
+		del self._elements 
+		del self._imf
+		del self._eta 
+		del self._enhancement 
+		del self._zin 
+		del self._recycling 
+		del self._delay 
+		del self._ria 
+		del self._Mg0 
+		del self._smoothing 
+		del self._tau_ia 
+		del self._tau_star 
+		del self._schmidt 
+		del self._schmidt_index 
+		del self._MgSchmidt 
+		del self._dt 
+		del self._m_upper 
+		del self._m_lower 
+		del self._z_solar 
+		del self._agb_model
+		del self.__model
+		del self.__run
 
 	@property
 	def name(self):
@@ -935,7 +962,6 @@ class singlezone(object):
 	@mode.deleter 
 	def mode(self): 
 		del self._mode 
-		del self.__run.mode 
 
 	@property
 	def elements(self):
@@ -1050,7 +1076,6 @@ class singlezone(object):
 	@IMF.deleter 
 	def IMF(self): 
 		del self._imf 
-		del self.__model.imf 
 
 	@property
 	def eta(self):
@@ -1454,8 +1479,6 @@ class singlezone(object):
 	@recycling.deleter 
 	def recycling(self): 
 		del self._recycling 
-		del self.__model.R0 
-		del self.__model.continuous 
 
 	def __recycling_warnings(self, value): 
 		"""
@@ -1611,7 +1634,6 @@ class singlezone(object):
 	@delay.deleter 
 	def delay(self): 
 		del self._delay 
-		del self.__model.t_d 
 
 	@property
 	def RIa(self):
@@ -1684,7 +1706,6 @@ class singlezone(object):
 	@RIa.deleter 
 	def RIa(self): 
 		del self._ria 
-		del self.__model.dtd 
 
 	@property
 	def Mg0(self):
@@ -1730,7 +1751,6 @@ class singlezone(object):
 	@Mg0.deleter 
 	def Mg0(self): 
 		del self._Mg0 
-		del self.__run.MG 
 
 	@property
 	def smoothing(self):
@@ -1777,7 +1797,6 @@ class singlezone(object):
 	@smoothing.deleter 
 	def smoothing(self): 
 		del self._smoothing 
-		del self.__model.smoothing_time 
 
 	@property
 	def tau_ia(self):
@@ -1818,7 +1837,6 @@ class singlezone(object):
 	@tau_ia.deleter 
 	def tau_ia(self): 
 		del self._tau_ia 
-		del self.__model.tau_ia 
 
 	@property
 	def tau_star(self):
@@ -1916,7 +1934,6 @@ class singlezone(object):
 	@dt.deleter 
 	def dt(self): 
 		del self._dt 
-		del self.__run.dt 
 
 	@property
 	def schmidt(self):
@@ -1969,7 +1986,6 @@ class singlezone(object):
 	@schmidt.deleter 
 	def schmidt(self): 
 		del self._schmidt 
-		del self.__model.schmidt 
 
 	@property
 	def schmidt_index(self):
@@ -2008,7 +2024,6 @@ class singlezone(object):
 	@schmidt_index.deleter 
 	def schmidt_index(self): 
 		del self._schmidt_index 
-		del self.__model.schmidt_index
 
 	@property
 	def MgSchmidt(self):
@@ -2051,7 +2066,6 @@ class singlezone(object):
 	@MgSchmidt.deleter 
 	def MgSchmidt(self): 
 		del self._MgSchmidt 
-		del self.__model.mgschmidt 
 
 	@property
 	def m_upper(self):
@@ -2092,7 +2106,6 @@ class singlezone(object):
 	@m_upper.deleter 
 	def m_upper(self): 
 		del self._m_upper 
-		del self.__model.m_upper 
 
 	@property
 	def m_lower(self):
@@ -2133,7 +2146,6 @@ class singlezone(object):
 	@m_lower.deleter 
 	def m_lower(self): 
 		del self._m_lower 
-		del self.__model.m_lower 
 
 	@property
 	def Z_solar(self):
@@ -2188,7 +2200,6 @@ class singlezone(object):
 	@Z_solar.deleter 
 	def Z_solar(self): 
 		del self._z_solar 
-		del self.__model.Z_solar 
 
 	@property
 	def agb_model(self):

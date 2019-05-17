@@ -442,6 +442,13 @@ class output(object):
 	def __exit__(self, exc_type, exc_value, exc_tb): 
 		return exc_value == None 
 
+	def __del__(self): 
+		del self._history 
+		del self._mdf 
+		del self._ccsne_yields 
+		del self._sneia_yields 
+		del self._elements 
+
 	@property
 	def name(self): 
 		"""
@@ -1043,6 +1050,9 @@ class dataframe(object):
 
 	def __exit__(self, exc_type, exc_value, exc_tb): 
 		return exc_value == None 
+
+	def __del__(self): 
+		del self._frame 
 
 	@property 
 	def frame(self): 
