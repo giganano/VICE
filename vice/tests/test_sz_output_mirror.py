@@ -48,7 +48,7 @@ def test_parameters(**kwargs):
 		assert(isinstance(foo.mdf, vice.dataframe)) 
 		assert(isinstance(foo.ccsne_yields, vice.dataframe)) 
 		assert(isinstance(foo.sneia_yields, vice.dataframe)) 
-		assert(isinstance(foo.element, tuple)) 
+		assert(isinstance(foo.elements, tuple)) 
 	except: 
 		tracker["output"] = False 
 	finally: 
