@@ -4,6 +4,8 @@ import math
 import vice 
 import warnings 
 import sys 
+import gc 
+gc.enable()
 sys.stdout.flush() 
 
 try: 
@@ -84,7 +86,7 @@ def main():
 												"onezonemodel") 
 											assert isinstance(foo, 
 												vice.dataframe) 
-											history_tracker["success"] += 1
+											history_tracker["success"] += 1 
 										except: 
 											history_tracker["failure"] += 1 
 										try: 
@@ -92,7 +94,7 @@ def main():
 												"onezonemodel") 
 											assert isinstance(foo, 
 												vice.dataframe) 
-											mdf_tracker["success"] += 1
+											mdf_tracker["success"] += 1 
 										except: 
 											mdf_tracker["failure"] += 1 
 										success = True 
@@ -114,12 +116,12 @@ def main():
 											assert isinstance(
 												foo.elements, 
 												tuple) 
-											output_tracker["success"] += 1
+											output_tracker["success"] += 1 
 											try: 
 												mir = vice.mirror(foo) 
 												assert isinstance(mir, 
 													vice.singlezone) 	
-												mirror_tracker["success"] += 1
+												mirror_tracker["success"] += 1 
 											except: 
 												mirror_tracker["failure"] += 1
 										except: 
