@@ -30,9 +30,12 @@ def test_parameters(**kwargs):
 		"mdf": 				True 
 	}
 	try: 
-		vice.singlezone(**kwargs).run(_OUTTIMES_, overwrite = True) 
+		foo = vice.singlezone(**kwargs)
+		foo.run(_OUTTIMES_, overwrite = True) 
 	except: 
 		tracker["singlezone"] = False 
+	finally: 
+		del foo 
 	try: 
 		assert(isinstance(vice.history("onezonemodel"), vice.dataframe)) 
 	except: 
