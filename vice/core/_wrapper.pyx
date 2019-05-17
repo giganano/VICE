@@ -54,7 +54,6 @@ except (ImportError, ModuleNotFoundError):
 	pass
 
 # C Functions
-from libc.stdlib cimport malloc, free
 from ctypes import *
 clib = pydll.LoadLibrary("%ssrc/enrichment.so" % (_DIRECTORY_))
 
@@ -764,7 +763,13 @@ class singlezone(object):
 		self.m_upper = m_upper
 		self.m_lower = m_lower
 		self.Z_solar = Z_solar
-		self.agb_model = agb_model
+		self.agb_model = agb_model 
+
+	def __enter__(self): 
+		return self 
+
+	def __exit__(self, exc_type, exc_value, exc_tb): 
+		return exc_value == None
 
 	@property
 	def name(self):
@@ -810,8 +815,11 @@ class singlezone(object):
 			# If it's not a string it's a TypeError 
 			message = "Attribute name must be of type string. Got: %s" % (
 				type(value))
-			raise TypeError(message)
+			raise TypeError(message) 
 
+	@name.deleter 
+	def name(self): 
+		del self._name 
 
 	@property
 	def func(self):
@@ -866,7 +874,11 @@ class singlezone(object):
 			message = "Attribute 'func' must be a callable function that "
 			message += "takes only one parameter with no variable, "
 			message += "keyword, or default arguments."
-			raise TypeError(message)
+			raise TypeError(message) 
+
+	@func.deleter 
+	def func(self): 
+		del self._func 
 
 	@property
 	def mode(self):
@@ -918,7 +930,11 @@ class singlezone(object):
 			# If it's not a string it's a TypeError
 			message = "Attribute mode must be of type string. Got: %s" % (
 				type(value))
-			raise TypeError(message)
+			raise TypeError(message) 
+
+	@mode.deleter 
+	def mode(self): 
+		del self._mode 
 
 	@property
 	def elements(self):
@@ -972,7 +988,11 @@ class singlezone(object):
 				continue
 
 		# Store the copy in the attribute ---> make it a tuple so it's immutable 
-		self._elements = tuple(copy[:])
+		self._elements = tuple(copy[:]) 
+
+	@elements.deleter
+	def elements(self): 
+		del self._elements 
 
 	@property
 	def IMF(self):
@@ -1025,6 +1045,10 @@ class singlezone(object):
 			message = "Attribute 'IMF' must be of type string. Got: %s" % (
 				type(value))
 			raise TypeError(message) 
+
+	@IMF.deleter 
+	def IMF(self): 
+		del self._imf 
 
 	@property
 	def eta(self):
@@ -1085,7 +1109,8 @@ class singlezone(object):
 				message += "stars. This is known as the G-dwarf problem "
 				message += "(Tinsley 1980, Fundamentals Cosmic Phys., 5, 287. "
 				message += "Outflows are necessary for maintaining long-term " 
-				message += "chemical equilibrium (Dalcanton 2007, ApJ, 658, 941." 
+				message += "chemical equilibrium (Dalcanton 2007, ApJ, 658, " 
+				message += "941." 
 				warnings.warn(message, ScienceWarning)
 			else:
 				message = "Attribute 'eta' must be non-negative." 
@@ -1095,7 +1120,11 @@ class singlezone(object):
 			message = "Attribute eta must be either a callable python "
 			message += "function or a numerical value. Got: %s" % (
 				type(value))
-			raise TypeError(message)
+			raise TypeError(message) 
+
+	@eta.deleter 
+	def eta(self): 
+		del self._eta 
 
 	@property
 	def enhancement(self):
@@ -1152,7 +1181,11 @@ class singlezone(object):
 			# Otherwise throw a TypeError 
 			message = "Attribute 'enhancement' must be either a callable "
 			message += "python function or a numerical value."
-			raise TypeError(message)
+			raise TypeError(message) 
+
+	@enhancement.deleter 
+	def enhancement(self): 
+		del self._enhancement 
 
 	@property
 	def Zin(self):
@@ -1330,7 +1363,11 @@ class singlezone(object):
 				True, "foo")	
 
 		else:
-			pass
+			pass 
+
+	@Zin.deleter 
+	def Zin(self): 
+		del self._zin 
 
 	@property
 	def recycling(self):
@@ -1410,7 +1447,11 @@ class singlezone(object):
 			message = "Attribute recycling must be either a numerical value "
 			message += "between 0 and 1 or the string 'continuous' (case-"
 			message += "insensitive)."
-			raise TypeError(message)
+			raise TypeError(message) 
+
+	@recycling.deleter 
+	def recycling(self): 
+		del self._recycling 
 
 	def __recycling_warnings(self, value): 
 		"""
@@ -1519,7 +1560,11 @@ class singlezone(object):
 		# This property is not even stored in Python ---> only in C. 
 		ptr = c_double * len(copy)
 		self.__model.bins = ptr(*list(copy[:]))
-		self.__model.num_bins = len(value) - 1l
+		self.__model.num_bins = len(value) - 1l 
+
+	@bins.deleter 
+	def bins(self): 
+		pass 
 
 	@property
 	def delay(self):
@@ -1556,7 +1601,11 @@ class singlezone(object):
 			# If it's not a number, throw a TypeError 
 			message = "Attribute 'delay' must be a positive numerical value. "
 			message += "Got: %s" % (type(value))
-			raise TypeError(message)
+			raise TypeError(message) 
+
+	@delay.deleter 
+	def delay(self): 
+		del self._delay 
 
 	@property
 	def RIa(self):
@@ -1624,7 +1673,11 @@ class singlezone(object):
 		else:
 			message = "Attribute dtd must be either a callable function, "
 			message += "the string \"exp\", or the string \"plaw\"."
-			raise TypeError(message)
+			raise TypeError(message) 
+
+	@RIa.deleter 
+	def RIa(self): 
+		del self._ria 
 
 	@property
 	def Mg0(self):
@@ -1665,7 +1718,11 @@ class singlezone(object):
 			# Otherwise throw a TypeError ---> Mg0 must be a number 
 			message = "Attribute 'Mg0' must be a numerical value. Got: %s" % (
 				type(value))
-			raise TypeError(message)
+			raise TypeError(message) 
+
+	@Mg0.deleter 
+	def Mg0(self): 
+		del self._Mg0 
 
 	@property
 	def smoothing(self):
@@ -1707,7 +1764,11 @@ class singlezone(object):
 		else:
 			# If it's not a number it's a TypeError 
 			message = "Attribute 'smoothing' must be a numerical value."
-			raise TypeError(message)
+			raise TypeError(message) 
+
+	@smoothing.deleter 
+	def smoothing(self): 
+		del self._smoothing 
 
 	@property
 	def tau_ia(self):
@@ -1743,7 +1804,11 @@ class singlezone(object):
 			# If it's not a number, throw a TypeError 
 			message = "Attribute 'tau_ia' must be a positive numerical value." 
 			message += "Got: %s" % (type(value))
-			raise TypeError(message)
+			raise TypeError(message) 
+
+	@tau_ia.deleter 
+	def tau_ia(self): 
+		del self._tau_ia 
 
 	@property
 	def tau_star(self):
@@ -1801,7 +1866,11 @@ class singlezone(object):
 			# Otherwise throw a TypeError 
 			message = "Attribute 'tau_star' must be either a numerical value "
 			message += "or a callable function taking one parameter."
-			raise TypeError(message)
+			raise TypeError(message) 
+
+	@tau_star.deleter 
+	def tau_star(self): 
+		del self._tau_star 
 
 	@property
 	def dt(self):
@@ -1832,7 +1901,11 @@ class singlezone(object):
 			# Anything non-numerical is a TypeError. 
 			message = "Attribute 'dt' must be a numerical value. Got: %s" % (
 				type(value))
-			raise TypeError(message)
+			raise TypeError(message) 
+
+	@dt.deleter 
+	def dt(self): 
+		del self._dt 
 
 	@property
 	def schmidt(self):
@@ -1880,7 +1953,11 @@ class singlezone(object):
 			# Otherwise a TypeError needs thrown. 
 			message = "Attribute 'schmidt' must be interpretable as a "
 			message += "boolean. Got: %s" % (type(value))
-			raise TypeError(message)
+			raise TypeError(message) 
+
+	@schmidt.deleter 
+	def schmidt(self): 
+		del self._schmidt 
 
 	@property
 	def schmidt_index(self):
@@ -1914,7 +1991,11 @@ class singlezone(object):
 			"""
 			message = "Attribute 'schmidt_index' is now a negative value. "
 			message += "This may introduce numerical artifacts. "
-			warnings.warn(message, ScienceWarning)
+			warnings.warn(message, ScienceWarning) 
+
+	@schmidt_index.deleter 
+	def schmidt_index(self): 
+		del self._schmidt_index 
 
 	@property
 	def MgSchmidt(self):
@@ -1952,7 +2033,11 @@ class singlezone(object):
 		else:
 			# Otherwise throw a TypeError 
 			message = "Attribute 'MgSchmidt' must be a numerical value."
-			raise TypeError(message)
+			raise TypeError(message) 
+
+	@MgSchmidt.deleter 
+	def MgSchmidt(self): 
+		del self._MgSchmidt 
 
 	@property
 	def m_upper(self):
@@ -1990,6 +2075,10 @@ class singlezone(object):
 				type(value))
 			raise TypeError(message)
 
+	@m_upper.deleter 
+	def m_upper(self): 
+		del self._m_upper 
+
 	@property
 	def m_lower(self):
 		"""
@@ -2025,6 +2114,10 @@ class singlezone(object):
 			message = "Attribute m_lower must be a numerical value. Got: %s" % (
 				type(value))
 			raise TypeError(message)
+
+	@m_lower.deleter 
+	def m_lower(self): 
+		del self._m_lower 
 
 	@property
 	def Z_solar(self):
@@ -2074,7 +2167,11 @@ class singlezone(object):
 			# Anything non-numerical is a TypeError 
 			message = "Attribute z_solar must be a numerical value between 0 "
 			message += "an 1. Got: %s" % (type(value))
-			raise TypeError(message)
+			raise TypeError(message) 
+
+	@Z_solar.deleter 
+	def Z_solar(self): 
+		del self._z_solar 
 
 	@property
 	def agb_model(self):
@@ -2126,7 +2223,11 @@ class singlezone(object):
 		else:
 			# Not a string ---> TypeError 
 			message = "Attribute 'agb_model' must be of type string."
-			raise TypeError(message)
+			raise TypeError(message) 
+
+	@agb_model.deleter 
+	def agb_model(self): 
+		del self._agb_model 
 
 	def settings(self):
 		"""

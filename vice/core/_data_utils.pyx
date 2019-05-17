@@ -7,7 +7,7 @@ This file handles the VICE dataframe and the outputs of the singlezone class.
 from __future__ import division, unicode_literals, absolute_import 
 from .._globals import _DIRECTORY_
 from .._globals import _VERSION_ERROR_
-from .._globals import ScienceWarning
+from .._globals import ScienceWarning 
 import math as m 
 import warnings 
 import inspect 
@@ -436,6 +436,12 @@ class output(object):
 		self.__load_ccsne_yields() 
 		self.__load_sneia_yields() 
 
+	def __enter__(self): 
+		return self 
+
+	def __exit__(self, exc_type, exc_value, exc_tb): 
+		return exc_value == None 
+
 	@property
 	def name(self): 
 		"""
@@ -465,6 +471,10 @@ class output(object):
 				type(value)) 
 			raise TypeError(message) 
 
+	@name.deleter 
+	def name(self): 
+		del self._name 
+
 	@property
 	def elements(self):
 		""" 
@@ -473,7 +483,11 @@ class output(object):
 		The symbols for the elements whose enrichment was modeled to produce 
 		the output file. 
 		"""
-		return self._elements
+		return self._elements 
+
+	@elements.deleter 
+	def elements(self): 
+		del self._elements 
 
 	@property
 	def history(self):
@@ -486,7 +500,11 @@ class output(object):
 		======== 
 		Function vice.history
 		"""
-		return self._history
+		return self._history 
+
+	@history.deleter 
+	def history(self): 
+		del self._history 
 
 	@property
 	def mdf(self):
@@ -499,7 +517,11 @@ class output(object):
 		======== 
 		Function vice.mdf 
 		"""
-		return self._mdf
+		return self._mdf 
+
+	@mdf.deleter 
+	def mdf(self): 
+		del self._mdf 
 
 	@property
 	def ccsne_yields(self): 
@@ -515,6 +537,10 @@ class output(object):
 		"""
 		return self._ccsne_yields 
 
+	@ccsne_yields.deleter 
+	def ccsne_yields(self): 
+		del self._ccsne_yields 
+
 	@property
 	def sneia_yields(self): 
 		"""
@@ -528,6 +554,10 @@ class output(object):
 		vice.yields.sneia.settings 
 		"""
 		return self._sneia_yields 
+
+	@sneia_yields.deleter 
+	def sneia_yields(self): 
+		del self._sneia_yields 
 
 	def show(self, key): 
 		""" 
@@ -894,13 +924,7 @@ class dataframe(object):
 		frame :: dict 
 			A python dictionary to construct the dataframe from 
 		"""
-		try:
-			keys = tuple([i.lower() for i in frame.keys()])
-			fields = tuple([frame[i] for i in frame.keys()])
-			self._frame = dict(zip(keys, fields))  
-		except AttributeError: 
-			message = "All VICE dataframe keys must be of type str." 
-			raise TypeError(message) 
+		self.frame = frame # call the setter function 
 
 	def __call__(self, key): 
 		"""
@@ -1011,9 +1035,35 @@ class dataframe(object):
 		else:
 			return False 
 
-
 	def __ne__(self, other): 
 		return not self.__eq__(other) 
+
+	def __enter__(self): 
+		return self 
+
+	def __exit__(self, exc_type, exc_value, exc_tb): 
+		return exc_value == None 
+
+	@property 
+	def frame(self): 
+		"""
+		The dictionary itself, with lower-case values. 
+		""" 
+		return self._frame 
+
+	@frame.setter 
+	def frame(self, value): 
+		if isinstance(value, dict): 
+			keys = tuple([i.lower() for i in value.keys()]) 
+			fields = tuple([value[i] for i in value.keys()]) 
+			self._frame = dict(zip(keys, fields)) 
+		else: 
+			raise TypeError("Dataframe must be of type dict. Got: %s" % (
+				type(value))) 
+
+	@frame.deleter 
+	def frame(self): 
+		del self._frame 
 
 	def keys(self): 
 		"""

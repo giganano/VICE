@@ -51,6 +51,8 @@ def test_parameters(**kwargs):
 		assert(isinstance(foo.element, tuple)) 
 	except: 
 		tracker["output"] = False 
+	finally: 
+		del foo 
 	try: 
 		assert(isinstance(vice.mirror(vice.output("onezonemodel")), 
 			vice.singlezone)) 
