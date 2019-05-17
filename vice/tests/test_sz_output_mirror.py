@@ -5,7 +5,6 @@ import vice
 import warnings 
 import sys 
 import gc 
-gc.enable()
 sys.stdout.flush() 
 
 try: 
@@ -75,10 +74,11 @@ def main():
 											dt = 0.05
 										) 
 										try: 
-											vice.singlezone(**metadata).run(
-												_OUTTIMES_, 
+											foo = vice.singlezone(**metadata)
+											foo.run(_OUTTIMES_, 
 												overwrite = True) 
-											singlezone_tracker["success"] += 1
+											singlezone_tracker["success"] += 1 
+											del foo 
 										except: 
 											singlezone_tracker["failure"] += 1 
 										try: 
@@ -87,6 +87,7 @@ def main():
 											assert isinstance(foo, 
 												vice.dataframe) 
 											history_tracker["success"] += 1 
+											del foo 
 										except: 
 											history_tracker["failure"] += 1 
 										try: 
@@ -95,6 +96,7 @@ def main():
 											assert isinstance(foo, 
 												vice.dataframe) 
 											mdf_tracker["success"] += 1 
+											del foo 
 										except: 
 											mdf_tracker["failure"] += 1 
 										success = True 
@@ -122,8 +124,10 @@ def main():
 												assert isinstance(mir, 
 													vice.singlezone) 	
 												mirror_tracker["success"] += 1 
+												del mir 
 											except: 
-												mirror_tracker["failure"] += 1
+												mirror_tracker["failure"] += 1 
+											del foo 
 										except: 
 											output_tracker["failure"] += 1
 
@@ -131,6 +135,7 @@ def main():
 										sys.stdout.write("Progress: %.1f%%\r" % (
 											a / b * 100)) 
 										sys.stdout.flush() 
+										gc.collect() 
 										
 	#######
 	message = """\
