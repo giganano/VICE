@@ -765,6 +765,80 @@ class singlezone(object):
 		self.Z_solar = Z_solar
 		self.agb_model = agb_model 
 
+	def __repr__(self): 
+		"""
+		Same print format as the dataframe 
+		"""
+		rep = "vice.singlezone{\n" 
+		"""
+		Doing this with self.__dict__ doesn't work as some parameters are 
+		aliased to a different name under the hood. 
+		""" 
+		attrs = {
+			"name": 			self.name, 	
+			"func": 			self.func, 
+			"mode":				self.mode, 
+			"elements":			self.elements, 
+			"Zin": 				self.Zin, 
+			"recycling": 		self.recycling, 
+			"delay": 			self.delay, 
+			"RIa": 				self.RIa, 
+			"Mg0": 				self.Mg0, 
+			"smoothing": 		self.smoothing, 
+			"tau_ia": 			self.tau_ia, 
+			"tau_star": 		self.tau_star, 
+			"schmidt": 			self.schmidt, 
+			"schmidt_index": 	self.schmidt_index, 
+			"MgSchmidt": 		self.MgSchmidt, 
+			"dt": 				self.dt, 
+			"m_upper": 			self.m_upper, 
+			"m_lower": 			self.m_lower, 
+			"Z_solar": 			self.Z_solar, 
+			"agb_model": 		self.agb_model 
+		}
+
+		if len(self.bins) >= 10: 
+			attrs["bins"] = "[%g, %g, %g, ... , %g, %g, %g]" % (
+				self.bins[0], self.bins[1], self.bins[2], 
+				self.bins[-3], self.bins[-2], self.bins[-1]
+			) 
+		else:
+			attrs["bins"] = str(self.bins) 
+
+		for i in attrs.keys(): 
+			rep += "    %s " % (i) 
+			for j in range(15 - len(i)): 
+				rep += '-' 
+			rep += "> %s\n" % (str(attrs[i])) 
+		rep += '}' 
+
+		return rep 
+
+	def __str__(self): 
+		# Same as __repr__ 
+		return self.__repr__() 
+
+	def __eq__(self, other): 
+		if isinstance(other, self.__class__): 
+			# It's an instance of this class 
+			for i in self.__dict__.keys(): 
+				# Skip the wrapped C-structs 
+				if i[:11] == "_singlezone": 
+					continue 
+				# If any of the attributes don't match, return False  
+				elif self.__dict__[i] == other.__dict__[i]: 
+					continue 
+				else: 
+					return False 
+			# If the code gets here, they're not the same 
+			return True 
+		else: 
+			# It's not an instance of this class 
+			return False 
+
+	def __ne__(self, other): 
+		return not self.__eq__(other) 
+
 	def __enter__(self): 
 		return self 
 
@@ -1445,8 +1519,8 @@ class singlezone(object):
 
 	@recycling.setter
 	def recycling(self, value):
-		if isinstance(value, numbers.Number):
-			# The cumulative return fraction is by definition between 0 and 1 ... 
+		# The cumulative return fraction is by definition between 0 and 1 ... 
+		if isinstance(value, numbers.Number): 
 			if 0 <= value <= 1: 
 				self.__recycling_warnings(value) 
 				self._recycling = float(value)
@@ -2256,53 +2330,6 @@ class singlezone(object):
 	@agb_model.deleter 
 	def agb_model(self): 
 		del self._agb_model 
-
-	def settings(self):
-		"""
-		Prints the current parameters of the simulation to the screen. 
-		"""
-		frame = {}
-		frame["name"] = self._name[:-5]
-		frame["func"] = self._func
-		frame["mode"] = self._mode 
-		frame["IMF"] = self._imf 
-		frame["elements"] = self._elements
-		frame["eta"] = self._eta
-		frame["enhancement"] = self._enhancement
-		frame["recycling"] = self._recycling 
-		if len(self.bins) >= 10: 
-			frame["bins"] = "[%g, %g, %g, ... , %g, %g, %g]" % (
-				self.bins[0], self.bins[1], self.bins[2], 
-				self.bins[-3], self.bins[-2], self.bins[-1]
-			)
-		else:
-			frame["bins"] = self.bins
-		frame["delay"] = self._delay
-		frame["RIa"] = self._ria
-		frame["Mg0"] = self._Mg0
-		frame["smoothing"] = self._smoothing
-		frame["tau_ia"] = self._tau_ia 
-		frame["tau_star"] = self._tau_star 
-		frame["dt"] = self._dt 
-		frame["schmidt"] = self._schmidt 
-		frame["schmidt_index"] = self._schmidt_index 
-		frame["MgSchmidt"] = self._MgSchmidt 
-		frame["Zin"] = self._zin
-		frame["m_upper"] = self._m_upper 
-		frame["m_lower"] = self._m_lower 
-		frame["Z_solar"] = self._z_solar
-		frame["agb_model"] = self._agb_model
-
-		print("Current Settings:")
-		print("=================")
-		for i in frame.keys(): 
-			rep = "%s " % (i) 
-			arrow = ""
-			for j in range(15 - len(i)): 
-				arrow += "-"
-			rep += "%s> %s" % (arrow, str(frame[i]))
-			print(rep)
-		del frame
 
 	def run(self, output_times, capture = False, overwrite = False):
 		"""

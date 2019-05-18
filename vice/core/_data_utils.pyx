@@ -436,6 +436,22 @@ class output(object):
 		self.__load_ccsne_yields() 
 		self.__load_sneia_yields() 
 
+	def __repr__(self): 
+		return "<VICE output object from simulation: %s>" % (self._name[:-5]) 
+
+	def __str__(self): 
+		# Same as __repr__ 
+		return self.__repr__() 
+
+	def __eq__(self, other): 
+		"""
+		Returns True if the outputs point to the same simulation. 
+		"""
+		return os.path.abspath(self._name) == os.path.abspath(other._name) 
+
+	def __ne__(self, other): 
+		return not self.__eq__(other) 
+
 	def __enter__(self): 
 		return self 
 
