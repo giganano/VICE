@@ -767,7 +767,10 @@ class singlezone(object):
 
 	def __repr__(self): 
 		"""
-		Same print format as the dataframe 
+		Prints in the format: vice.singlezone{
+		    attribute1 -----> value 
+		    attribute2 -----> value
+		}
 		"""
 		rep = "vice.singlezone{\n" 
 		"""
@@ -815,10 +818,16 @@ class singlezone(object):
 		return rep 
 
 	def __str__(self): 
-		# Same as __repr__ 
+		"""
+		Returns self.__repr__() 
+		"""
 		return self.__repr__() 
 
 	def __eq__(self, other): 
+		"""
+		Returns true if other is a singlezone object and all attributes are 
+		equal with the == operation 
+		"""	
 		if isinstance(other, self.__class__): 
 			# It's an instance of this class 
 			for i in self.__dict__.keys(): 
@@ -837,15 +846,27 @@ class singlezone(object):
 			return False 
 
 	def __ne__(self, other): 
+		"""
+		Returns not self.__eq__(other) 
+		"""
 		return not self.__eq__(other) 
 
 	def __enter__(self): 
+		"""
+		Opens a with statement 
+		"""
 		return self 
 
 	def __exit__(self, exc_type, exc_value, exc_tb): 
+		"""
+		Raise all exceptions inside with statements 
+		"""
 		return exc_value == None 
 
 	def __del__(self): 
+		"""
+		del each attribute at destruction 
+		"""
 		del self._name 
 		del self._func 
 		del self._mode 

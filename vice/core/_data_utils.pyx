@@ -437,10 +437,15 @@ class output(object):
 		self.__load_sneia_yields() 
 
 	def __repr__(self): 
+		"""
+		Prints the name of the simulation 
+		"""
 		return "<VICE output object from simulation: %s>" % (self._name[:-5]) 
 
 	def __str__(self): 
-		# Same as __repr__ 
+		"""
+		Returns self.__repr__() 
+		"""
 		return self.__repr__() 
 
 	def __eq__(self, other): 
@@ -450,15 +455,27 @@ class output(object):
 		return os.path.abspath(self._name) == os.path.abspath(other._name) 
 
 	def __ne__(self, other): 
+		"""
+		Returns not self.__eq__(other) 
+		"""
 		return not self.__eq__(other) 
 
 	def __enter__(self): 
+		"""
+		Opens a with statement 
+		"""
 		return self 
 
 	def __exit__(self, exc_type, exc_value, exc_tb): 
+		"""
+		Raise all exceptions inside with statements 
+		"""
 		return exc_value == None 
 
 	def __del__(self): 
+		"""
+		del each attribute at destruction 
+		"""
 		del self._history 
 		del self._mdf 
 		del self._ccsne_yields 
@@ -1039,12 +1056,14 @@ class dataframe(object):
 		return rep 
 
 	def __str__(self): 
-		# Same as __repr__ 
+		"""
+		Returns self.__repr__() 
+		"""
 		return self.__repr__() 
 
 	def __eq__(self, other): 
 		"""
-		Test if the dataframes are identical 
+		Returns true if the dataframes have the same contents 
 		"""
 		test = len(self.keys()) * [None] 
 		for i in range(len(self.keys())): 
@@ -1059,15 +1078,27 @@ class dataframe(object):
 			return False 
 
 	def __ne__(self, other): 
+		"""
+		Returns not self.__eq__(other) 
+		"""
 		return not self.__eq__(other) 
 
 	def __enter__(self): 
+		"""
+		Opens a with statement 
+		"""
 		return self 
 
 	def __exit__(self, exc_type, exc_value, exc_tb): 
+		"""
+		Raise all exceptions inside with statements 
+		"""
 		return exc_value == None 
 
 	def __del__(self): 
+		"""
+		del each attribute at destruction 
+		"""
 		del self._frame 
 
 	@property 
