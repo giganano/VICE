@@ -89,10 +89,11 @@ else:
 		from .version import version as __version__
 		from .version import release as __release
 	except: 
-		message = "Error importing VICE. You should not try to run VICE from " 
-		message += "within its source directory. Please exit the VICE source "
-		message += "tree and relaunch your python interpreter from there." 
-		raise ImportError(message)
+		raise ImportError("""\
+Error importing VICE. VICE is a pre-compiled package and cannot be ran from \
+its source directory, because the compiled objects are not stored here. Please \
+exit the VICE source tree and relaunch your python interpreter from there. \
+""")
 
 	if not __release: 
 		warnings.warn("Using un-released version of VICE", UserWarning)
