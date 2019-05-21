@@ -103,9 +103,8 @@ else:
 	try: 
 		from .core import * 
 		from ._build_utils import * 
-		from . import yields 
-		from . import _globals
 		from ._globals import ScienceWarning
+		from . import yields 
 	except (ImportError, ModuleNotFoundError): 
 		raise ImportError("""\
 Error importing VICE. If you have attempted an alternate installation method, \

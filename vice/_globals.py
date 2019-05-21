@@ -43,6 +43,7 @@ will be sorted by the singlezone class. It spans the range from -3 to 1 in each
 _DEFAULT_BINS_ = 81 * [0.]
 for i in range(81): 
 	_DEFAULT_BINS_[i] = -3. + 0.05 * i 
+del i
 
 """
 Elements and initial mass functions built into VICE. The user cannot simply 
@@ -84,7 +85,7 @@ class ScienceWarning(UserWarning):
 	from any given function. Although it is not recommended, users can silence 
 	this specific class of warnings via: 
 
-		>>> warnings.filterwarnings("ignore", categore = vice.ScienceWarning) 
+		>>> warnings.filterwarnings("ignore", category = vice.ScienceWarning) 
 
 	Alternatively, they may silence all warnings within VICE via: 
 
@@ -95,4 +96,8 @@ class ScienceWarning(UserWarning):
 		>>> warnings.filterwarnings("ignore") 
 	"""
 	pass 
+
+# Get rid of local variables 
+del warnings 
+del os 
 
