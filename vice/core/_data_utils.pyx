@@ -43,7 +43,7 @@ except (ImportError, ModuleNotFoundError):
 # C Functions 
 from ctypes import * 
 from libc.stdlib cimport malloc, free 
-clib = pydll.LoadLibrary("%ssrc/enrichment.so" % (_DIRECTORY_)) 
+clib = cdll.LoadLibrary("%ssrc/enrichment.so" % (_DIRECTORY_)) 
 
 """
 <--------------- C routine comment headers not duplicated here --------------->

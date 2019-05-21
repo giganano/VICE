@@ -55,7 +55,7 @@ except (ImportError, ModuleNotFoundError):
 
 # C Functions
 from ctypes import *
-clib = pydll.LoadLibrary("%ssrc/enrichment.so" % (_DIRECTORY_))
+clib = cdll.LoadLibrary("%ssrc/enrichment.so" % (_DIRECTORY_))
 
 __all__ = ["singlezone", "single_stellar_population", "mirror"] 
 __all__ = [str(i) for i in __all__] # appease python 2 strings  
