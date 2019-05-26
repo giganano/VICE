@@ -142,7 +142,7 @@ def main():
 											mdf_tracker["failure"] += 1 
 
 										a += 1
-										sys.stdout.write("Progress: %.1f%\r" % (
+										sys.stdout.write("Progress: %.1f%%\r" % (
 											a / b * 100)) 
 										sys.stdout.flush() 
 										gc.collect() 
