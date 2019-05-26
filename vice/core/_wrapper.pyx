@@ -69,7 +69,7 @@ else:
 
 
 
-#------------------------------ MIRROR FUNCTION ------------------------------# 
+#----------------------------- MIRROR FUNCTION -----------------------------# 
 def mirror(output_obj): 
 	"""
 	Obtain an instance of the vice.singlezone class given only an instance of 
