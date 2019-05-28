@@ -784,6 +784,7 @@ class singlezone(object):
 			"elements":			self.elements, 
 			"Zin": 				self.Zin, 
 			"recycling": 		self.recycling, 
+			"eta": 				self.eta, 
 			"delay": 			self.delay, 
 			"RIa": 				self.RIa, 
 			"Mg0": 				self.Mg0, 
