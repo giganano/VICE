@@ -842,7 +842,7 @@ class singlezone(object):
 					continue 
 				else: 
 					return False 
-			# If the code gets here, they're not the same 
+			# If the code gets here, they're the same 
 			return True 
 		else: 
 			# It's not an instance of this class 
