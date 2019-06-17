@@ -5,9 +5,13 @@ and the singlezone class. Most of the scientific utility of VICE that the user
 interacts with is scripted in this file. 
 """
 
-# Python Functions
 from __future__ import (print_function, division, unicode_literals, 
 	absolute_import)
+
+__all__ = ["singlezone", "single_stellar_population", "mirror"] 
+__all__ = [str(i) for i in __all__] # appease python 2 strings  
+
+# Python Functions
 from . import _data_utils as _du
 from .._globals import _RECOGNIZED_ELEMENTS_
 from .._globals import _RECOGNIZED_IMFS_
@@ -56,9 +60,6 @@ except (ImportError, ModuleNotFoundError):
 # C Functions
 from ctypes import *
 clib = cdll.LoadLibrary("%ssrc/enrichment.so" % (_DIRECTORY_))
-
-__all__ = ["singlezone", "single_stellar_population", "mirror"] 
-__all__ = [str(i) for i in __all__] # appease python 2 strings  
 
 if sys.version_info[0] == 2: 
 	strcomp = basestring

@@ -3,8 +3,12 @@
 This file handles the VICE dataframe and the outputs of the singlezone class. 
 """
 
-# Python Functions 
 from __future__ import division, unicode_literals, absolute_import 
+
+__all__ = ["mdf", "history", "output", "dataframe"] 
+__all__ = [str(i) for i in __all__] # appease python 2 strings 
+
+# Python Functions 
 from .._globals import _DIRECTORY_
 from .._globals import _VERSION_ERROR_
 from .._globals import ScienceWarning 
@@ -63,11 +67,7 @@ elif sys.version_info[0] == 3:
 	strcomp = str 
 else: 
 	_VERSION_ERROR_() 
-
-__all__ = ["mdf", "history", "output", "dataframe"] 
-__all__ = [str(i) for i in __all__] # appease python 2 strings 
-
-
+	
 
 #------------- STELLAR METALLICITY DISTRIBUTION FUNCTION READER -------------#
 def mdf(name): 

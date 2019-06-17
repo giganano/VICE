@@ -10,10 +10,11 @@ sneia :: type Ia supernovae
 """
 
 from __future__ import absolute_import
+
+__all__ = ["agb", "ccsne", "sneia"] 
+
 from . import agb 
 from . import ccsne 
 from . import sneia 
-
-__all__ = ["agb", "ccsne", "sneia"] 
 
 del absolute_import 

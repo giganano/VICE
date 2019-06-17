@@ -4,10 +4,10 @@ This file handles yield settings as well as lookup features related to that.
 This includes the global dataframes like sources and solar_z. 
 """
 
-from . import _data_utils as _du
-
 __all__ = ["atomic_number", "solar_z", "sources"]
-__all__ = [str(i) for i in __all__]
+__all__ = [str(i) for i in __all__] # appease python 2 strings 
+
+from . import _data_utils as _du
 
 """
 The following are instances of VICE's dataframe intended for both user 
