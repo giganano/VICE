@@ -38,8 +38,8 @@ def read_build():
 	Returns a dictionary showing the version info for the packages used to 
 	build VICE at the time of installation. 
 	"""
-	from ..core._globals import _DIRECTORY
-	return pickle.load(open("%s_build_utils/build_data.obj" % (_DIRECTORY), 
+	from .._globals import _DIRECTORY_ 
+	return pickle.load(open("%s_build_utils/build_data.obj" % (_DIRECTORY_), 
 		"rb"))
 
 
