@@ -428,7 +428,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	elif not isinstance(time, numbers.Number):
 		message = "Keyword arg 'time' must be a numerical value. Got: %s" % (
 			type(time))
-		raise TypeError(message0)
+		raise TypeError(message)
 	elif not isinstance(dt, numbers.Number):
 		message = "Keyword arg 'dt' must be a numerical value. Got: %s" % (
 			type(dt))
