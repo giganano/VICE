@@ -116,7 +116,7 @@ Alternatively, if you have installed VICE in a conda environment, the \
 installation process will run, but its compiled extensions will not be placed \
 in the correct directories. If this is the case, please deactivate the conda \
 environment and install VICE globally. VICE is implemented independently of \
-anaconda, and for this reason a conda environment not necessary. \
+anaconda, and for this reason a conda environment is not necessary. \
 
 If you have followed the preferred installation method outside of a conda \
 environment, then please open an issue at \
