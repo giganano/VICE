@@ -1,58 +1,61 @@
-# cython: language_level=3, boundscheck=False
-"""
-This script wraps the numerical integration features over mass sampled tables 
-of core collapse supernovae yields. 
-"""
+# cython: language_level = 3, boundscheck = False
+""" 
+This script wraps the numerical integration features over mass sampled 
+tables of core collapse supernovae yields. 
+""" 
 
-from __future__ import absolute_import, unicode_literals 
-from ..._globals import _DIRECTORY_
-from ..._globals import _RECOGNIZED_ELEMENTS_
-from ..._globals import _RECOGNIZED_IMFS_
-from ..._globals import ScienceWarning
-from ..._globals import _VERSION_ERROR_
-from ...core._dataframes import atomic_number
-PATH = "%syields/ccsne/" % (_DIRECTORY_)
-from libc.stdlib cimport free
-import warnings
-import numbers
-import math as m
-import sys
-import os
-
-if sys.version_info[0] == 2: 
+from __future__ import absolute_import 
+from ..._globals import _DIRECTORY_ 
+from ..._globals import _RECOGNIZED_ELEMENTS_ 
+from ..._globals import _RECOGNIZED_IMFS_ 
+from ..._globals import _VERSION_ERROR_ 
+from ..._globals import ScienceWarning 
+from ...core._builtin_dataframes import atomic_number 
+import math as m 
+import warnings 
+import numbers 
+import sys 
+import os 
+if sys.version_info[:2] == (2, 7): 
 	strcomp = basestring 
-elif sys.version_info[0] == 3: 
-	strcomp = str
-else:
-	_VERSION_ERROR_()
+elif sys.version_info[:2] >= (3, 5): 
+	strcomp = str 
+else: 
+	_VERSION_ERROR_() 
 
-# Recognzied methods of numerical quadrature 
-_RECOGNIZED_METHODS_ = tuple(["simpson", "midpoint", "trapezoid", "euler"])
+# C Functions 
+from libc.stdlib cimport malloc, free 
+""" 
+<--------------- C routine comment headers not duplicated here ---------------> 
+
+Notes 
+===== 
+The following pythonic relative import line: 
+from ...core cimport _ccsne 
+produced the following line in the output .c file: 
+#include "..src//objects.h" 
+which appears in the _ccsne.pxd file. This renders a relative import from 
+this file impossible, so we can simply cdef the necessary functions here. 
+Since there are only two of them, this is simpler than modifying the 
+vice/core/_ccsne.pxd file to allow it. 
+""" 
+cdef extern from "../../src/ccsne.h": 
+	double *IMFintegrated_fractional_yield_numerator(char *file, char *IMF, 
+		double m_lower, double m_upper, double tolerance, char *method, 
+		long Nmax, long Nmin) 
+	double *IMFintegrated_fractional_yield_denominator(char *IMF, 
+		double m_lower, double m_upper, double tolerance, char *method, 
+		long Nmax, long Nmin) 
 
 
+# Recognized methods of numerical quadrature and yield studies 
+_RECOGNIZED_METHODS_ = tuple(["simpson", "midpoint", "trapezoid", "euler"]) 
+_RECOGNIZED_STUDIES_ = tuple(["WW95", "LC18", "CL13", "CL04"]) 
 
-
-"""
-<--------------- C routine comment headers not duplicated here --------------->
-
-Conventionally these would be declared in a .pxd file and imported, but this 
-is simpler when there are only two of them. 
-"""
-cdef extern from "../../src/cc_yields.h":
-	double *numerator(char *file, char *IMF, double lower, double upper, 
-		double tolerance, char *method, long Nmax, long Nmin)
-	double *denominator(char *IMF, double lower, double upper, 
-		double tolerance, char *method, long Nmax, long Nmin)
-
-
-
-
-
-
-#----------------------- FRACTIONAL_CC_YIELD FUNCTION -----------------------#
+#----------------------- FRACTIONAL_CC_YIELD FUNCTION -----------------------# 
 def integrate(element, study = "LC18", MoverH = 0, rotation = 0, 
 	IMF = "kroupa", method = "simpson", m_lower = 0.08, m_upper = 100, 
-	tolerance = 1e-3, Nmin = 64, Nmax = 2e8):
+	tolerance = 1e-3, Nmin = 64, Nmax = 2e8): 
 	"""
 	Calculates an IMF-integrated fractional nucleosynthetic yield of a given 
 	element from core-collapse supernovae. VICE has built-in functions which 
@@ -196,115 +199,64 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	Press, Teukolsky, Vetterling & Flannery, Numerical Recipes, (2007), 
 		Cambridge University Press 
 	(2) Salpeter (1955), ApJ, 121, 161 
-	"""
+	""" 
 
-	# The study keywords and their full citations
+	# Type checking errors 
+	if not isinstance(element, strcomp): 
+		raise TypeError("First argument must be of type string. Got: %s" % ( 
+			type(element))) 
+	else: 
+		__string_check(study, "study") 
+		__string_check(IMF, "IMF") 
+		__string_check(method, "method") 
+		__numeric_check(MoverH, "MoverH") 
+		__numeric_check(rotation, "rotation") 
+		__numeric_check(m_lower, "m_lower") 
+		__numeric_check(m_upper, "m_upper") 
+		__numeric_check(tolerance, "tolerance") 
+		__numeric_check(Nmin, "Nmin") 
+		__numeric_check(Nmax, "Nmax") 
+
+	# Study keywords and their full citations 
 	studies = {
 		"LC18":		"Limongi & Chieffi (2018), ApJS, 237, 18", 
 		"CL13":		"Chieffi & Limongi (2013), ApJ, 764, 21", 
 		"CL04":		"Chieffi & Limongi (2004), ApJ, 608, 405", 
 		"WW95": 	"Woosley & Weaver (1995), ApJ, 101, 181"
-	}
+	} 
 
-	# Type checking errors
-	__string_check(study, 'study')		# study must be a string 
-	if isinstance(MoverH, numbers.Number):
-		"""
-		Metallicity must be a number ---> get the subdirectory name 
-		
-		Within data/_ccsne_yields/ there are files for each study, and 
-		within those files for each metallicity [M/H] rounded to two 
-		decimal places with a 'p' in place of the decimal point. For 
-		example, yields from stars with metallicities of [M/H] = 0.15 are 
-		stored in a subdirectory 0p15/
-		"""
-		if MoverH % 1 == 0:
-			MoverHstr = "%d" % (MoverH)
-		else:
-			MoverHstr = ("%.2f" % (MoverH)).replace('.', 'p')
-	else:
-		message = "Specified [M/H] must be a floating point value."
-		raise TypeError(message)
-	if not isinstance(rotation, numbers.Number):
-		"""
-		Within the directory for each metallicity is a directory for each 
-		rotational velocity 
-		"""
-		message = "Keyword Arg 'rotation' must be a floating point value."
-		raise TypeError(message)
-	else:
-		pass
-	__string_check(IMF, 'IMF')			# IMF must be a string 
-	__string_check(method, 'method')	# method must be a string 
-	if not isinstance(m_lower, numbers.Number):
-		# Lower stellar mass limit must be a number 
-		message = "Keyword Arg 'm_lower' must be a floating point value."
-		raise TypeError(message)
-	else:
-		pass
-	if not isinstance(m_upper, numbers.Number):
-		# Upper stellar mass limit must be a number 
-		message = "Keyword Arg 'upper' must be a floating point value."
-		raise TypeError(message)
-	else:
-		pass
-	if not isinstance(tolerance, numbers.Number):
-		# Tolerance must be a number 
-		message = "Keyword Arg 'tolerance' must be a floating point value."
-		raise TypeError(message)
-	else:
-		pass
-	if not isinstance(Nmin, numbers.Number):
-		# Minimum number of quadrature bins must be a number 
-		message = "Keyword Arg 'Nmin' must be a floating point value."
-		raise TypeError(message)
-	else:
-		pass
-	if not isinstance(Nmax, numbers.Number):
-		# Maximum number of quadrature bins must be a number 
-		message = "Keyword Arg 'Nmax' must be a floating point value."
-		raise TypeError(message)
-	else:
-		pass
+	# The name of the directory holding yield files at this metallicity 
+	if MoverH % 1 == 0: 
+		MoverHstr = "%d" % (MoverH) 
+	else: 
+		MoverHstr = ("%.2f" % (MoverH)).replace('.', 'p') 
 
-	# Value checking errors
-	if element.lower() not in _RECOGNIZED_ELEMENTS_:
-		# Element has to be recognized by VICE 
-		raise ValueError("Unrecognized element: %s" % (element))
-	elif study.upper() not in studies:
-		# Yields need to be built in 
-		raise ValueError("Unrecognized study: %s" % (study.upper()))
-	elif not os.path.exists("%s%s/FeH%s" % (PATH, study.upper(), MoverHstr)):
-		# The study had to have reported yields at that metallicity 
-		message = "The %s study does not have yields for [M/H] = %s" % (
-			studies[study.upper()], MoverHstr)
-		raise LookupError(message)
-	elif not os.path.exists("%s%s/FeH%s/v%d" % (PATH, study.upper(), MoverHstr, 
-		rotation)):
-		# The study had to have reported yields at this rotational velocity 
-		message = "The %s study does not have yields for v = %d km/s and " % (
-			study.upper(), rotation)
-		message += "[M/H] = %s" % (MoverHstr)
-		raise LookupError(message)
-	elif tolerance < 0 or tolerance > 1:
-		# Tolerance must be between 0 and 1 
-		message = "Tolerance must be a floating point value between 0 and 1."
-		raise ValueError(message)
-	elif m_lower > m_upper: 
-		# Upper mass limit has to be larger than lower mass limit 
-		message = "Lower mass limit greater than upper mass limit." 
-		raise ValueError(message)
-	elif IMF.lower() not in _RECOGNIZED_IMFS_:
-		# IMF must be recognized by the software 
-		raise ValueError("Unrecognized IMF: %s" % (IMF))
-	elif method.lower() not in _RECOGNIZED_METHODS_:
-		# Method of integration must be built into the quadrature functions 
-		raise ValueError("Unrecognized method of quadrature: %s" % (method))
-	elif Nmin > Nmax: 
-		# Maximum number of bins must be larger than the minimum 
-		message = "Minimum number of bins in quadrature must be smaller than "
-		message += "maximum number of bins." 
-		raise ValueError(message)
+	# Value checking errors 
+	if element.lower() not in _RECOGNIZED_ELEMENTS_: 
+		raise ValueError("Unrecognized element: %s" % (element)) 
+	elif study.upper() not in _RECOGNIZED_STUDIES_: 
+		raise ValueError("Unrecognized study: %s" % (study)) 
+	elif not os.path.exists("%syields/ccsne/%s/FeH%s" % (_DIRECTORY_, 
+		study.upper(), MoverHstr)): 
+		raise LookupError("The %s study does not have yields for [M/H] = %s" % (
+			studies[study.upper()], MoverHstr)) 
+	elif not os.path.exists("%syields/ccsne/%s/FeH%s/v%d" % (_DIRECTORY_, 
+		study.upper(), MoverHstr, rotation)): 
+		raise LookupError("""The %s study did not report yields for v = %d \
+km/s and [M/H] = %g""" % (study, rotation, MoverH)) 
+	elif tolerance < 0 or tolerance > 1: 
+		raise ValueError("Tolerance must be between 0 and 1.") 
+	elif m_lower >= m_upper: 
+		raise ValueError("Lower lass limit larger than upper mass limit.") 
+	elif IMF.lower() not in _RECOGNIZED_IMFS_: 
+		raise ValueError("Unrecognized IMF: %s" % (IMF)) 
+	elif method.lower() not in _RECOGNIZED_METHODS_: 
+		raise ValueError("Unrecognized method of quadrature: %s" % (method)) 
+	elif Nmin >= Nmax: 
+		raise ValueError("""Minimum number of bins in quadrature must be \
+smaller than maximum number of bins.""") 
+	else: 
+		pass 
 
 	"""
 	Science Warnings 
@@ -313,7 +265,8 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	reported yields up to 120 Msun, so warn the user that for upper mass 
 	limits higher than this that their yields will be extrapolated. The same 
 	is true for the Chieffi & Limongi (2004) yields with upper mass limits 
-	of 35 Msun. 
+	of 35 Msun and the Woosley & Weaver (1995) study with upper mass limits 
+	of 40 Msun. 
 
 	2) The Chieffi & Limongi (2004) and the Chieffi & Limongi (2013) studies 
 	involved numerical simulations of core collapse explosions with dialed-in 
@@ -324,104 +277,107 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	3) The Woosley & Weaver (1995) study reported yields up to 40 Msun. Warn 
 	the user about extrapolation to higher initial masses. 
 	"""
-	if study.upper() in ["LC18", "CL13"] and m_upper > 120:
-		message = "Supernovae yields from the %s study are sampled on a grid " % (
-			studies[study.upper()]) 
-		message += "of stellar masses up to 120 Msun. Employing an upper mass "
-		message += "limit larger than this may introduce numerical artifacts. "
-		message += "Got: %g" % (m_upper) 
-		warnings.warn(message, ScienceWarning)
-	elif study.upper() == "CL04" and m_upper > 35: 
-		message = "Supernovae yields from the %s study are only sampled up to " % (
-			studies["CL04"])
-		message += "35 Msun. With an upper mass limit of %g, linear " % (
-			m_upper)
-		message += "extrapolation of the yields may introduce numerical " 
-		message += "artifacts." 
-		warnings.warn(message, ScienceWarning)
-	elif study.upper() == "WW95" and m_upper > 40: 
-		message = "Supernovae yields from the %s study are sampled on a grid " % (
-			studies["WW95"])
-		message += "of stellar masses up to 40 Msun. Employing an upper mass " 
-		message += "limit larger than this may introduce numerical artifacts. " 
-		warnings.warn(message, ScienceWarning)
-	else:
+	upper_mass_limits = {
+		"LC18":		120, 
+		"CL13": 	120, 
+		"CL04": 	35, 
+		"WW95": 	40 
+	} 
+
+	if m_upper > upper_mass_limits[study.upper()]: 
+		warnings.warn("""Supernovae yields from the %s study are sampled on a \
+grid of stellar masses up to %d Msun. Employing an upper mass limit larger \
+than this may introduce numerical artifacts. Got: %g Msun""" % (
+		studies[study.upper()], upper_mass_limits[study.upper()], m_upper), 
+		ScienceWarning) 
+	else: 
 		pass 
 
 	if ( study.upper() in ["CL04", "CL13"] and 
 		24 <= atomic_number[element.lower()] <= 28 ): 
-		message = "The %s study published only the results which adopted" % (
-			studies[study.upper()]) 
-		message += "a fixed yield of nickel-56, and these are the yields which "
-		message += "are included in VICE. For this reason, we caution the user " 
-		message += "on their yields of iron peak elements." 
-		warnings.warn(message, ScienceWarning)
-	else:
-		pass
-
-
-	# Find the file, but first check if the element comes from CCSNe
-
-	"""
-	VICE has included yields for every element, so they can be calculcated 
-	no matter the dominant contributing factors. 
-	"""
-	filename = "%s%s/FeH%s/v%d/%s.dat" % (PATH, study.upper(), MoverHstr, 
-		rotation, element.lower()) 
-	if os.path.exists(filename): 
-		pass 
+		warnings.warn("""The %s study published only the results which \
+adopted a fixed yield of nickel-56, and these are the yields which are 
+installed in this version of VICE. For this reason, we caution the user on \
+these yields of iron peak elements.""" % (studies[study.upper()]), 
+			ScienceWarning) 
 	else: 
-		"""
-		If the file doesn't exist, the study didn't report yields for that 
-		element (unless the user hacked their version of VICE). In this 
-		case, that study would suggest that this element is not produced in 
-		significant amounts by CCSNe, so we can safely return 0. 
-		"""
-		return [0, float("nan")]
+		pass 
 
-	# Encode the strings 
-	filename = filename.encode("latin-1")
-	method = method.lower().encode("latin-1")
-	IMF = IMF.lower().encode("latin-1")
+	"""
+	VICE includes yields for every element that these studies reported. 
+	However, if a study didn't report yields for a given element, that study 
+	would suggest that the element is not produced in significant amounts by 
+	CCSNe, so we can safely return a 0 and raise a ScienceWarning. 
+	""" 
+	filename = "%syields/ccsne/%s/FeH%s/v%d/%s.dat" % (_DIRECTORY_, 
+		study.upper(), 
+		MoverHstr, 
+		rotation, 
+		element.lower()) 
+	if not os.path.exists(filename): 
+		warnings.warn("""The %s study did not report yields for the element \
+%s. If adopting these yields for simulation, it is likely that this yield \
+can be approximated as zero at this metallicity. Users may exercise their \
+own discretion by modifying their CCSNe yield settings directly.""" % (
+			studies[study.upper()], element), ScienceWarning) 
+		return [0, float("nan")] 
+	else: 
+		pass 
 
-	# Call the quadrature functions 
-	cdef double *num = numerator(filename, IMF, m_lower, 
-		m_upper, tolerance, method, long(Nmax), long(Nmin))
-	cdef double *den = denominator(IMF, m_lower, m_upper, 
-		tolerance, method, long (Nmax), long (Nmin))
+	# Compute the yield 
+	cdef double *numerator = IMFintegrated_fractional_yield_numerator(
+		filename.encode("latin-1"), 
+		IMF.lower().encode("latin-1"), 
+		m_lower, 
+		m_upper, 
+		tolerance, 
+		method.lower().encode("latin-1"), 
+		Nmax, 
+		Nmin) 
 
-	if num[1] > tolerance: 
+	cdef double *denominator = IMFintegrated_fractional_yield_denominator( 
+		IMF.lower().encode("latin-1"), 
+		m_lower, 
+		m_upper, 
+		tolerance, 
+		method.lower().encode("latin-1"), 
+		Nmax, 
+		Nmin) 
+
+	if numerator[1] > tolerance: 
 		# If the numerator didn't converge 
-		message = "Yield-weighted IMF integration did not converge. "
-		message += "Estimated fractional error: %.2e" % (num[1]) 
-		warnings.warn(message, ScienceWarning)
-	else:
-		pass
-	if den[1] > tolerance: 
-		# If the denominator didn't converge 
-		message = "Mass-weighted IMF integration did not converge. "
-		message += "Estimated fractional error: %.2e" % (den[1]) 
-		warnings.warn(message, ScienceWarning)
-	else:
-		pass
+		warnings.warn("""Yield-weighted IMF integration did not converge. \
+Estimated fractional error: %.2e""" % (numerator[1]), ScienceWarning) 
+	else: 
+		pass 
+	if denominator[1] > tolerance: 
+		warnings.warn("""Mass-weighted IMF integration did not converge. \
+Estimated fractional error: %.2e""" % (denominator[1], ScienceWarning)) 
+	else: 
+		pass 
 
-	"""
-	Determine the fractional yield and the associated numerical error, then 
-	free up the memory and return the results 
-	"""
-	y = num[0] / den[0]
-	errnum = num[1] * num[0]
-	errden = den[1] * den[0]
-	err = m.sqrt(errnum**2 / den[0]**2 + num[0]**2/den[0]**4 * errden**2)
-	free(num)
-	free(den)
-	return [y, err]
+	try: 
+		y = numerator[0] / denominator[0] 
+		errnum = numerator[1] * numerator[0] 
+		errden = denominator[1] * denominator[0] 
+		err = m.sqrt(errnum**2 / denominator[0]**2 + numerator[0]**2 / 
+			denominator[0]**4 * errden**2) 
+	finally: 
+		free(numerator) 
+		free(denominator) 
+
+	return [y, err] 
 
 
+#------------------------- TYPE CHECKING SUBROUTINES -------------------------# 
+def __numeric_check(param, name): 
+	if not isinstance(param, numbers.Number): 
+		raise TypeError("Keyword arg '%g' must be a real number. Got: %s" % (
+			name, type(param))) 
+	else: 
+		pass 
 
 
-
-#------------------------- TYPE CHECKING SUBROUTINE -------------------------# 
 def __string_check(param, name):
 	"""
 	Determines if the passed parameter is of type string, and throws a 

@@ -1,48 +1,33 @@
-# cython: language_level=3, boundscheck=False
+# cython: language_level = 3, boundscheck = False 
 """
-This file handles file I/O of the built in AGB grids either for use in 
-integrations or returning to the user 
-"""
+This file wraps the C subroutines for reading AGB yield grids 
+""" 
 
-from __future__ import absolute_import
-import inspect
-import sys
-import os
-from ..._globals import _DIRECTORY_
-from ..._globals import _RECOGNIZED_ELEMENTS_
-from ..._globals import _VERSION_ERROR_
-from ...core._dataframes import atomic_number 
-PATH = "%syields/agb/" % (_DIRECTORY_)
-if sys.version_info[0] == 3:
-	from builtins import str
-else:
-	pass
-	
-if sys.version_info[0] == 2: 
+# Python imports 
+from __future__ import absolute_import 
+from ..._globals import _DIRECTORY_ 
+from ..._globals import _RECOGNIZED_ELEMENTS_ 
+from ..._globals import _VERSION_ERROR_ 
+from ...core._builtin_dataframes import atomic_number 
+from ...core import _pyutils 
+import sys 
+import os 
+if sys.version_info[:2] == (2, 7): 
 	strcomp = basestring 
-elif sys.version_info[0] == 3: 
-	strcomp = str
-else:
-	_VERSION_ERROR_()
+elif sys.version_info[:2] >= (3, 5): 
+	strcomp = str 
+else: 
+	_VERSION_ERROR_() 
 
+# C imports 
+from libc.stdlib cimport malloc, free 
+from ...core._objects cimport AGB_YIELD_GRID, ELEMENT 
+from ...core cimport _agb 
+from ...core cimport _cutils 
+from ...core cimport _element 
+from ...core cimport _io 
 
-
-#--------------------------- AGB YIELD GRID READER ---------------------------# 
-def read_grid(filename):
-	"""
-	Reads in the yield grid given the filename
-	"""
-	grid = []
-	with open(filename, 'r') as f: # Open the file 
-		line = f.readline()
-		while line != "":
-			grid.append([float(i) for i in line.split()]) # attach each float 
-			line = f.readline() # read the next line 
-		f.close()		# close the file and return 
-	return grid 
-
-
-
+_RECOGNIZED_STUDIES_ = tuple(["cristallo11", "karakas10"]) 
 
 #-------------------------- AGB_YIELD_GRID FUNCTION --------------------------# 
 def yield_grid(element, study = "cristallo11"):
@@ -105,69 +90,115 @@ def yield_grid(element, study = "cristallo11"):
 	========== 
 	Cristallo et al. (2011), ApJS, 197, 17 
 	Karakas (2010), MNRAS, 403, 1413 
-	"""
-
-	# Type check errors
+	""" 
+	# Type checking  
 	if not isinstance(element, strcomp): 
-		message = "First argument must be of type string." 
-		raise TypeError(message) 
-	else:
+		raise TypeError("First argument must be of type string. Got: %s" % (
+			type(element))) 
+	elif not isinstance(study, strcomp): 
+		raise TypeError("""Keyword arg 'study' must be of type string. \
+Got: %s""" % (study)) 
+	else: 
 		pass 
-	if not isinstance(study, strcomp): 
-		message = "Keyword Arg 'study' must be of type string." 
-		raise TypeError(message) 
-	else:
-		pass
 
-	# Study keywords to their full citations
+	# Study keywords to their full citations 
 	studies = {
-		"cristallo11":		"Cristallo et al. (2011), ApJS, 197, 17", 
-		"karakas10":		"Karakas (2010), MNRAS, 403, 1413"
-	}
+		"cristallo11": 			"Cristallo et al. (2011), ApJ, 197, 17", 
+		"karakas10": 			"Karakas (2010), MNRAS, 403, 1413" 
+	} 
 
-	# Value error checks
-	if study.lower() not in studies: 
-		message = "Unrecognized study: %s" % (study)
-		raise ValueError(message)
-	else:
-		pass
-	if element.lower() not in _RECOGNIZED_ELEMENTS_: 
-		message = "Unrecognized element: %s" % (element)
-		raise ValueError(message)
-	else:
-		pass
+	# Value checking 
+	if study.lower() not in _RECOGNIZED_STUDIES_: 
+		raise ValueError("Unrecognized study: %s" % (study)) 
+	elif element.lower() not in _RECOGNIZED_ELEMENTS_: 
+		raise ValueError("Unrecognized element: %s" % (element)) 
+	else: 
+		pass 
 
-	# The Karakas (2010) study didn't look at anything heavier than nickel 
-	if study.lower() == "karakas10" and atomic_number[element.lower()] > 28:
-		message = "The %s study did not report yields for elements " % (
-			studies["karakas10"])
-		message += "heavier than nickel."
-		raise LookupError(message)
-	else:
-		pass
+	if study.lower() == "karakas10" and atomic_number[element.lower()] > 28: 
+		raise LookupError("""The %s study did not report yields for elements \
+heavier than nickel (atomic number 28).""" % (studies["karakas10"])) 
+	else: 
+		pass 
 
-	# The full path to the file containing the yield grid 
-	filename = "%s%s/%s.dat" % (PATH, study.lower(), element.lower())
-	if os.path.exists(filename):
-		grid = read_grid("%s%s/%s.dat" % (PATH, study.lower(), element.lower()))
-		# Pull off the masses and metallicities on the grid 
-		m = list(set([i[0] for i in grid]))
-		z = list(set([i[1] for i in grid]))
-		y = len(m) * [None]
-		# Stitch together the yields into a new 2-D python list 
-		for i in range(len(m)):
-			arr = len(z) * [0.]
-			for j in range(len(z)):
-				# y[i][j] = grid[len(m) * i + j][2]
-				arr[j] = grid[len(z) * i + j][2]
-			y[i] = arr
-		# return the grid 
-		return [tuple([tuple(i) for i in y]), tuple(sorted(m)), tuple(sorted(z))]
-	else:
+	# full path to the file containing the yield grid 
+	filename = find_yield_file(element, study) 
+
+	if not os.path.exists(filename): 
 		"""
-		File not found ---> unless VICE was tampered with, this shouldn't 
-		happen 
-		"""
-		message = "Yield file not found. Please re-install VICE."
-		raise IOError(message) 
+		File nt found ---> unless VICE was tampered with, this shouldn't 
+		happen. 
+		""" 
+		raise IOError("Yield file not found. Please re-install VICE.") 
+	else: 
+		pass 
+
+	cdef ELEMENT *e = _element.element_initialize() 
+	if _io.import_agb_grid(e, filename.encode("latin-1")): 
+		free(e) 
+		raise SystemError("Internal Error: couldn't read yield file.") 
+	else: 
+		try: 
+			# copy over the yields, masses, and metallicities 
+			yields = e[0].agb_grid[0].n_m * [None] 
+			for i in range(e[0].agb_grid[0].n_m): 
+				yields[i] = e[0].agb_grid[0].n_z * [0.0] 
+				for j in range(e[0].agb_grid[0].n_z): 
+					yields[i][j] = e[0].agb_grid[0].grid[i][j] 
+			masses = [e[0].agb_grid[0].m[i] for i in range(
+				e[0].agb_grid[0].n_m)] 
+			metallicities = [e[0].agb_grid[0].z[i] for i in range(
+				e[0].agb_grid[0].n_z)] 
+		finally: 
+			free(e[0].agb_grid[0].m) 
+			free(e[0].agb_grid[0].z) 
+			free(e[0].agb_grid[0].grid) 
+			free(e) 
+
+		return [tuple(i) for i in [[tuple(j) for j in yields], masses, 
+			metallicities]] 
+
+def find_yield_file(element, study): 
+	""" 
+	Determines the full path to the file containing the mass-metallicity 
+	yield grid for a given element and study. 
+
+	Parameters 
+	========== 
+	element :: str [case-insensitive] 
+		The symbol for the element whose file is to be found 
+	study :: str [case-insensitive] 
+		The keyword for the study to lookup 
+
+	Returns 
+	======= 
+	path :: str 
+		The path to the yield file 
+
+	Raises 
+	====== 
+	TypeError :: 
+		:: element is not of type str 
+		:: study is not of type str 
+	ValueError :: 
+		:: element is not recognized by VICE 
+		:: study is not recognized by VICE 
+	""" 
+	if not isinstance(element, strcomp): 
+		raise TypeError("Element must be of type str. Got: %s" % (
+			type(element)))
+	elif not isinstance(study, strcomp): 
+		raise TypeError("Study must be of type str. Got: %s" % (
+			type(study))) 
+	elif element.lower() not in _RECOGNIZED_ELEMENTS_: 
+		raise ValueError("Unrecognized element: %s" % (element)) 
+	elif study.lower() not in _RECOGNIZED_STUDIES_: 
+		raise ValueError("Unrecognized study: %s" % (study)) 
+	else: 
+		return "%syields/agb/%s/%s.dat" % (_DIRECTORY_, study.lower(), 
+			element.lower()) 
+
+
+
+
 

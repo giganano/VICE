@@ -30,14 +30,17 @@ Limongi & Chieffi (2018), ApJS, 237, 13
 Woosley & Weaver (1995), ApJ, 101, 181 
 """
 
-from __future__ import absolute_import
-from .yield_integrator import integrate as fractional
-from ...core._data_utils import _customizable_yield_table 
-import sys 
+from __future__ import absolute_import 
 
 __all__ = ["fractional", "settings"] 
+__all__ = [str(i) for i in __all__] 	# appease python 2 strings 
 
-settings = _customizable_yield_table({
+from ._yield_integrator import integrate as fractional 
+from ...core._dataframe import yield_settings
+import sys 
+
+# settings = _customizable_yield_table({ 
+settings = yield_settings({ 
 	"c":	2.36e-3, 
 	"n":	5.78e-4, 
 	"o":	5.64e-3, 
@@ -114,15 +117,6 @@ settings = _customizable_yield_table({
 	"tl":	8.53e-7, 
 	"pb":	1.50e-9, 
 	"bi":	1.17e-10
-}, True, "ccsne")
+}, "CCSNe yield", True, "ccsne")
 
-del absolute_import 
-del yield_integrator
-del _customizable_yield_table
-if sys.version_info[0] < 3: 
-	__all__ = [str(i) for i in __all__] 
-	del i 
-else:
-	pass 
-del sys 
 

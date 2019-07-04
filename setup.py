@@ -11,31 +11,25 @@ try:
 	import Cython 
 	from Cython.Build import cythonize 
 except (ImportError, ModuleNotFoundError): 
-	message = "Please install Cython >= %d.%d.%d before installing VICE." % (
-		_MIN_CYTHON_MAJOR_, _MIN_CYTHON_MINOR_, _MIN_CYTHON_MICRO_) 
-	raise RuntimeError(message) 
-if tuple([int(i) for i in Cython.__version__.split('.')]) < tuple([
-	_MIN_CYTHON_MAJOR_, _MIN_CYTHON_MINOR_, _MIN_CYTHON_MICRO_]): 
-	message = "Building VICE requires Cython >= %d.%d.%d. Current version: %s" % (
-		_MIN_CYTHON_MAJOR_, _MIN_CYTHON_MINOR_, _MIN_CYTHON_MICRO_, 
-		Cython.__version__)  
-	raise RuntimeError(message) 
+	raise RuntimeError("""Please install Cython >= %d.%d.%d before installing \
+VICE.""" % (_MIN_CYTHON_MAJOR_, _MIN_CYTHON_MINOR_, _MIN_CYTHON_MICRO_)) 
+if tuple([int(i) for i in Cython.__version__.split('.')]) < tuple(
+	[_MIN_CYTHON_MAJOR_, _MIN_CYTHON_MINOR_, _MIN_CYTHON_MICRO_]): 
+	raise RuntimeError("""Building VICE requires Cython >= %d.%d.%d. Current \
+version: %s""" % (_MIN_CYTHON_MAJOR_, _MIN_CYTHON_MINOR_, _MIN_CYTHON_MICRO_, 
+		Cython.__version__)) 
 else:
 	pass 
 
 from distutils.core import setup, Extension 
 import sys
-import os
-
-if sys.version_info[0] < 3: 
-	import __builtin__ as builtins
-else:
-	import builtins
-
-if sys.version_info[:2] < (3, 5) and sys.version_info[:2] != (2, 7): 
-	raise RuntimeError("VICE requires python version 2.7 or >= 3.5.")
-else:
-	pass
+import os 
+if sys.version_info[:2] == (2, 7): 
+	import __builtin__ as builtins 
+elif sys.version_info[:2] >= (3, 5): 
+	import builtins 
+else: 
+	raise RuntimeError("Vice requires python version 2.7 or >= 3.5") 
 
 package_name = "VICE" 
 base_url = "http://github.com/giganano/VICE"
@@ -44,7 +38,7 @@ base_url = "http://github.com/giganano/VICE"
 builtins.__VICE_SETUP__ = True
 import vice 
 
-CLASSIFIERS = """
+CLASSIFIERS = """\
 Development Status :: 4 - Beta 
 Intended Audience :: Developers 
 Intended Audience :: Science/Research 
@@ -70,29 +64,32 @@ Topic :: Scientific/Engineering :: Physics
 """
 
 MAJOR 			= 1
-MINOR 			= 0
+MINOR 			= 0 
 MICRO 			= 0
-ISRELEASED		= True
+ISRELEASED		= True 
 VERSION 		= "%d.%d.%d" % (MAJOR, MINOR, MICRO)
 
-def compile_extensions(): # Compiles each Cython extension 
-	# Each C extension lives in vice/src/ ---> find the *.c files 
-	c_extensions = list(filter(lambda x: x[-2:] == ".c", 
-		["vice/src/%s" % (i) for i in os.listdir("vice/src/")]))
+def compile_extensions(): 
+	# compile each Cython extension 
+	c_extensions = list(filter(lambda x: x.endswith(".c"), 
+		["vice/src/%s" % (i) for i in os.listdir("./vice/src/")])) 
 	for root, dirs, files in os.walk('.'): 
-		for i in files: 
-			# If this is Cython code
-			if i[-4:] == ".pyx": 
-				# Produce the extension linked with the C extensions 
-				ext = "%s.%s" % (root[2:].replace('/', '.'), i.split('.')[0])
-				files = ["%s/%s" % (root[2:], i)] + c_extensions
-				setup(ext_modules = cythonize([Extension(ext, files)]))
-			else:
-				continue
+		if "v0p0p0" not in root: 
+			for i in files: 
+				if i.endswith(".pyx"): 		# if it's cython code 
+					ext = "%s.%s" % (root[2:].replace('/', '.'), 
+						i.split('.')[0]) 
+					files = ["%s/%s" % (root[2:], i)] + c_extensions 
+					setup(ext_modules = cythonize([Extension(ext, files,
+						extra_compile_args = ["-Wno-unreachable-code"])])) 
+				else: 
+					continue 
+		else: 
+			continue 
 
 def find_packages(path = '.'):
 	"""
-	# Finds each subpackage given the presence of an __init__.py file 
+	Finds each subpackage given the presence of an __init__.py file 
 	
 	path: 			The relative patch to the directory 
 	"""
@@ -104,22 +101,27 @@ def find_packages(path = '.'):
 			continue
 	return packages
 
-def find_package_data(): # Finds data files associated with each package 
+def find_package_data(): 
+	# Finds data files associated with each package 
 	packages = find_packages()
 	data = {}
+	data_extensions = [".dat", ".so", ".obj"] 
 	for i in packages: 
-		"""
-		C library stored in a shared object ---> moving .so files with data 
-		ensures that it will be moved to the install directory as well. Build 
-		data is stored in a .obj output file ---> moving that allows the 
+		""" 
+		VICE's C library is compiled into a shared object using make, and the 
+		associated .so file is moved to the install directory as well. The 
+		build data is stored in a .obj output file -> moving that allows the 
 		show_build() function to work properly. 
-		"""
-		if any(map(lambda x: x.split('.')[-1] in ["dat", "so", "obj"], 
-			os.listdir(i.replace('.', '/')))): 
-			data[i] = ["*.dat", "*.so", "*.obj"]
-		else:
-			continue
-	return data
+		""" 
+		data[i] = [] 
+		for j in os.listdir(i.replace('.', '/')): 
+			# look at each files extension 
+			for k in data_extensions: 
+				if j.endswith(k): 
+					data[i].append(j) 
+				else: 
+					continue 
+	return data 
 
 def write_version_info(filename = "vice/version.py"): 
 	"""
@@ -148,7 +150,7 @@ def set_path_variable(filename = "~/.bash_profile"):
 	"""
 	if ("--user" in sys.argv and "%s/.local/bin" % (os.environ["HOME"]) not in 
 		os.environ["PATH"].split(':')): 
-		cnt = """
+		cnt = """\
 
 # This line added by vice setup.py %(version)s
 export PATH=$PATH:$HOME/.local/bin
@@ -164,10 +166,6 @@ def setup_package():
 	old_path = os.getcwd() 
 	os.chdir(src_path)
 	sys.path.insert(0, src_path)
-
-	write_version_info()	# Write the version file 
-	vice._write_build() 	# Save version info for packages used to build VICE 
-	compile_extensions()	# Compile Cython extensions
 
 	# Keywords to the setup() call 
 	metadata = dict(
@@ -187,14 +185,13 @@ def setup_package():
 		provides = [package_name], 
 		packages = find_packages(), 
 		package_data = find_package_data(), 
-		install_requires = ["Cython>=%d.%d.%d" % (
-			_MIN_CYTHON_MAJOR_, _MIN_CYTHON_MINOR_, _MIN_CYTHON_MICRO_)], 
-		python_requires = ">=2.7, !=3.0.*, !=3.1.*, !=3.3.*, !=3.4.*, <4", 
-		zip_safe = False, 
 		scripts = ["bin/%s" % (i) for i in os.listdir("./bin/")]
 	)
 
-	try:
+	try: 
+		write_version_info() 	# Write the version file 
+		vice._write_build() 	# save version info for packaged used in build 
+		compile_extensions()	
 		setup(**metadata)
 		set_path_variable()
 	finally: 

@@ -1,203 +1,206 @@
-/*
- * The header contains extern declarations for functions which handle 
- * VICE's file I/O. 
- */
 
-#ifndef IO_H
-#define IO_H
+#ifndef IO_H 
+#define IO_H 
 
-#include "specs.h" /* <------- Need INTEGRATION and MODEL structs */ 
+#ifdef __cplusplus 
+extern "C" {
+#endif 
 
+#ifndef LINESIZE 
+#define LINESIZE 100000l 
+#endif /* LINESIZE */ 
 
+/* The maximum number of characters in the names of files */ 
+#ifndef MAX_FILENAME_SIZE 
+#define MAX_FILENAME_SIZE 10000l 
+#endif /* MAX_FILENAME_SIZE */ 
 
-/* --------------------- FILE UTILITY FUNCTIONS ----------------------- */
+#include "objects.h" 
 
 /* 
- * Opens the output files for writing throughout the execution 
+ * Reads in a square ascii file given the name of the file. 
  * 
- * Args:
- * =====
- * run:				The INTEGRATION struct for the current execution
- * file1:			The name of the file holding the history output
- * file2:			The name of the file holding the mdf output
- * file3:			The name of the file holding the breakdown output 
+ * Parameters 
+ * ========== 
+ * file: 		The name of the file 
  * 
- * source: writers.c  
- */
-extern int open_files(INTEGRATION *run, char *name);
-
-/*
- * Closes all of the output files at the end of the INTEGRATION 
+ * Returns 
+ * ======= 
+ * Type double**. The data stored in the file as a 2D array indexed via 
+ * data[row_number][column_number]. NULL upon failure to read the input file. 
  * 
- * Args:
- * =====
- * run:				The INTEGRATION struct for the current execution. 
+ * source: io.c  
+ */ 
+extern double **read_square_ascii_file(char *file); 
+
+/* 
+ * Determine the length of the header at the top of a data file assuming all 
+ * header lines begin with #. 
  * 
- * source: writers.c 
- */
-extern void close_files(INTEGRATION *run);
+ * Parameters 
+ * ========== 
+ * file: 	The name of the file 
+ * 
+ * Returns 
+ * ======= 
+ * The length of the header; -1 on failure to read from the file. 
+ * 
+ * source: io.c 
+ */ 
+extern int header_length(char *file); 
 
+/* 
+ * Determine the dimensionality of a data file off of the first line passed the 
+ * header, assuming the header is commented out with '#'. 
+ * 
+ * Parameters 
+ * ========== 
+ * file: 		The file to determine the dimensionality of 
+ * 
+ * Returns 
+ * ======= 
+ * The number of quantities on one line of the file. -1 on failure to read 
+ * from the file 
+ * 
+ * source: io.c 
+ */ 
+extern int file_dimension(char *file); 
 
+/* 
+ * Determine the number of lines in an text file 
+ * 
+ * Parameters 
+ * ========== 
+ * file: 		The name of the file 
+ * 
+ * Returns 
+ * ======= 
+ * The number of total lines, counting comment headers and blank lines. -1l on 
+ * failure to read from the file 
+ * 
+ * source: io.c  
+ */ 
+extern long line_count(char *file); 
 
+/* 
+ * Import a built-in AGB star yields grid. 
+ * 
+ * Parameters 
+ * ========== 
+ * e: 		A pointer to the element struct to import the grid into 
+ * file: 	The name of the file containing the AGB yield grid. These are 
+ * 			include in VICE's data directory, and direct user access to them 
+ * 			is strongly discouraged. 
+ * 
+ * Returns 
+ * ======= 
+ * 0 on success; 1 on failure 
+ * 
+ * source: io.c  
+ */ 
+extern int import_agb_grid(ELEMENT *e, char *file); 
 
+/* 
+ * Read a yield table for CCSNe. 
+ * 
+ * Parameters 
+ * ========== 
+ * file: 		The name of the file, passed from python. 
+ * 
+ * Returns 
+ * ======= 
+ * Type **double: 
+ * 		returned[i][0]: initial stellar mass 
+ * 		returned[i][1]: total mass yield of the element 
+ * NULL on failure to read from the file 
+ * 
+ * source: io.c  
+ */ 
+extern double **cc_yield_grid(char *file); 
 
+/* 
+ * Lookup the mass yield of a given element from type Ia supernovae 
+ * 
+ * Parameters 
+ * ========== 
+ * file: 		The name of the yield file, passed from python 
+ * 
+ * Returns 
+ * ======= 
+ * The total mass yield in Msun of the given element reported by the built-in 
+ * study's data 
+ * 
+ * source: io.c  
+ */ 
+extern double single_ia_mass_yield_lookup(char *file); 
 
+/* 
+ * Open the history.out and mdf.out output files associated with a SINGLEZONE 
+ * object. 
+ * 
+ * Returns 
+ * ======= 
+ * 0 on success, 1 on failure 
+ * 
+ * source: io.c 
+ */ 
+extern int singlezone_open_files(SINGLEZONE *sz); 
 
+/* 
+ * Close the history.out and mdf.out output files associated with a SINGLEZONE 
+ * object. 
+ * 
+ * source: io.c  
+ */ 
+extern void singlezone_close_files(SINGLEZONE *sz); 
 
-
-/* ----------------- WRITING FUNCTIONS ------------------ */
-
-/*
+/* 
  * Writes the header to the history file 
  * 
- * Args:
- * =====
- * run:			The INTEGRATION struct for the current execution
- * m:			The MODEL struct for the current execution. 
+ * Parameters 
+ * ========== 
+ * sz: 		The SINGLEZONE object for the current simulation 
  * 
- * source: writers.c 
- */
-extern void write_history_header(INTEGRATION run, MODEL m);
+ * source: io.c 
+ */ 
+extern void write_history_header(SINGLEZONE sz); 
 
-/*
- * Writes output to the history file at the current timestep. 
+/* 
+ * Write output to the history.out file at the current timestep. 
  * 
- * Args:
- * =====
- * run:			The INTEGRATION struct for the current execution.
- * m:			The MODEL struct for the current execution. 
+ * Parameters 
+ * ========== 
+ * sz: 		The SINGLEZONE struct for the current simulation 
  * 
- * source: writers.c 
- */
-extern void write_history_output(INTEGRATION run, MODEL m);
+ * source: io.c 
+ */ 
+extern void write_history_output(SINGLEZONE sz); 
 
-/*
+/* 
  * Writes the header to the mdf output file. 
  * 
- * Args:
- * =====
- * run:		The INTEGRATION struct for the current execution. 
+ * Parameters 
+ * ========== 
+ * sz: 		The singlezone object for the current simulation 
  * 
- * source: writers.c
- */
-extern void write_mdf_header(INTEGRATION run);
-
-/*
- * Writes output to the mdf output file at the final timestep. 
- * 
- * Args:
- * =====
- * run:		The INTEGRATION struct for the current execution.
- * m:			The MODEL struct for the current execution. 
- * 
- * source: writers.c 
- */
-extern void write_mdf_output(INTEGRATION run, MODEL m);
-
-
-
-
-
-
-
-
-
-
-/* ------------------ READING FUNCTIONS ------------------- */
-
-/*
- * Reads the AGB grid for further expansion based on timestepping in the 
- * subroutines in agb.c 
- * 
- * Args:
- * =====
- * run:			The INTEGRATION struct for this iteration of the code
- * file:			The name of the file holding the grid
- * index:			The index of the element 
- * 
- * source readers.c 
- */
-extern int read_agb_grid(INTEGRATION *run, char *file, int index);
-
-/*
- * Reads in a square output file given the destination pointer to store it at 
- * in the memory, the file name, the dimensionality of the output, and the 
- * number of lines in the header. All of these parameters will be determined 
- * in python and the user will only need to specify the name of the previous 
- * INTEGRATION. 
- * 
- * Args:
- * =====
- * file:				The file holding the history output 
- * 
- * source: readers.c 
- */
-extern double **read_output(char *file);
-
-/*
- * Returns the number of lines in an ascii text file. 
- * 
- * Args:
- * =====
- * file:		The name of the file 
- * 
- * source: readers.c 
- */
-extern long num_lines(char *file);
-
-/* 
- * Determines the length of the header of an output file assuming the 
- * commenting character is '#' 
- * 
- * Args:
- * =====
- * file:		A character pointer to the name of the output file. 
- * 
- * source: readers.c 
- */
-extern int header_length(char *file);
-
-/*
- * Determines the dimensionality of the file off of the first line passed the 
- * header. 
- * 
- * Args:
- * =====
- * file:					The name of the file
- * header_length:			The number of lines in the header 
- * 
- * source: readers.c 
- */
-extern int file_dimension(char *file, int hlength);
-
-/*
- * Pulls the total yields off of the data file and returns them as a 2-D array 
- * where the zeroth column is the masses and the first column is the total 
- * yields of all isotopes at that stellar mass. 
- * 
- * Args:
- * =====
- * file: 		The name of the file containing the yield grid 
- * 
- * source: readers.c 
- */
-extern double **yields(char *file);
-
-/* 
- * Determines the gridsize -> The number of masses on which the yield grid is 
- * sampled. It does this simply by opening the file and seeing how many lines 
- * there are. 
- * 
- * Args: 
- * =====
- * file: 				The name of the file 
- * 
- * source: readers.c  
+ * source: io.c 
  */ 
-extern int gridsize(char *file);
+extern void write_mdf_header(SINGLEZONE sz); 
 
+/* 
+ * Write to the mdf.out output file at the final timestep. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		The singlezone object for the current simulation 
+ * 
+ * source: io.c 
+ */ 
+extern void write_mdf_output(SINGLEZONE sz); 
 
-#endif /* IO_H */
+#ifdef __cplusplus 
+}
+#endif 
 
+#endif /* IO_H */ 
 
- 

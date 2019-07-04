@@ -1,19 +1,17 @@
 
 from __future__ import absolute_import 
-from ._wrapper import * 
-from ._data_utils import * 
-from ._dataframes import * 
 
-__all__ = []
-__all__.extend(_wrapper.__all__)
-__all__.extend(_data_utils.__all__) 
-__all__.extend(_dataframes.__all__) 
+__all__ = ["dataframe", "singlezone", "mirror"]    
 
-# appease python 2 strings 
-import sys 
-if sys.version_info[0] < 3:  
-	__all__ = [str(i) for i in __all__] 
-else:
-	pass 
-del sys 
+from ._single_stellar_population import * 
+from ._dataframe import base as dataframe 
+from ._builtin_dataframes import * 
+from ._output import * 
+from ._pysinglezone import singlezone 
+from ._mirror import mirror 
+
+__all__.extend(_single_stellar_population.__all__) 
+__all__.extend(_builtin_dataframes.__all__) 
+__all__.extend(_output.__all__) 
+__all__ = [str(i) for i in __all__] 	# appease python 2 strings 
 

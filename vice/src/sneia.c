@@ -1,151 +1,194 @@
-/*
- * This script handles the numerical implementation of enrichment from type 
- * Ia supernovae. 
- */
 
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include "specs.h"
-#include "enrichment.h"
+#include <stdlib.h> 
+#include <string.h> 
+#include <stdio.h> 
+#include <math.h> 
+#include "sneia.h" 
 
 /* ---------- static function comment headers not duplicated here ---------- */
-static double mdotstarIa(INTEGRATION run, MODEL m);
-static double R_SNe_Ia(MODEL m, double t);
+static double mdotstarIa(SINGLEZONE sz, ELEMENT e); 
+static double RIa_builtin(ELEMENT e, double time); 
 
-/*
- * Returns the time derivative of the mass of a given element at the current 
- * timestep from SNe Ia alone. This is equal to the yield times the star 
- * formation rate weighted by the SNe Ia delay-time distribution. 
+/* 
+ * Allocate memory for and return a pointer to a SNEIA_YIELD_SPECS struct. 
+ * Automatically initializes RIa to NULL. Allocates memory for a 100-character 
+ * dtd char * specifier. 
  * 
- * Args:
- * =====
- * run:		The INTEGRATION struct for the current execution.
- * index:		The index of the element in question. 
+ * header: sneia.h 
+ */ 
+extern SNEIA_YIELD_SPECS *sneia_yield_initialize(void) {
+
+	SNEIA_YIELD_SPECS *sneia_yields = (SNEIA_YIELD_SPECS *) malloc (sizeof(
+		SNEIA_YIELD_SPECS)); 
+	sneia_yields -> dtd = (char *) malloc (100 * sizeof(char)); 
+	sneia_yields -> RIa = NULL; 
+	return sneia_yields; 
+
+} 
+
+/* 
+ * Free up the memory stored in a SNEIA_YIELD_SPECS struct. 
  * 
- * header: enrichment.h 
- */
-extern double mdot_ia(INTEGRATION run, MODEL m, int index) {
+ * header: sneia.h 
+ */ 
+extern void sneia_yield_free(SNEIA_YIELD_SPECS *sneia_yields) {
 
-	return run.elements[index].sneia_yield * mdotstarIa(run, m);
+	if ((*sneia_yields).RIa != NULL) free(sneia_yields -> RIa); 
+	free(sneia_yields -> dtd); 
+	free(sneia_yields); 
 
-}
+} 
 
-/*
- * Returns the star formation rate weighted by the SNe Ia rate. 
+/* 
+ * Determine the rate of mass enrichment of a given element at the current 
+ * timestep from SNe Ia. See section 4.3 of VICE's science documentation for 
+ * further details. 
  * 
- * Args:
- * =====
- * run:		The INTEGRATION struct for the current execution.
- */
-static double mdotstarIa(INTEGRATION run, MODEL m) {
-
-	double sfria = 0;
-	long i;
-	for (i = 0l; i < run.timestep; i++) {
-		/* SFR(t) * RIa(lookback time) */ 
-		sfria += m.ria[run.timestep - i] * run.mdotstar[i];
-	}
-	return sfria;
-
-}
-
-/*
- * Sets up the array RIA containing the SNe Ia rate at all times following the 
- * formation of a single stellar population at time 0. 
+ * Parameters 
+ * ========== 
+ * sz: 		The SINGLEZONE object for the current simulation 
+ * e: 		The element to find the rate of mass enrichment for 
  * 
- * This routine will not be called if the user has specified a custom DTD. In 
- * that case it will be filled by Python and insterted directly into the 
- * MODEL struct. 
+ * Returns 
+ * ======= 
+ * The time-derivative of the type Ia supernovae mass enrichment term 
  * 
- * Args:
- * =====
- * m:		The MODEL struct for this execution
- * dt:		The timestep size 
- * 
- * header: enrichment.h 
- */
-extern int setup_RIA(MODEL *m, double dt) {
+ * header: sneia.h 
+ */ 
+extern double mdot_sneia(SINGLEZONE sz, ELEMENT e) { 
 
-	if (R_SNe_Ia(*m, dt) == -1) {
-		return 1; 		// error 
-	} else {
-		long i;
-		/* 
-		 * VICE by design only fills the RIa array up to 15 Gyr. It is not 
-		 * designed to simulate evolution on longer timescales and Python will 
-		 * raise a warning to the user if they try to do so. 
-		 * 
-		 * The array will always be filled to 15 Gyr regardless of the final 
-		 * time of the simulation. 
-		 */ 
-		long length = (long) (15.0 / dt); 
-		m -> ria = (double *) malloc (length * sizeof(double));
-		for (i = 0l; i < length; i++) {
-			if (i * dt <= 13.8) {
-				m -> ria[i] = R_SNe_Ia(*m, i * dt);
+	return (*e.sneia_yields).yield_ * mdotstarIa(sz, e); 
+
+} 
+
+/* 
+ * Determine the star formation rate weighted by the SNe Ia rate. See section 
+ * 4.3 of VICE's science documentation for more details. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		The SINGLEZONE object for the current simulation 
+ * e: 		An ELEMENT struct containing the SNe Ia delay-time distribution 
+ * 			information 
+ * 
+ * Returns 
+ * ======= 
+ * The time-averaged star formation history weighted by the SNe Ia rate as a 
+ * double. 
+ */ 
+static double mdotstarIa(SINGLEZONE sz, ELEMENT e) {
+
+	long i; 
+	double sfria = 0; 
+	for (i = 0l; i < sz.timestep; i++) {
+		sfria += ((*e.sneia_yields).RIa[sz.timestep - i] * 
+			(*sz.ism).star_formation_history[i]); 
+	} 
+	return sfria; 
+
+} 
+
+/* 
+ * Setup the SNe Ia rate in preparation for a singlezone simulation. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		A pointer to the singlezone object that is about to be ran 
+ * 
+ * Returns 
+ * ======= 
+ * 0 on success, 1 on failure 
+ * 
+ * header: sneia.h 
+ */ 
+extern int setup_RIa(SINGLEZONE *sz) {
+
+	int j; 
+	long i, length = (long) (RIA_MAX_EVAL_TIME / (*sz).dt); 
+	for (j = 0; j < (*sz).n_elements; j++) { 
+		char *dtd = (*(*(*sz).elements[j]).sneia_yields).dtd; 
+		if (!strcmp(dtd, "plaw") || !strcmp(dtd, "exp")) {
+			/* built-in DTD, map it across time */ 
+			sz -> elements[j] -> sneia_yields -> RIa = (double *) malloc (
+				length * sizeof(double)); 
+			if ((*(*(*sz).elements[j]).sneia_yields).RIa == NULL) {
+				return 1; 		/* memory error */ 
 			} else {
-				m -> ria[i] = 0;
-			}
-		}
-
-		/* Normalize the DTD */
-		double sum = 0;
-		for (i = 0l; i < length; i++) {
-			sum += (*m).ria[i];
-		}
-		for (i = 0l; i < length; i++) {
-			m -> ria[i] /= sum;
-		}
-		return 0;
-	}
-
-}
-
-/* 
- * Sets the elements SNe Ia yield parameter to the specified value 
- * 
- * Args:
- * =====
- * run:		A pointer to the INTEGRATION struct for this execution
- * index:		The index of the element to set the yield for
- * value:		The yield itself 
- * 
- * header: enrichment.h
- */
-extern int set_sneia_yield(INTEGRATION *run, int index, double value) {
-
-	ELEMENT *e = &((*run).elements[index]);
-	e -> sneia_yield = value;
-	return 0;
+				for (i = 0l; i < length; i++) {
+					sz -> elements[j] -> sneia_yields -> RIa[i] = RIa_builtin(
+						*(*sz).elements[j], i * (*sz).dt); 
+				} 
+				normalize_RIa(sz -> elements[j], length); 	/* normalize it */ 
+			} 
+		} else if (!strcmp(dtd, "custom")) {
+			/* 
+			 * Python will map the custom function into this array, so simply 
+			 * normalize it here. 
+			 */ 
+			normalize_RIa(sz -> elements[j], length); 
+		} else {
+			return 1; 		/* Error: unrecognized DTD specification */ 
+		} 
+	} 
+	return 0; 		/* success */ 
 
 }
 
 /* 
- * Returns the SNe Ia rate at some time t following the formation of a single 
- * stellar population at time 0 given the MODEL specifications contained in m. 
+ * Returns the value of the SNe Ia delay-time distribution at a given time 
+ * under arbitrary normalization. 
  * 
- * Args:
- * =====
- * m:		The MODEL struct for this execution
- * t:		The time following the formation of the population in Gyr.
- */
-static double R_SNe_Ia(MODEL m, double t) {
+ * Parameters 
+ * ========== 
+ * e: 		An ELEMENT struct containing the delay-time information 
+ * time: 	The time in Gyr following the formation of a single stellar 
+ * 			population 
+ * 
+ * Returns 
+ * ======= 
+ * The value of the DTD prior to normalization 
+ */ 
+static double RIa_builtin(ELEMENT e, double time) { 
 
-	if (t < m.t_d) {
-		return 0;
-	} else if (!strcmp(m.dtd, "exp")) {
-		/* An exponential DTD with user specified e-folding timescale */ 
-		return exp( -t / m.tau_ia);
-	} else if (!strcmp(m.dtd, "plaw")) {
-		/* 
-		 * A power law DTD. 1e-12 is added to the time so that it can evaluate 
-		 * at zero without throwing an error 
+	if (time < (*e.sneia_yields).t_d) {
+		/* Time is below minimum Ia delay time, force to zero */ 
+		return 0; 
+	} else if (!strcmp((*e.sneia_yields).dtd, "exp")) {
+		/* exponential DTD w/user-specified e-folding timescale */ 
+		return exp( -time / (*e.sneia_yields).tau_ia ); 
+	} else if (!strcmp((*e.sneia_yields).dtd, "plaw")) {
+		/* power-law DTD w/index -1.1 Add 1e-12 to prevent numerical errors 
+		 * allowing this function to evaluate at zero without throwing an 
+		 * error. 
 		 */ 
-		return powf(t + 1e-12, -1.1);
+		return pow( time + 1e-12, -PLAW_DTD_INDEX ); 
 	} else {
-		return -1;
+		return -1; 
 	}
+
+} 
+
+/* 
+ * Normalize the SNe Ia delay-time distribution once it is set according to 
+ * an arbitrary normalization. 
+ * 
+ * Parameters 
+ * ========== 
+ * e: 			The ELEMENT struct to normalize the DTD for 
+ * length: 		The length of the e -> sneia_yields -> RIa array 
+ * 
+ * header: sneia.h 
+ */ 
+extern void normalize_RIa(ELEMENT *e, long length) {
+
+	long i; 
+	double sum = 0; 
+	for (i = 0l; i < length; i++) {
+		sum += (*(*e).sneia_yields).RIa[i]; 
+	} 
+	for (i = 0l; i < length; i++) {
+		 e -> sneia_yields -> RIa[i] /= sum; 
+	} 
 
 }
 

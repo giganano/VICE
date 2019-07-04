@@ -30,14 +30,16 @@ Iwamoto et al. (1999), ApJ, 124, 439
 """
 
 from __future__ import absolute_import
-from .yield_calculations import single_detonation as single
-from .yield_calculations import integrated_yield as fractional 
-from ...core._data_utils import _customizable_yield_table
-import sys 
 
 __all__ = ["single", "fractional", "settings"] 
+__all__ = [str(i) for i in __all__] 	# appease python 2 strings 
 
-settings = _customizable_yield_table({
+from ._yield_lookup import single_detonation as single 
+from ._yield_lookup import integrated_yield as fractional 
+from ...core._dataframe import yield_settings 
+
+# settings = _customizable_yield_table({ 
+settings = yield_settings({ 
 	"c":	5.74e-6, 
 	"n":	6.43e-9, 
 	"o":	5.79e-5, 
@@ -114,15 +116,6 @@ settings = _customizable_yield_table({
 	"tl":	0, 
 	"pb":	0, 
 	"bi":	0, 
-}, False, "sneia")
+}, "SNe Ia yield", False, "sneia")
 
-del absolute_import 
-del yield_calculations 
-del _customizable_yield_table 
-if sys.version_info[0] < 3: 
-	__all__ = [str(i) for i in __all__] # appease python 2 strings 
-	del i
-else:
-	pass 
-del sys 
 

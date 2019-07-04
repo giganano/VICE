@@ -1,6 +1,6 @@
 
-.PHONY: clean
+.PHONY: clean 
 
-clean:
-	rm -f *.c
+clean: 
+	rm -f *.c 
 

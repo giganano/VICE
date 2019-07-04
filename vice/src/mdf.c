@@ -1,159 +1,215 @@
-/*
- * This script handles the numerical implementation of stellar metallicity 
- * distribution functions.  
- */
 
-#include <stdlib.h>
-#include <math.h>
-#include "specs.h"
-#include "stars.h"
+#include <stdlib.h> 
+#include <math.h> 
+#include "mdf.h" 
+#include "utils.h" 
 
-/* ---------- static function comment headers not duplicated here ---------- */
-static long get_bin_number(MODEL m, double onH);
-
-/*
- * Updates the metallicity distribution function according to the mass of stars 
- * that form at the current timestep. 
+/* 
+ * Allocate memory for and return a pointer to an MDF struct. Initializes all 
+ * fields to NULL. 
  * 
- * Args:
- * =====
- * run:		The INTEGRATION struct for the current execution
- * m:			The MODEL struct for the current exeuction 
+ * header: mdf.h 
+ */ 
+extern MDF *mdf_initialize(void) {
+
+	MDF *mdf = (MDF *) malloc (sizeof(MDF)); 
+	mdf -> abundance_distributions = NULL; 
+	mdf -> ratio_distributions = NULL; 
+	mdf -> bins = NULL; 
+	return mdf; 
+
+} 
+
+/* 
+ * Free up the memory stored in an MDF struct. 
  * 
- * header: stars.h 
- */
-extern void update_MDF(INTEGRATION run, MODEL *m) {
+ * header: mdf.h 
+ */ 
+extern void mdf_free(MDF *mdf) {
 
-	int i, j;
-	/* --------------------- for each tracked element --------------------- */ 
-	for (i = 0; i < run.num_elements; i++) { 
-		/* Determine the associated [X/H] value */ 
-		double onH = log10( (run.elements[i].m_tot/run.MG) / 
-			run.elements[i].solar);
-		long bin = get_bin_number(*m, onH);
-		/* If it lies on the MDF binspace, increment that bin by the SFR */ 
-		if (bin != -1l) m -> mdf[i][bin] += run.SFR;
-	}
-	/* The number of updates done so far */ 
-	int n = run.num_elements; 
+	if ((*mdf).abundance_distributions != NULL) free(
+		mdf -> abundance_distributions); 
+	if ((*mdf).ratio_distributions != NULL) free(mdf -> ratio_distributions); 
+	if ((*mdf).bins != NULL) free(mdf -> bins); 
+	free(mdf); 
 
-	/* --------------------- for each tracked element --------------------- */ 
-	for (i = 1; i < run.num_elements; i++) {
-		/* 
-		 * Also track abundance ratios --- determine [X/Y] for each 
-		 * combination of elements. 
-		 */ 
-		for (j = 0; j < i; j++) { 
-			double onH1 = log10( (run.elements[i].m_tot/run.MG) / 
-				run.elements[i].solar);
-			double onH2 = log10( (run.elements[j].m_tot/run.MG) / 
-				run.elements[j].solar);
-			/* [X/Y] = [X/H] - [Y/H] */ 
-			double onH = onH1 - onH2;
-			long bin = get_bin_number(*m, onH);
-			/* If it lies on the MDF binspace, increment that bin by the SFR. */ 
-			if (bin != -1) m -> mdf[n][bin] += run.SFR;
-			n++;
-		}
-	}
+} 
 
-}
-
-/*
- * Normalizes the MDF prior to writing it to the output file. 
+/* 
+ * Setup the metallicity distribution functions. This does nothing more and 
+ * nothing less than give each abundance and ratio distribution an array of 
+ * zeroes representing the value in each bin. These arrays will be modified 
+ * at each timestep as the simulation evolves. 
  * 
- * Args:
- * =====
- * run:			The INTEGRATION struct for the current execution
- * m:			The MODEL struct for the current exeuction 
+ * Parameters 
+ * ========== 
+ * sz: 		A pointer to the singlezone object for the current simulation 
  * 
- * header: stars.h
- */
-extern void normalize_MDF(INTEGRATION run, MODEL *m) {
-
-	int i;
-	long j;
-	/* The number of MDFs that the simulation has tracked */ 
-	int num_mdfs = run.num_elements + (run.num_elements * (run.num_elements - 
-		1))/2;
-	for (i = 0; i < num_mdfs; i++) {
-		double sum = 0;
-		/* Integrate each MDF */ 
-		for (j = 0l; j < (*m).num_bins; j++) {
-			sum += (*m).mdf[i][j] * ( (*m).bins[j + 1] - (*m).bins[j] );
-		}
-		/* Normalize it */ 
-		for (j = 0l; j < (*m).num_bins; j++) {
-			m -> mdf[i][j] /= sum;
-		}
-	}
-
-}
-
-/*
- * Sets up the MDF at the beginning of the INTEGRATION 
+ * Returns 
+ * ======= 
+ * 0 on success, 1 on failure 
  * 
- * Args:
- * =====
- * run:			The INTEGRATION struct for the current execution of the code
- * m:			The MODEL struct for the current execution of the code* 
- * 
- * header: stars.h 
- */
-extern void setup_MDF(INTEGRATION run, MODEL *m) {
+ * header: mdf.h 
+ */ 
+extern int setup_MDF(SINGLEZONE *sz) {
 
-	int i;
-	long j;
 	/* 
-	 * The number of MDFs tracked by the simulation. VICE tracks star 
-	 * formation at individual abundances as well as abundance ratios. 
+	 * The number of bins and binspace will be set by python. Give each element 
+	 * an array for the abundance distribution in each bin and initialize its 
+	 * value to zero. 
 	 */ 
-	int num_mdfs = run.num_elements + (run.num_elements * (run.num_elements - 
-		1))/2;
-	m -> mdf = (double **) malloc (num_mdfs * sizeof(double *));
-	for (i = 0; i < num_mdfs; i++) {
-		/* 
-		 * Set each MDF as an array across the binspace where each element is 
-		 * initially zero. 
-		 */ 
-		m -> mdf[i] = (double *) malloc ((*m).num_bins * sizeof(double));
-		for (j = 0l; j < (*m).num_bins; j++) {
-			m -> mdf[i][j] = 0;
-		}
-	}
+	long i; 
+	int j; 
+	sz -> mdf -> abundance_distributions = (double **) malloc ((*sz).n_elements * 
+		sizeof(double *)); 
+	if ((*(*sz).mdf).abundance_distributions == NULL) {
+		return 1; 
+	} else {
+		for (j = 0; j < (*sz).n_elements; j++) {
+			sz -> mdf -> abundance_distributions[j] = (double *) malloc (
+				(*(*sz).mdf).n_bins * sizeof(double)); 
+			if ((*(*sz).mdf).abundance_distributions[j] == NULL) {
+				return 1; 
+			} else {
+				for (i = 0l; i < (*(*sz).mdf).n_bins; i++) {
+					sz -> mdf -> abundance_distributions[j][i] = 0.0; 
+				} 
+			} 
+		} 
+	} 
 
-}
-
-/*
- * Returns the bin number of the given [X/Y] value within the MDF. -1 if the 
- * value is not within the range of the MDF. This is similar in concept but 
- * different in implementation to the get_bounds function used for 
- * interpolation in agb.c. 
- * 
- * Args:
- * =====
- * m:			The MODEL struct for the current exeuction
- * onH:			The given [X/Y] value
- */
-static long get_bin_number(MODEL m, double onH) {
-
-	long i;
-	for (i = 0l; i < m.num_bins; i++) {
-		/* If the [X/Y] value lies between the bin edges ... */ 
-		if (m.bins[i] <= onH && onH <= m.bins[i + 1]) {
-			/* ... send that bin number back. */ 
-			return i;
-		} else {
-			continue;
-		}
-	}
 	/* 
-	 * If the code gets to this point, it didn't find a bin for the given 
-	 * [X/Y] value ===> It doesn't lie on the binspace. 
+	 * The number of abundance ratios is n choose 2 = n(n - 1)/2. Initialize 
+	 * each abundance ratio to an array of zeroes as well. 
 	 */ 
-	return -1l;
+	int n_ratios = (int) ((*sz).n_elements * ((*sz).n_elements - 1) / 2); 
+	sz -> mdf -> ratio_distributions = (double **) malloc (n_ratios * 
+		sizeof(double *)); 
+	if ((*(*sz).mdf).ratio_distributions == NULL) {
+		return 1; 
+	} else {
+		for (j = 0; j < n_ratios; j++) {
+			sz -> mdf -> ratio_distributions[j] = (double *) malloc (
+				(*(*sz).mdf).n_bins * sizeof(double)); 
+			if ((*(*sz).mdf).ratio_distributions == NULL) {
+				return 1; 
+			} else {
+				for (i = 0l; i < (*(*sz).mdf).n_bins; i++) {
+					sz -> mdf -> ratio_distributions[j][i] = 0.0; 
+				} 
+			} 
+		} 
+	} 
+
+	return 0; 
 
 }
 
+/* 
+ * Update the metallicity distribution function. This simply determines the bin 
+ * number for each [X/H] abundance and [X/Y] abundance ratio in the specified 
+ * binspace and increments it by the star formation rate. The prefactors are 
+ * ignored because they cancel in normalization at the end of the simulation. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		A pointer to the singlezone object to update the MDF for 
+ * 
+ * header: mdf.h 
+ */ 
+extern void update_MDF(SINGLEZONE *sz) {
 
+	/* ---------------------- for each tracked element ---------------------- */ 
+	int i, j; 
+	for (i = 0; i < (*sz).n_elements; i++) {
+		double onH = log10( 		/* [X/H] for this element */ 
+			((*(*sz).elements[i]).mass / (*(*sz).ism).mass) / 
+			(*(*sz).elements[i]).solar
+		); 
+		long bin = get_bin_number((*(*sz).mdf).bins, (*(*sz).mdf).n_bins, onH); 
+		if (bin != -1l) {
+			/* 
+			 * Increment the bin number by the star formation rate. Prefactors 
+			 * cancel in normalization at the end of the simulation 
+			 */ 
+			sz -> mdf -> abundance_distributions[i][bin] += (
+				*(*sz).ism).star_formation_rate; 
+		} else {} 
+	} 
+
+	/* ---------------------- for each abundance ratio ---------------------- */ 
+	int n = 0; 
+	for (i = 1; i < (*sz).n_elements; i++) {
+		for (j = 0; j < i; j++) {
+			double onH1 = log10(		/* [X/H] for this element */ 
+				((*(*sz).elements[i]).mass / (*(*sz).ism).mass) / 
+				(*(*sz).elements[i]).solar
+			); 
+			double onH2 = log10(		/* [Y/H] for this element */ 
+				((*(*sz).elements[j]).mass / (*(*sz).ism).mass) / 
+				(*(*sz).elements[j]).solar
+			); 
+			long bin = get_bin_number((*(*sz).mdf).bins, (*(*sz).mdf).n_bins, 
+				onH1 - onH2); 		/* The bin number for [X/Y] */ 
+			if (bin != -1l) {
+				/* 
+				 * Again increment the bin number by the star formation rate. 
+				 * Prefactors cancel in normalization at the end of the 
+				 * simulation. 
+				 */ 
+				sz -> mdf -> ratio_distributions[n][bin] += (
+					*(*sz).ism).star_formation_rate; 
+				n++; 
+			} else {} 
+		}
+	}
+
+} 
+
+/* 
+ * Normalize the metallicity distribution functions stored within a singlezone 
+ * object in prep for write-out at the end of a simulation. This converts each 
+ * distribution into a probability distribution function where the integral 
+ * over the extent of the user-specified binspace is equal to 1. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		The singlezone object whose simulation just finished 
+ * 
+ * header: mdf.h 
+ */ 
+extern void normalize_MDF(SINGLEZONE *sz) {
+
+	/* ---------------------- for each tracked element ---------------------- */ 
+	int j; 
+	long i;  
+	for (j = 0; j < (*sz).n_elements; j++) { 
+		double integral = 0.0; 
+		for (i = 0l; i < (*(*sz).mdf).n_bins; i++) { 
+			/* Sum up the value of the distribution times each bin width */ 
+			integral += (*(*sz).mdf).abundance_distributions[j][i] * (
+				(*(*sz).mdf).bins[i + 1l] - (*(*sz).mdf).bins[i]); 
+		} 
+		for (i = 0l; i < (*(*sz).mdf).n_bins; i++) {
+			/* Divide by the total integral to convert to a PDF */ 
+			sz -> mdf -> abundance_distributions[j][i] /= integral; 
+		} 
+	} 
+
+	/* ---------------------- for each abundance ratio ---------------------- */
+	int n_ratios = (int) ((*sz).n_elements * ((*sz).n_elements - 1) / 2); 
+	for (j = 0; j < n_ratios; j++) {
+		double integral = 0.0; 
+		for (i = 0l; i < (*(*sz).mdf).n_bins; i++) {
+			/* Sum up the value of the distribution times each bin width */ 
+			integral += (*(*sz).mdf).ratio_distributions[j][i] * (
+				(*(*sz).mdf).bins[i + 1l] - (*(*sz).mdf).bins[i]); 
+		} 
+		for (i = 0l; i < (*(*sz).mdf).n_bins; i++) {
+			/* Divide by the total integral to convert to a PDF */ 
+			sz -> mdf -> ratio_distributions[j][i] /= integral; 
+		} 
+	} 
+
+}
 

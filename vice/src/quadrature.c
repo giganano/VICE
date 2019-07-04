@@ -1,30 +1,22 @@
-/*
- * This script handles the numerical implementation of integration by quadrature 
- * for the functions which integrate mass yields of elements over an assumed 
- * IMF. 
- */ 
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include "cc_yields.h"
+#include <stdlib.h> 
+#include <string.h> 
+#include "quadrature.h" 
+#include "utils.h" 
 
 /* ---------- static function comment headers not duplicated here ---------- */
 static double euler(double (*func)(double), double a, double b, long N);
 static double trapzd(double (*func)(double), double a, double b, long N);
 static double midpt(double (*func)(double), double a, double b, long N);
-static double simp(double (*func)(double), double a, double b, long N);
-static double *binspace(double start, double stop, long N);
-static double *bin_centers(double *edges, long num_bins);
-static double sum(double *arr, long len);
-static double absval(double val);
-static double sign(double val);
+static double simp(double (*func)(double), double a, double b, long N); 
+static double absval(double x); 
+static int sign(double x); 
 
 /*
  * Evaluate an integral from a to b numerically using quadrature 
  * 
- * Args:
- * =====
+ * Parameters 
+ * ========== 
  * func:		The function to integrate
  * a:			The lower bound of integration
  * b:			The upper bound of integration
@@ -33,14 +25,21 @@ static double sign(double val);
  * Nmax:		Maximum number of bins (safeguard against divergent solns)
  * Nmin:		Minimum number of bins 
  * 
- * Returns:
- * ========
+ * Returns 
+ * ======= 
  * A 3-element array
  * returned[0]:		The estimated value of the integral
  * returned[1]:		The estimated fractional error
  * returned[2]:		The number of iterations it took to the get there 
+ * NULL in the case of an unrecognized method of integration 
  * 
- * header: cc_yields.h 
+ * Notes & References 
+ * ================== 
+ * The methods of numerical quadrature implemented in this function and its 
+ * subroutines are adopted from Chapter 4 of Numerical Recipes (Press, 
+ * Teukolsky, Vetterling & Flannery 2007), Cambridge University Press. 
+ * 
+ * header: quadrature.h 
  */
 extern double *quad(double (*func)(double), double a, double b, 
 	double tolerance, char *method, long Nmax, long Nmin) {
@@ -71,14 +70,11 @@ extern double *quad(double (*func)(double), double a, double b,
 		} else if (!strcmp(method, "midpoint")) {
 			/* Integrate according to midpoint rule */ 
 			new_int = midpt(func, a, b, N);
-		} else if (!strcmp(method, "simpson")) {
+		} else if (!strcmp(method, "simpson")) { 
 			/* Integrate according to Simpson's rule */ 
 			new_int = simp(func, a, b, N);
 		} else {
-			/* This should be caught by Python anyway, included as a failsafe */ 
-			printf("ERROR in IMF-INTEGRATOR. Please submit bug report to ");
-			printf("giganano9@gmail.com.\n");
-			exit(0);
+			return NULL; 
 		}
 		if (new_int == 0) {
 			/* 
@@ -86,7 +82,7 @@ extern double *quad(double (*func)(double), double a, double b,
 			 * given the algorithm implemented here 
 			 */ 
 			error = 1;
-		} else {
+		} else { 
 			error = absval(old_int / new_int - 1);
 		}
 		/* Store the previously determined value of the integral and double N */ 
@@ -111,12 +107,16 @@ extern double *quad(double (*func)(double), double a, double b,
  * Approximates the integral of a function between two bounds using Euler's 
  * method with a given number of bins. 
  * 
- * Args: 
- * =====
+ * Parameters 
+ * ========== 
  * func: 		A pointer to the function to integrate 
  * a: 			The lower bound of the integral 
  * b: 			The upper bound of the integral 
  * N: 			The number of bins to use in evaluating the Riemann sum 
+ * 
+ * Returns 
+ * ======= 
+ * The approximate value of the integral with the given number of bins 
  * 
  * For details on Euler's method, see chapter 4 of Numerical Recipes: 
  * Press, Teukolsky, Vetterling, & Flannery (2007), Cambridge University Press 
@@ -147,12 +147,16 @@ static double euler(double (*func)(double), double a, double b, long N) {
  * Approximates the integral of a function between two bounds using the 
  * Trapezoid rule with a given number of bins. 
  * 
- * Args: 
- * =====
+ * Parameters  
+ * ========== 
  * func: 		A pointer to the function to integrate 
  * a: 			The lower bound of the integral 
  * b: 			The upper bound of the integral 
  * N: 			The number of bins to use in evaluating the Riemann sum 
+ * 
+ * Returns 
+ * ======= 
+ * The approximate value of the integral with the given number of bins 
  * 
  * For details on the Trapezoid rule, see chapter 4 of Numerical Recipes: 
  * Press, Teukolsky, Vetterling, & Flannery (2007), Cambridge University Press 
@@ -184,12 +188,16 @@ static double trapzd(double (*func)(double), double a, double b, long N) {
  * Approximates the integral of a function between two bounds using the Midpoint 
  * rule with a given number of bins. 
  * 
- * Args: 
- * =====
+ * Parameters 
+ * ========== 
  * func: 		A pointer to the function to integrate 
  * a: 			The lower bound of the integral 
  * b: 			The upper bound of the integral 
  * N: 			The number of bins to use in evaluating the Riemann sum 
+ * 
+ * Returns 
+ * ======= 
+ * The approximate value of the integral with the given number of bins 
  * 
  * For details on the Midpoint rule, see chapter 4 of Numerical Recipes: 
  * Press, Teukolsky, Vetterling, & Flannery (2007), Cambridge University Press 
@@ -221,12 +229,16 @@ static double midpt(double (*func)(double), double a, double b, long N) {
  * Approximates the integral of a function between two bounds using Simpson's 
  * rule with a given number of bins. 
  * 
- * Args: 
- * =====
+ * Parameters 
+ * ========== 
  * func: 		A pointer to the function to integrate 
  * a: 			The lower bound of the integral 
  * b: 			The upper bound of the integral 
  * N: 			The number of bins to use in evaluating the Riemann sum 
+ * 
+ * Returns 
+ * ======= 
+ * The approximate value of the integral with the given number of bins 
  * 
  * For details on Simpson's rule, see chapter 4 of Numerical Recipes: 
  * Press, Teukolsky, Vetterling, & Flannery (2007), Cambridge University Press 
@@ -238,100 +250,40 @@ static double simp(double (*func)(double), double a, double b, long N) {
 
 }
 
-/*
- * Returns a pointer to an array of linearly spaced doubles between two 
- * specified values. For a binspace with n bins, the resulting array is of 
- * length N + 1. 
- * 
- * Args: 
- * =====
- * start: 			The left-most bin edge
- * stop: 			The right-most bin edge 
- * N: 				The number of desired bins 
- */
-static double *binspace(double start, double stop, long N) {
-
-	/* Allocated memory and determine the bin width */ 
-	double *arr = (double *) malloc ((N + 1l) * sizeof(double));
-	double dx = (stop - start) / N;
-	long i;
-	for (i = 0l; i <= N; i++) {
-		/* Incremenet each element forward based on the step size */ 
-		arr[i] = start + i * dx;
-	}
-	return arr;
-
-}
-
 /* 
- * Determines the centers of each bin in a binspace by averaging adjacent 
- * elements. For a binspace of n bins (an array of length n + 1), the returned 
- * array will be of length n. 
+ * Determine the absolute value of a double x. This function extends the 
+ * standard library function abs, which only excepts values of type int. 
  * 
- * Args:
- * =====
- * edges: 			The bin edges themselves 
- * num_bins: 		The number of bins in the bin-space
- * 					This is one less than the length of the array edges 
- */
-static double *bin_centers(double *edges, long num_bins) {
-
-	/* 
-	 * Allocate memory and take the arithmetic mean of adjacent elements in 
-	 * the array edges
-	 */ 
-	double *out = (double *) malloc (num_bins * sizeof(double));
-	long i;
-	for (i = 0l; i < num_bins; i++) {
-		out[i] = (edges[i] + edges[i + 1l]) / 2.0;
-	}
-	return out;
-
-}
-
-/*
- * Returns the sum of an array of doubles with a given length 
+ * Parameters 
+ * ========== 
+ * x: 		The number to determine the absolute value of 
  * 
- * Args:
- * =====
- * arr: 		A pointer to the array to sum 
+ * Returns 
+ * ======= 
+ * +x if x >= 0, -x if x < 0 
  */ 
-static double sum(double *arr, long len) {
+static double absval(double x) {
 
-	double s = 0;
-	long i;
-	for (i = 0l; i < len; i++) {
-		s += arr[i];
-	}
-	return s;
+	return sign(x) * x; 
 
 }
 
 /* 
- * Returns the absolute value of a given double precision number 
+ * Determine the sign of a double x 
  * 
- * Args: 
- * =====
- * val: 		The number itself 
- */
-static double absval(double val) {
-
-	return sign(val) * val;
-
-}
-
-/* 
- * Returns -1 if a number if negative, 0 if it is 0, and +1 if it is positive 
+ * Parameters 
+ * ========== 
+ * x: 		The value to determine the sign of 
  * 
- * Args: 
- * =====
- * val: 		The number itself 
- */
-static double sign(double val) {
+ * Returns 
+ * ======= 
+ * +1 if x >= 0, -1 if x < 0 
+ */ 
+static int sign(double x) {
 
-	return (val >= 0) - (val <= 0);
+	return (x >= 0) - (x < 0); 
 
-}
+} 
 
 
 

@@ -1,265 +1,208 @@
-/*
- * This script handles the numerical implementation of enrichment by asymptotic 
- * giant branch stars. 
- */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <math.h>
-#include "specs.h"
-#include "stars.h"
-#include "enrichment.h"
-
-/* ---------- static function comment headers not duplicated here ---------- */
-static int *get_bounds(double *arr, double value, int length);
-static double interpolate(double mz1, double mzto, double mz2, double y1, 
-	double y2);
+#include <stdlib.h> 
+#include "agb.h" 
+#include "singlezone.h" 
+#include "ssp.h" 
+#include "utils.h" 
 
 /* 
- * Returns the mass of a given element produced by AGB stars at the current 
- * timestep. 
+ * Allocate memory for and return a pointer to an AGB_YIELD_GRID struct and 
+ * initialize all fields to NULL. 
  * 
- * Args:
- * =====
- * run:			The INTEGRATION struct for this simulation
- * m:			The MODEL struct for this simulation
- * index:		The index of the element being tracked 
+ * header: agb.h 
+ */ 
+extern AGB_YIELD_GRID *agb_yield_grid_initialize(void) {
+
+	AGB_YIELD_GRID *agb_grid = (AGB_YIELD_GRID *) malloc (sizeof(
+		AGB_YIELD_GRID)); 
+
+	agb_grid -> grid = NULL; 
+	agb_grid -> m = NULL; 
+	agb_grid -> z = NULL; 
+
+	return agb_grid; 
+
+} 
+
+/* 
+ * Free up the memory stored in an AGB_YIELD_GRID struct 
  * 
- * header: enrichment.h 
- */
-extern double m_AGB(INTEGRATION run, MODEL m, int index) {
+ * header: agb.h 
+ */ 
+extern void agb_yield_grid_free(AGB_YIELD_GRID *agb_grid) {
 
-	if (run.timestep == 0) {
-		return 0; 		// Not enough time has passed for AGB stars yet 
-	} else {
-		double mass = 0; 		// mass of the element in Msun 
-		double solar = 0;		// Solar metallicity
-		long i;
-		int j;
-		for (j = 0; j < run.num_elements; j++) {
-			/* 
-			 * Determine the solar abundance given only the elements tracked 
-			 * by this simulation. 
-			 */
-			solar += run.elements[j].solar; 
-		}
-		/* Previous timesteps <---> Previous generations of stars */ 
-		for (i = 0l; i < run.timestep; i++) {
-			double Z = 0; 		// The abundance of tracked elements 
-			for (j = 0; j < run.num_elements; j++) {
-				Z += run.Zall[j][run.timestep - i];
-			}
-			/* Scale it off the solar abundance of tracked elements */ 
-			Z *= m.Z_solar / solar; 
+	if ((*agb_grid).grid != NULL) free(agb_grid -> grid); 
+	if ((*agb_grid).m != NULL) free(agb_grid -> m); 
+	if ((*agb_grid).z != NULL) free(agb_grid -> z); 
+	free(agb_grid); 
 
-			/*
-			 * AGB stars enrich the ISM at a time t with mass dm of a given 
-			 * element according to a yield y as a function of turnoff mass 
-			 * and metallicity. The prefactor is set by the hydrogen burning 
-			 * mass fraction h (see documentation). 
-			 * 
-			 * dm = y(M,Z) * mstar * dh
-			 */
-			mass += (get_AGB_yield(run.elements[index], i, Z) * 
-				run.mdotstar[run.timestep - i] * run.dt * (m.H[i] - 
-					m.H[i + 1l]));
-		}
-		return mass;
+} 
+
+/* 
+ * Determine the mass of a given element produced by AGB stars at the current 
+ * timestep of a singlezone simulation. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 			The SINGLEZONE struct associated with the current simulation 
+ * e: 			The ELEMENT struct to find the total mass yield for 
+ * 
+ * Returns 
+ * ======= 
+ * The mass of the given element in solar masses produced by AGB stars in one 
+ * timestep from all previous generations of stars. 
+ * 
+ * header: agb.h 
+ */ 
+extern double m_AGB(SINGLEZONE sz, ELEMENT e) {
+
+	if (sz.timestep == 0l) {
+		return 0; /* No star's yet */ 
+	} else { 
+		long i; 
+		double mass = 0; 
+		for (i = 0l; i <= sz.timestep; i++) { 
+			/* The metallicity of the stars that formed i timesteps ago */ 
+			double Z = scale_metallicity(sz, sz.timestep - i); 
+
+			/* From section 4.4 of VICE's science documentation */ 
+			mass += (
+				get_AGB_yield(e, Z, main_sequence_turnoff_mass(i * sz.dt)) * 
+				(*sz.ism).star_formation_history[sz.timestep - i] * sz.dt * 
+				((*sz.ssp).msmf[i] - (*sz.ssp).msmf[i + 1l])
+			); 
+
+
+
+			/* The metallicity of the stars that formed at that timestep */
+			// double Z = scale_metallicity(sz, i); 
+
+			/* From section 4.4 of VICE's science documentation */ 
+			// mass += (
+			// 	get_AGB_yield(e, Z, 
+			// 		main_sequence_turnoff_mass(sz.current_time - i * sz.dt)) * 
+			// 	(*sz.ism).star_formation_history[i] * 
+			// 	sz.dt * 
+			// 	((*sz.ssp).msmf[i] - (*sz.ssp).msmf[i + 1l])); 
+			
+		} 
+
+		return mass; 
 	}
 
-}
+} 
 
-/*
- * Returns the effective fractional AGB yield of the given element at the 
- * lookback time time_index timesteps ago. 
+/* 
+ * Determine the fractional yield of a given element from AGB stars at a 
+ * given mass and metallicity. 
  * 
- * Args:
- * =====
- * e:				The element whose yield is to be determined
- * time_index:		The number of timesteps ago that the stellar population 
- * 					formed
- * zto:				The metallicity of the stellar population that formed
+ * Parameters 
+ * ========== 
+ * e: 				The element struct containing AGB yield information 
+ * Z_stars: 		The metallicity by mass Z of the AGB stars 
+ * turnoff_mass:	The mass of the AGB stars 
  * 
- * header: enrichment.h 
- */
-extern double get_AGB_yield(ELEMENT e, long time_index, double zto) {
-
-	/* Get the indeces of the adjacent elements of the metallicity grid. */
-	int *bounds = get_bounds(e.agb_z, zto, e.num_agb_z);
-	if (bounds[0] == -1) {
-		/*
-		 * These lines used to tie the yields down to 0 at z = 0. This is probably 
-		 * a good assumption for s-process elements like strontium, but not for 
-		 * others like carbon, where the yields decrease with increasing 
-		 * metallicity. 
-		 * 
-		 * It is also not unphysical to expect negative yields of a given 
-		 * element. This simply means that the evolution of the star resulted in a 
-		 * net consumption of the element in the production of yet heavier 
-		 * elements. For example, the Cristallo et al. (2011) yields predict 
-		 * negative yields of Carbon for more massive AGB stars at solar 
-		 * metallicity. 
-		 * 
-		 * double yield = interpolate(0, zto, 
-		 * 	e.agb_z[bounds[1]], 
-		 * 	0, e.agb_grid[time_index][bounds[1]]);
-		 * free(bounds);
-		 * return yield;
-		 */
-		free(bounds);
-		/* Extrapolate from the lowest metallicity elements of the grid */ 
-		return interpolate(e.agb_z[0], zto, e.agb_z[1], 
-			e.agb_grid[time_index][0], e.agb_grid[time_index][1]);
-	} else {
-		/* If the metallicity is above the grid, extrapolate from there too */ 
-		if (bounds[1] == e.num_agb_z) {
-			bounds[0]--;
-			bounds[1]--;
-		} else {}
-		/* Otherwise interpolate normally */ 
-		double yield = interpolate(e.agb_z[bounds[0]], zto, e.agb_z[bounds[1]], 
-			e.agb_grid[time_index][bounds[0]], 
-			e.agb_grid[time_index][bounds[1]]
-		);
-		free(bounds);
-		return yield;
-	}
-
-}
-
-/*
- * Sets up the yield grid for a single element.
+ * Returns
+ * ======= 
+ * The fraction of each AGB star's mass that is converted into the element e 
+ * under the current yield settings. 
  * 
- * Args:
- * =====
- * e:			A pointer to the element struct to hold the grid
- * grid:		The grid sampled at various masses and metallicities for this 
- * 				element
- * times:		The times that the integration will evaluate at
- * num_times:	The number of elements in the array times.
- * 
- * header: enrichment.h 
- */
-extern void setup_single_AGB_grid(ELEMENT *e, double **grid, double *times, 
-	long num_times) {
+ * header: agb.h 
+ */ 
+extern double get_AGB_yield(ELEMENT e, double Z_stars, double turnoff_mass) {
 
-	/*
-	 * The yields are sampled on mass-metallicity grids. At a given 
-	 * metallicity, the yields are a function of turnoff mass, which is to say 
-	 * that they are a function of time. Before the integration even begins, 
-	 * VICE maps the yields from a single stellar population at the sampled 
-	 * metallicities across all of the times that it will evaluate at by 
-	 * interpolating linearly between the yields. 
-	 * 
-	 * At each timestep in the simulation, the yield is determined via 
-	 * linear interpolation between the sampled yields at the adjacent 
-	 * metallicities, the same process applied to the masses of the stars. 
-	 */
-	long i;
-	int j;
-	/* Re-initialize the grid */ 
-	// printf("a\n");
-	e -> agb_grid = (double **) malloc (num_times * sizeof(double *));
-	for (i = 0l; i < num_times; i++) {
-		// printf("%ld\n", i);
-		/* The first dimension of the array will be the time_index */ 
-		e -> agb_grid[i] = (double *) malloc (e -> num_agb_z * sizeof(double));
-		double mto = m_turnoff(times[i]);
-		int *bounds = get_bounds(e -> agb_m, mto, e -> num_agb_m);
+	if (turnoff_mass < MIN_AGB_MASS || turnoff_mass > MAX_AGB_MASS) { 
+
 		/* 
-		 * At each turnoff mass, do the interpolation for each metallicity 
-		 * on the grid. 
+		 * By default, only stars between 0 and 8 Msun have an AGB phase in 
+		 * VICE. Changing these requires altering these #define statements 
+		 * in agb.h. 
 		 */ 
-		for (j = 0; j < (*e).num_agb_z; j++) {
-			// printf("%d\n", j);
-			if (mto > 8) {
-				/* Tie it down to 0 at m > 8 Msun */
-				e -> agb_grid[i][j] = 0;
-			} else if (bounds[0] == -1) {
-				/* Tie it down to y = 0 at m = 0 */
-				e -> agb_grid[i][j] = interpolate(0, mto, e -> agb_m[0], 
-					0, grid[0][j]);
-			} else if (bounds[1] == (*e).num_agb_m) {
-				/* Tie it down to y = 0 at 8 Msun */
-				e -> agb_grid[i][j] = interpolate((*e).agb_m[bounds[0]], mto, 
-					8, grid[bounds[0]][j], 0);
+		return 0; 
+
+	} else { 
+		/* bin numbers of turnoff mass and metallicities on the yield grid */ 
+		long mass_bin = get_bin_number((*e.agb_grid).m, (*e.agb_grid).n_m - 1l, 
+			turnoff_mass); 
+		long z_bin = get_bin_number((*e.agb_grid).z, (*e.agb_grid).n_z - 1l, 
+			Z_stars); 
+
+		/* Put the masses and metallicities to interpolate from here */ 
+		double masses[2]; 
+		double metallicities[2]; 
+		double yields[2][2]; 
+
+		if (z_bin == -1l) {
+			/* Stellar metallicity above or below grid, figure out which */ 
+			if (Z_stars > (*e.agb_grid).z[(*e.agb_grid).n_z - 1l]) {
+				/* 
+				 * Stellar metallicity above the grid -> extrapolate to high 
+				 * metallicities using the top two elements of the grid 
+				 */ 
+				z_bin = (*e.agb_grid).n_z - 2l; 
+			} else if (Z_stars < (*e.agb_grid).z[0]) {
+				/* 
+				 * Stellar metallicity below the grid -> extrapolate to low 
+				 * metallicities using the bottom two elements on the grid 
+				 */ 
+				z_bin = 0l; 
 			} else {
-				/* Interpolate normally otherwise */ 
-				e -> agb_grid[i][j] = interpolate(e -> agb_m[bounds[0]], mto, 
-					e -> agb_m[bounds[1]], grid[bounds[0]][j], 
-					grid[bounds[1]][j]);
-			}
+				return -1; /* error */ 
+			} 
+		} else {
+			/* Stellar metallicity on the grid, proceed as planned */ 
+		} 
+
+		metallicities[0] = (*e.agb_grid).z[z_bin]; 
+		metallicities[1] = (*e.agb_grid).z[z_bin + 1l]; 
+
+		if (mass_bin == -1l) {
+			/* Turnoff mass above or below grid, figure out which */ 
+			if (turnoff_mass > (*e.agb_grid).m[(*e.agb_grid).n_m - 1l]) {
+				/* 
+				 * Turnoff mass above the grid -> extrapolate to higher masses, 
+				 * tying the yield down to 0 at 8 Msun 
+				 */ 
+				masses[0] = (*e.agb_grid).m[(*e.agb_grid).n_m - 1l]; 
+				masses[1] = MAX_AGB_MASS; 
+				yields[0][0] = (*e.agb_grid).grid[(*e.agb_grid).n_m - 1l][z_bin]; 
+				yields[0][1] = (*e.agb_grid).grid[(
+					*e.agb_grid).n_m - 1l][z_bin + 1l]; 
+				yields[1][0] = 0; 
+				yields[1][1] = 0; 
+			} else if (turnoff_mass < (*e.agb_grid).m[0]) {
+				/* 
+				 * Turnoff mass below the grid -> extrapolate to lower masses, 
+				 * tying the yield down to 0 at 0 Msun 
+				 */ 
+				masses[0] = MIN_AGB_MASS; 
+				masses[1] = (*e.agb_grid).m[0]; 
+				yields[0][0] = 0; 
+				yields[0][1] = 0; 
+				yields[1][0] = (*e.agb_grid).grid[0][z_bin]; 
+				yields[1][1] = (*e.agb_grid).grid[0][z_bin + 1l]; 
+			} else {
+				return -1; /* error */ 
+			} 
+		} else {
+			/* Turnoff mass on the grid, proceed as planned */ 
+			masses[0] = (*e.agb_grid).m[mass_bin]; 
+			masses[1] = (*e.agb_grid).m[mass_bin + 1l]; 
+			yields[0][0] = (*e.agb_grid).grid[mass_bin][z_bin]; 
+			yields[0][1] = (*e.agb_grid).grid[mass_bin][z_bin + 1l]; 
+			yields[1][0] = (*e.agb_grid).grid[mass_bin + 1l][z_bin]; 
+			yields[1][1] = (*e.agb_grid).grid[mass_bin + 1l][z_bin + 1l]; 
 		}
-		free(bounds);
+
+		return interpolate2D(
+			masses, 
+			metallicities, 
+			yields, 
+			turnoff_mass, 
+			Z_stars); 
 	}
 
 }
-
-/*
- * Returns a pointer to two integers. The first is the index of the number in the 
- * array that is the largest number smaller than the value. The second is the 
- * index of the number in the array the is the smaller number larger than the 
- * value. In other words, they're the bounding indeces that can be used for 
- * interpolation. 
- * 
- * This function assumes that the array arr is organized from least to 
- * greatest. This will always be true by how VICE is written.  
- * 
- * Args:
- * =====
- * arr:		The array to find bounding indeces within
- * value:		The value to find bounding indeces for
- * length:		The number of elements in the array arr
- */
-static int *get_bounds(double *arr, double value, int length) {
-
-	/* Allocate memory to be returned */ 
-	int *indeces = (int *) malloc (2 * sizeof(int));
-
-	if (value < arr[0]) { 		// If the value is below the grid 
-		indeces[0] = -1;
-		indeces[1] = 0;
-		return indeces;
-	} else {
-		int i;
-		for (i = 0; i < length; i++) { 
-			if (arr[i] >= value) { 			// If it is on the grid 
-				indeces[0] = i - 1;
-				indeces[1] = i;
-				return indeces;
-			} else {
-				continue;
-			}
-		}
-		/* If the code gets here, the value is above the grid */ 
-		indeces[0] = length - 1;
-		indeces[1] = length;
-		return indeces;
-	}
-
-}
-
-/*
- * Interpolates between two yields in either mass or metallicity space. This is 
- * the basic interpolation function in one dimension. 
- * 
- * Args:
- * =====
- * mz1:		The lower mass/metallicity to interpolate from
- * mzto:		The mass/metallicity dependent yield being approximated
- * mz2:		The upper mass/metallicity to interpolate from
- * y1:			The yield at mz1
- * y2:			The yield at mz2
- */
-static double interpolate(double mz1, double mzto, double mz2, double y1, 
-	double y2) {
-
-	return y1 + (y2 - y1) / (mz2 - mz1) * (mzto - mz1);
-
-}
-
-
 
 
 

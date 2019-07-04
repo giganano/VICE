@@ -2,5 +2,5 @@
 .PHONY: clean
 
 clean: 
-	rm -f grid.c 
+	rm -f *.c 
 

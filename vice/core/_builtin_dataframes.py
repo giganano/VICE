@@ -1,13 +1,12 @@
-# cython: language_level=3, boundscheck=False
-"""
-This file handles yield settings as well as lookup features related to that. 
-This includes the global dataframes like sources and solar_z. 
-"""
+""" 
+This file scripts VICE's built-in dataframes. 
+""" 
 
-__all__ = ["atomic_number", "solar_z", "sources"]
-__all__ = [str(i) for i in __all__] # appease python 2 strings 
+from __future__ import absolute_import 
+from . import _dataframe as df 
 
-from . import _data_utils as _du
+__all__ = ["atomic_number", "solar_z", "sources"] 
+__all__ = [str(i) for i in __all__] 	# appease python2 strings 
 
 """
 The following are instances of VICE's dataframe intended for both user 
@@ -49,10 +48,10 @@ channel. The enrichment channels:
 	NSNS:		neutron star - neutron star mergers 
 While some elements recognized here are believed to be enriched by mergers of 
 binary neutron stars, this is not modeled in the current version of VICE. 
-"""
+""" 
 
 #------------------------- ATOMIC NUMBER DATAFRAME -------------------------# 
-atomic_number = _du._noncustomizable_dataframe({
+atomic_number = df.noncustomizable({
 	"c":		6, 
 	"n":		7, 
 	"o":		8, 
@@ -129,10 +128,10 @@ atomic_number = _du._noncustomizable_dataframe({
 	"tl":  		81, 
 	"pb": 		82, 
 	"bi": 		83 
-})
+}, "atomic number")  
 
 #------------------------- SOLAR ABUNDANCE DATAFRAME -------------------------# 
-solar_z = _du._noncustomizable_dataframe({
+solar_z = df.noncustomizable({
 	"c":		2.36e-3,  
 	"n":		6.91e-4,  
 	"o":		5.72e-3,  
@@ -208,12 +207,11 @@ solar_z = _du._noncustomizable_dataframe({
 	"hg": 		1.46e-10, 
 	"tl":  		1.19e-9, 
 	"pb": 		8.51e-9, 
-	"bi": 		1.53e-10
-}) 
-
+	"bi": 		1.53e-10 
+}, "solar metallicity")  
 
 #----------------------------- SOURCES DATAFRAME -----------------------------# 
-sources = _du._noncustomizable_dataframe({
+sources = df.noncustomizable({
 	"c":		["CCSNE", "AGB"], 
 	"n":		["CCSNE", "AGB"], 
 	"o":		["CCSNE"], 
@@ -290,7 +288,5 @@ sources = _du._noncustomizable_dataframe({
 	"tl": 		["AGB", "NSNS"], 
 	"pb": 		["AGB", "NSNS"], 
 	"bi": 		["AGB", "NSNS"] 
-})
-
-
+}, "source") 
 
