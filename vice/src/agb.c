@@ -71,19 +71,6 @@ extern double m_AGB(SINGLEZONE sz, ELEMENT e) {
 				(*sz.ism).star_formation_history[sz.timestep - i] * sz.dt * 
 				((*sz.ssp).msmf[i] - (*sz.ssp).msmf[i + 1l])
 			); 
-
-
-
-			/* The metallicity of the stars that formed at that timestep */
-			// double Z = scale_metallicity(sz, i); 
-
-			/* From section 4.4 of VICE's science documentation */ 
-			// mass += (
-			// 	get_AGB_yield(e, Z, 
-			// 		main_sequence_turnoff_mass(sz.current_time - i * sz.dt)) * 
-			// 	(*sz.ism).star_formation_history[i] * 
-			// 	sz.dt * 
-			// 	((*sz.ssp).msmf[i] - (*sz.ssp).msmf[i + 1l])); 
 			
 		} 
 
