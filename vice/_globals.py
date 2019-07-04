@@ -57,7 +57,8 @@ _RECOGNIZED_ELEMENTS_ = tuple(["c", "n", "o", "f", "ne", "na",
 	"sn", "sb", "te", "i", "xe", "cs", "ba", "la", "ce", "pr", "nd", "sm", 
 	"eu", "gd", "tb", "dy", "ho", "er", "tm", "yb", "lu", "hf", "ta", "w", 
 	"re", "os", "ir", "pt", "au", "hg", "tl", "pb", "bi"])
-_RECOGNIZED_IMFS_ = tuple(["kroupa", "salpeter"])
+_RECOGNIZED_IMFS_ = tuple(["kroupa", "salpeter"]) 
+_RECOGNIZED_RIAS_ = tuple(["plaw", "exp"]) 
 
 
 def _DEFAULT_FUNC_(t):
