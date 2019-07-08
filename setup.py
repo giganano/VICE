@@ -105,13 +105,21 @@ def find_package_data():
 	# Finds data files associated with each package 
 	packages = find_packages()
 	data = {}
-	data_extensions = [".dat", ".so", ".obj"] 
+	data_extensions = [".dat", ".so", ".obj", ".o"]  
 	for i in packages: 
 		""" 
-		VICE's C library is compiled into a shared object using make, and the 
-		associated .so file is moved to the install directory as well. The 
-		build data is stored in a .obj output file -> moving that allows the 
-		show_build() function to work properly. 
+		Extensions 
+		========== 
+		.dat :: files holding built-in data 
+		.obj :: a pickled object -> currently the only instance is the pickled 
+			dictionary containing version info of build dependencies 
+		.so :: shared object 
+		.o :: compiled C code 
+
+		VICE's C extensions are compiled individually and wrapped into a 
+		shared object using make. All of this output is moved to the install 
+		directory to allow forward compatibility with future features that may 
+		require it. 
 		""" 
 		data[i] = [] 
 		for j in os.listdir(i.replace('.', '/')): 
