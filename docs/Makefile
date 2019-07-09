@@ -1,13 +1,5 @@
  	
-.PHONY: tests tests3 tutorial clean
-
-tests:
-	python test.py
-	rm -r */
-
-tests3:
-	python3 test.py
-	rm -r */
+.PHONY: tutorial clean
 
 tutorial: 
 	jupyter notebook QuickStartTutorial.ipynb
