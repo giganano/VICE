@@ -95,13 +95,9 @@ extern void ccsne_yield_free(CCSNE_YIELD_SPECS *ccsne_yield) {
  * header: ccsne.h 
  */ 
 extern double mdot_ccsne(SINGLEZONE sz, ELEMENT e) {
-
-	double Z = scale_metallicity(sz, sz.timestep); 
-	double yield = get_cc_yield(e, Z); 
-	return yield * (*sz.ism).star_formation_rate; 
-
-	// return (get_cc_yield(e, scale_metallicity(sz, sz.timestep)) * 
-	// 	(*sz.ism).star_formation_rate); 
+	
+	return (get_cc_yield(e, scale_metallicity(sz, sz.timestep)) * 
+		(*sz.ism).star_formation_rate); 
 
 }
 
