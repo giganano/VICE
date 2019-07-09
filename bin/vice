@@ -207,7 +207,7 @@ else:
 		eta = args.eta, 
 		enhancement = args.enhancement, 
 		delay = args.delay, 
-		ria = args.ria, 
+		RIa = args.ria, 
 		Mg0 = args.mg0, 
 		smoothing = args.smoothing, 
 		tau_ia = args.tau_ia, 

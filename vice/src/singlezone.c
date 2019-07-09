@@ -122,7 +122,7 @@ static void singlezone_timestepper(SINGLEZONE *sz) {
 	 */ 
 	int i; 
 	update_gas_evolution(sz); 
-	for (i = 0; i < (*sz).n_elements; i++) {
+	for (i = 0; i < (*sz).n_elements; i++) { 
 		update_element_mass(*sz, (*sz).elements[i]); 
 		/* Now the ISM and this element are at the next timestep */ 
 		sz -> elements[i] -> Z[(*sz).timestep + 1l] = (
@@ -132,6 +132,10 @@ static void singlezone_timestepper(SINGLEZONE *sz) {
 
 	sz -> current_time += (*sz).dt; 
 	sz -> timestep++; 
+
+	// for (i = 0; i < (*sz).n_elements; i++) {
+	// 	printf("Z(%s) = %e\n", )
+	// }
 	
 }
 
@@ -168,7 +172,8 @@ static int singlezone_setup(SINGLEZONE *sz) {
 			(*sz).output_times[(*sz).n_outputs - 1l] / (*sz).dt) + 10l)) { 
 			return 1; 
 		} else {
-			sz -> elements[i] -> mass = 0; 
+			sz -> elements[i] -> mass = 0.0; 
+			sz -> elements[i] -> Z[0l] = 0.0; 
 		} 
 	} 
 
@@ -276,8 +281,13 @@ static void update_element_mass(SINGLEZONE sz, ELEMENT *e) {
  */ 
 static void update_element_mass_sanitycheck(ELEMENT *e) {
 
-	/* no negative masses allowed; avoid ZeroDvisionErrors */ 
-	if ((*e).mass < 0) e -> mass = 1e-12; 	
+	/* 
+	 * Allowing a zero element mass does not produce numerical artifacts in 
+	 * the ISM evolution -> just -infs in the associated [X/H] values. 
+	 * Moreover, 10^-12 Msun may be quite a bit of mass for some particularly 
+	 * heavy elements. Thus a lower bound of a true zero is implemented here. 
+	 */ 
+	if ((*e).mass < 0) e -> mass = 0; 	
 
 }
 
@@ -305,41 +315,5 @@ extern double get_stellar_mass(SINGLEZONE sz) {
 	return mass; 
 
 } 
-
-#if 0 
-static void print_state(SINGLEZONE sz) {
-
-	printf("sz.name: %s\n", sz.name); 
-	printf("sz.dt = %lf\n", sz.dt); 
-	printf("sz.current_time = %lf\n", sz.current_time); 
-	printf("sz.timestep = %ld\n", sz.timestep); 
-	printf("sz.n_outputs = %ld\n", sz.n_outputs); 
-	printf("sz.Z_solar = %lf\n", sz.Z_solar); 
-	printf("sz.n_elements = %d\n", sz.n_elements); 
-
-	int i; 
-	for (i = 0; i < sz.n_elements; i++) {
-		printf("Z(%s) = %e\n", (*sz.elements[i]).symbol, 
-			(*sz.elements[i]).Z[sz.timestep]); 
-		printf("Zin(%s) = %e\n", (*sz.elements[i]).symbol, 
-			(*sz.elements[i]).Zin[sz.timestep]); 
-		printf("mass(%s) = %e\n", (*sz.elements[i]).symbol, 
-			(*sz.elements[i]).mass); 
-		printf("solar(%s) = %e\n", (*sz.elements[i]).symbol, 
-			(*sz.elements[i]).solar); 
-
-	}
-
-}
-#endif 
-
-
-
-
-
-
-
-
-
 
 

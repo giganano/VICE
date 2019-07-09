@@ -8,6 +8,7 @@
 /* ---------- Static function comment headers not duplicated here ---------- */ 
 static void update_gas_evolution_sanitycheck(SINGLEZONE *sz); 
 static double get_SFE_timescale(SINGLEZONE sz); 
+static double get_ism_mass_SFRmode(SINGLEZONE sz); 
 
 /* 
  * Allocate memory for and return a pointer to an ISM struct. Automatically 
@@ -72,19 +73,22 @@ extern int setup_gas_evolution(SINGLEZONE *sz) {
 		sz -> ism -> mass = (*(*sz).ism).specified[0]; 
 		sz -> ism -> star_formation_rate = ((*(*sz).ism).mass / 
 			get_SFE_timescale(*sz)); 
-		sz -> ism -> infall_rate = 0.0; 
+		sz -> ism -> infall_rate = NAN; /* lower bound at 10^-12 */  
 	} else if (!strcmp((*(*sz).ism).mode, "ifr")) {
 		/* initial gas supply set by python in this case */ 
 		sz -> ism -> infall_rate = (*(*sz).ism).specified[0]; 
 		sz -> ism -> star_formation_rate = ((*(*sz).ism).mass / 
 			get_SFE_timescale(*sz)); 
-	} else if (!strcmp((*(*sz).ism).mode, "sfr")) {
+	} else if (!strcmp((*(*sz).ism).mode, "sfr")) { 
 		sz -> ism -> star_formation_rate = (*(*sz).ism).specified[0]; 
-		sz -> ism -> mass = ((*(*sz).ism).star_formation_rate * 
-			get_SFE_timescale(*sz)); 
+		sz -> ism -> mass = get_ism_mass_SFRmode(*sz); 
+		sz -> ism -> infall_rate = NAN; 
 	} else {
 		return 1; 		/* unrecognized mode */ 
 	} 
+
+	/* Run the sanity checks to impose the lower bound */ 
+	update_gas_evolution_sanitycheck(sz); 
 
 	/* Allocate memory for the star formation history at each timestep */ 
 	sz -> ism -> star_formation_history = (double *) malloc (
@@ -140,9 +144,8 @@ extern int update_gas_evolution(SINGLEZONE *sz) {
 			get_SFE_timescale(*sz)); 
 	} else if (!strcmp((*(*sz).ism).mode, "sfr")) {
 		sz -> ism -> star_formation_rate = (
-			*(*sz).ism).specified[(*sz).timestep + 1l]; 
-		double dMg = ((*(*sz).ism).star_formation_rate * 
-			get_SFE_timescale(*sz) - (*(*sz).ism).mass); 
+			*(*sz).ism).specified[(*sz).timestep + 1l];  
+		double dMg = get_ism_mass_SFRmode(*sz) - (*(*sz).ism).mass; 
 		sz -> ism -> infall_rate = (
 			(dMg - mass_recycled(*sz, NULL)) / (*sz).dt + 
 			(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz)
@@ -168,8 +171,6 @@ extern int update_gas_evolution(SINGLEZONE *sz) {
  * ======= 
  * The timescale relating star formation rate and gas supply in Gyr at the 
  * next timestep. 
- * 
- * header: ism.h 
  */ 
 static double get_SFE_timescale(SINGLEZONE sz) {
 
@@ -185,6 +186,41 @@ static double get_SFE_timescale(SINGLEZONE sz) {
 } 
 
 /* 
+ * Determines the mass of the ISM at the NEXT timestep when the simulation is 
+ * ran in SFR mode. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		The singlezone object for the current simulation 
+ * 
+ * Returns 
+ * ======= 
+ * The mass of the ISM at the next timestep 
+ */ 
+static double get_ism_mass_SFRmode(SINGLEZONE sz) { 
+
+	/* 
+	 * The following are the analytically determined solutions for the gas 
+	 * supply under the equations in section 3.1 of VICE's science 
+	 * documentation. Special consideration must be taken aside from a simple 
+	 * SFR x get_SFE_timescale approach because this introduces numerical 
+	 * artifacts when the star formation rate is low. 
+	 */ 
+
+	if ((*sz.ism).schmidt) { 
+		return pow( 
+			(*sz.ism).star_formation_rate * 
+			(*sz.ism).tau_star[sz.timestep + 1l] * 
+			pow((*sz.ism).mgschmidt, (*sz.ism).schmidt_index), 
+			1 / (1 + (*sz.ism).schmidt_index)); 
+	} else {
+		return ((*sz.ism).star_formation_rate * 
+			(*sz.ism).tau_star[sz.timestep + 1l]); 
+	}
+
+}
+
+/* 
  * Performs a sanity check on the ISM parameters immediately after they 
  * were updated one timestep in a singlezone simulation. 
  * 
@@ -194,14 +230,19 @@ static double get_SFE_timescale(SINGLEZONE sz) {
  */ 
 static void update_gas_evolution_sanitycheck(SINGLEZONE *sz) {
 
-	/* no negative masses allowed; avoid ZeroDvisionErrors */ 
-	if ((*(*sz).ism).mass < 0) { 
+	/* 
+	 * All three of the ISM mass, the star formation rate, and infall rate 
+	 * are forced to be positive definite by imposing a lower bound at 
+	 * 10^-12 in the adopted unit system. This avoids unphysical parameter 
+	 * spaces and numerical artifacts at zero. 
+	 */ 
+	if ((*(*sz).ism).mass < 1e-12) { 
 		sz -> ism -> mass = 1e-12; 
 	} else {} 
-	if ((*(*sz).ism).star_formation_rate < 0) { 
+	if ((*(*sz).ism).star_formation_rate < 1e-12) { 
 		sz -> ism -> star_formation_rate = 1e-12;  
 	} else {} 
-	if ((*(*sz).ism).infall_rate < 0) {
+	if ((*(*sz).ism).infall_rate < 1e-12) {
 		sz -> ism -> infall_rate = 1e-12; 
 	} else {} 
 
