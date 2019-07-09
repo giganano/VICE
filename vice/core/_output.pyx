@@ -518,7 +518,7 @@ cdef class output:
 		"""
 		return self._sneia_yields 
 
-	def show(self, key): 
+	def show(self, key, xlim = None, ylim = None): 
 		""" 
 		Show a plot of the given quantity referenced by a keyword argument. 
 
@@ -535,6 +535,10 @@ cdef class output:
 			Users can also specify an argument of the format key1-key2 where 
 			key1 and key2 are elements of the history output. It will then 
 			plot key1 against key2 and show it to the user. 
+		xlim :: array-like object containing two real numbers 
+			The x-limits to impose on the shown plot 
+		ylim :: array-like object containing two real numbers 
+			The y-limits to impose on the shown plot 
 
 		Raises 
 		====== 
@@ -543,6 +547,7 @@ cdef class output:
 		ImportError/ModuleNotFoundError :: 
 			::	matplotlib version >= 2 is not found in the user's system. 
 				(The ModuleNotFoundError is raised in python version >= 3.6.) 
+		All other errors are raised by matplotlib.pyplot.show
 
 		Notes 
 		===== 
@@ -677,11 +682,19 @@ function to fail. Install matplotlib >= 2 to prevent this in the future. \
 		ax.set_ylabel(ylabel)
 		ax.plot(x, y, c = 'w') 
 
-		# Widen the axes if they're too narrow 
-		if (ax.get_ylim()[1] - ax.get_ylim()[0]) < 0.5: 
+		# do what we can with the specified limits, both x and y 
+		if xlim is not None: 
+			ax.set_xlim(xlim) 
+		else: 
+			pass 
+
+		if ylim is not None: 
+			ax.set_ylim(ylim) 
+		elif (ax.get_ylim()[1] - ax.get_ylim()[0]) < 0.5: 
+			# widen the axes if they're particularly narrow 
 			mean = sum(ax.get_ylim()) / 2. 
 			ax.set_ylim([mean - 0.25, mean + 0.25]) 
-		else:
+		else: 
 			pass 
 
 		# Show the plot, then call it a day when the user closes it 
