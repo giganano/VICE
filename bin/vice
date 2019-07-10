@@ -22,38 +22,35 @@ except NameError:
 	pass 
 import argparse 
 
-if "-r" in sys.argv: 
-	print(vice._globals._RECOGNIZED_ELEMENTS_)
-	sys.argv.remove("-r")
+if "-r" in sys.argv or "--recognized" in sys.argv: 
+	print(vice._globals._RECOGNIZED_ELEMENTS_) 
+	if "-r" in sys.argv: 
+		sys.argv.remove("-r") 
+	if "--recognized" in sys.argv: 
+		sys.argv.remove("--recognized") 
 	if len(sys.argv) == 1: 
-		sys.exit()
-	else:
-		pass 
-elif "--recognized" in sys.argv:
-	print(vice._globals._RECOGNIZED_ELEMENTS_)
-	sys.argv.remove("--recognized") 
-	if len(sys.argv) == 1: 
-		sys.exit()
-	else:
-		pass
-else:
-	pass
+		sys.exit() 
+else: 
+	pass 
 
 parser = argparse.ArgumentParser(
-	description = """Run simple simulations of single-zone models of galactic 
-chemical evolution from the linux command line.""", 
-	epilog = """The functionality available on the command line is severely 
-limited compared to the full python capabilities of VICE. In python, the user 
-can specify their own functions of time as well as change their nucleosynthetic 
-yield settings. From the command line, users are restricted to smooth 
-evolutionary histories and their default yield settings.
+	description = """\
+Run simple simulations of single-zone models of galactic chemical evolution \
+from the linux command line.""", 
+	epilog = """\
+The functionality available on the command line is severely limited compared \
+to the full python capabilities of VICE. In python, the user can specify \
+their own functions of time as well as change their nucleosynthetic yield \
+settings. From the command line, users are restricted to smooth evolutionary \
+histories and their default yield settings. 
 
-For details on the implementation of VICE, see the associated science 
+For details on the implementation of VICE, see the associated science \
 documentation at <https://github.com/giganano/VICE/tree/master/docs>.""") 
 
 parser.add_argument("-s", "--schmidt", 
-	help = """Implement star formation efficiency driven by the 
-Kennicutt-Schmidt Law (i.e. SFE ~ Mgas^n)""", 
+	help = """\
+Implement star formation efficiency driven by the Kennicutt-Schmidt Law (i.e. \
+SFE ~ Mgas^n)""", 
 	action = "store_true") 
 
 parser.add_argument("-f", "--force", 
@@ -65,16 +62,18 @@ parser.add_argument("-r", "--recognized",
 	action = "store_true") 
 
 parser.add_argument("--timedep", 
-	help = """The time dependence of the evolutionary model. Either 
-'constant', 'exp' (exponential decay), or 'linexp' (linear-exponential)""", 
+	help = """\
+The time dependence of the evolutionary model. Either 'constant', 'exp' \
+(exponential decay), or 'linexp' (linear-exponential)""", 
 	type = str, 
 	default = "constant") 
 
 parser.add_argument("--mode", 
-	help = """The specification of the evolutionary model. Either 'ifr' for 
-a specified infall rate, 'sfr' for a specified star formation rate, or 
-'gas' for a specified gas supply. The time evolution of this parameter is set 
-by the argument --timedep""", 
+	help = """\
+The specification of the evolutionary model. Either 'ifr' for a specified \
+infall rate, 'sfr' for a specified star formation rate, or 'gas' for a \
+specified gas supply. The time evolution of this parameter is set by the \
+argument --timedep""", 
 	type = str, 
 	default = "ifr") 
 
@@ -84,22 +83,25 @@ parser.add_argument("--name",
 	default = "onezonemodel")  
 
 parser.add_argument("--normalization", 
-	help = """A fiducial value for the infall rate, gas supply, or star 
-formation rate in Msun [yr^-1] (Default: 9.1). In the case of a constant 
-time dependence, this will be the value of the constant itself. For exponential 
-and linear-exponential time dependencies, this sets the prefactor.""", 
+	help = """\
+A fiducial value for the infall rate, gas supply, or star formation rate in \
+Msun [yr^-1] (Default: 9.1). In the case of a constant time dependence, this \
+will be the value of the constant itself. For exponential and \
+linear-exponential time dependencies, this sets the prefactor.""", 
 	type = float, 
 	default = 9.1) 
 
 parser.add_argument("--timescale", 
-	help = """The e-folding timescale of the infall rate, gas supply, or star 
-formation rate in Gyr (Default: 4.0)""", 
+	help = """\
+The e-folding timescale of the infall rate, gas supply, or star formation \
+rate in Gyr (Default: 4.0)""", 
 	type = float, 
 	default = 4.) 
 
 parser.add_argument("--elements", 
-	help = """Elements to simulate the enrichment for separated by 
-underscores (Default: \"fe_sr_o\")""",
+	help = """\
+Elements to simulate the enrichment for separated by underscores \
+(Default: \"fe_sr_o\")""",
 	type = str, 
 	default = "fe_sr_o") 
 
@@ -109,8 +111,9 @@ parser.add_argument("--IMF",
 	default = "kroupa") 
 
 parser.add_argument("--eta", 
-	help = """The mass loading factor (ratio of outflow to star formation 
-rates) (Default: 2.5)""", 
+	help = """\
+The mass loading factor (ratio of outflow to star formation rates) \
+(Default: 2.5)""", 
 	type = float, 
 	default = 2.5) 
 
@@ -125,14 +128,16 @@ parser.add_argument("--delay",
 	default = 0.15) 
 
 parser.add_argument("--RIa", 
-	help = """The delay-time distribution for SNe Ia to adopt ('exp' or 
-'plaw') (Default: \"plaw\")""", 
+	help = """\
+The delay-time distribution for SNe Ia to adopt ('exp' or 'plaw') \
+(Default: \"plaw\")""", 
 	type = str, 
 	default = "plaw") 
 
 parser.add_argument("--Mg0", 
-	help = """The gas supply at time 0 in Msun (only relevant for infall 
-histories) (Default: 6.0e9)""", 
+	help = """\
+The gas supply at time 0 in Msun (only relevant for infall histories) \
+(Default: 6.0e9)""", 
 	type = float, 
 	default = 6.0e9) 
 
@@ -142,8 +147,9 @@ parser.add_argument("--smoothing",
 	default = 0)
 
 parser.add_argument("--tau_ia", 
-	help = """The e-folding timescale for SNe Ia in Gyr (only relevant for 
---ria=\"exp\") (Default: 1.5)""", 
+	help = """\
+The e-folding timescale for SNe Ia in Gyr (only relevant for --ria=\"exp\") \
+(Default: 1.5)""", 
 	type = float, 
 	default = 1.5) 
 
@@ -158,20 +164,22 @@ parser.add_argument("--dt",
 	default = 0.01) 
 
 parser.add_argument("--recycling", 
-	help = """The recycling fraction (continuous if a negative number) 
-(Default: -1)""", 
+	help = """\
+The recycling fraction (continuous if a negative number) (Default: -1)""", 
 	type = float, 
 	default = -1)
 
 parser.add_argument("--MgSchmidt", 
-	help = """The normalization of the gas supply in Msun when implementing 
+	help = """\
+The normalization of the gas supply in Msun when implementing \
 Kennicutt-Schmidt Law star formation efficiency (Default: 6.0e9)""", 
 	type = float, 
 	default = 6.0e9) 
 
 parser.add_argument("--schmidt_index", 
-	help = """The power law index on Kennicutt-Schidt Law star formation 
-efficiency (Default: 0.5)""", 
+	help = """\
+The power law index on Kennicutt-Schidt Law star formation efficiency \
+(Default: 0.5)""", 
 	type = float, 
 	default = 0.5) 
 
