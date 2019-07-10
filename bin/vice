@@ -207,7 +207,7 @@ else:
 	else: 
 		raise ValueError("Unrecognized time dependence: %s" % (args.timedep)) 
 
-	metadata = dict(
+	params = dict(
 		name = args.name, 
 		func = function, 
 		mode = args.mode, 
@@ -229,5 +229,5 @@ else:
 	)
 
 	outtimes = [i * args.dt for i in range(int(args.end / args.dt) + 1)] 
-	vice.singlezone(**metadata).run(outtimes, overwrite = args.force)
+	vice.singlezone(**params).run(outtimes, overwrite = args.force)
 

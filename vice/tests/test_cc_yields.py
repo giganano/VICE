@@ -35,7 +35,7 @@ def main():
 			for k in _ROTATION_[i]: 
 				for l in _IMF_: 
 					for m in _METHOD_: 
-						metadata = dict(
+						params = dict(
 							study = i, 
 							MoverH = j, 
 							rotation = k, 
@@ -47,7 +47,7 @@ def main():
 						success = True
 						for elem in _RECOGNIZED_ELEMENTS_: 
 							try: 
-								foo = fractional(elem, **metadata) 
+								foo = fractional(elem, **params) 
 								assert 0 <= foo[0] < 1
 								if foo[0] == 0: 
 									assert m.isnan(foo[1])

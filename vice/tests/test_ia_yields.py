@@ -39,18 +39,18 @@ def main():
 		for j in _MODEL_[i]: 
 			success_single = True 
 			success_fractional = True 
-			metadata = dict(
+			params = dict(
 				study = i, 
 				model = j
 			) 
 			for k in _RECOGNIZED_ELEMENTS_: 
 				try: 
-					foo = single(k, **metadata) 
+					foo = single(k, **params) 
 				except: 
 					success_single = False 
 				for n in _N_: 
 					try: 
-						foo = fractional(k, n = n, **metadata) 
+						foo = fractional(k, n = n, **params) 
 						assert 0 <= foo < 1
 					except: 
 						success_fractional = False 

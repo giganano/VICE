@@ -98,7 +98,7 @@ def main():
 	output_tracker = dict(zip(keys, [0, 0])) 
 	history_tracker = dict(zip(keys, [0, 0])) 
 	mdf_tracker = dict(zip(keys, [0, 0])) 
-	metadata = {} 
+	params = {} 
 	for i in _MODES_: 
 		for j in _IMF_: 
 			for k in _ETA_: 
@@ -108,18 +108,18 @@ def main():
 							for o in _TAU_STAR_: 
 								for p in _SCHMIDT_: 
 									for q in _AGB_MODEL_: 
-										metadata["elements"] = ["fe", "o", "c"]  
-										metadata["mode"] = i 
-										metadata["IMF"] = j 
-										metadata["eta"] = k 
-										metadata["Zin"] = l 
-										metadata["recycling"] = m 
-										metadata["RIa"] = n 
-										metadata["tau_star"] = o 
-										metadata["schmidt"] = p 
-										metadata["agb_model"] = q 
-										metadata["dt"] = 0.05
-										results = test_parameters(**metadata) 
+										params["elements"] = ["fe", "o", "c"]  
+										params["mode"] = i 
+										params["IMF"] = j 
+										params["eta"] = k 
+										params["Zin"] = l 
+										params["recycling"] = m 
+										params["RIa"] = n 
+										params["tau_star"] = o 
+										params["schmidt"] = p 
+										params["agb_model"] = q 
+										params["dt"] = 0.05
+										results = test_parameters(**params) 
 										if results["singlezone"]: 
 											singlezone_tracker["success"] += 1
 										else:

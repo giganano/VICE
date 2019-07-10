@@ -36,7 +36,7 @@ def main():
 					success = True 
 					message = "%s :: %s :: %s :: %g :: " % (i, j, k, z) 
 					for elem in _RECOGNIZED_ELEMENTS_: 
-						metadata = dict(
+						params = dict(
 							mstar = _MSTAR_, 
 							Z = z, 
 							IMF = k, 
@@ -45,7 +45,7 @@ def main():
 						)
 						if not (i == "karakas10" and atomic_number[elem] > 28): 
 							try: 
-								mass, times = ssp(elem, **metadata) 
+								mass, times = ssp(elem, **params) 
 								assert mass[-1] < _MSTAR_ 
 							except: 
 								success = False 
