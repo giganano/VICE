@@ -7,11 +7,11 @@ except NameError:
 	ModuleNotFoundError = ImportError
 try: 
 	import vice
-except (ImportError, ModuleNotFoundError):
-	message = "This software requires the Versatile Integrator for Chemical "
-	message += "Evolution (VICE). Source code and installation instructions "
-	message += "can be found at <http://github.com/giganano/VICE.git>."
-	raise ImportError(message) 
+except (ImportError, ModuleNotFoundError): 
+	raise ModuleNotFoundError("""\
+This software requires the Versatile Integrator for Chemical Evolution \
+(VICE). Source code and installation instrucitons can be found at \
+<http://github.com/giganano/VICE.git>.""")
 import math as m 
 import sys 
 import os 
@@ -23,14 +23,14 @@ except NameError:
 import argparse 
 
 if "-r" in sys.argv: 
-	print(vice._RECOGNIZED_ELEMENTS)
+	print(vice._globals._RECOGNIZED_ELEMENTS_)
 	sys.argv.remove("-r")
 	if len(sys.argv) == 1: 
 		sys.exit()
 	else:
 		pass 
 elif "--recognized" in sys.argv:
-	print(vice._RECOGNIZED_ELEMENTS)
+	print(vice._globals._RECOGNIZED_ELEMENTS_)
 	sys.argv.remove("--recognized") 
 	if len(sys.argv) == 1: 
 		sys.exit()
@@ -103,7 +103,7 @@ underscores (Default: \"fe_sr_o\")""",
 	type = str, 
 	default = "fe_sr_o") 
 
-parser.add_argument("--imf", 
+parser.add_argument("--IMF", 
 	help = "The stellar initial mass function to assume (Default: \"kroupa\")", 
 	type = str, 
 	default = "kroupa") 
@@ -124,13 +124,13 @@ parser.add_argument("--delay",
 	type = float, 
 	default = 0.15) 
 
-parser.add_argument("--ria", 
+parser.add_argument("--RIa", 
 	help = """The delay-time distribution for SNe Ia to adopt ('exp' or 
 'plaw') (Default: \"plaw\")""", 
 	type = str, 
 	default = "plaw") 
 
-parser.add_argument("--mg0", 
+parser.add_argument("--Mg0", 
 	help = """The gas supply at time 0 in Msun (only relevant for infall 
 histories) (Default: 6.0e9)""", 
 	type = float, 
@@ -182,9 +182,10 @@ parser.add_argument("--end",
  
 if len(sys.argv) == 1: 
 	parser.print_usage() 
-	print("""To run VICE over the default parameters here, adding '-f' will 
-achieve this, overwriting an existing onezonemodel.vice output in the current 
-working directory.""") 
+	print("""\
+To run VICE over the default parameters here, adding '-f' will achieve this, \
+overwriting an existing onezonemodel.vice output in the current working \
+directory.""") 
 	parser.exit()
 else:
 	args = parser.parse_args() 
@@ -192,9 +193,9 @@ else:
 	if args.timedep == "constant": 
 		function = lambda t: args.normalization 
 	elif args.timedep == "exp": 
-		function = lambda t: args.normalization * m.exp( -t / args.timescale ) 
+		function = lambda t: args.normalization * m.exp(-t / args.timescale) 
 	elif args.timedep == "linexp": 
-		function = lambda t: args.normalization * t * m.exp( -t / args.timescale ) 
+		function = lambda t: args.normalization * t * m.exp(-t / args.timescale) 
 	else: 
 		raise ValueError("Unrecognized time dependence: %s" % (args.timedep)) 
 
@@ -203,12 +204,12 @@ else:
 		func = function, 
 		mode = args.mode, 
 		elements = [i.lower() for i in args.elements.split('_')], 
-		imf = args.imf, 
+		IMF = args.IMF, 
 		eta = args.eta, 
 		enhancement = args.enhancement, 
 		delay = args.delay, 
-		RIa = args.ria, 
-		Mg0 = args.mg0, 
+		RIa = args.RIa, 
+		Mg0 = args.Mg0, 
 		smoothing = args.smoothing, 
 		tau_ia = args.tau_ia, 
 		tau_star = args.tau_star, 
@@ -220,5 +221,5 @@ else:
 	)
 
 	outtimes = [i * args.dt for i in range(int(args.end / args.dt) + 1)] 
-	vice.integrator(**metadata).run(outtimes, overwrite = args.force)
+	vice.singlezone(**metadata).run(outtimes, overwrite = args.force)
 
