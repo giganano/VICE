@@ -116,18 +116,45 @@ extern double mdot_ccsne(SINGLEZONE sz, ELEMENT e) {
  * 
  * Returns 
  * ======= 
- * The interpolated yield off of the stored yield grid within the ELEMENT struct. 
+ * The interpolated yield off of the stored yield grid within the ELEMENT 
+ * struct. 
  * 
  * header: ccsne.h 
  */ 
 extern double get_cc_yield(ELEMENT e, double Z) { 
 
+	long lower_bound_idx; 
+	if (Z < CC_YIELD_GRID_MIN) {
+		/* 
+		 * Metallicity below the yield grid. Unless the user changes 
+		 * CC_YIELD_GRID_MIN in ccsne.h to something other than zero, this 
+		 * would be unphysical. Included as a failsafe for users modifying 
+		 * VICE. Interpolate off bottom two elements of yield grid. 
+		 */ 
+		lower_bound_idx = 0l; 
+	} else if (CC_YIELD_GRID_MIN <= Z && Z <= CC_YIELD_GRID_MAX) { 
+		/* 
+		 * Metallicity on the grid. This will always be true for simulations 
+		 * even remotely realistic without modified grid parameters. 
+		 * Interpolate off neighbroding elements of yield grid. 
+		 */ 
+		lower_bound_idx = (long) (Z / CC_YIELD_STEP); 
+	} else { 
+		/* 
+		 * Metallicity above the grid. Without modified grid parameters, this 
+		 * is unrealistically high, but included as a failsafe against 
+		 * segmentation faults. Interpolate off top two elements of yield 
+		 * grid. 
+		 */ 
+		lower_bound_idx = (long) (CC_YIELD_GRID_MAX / CC_YIELD_STEP) - 1l; 
+	} 
+
 	return interpolate(
-		(long) (Z / CC_YIELD_STEP) * CC_YIELD_STEP, 
-		(long) (Z / CC_YIELD_STEP) * CC_YIELD_STEP + CC_YIELD_STEP, 
-		(*e.ccsne_yields).yield_[(long) (Z / CC_YIELD_STEP)], 
-		(*e.ccsne_yields).yield_[(long) (Z / CC_YIELD_STEP + 1l)], 
-		Z 
+		lower_bound_idx * CC_YIELD_STEP, 
+		lower_bound_idx * CC_YIELD_STEP + CC_YIELD_STEP, 
+		(*e.ccsne_yields).yield_[lower_bound_idx], 
+		(*e.ccsne_yields).yield_[lower_bound_idx + 1l], 
+		Z
 	); 
 
 } 

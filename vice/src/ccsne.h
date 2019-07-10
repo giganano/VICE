@@ -77,7 +77,8 @@ extern double mdot_ccsne(SINGLEZONE sz, ELEMENT e);
  * 
  * Returns 
  * ======= 
- * The interpolated yield off of the stored yield grid within the ELEMENT struct. 
+ * The interpolated yield off of the stored yield grid within the ELEMENT 
+ * struct. 
  * 
  * source: ccsne.c 
  */ 
