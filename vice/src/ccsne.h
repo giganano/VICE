@@ -58,9 +58,7 @@ extern void ccsne_yield_free(CCSNE_YIELD_SPECS *ccsne_yield);
  * 
  * Returns 
  * ======= 
- * The rate of mass enrichment in Msun/Gyr. -1 if index is not between 0 
- * and the number of elements tracked by the simulation (i.e. if it would 
- * cause a segmentation fault). 
+ * The rate of mass enrichment in Msun/Gyr. 
  * 
  * source: ccsne.c 
  */ 
