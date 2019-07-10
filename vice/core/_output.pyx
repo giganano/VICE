@@ -1,6 +1,8 @@
 # cython: language_level = 3, boundscheck = False 
 """
-This file handles the history and mdf functions and the output class. 
+This file handles the history and mdf functions along with the output class. 
+These features handle VICE output automatically so that the user need not do 
+it themselves. 
 """ 
 
 from __future__ import absolute_import 

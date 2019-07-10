@@ -1,8 +1,9 @@
 /* 
- * This is the source code for the implementation of single stellar 
- * population evolution. This includes the single stellar population 
- * enrichmen simulations themselves, the main sequence mass fraction, and 
- * the cumulative return fraction. 
+ * This file implements the time evolution of quantities relevant to single 
+ * stellar populations (SSPs). In the current version of VICE, this includes 
+ * the single stellar population enrichment function, the main sequence mass 
+ * fraction, and the cumulative return fraction. In general, these features 
+ * ease the computational expense of singlezone simulations. 
  * 
  * NOTES 
  * ===== 

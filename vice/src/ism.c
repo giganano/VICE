@@ -1,3 +1,6 @@
+/* 
+ * This file implements the time evolution of an interstellar medium (ISM). 
+ */ 
 
 #include <stdlib.h> 
 #include <string.h> 

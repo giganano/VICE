@@ -1,3 +1,6 @@
+/* 
+ * All of VICE's objects are declared in this header. 
+ */ 
 
 #ifndef OBJECTS_H 
 #define OBJECTS_H 

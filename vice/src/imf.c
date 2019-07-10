@@ -1,3 +1,6 @@
+/* 
+ * This file implements stellar initial mass functions (IMFs). 
+ */ 
 
 #include <math.h> 
 #include "imf.h" 

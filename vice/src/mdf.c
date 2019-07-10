@@ -1,3 +1,7 @@
+/* 
+ * This file implemements the calculation of stellar metallicity distribution 
+ * functions (MDFs). 
+ */ 
 
 #include <stdlib.h> 
 #include <math.h> 

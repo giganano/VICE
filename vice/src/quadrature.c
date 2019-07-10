@@ -1,3 +1,7 @@
+/* 
+ * This file implements gaussian quadrature for the numerical evaluation of 
+ * integrals. 
+ */ 
 
 #include <stdlib.h> 
 #include <string.h> 

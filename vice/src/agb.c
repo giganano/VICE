@@ -1,3 +1,7 @@
+/* 
+ * This file implements the enrichment of arbitrary elements from asymptotic 
+ * giant branch (AGB) stars. 
+ */ 
 
 #include <stdlib.h> 
 #include "agb.h" 

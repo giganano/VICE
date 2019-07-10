@@ -1,3 +1,7 @@
+"""
+This file scripts pure python utility subroutines that many VICE subroutines 
+call under the hood. 
+""" 
 
 from __future__ import division 
 from .._globals import _VERSION_ERROR_ 

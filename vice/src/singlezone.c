@@ -1,3 +1,7 @@
+/* 
+ * This file implements the time evolution of a singlezone zone simulation 
+ * using the singlezone object declared in objects.h. 
+ */ 
 
 #include <stdlib.h>
 #include <string.h>  
@@ -16,8 +20,6 @@
 static void singlezone_timestepper(SINGLEZONE *sz); 
 static int singlezone_setup(SINGLEZONE *sz); 
 static void singlezone_clean(SINGLEZONE *sz); 
-static void update_element_mass(SINGLEZONE sz, ELEMENT *e); 
-static void update_element_mass_sanitycheck(ELEMENT *e); 
 
 /* 
  * Allocate memory for and return a pointer to a SINGLEZONE struct. 
@@ -132,10 +134,6 @@ static void singlezone_timestepper(SINGLEZONE *sz) {
 
 	sz -> current_time += (*sz).dt; 
 	sz -> timestep++; 
-
-	// for (i = 0; i < (*sz).n_elements; i++) {
-	// 	printf("Z(%s) = %e\n", )
-	// }
 	
 }
 
@@ -246,50 +244,7 @@ static void singlezone_clean(SINGLEZONE *sz) {
 	sz -> ssp -> msmf = NULL; 
 	sz -> output_times = NULL; 
 
-}
-
-/* 
- * Updates the mass of a single element at the current timestep. 
- * 
- * Parameters 
- * ========== 
- * sz: 		The singlezone object currently being simulated 
- * e: 		A pointer to the element to update 
- */ 
-static void update_element_mass(SINGLEZONE sz, ELEMENT *e) {
-
-	e -> mass += mdot_ccsne(sz, *e) * sz.dt; 
-	e -> mass += mdot_sneia(sz, *e) * sz.dt; 
-	e -> mass += m_AGB(sz, *e); 
-	e -> mass += mass_recycled(sz, e); 
-	e -> mass -= ((*sz.ism).star_formation_rate * sz.dt * 
-		(*e).mass / (*sz.ism).mass); 
-	e -> mass -= ((*sz.ism).enh[sz.timestep] * get_outflow_rate(sz) * sz.dt / 
-		(*sz.ism).mass * (*e).mass); 
-	e -> mass += (*sz.ism).infall_rate * sz.dt * (*e).Zin[sz.timestep]; 
-	update_element_mass_sanitycheck(e); 
-
 } 
-
-/* 
- * Performs a sanity check on a given element immediately after it's mass 
- * was updated for the next timestep. 
- * 
- * Parameters 
- * ========== 
- * e: 		A pointer to the element to sanity check 
- */ 
-static void update_element_mass_sanitycheck(ELEMENT *e) {
-
-	/* 
-	 * Allowing a zero element mass does not produce numerical artifacts in 
-	 * the ISM evolution -> just -infs in the associated [X/H] values. 
-	 * Moreover, 10^-12 Msun may be quite a bit of mass for some particularly 
-	 * heavy elements. Thus a lower bound of a true zero is implemented here. 
-	 */ 
-	if ((*e).mass < 0) e -> mass = 0; 	
-
-}
 
 /* 
  * Determine the stellar mass in a singlezone simulation 

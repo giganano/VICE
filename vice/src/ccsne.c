@@ -1,3 +1,7 @@
+/* 
+ * This file implements the enrichment of arbitrary elements from core 
+ * collapse supernovae (CCSNe). 
+ */ 
 
 #include <stdlib.h> 
 #include <string.h> 

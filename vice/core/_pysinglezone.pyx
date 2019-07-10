@@ -2,7 +2,8 @@
 """ 
 This file implements the python wrapper of the singlezone object, which 
 runs simulations under the singlezone approximation. Most of VICE is built 
-around this data structure. 
+around this data structure, and most of its subroutines are in C, found in the 
+vice/src/ directory within the root tree. 
 """ 
 
 # Python imports 

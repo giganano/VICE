@@ -1,3 +1,6 @@
+/* 
+ * This file implements all of VICE's input/output. 
+ */ 
 
 #include <stdlib.h> 
 #include <string.h> 

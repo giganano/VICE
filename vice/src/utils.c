@@ -1,3 +1,6 @@
+/* 
+ * This file implements pure utility functions. 
+ */ 
 
 #include <stdlib.h> 
 #include <math.h> 
