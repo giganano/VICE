@@ -135,8 +135,8 @@ Usage
 All of ``VICE``'s documentation is stored here under ``docs/``. 
 We recommend that users retain copies of ``VICE``'s `user's guide`__ and 
 `science documentation`__ for reference. These are PDFs with embedded 
-hyperlinks for ease of use. If installed via ``git``, the contents of this 
-directory will download automatically with the source code.  
+hyperlinks for ease of use; the contents of this directory will download 
+automatically with the source code. 
 
 If users find ``VICE`` useful, we kindly request that they star this 
 repository. This also helps us keep track of an approximate number of users. 
@@ -145,8 +145,8 @@ Tutorial
 --------
 Under ``docs/``, we provide `QuickStartTutorial.ipynb`__, a 
 ``jupyter notebook`` intended to provide first-time users with a primer on how 
-to use all of ``VICE``'s features. When installed via ``git``, users can launch 
-the tutorial immediately via ``make tutorial``. 
+to use all of ``VICE``'s features. After installation, users can launch the 
+tutorial immediately via ``make tutorial``. 
 
 From the Command Line 
 ---------------------
