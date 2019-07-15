@@ -108,8 +108,8 @@ with the installation process if it is not already there. This may require
 running ``source ~/.bash_profile`` after installation or restarting the 
 ``linux`` shell before running properly.
 
-This is currently the only install method for ``VICE``. It is currently not 
-installable via ``pip``. 
+This is currently the only installation method for ``VICE``. It is currently 
+not installable via ``pip``. 
 
 Installation Methods to Avoid 
 -----------------------------
