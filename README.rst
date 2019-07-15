@@ -127,9 +127,9 @@ include the ``base`` default environment associated with later versions of
 
 ``VICE`` will *run* within whatever ``conda`` environments users create. It 
 is only the installation process that must be ran independently of 
-``anaconda``. Implemented in ``C`` and wrapped using ``Cython`` and the 
-``python`` standard library, ``VICE`` is ``anaconda``-independent. For this 
-reason, it does not make sense to install in a ``conda`` environment anyway. 
+``anaconda``. ``VICE`` is implemented independently of ``anaconda``, and for 
+this reason, it does not make sense to run the installation process in a 
+``conda`` environment anyway.
 
 Usage 
 =====
