@@ -125,11 +125,10 @@ directory, preventing ``VICE`` from running properly. This however does not
 include the ``base`` default environment associated with later versions of 
 ``python`` and ``anaconda``. 
 
-``VICE`` will *run* within whatever ``conda`` environments users create. It 
-is only the installation process that must be ran independently of 
-``anaconda``. ``VICE`` is implemented independently of ``anaconda``, and for 
-this reason, it does not make sense to run the installation process in a 
-``conda`` environment anyway.
+``VICE`` will *run* within whatever ``conda`` environments users create; it 
+is only the installation process that this applies to. ``VICE`` is implemented 
+independently of ``anaconda``, and for this reason, it does not make sense to 
+install it in a ``conda`` environment anyway.
 
 Usage 
 =====
