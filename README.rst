@@ -98,7 +98,8 @@ Optional elements of the installation process are bound in brackets. The
 option ``--user`` should be invoked when users wish to install to their 
 ``~/.local/`` library. Users installing to multiple version of ``python`` may 
 run the tests over a specific version from the ``Makefile`` as indicated 
-above. 
+above. We caution users that running the tests for multiple versions of 
+``python`` simultaneously may cause a ``segmentation fault``. 
 
 If the user is installing to their ``~/.local/`` directory, then 
 ``~/.local/bin/`` must be on their ``PATH`` for ``VICE`` to run from the 
