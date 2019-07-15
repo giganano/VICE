@@ -130,8 +130,6 @@ def cumulative_return_fraction(age, IMF = "kroupa", m_upper = 100,
 
 	# necessary for the C subroutines 
 	cdef SSP *ssp = _ssp.ssp_initialize() 
-	# imf = IMF.lower().encode("latin-1") 
-	# ssp[0].imf = <bytes> imf 
 	_cutils.set_string(ssp[0].imf, IMF.lower()) 
 	ssp[0].m_upper = m_upper 
 	ssp[0].m_lower = m_lower 
@@ -225,8 +223,6 @@ def main_sequence_mass_fraction(age, IMF = "kroupa", m_upper = 100,
 
 	# necessary for C subroutines 
 	cdef SSP *ssp = _ssp.ssp_initialize() 
-	# imf = IMF.lower().encode("latin-1") 
-	# ssp[0].imf = <bytes> imf 
 	_cutils.set_string(ssp[0].imf, IMF.lower()) 
 	ssp[0].m_upper = m_upper 
 	ssp[0].m_lower = m_lower 
@@ -382,8 +378,6 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	# Necessary C structs for calling _ssp.single_population_enrichment
 	cdef SSP *ssp = _ssp.ssp_initialize() 
 	cdef ELEMENT *e = _element.element_initialize() 
-	# imf = IMF.lower().encode("latin-1") 
-	# ssp[0].imf = <bytes> imf 
 	_cutils.set_string(ssp[0].imf, IMF.lower()) 
 	ssp[0].m_upper = m_upper 
 	ssp[0].m_lower = m_lower 

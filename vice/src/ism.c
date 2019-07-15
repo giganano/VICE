@@ -154,6 +154,8 @@ extern int update_gas_evolution(SINGLEZONE *sz) {
 			(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz)
 		); 
 		sz -> ism -> mass += dMg; 
+	} else {
+		return 1; 
 	}
 
 	update_gas_evolution_sanitycheck(sz); 
