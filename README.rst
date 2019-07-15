@@ -113,12 +113,13 @@ installable via ``pip``.
 Installation Methods to Avoid 
 -----------------------------
 
-**Parallel Installations**: Users installing to multiple version of ``python`` 
-should not run the ``setup.py`` file in separate terminals simultaneously. It 
-is likely that this will cause at least one of the installations to fail. 
+1) **Parallel Installations**: Users installing to multiple version of 
+``python`` should not run the ``setup.py`` file in separate terminals 
+simultaneously. It is likely that this will cause at least one of the 
+installations to fail. 
 
-**conda Environments**: ``VICE`` should **never** be installed from within a 
-``conda`` environment. In this case, the installation process will run 
+2) **conda Environments**: ``VICE`` should **never** be installed from within 
+a ``conda`` environment. In this case, the installation process will run 
 smoothly, but the compiled extensions will not be placed in the correct 
 directory, preventing ``VICE`` from running properly. This however does not 
 include the ``base`` default environment associated with later versions of 
