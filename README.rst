@@ -31,7 +31,7 @@ Furthermore, ``VICE`` recognizes all astrophysically produced elements between
 carbon and bismuth: a total of 76 elements on the periodic table. 
 
 Furthermore, ``VICE`` achieves powerful computing speeds. On a system with a 
-2.7 GHz Intal Core i5 processor with 8 GB of DDR3 RAM (e.g. a base-model 
+2.7 GHz Intel Core i5 processor with 8 GB of DDR3 RAM (e.g. a base-model 
 2015 Macbook Pro), a simulation over the default parameter space with 
 typical timesteps (e.g. 10 Myr) finishes in 82 milliseconds per simulated 
 element. With finer timestepping (e.g. 1 Myr), the simulation finishes in ~6.0 
@@ -49,7 +49,7 @@ for this reason it is entirely cross-platform. ``VICE`` is however only
 packaged for installation on ``linux`` kernels, meaning that ``Windows`` users 
 must install and run ``VICE`` entirely from within the upcoming ``Windows 
 Terminal``. Users running any derivative of ``Mac OS X`` or any linux operating 
-systems such as ``CentOS`` or ``Ubuntu`` should be able to install ``VICE`` 
+system such as ``CentOS`` or ``Ubuntu`` should be able to install ``VICE`` 
 from any terminal included with the source distribution of their operating 
 system. 
 
@@ -64,16 +64,15 @@ properly:
 
 4) ``Clang >= 4.2.0 or gcc >= 4.6``
 
-**NOTE**: It is strongly recommended that users install ``dill`` along with 
-``VICE`` if they have not already. This can be achieved via ``pip install 
-dill``. ``VICE`` will run independently of ``dill``, but certain useful 
-features are made possible with ``dill``. As such, ``VICE`` is not dependent 
-on ``dill``, but users will miss out on certain features if they do not have 
-it. 
+**NOTE**: While ``VICE`` will run independently of ``dill`` and is thus not 
+dependent on it, it is nonetheless strongly recommended that users install 
+``dill``. This simply makes certain useful features possible, and can be 
+achieved via ``pip install dill``. 
 
 ``VICE``'s tutorial is dependent on ``numpy`` only weakly in that it 
-uses ``numpy``'s ``linspace`` function. However, ``VICE`` is also independent 
-of ``numpy``, and users may replace these lines in the tutorial if they so 
+uses ``numpy``'s ``linspace`` function. While ``VICE`` is compatible with 
+``numpy``, it is implemented independently of ``numpy`` and is thus not 
+dependent on it. Users may replace these lines in the tutorial if they so 
 choose. 
 
 Preferred Install Method
@@ -96,31 +95,40 @@ sequence of commands:
 	$ [make tests3]
 
 Optional elements of the installation process are bound in brackets. The 
-option ``[--user]`` should be invoked when the user wishes to install to 
-their ``~/.local/`` ``python`` library. If users are installing to multiple 
-versions of ``python``, they should not run the setup file in separate 
-terminals simultaneously. It is likely that this will cause at least one of 
-the installations to fail. In this case, tests over a specific version can be 
-ran from the ``Makefile`` as indicated above. 
-
-Users should **NOT** install ``VICE`` in a ``conda`` environment. In this case, 
-the installation process will run smoothly, but the compiled extensions will 
-not be placed in the correct install directory, and ``VICE`` will not run. 
-``VICE`` is implemented in ``C`` and wrapped for calling from python using 
-only the standard library ``ctypes`` module, making it entirely ``anaconda`` 
-independent. For this reason, it does not make sense to install in a ``conda`` 
-environment anyway. ``VICE`` may be ran in whatever ``conda`` environments 
-users desire, but the installation process must not be ran in such a manner. 
+option ``--user`` should be invoked when users wish to install to their 
+``~/.local/`` library. Users installing to multiple version of ``python`` may 
+run the tests over a specific version from the ``Makefile`` as indicated 
+above. 
 
 If the user is installing to their ``~/.local/`` directory, then 
 ``~/.local/bin/`` must be on their ``PATH`` for ``VICE`` to run from the 
 command-line. ``VICE`` will permanently add this to the user's ``PATH`` along 
 with the installation process if it is not already there. This may require 
 running ``source ~/.bash_profile`` after installation or restarting the 
-``linux`` shell before properly working.
+``linux`` shell before running properly.
 
-This is the only install method for ``VICE``. It is currently not 
-installable via ``pip``, but will be uploaded to ``PyPI`` in the coming weeks. 
+This is currently the only install method for ``VICE``. It is currently not 
+installable via ``pip``. 
+
+Installation Methods to Avoid 
+-----------------------------
+
+**Parallel Installations**: Users installing to multiple version of ``python`` 
+should not run the ``setup.py`` file in separate terminals simultaneously. It 
+is likely that this will cause at least one of the installations to fail. 
+
+**conda Environments**: ``VICE`` should **never** be installed from within a 
+``conda`` environment. In this case, the installation process will run 
+smoothly, but the compiled extensions will not be placed in the correct 
+directory, preventing ``VICE`` from running properly. This however does not 
+include the ``base`` default environment associated with later versions of 
+``python`` and ``anaconda``. 
+
+``VICE`` will *run* within whatever ``conda`` environments users create. It 
+is only the installation process that must be ran independently of 
+``anaconda``. Implemented in ``C`` and wrapped using ``Cython`` and the 
+``python`` standard library, ``VICE`` is ``anaconda``-independent. For this 
+reason, it does not make sense to install in a ``conda`` environment anyway. 
 
 Usage 
 =====
@@ -128,9 +136,7 @@ All of ``VICE``'s documentation is stored here under ``docs/``.
 We recommend that users retain copies of ``VICE``'s `user's guide`__ and 
 `science documentation`__ for reference. These are PDFs with embedded 
 hyperlinks for ease of use. If installed via ``git``, the contents of this 
-directory will download automatically with the source code. Users who install 
-via ``pip`` will need to either clone this repository via ``git`` anyway or 
-download the documentation separately in order to obtain copies. 
+directory will download automatically with the source code.  
 
 If users find ``VICE`` useful, we kindly request that they star this 
 repository. This also helps us keep track of an approximate number of users. 
@@ -139,24 +145,23 @@ Tutorial
 --------
 Under ``docs/``, we provide `QuickStartTutorial.ipynb`__, a 
 ``jupyter notebook`` intended to provide first-time users with a primer on how 
-to use all of ``VICE``'s features. If installed via ``git``, users can launch 
-the tutorial immediately via ``make tutorial``. If installed via ``pip``, users 
-must either clone this repository via ``git`` anyway or download the notebook 
-separately in order to obtain a copy. 
+to use all of ``VICE``'s features. When installed via ``git``, users can launch 
+the tutorial immediately via ``make tutorial``. 
 
 From the Command Line 
 ---------------------
 After installation, users can run simple simulations using ``VICE`` from the 
-command line. Run ``vice --help`` in a terminal from any directory for 
-instructions on how to use this functionality. We however caution users that 
-``VICE``'s functionality is severely limited when ran from the command line in 
-comparison to its full ``python`` capabilities. 
+command line. Run ``vice --help`` in a terminal from any directory (with the 
+exception of ``VICE``'s root directory) for instructions on how to use this 
+functionality. We however caution users that ``VICE``'s functionality is 
+severely limited when ran from the command line in comparison to its full 
+``python`` capabilities. 
 
-If users have installed to their ``~/.local/`` library and ``VICE`` does not 
-run properly from the command line, they may need to restart their linux 
-shell (or, alternatively, run ``source ~/.bash_profile`` in a terminal from any 
-directory). If this also does not work, it is likely that the user needs to add 
-``~/.local/bin/`` to their ``PATH``. 
+If users have installed ``VICE`` to their ``~/.local/`` library and ``VICE`` 
+does not run properly from the command line, they may need to restart their 
+linux shell (or, alternatively, run ``source ~/.bash_profile`` in a terminal 
+from any directory). If this also does not work, it is likely that 
+``~/.local/bin`` needs to be permanently added to their ``PATH``. 
 
 Example Code: A Simulation of a Galaxy with Known Star Formation History   
 ------------------------------------------------------------------------
@@ -212,7 +217,7 @@ We provide here the ``python`` code which produces all of the figures in
 Johnson & Weinberg (2019). From ``VICE``'s root directory, users can run 
 ``make jw19plots`` in a terminal, which will automatically run the simulations 
 and produce the figures exactly as they appear in that paper. Users may also 
-use these scrips as example code if they so choose. 
+use these scripts as example code if they so choose. 
 
 Submit a Bug Report 
 ===================
@@ -234,8 +239,8 @@ independently of these software packages. All internal data is stored and
 handled using ``C`` and ``python`` standard libraries. It is thus independent 
 of the user's version of Anaconda, or lackthereof. 
 
-The only feature in this software requiring the user of Anaconda is the 
-``show`` function assocaited with the ``output`` class, which requires 
+The only feature in this software requiring the use of Anaconda is the 
+``show`` function associated with the ``output`` class, which requires 
 ``matplotlib >= 2``. This function is however not a part of the integration 
 features associated with chemical evolution modeling, and is purely intended 
 so that the user may inspect the results of their integrations visually in 
