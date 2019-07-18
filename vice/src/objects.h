@@ -236,27 +236,6 @@ typedef struct singlezone {
 
 } SINGLEZONE; 
 
-typedef struct multizone {
-
-	/* 
-	 * This struct is the core implementation of the multizone object in 
-	 * VICE, as the name would suggest. 
-	 * 
-	 * name: The name of the simulation
-	 * zones: The SINGLEZONE objects corresponding to the individual zones 
-	 * n_zones: The number of zones 
-	 * n_tracers: The number of tracers per timestep per zone 
-	 * migration_matrix: The migration matrix at each timestep. 
-	 */ 
-
-	char *name; 
-	SINGLEZONE **zones; 
-	unsigned int n_zones; 
-	unsigned int n_tracers; 
-	double ***migration_matrix; 
-
-} MULTIZONE; 
-
 typedef struct tracer { 
 
 	/* 
@@ -268,12 +247,35 @@ typedef struct tracer {
 	 * timestep_origin: The timestep at which the tracer was born 
 	 */ 
 
-	unsigned double mass; 
+	double mass; 
 	unsigned int zone_origin; 
 	unsigned int zone_current; 
 	unsigned long timestep_origin; 
 
 } TRACER; 
+
+typedef struct multizone {
+
+	/* 
+	 * This struct is the core implementation of the multizone object in 
+	 * VICE, as the name would suggest. 
+	 * 
+	 * name: The name of the simulation
+	 * zones: The SINGLEZONE objects corresponding to the individual zones 
+	 * n_zones: The number of zones 
+	 * n_tracers: The number of tracers per timestep per zone 
+	 * migration_matrix: The migration matrix at each timestep. 
+	 * tracers: The tracer particles associated with the simulation 
+	 */ 
+
+	char *name; 
+	SINGLEZONE **zones; 
+	unsigned int n_zones; 
+	unsigned int n_tracers; 
+	double ***migration_matrix; 
+	TRACER **tracers; 
+
+} MULTIZONE; 
 
 #ifdef __cplusplus 
 } 

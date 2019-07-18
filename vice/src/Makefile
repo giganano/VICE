@@ -1,8 +1,8 @@
 
 CC = gcc 
 CFLAGS = -c -fPIC 
-OBJECTS = agb.o ccsne.o  element.o imf.o io.o ism.o mdf.o quadrature.o \
-	singlezone.o sneia.o ssp.o utils.o 
+OBJECTS = agb.o ccsne.o  element.o imf.o io.o ism.o mdf.o migration.o \
+	multizone.o quadrature.o singlezone.o sneia.o ssp.o tracer.o utils.o 
 
 all: vice.so 
 

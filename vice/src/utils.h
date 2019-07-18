@@ -12,6 +12,13 @@ extern "C" {
 #include "objects.h" 
 
 /* 
+ * Seeds the random number generator off of the current time. 
+ * 
+ * source: utils.c 
+ */ 
+extern void seed_random(void); 
+
+/* 
  * A standard interpolation function. For two points (x1, y1) and (x2, y2), 
  * this function draws the line between them and finds the expected value of y 
  * for a given value of x via linear extrapolation. 

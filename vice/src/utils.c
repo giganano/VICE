@@ -4,8 +4,20 @@
 
 #include <stdlib.h> 
 #include <math.h> 
+#include <time.h> 
 #include "utils.h" 
 #include "singlezone.h" 
+
+/* 
+ * Seeds the random number generator off of the current time. 
+ * 
+ * header: utils.h 
+ */ 
+extern void seed_random(void) {
+
+	srand(time(NULL)); 
+
+}
 
 /* 
  * A standard interpolation function. For two points (x1, y1) and (x2, y2), 
