@@ -11,8 +11,8 @@ cdef extern from "../src/objects.h":
 		double **grid
 		double *m
 		double *z
-		long n_m
-		long n_z
+		unsigned long n_m
+		unsigned long n_z
 
 	ctypedef struct CCSNE_YIELD_SPECS: 
 		double *yield_ 
@@ -54,7 +54,7 @@ cdef extern from "../src/objects.h":
 		double **abundance_distributions 
 		double **ratio_distributions 
 		double *bins 
-		long n_bins 
+		unsigned long n_bins 
 
 	ctypedef struct SSP: 
 		char *imf 
@@ -72,12 +72,27 @@ cdef extern from "../src/objects.h":
 		double dt 
 		double current_time 
 		double *output_times 
-		long timestep 
-		long n_outputs 
+		unsigned long timestep 
+		unsigned long n_outputs 
 		double Z_solar 
-		int n_elements 
+		unsigned int n_elements 
 		ELEMENT **elements 
 		ISM *ism 
 		MDF *mdf 
 		SSP *ssp 
 
+	ctypedef struct TRACER: 
+		double mass 
+		unsigned int zone_origin 
+		unsigned int zone_current 
+		unsigned long timestep_origin 
+
+	ctypedef struct MULTIZONE: 
+		char *name 
+		SINGLEZONE **zones 
+		unsigned int n_zones 
+		unsigned int n_tracers 
+		double ***migration_matrix_gas 
+		double ***migration_matrix_tracers 
+		TRACER **tracers 
+		int verbose 

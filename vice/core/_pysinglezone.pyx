@@ -1,9 +1,8 @@
 # cython: language_level = 3, boundscheck = False
 """ 
 This file implements the python wrapper of the singlezone object, which 
-runs simulations under the singlezone approximation. Most of VICE is built 
-around this data structure, and most of its subroutines are in C, found in the 
-vice/src/ directory within the root tree. 
+runs simulations under the singlezone approximation. Most of the subroutines 
+are in C, found in the vice/src/ directory within the root tree. 
 """ 
 
 # Python imports 
@@ -136,6 +135,8 @@ class singlezone:
 	mode :: str [default :: "ifr"] 
 		The interpretation of the attribute "func". Either "ifr" for infall 
 		rate, "sfr" for star formation rate, or "gas" for the gas supply. 
+	verbose :: bool [default :: False] 
+		Whether or not to print the to the console as the simulation runs 
 	elements :: array-like [default :: ("fe", "sr", "o")] 
 		An array-like object of strings denoting the symbols of the elements to 
 		track the enrichment for 
@@ -342,6 +343,21 @@ class singlezone:
 	@mode.setter 
 	def mode(self, value): 
 		self.__c_version.mode = value 
+
+	@property 
+	def verbose(self): 
+		""" 
+		Type :: bool 
+		Default :: False 
+
+		If True, will print the time in Gyr to the console as the simulation 
+		evolves. 
+		""" 
+		return self.__c_version.verbose 
+
+	@verbose.setter 
+	def verbose(self, value): 
+		self.__c_version.verbose = value 
 
 	@property 
 	def elements(self): 
@@ -1072,6 +1088,7 @@ cdef class c_singlezone:
 		name = "onezonemodel", 
 		func = _DEFAULT_FUNC_, 
 		mode = "ifr", 
+		verbose = False, 
 		elements = ("fe", "sr", "o"), 
 		IMF = "kroupa", 
 		eta = 2.5, 
@@ -1105,6 +1122,7 @@ cdef class c_singlezone:
 		self.name = name 
 		self.func = func 
 		self.mode = mode 
+		self.verbose = verbose 
 		self.elements = elements 
 		self.IMF = IMF 
 		self.eta = eta 
@@ -1142,6 +1160,7 @@ cdef class c_singlezone:
 			"name": 			self.name, 	
 			"func": 			self.func, 
 			"mode":				self.mode, 
+			"verbose": 			self.verbose, 
 			"elements":			self.elements, 
 			"IMF": 				self.IMF, 
 			"eta": 				self.eta, 
@@ -1302,6 +1321,33 @@ Got: %s""" % (type(value)))
 		else: 
 			raise TypeError("Attribute 'mode' must be of type str. Got: %s" % (
 				type(value))) 
+
+	@property 
+	def verbose(self): 
+		# docstring in python version 
+		return bool(self._sz[0].verbose) 
+
+	@verbose.setter 
+	def verbose(self, value): 
+		""" 
+		Whether or not to print the time as the simulation evolves. 
+
+		Allowed Types 
+		============= 
+		bool 
+
+		Allowed Values 
+		============== 
+		True and False 
+		""" 
+		if isinstance(value, numbers.Number) or isinstance(value, bool): 
+			if value: 
+				self._sz[0].verbose = 1 
+			else: 
+				self._sz[0].verbose = 0 
+		else: 
+			raise TypeError("""Attribute 'verbose' must be interpretable as \
+a boolean. Got: %s""" % (type(value))) 
 
 	@property
 	def elements(self): 

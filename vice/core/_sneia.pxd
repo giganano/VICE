@@ -8,6 +8,6 @@ cdef extern from "../src/sneia.h":
 	cdef double RIA_MAX_EVAL_TIME 
 	SNEIA_YIELD_SPECS *sneia_yield_initialize() 
 	void sneia_yield_free(SNEIA_YIELD_SPECS *sneia_yield) 
-	void normalize_RIa(ELEMENT *e, long length) 
+	void normalize_RIa(ELEMENT *e, unsigned long length) 
 
 

@@ -12,7 +12,7 @@ cdef extern from "../src/ccsne.h":
 	void ccsne_yield_free(CCSNE_YIELD_SPECS *ccsne_yield) 
 	double *IMFintegrated_fractional_yield_numerator(char *file, char *IMF, 
 		double m_lower, double m_upper, double tolerance, char *method, 
-		long Nmax, long Nmin) 
+		unsigned long Nmax, unsigned long Nmin) 
 	double *IMFintegrated_fractional_yield_denominator(char *IMF, 
 		double m_lower, double m_upper, double tolerance, char *method, 
-		long Nmax, long Nmin)
+		unsigned long Nmax, unsigned long Nmin)

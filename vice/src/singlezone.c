@@ -18,6 +18,7 @@
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
 static void singlezone_timestepper(SINGLEZONE *sz); 
+static void verbosity(SINGLEZONE sz); 
 
 /* 
  * Allocate memory for and return a pointer to a SINGLEZONE struct. 
@@ -94,7 +95,9 @@ extern int singlezone_evolve(SINGLEZONE *sz) {
 			n++; 
 		} else {} 
 		singlezone_timestepper(sz); 
+		verbosity(*sz); 
 	} 
+	if ((*sz).verbose) printf("\n"); 
 
 	/* Normalize the MDF, write it out, close the files */ 
 	normalize_MDF(sz); 
@@ -246,6 +249,15 @@ extern void singlezone_clean(SINGLEZONE *sz) {
 	sz -> output_times = NULL; 
 
 } 
+
+static void verbosity(SINGLEZONE sz) {
+
+	if (sz.verbose) {
+		/* '\t' characters injected to flush round-off errors */ 
+		printf("\rCurrent Time: %g Gyr\t\t\t", sz.current_time); 
+	} else {} 
+
+}
 
 /* 
  * Determine the stellar mass in a singlezone simulation 

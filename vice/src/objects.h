@@ -229,6 +229,7 @@ typedef struct singlezone {
 	unsigned long n_outputs; 
 	double Z_solar; 
 	unsigned int n_elements; 
+	int verbose; 
 	ELEMENT **elements; 
 	ISM *ism; 
 	MDF *mdf; 
@@ -280,6 +281,7 @@ typedef struct multizone {
 	double ***migration_matrix_gas; 
 	double ***migration_matrix_tracers; 
 	TRACER **tracers; 
+	int verbose; 
 
 } MULTIZONE; 
 

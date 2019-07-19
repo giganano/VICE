@@ -9,7 +9,7 @@ cdef extern from "../src/ssp.h":
 	SSP *ssp_initialize() 
 	void ssp_free(SSP *ssp) 
 	double *single_population_enrichment(SSP *ssp, ELEMENT *e, 
-		double Z, double *times, long n_times, double mstar)
+		double Z, double *times, unsigned long n_times, double mstar)
 	double CRF(SSP ssp, double time) 
 	double MSMF(SSP ssp, double time) 
 

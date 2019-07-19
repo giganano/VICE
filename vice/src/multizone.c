@@ -5,6 +5,7 @@
 #include <stdlib.h> 
 #include "multizone.h" 
 #include "singlezone.h" 
+#include "migration.h" 
 #include "element.h" 
 #include "tracer.h" 
 #include "utils.h" 
@@ -14,6 +15,7 @@
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
 static void multizone_timestepper(MULTIZONE *mz); 
+static void verbosity(MULTIZONE mz); 
 static void multizone_write_history(MULTIZONE mz); 
 static void multizone_normalize_MDF(MULTIZONE *mz); 
 static void multizone_write_MDF(MULTIZONE mz); 
@@ -84,7 +86,12 @@ extern void multizone_free(MULTIZONE *mz) {
  */ 
 extern int multizone_evolve(MULTIZONE *mz) {
 
-	if (multizone_setup(mz)) return 1; 	/* setup failed */ 
+	int x = multizone_setup(mz); 
+	/* 
+	 * x differentiates between failed setup and migration matrix failing the 
+	 * sanity check 
+	 */ 
+	if (x) return x; 
 
 	long n = 0l; 		/* keep track of the number of outputs */ 
 	SINGLEZONE *sz = mz -> zones[0]; 		/* for convenience/readability */ 
@@ -101,7 +108,9 @@ extern int multizone_evolve(MULTIZONE *mz) {
 			n++; 
 		} else {} 
 		multizone_timestepper(mz); 
+		verbosity(*mz); 
 	} 
+	if ((*mz).verbose) printf("\n"); 
 
 	/* Normalize all MDFs, write them out, and clean up */ 
 	multizone_normalize_MDF(mz); 
@@ -136,10 +145,20 @@ static void multizone_timestepper(MULTIZONE *mz) {
 			); 
 		} 
 		update_MDF(sz); 
+	} 
 
-		sz -> current_time += (*sz).dt; 
-		sz -> timestep++; 
-	}
+	/* 
+	 * Migration must be done before incrementing the timestep number as that 
+	 * is used to determine the number of tracer particles present. Migrating 
+	 * first also ensures that newly injected tracer particles never migrate 
+	 * at the timestep they're born. 
+	 */ 
+	migrate(mz); 
+	for (i = 0; i < (*mz).n_zones; i++) {
+		mz -> zones[i] -> current_time += (*(*mz).zones[i]).dt; 
+		mz -> zones[i] -> timestep++; 
+	} 
+	inject_tracers(mz); 
 
 } 
 
@@ -165,6 +184,16 @@ extern int multizone_setup(MULTIZONE *mz) {
 		} else { 
 			continue; 
 		} 
+	} 
+	unsigned long n_times = 10l + (unsigned long) (
+		(*(*mz).zones[0]).n_outputs / (*(*mz).zones[0]).dt 
+	); 
+	if (migration_matrix_sanitycheck((*mz).migration_matrix_gas, 
+		n_times, (*mz).n_zones)) {
+		return 2; 
+	} else if (migration_matrix_sanitycheck((*mz).migration_matrix_tracers, 
+		n_times, (*mz).n_zones)) {
+		return 2; 
 	} 
 	seed_random(); 
 	return 0; 
@@ -208,6 +237,19 @@ extern void multizone_clean(MULTIZONE *mz) {
 	mz -> migration_matrix_tracers = NULL; 
 
 } 
+
+/* 
+ * Prints the current time on the same line on the console if the user has 
+ * specified verbosity. 
+ */ 
+static void verbosity(MULTIZONE mz) {
+
+	if (mz.verbose) { 
+		/* '\t' characters injected to flush round-off errors */ 
+		printf("\rCurrent Time: %g Gyr\t\t\t", (*mz.zones[0]).current_time); 
+	} else {} 
+
+}
 
 /* 
  * Writes history output for each zone in a multizone simulation 

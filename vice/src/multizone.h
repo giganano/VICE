@@ -65,7 +65,7 @@ extern int multizone_setup(MULTIZONE *mz);
  * ========== 
  * mz: 		A pointer to the multizone object to clean 
  * 
- * header: multizone.h 
+ * source: multizone.c 
  */ 
 extern void multizone_clean(MULTIZONE *mz); 
 
