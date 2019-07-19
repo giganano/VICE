@@ -4,6 +4,7 @@
 
 #include <stdlib.h> 
 #include "tracer.h" 
+#include "utils.h" 
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
 static void realloc_tracers(MULTIZONE *mz); 
@@ -56,7 +57,7 @@ extern void inject_tracers(MULTIZONE *mz) {
 			
 			/* 
 			 * The given zone is creating SFR * dt of mass in stars. Divide 
-			 * this up amongst each zone. 
+			 * this up amongst each tracer particle. 
 			 */ 
 			mz -> tracers[index] -> mass = (
 				(*(*(*mz).zones[i]).ism).star_formation_rate * 
@@ -71,7 +72,30 @@ extern void inject_tracers(MULTIZONE *mz) {
 		}
 	}
 
-}
+} 
+
+/* 
+ * Determine the metallicity of a tracer particle. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		The multizone object for the current simulation 
+ * t: 		The tracer particle to determine the metallicity of 
+ * 
+ * Returns 
+ * ======= 
+ * The scaled metallicity of the tracer particle 
+ * 
+ * header: tracer.h 
+ */ 
+extern double tracer_metallicity(MULTIZONE mz, TRACER t) {
+
+	return scale_metallicity(
+		(*mz.zones[t.zone_origin]), 
+		t.timestep_origin
+	); 
+
+} 
 
 /* 
  * Adds memory to a multizone object's array of tracer particles to make 

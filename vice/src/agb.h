@@ -52,6 +52,18 @@ extern void agb_yield_grid_free(AGB_YIELD_GRID *agb_grid);
 extern double m_AGB(SINGLEZONE sz, ELEMENT e); 
 
 /* 
+ * Enrich each element in each zone according to the AGB stars associated with 
+ * tracer particles. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		The multizone object for the current simulation 
+ * 
+ * source: agb.c 
+ */ 
+extern void agb_from_tracers(MULTIZONE *mz); 
+
+/* 
  * Determine the fractional yield of a given element from AGB stars at a 
  * given mass and metallicity. 
  * 

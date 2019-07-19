@@ -173,11 +173,7 @@ extern double mass_recycled(SINGLEZONE sz, ELEMENT *e) {
 	if ((*sz.ssp).continuous) {
 		long i; 
 		double mass = 0; 
-		/* 
-		 * From each previous timestep, there's a dCRF contribution 
-		 * Start at i = 1 because only previous generations of stars are 
-		 * recycling. 
-		 */ 
+		/* From each previous timestep, there's a dCRF contribution */ 
 		for (i = 0l; i <= sz.timestep; i++) {
 			if (e == NULL) { 		/* This is the gas supply */ 
 				mass += ((*sz.ism).star_formation_history[sz.timestep - i] * 
@@ -200,6 +196,68 @@ extern double mass_recycled(SINGLEZONE sz, ELEMENT *e) {
 	}
 
 } 
+
+/* 
+ * Re-enriches the gas and each element in each zone according to the recycling 
+ * rate and the initial mass of each tracer particle. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		A pointer to the multizone object to re-enrich 
+ * 
+ * header: ssp.h 
+ */ 
+extern void recycle_from_tracers(MULTIZONE *mz, int index) {
+
+	/* ----------------------- Continuous recycling ----------------------- */ 
+	if ((*(*(*mz).zones[0]).ssp).continuous) { 
+		long i, timestep = (*(*mz).zones[0]).timestep; 
+		for (i = 0l; i < timestep * (*mz).n_zones * (*mz).n_tracers; i++) {
+			TRACER *t = mz -> tracers[i]; 
+			SSP *ssp = mz -> zones[(*t).zone_origin] -> ssp; 
+			long n = timestep - (*t).timestep_origin; 
+
+			/* Each tracer particle has a dCRF contribution */ 
+			if (index == -1) {			/* This is the gas supply */ 
+				mz -> zones[(*t).zone_current] -> ism -> mass += (
+					(*t).mass * ((*ssp).crf[n + 1l] - (*ssp).crf[n])
+				); 
+			} else {					/* element -> weight by Z */ 
+				/* The metallicity by mass of this element in the tracer */ 
+				double Z = (
+					(*(*(*mz).zones[(*t).zone_origin]).elements[index]).Z[(
+						*t).timestep_origin] 
+				); 
+				mz -> zones[(*t).zone_current] -> elements[index] -> mass += (
+					Z * (*t).mass * ((*ssp).crf[n + 1l] - (*ssp).crf[n]) 
+				); 
+			} 
+		} 
+	/* ---------------------- Instantaneous recycling ---------------------- */ 
+	} else { 
+		unsigned int i; 
+		if (index == -1) {			/* gas supply */ 
+			for (i = 0; i < (*mz).n_zones; i++) {
+				mz -> zones[i] -> ism -> mass += (
+					(*(*(*mz).zones[i]).ism).star_formation_rate * 
+					(*(*mz).zones[i]).dt * 
+					(*(*(*mz).zones[i]).ssp).R0 
+				); 
+			} 
+		} else { 				/* element -> weight by Z */ 
+			for (i = 0; i < (*mz).n_zones; i++) {
+				mz -> zones[i] -> elements[index] -> mass += (
+					(*(*(*mz).zones[i]).ism).star_formation_rate * 
+					(*(*mz).zones[i]).dt * 
+					(*(*(*mz).zones[i]).ssp).R0 * 
+					(*(*(*mz).zones[i]).elements[index]).mass / 
+					(*(*(*mz).zones[i]).ism).mass 
+				); 
+			} 
+		}
+	}
+
+}
 
 /* 
  * Evaluate the cumulative return fraction across all timesteps in preparation 

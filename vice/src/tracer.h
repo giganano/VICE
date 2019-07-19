@@ -33,6 +33,22 @@ extern void tracer_free(TRACER *t);
  */ 
 extern void inject_tracers(MULTIZONE *mz); 
 
+/* 
+ * Determine the metallicity of a tracer particle. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		The multizone object for the current simulation 
+ * t: 		The tracer particle to determine the metallicity of 
+ * 
+ * Returns 
+ * ======= 
+ * The scaled metallicity of the tracer particle 
+ * 
+ * source: tracer.c 
+ */ 
+extern double tracer_metallicity(MULTIZONE mz, TRACER t); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

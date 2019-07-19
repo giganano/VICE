@@ -50,6 +50,34 @@ extern void singlezone_free(SINGLEZONE *sz);
 extern int singlezone_evolve(SINGLEZONE *sz); 
 
 /* 
+ * Setup the singlezone object for simulation. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		A pointer to the singlezone object to do the setup for 
+ * 
+ * Returns 
+ * ======= 
+ * 0 on success, 1 on failure 
+ * 
+ * source: singlezone.c 
+ */ 
+extern int singlezone_setup(SINGLEZONE *sz); 
+
+/* 
+ * Frees up the memory allocated in running a singlezone simulation. This does 
+ * not free up the memory stored by simpling having a singlezone object in the 
+ * python interpreter. That is cleared by calling singlezone_free. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		The singlezone object to clean 
+ * 
+ * source: singlezone.h 
+ */ 
+extern void singlezone_clean(SINGLEZONE *sz); 
+
+/* 
  * Determine the stellar mass in a singlezone simulation 
  * 
  * Parameters 

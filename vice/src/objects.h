@@ -241,10 +241,15 @@ typedef struct tracer {
 	/* 
 	 * This struct implements the tracer particle for multizone simulations 
 	 * 
-	 * mass: The mass of the tracer particle in Msun 
+	 * mass: The initial mass of the tracer particle in Msun 
 	 * zone_origin: The zone in which the particle was born 
 	 * zone_current: The zone in which the particle currently resides 
 	 * timestep_origin: The timestep at which the tracer was born 
+	 * 
+	 * Notes 
+	 * ===== 
+	 * The ONLY parameter which changes is zone_current. Even the mass does 
+	 * not change; it is only the initial mass that is required. 
 	 */ 
 
 	double mass; 

@@ -18,8 +18,6 @@
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
 static void singlezone_timestepper(SINGLEZONE *sz); 
-static int singlezone_setup(SINGLEZONE *sz); 
-static void singlezone_clean(SINGLEZONE *sz); 
 
 /* 
  * Allocate memory for and return a pointer to a SINGLEZONE struct. 
@@ -66,8 +64,7 @@ extern void singlezone_free(SINGLEZONE *sz) {
 } 
 
 /* 
- * Runs the singlezone simulation under current user settings. Most of VICE is 
- * built around calling this function. 
+ * Runs the singlezone simulation under current user settings. 
  * 
  * Parameters 
  * ========== 
@@ -147,8 +144,10 @@ static void singlezone_timestepper(SINGLEZONE *sz) {
  * Returns 
  * ======= 
  * 0 on success, 1 on failure 
+ * 
+ * header: singlezone.h 
  */ 
-static int singlezone_setup(SINGLEZONE *sz) { 
+extern int singlezone_setup(SINGLEZONE *sz) { 
 
 	/* Open output files and write headers */ 
 	if (singlezone_open_files(sz)) { 
@@ -203,8 +202,10 @@ static int singlezone_setup(SINGLEZONE *sz) {
  * Parameters 
  * ========== 
  * sz: 		The singlezone object to clean 
+ * 
+ * header: singlezone.h 
  */ 
-static void singlezone_clean(SINGLEZONE *sz) {
+extern void singlezone_clean(SINGLEZONE *sz) {
 
 	int i; 
 	for (i = 0; i < (*sz).n_elements; i++) { 

@@ -6,6 +6,7 @@
 #include <stdlib.h> 
 #include "agb.h" 
 #include "singlezone.h" 
+#include "tracer.h" 
 #include "ssp.h" 
 #include "utils.h" 
 
@@ -80,6 +81,46 @@ extern double m_AGB(SINGLEZONE sz, ELEMENT e) {
 
 		return mass; 
 	}
+
+} 
+
+/* 
+ * Enrich each element in each zone according to the AGB stars associated with 
+ * tracer particles. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		The multizone object for the current simulation 
+ * 
+ * header: agb.h 
+ */ 
+extern void agb_from_tracers(MULTIZONE *mz) {
+
+	long i, timestep = (*(*mz).zones[0]).timestep; 
+	for (i = 0l; i < timestep * (*mz).n_zones * (*mz).n_tracers; i++) { 
+		/* Get the tracer particle's current zone and metallicity */ 
+		TRACER *t = mz -> tracers[i]; 
+		SINGLEZONE *sz = mz -> zones[(*t).zone_current]; 
+		double Z = tracer_metallicity(*mz, *t); 
+		int j; 
+		for (j = 0; j < (*sz).n_elements; j++) { 
+			/* 
+			 * For each element in the current zone, determine the AGB yield 
+			 * and pull the mass from the mass of the tracer particle. 
+			 * 
+			 * n: The number of timesteps ago the tracer particle formed. This 
+			 * times the timestep size is the age of the tracer particle in 
+			 * Gyr. 
+			 */ 
+			long n = timestep - (*t).timestep_origin; 
+			ELEMENT *e = sz -> elements[j]; 
+			e -> mass += ( 
+				get_AGB_yield(*e, Z, main_sequence_turnoff_mass(n * (*sz).dt)) 
+				* (*t).mass * 
+				((*(*sz).ssp).msmf[n] - (*(*sz).ssp).msmf[n + 1l]) 
+			); 
+		} 
+	} 
 
 } 
 

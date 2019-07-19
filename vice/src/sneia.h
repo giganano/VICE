@@ -53,6 +53,18 @@ extern void sneia_yield_free(SNEIA_YIELD_SPECS *sneia_yields);
 extern double mdot_sneia(SINGLEZONE sz, ELEMENT e); 
 
 /* 
+ * Enrich each element in each zone according to the SNe Ia associated with 
+ * tracer particles. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		The multizone object for the current simulation 
+ * 
+ * source: sneia.c 
+ */ 
+extern void sneia_from_tracers(MULTIZONE *mz); 
+
+/* 
  * Setup the SNe Ia rate in preparation for a singlezone simulation. 
  * 
  * Parameters 

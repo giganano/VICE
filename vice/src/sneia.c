@@ -66,6 +66,37 @@ extern double mdot_sneia(SINGLEZONE sz, ELEMENT e) {
 } 
 
 /* 
+ * Enrich each element in each zone according to the SNe Ia associated with 
+ * tracer particles. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		The multizone object for the current simulation 
+ * 
+ * header: sneia.h 
+ */ 
+extern void sneia_from_tracers(MULTIZONE *mz) {
+
+	long i, timestep = (*(*mz).zones[0]).timestep; 
+	for (i = 0l; i < timestep * (*mz).n_zones * (*mz).n_tracers; i++) { 
+		TRACER *t = mz -> tracers[i]; 
+		int j; 
+		/* 
+		 * Enrich each element in the zone from SNe Ia associated with this 
+		 * tracer particle 
+		 */ 
+		for (j = 0; j < (*(*mz).zones[(*t).zone_current]).n_elements; j++) {
+			ELEMENT *e = mz -> zones[(*t).zone_current] -> elements[j]; 
+			e -> mass += (
+				(*(*e).sneia_yields).yield_ * (*t).mass * 
+				(*(*e).sneia_yields).RIa[timestep - (*t).timestep_origin] 
+			); 
+		} 
+	}
+
+}
+
+/* 
  * Determine the star formation rate weighted by the SNe Ia rate. See section 
  * 4.3 of VICE's science documentation for more details. 
  * 

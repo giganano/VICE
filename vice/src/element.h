@@ -59,6 +59,18 @@ extern int malloc_Z(ELEMENT *e, long n_timesteps);
  */ 
 extern void update_element_mass(SINGLEZONE sz, ELEMENT *e); 
 
+/* 
+ * Updates the mass of each element in each zone to the proper value at the 
+ * next timestep. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		A pointer to the multizone object for the current simulation 
+ * 
+ * source: element.c 
+ */ 
+extern void update_elements(MULTIZONE *mz); 
+
 #ifdef __cplusplus 
 } 
 #endif 

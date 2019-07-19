@@ -98,6 +98,18 @@ extern double *single_population_enrichment(SSP *ssp, ELEMENT *e,
 extern double mass_recycled(SINGLEZONE sz, ELEMENT *e); 
 
 /* 
+ * Re-enriches the gas and each element in each zone according to the recycling 
+ * rate and the initial mass of each tracer particle. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		A pointer to the multizone object to re-enrich 
+ * 
+ * source: ssp.c 
+ */ 
+extern void recycle_from_tracers(MULTIZONE *mz, int index); 
+
+/* 
  * Evaluate the cumulative return fraction across all timesteps in preparation 
  * of a singlezone simulation. This will store the CRF in the SSP struct 
  * within the singlezone object. 
