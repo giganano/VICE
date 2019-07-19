@@ -27,8 +27,8 @@ typedef struct asymptotic_giant_branch_star_yield_grid {
 	double **grid; 
 	double *m; 
 	double *z; 
-	long n_m; 
-	long n_z; 
+	unsigned long n_m; 
+	unsigned long n_z; 
 
 } AGB_YIELD_GRID; 
 
@@ -164,7 +164,7 @@ typedef struct metallicity_distribution_function {
 	double **abundance_distributions; 
 	double **ratio_distributions; 
 	double *bins; 
-	long n_bins; 
+	unsigned long n_bins; 
 
 } MDF; 
 
@@ -225,10 +225,10 @@ typedef struct singlezone {
 	double dt; 
 	double current_time; 
 	double *output_times; 
-	long timestep; 
-	long n_outputs; 
+	unsigned long timestep; 
+	unsigned long n_outputs; 
 	double Z_solar; 
-	int n_elements; 
+	unsigned int n_elements; 
 	ELEMENT **elements; 
 	ISM *ism; 
 	MDF *mdf; 
