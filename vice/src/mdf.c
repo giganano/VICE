@@ -86,7 +86,7 @@ extern int setup_MDF(SINGLEZONE *sz) {
 	 * The number of abundance ratios is n choose 2 = n(n - 1)/2. Initialize 
 	 * each abundance ratio to an array of zeroes as well. 
 	 */ 
-	int n_ratios = (int) ((*sz).n_elements * ((*sz).n_elements - 1) / 2); 
+	unsigned int n_ratios = (*sz).n_elements * ((*sz).n_elements - 1) / 2; 
 	sz -> mdf -> ratio_distributions = (double **) malloc (n_ratios * 
 		sizeof(double *)); 
 	if ((*(*sz).mdf).ratio_distributions == NULL) {
@@ -130,7 +130,9 @@ extern void update_MDF(SINGLEZONE *sz) {
 			((*(*sz).elements[i]).mass / (*(*sz).ism).mass) / 
 			(*(*sz).elements[i]).solar
 		); 
-		long bin = get_bin_number((*(*sz).mdf).bins, (*(*sz).mdf).n_bins, onH); 
+		/* The bin number for [X/H] */ 
+		long bin = get_bin_number((*(*sz).mdf).bins, 
+			(*(*sz).mdf).n_bins, onH); 
 		if (bin != -1l) {
 			/* 
 			 * Increment the bin number by the star formation rate. Prefactors 
@@ -153,8 +155,9 @@ extern void update_MDF(SINGLEZONE *sz) {
 				((*(*sz).elements[j]).mass / (*(*sz).ism).mass) / 
 				(*(*sz).elements[j]).solar
 			); 
-			long bin = get_bin_number((*(*sz).mdf).bins, (*(*sz).mdf).n_bins, 
-				onH1 - onH2); 		/* The bin number for [X/Y] */ 
+			/* The bin number for [X/Y] */ 
+			long bin = get_bin_number((*(*sz).mdf).bins, 
+				(*(*sz).mdf).n_bins, onH1 - onH2); 		
 			if (bin != -1l) {
 				/* 
 				 * Again increment the bin number by the star formation rate. 

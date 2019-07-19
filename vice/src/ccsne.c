@@ -49,12 +49,12 @@ extern CCSNE_YIELD_SPECS *ccsne_yield_initialize(void) {
 	 * The number of elements on the yield grid between CC_YIELD_GRID_MIN and 
 	 * CC_YIELD_GRID_MAX in steps of CC_YIELD_STEP (inclusive). 
 	 */ 
-	long num_grid_elements = (long) (
+	unsigned long num_grid_elements = (long) (
 		(CC_YIELD_GRID_MAX - CC_YIELD_GRID_MIN) / CC_YIELD_STEP
 	) + 1l; 
 
 	/* Fill the grid starting at CC_YIELD_GRID_MIN in steps of CC_YIELD_STEP */ 
-	long i; 
+	unsigned long i; 
 	ccsne_yield -> grid = (double *) malloc (num_grid_elements * sizeof(double)); 
 	for (i = 0l; i < num_grid_elements; i++) {
 		ccsne_yield -> grid[i] = CC_YIELD_GRID_MIN + i * CC_YIELD_STEP; 
@@ -181,7 +181,7 @@ extern double get_cc_yield(ELEMENT e, double Z) {
  */ 
 extern double *IMFintegrated_fractional_yield_numerator(char *file, char *IMF, 
 	double m_lower, double m_upper, double tolerance, char *method, 
-	long Nmax, long Nmin) {
+	unsigned long Nmax, unsigned long Nmin) {
 
 	/* 
 	 * Initialize these variables globally. This is such that the functions 
@@ -232,8 +232,8 @@ extern double *IMFintegrated_fractional_yield_numerator(char *file, char *IMF,
  * header: ccsne.h 
  */ 
 extern double *IMFintegrated_fractional_yield_denominator(char *IMF, 
-	double m_lower, double m_upper, double tolerance, char *method, long Nmax, 
-	long Nmin) { 
+	double m_lower, double m_upper, double tolerance, char *method, 
+	unsigned long Nmax, unsigned long Nmin) { 
 
 	if (!strcmp(IMF, "kroupa")) {
 		return quad(mass_weighted_kroupa01, m_lower, m_upper, tolerance, 

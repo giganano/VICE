@@ -9,10 +9,14 @@
 #include "utils.h" 
 
 /* ---------- static function comment headers not duplicated here ---------- */
-static double euler(double (*func)(double), double a, double b, long N);
-static double trapzd(double (*func)(double), double a, double b, long N);
-static double midpt(double (*func)(double), double a, double b, long N);
-static double simp(double (*func)(double), double a, double b, long N); 
+static double euler(double (*func)(double), double a, double b, 
+	unsigned long N);
+static double trapzd(double (*func)(double), double a, double b, 
+	unsigned long N);
+static double midpt(double (*func)(double), double a, double b, 
+	unsigned long N);
+static double simp(double (*func)(double), double a, double b, 
+	unsigned long N); 
 static double absval(double x); 
 static int sign(double x); 
 
@@ -46,10 +50,10 @@ static int sign(double x);
  * header: quadrature.h 
  */
 extern double *quad(double (*func)(double), double a, double b, 
-	double tolerance, char *method, long Nmax, long Nmin) {
+	double tolerance, char *method, unsigned long Nmax, unsigned long Nmin) {
 
-	long N = Nmin / 2l; 		// Start with half the specified minimum 
-	if (N % 2l != 0l) {			// Make the number of quadrature bins even 
+	unsigned long N = Nmin / 2l; 	// Start with half the specified minimum 
+	if (N % 2l != 0l) {				// Make the number of quadrature bins even 
 		N += 1l;
 	} else {}
 
@@ -125,13 +129,14 @@ extern double *quad(double (*func)(double), double a, double b,
  * For details on Euler's method, see chapter 4 of Numerical Recipes: 
  * Press, Teukolsky, Vetterling, & Flannery (2007), Cambridge University Press 
  */ 
-static double euler(double (*func)(double), double a, double b, long N) {
+static double euler(double (*func)(double), double a, double b, 
+	unsigned long N) {
 
 	double hN = (b - a) / N;		// The width of the bins 
 	/* Euler's method uses only the left edge of the bins */ 
 	double *x = binspace(a, b - hN, N - 1l);	
 	double *eval = (double *) malloc (N * sizeof(double));
-	long i;
+	unsigned long i;
 
 	/* 
 	 * Evaluate the function at each bin edge, add it up, multiply by the 
@@ -165,12 +170,13 @@ static double euler(double (*func)(double), double a, double b, long N) {
  * For details on the Trapezoid rule, see chapter 4 of Numerical Recipes: 
  * Press, Teukolsky, Vetterling, & Flannery (2007), Cambridge University Press 
  */ 
-static double trapzd(double (*func)(double), double a, double b, long N) {
+static double trapzd(double (*func)(double), double a, double b, 
+	unsigned long N) {
 
 	double hN = (b - a) / N;		// The width of each bin 
 	double *x = binspace(a, b, N);
 	double *eval = (double *) malloc ((N + 1l) * sizeof(double));
-	long i;
+	unsigned long i;
 
 	/* 
 	 * Evaluate the function at each bin edge, and add everything up. According 
@@ -206,13 +212,14 @@ static double trapzd(double (*func)(double), double a, double b, long N) {
  * For details on the Midpoint rule, see chapter 4 of Numerical Recipes: 
  * Press, Teukolsky, Vetterling, & Flannery (2007), Cambridge University Press 
  */ 
-static double midpt(double (*func)(double), double a, double b, long N) {
+static double midpt(double (*func)(double), double a, double b, 
+	unsigned long N) {
 
 	double hN = (b - a) / N;		// The width of each bin 
 	double *x = binspace(a, b, N);
 	double *mids = bin_centers(x, N); // Midpoint rule evaluates at bin centers 
 	double *eval = (double *) malloc (N * sizeof(double));
-	long i;
+	unsigned long i;
 
 	/* 
 	 * Evaluate the function at the bin centers, add everything up, then 
@@ -247,7 +254,8 @@ static double midpt(double (*func)(double), double a, double b, long N) {
  * For details on Simpson's rule, see chapter 4 of Numerical Recipes: 
  * Press, Teukolsky, Vetterling, & Flannery (2007), Cambridge University Press 
  */ 
-static double simp(double (*func)(double), double a, double b, long N) {
+static double simp(double (*func)(double), double a, double b, 
+	unsigned long N) {
 
 	/* Simpson's rule is essentially a complication of Trapezoid rule */ 
 	return (4 * trapzd(func, a, b, N) - trapzd(func, a, b, N/2l)) / 3;

@@ -63,9 +63,9 @@ extern void element_free(ELEMENT *e) {
  * 
  * header: element.h 
  */ 
-extern int malloc_Z(ELEMENT *e, long n_timesteps) {
+extern int malloc_Z(ELEMENT *e, unsigned long n_timesteps) {
 
-	long i; 
+	unsigned long i; 
 	e -> Z = (double *) malloc (n_timesteps * sizeof(double)); 
 	if ((*e).Z == NULL) {
 		return 1; 
@@ -160,7 +160,7 @@ extern void update_elements(MULTIZONE *mz) {
 	agb_from_tracers(mz); 
 	sneia_from_tracers(mz); 
 	for (i = 0; i < (*(*mz).zones[0]).n_elements; i++) {
-		recycle_from_tracers(mz, i); 
+		recycle_from_tracers(mz, (signed) i); 
 	} 
 
 	/* sanity check each element in each zone */ 

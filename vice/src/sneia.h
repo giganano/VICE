@@ -90,7 +90,7 @@ extern int setup_RIa(SINGLEZONE *sz);
  * 
  * source: sneia.c 
  */ 
-extern void normalize_RIa(ELEMENT *e, long length); 
+extern void normalize_RIa(ELEMENT *e, unsigned long length); 
 
 #ifdef __cplusplus 
 } 

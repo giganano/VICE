@@ -165,7 +165,7 @@ extern int singlezone_setup(SINGLEZONE *sz) {
 		 * The singlezone object always allocates memory for 10 timesteps 
 		 * beyond the ending time as a safeguard against memory errors. 
 		 */ 
-		if (malloc_Z(sz -> elements[i], (long) (
+		if (malloc_Z(sz -> elements[i], (unsigned long) (
 			(*sz).output_times[(*sz).n_outputs - 1l] / (*sz).dt) + 10l)) { 
 			return 1; 
 		} else {
@@ -262,7 +262,7 @@ extern void singlezone_clean(SINGLEZONE *sz) {
  */ 
 extern double get_stellar_mass(SINGLEZONE sz) {
 
-	long i; 
+	unsigned long i; 
 	double mass = 0; 
 	for (i = 0l; i < sz.timestep; i++) {
 		mass += ((*sz.ism).star_formation_history[sz.timestep - i] * sz.dt * 

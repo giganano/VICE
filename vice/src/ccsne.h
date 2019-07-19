@@ -106,7 +106,7 @@ extern double get_cc_yield(ELEMENT e, double Z);
  */ 
 extern double *IMFintegrated_fractional_yield_numerator(char *file, char *IMF, 
 	double m_lower, double m_upper, double tolerance, char *method, 
-	long Nmax, long Nmin); 
+	unsigned long Nmax, unsigned long Nmin); 
 
 	/* 
  * Determine the value of the integrated IMF weighted by stellar mass, up to 
@@ -130,8 +130,8 @@ extern double *IMFintegrated_fractional_yield_numerator(char *file, char *IMF,
  * source: ccsne.c 
  */ 
 extern double *IMFintegrated_fractional_yield_denominator(char *IMF, 
-	double m_lower, double m_upper, double tolerance, char *method, long Nmax, 
-	long Nmin); 
+	double m_lower, double m_upper, double tolerance, char *method, 
+	unsigned long Nmax, unsigned long Nmin); 
 
 #ifdef __cplusplus 
 } 

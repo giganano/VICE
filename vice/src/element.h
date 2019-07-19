@@ -45,7 +45,7 @@ extern void element_free(ELEMENT *e);
  * 
  * source: element.c 
  */ 
-extern int malloc_Z(ELEMENT *e, long n_timesteps); 
+extern int malloc_Z(ELEMENT *e, unsigned long n_timesteps); 
 
 /* 
  * Updates the mass of a single element at the current timestep. 

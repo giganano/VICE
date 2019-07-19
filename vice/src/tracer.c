@@ -45,15 +45,15 @@ extern void inject_tracers(MULTIZONE *mz) {
 	realloc_tracers(mz); 	/* need more memory */ 
 	
 	/* Give each new tracer particle it's mass and zone number */ 
-	int i, j; 
-	long start_index = (
+	unsigned int i, j; 
+	unsigned long start_index = (
 		((*(*mz).zones[0]).timestep - 1l) * (*mz).n_zones * (*mz).n_tracers 
 	); 
 	for (i = 0; i < (*mz).n_zones; i++) {
 		for (j = 0; j < (*mz).n_tracers; j++) { 
 
 			/* The index of this tracer in the array */ 
-			long index = start_index + (*mz).n_tracers * i + j; 
+			unsigned long index = start_index + (*mz).n_tracers * i + j; 
 			
 			/* 
 			 * The given zone is creating SFR * dt of mass in stars. Divide 
@@ -107,7 +107,7 @@ extern double tracer_metallicity(MULTIZONE mz, TRACER t) {
  */ 
 static void realloc_tracers(MULTIZONE *mz) {
 
-	long i, timestep = (*(*mz).zones[0]).timestep; 
+	unsigned long i, timestep = (*(*mz).zones[0]).timestep; 
 	mz -> tracers = (TRACER **) realloc (mz -> tracers, 
 		timestep * (*mz).n_zones * (*mz).n_tracers * sizeof(TRACER *)); 
 	for (i = (timestep - 1l) * (*mz).n_zones * (*mz).n_tracers; 

@@ -64,7 +64,7 @@ extern double m_AGB(SINGLEZONE sz, ELEMENT e) {
 	if (sz.timestep == 0l) {
 		return 0; /* No star's yet */ 
 	} else { 
-		long i; 
+		unsigned long i; 
 		double mass = 0; 
 		for (i = 0l; i <= sz.timestep; i++) { 
 			/* The metallicity of the stars that formed i timesteps ago */ 
@@ -96,7 +96,7 @@ extern double m_AGB(SINGLEZONE sz, ELEMENT e) {
  */ 
 extern void agb_from_tracers(MULTIZONE *mz) {
 
-	long i, timestep = (*(*mz).zones[0]).timestep; 
+	unsigned long i, timestep = (*(*mz).zones[0]).timestep; 
 	for (i = 0l; i < timestep * (*mz).n_zones * (*mz).n_tracers; i++) { 
 		/* Get the tracer particle's current zone and metallicity */ 
 		TRACER *t = mz -> tracers[i]; 
@@ -112,7 +112,7 @@ extern void agb_from_tracers(MULTIZONE *mz) {
 			 * times the timestep size is the age of the tracer particle in 
 			 * Gyr. 
 			 */ 
-			long n = timestep - (*t).timestep_origin; 
+			unsigned long n = timestep - (*t).timestep_origin; 
 			ELEMENT *e = sz -> elements[j]; 
 			e -> mass += ( 
 				get_AGB_yield(*e, Z, main_sequence_turnoff_mass(n * (*sz).dt)) 
@@ -154,10 +154,10 @@ extern double get_AGB_yield(ELEMENT e, double Z_stars, double turnoff_mass) {
 
 	} else { 
 		/* bin numbers of turnoff mass and metallicities on the yield grid */ 
-		long mass_bin = get_bin_number((*e.agb_grid).m, (*e.agb_grid).n_m - 1l, 
-			turnoff_mass); 
-		long z_bin = get_bin_number((*e.agb_grid).z, (*e.agb_grid).n_z - 1l, 
-			Z_stars); 
+		long mass_bin = get_bin_number((*e.agb_grid).m, 
+			(*e.agb_grid).n_m - 1l, turnoff_mass); 
+		long z_bin = get_bin_number((*e.agb_grid).z, 
+			(*e.agb_grid).n_z - 1l, Z_stars); 
 
 		/* Put the masses and metallicities to interpolate from here */ 
 		double masses[2]; 
@@ -171,7 +171,7 @@ extern double get_AGB_yield(ELEMENT e, double Z_stars, double turnoff_mass) {
 				 * Stellar metallicity above the grid -> extrapolate to high 
 				 * metallicities using the top two elements of the grid 
 				 */ 
-				z_bin = (*e.agb_grid).n_z - 2l; 
+				z_bin = (signed) (*e.agb_grid).n_z - 2l; 
 			} else if (Z_stars < (*e.agb_grid).z[0]) {
 				/* 
 				 * Stellar metallicity below the grid -> extrapolate to low 

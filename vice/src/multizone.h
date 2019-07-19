@@ -17,7 +17,7 @@ extern "C"{
  * 
  * source: multizone.c 
  */ 
-extern MULTIZONE *multizone_initialize(int n); 
+extern MULTIZONE *multizone_initialize(unsigned int n); 
 
 /*
  * Frees the memory stored in a multizone object 

@@ -106,7 +106,8 @@ extern double interpolate2D(double x[2], double y[2], double f[2][2], double x0,
  * 
  * header: utils.h 
  */ 
-extern long get_bin_number(double *binspace, long num_bins, double value) {
+extern long get_bin_number(double *binspace, unsigned long num_bins, 
+	double value) {
 
 	long i; 
 	for (i = 0l; i < num_bins; i++) {
@@ -151,9 +152,9 @@ extern long get_bin_number(double *binspace, long num_bins, double value) {
  * 
  * header: utils.h 
  */ 
-extern double scale_metallicity(SINGLEZONE sz, long timestep) {
+extern double scale_metallicity(SINGLEZONE sz, unsigned long timestep) {
 
-	int i; 
+	unsigned int i; 
 	double solar_by_element = 0, z_by_element = 0; 
 
 	/* 
@@ -183,11 +184,11 @@ extern double scale_metallicity(SINGLEZONE sz, long timestep) {
  * 
  * header: utils.h 
  */ 
-extern double *binspace(double start, double stop, long N) {
+extern double *binspace(double start, double stop, unsigned long N) {
 
 	double *arr = (double *) malloc ((N + 1l) * sizeof(double)); 
 	double dx = (stop - start) / N; 
-	long i; 
+	unsigned long i; 
 	for (i = 0l; i <= N; i++) {
 		arr[i] = start + i * dx; 
 	} 
@@ -212,10 +213,10 @@ extern double *binspace(double start, double stop, long N) {
  * 
  * header: utils.h 
  */ 
-extern double *bin_centers(double *edges, long n_bins) {
+extern double *bin_centers(double *edges, unsigned long n_bins) {
 
 	double *centers = (double *) malloc (n_bins * sizeof(double)); 
-	long i; 
+	unsigned long i; 
 	for (i = 0l; i < n_bins; i++) {
 		centers[i] = (edges[i] + edges[i + 1l]) / 2.0; 
 	} 
@@ -237,7 +238,7 @@ extern double *bin_centers(double *edges, long n_bins) {
  * 
  * header: utils.h 
  */ 
-extern double sum(double *arr, long len) {
+extern double sum(double *arr, unsigned long len) {
 
 	long i; 
 	double s = 0; 

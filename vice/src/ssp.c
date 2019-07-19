@@ -114,7 +114,7 @@ extern double main_sequence_turnoff_mass(double time) {
  * header: ssp.h 
  */ 
 extern double *single_population_enrichment(SSP *ssp, ELEMENT *e, 
-	double Z, double *times, long n_times, double mstar) {
+	double Z, double *times, unsigned long n_times, double mstar) {
 
 	double *mass = (double *) malloc (n_times * sizeof(double)); 
 	if (mass == NULL) return NULL; 	/* memory error */ 
@@ -171,7 +171,7 @@ extern double mass_recycled(SINGLEZONE sz, ELEMENT *e) {
 
 	/* ----------------------- Continuous recycling ----------------------- */ 
 	if ((*sz.ssp).continuous) {
-		long i; 
+		unsigned long i; 
 		double mass = 0; 
 		/* From each previous timestep, there's a dCRF contribution */ 
 		for (i = 0l; i <= sz.timestep; i++) {
@@ -211,11 +211,11 @@ extern void recycle_from_tracers(MULTIZONE *mz, int index) {
 
 	/* ----------------------- Continuous recycling ----------------------- */ 
 	if ((*(*(*mz).zones[0]).ssp).continuous) { 
-		long i, timestep = (*(*mz).zones[0]).timestep; 
+		unsigned long i, timestep = (*(*mz).zones[0]).timestep; 
 		for (i = 0l; i < timestep * (*mz).n_zones * (*mz).n_tracers; i++) {
 			TRACER *t = mz -> tracers[i]; 
 			SSP *ssp = mz -> zones[(*t).zone_origin] -> ssp; 
-			long n = timestep - (*t).timestep_origin; 
+			unsigned long n = timestep - (*t).timestep_origin; 
 
 			/* Each tracer particle has a dCRF contribution */ 
 			if (index == -1) {			/* This is the gas supply */ 
@@ -289,7 +289,7 @@ extern int setup_CRF(SINGLEZONE *sz) {
 		 * quantities for ten timesteps beyond the endpoint of the simulation. 
 		 * This is a safeguard against memory errors. 
 		 */ 
-		long i, n = 10l + (long) (
+		unsigned long i, n = 10l + (unsigned long) (
 			(*sz).output_times[(*sz).n_outputs - 1l] / (*sz).dt); 
 
 		sz -> ssp -> crf = (double *) malloc (n * sizeof(double)); 
@@ -654,7 +654,7 @@ extern int setup_MSMF(SINGLEZONE *sz) {
 		 * quantities for ten timesteps beyond the endpoint of the simulation. 
 		 * This is a safeguard against memory errors. 
 		 */ 
-		long i, n = 10l + (long) (
+		unsigned long i, n = 10l + (unsigned long) (
 			(*sz).output_times[(*sz).n_outputs - 1l] / (*sz).dt); 
 
 		sz -> ssp -> msmf = (double *) malloc (n * sizeof(double)); 

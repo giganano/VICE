@@ -76,7 +76,7 @@ extern double main_sequence_turnoff_mass(double t);
  * header: ssp.h 
  */ 
 extern double *single_population_enrichment(SSP *ssp, ELEMENT *e, 
-	double Z, double *times, long n_times, double mstar); 
+	double Z, double *times, unsigned long n_times, double mstar); 
 
 /* 
  * Determine the mass recycled from all previous generations of stars for 

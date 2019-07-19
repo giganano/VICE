@@ -25,7 +25,7 @@ extern "C" {
  * header: migration.h 
  */ 
 extern int migration_matrix_sanitycheck(double ***migration_matrix, 
-	long n_times, int n_zones); 
+	unsigned long n_times, unsigned int n_zones); 
 
 /* 
  * Migrates all gas, elements, and tracer particles between zones at the 

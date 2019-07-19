@@ -95,8 +95,8 @@ extern int setup_gas_evolution(SINGLEZONE *sz) {
 
 	/* Allocate memory for the star formation history at each timestep */ 
 	sz -> ism -> star_formation_history = (double *) malloc (
-		((long) ((*sz).output_times[(*sz).n_outputs - 1l] / (*sz).dt) + 10l) * 
-		sizeof(double)); 
+		((unsigned long) ((*sz).output_times[(*sz).n_outputs - 1l] / (*sz).dt) 
+			+ 10l) * sizeof(double)); 
 	sz -> ism -> star_formation_history[0l] = (*(*sz).ism).star_formation_rate; 
 	return 0; 
 
@@ -279,7 +279,7 @@ extern double get_outflow_rate(SINGLEZONE sz) {
 		return (*sz.ism).eta[sz.timestep] * (*sz.ism).star_formation_rate; 
 	} else {
 		/* The number of timesteps to smooth over */ 
-		long i, n = (long) ((*sz.ism).smoothing_time / sz.dt); 
+		unsigned long i, n = (unsigned long) ((*sz.ism).smoothing_time / sz.dt); 
 		double mean_sfr = 0; 
 		if (n > sz.timestep) {
 			/* If the simulation hasn't reached this many timesteps yet. 

@@ -7,6 +7,7 @@
 #include "singlezone.h" 
 #include "element.h" 
 #include "tracer.h" 
+#include "utils.h" 
 #include "ism.h" 
 #include "mdf.h" 
 #include "io.h" 
@@ -26,11 +27,12 @@ static void multizone_write_MDF(MULTIZONE mz);
  * 
  * header: multizone.h 
  */ 
-extern MULTIZONE *multizone_initialize(int n) {
+extern MULTIZONE *multizone_initialize(unsigned int n) {
 
 	MULTIZONE *mz = (MULTIZONE *) malloc (sizeof(MULTIZONE)); 
 	mz -> name = (char *) malloc (MAX_FILENAME_SIZE * sizeof(char)); 
-	mz -> zones = (SINGLEZONE **) malloc (n * sizeof(SINGLEZONE *)); 
+	mz -> zones = (SINGLEZONE **) malloc ((unsigned long) n * 
+		sizeof(SINGLEZONE *)); 
 	mz -> migration_matrix_gas = NULL; 
 	mz -> migration_matrix_tracers = NULL; 
 	mz -> tracers = NULL; 
@@ -164,6 +166,7 @@ extern int multizone_setup(MULTIZONE *mz) {
 			continue; 
 		} 
 	} 
+	seed_random(); 
 	return 0; 
 
 } 

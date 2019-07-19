@@ -33,11 +33,11 @@ static double **get_changes(MULTIZONE mz, int index);
  * header: migration.h 
  */ 
 extern int migration_matrix_sanitycheck(double ***migration_matrix, 
-	long n_times, int n_zones) {
+	unsigned long n_times, unsigned int n_zones) {
 
-	long i; 
+	unsigned long i; 
 	for (i = 0l; i < n_times; i++) {
-		int j; 
+		unsigned int j; 
 		for (j = 0; j < n_zones; j++) { 
 			/* 
 			 * At all times for all zones, total probability of migration out 
@@ -73,7 +73,7 @@ extern void migrate(MULTIZONE *mz) {
 	} 
 
 	/* Migrate all tracer particles between zones */ 
-	long j, timestep = (*(*mz).zones[0]).timestep; 
+	unsigned long j, timestep = (*(*mz).zones[0]).timestep; 
 	for (j = 0l; j < timestep * (*mz).n_zones * (*mz).n_tracers; j++) {
 		migrate_tracer(*mz, mz -> tracers[j]); 
 	} 
@@ -101,7 +101,7 @@ static void migrate_tracer(MULTIZONE mz, TRACER *t) {
 	 */ 
 
 	double dice_roll = (double) rand() / RAND_MAX; 
-	long timestep = (*mz.zones[0]).timestep; 
+	unsigned long timestep = (*mz.zones[0]).timestep; 
 	unsigned int j, i = (*t).zone_current; 
 
 	/* Look at all elements of the relevant row in the migration matrix */ 
@@ -173,7 +173,7 @@ static void migrate_gas_element(MULTIZONE *mz, int index) {
 static double **get_changes(MULTIZONE mz, int index) {
 
 	unsigned int i, j; 
-	long timestep = (*mz.zones[0]).timestep; 
+	unsigned long timestep = (*mz.zones[0]).timestep; 
 	double **changes = setup_changes(mz.n_zones); 
 
 	for (i = 0; i < mz.n_zones; i++) {

@@ -83,7 +83,8 @@ extern double interpolate2D(double x[2], double y[2], double f[2][2], double x0,
  * 
  * source: utils.c 
  */ 
-extern long get_bin_number(double *binspace, long num_bins, double value); 
+extern long get_bin_number(double *binspace, unsigned long num_bins, 
+	double value); 
 
 /* 
  * Determine the metallicity by mass of the ISM. This is not simply the sum 
@@ -107,7 +108,7 @@ extern long get_bin_number(double *binspace, long num_bins, double value);
  * 
  * source: utils.c 
  */ 
-extern double scale_metallicity(SINGLEZONE sz, long timestep); 
+extern double scale_metallicity(SINGLEZONE sz, unsigned long timestep); 
 
 /* 
  * Returns a pointer to an array of linearly spaced doubles between two 
@@ -122,7 +123,7 @@ extern double scale_metallicity(SINGLEZONE sz, long timestep);
  * 
  * source: utils.c 
  */ 
-extern double *binspace(double start, double stop, long N); 
+extern double *binspace(double start, double stop, unsigned long N); 
 
 /* 
  * Determine the center of each bin in an array of bin edges by taking the 
@@ -141,7 +142,7 @@ extern double *binspace(double start, double stop, long N);
  * 
  * source: utils.c 
  */ 
-extern double *bin_centers(double *edges, long n_bins); 
+extern double *bin_centers(double *edges, unsigned long n_bins); 
 
 /* 
  * Determine the sum of an array of double with known length. 
@@ -157,7 +158,7 @@ extern double *bin_centers(double *edges, long n_bins);
  * 
  * source: utils.c 
  */ 
-extern double sum(double *arr, long len); 
+extern double sum(double *arr, unsigned long len); 
 
 /* 
  * Sets the value of a string according to the ordinals of its values. Assumes 

@@ -59,9 +59,10 @@ extern double **read_square_ascii_file(char *file) {
 	 * data in as a 2D array
 	 */ 
 	long j; 
-	double **data = (double **) malloc ((length - h_length) * sizeof(double *)); 
+	double **data = (double **) malloc ( (unsigned) (length - h_length) * 
+		sizeof(double *)); 
 	for (j = 0l; j < length - h_length; j++) { 
-		data[j] = (double *) malloc (dimension * sizeof(double)); 
+		data[j] = (double *) malloc ( (unsigned) dimension * sizeof(double)); 
 		for (i = 0; i < dimension; i++) { 
 			if (fscanf(in, "%lf", &data[j][i])) {
 				continue; 
@@ -296,10 +297,10 @@ extern int import_agb_grid(ELEMENT *e, char *file) {
 	 * that format. 
 	 */ 
 	int i, j; 
-	if (length % (*(*e).agb_grid).n_z != 0) {
+	if ( (unsigned) length % (*(*e).agb_grid).n_z != 0) {
 		return 1; 
 	} else { 
-		e -> agb_grid -> n_m = length / (*(*e).agb_grid).n_z; 
+		e -> agb_grid -> n_m = (unsigned) length / (*(*e).agb_grid).n_z; 
 		in = fopen(file, "r"); 
 		if (in == NULL) return 1; 
 		e -> agb_grid -> m = (double *) malloc (
@@ -363,7 +364,8 @@ extern double **cc_yield_grid(char *file) {
 
 	int i, j; 
 	double **raw = read_square_ascii_file(file); 
-	double **grid = (double **) malloc (n_masses * sizeof(double *)); 
+	double **grid = (double **) malloc ( (unsigned) n_masses * 
+		sizeof(double *)); 
 	for (i = 0; i < n_masses; i++) { 
 		/* Convert to a stellar mass - total isotope mass yield grid */ 
 		grid[i] = (double *) malloc (2 * sizeof(double)); 

@@ -77,10 +77,10 @@ extern double mdot_sneia(SINGLEZONE sz, ELEMENT e) {
  */ 
 extern void sneia_from_tracers(MULTIZONE *mz) {
 
-	long i, timestep = (*(*mz).zones[0]).timestep; 
+	unsigned long i, timestep = (*(*mz).zones[0]).timestep; 
 	for (i = 0l; i < timestep * (*mz).n_zones * (*mz).n_tracers; i++) { 
 		TRACER *t = mz -> tracers[i]; 
-		int j; 
+		unsigned int j; 
 		/* 
 		 * Enrich each element in the zone from SNe Ia associated with this 
 		 * tracer particle 
@@ -113,7 +113,7 @@ extern void sneia_from_tracers(MULTIZONE *mz) {
  */ 
 static double mdotstarIa(SINGLEZONE sz, ELEMENT e) {
 
-	long i; 
+	unsigned long i; 
 	double sfria = 0; 
 	for (i = 0l; i < sz.timestep; i++) {
 		sfria += ((*e.sneia_yields).RIa[sz.timestep - i] * 
@@ -139,7 +139,7 @@ static double mdotstarIa(SINGLEZONE sz, ELEMENT e) {
 extern int setup_RIa(SINGLEZONE *sz) {
 
 	int j; 
-	long i, length = (long) (RIA_MAX_EVAL_TIME / (*sz).dt); 
+	unsigned long i, length = (unsigned long) (RIA_MAX_EVAL_TIME / (*sz).dt); 
 	for (j = 0; j < (*sz).n_elements; j++) { 
 		char *dtd = (*(*(*sz).elements[j]).sneia_yields).dtd; 
 		if (!strcmp(dtd, "plaw") || !strcmp(dtd, "exp")) {
@@ -214,9 +214,9 @@ static double RIa_builtin(ELEMENT e, double time) {
  * 
  * header: sneia.h 
  */ 
-extern void normalize_RIa(ELEMENT *e, long length) {
+extern void normalize_RIa(ELEMENT *e, unsigned long length) {
 
-	long i; 
+	unsigned long i; 
 	double sum = 0; 
 	for (i = 0l; i < length; i++) {
 		sum += (*(*e).sneia_yields).RIa[i]; 

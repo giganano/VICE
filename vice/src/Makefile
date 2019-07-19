@@ -1,6 +1,6 @@
 
 CC = gcc 
-CFLAGS = -c -fPIC 
+CFLAGS = -c -fPIC -Wsign-conversion
 OBJECTS = agb.o ccsne.o  element.o imf.o io.o ism.o mdf.o migration.o \
 	multizone.o quadrature.o singlezone.o sneia.o ssp.o tracer.o utils.o 
 
