@@ -19,7 +19,8 @@ extern MULTIZONE *multizone_initialize(void) {
 	MULTIZONE *mz = (MULTIZONE *) malloc (sizeof(MULTIZONE)); 
 	mz -> name = (char *) malloc (MAX_FILENAME_SIZE * sizeof(char)); 
 	mz -> zones = NULL; 
-	mz -> migration_matrix = NULL; 
+	mz -> migration_matrix_gas = NULL; 
+	mz -> migration_matrix_tracers = NULL; 
 	return mz; 
 
 }
@@ -38,7 +39,10 @@ extern void multizone_free(MULTIZONE *mz) {
 			singlezone_free(mz -> zones[i]); 
 		} 
 	} else {} 
-	if ((*mz).migration_matrix != NULL) free(mz -> migration_matrix); 
+	if ((*mz).migration_matrix_gas != NULL) free(mz -> migration_matrix_gas); 
+	if ((*mz).migration_matrix_tracers != NULL) {
+		free(mz -> migration_matrix_tracers); 
+	} else {} 
 
 } 
 

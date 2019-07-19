@@ -272,7 +272,8 @@ typedef struct multizone {
 	SINGLEZONE **zones; 
 	unsigned int n_zones; 
 	unsigned int n_tracers; 
-	double ***migration_matrix; 
+	double ***migration_matrix_gas; 
+	double ***migration_matrix_tracers; 
 	TRACER **tracers; 
 
 } MULTIZONE; 

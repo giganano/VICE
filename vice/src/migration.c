@@ -8,12 +8,51 @@
 #include "migration.h" 
 #include "multizone.h" 
 #include "tracer.h" 
+#include "utils.h" 
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
 static void migrate_tracer(MULTIZONE mz, TRACER *t); 
 static void migrate_gas_element(MULTIZONE *mz, int index); 
 static double **setup_changes(unsigned int n_zones); 
 static double **get_changes(MULTIZONE mz, int index); 
+
+/* 
+ * Performs a sanity check on a given migration matrix by making sure the sum 
+ * of migration probabilities out of a given zone at all times is <= 1. 
+ * 
+ * Parameters 
+ * ========== 
+ * migration_matrix: 		The migration matrix to sanity check 
+ * n_times: 				The number of times the simulation will evaluate 
+ * n_zones: 				The number of zones in the simulation 
+ * 
+ * Returns 
+ * ======= 
+ * 0 on passing sanity check, 1 on failure 
+ * 
+ * header: migration.h 
+ */ 
+extern int migration_matrix_sanitycheck(double ***migration_matrix, 
+	long n_times, int n_zones) {
+
+	long i; 
+	for (i = 0l; i < n_times; i++) {
+		int j; 
+		for (j = 0; j < n_zones; j++) { 
+			/* 
+			 * At all times for all zones, total probability of migration out 
+			 * of the zone must be <= 1. 
+			 */ 
+			if (sum(migration_matrix[i][j], n_zones) > 1) {
+				return 1; 
+			} else {
+				continue; 
+			} 
+		} 
+	} 
+	return 0; 
+
+}
 
 /* 
  * Migrates all gas, elements, and tracer particles between zones at the 
@@ -70,7 +109,7 @@ static void migrate_tracer(MULTIZONE mz, TRACER *t) {
 		if (j == i) {
 			/* Migration to the same zone can be ignored */ 
 			continue; 
-		} else if (dice_roll < mz.migration_matrix[timestep][i][j]) {
+		} else if (dice_roll < mz.migration_matrix_tracers[timestep][i][j]) {
 			/* stop the for loop after the tracer particle migrates once */ 
 			t -> zone_current = j; 
 			break; 
@@ -145,13 +184,13 @@ static double **get_changes(MULTIZONE mz, int index) {
 			} else if (index == -1) {
 				/* gas reservoir */ 
 				changes[i][j] = (
-					mz.migration_matrix[timestep][i][j] * 
+					mz.migration_matrix_gas[timestep][i][j] * 
 					(*(*mz.zones[i]).ism).mass 
 				); 
 			} else {
 				/* element in the i'th zone */ 
 				changes[i][j] = (
-					mz.migration_matrix[timestep][i][j] * 
+					mz.migration_matrix_gas[timestep][i][j] * 
 					(*(*mz.zones[i]).elements[index]).mass 
 				); 
 			} 
