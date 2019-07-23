@@ -163,8 +163,8 @@ extern void update_MDF(SINGLEZONE *sz) {
 				 */ 
 				sz -> mdf -> ratio_distributions[n][bin] += (
 					*(*sz).ism).star_formation_rate; 
-				n++; 
 			} else {} 
+			n++; 
 		}
 	}
 
