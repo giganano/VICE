@@ -11,13 +11,9 @@ extern "C"{
 /* 
  * Allocates memory for and returns a pointer to a multizone object 
  * 
- * Parameters 
- * ========== 
- * n: 		The number of zones in the simulation 
- * 
  * source: multizone.c 
  */ 
-extern MULTIZONE *multizone_initialize(unsigned int n); 
+extern MULTIZONE *multizone_initialize(void); 
 
 /*
  * Frees the memory stored in a multizone object 

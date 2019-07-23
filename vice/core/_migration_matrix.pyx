@@ -81,7 +81,7 @@ class migration_matrix(object):
 not supported. Please modify each element individually.""")  
 
 	def __repr__(self): 
-		rep "MigrationMatrix{\n" 
+		rep = "MigrationMatrix{\n" 
 		for i in range(self.size): 
 			rep += "    Zone %d %s\n" % (i, str(self._rows[i])) 
 		rep += "}" 

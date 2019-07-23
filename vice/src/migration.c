@@ -68,7 +68,7 @@ extern void migrate(MULTIZONE *mz) {
 
 	/* Migrate gas and all elements between zones */ 
 	int i; 
-	for (i = -1; i < (*(*mz).zones[0]).n_elements; i++) {
+	for (i = -1; i < (signed) (*(*mz).zones[0]).n_elements; i++) {
 		migrate_gas_element(mz, i); 
 	} 
 
@@ -132,7 +132,7 @@ static void migrate_tracer(MULTIZONE mz, TRACER *t) {
  */ 
 static void migrate_gas_element(MULTIZONE *mz, int index) {
 
-	int i, j; 
+	unsigned int i, j; 
 	double **changes = get_changes(*mz, -1); 
 	for (i = 0; i < (*mz).n_zones; i++) {
 		for (j = 0; j < (*mz).n_zones; j++) {

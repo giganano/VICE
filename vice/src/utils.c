@@ -109,14 +109,14 @@ extern double interpolate2D(double x[2], double y[2], double f[2][2], double x0,
 extern long get_bin_number(double *binspace, unsigned long num_bins, 
 	double value) {
 
-	long i; 
+	unsigned long i; 
 	for (i = 0l; i < num_bins; i++) {
 		if (binspace[i] <= value && value <= binspace[i + 1l]) { 
 			/* 
 			 * If the value lies between two consecutive bin edges, send that 
 			 * index back. 
 			 */ 
-			return i; 
+			return (signed) i; 
 		} else {
 			continue; 
 		} 
@@ -240,7 +240,7 @@ extern double *bin_centers(double *edges, unsigned long n_bins) {
  */ 
 extern double sum(double *arr, unsigned long len) {
 
-	long i; 
+	unsigned long i; 
 	double s = 0; 
 	for (i = 0l; i < len; i++) {
 		s += arr[i]; 

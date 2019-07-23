@@ -102,7 +102,7 @@ extern void agb_from_tracers(MULTIZONE *mz) {
 		TRACER *t = mz -> tracers[i]; 
 		SINGLEZONE *sz = mz -> zones[(*t).zone_current]; 
 		double Z = tracer_metallicity(*mz, *t); 
-		int j; 
+		unsigned int j; 
 		for (j = 0; j < (*sz).n_elements; j++) { 
 			/* 
 			 * For each element in the current zone, determine the AGB yield 

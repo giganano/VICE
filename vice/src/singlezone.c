@@ -50,7 +50,7 @@ extern void singlezone_free(SINGLEZONE *sz) {
 
 	singlezone_close_files(sz); 
 	if ((*sz).elements != NULL) {
-		int i; 
+		unsigned int i; 
 		for (i = 0; i < (*sz).n_elements; i++) {
 			element_free(sz -> elements[i]); 
 		} 
@@ -122,7 +122,7 @@ static void singlezone_timestepper(SINGLEZONE *sz) {
 	 * Timestep number and current time get moved LAST. This is taken into 
 	 * account in each of the following subroutines. 
 	 */ 
-	int i; 
+	unsigned int i; 
 	update_gas_evolution(sz); 
 	for (i = 0; i < (*sz).n_elements; i++) { 
 		update_element_mass(*sz, (*sz).elements[i]); 
@@ -162,7 +162,7 @@ extern int singlezone_setup(SINGLEZONE *sz) {
 		write_mdf_header(*sz); 
 	} 
 
-	int i; 
+	unsigned int i; 
 	for (i = 0; i < (*sz).n_elements; i++) { 
 		/* 
 		 * The singlezone object always allocates memory for 10 timesteps 
@@ -210,7 +210,7 @@ extern int singlezone_setup(SINGLEZONE *sz) {
  */ 
 extern void singlezone_clean(SINGLEZONE *sz) {
 
-	int i; 
+	unsigned int i; 
 	for (i = 0; i < (*sz).n_elements; i++) { 
 		free(sz -> elements[i] -> Z); 
 		free(sz -> elements[i] -> Zin); 

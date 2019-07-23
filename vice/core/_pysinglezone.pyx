@@ -1066,8 +1066,126 @@ class singlezone:
 #--------------------------- SINGLEZONE C VERSION ---------------------------# 
 cdef class c_singlezone: 
 
-	""" 
-	Wrapping of the C version of the singlezone object. 
+	"""
+	Runs simulations of chemical enrichment under the single-zone approximation 
+	for user-specified parameters. The organizational structure of this class 
+	is very simple; every attribute encodes information on a relevant galaxy 
+	evolution parameter. 
+
+	Signature: vice.singlezone.__init__(name = "onezonemodel", 
+		func = _DEFAULT_FULC_, 
+		mode = "ifr", 
+		elements = ("fe", "sr", "o"), 
+		IMF = "kroupa", 
+		eta = 2.5, 
+		ehancement = 1, 
+		zin = 0, 
+		recycling = "continuous", 
+		bins = _DEFAULT_FUNC_, 
+		delay = 0.15, 
+		RIa = "plaw", 
+		Mg0 = 6.0e+09, 
+		smoothing = 0.0, 
+		tau_ia = 1.5, 
+		tau_star = 2.0, 
+		dt = 0.01, 
+		schmidt = False, 
+		schmidt_index = 0.5, 
+		MgSchmidt = 6.0e+09, 
+		m_upper = 100, 
+		m_lower = 0.08, 
+		Z_solar = 0.014, 
+		agb_model = "cristallo11" 
+	)
+
+	Attributes 
+	========== 
+	name :: str [default :: "onezonemodel"] 
+		The name of the simulation. 
+	func :: <function> 
+		A function of time describing some evolutionary parameter of the 
+		galaxy. Interpretation set by the attribute "mode". 
+	mode :: str [default :: "ifr"] 
+		The interpretation of the attribute "func". Either "ifr" for infall 
+		rate, "sfr" for star formation rate, or "gas" for the gas supply. 
+	verbose :: bool [default :: False] 
+		Whether or not to print the to the console as the simulation runs 
+	elements :: array-like [default :: ("fe", "sr", "o")] 
+		An array-like object of strings denoting the symbols of the elements to 
+		track the enrichment for 
+	IMF :: str [default :: "kroupa"] 
+		A string denoting which stellar initial mass function to adopt. This 
+		must be either "kroupa" (1) or "salpeter" (2). 
+	eta :: real number [default :: 2.5] 
+		The mass-loading parameter - ratio of outflow to star formation rates. 
+		This relationship gets more complicated when the attribute smoothing is 
+		nonzero. See docstring for further details. 
+	enhancement :: real number or <function> [default :: 1] 
+		The ratio of outflow to ISM metallicities. If a callable function is 
+		passed, it will be interpreted as taking time in Gyr as a parameter. 
+	zin :: real number, <function>, or dict [default :: 0] 
+		The infall metallicity. See docstring for further details. 
+	recycling :: str or real number [default :: "continuous"] 
+		Either the string "continuous" or a real number between 0 and 1 
+		denoting the treatment of recycling from previous generations of stars. 
+	bins :: array-like [default :: [-3.0, -2.95, -2.9, ... , 0.9, 0.95, 1.0]] 
+		The binspace within which to sort the normalized stellar metallicity 
+		distribution function in each [X/H] abundance and [X/Y] abundance 
+		ratio measurement. 
+	delay :: real number [default :: 0.15] 
+		The minimum delay time in Gyr before the onset of type Ia supernovae 
+		associated with a single stellar population 
+	RIa :: str or <function> [default :: "plaw"] 
+		The delay-time distribution (DTD) to adopt. See docstring for further 
+		details. 
+	Mg0 :: real number [default :: 6.0e+09] 
+		The initial gas supply of the galaxy in solar masses. Only relevant 
+		when the simulation is ran in infall mode (i.e. mode == "ifr") 
+	smoothing :: real number [default :: 0] 
+		The smoothing timescale in Gyr. See docstring for further details. 
+	tau_ia :: real number [default :: 1.5] 
+		The e-folding timescale of type Ia supernovae in Gyr when ria == "exp". 
+	tau_star :: real number or <function> [default :: 2.0] 
+		The star formation rate per unit gas mass in the galaxy in Gyr. This 
+		can either be a number which will be treated as a constant, or a 
+		function of time in Gyr. This becomes the normalization of the star 
+		formation efficiency when the attribute schmidt == True. 
+	dt :: real number [default :: 0.01] 
+		The timestep size in Gyr. 
+	schmidt :: bool [default :: False] 
+		A boolean switch describing whether or not to implement star formation 
+		efficiency dependent on the gas-supply (3; 4). 
+	MgSchmidt :: real number [default :: 6.0e+09] 
+		The normalization of the gas-supply when attribute schmidt == True. 
+	m_upper :: real number [default :: 100] 
+		The upper mass limit on star formation in solar masses 
+	m_lower :: real number [default :: 0.08] 
+		The lower mass limit on star formation in solar masses 
+	Z_solar :: real number [default :: 0.014] 
+		The adopted solar metallicity by mass. 
+	agb_model :: str [default :: "cristallo11"] 
+		A keyword denoting which AGB yield grid to adopt. Must be either 
+		"cristallo11" (5) or "karakas10" (6). 
+
+	Functions 
+	========= 
+	run :: 			Run the simulation 
+	settings :: 	Print the current settings 
+
+	See also 	[https://github.com/giganano/VICE/tree/master/docs]
+	========
+	Sections 3 - 6 of science documentation 
+	Notes on functional attributes and numerical delta functions in User's 
+		guide 
+
+	References 
+	========== 
+	(5) Cristallo et al. (2011), ApJS, 197, 17 
+	(6) Karakas (2010), MNRAS, 403, 1413 
+	(1) Kroupa (2001), MNRAS, 322, 231 
+	(4) Leroy et al. (2008), AJ, 136, 2782 
+	(2) Salpeter (1955), ApJ, 121, 161 
+	(3) Schmidt (1959), ApJ, 129, 243 
 	""" 
 
 	cdef SINGLEZONE *_sz 
@@ -1218,7 +1336,30 @@ cdef class c_singlezone:
 
 	@property
 	def name(self):  
-		# docstring in python version 
+		"""
+		Type :: str 
+		Default :: "onezonemodel" 
+
+		The name of the simulation. The output will be stored in a directory 
+		under this name with the extension ".vice". This can also be of the 
+		form /path/to/directory/name and the output will be stored there. 
+
+		Notes 
+		===== 
+		The user need not interact with any of the output files; the output 
+		object is designed to read in all of the results automatically. 
+
+		Most of the relevant physical information stored in VICE 
+		outputs are in the history.out and mdf.out output files. They are 
+		simple ascii text files, allowing users to open them in languages other 
+		than python if they so choose. The other output files store the yield 
+		settings at the time of simulation and the integrator parameters which 
+		produced it. 
+
+		By forcing a ``.vice'' extension on the output file, users can run 
+		'<command> *.vice' in a linux terminal to run commands over 
+		all vice outputs in a given directory. 		
+		""" 
 		return "".join([chr(self._sz[0].name[i]) for i in range(
 			strlen(self._sz[0].name))])[:-5] 
 
@@ -1265,7 +1406,36 @@ empty string.""")
 
 	@property 
 	def func(self): 
-		# docstring in python version 
+		"""
+		Type :: <function> 
+		Default :: _DEFAULT_FUNC_ 
+
+		A callable python function of time which returns a real number. 
+		This must take only one parameter, which will be interpreted as time 
+		in Gyr. The value returned by this function will represent either the 
+		gas infall history in Msun/yr, the star formation history in Msun/yr, 
+		or the gas supply in Msun. 
+
+		The default function returns the value of 9.1 always. With a default 
+		mode of "ifr", if these attributes are not changed, the simulation 
+		will run with an infall rate of 9.1 Msun/yr at all times. 
+
+		Notes 
+		===== 
+		Encoding this functional attribute into VICE outputs requires the 
+		package dill, an extension to pickle in the python standard library. 
+		Without this, the outputs will not have memory of this parameter. 
+		It is recommended that VICE users install dill if they have not already 
+		so that they can make use of this feature; this can be done via 
+		'pip install dill'. 
+
+		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
+		======== 
+		Section 3 of science documentation 
+		Notes on functional attributes and numerical delta functions in user's 
+			guide 
+		Attribute mode 
+		""" 
 		return self._func
 
 	@func.setter

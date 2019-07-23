@@ -138,7 +138,7 @@ static double mdotstarIa(SINGLEZONE sz, ELEMENT e) {
  */ 
 extern int setup_RIa(SINGLEZONE *sz) {
 
-	int j; 
+	unsigned int j; 
 	unsigned long i, length = (unsigned long) (RIA_MAX_EVAL_TIME / (*sz).dt); 
 	for (j = 0; j < (*sz).n_elements; j++) { 
 		char *dtd = (*(*(*sz).elements[j]).sneia_yields).dtd; 

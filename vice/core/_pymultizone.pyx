@@ -57,6 +57,7 @@ except (ModuleNotFoundError, ImportError):
 # C imports 
 from libc.stdlib cimport malloc, realloc, free 
 from libc.string cimport strlen, strcpy 
+from ._pysinglezone cimport sz_pointer_from_pysinglezone 
 from ._objects cimport AGB_YIELD_GRID 
 from ._objects cimport CCSNE_YIELD_SPECS 
 from ._objects cimport SNEIA_YIELD_SPECS 
@@ -90,12 +91,19 @@ cdef class multizone:
 
 	def __cinit__(self, int n): 
 		if n > 0: 
-			self._mz = _multizone.multizone_initialize(n) 
+			self._mz = _multizone.multizone_initialize() 
 			self._zones = n * [None] 
 			for i in range(n): 
 				self._zones[i] = singlezone() 
-				self._zones[i]._sz = self._mz[0].zones[i] 
 				self._zones[i].name = "zone%d" % (i) 
+				self._mz[0].zones[i] = sz_pointer_from_pysinglezone(
+					self._zones[i])
+			# self._mz = _multizone.multizone_initialize(n) 
+			# self._zones = n * [None] 
+			# for i in range(n): 
+			# 	self._zones[i] = singlezone() 
+			# 	self._zones[i]._sz = self._mz[0].zones[i] 
+			# 	self._zones[i].name = "zone%d" % (i) 
 		else: 
 			raise ValueError("Number of zones must be positive. Got: %d" % (n)) 
 

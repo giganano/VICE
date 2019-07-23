@@ -29,22 +29,14 @@ static void multizone_write_MDF(MULTIZONE mz);
  * 
  * header: multizone.h 
  */ 
-extern MULTIZONE *multizone_initialize(unsigned int n) {
+extern MULTIZONE *multizone_initialize(void) {
 
 	MULTIZONE *mz = (MULTIZONE *) malloc (sizeof(MULTIZONE)); 
 	mz -> name = (char *) malloc (MAX_FILENAME_SIZE * sizeof(char)); 
-	mz -> zones = (SINGLEZONE **) malloc ((unsigned long) n * 
-		sizeof(SINGLEZONE *)); 
+	mz -> zones = NULL; 	/* handled in python */ 
 	mz -> migration_matrix_gas = NULL; 
 	mz -> migration_matrix_tracers = NULL; 
 	mz -> tracers = NULL; 
-	mz -> n_zones = n; 
-
-	unsigned int i; 
-	for (i = 0; i < n; i++) {
-		mz -> zones[i] = singlezone_initialize(); 
-	}
-
 	return mz; 
 
 } 
@@ -70,6 +62,18 @@ extern void multizone_free(MULTIZONE *mz) {
 	if ((*mz).tracers != NULL) free(mz -> tracers); 
 
 } 
+
+#if 0 
+extern void setup_zones(MULTIZONE *mz, SINGLEZONE **sz, unsigned int n_zones) {
+
+	unsigned int i; 
+	mz -> zones = (SINGLEZONE **) malloc (n_zones * sizeof(SINGLEZONE *)); 
+	for (i = 0; i < n_zones; i++) {
+		mz -> zones[i] = sz[i]; 
+	}
+
+} 
+#endif 
 
 /* 
  * Runs the multizone simulation under current user settings. 
@@ -221,7 +225,7 @@ extern void multizone_clean(MULTIZONE *mz) {
 	} 
 
 	/* free up each tracer and set the pointer to NULL again */ 
-	long j; 
+	unsigned long j; 
 	for (j = 0l; 
 		j < (*(*mz).zones[0]).timestep * (*mz).n_zones * (*mz).n_tracers; 
 		j++) {

@@ -122,7 +122,7 @@ extern double *single_population_enrichment(SSP *ssp, ELEMENT *e,
 	ssp -> msmf = (double *) malloc (n_times * sizeof(double)); 
 	if ((*ssp).msmf == NULL) return NULL; /* memory error */ 
 
-	long i; 
+	unsigned long i; 
 	for (i = 0l; i < n_times; i++) {
 		ssp -> msmf[i] = MSMF(*ssp, times[i]); 
 	} 

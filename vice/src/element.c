@@ -115,9 +115,8 @@ extern void update_element_mass(SINGLEZONE sz, ELEMENT *e) {
  */ 
 extern void update_elements(MULTIZONE *mz) {
 
-	unsigned int i; 
-	for (i = 0; i < (*mz).n_zones; i++) {
-		int j; 
+	unsigned int i, j; 
+	for (i = 0; i < (*mz).n_zones; i++) { 
 		for (j = 0; j < (*(*mz).zones[i]).n_elements; j++) { 
 			/* 
 			 * Instantaneous pieces that don't require tracer particles: 
@@ -165,7 +164,6 @@ extern void update_elements(MULTIZONE *mz) {
 
 	/* sanity check each element in each zone */ 
 	for (i = 0; i < (*mz).n_zones; i++) { 
-		int j; 
 		for (j = 0; j < (*(*mz).zones[i]).n_elements; j++) { 
 			update_element_mass_sanitycheck(mz -> zones[i] -> elements[j]); 
 		}

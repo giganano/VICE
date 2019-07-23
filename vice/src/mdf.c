@@ -62,8 +62,8 @@ extern int setup_MDF(SINGLEZONE *sz) {
 	 * an array for the abundance distribution in each bin and initialize its 
 	 * value to zero. 
 	 */ 
-	long i; 
-	int j; 
+	unsigned long i; 
+	unsigned int j; 
 	sz -> mdf -> abundance_distributions = (double **) malloc ((*sz).n_elements * 
 		sizeof(double *)); 
 	if ((*(*sz).mdf).abundance_distributions == NULL) {
@@ -124,7 +124,7 @@ extern int setup_MDF(SINGLEZONE *sz) {
 extern void update_MDF(SINGLEZONE *sz) {
 
 	/* ---------------------- for each tracked element ---------------------- */ 
-	int i, j; 
+	unsigned int i, j; 
 	for (i = 0; i < (*sz).n_elements; i++) {
 		double onH = log10( 		/* [X/H] for this element */ 
 			((*(*sz).elements[i]).mass / (*(*sz).ism).mass) / 
@@ -157,7 +157,7 @@ extern void update_MDF(SINGLEZONE *sz) {
 			); 
 			/* The bin number for [X/Y] */ 
 			long bin = get_bin_number((*(*sz).mdf).bins, 
-				(*(*sz).mdf).n_bins, onH1 - onH2); 		
+				(*(*sz).mdf).n_bins, onH1 - onH2); 
 			if (bin != -1l) {
 				/* 
 				 * Again increment the bin number by the star formation rate. 
@@ -166,8 +166,8 @@ extern void update_MDF(SINGLEZONE *sz) {
 				 */ 
 				sz -> mdf -> ratio_distributions[n][bin] += (
 					*(*sz).ism).star_formation_rate; 
-				n++; 
 			} else {} 
+			n++; 
 		}
 	}
 
@@ -188,8 +188,8 @@ extern void update_MDF(SINGLEZONE *sz) {
 extern void normalize_MDF(SINGLEZONE *sz) {
 
 	/* ---------------------- for each tracked element ---------------------- */ 
-	int j; 
-	long i;  
+	unsigned long i; 
+	unsigned int j; 
 	for (j = 0; j < (*sz).n_elements; j++) { 
 		double integral = 0.0; 
 		for (i = 0l; i < (*(*sz).mdf).n_bins; i++) { 
@@ -204,7 +204,8 @@ extern void normalize_MDF(SINGLEZONE *sz) {
 	} 
 
 	/* ---------------------- for each abundance ratio ---------------------- */
-	int n_ratios = (int) ((*sz).n_elements * ((*sz).n_elements - 1) / 2); 
+	unsigned int n_ratios = (unsigned int) ((*sz).n_elements * 
+		((*sz).n_elements - 1) / 2); 
 	for (j = 0; j < n_ratios; j++) {
 		double integral = 0.0; 
 		for (i = 0l; i < (*(*sz).mdf).n_bins; i++) {

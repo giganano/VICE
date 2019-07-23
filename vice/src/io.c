@@ -296,7 +296,7 @@ extern int import_agb_grid(ELEMENT *e, char *file) {
 	 * with the line number. These lines are explicitly designed to read in 
 	 * that format. 
 	 */ 
-	int i, j; 
+	unsigned int i, j; 
 	if ( (unsigned) length % (*(*e).agb_grid).n_z != 0) {
 		return 1; 
 	} else { 
@@ -507,7 +507,7 @@ extern void write_history_header(SINGLEZONE sz) {
 	fprintf(sz.history_writer, "#\t6: eta_0\t\t\tMass-loading factor\n"); 
 	fprintf(sz.history_writer, "#\t7: r_eff\t\t\tEffective recycilng rate\n"); 
 	
-	int i, j, n = 8; 
+	unsigned int i, j, n = 8; 
 	for (i = 0; i < sz.n_elements; i++) { 
 		/* Inflow metallicity for each element */ 
 		fprintf(sz.history_writer, 
@@ -574,7 +574,7 @@ extern void write_history_output(SINGLEZONE sz) {
 	 */ 
 	double *Z = (double *) malloc (sz.n_elements * sizeof(double)); 
 	double *onH = (double *) malloc (sz.n_elements * sizeof(double)); 
-	int i, j; 
+	unsigned int i, j; 
 	for (i = 0; i < sz.n_elements; i++) {
 		Z[i] = (*sz.elements[i]).mass / (*sz.ism).mass; 
 		onH[i] = log10(Z[i] / (*sz.elements[i]).solar); 
@@ -656,7 +656,7 @@ extern void write_mdf_header(SINGLEZONE sz) {
 	 * that [X/Y] logarithmic abundance ratio for each combination of elements. 
 	 */ 
 
-	int i, j; 
+	unsigned int i, j; 
 	fprintf(sz.mdf_writer, "# bin_edge_left\tbin_edge_right\t"); 
 	for (i = 0; i < sz.n_elements; i++) {
 		fprintf(sz.mdf_writer, "dN/d[%s/H]\t", (*sz.elements[i]).symbol); 
@@ -683,8 +683,9 @@ extern void write_mdf_header(SINGLEZONE sz) {
 extern void write_mdf_output(SINGLEZONE sz) {
  
  	/* n: The number of abundance ratios reported */ 
- 	int j;
-	long i, n = (int) (sz.n_elements * (sz.n_elements - 1) / 2); 
+	unsigned int j;
+	unsigned long i, n = (unsigned long) (sz.n_elements * 
+		(sz.n_elements - 1) / 2); 
 	for (i = 0l; i < (*sz.mdf).n_bins; i++) { 
 		fprintf(sz.mdf_writer, "%e\t%e\t", (*sz.mdf).bins[i], 
 			(*sz.mdf).bins[i + 1l]); 
