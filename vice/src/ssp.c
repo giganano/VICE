@@ -58,12 +58,29 @@ extern SSP *ssp_initialize(void) {
  * 
  * header: ssp.h 
  */ 
-extern void ssp_free(SSP *ssp) {
+extern void ssp_free(SSP *ssp) { 
 
-	if ((*ssp).crf != NULL) free(ssp -> crf); 
-	if ((*ssp).msmf != NULL) free(ssp -> msmf); 
-	free(ssp -> imf); 
-	free(ssp); 
+	if (ssp != NULL) {
+
+		if ((*ssp).crf != NULL) {
+			free(ssp -> crf); 
+			ssp -> crf = NULL; 
+		} else {} 
+
+		if ((*ssp).msmf != NULL) {
+			free(ssp -> msmf); 
+			ssp -> msmf = NULL; 
+		} else {} 
+
+		if ((*ssp).imf != NULL) {
+			free(ssp -> imf); 
+			ssp -> imf = NULL; 
+		} else {} 
+
+		free(ssp); 
+		ssp = NULL; 
+
+	} else {}  
 
 } 
 

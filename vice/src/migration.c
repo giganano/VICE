@@ -73,8 +73,8 @@ extern void migrate(MULTIZONE *mz) {
 	} 
 
 	/* Migrate all tracer particles between zones */ 
-	unsigned long j, timestep = (*(*mz).zones[0]).timestep; 
-	for (j = 0l; j < timestep * (*mz).n_zones * (*mz).n_tracers; j++) {
+	unsigned long j; 
+	for (j = 0l; j < (*mz).tracer_count; j++) {
 		migrate_tracer(*mz, mz -> tracers[j]); 
 	} 
 

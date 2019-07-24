@@ -27,6 +27,21 @@ extern MULTIZONE *multizone_initialize(unsigned int n);
 extern void multizone_free(MULTIZONE *mz); 
 
 /* 
+ * Links an individual zone in a multizone object to the proper address of a 
+ * singlezone struct. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 			A pointer to the multizone object 
+ * address: 	The address of the singlezone object to link 
+ * zone_index: 	The zone number this singlezone object should correspond to 
+ * 
+ * source: multizone.c 
+ */ 
+extern void link_zone(MULTIZONE *mz, unsigned long address, 
+	unsigned int zone_index); 
+
+/* 
  * Runs the multizone simulation under current user settings. 
  * 
  * Parameters 

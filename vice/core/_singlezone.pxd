@@ -7,5 +7,6 @@ cdef extern from "../src/singlezone.h":
 	double SINGLEZONE_MAX_EVAL_TIME
 	SINGLEZONE *singlezone_initialize() 
 	void singlezone_free(SINGLEZONE *sz) 
+	long singlezone_address(SINGLEZONE *sz) 
 	int singlezone_evolve(SINGLEZONE *sz) 
 

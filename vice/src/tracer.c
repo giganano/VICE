@@ -27,7 +27,10 @@ extern TRACER *tracer_initialize(void) {
  */ 
 extern void tracer_free(TRACER *t) {
 
-	free(t); 
+	if (t != NULL) {
+		free(t); 
+		t = NULL; 
+	} else {} 
 
 }
 
@@ -47,7 +50,7 @@ extern void inject_tracers(MULTIZONE *mz) {
 	/* Give each new tracer particle it's mass and zone number */ 
 	unsigned int i, j; 
 	unsigned long start_index = (
-		((*(*mz).zones[0]).timestep - 1l) * (*mz).n_zones * (*mz).n_tracers 
+		(*mz).tracer_count - (*mz).n_zones * (*mz).n_tracers 
 	); 
 	for (i = 0; i < (*mz).n_zones; i++) {
 		for (j = 0; j < (*mz).n_tracers; j++) { 
@@ -105,16 +108,20 @@ extern double tracer_metallicity(MULTIZONE mz, TRACER t) {
  * ========== 
  * mz: 		The multizone object for the current simulation 
  */ 
-static void realloc_tracers(MULTIZONE *mz) {
+static void realloc_tracers(MULTIZONE *mz) { 
 
-	unsigned long i, timestep = (*(*mz).zones[0]).timestep; 
-	mz -> tracers = (TRACER **) realloc (mz -> tracers, 
-		timestep * (*mz).n_zones * (*mz).n_tracers * sizeof(TRACER *)); 
-	for (i = (timestep - 1l) * (*mz).n_zones * (*mz).n_tracers; 
-		i < timestep * (*mz).n_zones * (*mz).n_tracers; 
+	mz -> tracer_count += (*mz).n_zones * (*mz).n_tracers; 
+	mz -> tracers = (TRACER **) realloc(mz -> tracers, 
+		(*mz).tracer_count * sizeof(TRACER *)); 
+
+	unsigned long i; 
+	for (i = (*mz).tracer_count - (*mz).n_zones * (*mz).n_tracers; 
+		i < (*mz).tracer_count; 
 		i++) {
+
 		mz -> tracers[i] = tracer_initialize(); 
-	} 
+
+	}
 
 }
 

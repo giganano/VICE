@@ -69,11 +69,24 @@ extern CCSNE_YIELD_SPECS *ccsne_yield_initialize(void) {
  * 
  * header: ccsne.h 
  */ 
-extern void ccsne_yield_free(CCSNE_YIELD_SPECS *ccsne_yield) {
+extern void ccsne_yield_free(CCSNE_YIELD_SPECS *ccsne_yield) { 
 
-	if ((*ccsne_yield).yield_ != NULL) free(ccsne_yield -> yield_); 
-	free(ccsne_yield -> grid); 
-	free(ccsne_yield); 
+	if (ccsne_yield != NULL) {
+
+		if ((*ccsne_yield).yield_ != NULL) {
+			free(ccsne_yield -> yield_); 
+			ccsne_yield -> yield_ = NULL; 
+		} else {} 
+
+		if ((*ccsne_yield).grid != NULL) {
+			free(ccsne_yield -> grid); 
+			ccsne_yield -> grid = NULL; 
+		} else {} 
+
+		free(ccsne_yield); 
+		ccsne_yield = NULL; 
+
+	} else {} 
 
 } 
 

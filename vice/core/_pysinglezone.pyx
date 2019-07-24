@@ -232,6 +232,14 @@ class singlezone:
 	def __exit__(self): 
 		return self.__c_version.__exit__() 
 
+	def __zone_object_address(self): 
+		""" 
+		Returns the memory address of the SINGLEZONE struct in C. For usage 
+		in initialization of multizone objects only; usage of this function 
+		by the user is strongly discouraged. 
+		""" 
+		return self.__c_version.object_address() 
+
 	@property 
 	def name(self): 
 		"""
@@ -1070,6 +1078,16 @@ cdef class c_singlezone:
 	Wrapping of the C version of the singlezone object 
 	""" 
 
+	cdef SINGLEZONE *_sz 
+	cdef object _func 
+	cdef object _eta 
+	cdef object _enhancement 
+	cdef object _tau_star 
+	cdef object _zin 
+	cdef object _ria 
+	cdef double _Mg0 
+	cdef object _agb_model 
+
 	def __cinit__(self): 
 		self._sz = _singlezone.singlezone_initialize()
 
@@ -1144,7 +1162,6 @@ cdef class c_singlezone:
 			attribute2 ------> value 
 		}
 		""" 
-		rep = "vice.singlezone{\n" 
 		attrs = {
 			"name": 			self.name, 	
 			"func": 			self.func, 
@@ -1180,6 +1197,7 @@ cdef class c_singlezone:
 		else: 
 			attrs["bins"] = str(self.bins) 
 
+		rep = "vice.singlezone{\n" 
 		for i in attrs.keys(): 
 			rep += "    %s " % (i) 
 			for j in range(15 - len(i)): 
@@ -1205,6 +1223,12 @@ cdef class c_singlezone:
 		Raises all exceptions inside with statements 
 		""" 
 		return exc_value is None 
+
+	def object_address(self): 
+		""" 
+		Returns the memory address of the associated SINGLEZONE struct in C. 
+		""" 
+		return _singlezone.singlezone_address(self._sz) 
 
 	@property
 	def name(self):  

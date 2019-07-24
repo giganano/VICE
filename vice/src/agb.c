@@ -34,12 +34,29 @@ extern AGB_YIELD_GRID *agb_yield_grid_initialize(void) {
  * 
  * header: agb.h 
  */ 
-extern void agb_yield_grid_free(AGB_YIELD_GRID *agb_grid) {
+extern void agb_yield_grid_free(AGB_YIELD_GRID *agb_grid) { 
 
-	if ((*agb_grid).grid != NULL) free(agb_grid -> grid); 
-	if ((*agb_grid).m != NULL) free(agb_grid -> m); 
-	if ((*agb_grid).z != NULL) free(agb_grid -> z); 
-	free(agb_grid); 
+	if (agb_grid != NULL) {
+
+		if ((*agb_grid).grid != NULL) {
+			free(agb_grid -> grid); 
+			agb_grid -> grid = NULL; 
+		} else {} 
+
+		if ((*agb_grid).m != NULL) {
+			free(agb_grid -> m); 
+			agb_grid -> m = NULL; 
+		} else {} 
+
+		if ((*agb_grid).z != NULL) {
+			free(agb_grid -> z); 
+			agb_grid -> z = NULL; 
+		} else {} 
+
+		free(agb_grid); 
+		agb_grid = NULL; 
+
+	} else {} 
 
 } 
 
@@ -97,17 +114,19 @@ extern double m_AGB(SINGLEZONE sz, ELEMENT e) {
 extern void agb_from_tracers(MULTIZONE *mz) {
 
 	unsigned long i, timestep = (*(*mz).zones[0]).timestep; 
-	for (i = 0l; i < timestep * (*mz).n_zones * (*mz).n_tracers; i++) { 
-		/* Get the tracer particle's current zone and metallicity */ 
+	for (i = 0l; i < (*mz).tracer_count; i++) { 
+		/* 
+		 * Get the tracer particle's current zone and metallicity. Use the SSP 
+		 * evolutionary parameters from the zone in which the tracer particle 
+		 * was born. 
+		 */ 
 		TRACER *t = mz -> tracers[i]; 
 		SINGLEZONE *sz = mz -> zones[(*t).zone_current]; 
+		SSP *ssp = mz -> zones[(*t).zone_origin] -> ssp; 
 		double Z = tracer_metallicity(*mz, *t); 
 		unsigned int j; 
 		for (j = 0; j < (*sz).n_elements; j++) { 
 			/* 
-			 * For each element in the current zone, determine the AGB yield 
-			 * and pull the mass from the mass of the tracer particle. 
-			 * 
 			 * n: The number of timesteps ago the tracer particle formed. This 
 			 * times the timestep size is the age of the tracer particle in 
 			 * Gyr. 
@@ -117,7 +136,7 @@ extern void agb_from_tracers(MULTIZONE *mz) {
 			e -> mass += ( 
 				get_AGB_yield(*e, Z, main_sequence_turnoff_mass(n * (*sz).dt)) 
 				* (*t).mass * 
-				((*(*sz).ssp).msmf[n] - (*(*sz).ssp).msmf[n + 1l]) 
+				((*ssp).msmf[n] - (*ssp).msmf[n + 1l]) 
 			); 
 		} 
 	} 

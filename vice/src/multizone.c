@@ -31,18 +31,21 @@ static void multizone_write_MDF(MULTIZONE mz);
  */ 
 extern MULTIZONE *multizone_initialize(unsigned int n) {
 
+	/* 
+	 * Memory is allocated for n SINGLEZONE structs, but they are not 
+	 * initialized here. When a multizone object is created through the 
+	 * python interpreter, it creates an array of singlezone objects, then 
+	 * calls link_zone to point each zone here to proper memory address. 
+	 */ 
+
 	MULTIZONE *mz = (MULTIZONE *) malloc (sizeof(MULTIZONE)); 
 	mz -> name = (char *) malloc (MAX_FILENAME_SIZE * sizeof(char)); 
 	mz -> zones = (SINGLEZONE **) malloc (n * sizeof(SINGLEZONE *)); 
+	mz -> n_zones = n; 
 	mz -> migration_matrix_gas = NULL; 
 	mz -> migration_matrix_tracers = NULL; 
+	mz -> tracer_count = 0l; 
 	mz -> tracers = NULL; 
-
-	unsigned int i; 
-	for (i = 0; i < n; i++) {
-		mz -> zones[i] = singlezone_initialize(); 
-	}
-
 	return mz; 
 
 } 
@@ -52,33 +55,80 @@ extern MULTIZONE *multizone_initialize(unsigned int n) {
  * 
  * header: multizone.h 
  */ 
-extern void multizone_free(MULTIZONE *mz) {
+extern void multizone_free(MULTIZONE *mz) { 
 
-	free(mz -> name); 
-	if ((*mz).zones != NULL) {
-		unsigned int i; 
-		for (i = 0; i < (*mz).n_zones; i++) {
-			singlezone_free(mz -> zones[i]); 
-		} 
-	} else {} 
-	if ((*mz).migration_matrix_gas != NULL) free(mz -> migration_matrix_gas); 
-	if ((*mz).migration_matrix_tracers != NULL) {
-		free(mz -> migration_matrix_tracers); 
-	} else {} 
-	if ((*mz).tracers != NULL) free(mz -> tracers); 
+	if (mz != NULL) {
+
+		/* 
+		 * Since the singlezone object's __dealloc__ function call's 
+		 * singlezone_free, the memory for each individual zone should not 
+		 * be freed here. Doing so will cause a memory error upon system exit. 
+		 */ 
+
+		if ((*mz).name != NULL) {
+			free(mz -> name); 
+			mz -> name = NULL; 
+		} else {} 
+
+		if ((*mz).migration_matrix_gas != NULL) {
+			free(mz -> migration_matrix_gas); 
+			mz -> migration_matrix_gas = NULL; 
+		} else {} 
+
+		if ((*mz).migration_matrix_tracers != NULL) {
+			free(mz -> migration_matrix_tracers); 
+			mz -> migration_matrix_tracers = NULL; 
+		} else {} 
+
+		if ((*mz).tracers != NULL) {
+			unsigned long i; 
+			for (i = 0; i < (*mz).tracer_count; i++) {
+				tracer_free(mz -> tracers[i]); 
+			} 
+			free(mz -> tracers); 
+			mz -> tracers = NULL; 
+			mz -> tracer_count = 0l; 
+		} else {} 
+
+		free(mz); 
+		mz = NULL; 
+
+	} 
+
+} 
+
+/* 
+ * Links an individual zone in a multizone object to the proper address of a 
+ * singlezone struct. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 			A pointer to the multizone object 
+ * address: 	The address of the singlezone object to link 
+ * zone_index: 	The zone number this singlezone object should correspond to 
+ * 
+ * header: multizone.h 
+ */ 
+extern void link_zone(MULTIZONE *mz, unsigned long address, 
+	unsigned int zone_index) {
+
+	mz -> zones[zone_index] = (SINGLEZONE *) address; 
 
 } 
 
 #if 0 
-extern void setup_zones(MULTIZONE *mz, SINGLEZONE **sz, unsigned int n_zones) {
+extern void test_linker(MULTIZONE mz) {
 
 	unsigned int i; 
-	mz -> zones = (SINGLEZONE **) malloc (n_zones * sizeof(SINGLEZONE *)); 
-	for (i = 0; i < n_zones; i++) {
-		mz -> zones[i] = sz[i]; 
+	for (i = 0; i < mz.n_zones; i++) {
+		printf("Address of zones[%d] = %p\n", i, (void *) mz.zones[i]); 
 	}
 
-} 
+	for (i = 0; i < mz.n_zones; i++) {
+		printf("zones[%d].name = %s\n", i, (*mz.zones[i]).name); 
+	} 
+
+}
 #endif 
 
 /* 

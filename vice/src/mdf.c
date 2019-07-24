@@ -29,13 +29,29 @@ extern MDF *mdf_initialize(void) {
  * 
  * header: mdf.h 
  */ 
-extern void mdf_free(MDF *mdf) {
+extern void mdf_free(MDF *mdf) { 
 
-	if ((*mdf).abundance_distributions != NULL) free(
-		mdf -> abundance_distributions); 
-	if ((*mdf).ratio_distributions != NULL) free(mdf -> ratio_distributions); 
-	if ((*mdf).bins != NULL) free(mdf -> bins); 
-	free(mdf); 
+	if (mdf != NULL) {
+
+		if ((*mdf).abundance_distributions != NULL) {
+			free(mdf -> abundance_distributions); 
+			mdf -> abundance_distributions = NULL; 
+		} else {} 
+
+		if ((*mdf).ratio_distributions != NULL) {
+			free(mdf -> ratio_distributions); 
+			mdf -> ratio_distributions = NULL; 
+		} else {} 
+
+		if ((*mdf).bins != NULL) {
+			free(mdf -> bins); 
+			mdf -> bins = NULL; 
+		} else {} 
+
+		free(mdf); 
+		mdf = NULL; 
+
+	} else {}  
 
 } 
 

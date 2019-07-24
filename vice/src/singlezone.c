@@ -46,23 +46,51 @@ extern SINGLEZONE *singlezone_initialize(void) {
  * 
  * header: singlezone.h 
  */ 
-extern void singlezone_free(SINGLEZONE *sz) {
+extern void singlezone_free(SINGLEZONE *sz) { 
 
-	singlezone_close_files(sz); 
-	if ((*sz).elements != NULL) {
-		unsigned int i; 
-		for (i = 0; i < (*sz).n_elements; i++) {
-			element_free(sz -> elements[i]); 
-		} 
-		free(sz -> elements); 
-	} 
-	if ((*sz).ism != NULL) ism_free(sz -> ism); 
-	if ((*sz).mdf != NULL) mdf_free(sz -> mdf); 
-	if ((*sz).ssp != NULL) ssp_free(sz -> ssp); 
-	free(sz -> name); 
-	free(sz); 
+	if (sz != NULL) {
+
+		singlezone_close_files(sz); 
+
+		if ((*sz).elements != NULL) { 
+			unsigned int i; 
+			for (i = 0; i < (*sz).n_elements; i++) { 
+				element_free(sz -> elements[i]); 
+			} 
+			free(sz -> elements); 
+			sz -> elements = NULL; 
+		} else {} 
+
+		ism_free(sz -> ism); 
+		mdf_free(sz -> mdf); 
+		ssp_free(sz -> ssp); 
+
+		if ((*sz).name != NULL) { 
+			free(sz -> name); 
+			sz -> name = NULL; 
+		} else {} 
+
+		free(sz); 
+		sz = NULL; 
+
+	}
 
 } 
+
+/* 
+ * Obtain the memory address of a singlezone object as a long. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		The singlezone object to obtain the memory address for 
+ * 
+ * header: singlezone.h 
+ */ 
+extern long singlezone_address(SINGLEZONE *sz) { 
+
+	return (long) ((void *) sz); 
+
+}
 
 /* 
  * Runs the singlezone simulation under current user settings. 
@@ -247,6 +275,8 @@ extern void singlezone_clean(SINGLEZONE *sz) {
 	sz -> ssp -> crf = NULL; 
 	sz -> ssp -> msmf = NULL; 
 	sz -> output_times = NULL; 
+	sz -> current_time = 0; 
+	sz -> timestep = 0l; 
 
 } 
 

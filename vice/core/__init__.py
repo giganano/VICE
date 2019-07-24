@@ -1,13 +1,14 @@
 
 from __future__ import absolute_import 
 
-__all__ = ["dataframe", "singlezone", "mirror"]    
+__all__ = ["dataframe", "singlezone", "multizone", "mirror"]    
 
 from ._single_stellar_population import * 
 from ._dataframe import base as dataframe 
 from ._builtin_dataframes import * 
 from ._output import * 
 from ._pysinglezone import singlezone 
+from ._pymultizone import multizone 
 from ._mirror import mirror 
 
 __all__.extend(_single_stellar_population.__all__) 

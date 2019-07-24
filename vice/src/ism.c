@@ -38,16 +38,44 @@ extern ISM *ism_initialize(void) {
  * 
  * header: ism.h 
  */ 
-extern void ism_free(ISM *ism) {
+extern void ism_free(ISM *ism) { 
 
-	if ((*ism).specified != NULL) free(ism -> specified); 
-	if ((*ism).star_formation_history != NULL) free(
-		ism -> star_formation_history); 
-	if ((*ism).eta != NULL) free(ism -> eta); 
-	if ((*ism).enh != NULL) free(ism -> enh); 
-	if ((*ism).tau_star != NULL) free(ism -> tau_star); 
-	free(ism -> mode); 
-	free(ism); 
+	if (ism != NULL) {
+
+		if ((*ism).specified != NULL) { 
+			free(ism -> specified); 
+			ism -> specified = NULL; 
+		} else {} 
+
+		if ((*ism).star_formation_history != NULL) {
+			free(ism -> star_formation_history); 
+			ism -> star_formation_history = NULL; 
+		} else {} 
+
+		if ((*ism).eta != NULL) {
+			free(ism -> eta); 
+			ism -> eta = NULL; 
+		} else {} 
+
+		if ((*ism).enh != NULL) {
+			free(ism -> enh); 
+			ism -> enh = NULL; 
+		} else {} 
+
+		if ((*ism).tau_star != NULL) {
+			free(ism -> tau_star); 
+			ism -> tau_star = NULL; 
+		} else {} 
+
+		if ((*ism).mode != NULL) {
+			free(ism -> mode); 
+			ism -> mode = NULL; 
+		} else {} 
+
+		free(ism); 
+		ism = NULL; 
+
+	} else {} 
 
 } 
 

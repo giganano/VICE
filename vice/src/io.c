@@ -482,7 +482,7 @@ extern void singlezone_close_files(SINGLEZONE *sz) {
 	if ((*sz).mdf_writer != NULL) {
 		fclose(sz -> mdf_writer); 
 		sz -> mdf_writer = NULL; 
-	} 
+	} else {} 
 
 } 
 

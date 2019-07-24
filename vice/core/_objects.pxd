@@ -95,5 +95,6 @@ cdef extern from "../src/objects.h":
 		unsigned int n_tracers 
 		double ***migration_matrix_gas 
 		double ***migration_matrix_tracers 
+		unsigned long tracer_count 
 		TRACER **tracers 
 		int verbose 

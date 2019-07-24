@@ -6,5 +6,8 @@ from ._objects cimport MULTIZONE
 cdef extern from "../src/multizone.h": 
 	MULTIZONE *multizone_initialize(unsigned int n) 
 	void multizone_free(MULTIZONE *mz) 
+	void link_zone(MULTIZONE *mz, unsigned long address, 
+		unsigned int zone_index) 
 	int multizone_evolve(MULTIZONE *mz) 
+	void test_linker(MULTIZONE mz)
 

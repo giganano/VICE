@@ -34,6 +34,17 @@ extern SINGLEZONE *singlezone_initialize(void);
 extern void singlezone_free(SINGLEZONE *sz); 
 
 /* 
+ * Obtain the memory address of a singlezone object as a long. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		The singlezone object to obtain the memory address for 
+ * 
+ * source: singlezone.c 
+ */ 
+extern long singlezone_address(SINGLEZONE *sz); 
+
+/* 
  * Runs the singlezone simulation under current user settings. Most of VICE is 
  * built around calling this function. 
  * 

@@ -37,13 +37,23 @@ extern ELEMENT *element_initialize(void) {
  * 
  * header: element.h 
  */ 
-extern void element_free(ELEMENT *e) {
+extern void element_free(ELEMENT *e) { 
 
-	agb_yield_grid_free(e -> agb_grid); 
-	ccsne_yield_free(e -> ccsne_yields); 
-	sneia_yield_free(e -> sneia_yields); 
-	free(e -> symbol); 
-	free(e); 
+	if (e != NULL) {
+
+		agb_yield_grid_free(e -> agb_grid); 
+		ccsne_yield_free(e -> ccsne_yields); 
+		sneia_yield_free(e -> sneia_yields); 
+
+		if ((*e).symbol != NULL) {
+			free(e -> symbol); 
+			e -> symbol = NULL; 
+		} else {} 
+
+		free(e); 
+		e = NULL; 
+
+	} else {} 
 
 } 
 

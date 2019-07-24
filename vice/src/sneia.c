@@ -35,11 +35,24 @@ extern SNEIA_YIELD_SPECS *sneia_yield_initialize(void) {
  * 
  * header: sneia.h 
  */ 
-extern void sneia_yield_free(SNEIA_YIELD_SPECS *sneia_yields) {
+extern void sneia_yield_free(SNEIA_YIELD_SPECS *sneia_yields) { 
 
-	if ((*sneia_yields).RIa != NULL) free(sneia_yields -> RIa); 
-	free(sneia_yields -> dtd); 
-	free(sneia_yields); 
+	if (sneia_yields != NULL) {
+
+		if ((*sneia_yields).RIa != NULL) {
+			free(sneia_yields -> RIa); 
+			sneia_yields -> RIa = NULL; 
+		} else {} 
+
+		if ((*sneia_yields).dtd != NULL) {
+			free(sneia_yields -> dtd); 
+			sneia_yields -> dtd = NULL; 
+		} else {} 
+
+		free(sneia_yields); 
+		sneia_yields = NULL; 
+
+	} else {} 
 
 } 
 
@@ -78,15 +91,15 @@ extern double mdot_sneia(SINGLEZONE sz, ELEMENT e) {
 extern void sneia_from_tracers(MULTIZONE *mz) {
 
 	unsigned long i, timestep = (*(*mz).zones[0]).timestep; 
-	for (i = 0l; i < timestep * (*mz).n_zones * (*mz).n_tracers; i++) { 
+	for (i = 0l; i < (*mz).tracer_count; i++) { 
 		TRACER *t = mz -> tracers[i]; 
 		unsigned int j; 
 		/* 
 		 * Enrich each element in the zone from SNe Ia associated with this 
 		 * tracer particle 
 		 */ 
-		for (j = 0; j < (*(*mz).zones[(*t).zone_current]).n_elements; j++) {
-			ELEMENT *e = mz -> zones[(*t).zone_current] -> elements[j]; 
+		for (j = 0; j < (*(*mz).zones[(*t).zone_origin]).n_elements; j++) {
+			ELEMENT *e = mz -> zones[(*t).zone_origin] -> elements[j]; 
 			e -> mass += (
 				(*(*e).sneia_yields).yield_ * (*t).mass * 
 				(*(*e).sneia_yields).RIa[timestep - (*t).timestep_origin] 

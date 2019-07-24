@@ -67,9 +67,6 @@ from ._objects cimport SSP
 from ._objects cimport SINGLEZONE 
 from ._objects cimport TRACER 
 from ._objects cimport MULTIZONE 
-from ._zones cimport c_singlezone 
-from ._zones cimport c_multizone 
-from ._zones cimport migration_specifications 
 from . cimport _agb 
 from . cimport _ccsne 
 from . cimport _cutils 
@@ -87,9 +84,39 @@ cdef class migration_specifications:
 	Migration specifications for multizone simulations. 
 	""" 
 
+	cdef object _stars 
+	cdef object _gas 
+
 	def __init__(self, int n): 
 		self._stars = migration_matrix(n) 
 		self._gas = migration_matrix(n) 
+
+	def __repr__(self): 
+		rep = "ISM: " 
+		for i in str(self._gas).split('\n'): 
+			rep += "    %s\n" % (i) 
+		for i in range(22): 
+			rep += ' '
+		rep += "Stars: "
+		for i in str(self._stars).split('\n'): 
+			rep += "    %s\n" % (i) 
+		rep += "" 
+		return rep 
+
+	def __str__(self): 
+		return self.__repr__() 
+
+	def __enter__(self): 
+		""" 
+		Opens a with statement 
+		""" 
+		return self 
+
+	def __exit__(self, exc_type, exc_value, exc_tb): 
+		""" 
+		Raises all exceptions inside with statements 
+		""" 
+		return exc_value is None 
 
 	@property 
 	def gas(self): 
@@ -128,44 +155,101 @@ cdef class migration_specifications:
 		return self._stars 
 
 
-cdef class c_multizone: 
+cdef class multizone: 
 
 	""" 
 	Wrapping of the C version of the multizone object. 
 	""" 
 
-	def __cinit__(self, int n): 
-		if n > 0: 
-			self._mz = _multizone.multizone_initialize(n) 
-			self._zones = <c_singlezone *> malloc (n * sizeof(c_singlezone)) 
-			for i in range(n): 
-				# self._zones[i] = c_singlezone() 
-				self._zones[i].name = "zone%d" % (i) 
-				self._zones[i]._sz = self._mz[0].zones[i] 
+	cdef MULTIZONE *_mz 
+	cdef object _zones 
+	cdef migration_specifications _migration 
 
-			# self._mz = _multizone.multizone_initialize(n) 
-			# self._zones = n * [None] 
-			# for i in range(n): 
-			# 	self._zones[i] = singlezone() 
-			# 	self._zones[i]._sz = self._mz[0].zones[i] 
-			# 	self._zones[i].name = "zone%d" % (i) 
+	def __cinit__(self, n_zones = 10): 
+		if isinstance(n_zones, numbers.Number): 
+			if n_zones > 0: 
+				if n_zones % 1 == 0: 
+					n_zones = int(n_zones) 
+					self._mz = _multizone.multizone_initialize(n_zones) 
+					self._zones = n_zones * [None] 
+					for i in range(n_zones): 
+						self._zones[i] = singlezone() 
+						self._zones[i].name = "zone%d" % (i) 
+						_multizone.link_zone(self._mz, 
+							self._zones[i]._singlezone__zone_object_address(), 
+							i) 
+				else: 
+					# error handled in __init__ 
+					pass 
+			else: 
+				# error handled in __init__ 
+				pass 
 		else: 
-			raise ValueError("Number of zones must be positive. Got: %d" % (n)) 
+			# error handled in __init__ 
+			pass 
 
-	def __init__(self, int n, 
+	def __init__(self, n_zones = 10, 
 		name = "multizonemodel", 
-		n_zones = 10, 
 		n_tracers = 1, 
 		verbose = False): 
 		
-		self.name = name 
-		self.migration = migration_specifications(n) 
-		self.n_zones = n_zones 
-		self.n_tracers = n_tracers 
-		self.verbose = verbose 
+		if isinstance(n_zones, numbers.Number): 
+			if n_zones > 0: 
+				if n_zones % 1 == 0: 
+					self.name = name 
+					self._migration = migration_specifications(n_zones) 
+					self.n_tracers = n_tracers 
+					self.verbose = verbose 
+				else: 
+					raise ValueError("""Attribute 'n_zones' must be an \
+integer. Got: %g""" % (n_zones)) 
+			else: 
+				raise ValueError("Attribute 'n_zones' must be positive.") 
+		else: 
+			raise TypeError("""Attribute 'n_zones' must be a numerical value. \
+Got: %s""" % (type(n_zones))) 
 
 	def __dealloc__(self): 
 		_multizone.multizone_free(self._mz) 
+
+	def __repr__(self): 
+		""" 
+		Prints in the format: vice.singlezone{ 
+			attr1 -----------> value 
+			attribute2 ------> value 
+		}
+		""" 
+		attrs = {
+			"name": 			self.name, 
+			"n_zones": 			self.n_zones, 
+			"n_tracers": 		self.n_tracers, 
+			"verbose": 			self.verbose, 
+			"migration": 		self.migration 
+		} 
+
+		rep = "vice.multizone{\n" 
+		for i in attrs.keys(): 
+			rep += "    %s " % (i) 
+			for j in range(15 - len(i)): 
+				rep += '-' 
+			rep += "> %s\n" % (str(attrs[i])) 
+		rep += '}' 
+		return rep 
+
+	def __str__(self): 
+		return self.__repr__() 
+
+	def __enter__(self): 
+		""" 
+		Opens a with statement 
+		""" 
+		return self 
+
+	def __exit__(self, exc_type, exc_value, exc_tb): 
+		""" 
+		Raises all exceptions inside with statements 
+		""" 
+		return exc_value is None 
 
 	@property 
 	def zones(self): 
@@ -222,33 +306,6 @@ empty string.""")
 	def n_zones(self): 
 		# docstring in python version 
 		return self._mz[0].n_zones 
-
-	@n_zones.setter 
-	def n_zones(self, value): 
-		""" 
-		The number of zones in the simulation 
-
-		Allowed Types 
-		============= 
-		real number 
-
-		Allows Values 
-		============= 
-		Positive integers 
-		""" 
-		if isinstance(value, numbers.Number): 
-			if value > 0: 
-				if value % 1 == 0: 
-					self._mz[0].n_zones = int(value) 
-				else: 
-					raise ValueError("""Attribute 'n_zones' must be \
-interpretable as an integer. Got: %g""" % (value)) 
-			else: 
-				raise ValueError("""Attribute 'n_zones' must be positive. \
-Got: %g""" % (value)) 
-		else: 
-			raise TypeError("""Attribute 'n_zones' must be an integer. \
-Got: %s""" % (type(value))) 
 
 	@property 
 	def n_tracers(self): 

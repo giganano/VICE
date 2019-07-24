@@ -213,6 +213,8 @@ typedef struct singlezone {
 	 * n_outputs: The number of times in the output_times array 
 	 * Z_solar: The adopted metallicity by mass of the sun 
 	 * n_elements: The number of elements to track 
+	 * verbose: boolean int describing whether or not to print the time as the 
+	 * 		simulation evolves 
 	 * elements: The yield information for each element 
 	 * ism: The time evolution information for the interstellar medium (ISM) 
 	 * mdf: The stellar metallicity distribution function (MDF) information 
@@ -271,7 +273,10 @@ typedef struct multizone {
 	 * n_zones: The number of zones 
 	 * n_tracers: The number of tracers per timestep per zone 
 	 * migration_matrix: The migration matrix at each timestep. 
+	 * tracer_count: The total number of tracers 
 	 * tracers: The tracer particles associated with the simulation 
+	 * verbose: boolean int describing whether or not to print the time as the 
+	 * 		simulation evolves 
 	 */ 
 
 	char *name; 
@@ -280,6 +285,7 @@ typedef struct multizone {
 	unsigned int n_tracers; 
 	double ***migration_matrix_gas; 
 	double ***migration_matrix_tracers; 
+	unsigned long tracer_count; 
 	TRACER **tracers; 
 	int verbose; 
 
