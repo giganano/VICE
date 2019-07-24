@@ -194,6 +194,80 @@ extern int update_gas_evolution(SINGLEZONE *sz) {
 } 
 
 /* 
+ * Moves the infall rate, total gas mass, and star formation rate in all zones 
+ * in a multizone simulation forward one timestep. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		A pointer to the multizone object for this simulation 
+ * 
+ * Returns 
+ * ======= 
+ * 0 on success, 1 on an unrecognized mode 
+ * 
+ * header: ism.h 
+ */ 
+extern int update_zone_evolution(MULTIZONE *mz) {
+
+	/* 
+	 * The relation between star formation rate, infall rate, gas supply, 
+	 * timestep size, outflow rate, recycling rate, and star formation 
+	 * efficiency timescale: 
+	 * 
+	 * SFR = MG * tau_star^-1 
+	 * 
+	 * dMG = (IFR - SFR - OFR) * dt + M_recycled 
+	 */ 
+	
+	unsigned int i; 
+	double *mass_recycled = gas_recycled_in_zones(*mz); 
+	for (i = 0; i < (*mz).n_zones; i++) {
+		SINGLEZONE *sz = mz -> zones[i]; 
+		if (!strcmp((*(*sz).ism).mode, "gas")) {
+			sz -> ism -> mass = (*(*sz).ism).specified[(*sz).timestep + 1l]; 
+			sz -> ism -> star_formation_rate = (
+				(*(*sz).ism).mass / get_SFE_timescale(*sz) 
+			); 
+			sz -> ism -> infall_rate = (
+				((*(*sz).ism).mass - (*(*sz).ism).specified[(*sz).timestep] - 
+					mass_recycled[i]) / (*sz).dt + 
+				(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz) 
+			); 
+		} else if (!strcmp((*(*sz).ism).mode, "ifr")) {
+			sz -> ism -> mass += (
+				((*(*sz).ism).infall_rate - (*(*sz).ism).star_formation_rate - 
+					get_outflow_rate(*sz)) * (*sz).dt + mass_recycled[i] 
+			); 
+			sz -> ism -> infall_rate = (
+				*(*sz).ism).specified[(*sz).timestep + 1l]; 
+			sz -> ism -> star_formation_rate = (
+				(*(*sz).ism).mass / get_SFE_timescale(*sz) 
+			); 
+		} else if (!strcmp((*(*sz).ism).mode, "sfr")) {
+			sz -> ism -> star_formation_rate = (
+				*(*sz).ism).specified[(*sz).timestep + 1l]; 
+			double dMg = get_ism_mass_SFRmode(*sz) - (*(*sz).ism).mass; 
+			sz -> ism -> infall_rate = (
+				(dMg - mass_recycled[i]) / (*sz).dt + 
+				(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz) 
+			); 
+			sz -> ism -> mass += dMg; 
+		} else {
+			return 1; 
+		}
+
+		update_gas_evolution_sanitycheck(sz); 
+		sz -> ism -> star_formation_history[(*sz).timestep + 1l] = (
+			*(*sz).ism).star_formation_rate; 
+
+	} 
+
+	free(mass_recycled); 
+	return 0; 
+
+}
+
+/* 
  * Determine the star formation efficiency timescale at the NEXT timestep. 
  * 
  * Parameters 

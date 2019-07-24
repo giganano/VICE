@@ -98,8 +98,10 @@ extern double *single_population_enrichment(SSP *ssp, ELEMENT *e,
 extern double mass_recycled(SINGLEZONE sz, ELEMENT *e); 
 
 /* 
- * Re-enriches the gas and each element in each zone according to the recycling 
- * rate and the initial mass of each tracer particle. 
+ * Re-enriches each zone in a multizone simulation. Zones with instantaneous 
+ * recycling will behave as such, but zones with continuous recycling will 
+ * produce tracer particles that re-enrich their current zone, even if that 
+ * zone has instantaneous recycling. 
  * 
  * Parameters 
  * ========== 
@@ -107,7 +109,27 @@ extern double mass_recycled(SINGLEZONE sz, ELEMENT *e);
  * 
  * source: ssp.c 
  */ 
-extern void recycle_from_tracers(MULTIZONE *mz, int index); 
+extern void recycle_metals_from_tracers(MULTIZONE *mz, unsigned int index); 
+
+/* 
+ * Determine the amount of ISM gas recycled from stars in each zone in a 
+ * multizone simulation. Just as is the case with re-enrichment of metals, 
+ * zones with instantaneous recycling will behave as such, but zones with 
+ * continuous recycling will produce tracer particles that re-enrich their 
+ * current zone, even if that zone has instantaneous recycling. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		The multizone object for this simulation 
+ * 
+ * Returns 
+ * ======= 
+ * An array of doubles, each element is the mass in Msun of ISM gas returned 
+ * to each zone at the current timestep. 
+ * 
+ * source: ssp.c 
+ */ 
+extern double *gas_recycled_in_zones(MULTIZONE mz); 
 
 /* 
  * Evaluate the cumulative return fraction across all timesteps in preparation 

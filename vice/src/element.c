@@ -169,7 +169,7 @@ extern void update_elements(MULTIZONE *mz) {
 	agb_from_tracers(mz); 
 	sneia_from_tracers(mz); 
 	for (i = 0; i < (*(*mz).zones[0]).n_elements; i++) {
-		recycle_from_tracers(mz, (signed) i); 
+		recycle_metals_from_tracers(mz, i); 
 	} 
 
 	/* sanity check each element in each zone */ 

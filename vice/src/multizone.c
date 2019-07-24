@@ -189,16 +189,16 @@ extern int multizone_evolve(MULTIZONE *mz) {
  */ 
 static void multizone_timestepper(MULTIZONE *mz) {
 
-	unsigned int i, j; 
 	update_elements(mz); 
+	update_zone_evolution(mz); 
+
+	/* 
+	 * Now each element and the ISM in each zone are at the next timestep. 
+	 * bookkeep the new metallicity and update the MDF in each zone. 
+	 */ 
+	unsigned int i, j; 
 	for (i = 0; i < (*mz).n_zones; i++) { 
 		SINGLEZONE *sz = mz -> zones[i]; 
-		update_gas_evolution(sz); 
-
-		/* 
-		 * Now the ISM in zone i and all of its elements are at the next 
-		 * timestep. Bookkeep the new metallicity 
-		 */ 
 		for (j = 0; j < (*sz).n_elements; j++) {
 			sz -> elements[j] -> Z[(*sz).timestep + 1l] = (
 				(*(*sz).elements[j]).mass / (*(*sz).ism).mass 
@@ -206,7 +206,7 @@ static void multizone_timestepper(MULTIZONE *mz) {
 		} 
 		update_MDF(sz); 
 	} 
-
+	
 	/* 
 	 * Migration must be done before incrementing the timestep number as that 
 	 * is used to determine the number of tracer particles present. Migrating 

@@ -36,7 +36,7 @@ extern void ism_free(ISM *ism);
  * ======= 
  * 0 on success, 1 on an unrecognized mode 
  * 
- * header: ism.h 
+ * source: ism.c 
  */ 
 extern int setup_gas_evolution(SINGLEZONE *sz); 
 
@@ -52,9 +52,25 @@ extern int setup_gas_evolution(SINGLEZONE *sz);
  * ======= 
  * 0 on success; 1 on an unrecognized mode 
  * 
- * header: ism.h 
+ * source: ism.c 
  */ 
 extern int update_gas_evolution(SINGLEZONE *sz); 
+
+/* 
+ * Moves the infall rate, total gas mass, and star formation rate in all zones 
+ * in a multizone simulation forward one timestep. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		A pointer to the multizone object for this simulation 
+ * 
+ * Returns 
+ * ======= 
+ * 0 on success, 1 on an unrecognized mode 
+ * 
+ * source: ism.c 
+ */ 
+extern int update_zone_evolution(MULTIZONE *mz); 
 
 /* 
  * Determine the ISM mass outflow rate in a singlezone simulation. 

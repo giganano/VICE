@@ -181,6 +181,8 @@ class singlezone:
 	schmidt :: bool [default :: False] 
 		A boolean switch describing whether or not to implement star formation 
 		efficiency dependent on the gas-supply (3; 4). 
+	schmidt_index :: real number [default :: 0.5] 
+		The power-law index on gas-dependent star formation efficiency 
 	MgSchmidt :: real number [default :: 6.0e+09] 
 		The normalization of the gas-supply when attribute schmidt == True. 
 	m_upper :: real number [default :: 100] 
@@ -196,7 +198,6 @@ class singlezone:
 	Functions 
 	========= 
 	run :: 			Run the simulation 
-	settings :: 	Print the current settings 
 
 	See also 	[https://github.com/giganano/VICE/tree/master/docs]
 	========
