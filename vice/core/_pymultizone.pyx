@@ -57,7 +57,6 @@ except (ModuleNotFoundError, ImportError):
 # C imports 
 from libc.stdlib cimport malloc, realloc, free 
 from libc.string cimport strlen, strcpy 
-from ._pysinglezone cimport sz_pointer_from_pysinglezone 
 from ._objects cimport AGB_YIELD_GRID 
 from ._objects cimport CCSNE_YIELD_SPECS 
 from ._objects cimport SNEIA_YIELD_SPECS 
@@ -68,6 +67,9 @@ from ._objects cimport SSP
 from ._objects cimport SINGLEZONE 
 from ._objects cimport TRACER 
 from ._objects cimport MULTIZONE 
+from ._zones cimport c_singlezone 
+from ._zones cimport c_multizone 
+from ._zones cimport migration_specifications 
 from . cimport _agb 
 from . cimport _ccsne 
 from . cimport _cutils 
@@ -79,25 +81,68 @@ from . cimport _singlezone
 from . cimport _sneia 
 from . cimport _ssp 
 
-cdef class multizone: 
+cdef class migration_specifications: 
+
+	""" 
+	Migration specifications for multizone simulations. 
+	""" 
+
+	def __init__(self, int n): 
+		self._stars = migration_matrix(n) 
+		self._gas = migration_matrix(n) 
+
+	@property 
+	def gas(self): 
+		""" 
+		The migration matrix associated with the interstellar gas. 
+
+		Contains user-specified migration prescriptions for use in multizone 
+		simulations. For a multizone simulation with N zones, this is an NxN 
+		matrix. 
+
+		This matrix is defined such that the ij'th element represents the 
+		likelihood that interstellar gas or stars will migrate FROM the i'th 
+		TO the j'th zone in the simulation. These entries may be either 
+		numerical values or functions of time in Gyr. In all cases, the value 
+		at a given time must be between 0 and 1, because the elements are 
+		interpreted as likelihoods. 
+		""" 
+		return self._gas 
+
+	@property 
+	def stars(self): 
+		""" 
+		The migration matrix associated with the stars. 
+
+		Contains user-specified migration prescriptions for use in multizone 
+		simulations. For a multizone simulation with N zones, this is an NxN 
+		matrix. 
+
+		This matrix is defined such that the ij'th element represents the 
+		likelihood that interstellar gas or stars will migrate FROM the i'th 
+		TO the j'th zone in the simulation. These entries may be either 
+		numerical values or functions of time in Gyr. In all cases, the value 
+		at a given time must be between 0 and 1, because the elements are 
+		interpreted as likelihoods. 
+		""" 
+		return self._stars 
+
+
+cdef class c_multizone: 
 
 	""" 
 	Wrapping of the C version of the multizone object. 
 	""" 
 
-	cdef MULTIZONE *_mz 
-	cdef object _zones 
-	cdef object _migration 
-
 	def __cinit__(self, int n): 
 		if n > 0: 
-			self._mz = _multizone.multizone_initialize() 
-			self._zones = n * [None] 
+			self._mz = _multizone.multizone_initialize(n) 
+			self._zones = <c_singlezone *> malloc (n * sizeof(c_singlezone)) 
 			for i in range(n): 
-				self._zones[i] = singlezone() 
+				# self._zones[i] = c_singlezone() 
 				self._zones[i].name = "zone%d" % (i) 
-				self._mz[0].zones[i] = sz_pointer_from_pysinglezone(
-					self._zones[i])
+				self._zones[i]._sz = self._mz[0].zones[i] 
+
 			# self._mz = _multizone.multizone_initialize(n) 
 			# self._zones = n * [None] 
 			# for i in range(n): 
@@ -268,57 +313,5 @@ a boolean. Got: %s""" % (type(value)))
 	def migration(self): 
 		# docstring in python version 
 		return self._migration 
-
-cdef class migration_specifications: 
-
-	""" 
-	Migration specifications for multizone simulations. 
-	""" 
-
-	cdef object _stars 
-	cdef object _gas 
-
-	def __init__(self, int n): 
-		self._stars = migration_matrix(n) 
-		self._gas = migration_matrix(n) 
-
-	@property 
-	def gas(self): 
-		""" 
-		The migration matrix associated with the interstellar gas. 
-
-		Contains user-specified migration prescriptions for use in multizone 
-		simulations. For a multizone simulation with N zones, this is an NxN 
-		matrix. 
-
-		This matrix is defined such that the ij'th element represents the 
-		likelihood that interstellar gas or stars will migrate FROM the i'th 
-		TO the j'th zone in the simulation. These entries may be either 
-		numerical values or functions of time in Gyr. In all cases, the value 
-		at a given time must be between 0 and 1, because the elements are 
-		interpreted as likelihoods. 
-		""" 
-		return self._gas 
-
-	@property 
-	def stars(self): 
-		""" 
-		The migration matrix associated with the stars. 
-
-		Contains user-specified migration prescriptions for use in multizone 
-		simulations. For a multizone simulation with N zones, this is an NxN 
-		matrix. 
-
-		This matrix is defined such that the ij'th element represents the 
-		likelihood that interstellar gas or stars will migrate FROM the i'th 
-		TO the j'th zone in the simulation. These entries may be either 
-		numerical values or functions of time in Gyr. In all cases, the value 
-		at a given time must be between 0 and 1, because the elements are 
-		interpreted as likelihoods. 
-		""" 
-		return self._stars 
-
-
-
 
 

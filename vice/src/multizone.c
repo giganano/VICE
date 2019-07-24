@@ -29,14 +29,20 @@ static void multizone_write_MDF(MULTIZONE mz);
  * 
  * header: multizone.h 
  */ 
-extern MULTIZONE *multizone_initialize(void) {
+extern MULTIZONE *multizone_initialize(unsigned int n) {
 
 	MULTIZONE *mz = (MULTIZONE *) malloc (sizeof(MULTIZONE)); 
 	mz -> name = (char *) malloc (MAX_FILENAME_SIZE * sizeof(char)); 
-	mz -> zones = NULL; 	/* handled in python */ 
+	mz -> zones = (SINGLEZONE **) malloc (n * sizeof(SINGLEZONE *)); 
 	mz -> migration_matrix_gas = NULL; 
 	mz -> migration_matrix_tracers = NULL; 
 	mz -> tracers = NULL; 
+
+	unsigned int i; 
+	for (i = 0; i < n; i++) {
+		mz -> zones[i] = singlezone_initialize(); 
+	}
+
 	return mz; 
 
 } 
