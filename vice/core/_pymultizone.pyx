@@ -371,6 +371,75 @@ a boolean. Got: %s""" % (type(value)))
 		# docstring in python version 
 		return self._migration 
 
-	# def align_elements
+	def align_name_attributes(self): 
+		""" 
+		Checks for duplicate names within the zone attribues and raises a 
+		RuntimeError if there are duplicates. Then puts the multizone object's 
+		name in front of each zone's name. This ensures that the singlezone 
+		objects will open files at paths of the format: 
+
+		multizonemodel.vice/onezonemodel.vice/ 
+
+		Checks for duplicate names as well 
+		""" 
+		# Start with a list of each zone's names and remove duplicates 
+		names = [self._zones[i].name for i in range(self._mz[0].n_zones)] 
+		names = list(dict.fromkeys(names)) 
+		if len(names) < self._mz[0].n_zones: 
+			raise RuntimeError("Zones with duplicate names detected.") 
+		else: 
+			# put multizone's name in front of each zone's name 
+			for i in range(self._mz[0].n_zones): 
+				self._zones[i].name = "%s.vice/%s" % (self.name, names[i]) 
+
+	def dealign_name_attributes(self): 
+		""" 
+		Removes the multizone model's name from the front of each zone's name 
+		at the end of a multizone simulation. 
+		""" 
+		for i in range(self._mz[0].n_zones): 
+			self._zones[i].name = self._zones[i].name.split('/')[-1] 
+
+	def align_element_attributes(self): 
+		""" 
+		Sets each zone's elements attribute to the union of all of them. 
+		""" 
+		# take a snapshot of each zone's elements and start w/zone 0 
+		elements_attributes = [self._zones[i].elements for i in range(
+			self._mz[0].n_zones)] 
+		elements = elements_attributes[0][:] 
+
+		# if any zone has an element not in the list, append it 
+		for i in range(1, self._mz[0].n_zones): 
+			for j in elements_attributes[i]: 
+				if j not in elements: 
+					elements.append(j) 
+				else: 
+					continue 
+
+		# Set each zone's elements to the newly determined union 
+		for i in range(self._mz[0].n_zones): 
+			self._zones[i].elements = elements 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

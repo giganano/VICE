@@ -2441,7 +2441,6 @@ attribute '%s' evaluated to inf or NaN for at least one timestep.""" % (name))
 			pass 
 
 		self.setup_Zin(output_times[-1]) 
-
 		return output_times 
 
 	def output_times_check(self, output_times): 
