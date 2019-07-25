@@ -280,6 +280,53 @@ extern void singlezone_clean(SINGLEZONE *sz) {
 
 } 
 
+/* 
+ * Undo the pieces of preparation to run a singlezone simulation that are 
+ * called from python. This function is invoked when the user cancels their 
+ * simulation by answering 'no' to whether or not they'd like to overwrite. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		A pointer to the singlezone simulation to cancel 
+ * 
+ * header: singlezone.h 
+ */ 
+extern void singlezone_cancel(SINGLEZONE *sz) {
+
+	unsigned int i; 
+	for (i = 0; i < (*sz).n_elements; i++) {
+		free(sz -> elements[i] -> Zin); 
+		free(sz -> elements[i] -> ccsne_yields -> yield_); 
+		if (!strcmp((*(*(*sz).elements[i]).sneia_yields).dtd, "custom")) { 
+			/* RIa needs freed only if it was custom */ 
+			free(sz -> elements[i] -> sneia_yields -> RIa); 
+			sz -> elements[i] -> sneia_yields -> RIa = NULL; 
+		} else {} 
+		free(sz -> elements[i] -> agb_grid -> grid); 
+		free(sz -> elements[i] -> agb_grid -> m); 
+		free(sz -> elements[i] -> agb_grid -> z); 
+		sz -> elements[i] -> Zin = NULL; 
+		sz -> elements[i] -> ccsne_yields -> yield_ = NULL; 
+		sz -> elements[i] -> sneia_yields -> RIa = NULL; 
+		sz -> elements[i] -> agb_grid -> grid = NULL; 
+		sz -> elements[i] -> agb_grid -> m = NULL; 
+		sz -> elements[i] -> agb_grid -> z = NULL; 
+	} 
+	free(sz -> ism -> specified); 
+	free(sz -> ism -> eta); 
+	free(sz -> ism -> enh); 
+	free(sz -> ism -> tau_star); 
+
+}
+
+/* 
+ * Prints the current time on the same line on the console if the user has 
+ * specified verbosity. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		The singlezone object for the current simulation 
+ */ 
 static void verbosity(SINGLEZONE sz) {
 
 	if (sz.verbose) {

@@ -301,6 +301,10 @@ extern void multizone_clean(MULTIZONE *mz) {
 /* 
  * Prints the current time on the same line on the console if the user has 
  * specified verbosity. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		The multizone object for the current simulation 
  */ 
 static void verbosity(MULTIZONE mz) {
 

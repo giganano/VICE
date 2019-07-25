@@ -2324,11 +2324,60 @@ Got: %s""" % (type(value)))
 		>>> outtimes = np.linspace(0, 10, 1001) 
 		>>> sz.run(outtimes) 
 		"""
-		
+		output_times = self.prep(output_times) 
+		cdef int enrichment 
+		if self.outfile_check(overwrite): 
+			if not os.path.exists("%s.vice" % (self.name)): 
+				os.system("mkdir %s.vice" % (self.name)) 
+			else: 
+				pass 
+
+			# warn the user about r-process element and bad solar calibrations 
+			self.nsns_warning() 
+			self.solar_z_warning() 
+
+			# just do it #nike 
+			self._sz[0].output_times = _cutils.copy_pylist(output_times) 
+			self._sz[0].n_outputs = len(output_times) 
+			enrichment = _singlezone.singlezone_evolve(self._sz) 
+
+			# save yield settings and attributes 
+			self.save_yields() 
+			self.save_attributes() 
+
+		else: 
+			_singlezone.singlezone_cancel(self._sz) 
+			enrichment = 0 
+
+		if enrichment: 
+			raise SystemError("Internal Error") 
+		elif capture: 
+			return output(self.name) 
+		else: 
+			pass 
+
+	def prep(self, output_times): 
+		""" 
+		Prepares the simulation to be ran based on the current settings. 
+
+		Parameters 
+		========== 
+		output_times :: array-like 
+			The array of values the user passed to run() 
+
+		Returns 
+		======= 
+		times :: list 
+			A copy of the array the user passed as a list, if successful 
+
+		Raises 
+		====== 
+		Exceptions raised by subroutines 
+		""" 
 		# Make sure the output times are as they should be 
-		output_times = self.__output_times_check(output_times) 
+		output_times = self.output_times_check(output_times) 
 		self._sz[0].ism[0].mass = self._Mg0 # reset initial gas supply 
-		self.__setup_elements() 
+		self.setup_elements() 
 
 		""" 
 		Construct the array of times at which the simulation will evaluate, and 
@@ -2387,45 +2436,15 @@ attribute '%s' evaluated to inf or NaN for at least one timestep.""" % (name))
 
 		# Set a custom DTD if specified 
 		if callable(self._ria): 
-			self.__set_ria() 
+			self.set_ria() 
 		else: 
 			pass 
 
-		self.__setup_Zin(output_times[-1]) 
+		self.setup_Zin(output_times[-1]) 
 
-		cdef int enrichment 
+		return output_times 
 
-		if self.__outfile_check(overwrite): 
-			if not os.path.exists("%s.vice" % (self.name)): 
-				os.system("mkdir %s.vice" % (self.name)) 
-			else: 
-				pass 
-
-			# warn the user about r-process element and bad solar calibrations 
-			self.__nsns_warning() 
-			self.__solar_z_warning() 
-
-			# just do it #nike 
-			self._sz[0].output_times = _cutils.copy_pylist(output_times) 
-			self._sz[0].n_outputs = len(output_times) 
-			enrichment = _singlezone.singlezone_evolve(self._sz) 
-
-			# save yield settings and attributes 
-			self.__save_yields() 
-			self.__save_attributes() 
-
-		else: 
-			enrichment = 0 
-
-		if enrichment: 
-			raise SystemError("Internal Error") 
-		elif capture: 
-			return output(self.name) 
-		else: 
-			pass 
-
-
-	def __output_times_check(self, output_times): 
+	def output_times_check(self, output_times): 
 		""" 
 		Ensures that the output times have only numerical values above zero. 
 
@@ -2451,9 +2470,9 @@ value detected in output times.""")
 		output_times = sorted(output_times) 
 
 		# Some more refinement to ensure cleaner outputs 
-		return self.__refine_output_times(output_times) 
+		return self.refine_output_times(output_times) 
 
-	def __refine_output_times(self, output_times): 
+	def refine_output_times(self, output_times): 
 		""" 
 		Removes any elements of the user's specified output_times array that 
 		are less than self.dt - 1.e-5 larger than the previous output time. 
@@ -2475,7 +2494,7 @@ value detected in output times.""")
 
 		return arr[:(n + 1)] 
 
-	def __outfile_check(self, overwrite): 
+	def outfile_check(self, overwrite): 
 		"""
 		Determines if any of the output files exist and proceeds according to 
 		the user specified overwrite preference. 
@@ -2518,7 +2537,7 @@ be lost.\nOutput directory: %s.vice\nOverwrite? (y | n) """ % (self.name))
 				# output directory doesn't even exist yet 
 				return True 
 
-	def __setup_elements(self): 
+	def setup_elements(self): 
 		""" 
 		Setup each element's AGB grid, CCSNe yield grid, and SNe Ia yield 
 		""" 
@@ -2530,10 +2549,10 @@ be lost.\nOutput directory: %s.vice\nOverwrite? (y | n) """ % (self.name))
 				agbfile.encode("latin-1")) 
 			self._sz[0].elements[i][0].sneia_yields[0].yield_ = (
 				sneia.settings[self.elements[i]]) 
-			self.__setup_ccsne_yield(i) 
+			self.setup_ccsne_yield(i) 
 
 
-	def __setup_ccsne_yield(self, element_index): 
+	def setup_ccsne_yield(self, element_index): 
 		""" 
 		Fills the yield array for a given element based on the user's curent 
 		setting for that particular element. 
@@ -2572,7 +2591,7 @@ Got: %s""" % (type(ccyield)))
 		self._sz[0].elements[element_index][0].ccsne_yields[0].yield_ = (
 			_cutils.copy_pylist(arr)) 
 
-	def __set_ria(self): 
+	def set_ria(self): 
 		""" 
 		Maps a custom SNe Ia DTD across the evalutation times of the 
 		simulation. 
@@ -2608,7 +2627,7 @@ negative, NaN, or inf for at least one timestep.""")
 			self._sz[0].elements[i][0].sneia_yields[0].RIa = (
 				_cutils.copy_pylist(ria)) 
 
-	def __setup_Zin(self, endtime): 
+	def setup_Zin(self, endtime): 
 		""" 
 		Fills infall metallicity information for each element. 
 
@@ -2673,7 +2692,7 @@ negative value for at least one timestep.""")
 			# failesafe 
 			raise SystemError("Internal Error") 
 
-	def __save_yields(self): 
+	def save_yields(self): 
 		""" 
 		Writes the .config yield files to the output directory. 
 		""" 
@@ -2717,7 +2736,7 @@ following elements will not be saved: """
 		pickle.dump(sneia_yields, open("%s.vice/sneia_yields.config" % (
 			self.name), "wb")) 
 
-	def __save_attributes(self): 
+	def save_attributes(self): 
 		""" 
 		Saves the .config file to the output directory containing all of the 
 		attributes. 
@@ -2792,7 +2811,7 @@ output: """
 
 		pickle.dump(params, open("%s.vice/params.config" % (self.name), "wb")) 
 
-	def __nsns_warning(self): 
+	def nsns_warning(self): 
 		""" 
 		Determines which, if any, or the tracked elements are enriched via the 
 		r-process. In this case, VICE raises a ScienceWarning that these 
@@ -2813,7 +2832,7 @@ r-process. These elements will likely be under-abundant in the output."""
 		else: 
 			pass 
 
-	def __solar_z_warning(self): 
+	def solar_z_warning(self): 
 		""" 
 		Determines if VICE is about to simulate the enrichment of an element 
 		whose solar Z calibration off of Asplund et al. (2009) is not well 

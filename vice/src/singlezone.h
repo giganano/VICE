@@ -89,6 +89,19 @@ extern int singlezone_setup(SINGLEZONE *sz);
 extern void singlezone_clean(SINGLEZONE *sz); 
 
 /* 
+ * Undo the pieces of preparation to run a singlezone simulation that are 
+ * called from python. This function is invoked when the user cancels their 
+ * simulation by answering 'no' to whether or not they'd like to overwrite. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		A pointer to the singlezone simulation to cancel 
+ * 
+ * source: singlezone.c 
+ */ 
+extern void singlezone_cancel(SINGLEZONE *sz); 
+
+/* 
  * Determine the stellar mass in a singlezone simulation 
  * 
  * Parameters 
