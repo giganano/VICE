@@ -154,7 +154,7 @@ extern int multizone_evolve(MULTIZONE *mz) {
 	if (x) return x; 
 
 	long n = 0l; 		/* keep track of the number of outputs */ 
-	SINGLEZONE *sz = mz -> zones[0]; 		/* for convenience/readability */ 
+	SINGLEZONE *sz = mz -> zones[0]; 	/* for convenience and readability */ 
 	while ((*sz).current_time <= (*sz).output_times[(*sz).n_outputs - 1l]) {
 		/* 
 		 * Run the simulation until the time reaches the final output time 
@@ -297,6 +297,30 @@ extern void multizone_clean(MULTIZONE *mz) {
 	mz -> migration_matrix_tracers = NULL; 
 
 } 
+
+/* 
+ * Undo the pieces of preparation to run a multizone simulation that are 
+ * called from python. This function is invoked when the user cancels their 
+ * simulation by answer 'no' to whether or not they'd like to overwrite. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		A pointer to the multizone object to cancel 
+ * 
+ * header: multizone.h 
+ */ 
+extern void multizone_cancel(MULTIZONE *mz) {
+
+	unsigned int i; 
+	for (i = 0; i < (*mz).n_zones; i++) {
+		singlezone_cancel(mz -> zones[i]); 
+	} 
+	free(mz -> migration_matrix_gas); 
+	free(mz -> migration_matrix_tracers); 
+	mz -> migration_matrix_gas = NULL; 
+	mz -> migration_matrix_tracers = NULL; 
+
+}
 
 /* 
  * Prints the current time on the same line on the console if the user has 

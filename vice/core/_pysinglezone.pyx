@@ -241,6 +241,28 @@ class singlezone:
 		""" 
 		return self.__c_version.object_address() 
 
+	def __zone_prep(self, output_times): 
+		""" 
+		Runs the setup functions to prep a singlezone object for simulation. 
+		For usage in preparation of multizone simulations; usage of this 
+		function by the user is strongly discouraged. 
+
+		Parameters 
+		========== 
+		output_times :: array-like 
+			The array of output times that the user passed 
+
+		Returns 
+		======= 
+		times :: list 
+			A copy of the (vetted) array of output times that the user passed 
+
+		Raises 
+		====== 
+		Exceptions raised by subroutines 
+		""" 
+		return self.__c_version.prep(output_times) 
+
 	@property 
 	def name(self): 
 		"""
@@ -2332,7 +2354,7 @@ Got: %s""" % (type(value)))
 			else: 
 				pass 
 
-			# warn the user about r-process element and bad solar calibrations 
+			# warn the user about r-process elements and bad solar calibrations 
 			self.nsns_warning() 
 			self.solar_z_warning() 
 

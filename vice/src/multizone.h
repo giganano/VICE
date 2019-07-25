@@ -84,6 +84,19 @@ extern int multizone_setup(MULTIZONE *mz);
  */ 
 extern void multizone_clean(MULTIZONE *mz); 
 
+/* 
+ * Undo the pieces of preparation to run a multizone simulation that are 
+ * called from python. This function is invoked when the user cancels their 
+ * simulation by answer 'no' to whether or not they'd like to overwrite. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		A pointer to the multizone object to cancel 
+ * 
+ * source: multizone.c 
+ */ 
+extern void multizone_cancel(MULTIZONE *mz); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

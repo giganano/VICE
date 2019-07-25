@@ -287,7 +287,7 @@ extern void singlezone_clean(SINGLEZONE *sz) {
  * 
  * Parameters 
  * ========== 
- * sz: 		A pointer to the singlezone simulation to cancel 
+ * sz: 		A pointer to the singlezone object to cancel 
  * 
  * header: singlezone.h 
  */ 

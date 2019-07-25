@@ -78,83 +78,6 @@ from . cimport _singlezone
 from . cimport _sneia 
 from . cimport _ssp 
 
-cdef class migration_specifications: 
-
-	""" 
-	Migration specifications for multizone simulations. 
-	""" 
-
-	cdef object _stars 
-	cdef object _gas 
-
-	def __init__(self, int n): 
-		self._stars = migration_matrix(n) 
-		self._gas = migration_matrix(n) 
-
-	def __repr__(self): 
-		rep = "ISM: " 
-		for i in str(self._gas).split('\n'): 
-			rep += "    %s\n" % (i) 
-		for i in range(22): 
-			rep += ' '
-		rep += "Stars: "
-		for i in str(self._stars).split('\n'): 
-			rep += "    %s\n" % (i) 
-		rep += "" 
-		return rep 
-
-	def __str__(self): 
-		return self.__repr__() 
-
-	def __enter__(self): 
-		""" 
-		Opens a with statement 
-		""" 
-		return self 
-
-	def __exit__(self, exc_type, exc_value, exc_tb): 
-		""" 
-		Raises all exceptions inside with statements 
-		""" 
-		return exc_value is None 
-
-	@property 
-	def gas(self): 
-		""" 
-		The migration matrix associated with the interstellar gas. 
-
-		Contains user-specified migration prescriptions for use in multizone 
-		simulations. For a multizone simulation with N zones, this is an NxN 
-		matrix. 
-
-		This matrix is defined such that the ij'th element represents the 
-		likelihood that interstellar gas or stars will migrate FROM the i'th 
-		TO the j'th zone in the simulation. These entries may be either 
-		numerical values or functions of time in Gyr. In all cases, the value 
-		at a given time must be between 0 and 1, because the elements are 
-		interpreted as likelihoods. 
-		""" 
-		return self._gas 
-
-	@property 
-	def stars(self): 
-		""" 
-		The migration matrix associated with the stars. 
-
-		Contains user-specified migration prescriptions for use in multizone 
-		simulations. For a multizone simulation with N zones, this is an NxN 
-		matrix. 
-
-		This matrix is defined such that the ij'th element represents the 
-		likelihood that interstellar gas or stars will migrate FROM the i'th 
-		TO the j'th zone in the simulation. These entries may be either 
-		numerical values or functions of time in Gyr. In all cases, the value 
-		at a given time must be between 0 and 1, because the elements are 
-		interpreted as likelihoods. 
-		""" 
-		return self._stars 
-
-
 cdef class multizone: 
 
 	""" 
@@ -371,6 +294,112 @@ a boolean. Got: %s""" % (type(value)))
 		# docstring in python version 
 		return self._migration 
 
+	def run(self, output_times, capture = False, overwrite = False): 
+		""" 
+		To-do list for this function 
+		============================ 
+		migration matrices need piped to C 
+		need to interpret value of enrichment variable once it's done: it's 
+			not a simple "1 if failed setup" as in singlezone 
+		""" 
+
+		self.prep(output_times) 
+		cdef int enrichment 
+		if self.outfile_check(overwrite): 
+			os.system("mkdir %s.vice" % (self.name)) 
+			for i in range(self._mz[0].n_zones): 
+				os.system("mkdir %s.vice" % (self._zones[i].name)) 
+
+			# warn the user about r-process elements and bad solar calibrations 
+			self._zones[0]._singlezone__c_version.nsns_warning() 
+			self._zones[0]._singlezone__c_version.solar_z_warning() 
+
+			# just do it #nike 
+			enrichment = _multizone.multizone_evolve(self._mz) 
+
+			# save yield settings and attributes 
+			for i in range(self._mz[0].n_zones): 
+				self._zones[i]._singlezone__c_version.save_yields() 
+				self._zones[i]._singlezone__c_version.save_attributes() 
+
+		else: 
+			_multizone.multizone_cancel(self._mz) 
+			enrichment = 0 
+
+		if enrichment: 
+			raise SystemError("Internal Error") 
+		elif capture: 
+			return output(self.name) 
+		else: 
+			pass 
+
+	def prep(self, output_times): 
+		""" 
+		Prepares the simulation to be ran based on the current settings. 
+
+		Parameters 
+		========== 
+		output_times :: array-like 
+			The array of values the user passed to run() 
+
+		Raises 
+		====== 
+		Exceptions raised by subroutines 
+		""" 
+		for i in range(self._mz[0].n_zones): 
+			times = self._zones[i]._singlezone__zone_prep(output_times) 
+			self._mz[0].zones[i][0].output_times = _cutils.copy_pylist(
+				output_times)
+			self._zones[i].n_outputs = len(output_times) 
+		self.align_name_attributes() 
+		self.align_element_attributes() 
+		self.zone_alignment_warnings() 
+		self.timestep_alignment_error() 
+
+	def outfile_check(self, overwrite): 
+		""" 
+		Determines if any of the output files exist and proceeds according to 
+		the user specified overwrite preference. 
+
+		Parameters 
+		========== 
+		overwrite :: bool 
+			The user's overwrite spefication - True to force overwrite. 
+
+		Returns 
+		======= 
+		True if the simulation can proceed and run, overwriting any files that 
+		may already exist. False if the user wishes to abort. 
+		""" 
+		if overwrite: 
+			if os.path.exists("%s.vice" % (self.name)): 
+				os.system("rm -rf %s.vice" % (self.name)) 
+			else: 
+				pass 
+			return True 
+		else: 
+			if os.path.exists("%s.vice" % (self.name)): 
+				""" 
+				Output directory exists. Ask the user if they'd like to wipe 
+				its contents and overwrite. 
+				""" 
+				answer = raw_input("""\
+Output directory already exists. Overwriting will delete all of its contents, \
+leaving only the results of the current simulation.\nOutput directory: \
+%s.vice\nOverwrite? (y | n) """ % (self.name)) 
+
+				# be emphatic about it 
+				while answer.lower() not in ["yes", "y", "no", "n"]: 
+					answer = raw_input("Please enter either 'y' or 'n': ") 
+
+				if answer.lower() in ["y", "yes"]: 
+					os.system("rm -rf %s.vice" % (self.name)) 
+					return True 
+				else: 
+					return False 
+			else: 
+				return True 
+
 	def align_name_attributes(self): 
 		""" 
 		Checks for duplicate names within the zone attribues and raises a 
@@ -407,7 +436,7 @@ a boolean. Got: %s""" % (type(value)))
 		# take a snapshot of each zone's elements and start w/zone 0 
 		elements_attributes = [self._zones[i].elements for i in range(
 			self._mz[0].n_zones)] 
-		elements = list(elements_attributes[0][:]) m
+		elements = list(elements_attributes[0][:]) 
 
 		# if any zone has an element not in the list, append it 
 		for i in range(1, self._mz[0].n_zones): 
@@ -445,7 +474,9 @@ a boolean. Got: %s""" % (type(value)))
 		} 
 
 		def checker(key): 
-			# detects any non-uniformity across zones and raises ScienceWarning 
+			"""
+			Detects any non-uniformity across zones and raises ScienceWarning 
+			""" 
 			if len(list(dict.fromkeys(attrs[key]))) > 1: 
 				warnings.warn("""\
 Attribute '%s' is not uniform across zones. This will introduce numerical \
@@ -468,4 +499,82 @@ artifacts.""" % (key), ScienceWarning)
 			raise RuntimeError("Timestep size not uniform across zones.") 
 		else: 
 			pass  
+
+cdef class migration_specifications: 
+
+	""" 
+	Migration specifications for multizone simulations. 
+	""" 
+
+	cdef object _stars 
+	cdef object _gas 
+
+	def __init__(self, int n): 
+		self._stars = migration_matrix(n) 
+		self._gas = migration_matrix(n) 
+
+	def __repr__(self): 
+		rep = "ISM: " 
+		for i in str(self._gas).split('\n'): 
+			rep += "    %s\n" % (i) 
+		for i in range(22): 
+			rep += ' '
+		rep += "Stars: "
+		for i in str(self._stars).split('\n'): 
+			rep += "    %s\n" % (i) 
+		rep += "" 
+		return rep 
+
+	def __str__(self): 
+		return self.__repr__() 
+
+	def __enter__(self): 
+		""" 
+		Opens a with statement 
+		""" 
+		return self 
+
+	def __exit__(self, exc_type, exc_value, exc_tb): 
+		""" 
+		Raises all exceptions inside with statements 
+		""" 
+		return exc_value is None 
+
+	@property 
+	def gas(self): 
+		""" 
+		The migration matrix associated with the interstellar gas. 
+
+		Contains user-specified migration prescriptions for use in multizone 
+		simulations. For a multizone simulation with N zones, this is an NxN 
+		matrix. 
+
+		This matrix is defined such that the ij'th element represents the 
+		likelihood that interstellar gas or stars will migrate FROM the i'th 
+		TO the j'th zone in the simulation. These entries may be either 
+		numerical values or functions of time in Gyr. In all cases, the value 
+		at a given time must be between 0 and 1, because the elements are 
+		interpreted as likelihoods. 
+		""" 
+		return self._gas 
+
+	@property 
+	def stars(self): 
+		""" 
+		The migration matrix associated with the stars. 
+
+		Contains user-specified migration prescriptions for use in multizone 
+		simulations. For a multizone simulation with N zones, this is an NxN 
+		matrix. 
+
+		This matrix is defined such that the ij'th element represents the 
+		likelihood that interstellar gas or stars will migrate FROM the i'th 
+		TO the j'th zone in the simulation. These entries may be either 
+		numerical values or functions of time in Gyr. In all cases, the value 
+		at a given time must be between 0 and 1, because the elements are 
+		interpreted as likelihoods. 
+		""" 
+		return self._stars 
+
+
 
