@@ -702,7 +702,7 @@ class singlezone:
 		Note on functional attributes and numerical delta functions in user's 
 			guide 
 		"""
-		return self.__c_verion.RIa 
+		return self.__c_version.RIa 
 
 	@RIa.setter 
 	def RIa(self, value): 

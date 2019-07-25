@@ -407,7 +407,7 @@ a boolean. Got: %s""" % (type(value)))
 		# take a snapshot of each zone's elements and start w/zone 0 
 		elements_attributes = [self._zones[i].elements for i in range(
 			self._mz[0].n_zones)] 
-		elements = elements_attributes[0][:] 
+		elements = list(elements_attributes[0][:]) m
 
 		# if any zone has an element not in the list, append it 
 		for i in range(1, self._mz[0].n_zones): 
@@ -421,25 +421,51 @@ a boolean. Got: %s""" % (type(value)))
 		for i in range(self._mz[0].n_zones): 
 			self._zones[i].elements = elements 
 
+	def zone_alignment_warnings(self): 
+		""" 
+		Raises ScienceWarnings if any of a number of attributes differ between 
+		zones. 
+		""" 
+		n_zones = self._mz[0].n_zones 
 
+		# attributes that shouldn't (but can) differ between zones 
+		attrs = { 
+			"IMF": 			[self._zones[i].IMF for i in range(n_zones)], 
+			"recycling":	[self._zones[i].recycling for i in range(n_zones)], 
+			"delay": 		[self._zones[i].delay for i in range(n_zones)], 
+			"RIa": 			[self._zones[i].RIa for i in range(n_zones)], 
+			"schmidt": 		[self._zones[i].schmidt for i in range(n_zones)], 
+			"schmidt_index": [self._zones[i].schmidt_index for i in range(
+				n_zones)], 
+			"MgSchmidt": 	[self._zones[i].MgSchmidt for i in range(n_zones)], 
+			"m_upper": 		[self._zones[i].m_upper for i in range(n_zones)], 
+			"m_lower": 		[self._zones[i].m_lower for i in range(n_zones)], 
+			"Z_solar": 		[self._zones[i].Z_solar for i in range(n_zones)], 
+			"agb_model": 	[self._zones[i].agb_model for i in range(n_zones)] 
+		} 
 
+		def checker(key): 
+			# detects any non-uniformity across zones and raises ScienceWarning 
+			if len(list(dict.fromkeys(attrs[key]))) > 1: 
+				warnings.warn("""\
+Attribute '%s' is not uniform across zones. This will introduce numerical \
+artifacts.""" % (key), ScienceWarning)  
+			else: 
+				pass 
 
+		for i in attrs.keys(): 
+			checker(i) 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	def timestep_alignment_error(self): 
+		""" 
+		Raises a Runtime Error if the timestep size is not uniform across 
+		zones. 
+		""" 
+		timestep_size_checker = list(dict.fromkeys(
+			[self._zones[i].dt for i in range(self._mz[0].n_zones)] 
+		)) 
+		if len(timestep_size_checker) > 1: 
+			raise RuntimeError("Timestep size not uniform across zones.") 
+		else: 
+			pass  
 
