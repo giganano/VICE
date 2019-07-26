@@ -303,7 +303,6 @@ a boolean. Got: %s""" % (type(value)))
 		need to interpret value of enrichment variable once it's done: it's 
 			not a simple "1 if failed setup" as in singlezone 
 		""" 
-
 		self.prep(output_times) 
 		cdef int enrichment 
 		if self.outfile_check(overwrite): 
@@ -355,8 +354,8 @@ zone and at least one timestep larger than 1.""")
 		for i in range(self._mz[0].n_zones): 
 			times = self._zones[i]._singlezone__zone_prep(output_times) 
 			self._mz[0].zones[i][0].output_times = _cutils.copy_pylist( 
-				output_times)
-			self._zones[i].n_outputs = len(output_times) 
+				times)
+			self._mz[0].zones[i][0].n_outputs = len(times) 
 		self.align_name_attributes() 
 		self.align_element_attributes() 
 		self.zone_alignment_warnings() 
@@ -418,7 +417,6 @@ leaving only the results of the current simulation.\nOutput directory: \
 			:: 	one of the migration specifications produces a value that is 
 				not between 0 and 1 at any timestep. 
 		""" 
-		_migration.malloc_migration_matrices(self._mz) 
 		_migration.malloc_migration_matrices(self._mz) 
 		cdef long length = 10l + long(
 			self._mz[0].zones[0].output_times[

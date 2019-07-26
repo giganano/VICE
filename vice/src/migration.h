@@ -60,6 +60,24 @@ extern int setup_migration_element(MULTIZONE mz, double ***migration_matrix,
 	unsigned int row, unsigned int column, double *arr); 
 
 /* 
+ * Determines the number of elements in a migration matrix. This is also the 
+ * number of timesteps that all VICE simulations have allocated memory for. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		The multizone object for the current simulation 
+ * 
+ * Returns 
+ * ======= 
+ * The number of timesteps to the final output time plus 10. By design, VICE 
+ * always allocates memory for 10 extra timesteps as a safeguard against 
+ * memory errors 
+ * 
+ * source: migration.c 
+ */ 
+extern unsigned long migration_matrix_length(MULTIZONE mz); 
+
+/* 
  * Migrates all gas, elements, and tracer particles between zones at the 
  * current timestep. 
  * 

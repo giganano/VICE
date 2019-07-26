@@ -21,7 +21,7 @@ cdef class migration_specifications:
 	cdef object _stars 
 	cdef object _gas 
 
-cdef class c_multizone: 
+cdef class multizone: 
 	cdef MULTIZONE *_mz 
 	cdef c_singlezone *_zones 
 	cdef migration_specifications _migration 

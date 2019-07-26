@@ -11,7 +11,6 @@
 #include "utils.h" 
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
-static unsigned long migration_matrix_length(MULTIZONE mz); 
 static void migrate_tracer(MULTIZONE mz, TRACER *t); 
 static void migrate_gas_element(MULTIZONE *mz, int index); 
 static double **setup_changes(unsigned int n_zones); 
@@ -64,7 +63,7 @@ extern int migration_matrix_sanitycheck(double ***migration_matrix,
  * 
  * header: migration.h 
  */ 
-extern void malloc_migration_matrices(MULTIZONE *mz) {
+extern void malloc_migration_matrices(MULTIZONE *mz) { 
 
 	/* Allocate memory for each timestep in both matrices */ 
 	unsigned long i, length = migration_matrix_length(*mz); 
@@ -83,7 +82,7 @@ extern void malloc_migration_matrices(MULTIZONE *mz) {
 		mz -> migration_matrix_gas[i] = (double **) malloc ((*mz).n_zones * 
 			sizeof(double *)); 
 		unsigned int j, k; 
-		for (j = 0; j < (*mz).n_zones; j++) {
+		for (j = 0; j < (*mz).n_zones; j++) { 
 			mz -> migration_matrix_tracers[i][j] = (double *) malloc (
 				(*mz).n_zones * sizeof(double)); 
 			mz -> migration_matrix_gas[i][j] = (double *) malloc (
@@ -143,8 +142,16 @@ extern int setup_migration_element(MULTIZONE mz, double ***migration_matrix,
  * Parameters 
  * ========== 
  * mz: 		The multizone object for the current simulation 
+ * 
+ * Returns 
+ * ======= 
+ * The number of timesteps to the final output time plus 10. By design, VICE 
+ * always allocates memory for 10 extra timesteps as a safeguard against 
+ * memory errors 
+ * 
+ * header: migration.h 
  */ 
-static unsigned long migration_matrix_length(MULTIZONE mz) {
+extern unsigned long migration_matrix_length(MULTIZONE mz) {
 
 	return 10l + ( 
 		(*mz.zones[0]).output_times[(*mz.zones[0]).n_outputs - 1l] / 

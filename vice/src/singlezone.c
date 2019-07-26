@@ -211,15 +211,28 @@ extern int singlezone_setup(SINGLEZONE *sz) {
 	 */ 
 	if (setup_CRF(sz)) { 
 		return 1; 
-	} else if (setup_MSMF(sz)) {
+	} else if (setup_MSMF(sz)) { 
 		return 1; 
-	} else if (setup_MDF(sz)) {
+	} else if (setup_MDF(sz)) { 
 		return 1; 
 	} else if (setup_RIa(sz)) { 
 		return 1; 
-	} else if (setup_gas_evolution(sz)) {
+	} else if (setup_gas_evolution(sz)) { 
 		return 1; 
-	} else {
+	} else { 
+		for (i = 0; i < (*sz).n_elements; i++) {
+			printf("sz.elements[%d] address = %p\n", i, 
+				(void *) (*sz).elements[i]); 
+			printf("sz.elements[%d].agb_grid address = %p\n", i, 
+				(void *) (*(*sz).elements[i]).agb_grid); 
+			printf("sz.elements[%d].ccsne_yields address = %p\n", i, 
+				(void *) (*(*sz).elements[i]).ccsne_yields); 
+			printf("sz.elements[%d].sneia_yields address = %p\n", i, 
+				(void *) (*(*sz).elements[i]).sneia_yields); 
+		} 
+		printf("sz.ism address = %p\n", (void *) (*sz).ism); 
+		printf("sz.mdf address = %p\n", (void *) (*sz).mdf); 
+		printf("sz.ssp address = %p\n", (void *) (*sz).ssp); 
 		return 0; 
 	}
 

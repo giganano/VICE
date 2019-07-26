@@ -75,16 +75,16 @@ extern void element_free(ELEMENT *e) {
  */ 
 extern int malloc_Z(ELEMENT *e, unsigned long n_timesteps) {
 
-	unsigned long i; 
 	e -> Z = (double *) malloc (n_timesteps * sizeof(double)); 
-	if ((*e).Z == NULL) {
+	if ((*e).Z == NULL) { 
 		return 1; 
-	} else {
-		for (i = 0l; i < n_timesteps; i++) {
+	} else { 
+		unsigned long i; 
+		for (i = 0l; i < n_timesteps; i++) { 
 			e -> Z[i] = 0; 
 		} 
 		return 0; 
-	}
+	} 
 
 } 
 
