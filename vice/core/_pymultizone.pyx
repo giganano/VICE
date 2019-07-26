@@ -73,6 +73,7 @@ from . cimport _cutils
 from . cimport _element 
 from . cimport _io 
 from . cimport _mdf 
+from . cimport _migration 
 from . cimport _multizone 
 from . cimport _singlezone 
 from . cimport _sneia 
@@ -326,8 +327,13 @@ a boolean. Got: %s""" % (type(value)))
 			_multizone.multizone_cancel(self._mz) 
 			enrichment = 0 
 
-		if enrichment: 
+		if enrichment == 1: 
+			_multizone.multizone_cancel(self._mz) 
 			raise SystemError("Internal Error") 
+		elif enrichment == 2: 
+			_multizone.multizone_cancel(self._mz) 
+			raise RuntimeError("""Sum of migration likelihoods for at least \
+zone and at least one timestep larger than 1.""") 
 		elif capture: 
 			return output(self.name) 
 		else: 
@@ -348,13 +354,14 @@ a boolean. Got: %s""" % (type(value)))
 		""" 
 		for i in range(self._mz[0].n_zones): 
 			times = self._zones[i]._singlezone__zone_prep(output_times) 
-			self._mz[0].zones[i][0].output_times = _cutils.copy_pylist(
+			self._mz[0].zones[i][0].output_times = _cutils.copy_pylist( 
 				output_times)
 			self._zones[i].n_outputs = len(output_times) 
 		self.align_name_attributes() 
 		self.align_element_attributes() 
 		self.zone_alignment_warnings() 
 		self.timestep_alignment_error() 
+		self.setup_migration() 
 
 	def outfile_check(self, overwrite): 
 		""" 
@@ -399,6 +406,87 @@ leaving only the results of the current simulation.\nOutput directory: \
 					return False 
 			else: 
 				return True 
+
+	def setup_migration(self): 
+		""" 
+		Sets up the migration matrices for simulation. Cancels the simulation 
+		if there's an error. 
+
+		Raises 
+		====== 
+		RuntimeError :: 
+			:: 	one of the migration specifications produces a value that is 
+				not between 0 and 1 at any timestep. 
+		""" 
+		_migration.malloc_migration_matrices(self._mz) 
+		_migration.malloc_migration_matrices(self._mz) 
+		cdef long length = 10l + long(
+			self._mz[0].zones[0].output_times[
+				self._mz[0].zones[0].n_outputs - 1l] / 
+			self._mz[0].zones[0].dt 
+		) 
+		eval_times = [i * self._mz[0].zones[0].dt for i in range(length)] 
+		errmsg = """Migration probability must be between 0 and 1 at all \
+timesteps.""" 
+
+		for i in range(self._mz[0].n_zones): 
+			for j in range(self._mz[0].n_zones): 
+				""" 
+				For both gas and stars, look at the i,j'th element of the 
+				user-specified migration matrix. Whether it is a number or a 
+				function, map it across the known evaluation times of the 
+				simulation and pipe it to C 
+				""" 
+
+				# gas 
+				if isinstance(self.migration.gas[i][j], numbers.Number): 
+					arr = length * [self.migration.gas[i][j]] 
+					if _migration.setup_migration_element(self._mz[0], 
+						self._mz[0].migration_matrix_gas, 
+						i, j, _cutils.copy_pylist(arr)): 
+
+						_multizone.multizone_cancel(self._mz) 
+						raise RuntimeError(errmsg) 
+					else: 
+						pass  
+			
+				elif callable(self.migration.gas[i][j]): 
+					arr = list(map(self.migration.gas[i][j], eval_times)) 
+					if _migration.setup_migration_element(self._mz[0], 
+						self._mz[0].migration_matrix_gas, 
+						i, j, _cutils.copy_pylist(arr)): 
+
+						_multizone.multizone_cancel(self._mz) 
+						raise RuntimeError(errmsg) 
+					else: 
+						pass  
+				else: 
+					raise SystemError("Internal Error") 
+
+				# stars 
+				if isinstance(self.migration.stars[i][j], numbers.Number): 
+					arr = length * [self.migration.stars[i][j]] 
+					if _migration.setup_migration_element(self._mz[0], 
+						self._mz[0].migration_matrix_tracers, 
+						i, j, _cutils.copy_pylist(arr)): 
+
+						_multizone.multizone_cancel(self._mz) 
+						raise RuntimeError(errmsg) 
+					else: 
+						continue 
+				elif callable(self.migration.stars[i][j]): 
+					arr = list(map(self.migration.stars[i][j], eval_times)) 
+					if _migration.setup_migration_element(self._mz[0], 
+						self._mz[0].migration_matrix_tracers, 
+						i, j, _cutils.copy_pylist(arr)): 
+
+						_multizone.multizone_cancel(self._mz) 
+						raise RuntimeError(errmsg) 
+					else: 
+						continue 
+				else: 
+					raise SystemError("Internal Error") 
+
 
 	def align_name_attributes(self): 
 		""" 

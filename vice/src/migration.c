@@ -11,6 +11,7 @@
 #include "utils.h" 
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
+static unsigned long migration_matrix_length(MULTIZONE mz); 
 static void migrate_tracer(MULTIZONE mz, TRACER *t); 
 static void migrate_gas_element(MULTIZONE *mz, int index); 
 static double **setup_changes(unsigned int n_zones); 
@@ -51,6 +52,104 @@ extern int migration_matrix_sanitycheck(double ***migration_matrix,
 		} 
 	} 
 	return 0; 
+
+} 
+
+/* 
+ * Allocates memory for the migration matrices. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		A pointer to the multizone object for this simulation 
+ * 
+ * header: migration.h 
+ */ 
+extern void malloc_migration_matrices(MULTIZONE *mz) {
+
+	/* Allocate memory for each timestep in both matrices */ 
+	unsigned long i, length = migration_matrix_length(*mz); 
+	mz -> migration_matrix_tracers = (double ***) malloc (length * 
+		sizeof(double **)); 
+	mz -> migration_matrix_gas = (double ***) malloc (length * 
+		sizeof(double **)); 
+
+	/* 
+	 * At each timestep, allocate memory for an n_zones x n_zones array of 
+	 * doubles in both matrices.  
+	 */ 
+	for (i = 0l; i < length; i++) { 
+		mz -> migration_matrix_tracers[i] = (double **) malloc ((*mz).n_zones * 
+			sizeof(double *)); 
+		mz -> migration_matrix_gas[i] = (double **) malloc ((*mz).n_zones * 
+			sizeof(double *)); 
+		unsigned int j, k; 
+		for (j = 0; j < (*mz).n_zones; j++) {
+			mz -> migration_matrix_tracers[i][j] = (double *) malloc (
+				(*mz).n_zones * sizeof(double)); 
+			mz -> migration_matrix_gas[i][j] = (double *) malloc (
+				(*mz).n_zones * sizeof(double)); 
+
+			/* Initially set everything to zero */ 
+			for (k = 0; k < (*mz).n_zones; k++) {
+				mz -> migration_matrix_tracers[i][j][k] = 0.0; 
+				mz -> migration_matrix_gas[i][j][k] = 0.0; 
+			} 
+		} 
+	} 
+
+} 
+
+/* 
+ * Sets up an element of the migration matrix at each timestep that it has 
+ * memory allocated for. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 					The multizone object for the current simulation 
+ * migration_matrix: 	Pointer to the migration matrix itself 
+ * row: 				The row number of this element 
+ * column: 				The column number of this element 
+ * arr: 				The value of the migration matrix at each timestep 
+ * 
+ * Returns 
+ * ======= 
+ * 0 if all elements of arr are between 0 and 1 at all timesteps, 1 otherwise 
+ * 
+ * header: migration.h 
+ */ 
+extern int setup_migration_element(MULTIZONE mz, double ***migration_matrix, 
+	unsigned int row, unsigned int column, double *arr) {
+
+	/* 
+	 * At each timestep, simply copy the value over. Memory will have already 
+	 * been allocated. 
+	 */ 
+	unsigned long i, length = migration_matrix_length(mz); 
+	for (i = 0; i < length; i++) { 
+		if (0 <= arr[i] && arr[i] <= 1) { 
+			migration_matrix[i][row][column] = arr[i]; 
+		} else { 
+			return 1; 
+		} 
+	} 
+	return 0; 
+
+} 
+
+/* 
+ * Determines the number of elements in a migration matrix. This is also the 
+ * number of timesteps that all VICE simulations have allocated memory for. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		The multizone object for the current simulation 
+ */ 
+static unsigned long migration_matrix_length(MULTIZONE mz) {
+
+	return 10l + ( 
+		(*mz.zones[0]).output_times[(*mz.zones[0]).n_outputs - 1l] / 
+		(*mz.zones[0]).dt 
+	); 
 
 }
 

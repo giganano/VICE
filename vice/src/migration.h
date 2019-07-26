@@ -22,10 +22,42 @@ extern "C" {
  * ======= 
  * 0 on passing sanity check, 1 on failure 
  * 
- * header: migration.h 
+ * source: migration.c 
  */ 
 extern int migration_matrix_sanitycheck(double ***migration_matrix, 
 	unsigned long n_times, unsigned int n_zones); 
+
+/* 
+ * Allocates memory for the migration matrices. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		A pointer to the multizone object for this simulation 
+ * 
+ * source: migration.c 
+ */ 
+extern void malloc_migration_matrices(MULTIZONE *mz); 
+
+/* 
+ * Sets up an element of the migration matrix at each timestep that it has 
+ * memory allocated for. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 					The multizone object for the current simulation 
+ * migration_matrix: 	Pointer to the migration matrix itself 
+ * row: 				The row number of this element 
+ * column: 				The column number of this element 
+ * arr: 				The value of the migration matrix at each timestep 
+ * 
+ * Returns 
+ * ======= 
+ * 0 if all elements of arr are between 0 and 1 at all timesteps, 1 otherwise 
+ * 
+ * source: migration.c 
+ */ 
+extern int setup_migration_element(MULTIZONE mz, double ***migration_matrix, 
+	unsigned int row, unsigned int column, double *arr); 
 
 /* 
  * Migrates all gas, elements, and tracer particles between zones at the 
