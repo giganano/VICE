@@ -146,20 +146,15 @@ extern void test_linker(MULTIZONE mz) {
  */ 
 extern int multizone_evolve(MULTIZONE *mz) {
 
-	printf("evolve.a\n"); 
 	int x = multizone_setup(mz); 
-	printf("evolve.b\n"); 
 	/* 
 	 * x differentiates between failed setup and migration matrix failing the 
 	 * sanity check 
 	 */ 
 	if (x) return x; 
-	printf("evolve.c\n"); 
 
 	long n = 0l; 		/* keep track of the number of outputs */ 
-	printf("evolve.d\n"); 
 	SINGLEZONE *sz = mz -> zones[0]; 	/* for convenience and readability */ 
-	printf("evolve.e\n"); 
 	while ((*sz).current_time <= (*sz).output_times[(*sz).n_outputs - 1l]) {
 		/* 
 		 * Run the simulation until the time reaches the final output time 
@@ -167,32 +162,20 @@ extern int multizone_evolve(MULTIZONE *mz) {
 		 * whenever an output time is reached, or if the current timestep is 
 		 * closer to the next output time than the subsequent timestep. 
 		 */ 
-		printf("evolve.f\n"); 
 		if ((*sz).current_time >= (*sz).output_times[n] || 
 			2 * (*sz).output_times[n] < 2 * (*sz).current_time + (*sz).dt) { 
-			printf("evolve.g\n"); 
 			multizone_write_history(*mz); 
-			printf("evolve.h\n"); 
 			n++; 
 		} else {} 
-		printf("evolve.i\n"); 
 		multizone_timestepper(mz); 
-		printf("evolve.j\n"); 
 		verbosity(*mz); 
-		printf("evolve.k\n"); 
 	} 
-	printf("evolve.l\n"); 
 	if ((*mz).verbose) printf("\n"); 
-	printf("evolve.m\n"); 
 
 	/* Normalize all MDFs, write them out, and clean up */ 
-	printf("evolve.n\n"); 
 	multizone_normalize_MDF(mz); 
-	printf("evolve.o\n"); 
 	multizone_write_MDF(*mz); 
-	printf("evolve.p\n"); 
 	multizone_clean(mz); 
-	printf("evolve.q\n"); 
 	return 0; 
 
 }
@@ -259,25 +242,6 @@ extern int multizone_setup(MULTIZONE *mz) {
 		if (singlezone_setup(mz -> zones[i])) { 
 			return 1; 
 		} else { 
-			unsigned int j; 
-			for (j = 0; j < (*(*mz).zones[i]).n_elements; j++) {
-				printf("mz.zones[%d].elements[%d] address = %p\n", i, j, 
-					(void *) (*(*mz).zones[i]).elements[j]); 
-				printf("mz.zones[%d].elements[%d].agb_grid address = %p\n", 
-					i, j, (void *) (*(*(*mz).zones[i]).elements[j]).agb_grid); 
-				printf("mz.zones[%d].elements[%d].ccsne_yields address = %p\n", 
-					i, j, 
-					(void *) (*(*(*mz).zones[i]).elements[j]).ccsne_yields); 
-				printf("mz.zones[%d].elements[%d].sneia_yields address = %p\n", 
-					i, j, 
-					(void *) (*(*(*mz).zones[i]).elements[j]).sneia_yields); 
-			} 
-			printf("mz.zones[%d].ism address = %p\n", i, 
-				(void *) (*(*mz).zones[i]).ism); 
-			printf("mz.zones[%d].mdf address = %p\n", i, 
-				(void *) (*(*mz).zones[i]).mdf); 
-			printf("mz.zones[%d].ssp address = %p\n", i, 
-				(void *) (*(*mz).zones[i]).ssp); 
 			continue; 
 		} 
 	} 
@@ -385,7 +349,6 @@ static void multizone_write_history(MULTIZONE mz) {
 
 	unsigned int i; 
 	for (i = 0; i < mz.n_zones; i++) { 
-		printf("i = %d\n", i); 
 		write_history_output(*mz.zones[i]); 
 	} 
 

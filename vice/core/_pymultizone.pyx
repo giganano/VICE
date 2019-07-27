@@ -86,22 +86,31 @@ cdef class multizone:
 	""" 
 
 	cdef MULTIZONE *_mz 
-	cdef object _zones 
+	cdef zone_array _zones 
 	cdef migration_specifications _migration 
 
-	def __cinit__(self, n_zones = 10): 
+	def __cinit__(self, 
+		n_zones = 10, 
+		name = "multizonemodel", 
+		n_tracers = 1, 
+		verbose = False): 
 		if isinstance(n_zones, numbers.Number): 
 			if n_zones > 0: 
 				if n_zones % 1 == 0: 
 					n_zones = int(n_zones) 
 					self._mz = _multizone.multizone_initialize(n_zones) 
-					self._zones = n_zones * [None] 
+					self._zones = zone_array(n_zones) 
 					for i in range(n_zones): 
-						self._zones[i] = singlezone() 
-						self._zones[i].name = "zone%d" % (i) 
 						_multizone.link_zone(self._mz, 
 							self._zones[i]._singlezone__zone_object_address(), 
 							i) 
+					# self._zones = n_zones * [None] 
+					# for i in range(n_zones): 
+					# 	self._zones[i] = singlezone() 
+					# 	self._zones[i].name = "zone%d" % (i) 
+					# 	_multizone.link_zone(self._mz, 
+					# 		self._zones[i]._singlezone__zone_object_address(), 
+					# 		i) 
 				else: 
 					# error handled in __init__ 
 					pass 
@@ -112,7 +121,8 @@ cdef class multizone:
 			# error handled in __init__ 
 			pass 
 
-	def __init__(self, n_zones = 10, 
+	def __init__(self, 
+		n_zones = 10, 
 		name = "multizonemodel", 
 		n_tracers = 1, 
 		verbose = False): 
@@ -303,6 +313,7 @@ a boolean. Got: %s""" % (type(value)))
 		need to interpret value of enrichment variable once it's done: it's 
 			not a simple "1 if failed setup" as in singlezone 
 		""" 
+		self.align_name_attributes() 
 		self.prep(output_times) 
 		cdef int enrichment 
 		if self.outfile_check(overwrite): 
@@ -321,11 +332,11 @@ a boolean. Got: %s""" % (type(value)))
 			for i in range(self._mz[0].n_zones): 
 				self._zones[i]._singlezone__c_version.save_yields() 
 				self._zones[i]._singlezone__c_version.save_attributes() 
-
 		else: 
 			_multizone.multizone_cancel(self._mz) 
 			enrichment = 0 
 
+		self.dealign_name_attributes() 
 		if enrichment == 1: 
 			_multizone.multizone_cancel(self._mz) 
 			raise SystemError("Internal Error") 
@@ -350,17 +361,22 @@ zone and at least one timestep larger than 1.""")
 		Raises 
 		====== 
 		Exceptions raised by subroutines 
+
+		Notes 
+		===== 
+		The order of function calls here is highly sensitive to memory errors. 
+		It must go setup calls, then for loop, then migration setup. Anything 
+		else messes with attributes and causes values to be reset 
 		""" 
+		self.align_element_attributes() 
+		self.zone_alignment_warnings() 
+		self.timestep_alignment_error() 
 		for i in range(self._mz[0].n_zones): 
 			times = self._zones[i]._singlezone__zone_prep(output_times) 
 			self._mz[0].zones[i][0].output_times = _cutils.copy_pylist( 
 				times)
 			self._mz[0].zones[i][0].n_outputs = len(times) 
-		self.align_name_attributes() 
-		self.align_element_attributes() 
-		self.zone_alignment_warnings() 
-		self.timestep_alignment_error() 
-		self.setup_migration() 
+		self.setup_migration()
 
 	def outfile_check(self, overwrite): 
 		""" 
@@ -586,6 +602,77 @@ artifacts.""" % (key), ScienceWarning)
 		else: 
 			pass  
 
+cdef class zone_array: 
+
+	""" 
+	An array of singlezone objects 
+	""" 
+	cdef object _zones 
+	cdef int _n 
+
+	def __init__(self, n): 
+		assert isinstance(n, int), "Internal Error" 
+		self._n = n 
+		self._zones = n * [None] 
+		for i in range(n): 
+			self._zones[i] = singlezone() 
+			self._zones[i].name = "zone%d" % (i) 
+
+	def __getitem__(self, key): 
+		""" 
+		Allow indexing by key of type int 
+		""" 
+		if isinstance(key, numbers.Number): 
+			if 0 <= key < self._n: 
+				if key % 1 == 0: 
+					return self._zones[int(key)] 
+				else: 
+					raise IndexError("""Index must be interpretable as an \
+integer. Got: %g""" % (key)) 
+			else: 
+				raise IndexError("Index out of bounds: %g" % (key)) 
+		else: 
+			raise IndexError("Index must be an integer. Got: %s" % (type(key))) 
+
+	def __setitem__(self, key, value): 
+		""" 
+		Allow indexing by key of type int; item must be of type singlezone 
+		""" 
+		if isinstance(key, numbers.Number): 
+			if 0 <= key < self._n: 
+				if key % 1 == 0: 
+					if isinstance(value, singlezone): 
+						self._zones[int(key)] = value 
+					else: 
+						raise TypeError("""Item must be of type singlezone. \
+Got: %s""" % (type(value))) 
+				else: 
+					raise ValueError("""Index must be interpretable as an \
+integer. Got: %g""" % (key)) 
+			else: 
+				raise ValueError("Index out of bounds: %g" % (key)) 
+		else: 
+			raise TypeError("Index must be an integer. Got: %s" % (type(key))) 
+
+	def __repr__(self): 
+		return str([self._zones[i] for i in range(self._n)]) 
+
+	def __str__(self): 
+		return self.__repr__() 
+
+	def __enter__(self): 
+		""" 
+		Opens a with statement 
+		""" 
+		return self 
+
+	def __exit__(self, exc_type, exc_value, exc_tb): 
+		""" 
+		Raises all exceptions inside with statements 
+		""" 
+		return self.exc_value is None 
+
+
 cdef class migration_specifications: 
 
 	""" 
@@ -595,7 +682,8 @@ cdef class migration_specifications:
 	cdef object _stars 
 	cdef object _gas 
 
-	def __init__(self, int n): 
+	def __init__(self, n): 
+		assert isinstance(n, int), "Internal Error" 
 		self._stars = migration_matrix(n) 
 		self._gas = migration_matrix(n) 
 

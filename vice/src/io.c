@@ -572,20 +572,10 @@ extern void write_history_output(SINGLEZONE sz) {
 	 * tracked by VICE at each timestep, but are determined at each 
 	 * output. 
 	 */ 
-	printf("a\n"); 
 	double *Z = (double *) malloc (sz.n_elements * sizeof(double)); 
-	printf("b\n"); 
 	double *onH = (double *) malloc (sz.n_elements * sizeof(double)); 
-	printf("c\n"); 
 	unsigned int i, j; 
-	printf("d\n"); 
 	for (i = 0; i < sz.n_elements; i++) { 
-		printf("i = %d\n", i); 
-		printf("sz.elements[%d].mass = %e\n", i, (*sz.elements[i]).mass); 
-		printf("sz.elements[%d].solar = %e\n", i, (*sz.elements[i]).solar); 
-		printf("sz.elements[%d].ccsne_yield = %e\n", i, 
-			(*(*sz.elements[i]).ccsne_yields).yield_[0]); 
-		printf("sz.ism.mass = %e\n", (*sz.ism).mass); 
 		Z[i] = (*sz.elements[i]).mass / (*sz.ism).mass; 
 		onH[i] = log10(Z[i] / (*sz.elements[i]).solar); 
 	} 

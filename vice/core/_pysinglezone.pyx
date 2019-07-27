@@ -61,6 +61,7 @@ from ._objects cimport ISM
 from ._objects cimport MDF 
 from ._objects cimport SSP 
 from ._objects cimport SINGLEZONE 
+# from ._zoneprep cimport zoneprep 
 from . cimport _agb 
 from . cimport _ccsne 
 from . cimport _cutils 
@@ -2347,6 +2348,7 @@ Got: %s""" % (type(value)))
 		>>> sz.run(outtimes) 
 		"""
 		output_times = self.prep(output_times) 
+		# zoneprep(self._sz, self, output_times, overwrite) 
 		cdef int enrichment 
 		if self.outfile_check(overwrite): 
 			if not os.path.exists("%s.vice" % (self.name)): 

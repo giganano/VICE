@@ -207,10 +207,10 @@ def key_check(key, maximum):
 				return int(key) 
 			else: 
 				return [ValueError, 
-					"Index must be of interpretable as an integer. Got: %g" % (
+					"Index must be interpretable as an integer. Got: %g" % (
 					key)] 
 		else: 
-			return [ValueError, "Index out of bound: %g" % (key)] 
+			return [ValueError, "Index out of bounds: %g" % (key)] 
 	else: 
 		return [TypeError, "Index must be an integer. Got: %s" % (type(key))] 
 

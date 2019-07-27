@@ -199,8 +199,3 @@ def is_ascii(pystr):
 		raise TypeError("Must be of type str. Got: %s" % (type(pystr))) 
 
 
-
-
-
-
-
