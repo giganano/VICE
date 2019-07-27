@@ -230,8 +230,8 @@ class singlezone:
 	def __enter__(self): 
 		return self.__c_version.__enter__() 
 
-	def __exit__(self): 
-		return self.__c_version.__exit__() 
+	def __exit__(self, exc_type, exc_value, exc_tb): 
+		return self.__c_version.__exit__(exc_type, exc_value, exc_tb)  
 
 	@property 
 	def name(self): 
