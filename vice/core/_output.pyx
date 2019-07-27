@@ -244,19 +244,19 @@ def mdf(name):
 def _get_name(name): 
 	"""
 	Gets the name of a VICE output given the user-specified name. 
-	"""
-	if isinstance(name, strcomp): # if it's a string 
-		while name[-1] == '/': # remove the slash on the end of the directory 
+	""" 
+	if isinstance(name, strcomp): 
+		while name[-1] == '/': 
+			# Remove the '/' at the end of a directory name 
 			name = name[:-1] 
-		if name[-5:].lower() != ".vice": 
-			# If the extension is not on the end 
-			return "%s.vice" % (name)
+		# Recognize the forced '.vice' extension 
+		if name.lower().endswith(".vice"): 
+			name = "%s.vice" % (name[:-5]) 
 		else: 
-			# If the extension is there, but maybe with case errors 
-			return "%s.vice" % (name[:-5]) 
+			name = "%s.vice" % (name) 
+		return name 
 	else: 
-		# If the name of an output isn't a string, it's a TypeError 
-		raise TypeError("Parameter must be of type string. Got: %s" % (
+		raise TypeError("'name' must be of type string. Got: %s" % (
 			type(name)))
 
 def _check_output(name): 
@@ -386,19 +386,7 @@ cdef class output:
 			extension need not be included. 
 		"""
 		# Set the name with some forethought about the directory 
-		if isinstance(name, strcomp): 
-			self._name = name 
-			while self._name[-1] == '/': 
-				# Remove the '/' at the end of a directory name 
-				self._name = self._name[:-1] 
-			# Recognize the forced '.vice' extension 
-			if self._name.lower().endswith(".vice"): 
-				self._name = "%s.vice" % (self._name[:-5]) 
-			else: 
-				self._name = "%s.vice" % (self._name) 
-		else: 
-			message = "Attribute name must be of type string. Got: %s" % (
-				type(name)) 
+		self._name = _get_name(name) 
 
 		# Now pull in all of the output information 
 		self._hist = history(self.name) 
