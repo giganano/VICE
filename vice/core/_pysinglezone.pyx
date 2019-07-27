@@ -102,6 +102,7 @@ class singlezone:
 	Signature: vice.singlezone.__init__(name = "onezonemodel", 
 		func = _DEFAULT_FULC_, 
 		mode = "ifr", 
+		verbose = False, 
 		elements = ("fe", "sr", "o"), 
 		IMF = "kroupa", 
 		eta = 2.5, 
@@ -136,7 +137,7 @@ class singlezone:
 		The interpretation of the attribute "func". Either "ifr" for infall 
 		rate, "sfr" for star formation rate, or "gas" for the gas supply. 
 	verbose :: bool [default :: False] 
-		Whether or not to print the to the console as the simulation runs 
+		Whether or not to print the time to the console as the simulation runs 
 	elements :: array-like [default :: ("fe", "sr", "o")] 
 		An array-like object of strings denoting the symbols of the elements to 
 		track the enrichment for 
@@ -198,7 +199,8 @@ class singlezone:
 
 	Functions 
 	========= 
-	run :: 			Run the simulation 
+	run :: 
+		Run the simulation 
 
 	See also 	[https://github.com/giganano/VICE/tree/master/docs]
 	========
@@ -231,8 +233,8 @@ class singlezone:
 	def __enter__(self): 
 		return self.__c_version.__enter__() 
 
-	def __exit__(self): 
-		return self.__c_version.__exit__() 
+	def __exit__(self, exc_type, exc_value, exc_tb): 
+		return self.__c_version.__exit__(exc_type, exc_value, exc_tb)  
 
 	def __zone_object_address(self): 
 		""" 
@@ -286,7 +288,7 @@ class singlezone:
 		settings at the time of simulation and the integrator parameters which 
 		produced it. 
 
-		By forcing a ``.vice'' extension on the output file, users can run 
+		By forcing a ".vice" extension on the output file, users can run 
 		'<command> *.vice' in a linux terminal to run commands over 
 		all vice outputs in a given directory. 		
 		""" 
@@ -381,7 +383,7 @@ class singlezone:
 		Type :: bool 
 		Default :: False 
 
-		If True, will print the time in Gyr to the console as the simulation 
+		If True, the time in Gyr will print to the console as the simulation 
 		evolves. 
 		""" 
 		return self.__c_version.verbose 

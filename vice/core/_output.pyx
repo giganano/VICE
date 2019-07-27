@@ -13,6 +13,7 @@ __all__ = [str(i) for i in __all__] 		# appease python 2 strings
 from .._globals import _DIRECTORY_ 
 from .._globals import _VERSION_ERROR_ 
 from .._globals import ScienceWarning 
+from ._dataframe import base 
 from ._dataframe import history as _history 
 from ._dataframe import fromfile 
 from ._dataframe import saved_yields 
@@ -244,19 +245,19 @@ def mdf(name):
 def _get_name(name): 
 	"""
 	Gets the name of a VICE output given the user-specified name. 
-	"""
-	if isinstance(name, strcomp): # if it's a string 
-		while name[-1] == '/': # remove the slash on the end of the directory 
+	""" 
+	if isinstance(name, strcomp): 
+		while name[-1] == '/': 
+			# Remove the '/' at the end of a directory name 
 			name = name[:-1] 
-		if name[-5:].lower() != ".vice": 
-			# If the extension is not on the end 
-			return "%s.vice" % (name)
+		# Recognize the forced '.vice' extension 
+		if name.lower().endswith(".vice"): 
+			name = "%s.vice" % (name[:-5]) 
 		else: 
-			# If the extension is there, but maybe with case errors 
-			return "%s.vice" % (name[:-5]) 
+			name = "%s.vice" % (name) 
+		return name 
 	else: 
-		# If the name of an output isn't a string, it's a TypeError 
-		raise TypeError("Parameter must be of type string. Got: %s" % (
+		raise TypeError("'name' must be of type string. Got: %s" % (
 			type(name)))
 
 def _check_output(name): 
@@ -314,9 +315,27 @@ def _load_elements(filename):
 			continue 
 	return tuple(elements[:]) 
 
+def _is_multizone(filename): 
+	""" 
+	Determines if a directory corresponds to the output of a VICE multizone 
+	object. 
+	""" 
+	name = _get_name(filename) 
+	if os.path.exists(filename): 
+		zones = list(filter(lambda x: x.endswith(".vice"), 
+			os.listdir(filename))) 
+		if len(zones) >= 2: 
+			return True 
+		else: 
+			return False 
+	else: 
+		return False 
+
+
 
 #------------------------------ OUTPUT OBJECT ------------------------------# 
-cdef class output: 
+class output(object): 
+
 	"""
 	Reads in the output from the singlezone class and allows the user to access 
 	it easily via VICE dataframes. The results are read in automatically. 
@@ -369,12 +388,21 @@ cdef class output:
 	vice.mdf 
 	""" 
 
-	cdef object _hist 
-	cdef object _mdf 
-	cdef object _elements 
-	cdef object _ccsne_yields 
-	cdef object _sneia_yields 
-	cdef object _name 
+	def __new__(cls, name): 
+		"""
+		__new__ is overridden such that in the event of a multizone object, 
+		a VICE dataframe of names to output objects for each zone is returned. 
+		""" 
+		name = _get_name(name) 
+		if _is_multizone(name): 
+			zones = list(filter(lambda x: x.endswith(".vice"), 
+				os.listdir(name))) 
+			zones = [i[:-5] for i in zones]
+			return base(
+				dict(zip(zones, [output("%s/%s" % (name, i)) for i in zones]))
+			) 
+		else: 
+			return super(output, cls).__new__(cls) 
 
 	def __init__(self, name): 
 		"""
@@ -385,65 +413,37 @@ cdef class output:
 			also be the full path to the output directory. The '.vice' 
 			extension need not be included. 
 		"""
-		# Set the name with some forethought about the directory 
-		if isinstance(name, strcomp): 
-			self._name = name 
-			while self._name[-1] == '/': 
-				# Remove the '/' at the end of a directory name 
-				self._name = self._name[:-1] 
-			# Recognize the forced '.vice' extension 
-			if self._name.lower().endswith(".vice"): 
-				self._name = "%s.vice" % (self._name[:-5]) 
-			else: 
-				self._name = "%s.vice" % (self._name) 
-		else: 
-			message = "Attribute name must be of type string. Got: %s" % (
-				type(name)) 
-
-		# Now pull in all of the output information 
-		self._hist = history(self.name) 
-		self._mdf = mdf(self.name) 
-		self._elements = _load_elements("%s.vice/history.out" % (self.name)) 
-
-		# Read in the yield settings 
-		self.__load_ccsne_yields() 
-		self.__load_sneia_yields() 
+		self.__c_version = c_output(name) 
 
 	def __repr__(self): 
-		"""
-		Prints the name of the simulation 
-		"""
-		return "<VICE output object from simulation: %s>" % (self._name[:-5]) 
+		return self.__c_version.__repr__() 
 
 	def __str__(self): 
-		""" 
-		Returns self.__repr__() 
-		""" 
-		return self.__repr__() 
+		return self.__c_version.__str__() 
 
 	def __eq__(self, other): 
 		""" 
 		Returns True if the outputs point to the same simulation 
 		""" 
-		return os.path.abspath(self._name) == os.path.abspath(other._name) 
+		return self.__c_version.__eq__(other) 
 
 	def __ne__(self, other): 
 		""" 
 		Returns not self.__eq__(other) 
 		""" 
-		return not self.__eq__(other) 
+		return self.__c_version.__ne__(other) 
 
 	def __enter__(self): 
 		""" 
 		Opens a with statement 
 		""" 
-		return self 
+		return self.__c_version.__enter__() 
 
 	def __exit__(self, exc_type, exc_value, exc_tb): 
 		""" 
-		Raises all exceptions inside with statements. 
+		Raises all exceptions inside with statements 
 		""" 
-		return exc_value is None 
+		return self.__c_version.__exit__(exc_type, exc_value, exc_tb) 
 
 	@property 
 	def name(self): 
@@ -454,7 +454,7 @@ cdef class output:
 		singlezone object. The ".vice" extension need not be specified with 
 		the name. 
 		"""
-		return self._name[:-5]
+		return self.__c_version.name 
 
 	@property
 	def elements(self):
@@ -464,7 +464,7 @@ cdef class output:
 		The symbols for the elements whose enrichment was modeled to produce 
 		the output file. 
 		"""
-		return self._elements 
+		return self.__c_version.elements 
 
 	@property
 	def history(self):
@@ -477,7 +477,7 @@ cdef class output:
 		======== 
 		Function vice.history
 		"""
-		return self._hist 
+		return self.__c_version.history 
 
 	@property
 	def mdf(self):
@@ -490,7 +490,7 @@ cdef class output:
 		======== 
 		Function vice.mdf 
 		"""
-		return self._mdf 
+		return self.__c_version.mdf 
 
 	@property
 	def ccsne_yields(self): 
@@ -504,7 +504,7 @@ cdef class output:
 		======== 
 		vice.yields.ccsne.settings 
 		"""
-		return self._ccsne_yields 
+		return self.__c_version.ccsne_yields 
 
 	@property
 	def sneia_yields(self): 
@@ -518,7 +518,7 @@ cdef class output:
 		======== 
 		vice.yields.sneia.settings 
 		"""
-		return self._sneia_yields 
+		return self.__c_version.sneia_yields 
 
 	def show(self, key, xlim = None, ylim = None): 
 		""" 
@@ -565,6 +565,114 @@ cdef class output:
 		>>> out.show("sfr") 
 		>>> out.show("[o/fe]-[fe/h]") 
 		"""	
+		self.__c_version.show(key, xlim = xlim, ylim = ylim) 
+
+
+cdef class c_output: 
+	
+	""" 
+	C version of the output object 
+	""" 
+
+	cdef object _hist 
+	cdef object _mdf 
+	cdef object _elements 
+	cdef object _ccsne_yields 
+	cdef object _sneia_yields 
+	cdef object _name 
+
+	def __init__(self, name): 
+		"""
+		Parameters 
+		========== 
+		name :: str 
+			The name of the .vice directory containing the output. This can 
+			also be the full path to the output directory. The '.vice' 
+			extension need not be included. 
+		"""
+		# Set the name with some forethought about the directory 
+		self._name = _get_name(name) 
+
+		# Now pull in all of the output information 
+		self._hist = history(self.name) 
+		self._mdf = mdf(self.name) 
+		self._elements = _load_elements("%s.vice/history.out" % (self.name)) 
+
+		# Read in the yield settings 
+		self.__load_ccsne_yields() 
+		self.__load_sneia_yields() 
+
+	def __repr__(self): 
+		"""
+		Prints the name of the simulation 
+		"""
+		return "<VICE output object from simulation: %s>" % (self._name[:-5]) 
+
+	def __str__(self): 
+		""" 
+		Returns self.__repr__() 
+		""" 
+		return self.__repr__() 
+
+	def __eq__(self, other): 
+		""" 
+		Returns True if the outputs point to the same simulation 
+		""" 
+		if isinstance(other, output): 
+			return os.path.abspath(self.name) == os.path.abspath(other.name) 
+		else: 
+			return False 
+
+	def __ne__(self, other): 
+		""" 
+		Returns not self.__eq__(other) 
+		""" 
+		return not self.__eq__(other) 
+
+	def __enter__(self): 
+		""" 
+		Opens a with statement 
+		""" 
+		return self 
+
+	def __exit__(self, exc_type, exc_value, exc_tb): 
+		""" 
+		Raises all exceptions inside with statements. 
+		""" 
+		return exc_value is None 
+
+	@property 
+	def name(self): 
+		# docstring in python version 
+		return self._name[:-5]
+
+	@property
+	def elements(self):
+		# docstring in python version 
+		return self._elements 
+
+	@property
+	def history(self):
+		# docstring in python version 
+		return self._hist 
+
+	@property
+	def mdf(self):
+		# docstring in python version 
+		return self._mdf 
+
+	@property
+	def ccsne_yields(self): 
+		# docstring in python version 
+		return self._ccsne_yields 
+
+	@property
+	def sneia_yields(self): 
+		# docstring in python version 
+		return self._sneia_yields 
+
+	def show(self, key, xlim = None, ylim = None): 
+		# docstring in python version 
 		try: 
 			import matplotlib as mpl 
 		except (ImportError, ModuleNotFoundError): 
