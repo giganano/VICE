@@ -13,6 +13,7 @@
 /* ---------- Static function comment headers not duplicated here ---------- */ 
 static void migrate_tracer(MULTIZONE mz, TRACER *t); 
 static void migrate_gas_element(MULTIZONE *mz, int index); 
+static void migration_sanity_check(MULTIZONE *mz); 
 static double **setup_changes(unsigned int n_zones); 
 static double **get_changes(MULTIZONE mz, int index); 
 
@@ -183,6 +184,7 @@ extern void migrate(MULTIZONE *mz) {
 	for (j = 0l; j < (*mz).tracer_count; j++) {
 		migrate_tracer(*mz, mz -> tracers[j]); 
 	} 
+	migration_sanity_check(mz); 	/* sanity check the migration */ 
 
 }
 
@@ -211,18 +213,21 @@ static void migrate_tracer(MULTIZONE mz, TRACER *t) {
 	unsigned int j, i = (*t).zone_current; 
 
 	/* Look at all elements of the relevant row in the migration matrix */ 
-	for (j = 0; j < mz.n_zones; j++) { 
-		if (j == i) {
-			/* Migration to the same zone can be ignored */ 
-			continue; 
-		} else if (dice_roll < mz.migration_matrix_tracers[timestep][i][j]) {
-			/* stop the for loop after the tracer particle migrates once */ 
-			t -> zone_current = j; 
-			break; 
-		} else { 
-			/* Keep checking to see if it migrated */ 
-			continue; 
-		} 
+	for (i = 0; i < mz.n_zones; i++) {
+		for (j = 0; j < mz.n_zones; j++) {
+			if (j == i) {
+				/* Migration to the same zone can be ignored */ 
+				continue; 
+			} else if (dice_roll < 
+				mz.migration_matrix_tracers[timestep][i][j]) { 
+				/* stop the for loop after the tracer particle migrates once */ 
+				t -> zone_current = j; 
+				break; 
+			} else {
+				/* Keep checking to see if it migrated */ 
+				continue; 
+			}
+		}
 	} 
 
 } 
@@ -239,7 +244,7 @@ static void migrate_tracer(MULTIZONE mz, TRACER *t) {
 static void migrate_gas_element(MULTIZONE *mz, int index) {
 
 	unsigned int i, j; 
-	double **changes = get_changes(*mz, -1); 
+	double **changes = get_changes(*mz, index); 
 	for (i = 0; i < (*mz).n_zones; i++) {
 		for (j = 0; j < (*mz).n_zones; j++) {
 			if (i == j) { 
@@ -259,6 +264,34 @@ static void migrate_gas_element(MULTIZONE *mz, int index) {
 	free(changes); 
 
 } 
+
+/* 
+ * Looks at the ISM mass and total element mass in each zone and takes into 
+ * account the physical lower bound. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		A pointer to the multizone object to sanity check 
+ */ 
+static void migration_sanity_check(MULTIZONE *mz) {
+
+	unsigned int i, j; 
+	for (i = 0; i < (*mz).n_zones; i++) {
+		for (j = 0; j < (*(*mz).zones[i]).n_elements; j++) {
+			if ((*(*(*mz).zones[i]).elements[j]).mass < 0) {
+				mz -> zones[i] -> elements[j] -> mass = 0; 
+			} else {
+				continue; 
+			} 
+		} 
+		if ((*(*(*mz).zones[i]).ism).mass < 1.e-12) {
+			mz -> zones[i] -> ism -> mass = 1.e-12; 
+		} else {
+			continue; 
+		} 
+	} 
+
+}
 
 /* 
  * Determine how much of the nebular phase mass migrates between all zones at 
