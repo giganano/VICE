@@ -134,7 +134,8 @@ extern void agb_from_tracers(MULTIZONE *mz) {
 			unsigned long n = timestep - (*t).timestep_origin; 
 			ELEMENT *e = sz -> elements[j]; 
 			e -> mass += ( 
-				get_AGB_yield(*e, Z, main_sequence_turnoff_mass(n * (*sz).dt)) 
+				get_AGB_yield( *(*(*mz).zones[(*t).zone_origin]).elements[j], 
+					Z, main_sequence_turnoff_mass(n * (*sz).dt)) 
 				* (*t).mass * 
 				((*ssp).msmf[n] - (*ssp).msmf[n + 1l]) 
 			); 

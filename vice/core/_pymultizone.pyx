@@ -129,7 +129,7 @@ class multizone(object):
 	VICE's science documentation 
 	""" 
 
-	def __new__(cls, n_zones = 10): 
+	def __new__(cls, n_zones = 10, **kwargs): 
 		""" 
 		__new__ is overridden such that a singlezone object is returned 
 		when n_zones = 1. 

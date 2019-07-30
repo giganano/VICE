@@ -153,8 +153,15 @@ extern int multizone_evolve(MULTIZONE *mz) {
 	 */ 
 	if (x) return x; 
 
-	long n = 0l; 		/* keep track of the number of outputs */ 
-	SINGLEZONE *sz = mz -> zones[0]; 	/* for convenience and readability */ 
+	/* 
+	 * Use the variable n to keep track of the number of outputs. Pull a 
+	 * local copy of the first zone just for convenience. Lastly, tracer 
+	 * particles are injected at the end of each timestep, so inject them at 
+	 * the start of the simulation to account for the first timestep. 
+	 */ 
+	long n = 0l; 
+	SINGLEZONE *sz = mz -> zones[0]; 
+	inject_tracers(mz); 
 	while ((*sz).current_time <= (*sz).output_times[(*sz).n_outputs - 1l]) {
 		/* 
 		 * Run the simulation until the time reaches the final output time 

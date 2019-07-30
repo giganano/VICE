@@ -111,7 +111,7 @@ extern double tracer_metallicity(MULTIZONE mz, TRACER t) {
 static void realloc_tracers(MULTIZONE *mz) { 
 
 	mz -> tracer_count += (*mz).n_zones * (*mz).n_tracers; 
-	mz -> tracers = (TRACER **) realloc(mz -> tracers, 
+	mz -> tracers = (TRACER **) realloc (mz -> tracers, 
 		(*mz).tracer_count * sizeof(TRACER *)); 
 
 	unsigned long i; 

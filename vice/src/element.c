@@ -136,8 +136,10 @@ extern void update_elements(MULTIZONE *mz) {
 			 * depletion from outflows 
 			 * metal-rich infall 
 			 */ 
-			mz -> zones[i] -> elements[j] -> mass += mdot_ccsne(
-				(*(*mz).zones[i]), *(*(*mz).zones[i]).elements[j]); 
+			mz -> zones[i] -> elements[j] -> mass += (
+				mdot_ccsne((*(*mz).zones[i]), *(*(*mz).zones[i]).elements[j]) * 
+				(*(*mz).zones[i]).dt 
+			); 
 			mz -> zones[i] -> elements[j] -> mass -= (
 				(*(*(*mz).zones[i]).ism).star_formation_rate * 
 				(*(*mz).zones[i]).dt * 

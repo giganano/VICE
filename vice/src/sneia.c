@@ -96,13 +96,16 @@ extern void sneia_from_tracers(MULTIZONE *mz) {
 		unsigned int j; 
 		/* 
 		 * Enrich each element in the zone from SNe Ia associated with this 
-		 * tracer particle 
+		 * tracer particle. Pull the yield information from the zone in 
+		 * which the tracer particle originated. 
 		 */ 
-		for (j = 0; j < (*(*mz).zones[(*t).zone_origin]).n_elements; j++) {
-			ELEMENT *e = mz -> zones[(*t).zone_origin] -> elements[j]; 
+		for (j = 0; j < (*(*mz).zones[(*t).zone_current]).n_elements; j++) {
+			ELEMENT *e = mz -> zones[(*t).zone_current] -> elements[j]; 
+			SNEIA_YIELD_SPECS *sneia = (mz -> zones[(*t).zone_origin] -> 
+				elements[j] -> sneia_yields); 
 			e -> mass += (
-				(*(*e).sneia_yields).yield_ * (*t).mass * 
-				(*(*e).sneia_yields).RIa[timestep - (*t).timestep_origin] 
+				(*sneia).yield_ * (*t).mass * 
+				(*sneia).RIa[timestep - (*t).timestep_origin] 
 			); 
 		} 
 	}
