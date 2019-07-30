@@ -606,6 +606,8 @@ a boolean. Got: %s""" % (type(value)))
 
 			# just do it #nike 
 			enrichment = _multizone.multizone_evolve(self._mz) 
+			self.save_zone_numbers() 
+			self.save_attributes() 
 
 			# save yield settings and attributes 
 			for i in range(self._mz[0].n_zones): 
@@ -879,7 +881,71 @@ artifacts.""" % (key), ScienceWarning)
 		if len(timestep_size_checker) > 1: 
 			raise RuntimeError("Timestep size not uniform across zones.") 
 		else: 
+			pass 
+
+	def save_zone_numbers(self): 
+		""" 
+		Saves a dictionary of zone indeces to zone names once the simulation 
+		has ran for mirroring purposes. 
+		""" 
+		# splitting on '/' removes multizone name from each zone 
+		zone_numbers = dict(zip(
+			list(range(self.n_zones)), 
+			[self.zones[i].name.split('/')[-1] for i in range(self.n_zones)]
+		)) 
+		pickle.dump(
+			zone_numbers, 
+			open("%s.vice/zone_numbers.config" % (self.name), "wb"
+		)) 
+
+	def save_attributes(self): 
+		""" 
+		Saves the multizone parameters to the output file 
+		""" 
+		params = {
+			"name": 			self.name, 
+			"n_zones": 			self.n_zones, 
+			"n_tracers": 		self.n_tracers, 
+		} 
+		if "dill" in sys.modules: 
+			params["migration.gas"] = self.migration.gas 
+			params["migration.stars"] = self.migration.stars 
+		else: 
+			""" 
+			User doesn't have dill. Switch functional elements of migration 
+			matrices to 0.0 
+			""" 
+			gas, stars = self.copy_migration_matrices() 
+			params["migration.gas"] = gas 
+			params["migration.stars"] = stars 
+		pickle.dump(params, open("%s.vice/params.config" % (self.name), "wb"))  
+
+	def copy_migration_matrices(self): 
+		warn = False 
+		gas = migration_matrix(self.n_zones) 
+		stars = migration_matrix(self.n_zones) 
+		for i in range(self.n_zones): 
+			for j in range(self.n_zones): 
+				if callable(self.migration.gas[i][j]): 
+					warn = True 
+					gas[i][j] = 0.0 
+				else: 
+					gas[i][j] = self.migration.gas[i][j] 
+				if callable(self.migration.stars[i][j]): 
+					warn = True 
+					stars[i][j] = 0.0 
+				else: 
+					stars[i][j] = self.migration.stars[i][j] 
+
+		if warn: 
+			warnings.warn("""\
+Saving functional attributes within VICE outputs requires dill (installable \
+via pip). The functional elements of these migration matrices will not be \
+saved with this output.""", ScienceWarning) 
+		else: 
 			pass  
+
+		return [gas, stars] 
 
 cdef class zone_array: 
 
@@ -921,7 +987,12 @@ integer. Got: %g""" % (key))
 			if 0 <= key < self._n: 
 				if key % 1 == 0: 
 					if isinstance(value, singlezone): 
-						self._zones[int(key)] = value 
+						""" 
+						Because the memory addresses of each singlezone object 
+						is copied into the multizone object, must instead copy 
+						each attribute here, preventing memory errors 
+						""" 
+						self.__copy_attributes(int(key), value) 
 					else: 
 						raise TypeError("""Item must be of type singlezone. \
 Got: %s""" % (type(value))) 
@@ -950,6 +1021,38 @@ integer. Got: %g""" % (key))
 		Raises all exceptions inside with statements 
 		""" 
 		return self.exc_value is None 
+
+	def __copy_attributes(self, key, sz): 
+		""" 
+		Copies the attributes of singlezone object sz into the zone at index 
+		key 
+		""" 
+		assert isinstance(key, int), "Internal Error" 
+		assert isinstance(sz, singlezone), "Internal Error" 
+		self._zones[int(key)].agb_model 		= sz.agb_model
+		self._zones[int(key)].bins 				= sz.bins
+		self._zones[int(key)].delay 			= sz.delay
+		self._zones[int(key)].dt 				= sz.dt
+		self._zones[int(key)].RIa 				= sz.RIa
+		self._zones[int(key)].elements 			= sz.elements
+		self._zones[int(key)].enhancement 		= sz.enhancement
+		self._zones[int(key)].eta 				= sz.eta
+		self._zones[int(key)].func 				= sz.func
+		self._zones[int(key)].IMF 				= sz.IMF
+		self._zones[int(key)].m_lower 			= sz.m_lower
+		self._zones[int(key)].m_upper 			= sz.m_upper
+		self._zones[int(key)].Mg0 				= sz.Mg0
+		self._zones[int(key)].MgSchmidt 		= sz.MgSchmidt
+		self._zones[int(key)].mode 				= sz.mode
+		self._zones[int(key)].name 				= sz.name
+		self._zones[int(key)].recycling 		= sz.recycling
+		self._zones[int(key)].schmidt 			= sz.schmidt
+		self._zones[int(key)].schmidt_index 	= sz.schmidt_index
+		self._zones[int(key)].smoothing 		= sz.smoothing
+		self._zones[int(key)].tau_ia 			= sz.tau_ia
+		self._zones[int(key)].tau_star 			= sz.tau_star
+		self._zones[int(key)].Z_solar 			= sz.Z_solar
+		self._zones[int(key)].Zin 				= sz.Zin
 
 
 cdef class migration_specifications: 

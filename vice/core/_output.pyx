@@ -322,10 +322,13 @@ def _is_multizone(filename):
 	""" 
 	name = _get_name(filename) 
 	if os.path.exists(filename): 
-		zones = list(filter(lambda x: x.endswith(".vice"), 
-			os.listdir(filename))) 
-		if len(zones) >= 2: 
-			return True 
+		if os.path.isdir(filename): 
+			zones = list(filter(lambda x: x.endswith(".vice"), 
+				os.listdir(filename))) 
+			if len(zones) >= 2 and "zone_numbers.config" in os.listdir(filename): 
+				return True 
+			else: 
+				return False 
 		else: 
 			return False 
 	else: 
