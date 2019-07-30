@@ -213,7 +213,7 @@ static void multizone_timestepper(MULTIZONE *mz) {
 		} 
 		update_MDF(sz); 
 	} 
-	
+
 	/* 
 	 * Migration must be done before incrementing the timestep number as that 
 	 * is used to determine the number of tracer particles present. Migrating 
@@ -259,7 +259,8 @@ extern int multizone_setup(MULTIZONE *mz) {
 	} else if (migration_matrix_sanitycheck((*mz).migration_matrix_tracers, 
 		migration_matrix_length(*mz), (*mz).n_zones)) { 
 		return 2; 
-	} else {
+	} else { 
+		mz -> tracer_count = 0l; 
 		seed_random(); 
 		return 0; 
 	} 
