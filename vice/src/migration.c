@@ -16,6 +16,7 @@ static void migrate_gas_element(MULTIZONE *mz, int index);
 static void migration_sanity_check(MULTIZONE *mz); 
 static double **setup_changes(unsigned int n_zones); 
 static double **get_changes(MULTIZONE mz, int index); 
+static double dice_roll(void); 
 
 /* 
  * Performs a sanity check on a given migration matrix by making sure the sum 
@@ -203,31 +204,37 @@ static void migrate_tracer(MULTIZONE mz, TRACER *t) {
 	/* 
 	 * Bookkeeping 
 	 * =========== 
-	 * dice_roll: 	A random double between 0 and 1 
 	 * timestep: 	The timestep number, pulled from one of the zones 
 	 * i, j: 		The row and column indeces of the migration matrix 
 	 */ 
-
-	double dice_roll = (double) rand() / RAND_MAX; 
 	unsigned long timestep = (*mz.zones[0]).timestep; 
-	unsigned int j, i = (*t).zone_current; 
+	unsigned int j; 
 
-	/* Look at all elements of the relevant row in the migration matrix */ 
-	for (i = 0; i < mz.n_zones; i++) {
-		for (j = 0; j < mz.n_zones; j++) {
-			if (j == i) {
-				/* Migration to the same zone can be ignored */ 
-				continue; 
-			} else if (dice_roll < 
-				mz.migration_matrix_tracers[timestep][i][j]) { 
-				/* stop the for loop after the tracer particle migrates once */ 
-				t -> zone_current = j; 
-				break; 
-			} else {
-				/* Keep checking to see if it migrated */ 
-				continue; 
-			}
-		}
+	/* 
+	 * Look at all elements of the relevant row in the migration matrix and 
+	 * bookkeep whether or not the diceroll passes  
+	 */ 
+	// int *migrate = (int *) malloc (mz.n_zones * sizeof(int)); 
+	for (j = 0; j < mz.n_zones; j++) {
+		if (j == (*t).zone_current) {
+			/* Migration within the zone can be ignored */ 
+			continue; 
+		} else if (dice_roll() < 
+			mz.migration_matrix_tracers[timestep][(*t).zone_current][j]) { 
+			/* 
+			 * Once the particle has migrated, exit the for-loop. For  
+			 * equal migration likelihoods to a particular zone, calling 
+			 * dice_roll in the if statement ensures that the comparison is 
+			 * done independently within each zone. That is, the comparison is 
+			 * just as likely to pass or fail regardless of zone index. This 
+			 * ensures that migration never moves preferentially in one 
+			 * direction or another. 
+			 */ 
+			t -> zone_current = j; 
+			break; 
+		} else {
+			continue; 
+		} 
 	} 
 
 } 
@@ -365,4 +372,11 @@ static double **setup_changes(unsigned int n_zones) {
 
 } 
 
+/* 
+ * Returns a pseudo-random double between 0 and 1. 
+ */ 
+static double dice_roll(void) { 
 
+	return (double) rand() / RAND_MAX; 
+
+} 
