@@ -1,0 +1,48 @@
+language: python  
+sudo: required 
+os: linux 
+dist: xenial    # required for python >= 3.7  
+python: 
+  - 2.7 
+  - 3.5 
+  - 3.6 
+  - 3.7  
+env: 
+  - COMPILER=gcc 
+  - COMPILER=clang 
+
+matrix: 
+  fast_finish: true 
+
+notifications: 
+  email: 
+    recipients: 
+      - giganano9@gmail.com 
+    on_success: change 
+    on_failure: always 
+
+addons: 
+  apt: 
+    sources: 
+      - ubuntu-toolchain-r-test 
+      - llvm-toolchain-precise-3.6
+    packages: 
+      - gcc-4.6 
+      - clang-3.6
+
+before_install: 
+  - pip install Cython==0.28.0 --install-option="--no-cython-compile" 
+  - python --version 
+  - make --version 
+
+install: 
+  - make -r CC=$COMPILER 
+  - python setup.py install 
+  - make clean 
+
+script: 
+  - make tests 
+
+branches: 
+  only: 
+    - master 
