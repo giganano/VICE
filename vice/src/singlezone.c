@@ -143,6 +143,10 @@ extern int singlezone_evolve(SINGLEZONE *sz) {
  * Parameters 
  * ========== 
  * sz: 		A pointer to the singlezone object to advance one timestep 
+ * 
+ * Returns 
+ * ======= 
+ * 0 while the simulation is running, 1 if the simulation is over 
  */ 
 static int singlezone_timestepper(SINGLEZONE *sz) {
 
