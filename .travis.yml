@@ -117,12 +117,12 @@ matrix:
       env: COMPILER=gcc PYTHON_VERSION=3.7 
 
 install: 
-  - make -r CC=$(COMPILER) 
-  - python$(PYTHON_VERSION) setup.py install 
+  - make -r CC=$COMPILER 
+  - python$PYTHON_VERSION setup.py install 
   - make clean 
 
 script: 
-  - python$(PYTHON_VERSION) ./vice/tests/ 
+  - python$PYTHON_VERSION ./vice/tests/ 
 
 branches: 
   only: 
