@@ -40,6 +40,13 @@ extern int migration_matrix_sanitycheck(double ***migration_matrix,
 	unsigned long i; 
 	for (i = 0l; i < n_times; i++) {
 		unsigned int j; 
+		/* 
+		 * First set the diagonal equal to zero; migration within zones is 
+		 * simply ignored. 
+		 */ 
+		for (j = 0; j < n_zones; j++) { 
+			migration_matrix[i][j][j] = 0.0; 
+		}
 		for (j = 0; j < n_zones; j++) { 
 			/* 
 			 * At all times for all zones, total probability of migration out 

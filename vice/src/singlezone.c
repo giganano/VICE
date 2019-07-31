@@ -17,7 +17,7 @@
 #include "io.h" 
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
-static void singlezone_timestepper(SINGLEZONE *sz); 
+static int singlezone_timestepper(SINGLEZONE *sz); 
 static void verbosity(SINGLEZONE sz); 
 
 /* 
@@ -122,7 +122,7 @@ extern int singlezone_evolve(SINGLEZONE *sz) {
 			write_history_output(*sz); 
 			n++; 
 		} else {} 
-		singlezone_timestepper(sz); 
+		if (singlezone_timestepper(sz)) break; 
 		verbosity(*sz); 
 	} 
 	if ((*sz).verbose) printf("\n"); 
@@ -144,7 +144,7 @@ extern int singlezone_evolve(SINGLEZONE *sz) {
  * ========== 
  * sz: 		A pointer to the singlezone object to advance one timestep 
  */ 
-static void singlezone_timestepper(SINGLEZONE *sz) {
+static int singlezone_timestepper(SINGLEZONE *sz) {
 
 	/* 
 	 * Timestep number and current time get moved LAST. This is taken into 
@@ -162,6 +162,8 @@ static void singlezone_timestepper(SINGLEZONE *sz) {
 
 	sz -> current_time += (*sz).dt; 
 	sz -> timestep++; 
+
+	return (*sz).current_time > (*sz).output_times[(*sz).n_outputs - 1l]; 
 	
 }
 
@@ -331,7 +333,7 @@ static void verbosity(SINGLEZONE sz) {
 
 	if (sz.verbose) {
 		/* '\t' characters injected to flush round-off errors */ 
-		printf("\rCurrent Time: %g Gyr\t\t\t", sz.current_time); 
+		printf("\rCurrent Time: %2.f Gyr", sz.current_time); 
 	} else {} 
 
 }

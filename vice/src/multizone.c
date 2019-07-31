@@ -14,7 +14,7 @@
 #include "io.h" 
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
-static void multizone_timestepper(MULTIZONE *mz); 
+static int multizone_timestepper(MULTIZONE *mz); 
 static void verbosity(MULTIZONE mz); 
 static void multizone_write_history(MULTIZONE mz); 
 static void multizone_normalize_MDF(MULTIZONE *mz); 
@@ -174,7 +174,7 @@ extern int multizone_evolve(MULTIZONE *mz) {
 			multizone_write_history(*mz); 
 			n++; 
 		} else {} 
-		multizone_timestepper(mz); 
+		if (multizone_timestepper(mz)) break; 
 		verbosity(*mz); 
 	} 
 	if ((*mz).verbose) printf("\n"); 
@@ -193,8 +193,12 @@ extern int multizone_evolve(MULTIZONE *mz) {
  * Parameters 
  * ========== 
  * mz: 		A pointer to the multizone object to move forward 
+ * 
+ * Returns 
+ * ======= 
+ * 0 while the simulation is running, 1 if the time has passed the end 
  */ 
-static void multizone_timestepper(MULTIZONE *mz) {
+static int multizone_timestepper(MULTIZONE *mz) {
 
 	update_elements(mz); 
 	update_zone_evolution(mz); 
@@ -226,6 +230,9 @@ static void multizone_timestepper(MULTIZONE *mz) {
 		mz -> zones[i] -> timestep++; 
 	} 
 	inject_tracers(mz); 
+
+	return ((*(*mz).zones[0]).current_time > 
+		(*(*mz).zones[0]).output_times[(*(*mz).zones[0]).n_outputs - 1l]); 
 
 } 
 
@@ -340,8 +347,8 @@ extern void multizone_cancel(MULTIZONE *mz) {
 static void verbosity(MULTIZONE mz) {
 
 	if (mz.verbose) { 
-		/* '\t' characters injected to flush round-off errors */ 
-		printf("\rCurrent Time: %g Gyr\t\t\t", (*mz.zones[0]).current_time); 
+		/* Spaces injected to flush round-off errors */ 
+		printf("\rCurrent Time: %.2f Gyr", (*mz.zones[0]).current_time); 
 	} else {} 
 
 }
