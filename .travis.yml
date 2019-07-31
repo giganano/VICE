@@ -1,7 +1,7 @@
 language: python  
 sudo: required 
 os: linux 
-dist: trusty 
+dist: xenial    # required for python >= 3.7  
 python: 
   - "2.7" 
   - "3.5" 
@@ -10,7 +10,6 @@ python:
 env: 
   - COMPILER=gcc 
   - COMPILER=clang 
-
 
 matrix: 
   fast_finish: true 
@@ -39,7 +38,7 @@ install:
   - make clean 
 
 script: 
-  - echo "test" 
+  - make tests 
 
 branches: 
   only: 
