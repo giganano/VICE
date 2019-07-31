@@ -274,9 +274,13 @@ under the terms of the associated LICENSE_.
 	:target: https://raw.githubusercontent.com/giganano/VICE/master/LICENSE
 	:alt: MIT License
 
-..	|docs| image:: https://img.shields.io/badge/-docs-brightgreen.svg
-	:target: https://github.com/giganano/VICE/tree/master/docs
-	:alt: docs
+..	|issues| image:: https://img.shields.io/github/issues/giganano/VICE.svg 
+	:target: https://github.com/giganano/VICE/issues 
+	:alt: issues 
+
+..	|travis| image:: https://travis-ci.com/giganano/VICE.svg?branch=master 
+	:target: https://travis-ci.com/giganano/VICE 
+	:alt: travis 
 
 ..	|authors| image:: https://img.shields.io/badge/-Authors-brightgreen.svg
 	:target: https://github.com/giganano/VICE/blob/master/AUTHORS.rst
