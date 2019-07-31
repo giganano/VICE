@@ -25,13 +25,14 @@ addons:
   apt: 
     sources: 
       - ubuntu-toolchain-r-test 
+      - llvm-toolchain-precise-3.6
     packages: 
       - gcc-4.6 
+      - clang-3.6
 
 before_install: 
   - pip install Cython --install-option="--no-cython-compile" 
   - python -V 
-  - $COMPILER --version
 
 install: 
   - make -r CC=$COMPILER 
