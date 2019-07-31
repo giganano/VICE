@@ -36,6 +36,8 @@ matrix:
   exclude: 
     - os: osx 
       env: COMPILER=gcc 
+    - os: linux 
+      env: COMPILER=clang 
 
 before_install: 
   - pip install Cython --install-option="--no-cython-compile" 
