@@ -56,13 +56,13 @@ system.
 The following system requirements must be satisfied for ``VICE`` to install 
 properly: 
 
-1) ``Cython version >= 0.25.2``
+1) ``Cython >= 0.25.2``
 
-2) ``Python version 2.7, or >= 3.5``
+2) ``Python 2.7, or >= 3.5``
 
-3) ``Make version >= 3.80``
+3) ``Make >= 3.80``
 
-4) ``Clang >= 4.2.0 or gcc >= 4.6``
+4) ``Clang >= 7.0.0 or gcc >= 4.6``
 
 **NOTE**: While ``VICE`` will run independently of ``dill`` and is thus not 
 dependent on it, it is nonetheless strongly recommended that users install 
