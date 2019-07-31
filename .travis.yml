@@ -51,12 +51,9 @@ before_install:
   - python -V 
 
 install: 
-  - make 
+  - make -r CC=$COMPILER 
   - python setup.py install 
   - make clean 
-
-script: 
-  - python ./vice/tests/ 
 
 branches: 
   only: 
