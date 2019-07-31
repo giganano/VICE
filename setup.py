@@ -13,6 +13,11 @@ try:
 except (ImportError, ModuleNotFoundError): 
 	raise RuntimeError("""Please install Cython >= %d.%d.%d before installing \
 VICE.""" % (_MIN_CYTHON_MAJOR_, _MIN_CYTHON_MINOR_, _MIN_CYTHON_MICRO_)) 
+if len([int(i) for i in Cython.__version__.split('.')]) == 2: 
+	# Handle version numbers w/o a micro to not break the 0.28.0 installation 
+	Cython.__version__ += ".0" 
+else: 
+	pass 
 if tuple([int(i) for i in Cython.__version__.split('.')]) < tuple(
 	[_MIN_CYTHON_MAJOR_, _MIN_CYTHON_MINOR_, _MIN_CYTHON_MICRO_]): 
 	raise RuntimeError("""Building VICE requires Cython >= %d.%d.%d. Current \
