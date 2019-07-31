@@ -1,4 +1,5 @@
-language: minimal 
+language: python  
+sudo: required 
 dist: trusty 
 python: 
   - "2.7" 
@@ -40,6 +41,7 @@ matrix:
       env: COMPILER=clang 
 
 before_install: 
+  - 
   - pip install Cython --install-option="--no-cython-compile" 
   - python -V 
 
@@ -47,6 +49,9 @@ install:
   - make -r CC=$COMPILER 
   - python setup.py install 
   - make clean 
+
+script: 
+  - echo "test" 
 
 branches: 
   only: 
