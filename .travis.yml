@@ -31,7 +31,7 @@ addons:
       - clang-3.6
 
 before_install: 
-  - pip install Cython==0.27.3 --install-option="--no-cython-compile" 
+  - pip install Cython==0.28.0 --install-option="--no-cython-compile" 
   - python --version 
   - make --version 
 
