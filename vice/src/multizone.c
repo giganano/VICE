@@ -116,21 +116,6 @@ extern void link_zone(MULTIZONE *mz, unsigned long address,
 
 } 
 
-#if 0 
-extern void test_linker(MULTIZONE mz) {
-
-	unsigned int i; 
-	for (i = 0; i < mz.n_zones; i++) {
-		printf("Address of zones[%d] = %p\n", i, (void *) mz.zones[i]); 
-	}
-
-	for (i = 0; i < mz.n_zones; i++) {
-		printf("zones[%d].name = %s\n", i, (*mz.zones[i]).name); 
-	} 
-
-}
-#endif 
-
 /* 
  * Runs the multizone simulation under current user settings. 
  * 
