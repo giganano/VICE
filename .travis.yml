@@ -1,22 +1,18 @@
 language: python  
 sudo: required 
+os: linux 
 dist: trusty 
 python: 
   - "2.7" 
   - "3.5" 
   - "3.6" 
   - "3.7" 
-os: 
-  - osx 
-  - linux 
-osx_image: 
-  - xcode11 
-  - xcode10.2 
-  - xcode9.4 
-  - xcode8.3 
 env: 
   - COMPILER=gcc 
   - COMPILER=clang 
+
+matrix: 
+  fast_finish: true 
 
 notifications: 
   email: 
@@ -31,14 +27,6 @@ addons:
       - ubuntu-toolchain-r-test 
     packages: 
       - gcc-4.8 
-
-matrix: 
-  fast_finish: true 
-  exclude: 
-    - os: osx 
-      env: COMPILER=gcc 
-    - os: linux 
-      env: COMPILER=clang 
 
 before_install: 
   - pip install Cython --install-option="--no-cython-compile" 
