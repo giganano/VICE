@@ -181,7 +181,7 @@ extern int multizone_evolve(MULTIZONE *mz) {
  * 
  * Returns 
  * ======= 
- * 0 while the simulation is running, 1 if the time has passed the end 
+ * 0 while the simulation is running, 1 if the simulation is over  
  */ 
 static int multizone_timestepper(MULTIZONE *mz) {
 
