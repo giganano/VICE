@@ -27,7 +27,7 @@ addons:
       - ubuntu-toolchain-r-test 
     packages: 
       - gcc-4.6 
-      - clang-4.2
+      - clang-7.0
 
 before_install: 
   - pip install Cython --install-option="--no-cython-compile" 
