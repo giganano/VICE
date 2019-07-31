@@ -274,7 +274,7 @@ under the terms of the associated LICENSE_.
 	:target: https://raw.githubusercontent.com/giganano/VICE/master/LICENSE
 	:alt: MIT License
 
-..	|issues| image:: https://img.shields.io/github/issues/giganano/VICE.svg 
+..	|issues| image:: https://img.shields.io/github/issues/giganano/VICE.svg
 	:target: https://github.com/giganano/VICE/issues 
 	:alt: issues 
 
