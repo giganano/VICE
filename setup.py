@@ -1,7 +1,7 @@
 
 _MIN_CYTHON_MAJOR_ = 0
-_MIN_CYTHON_MINOR_ = 25 
-_MIN_CYTHON_MICRO_ = 2 
+_MIN_CYTHON_MINOR_ = 28 
+_MIN_CYTHON_MICRO_ = 0 
 
 try: 
 	ModuleNotFoundError 
