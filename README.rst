@@ -1,5 +1,5 @@
 
-|version| |MIT Licensed| |Authors| |userguide| |scidocs| |travis| 
+|version| |MIT Licensed| |travis| |issues| |Authors| |userguide| |scidocs| 
 
 ``VICE: Versatile Integrator for Chemical Evolution``
 =====================================================
@@ -273,6 +273,10 @@ under the terms of the associated LICENSE_.
 ..	|MIT Licensed| image:: https://img.shields.io/badge/license-MIT-blue.svg
 	:target: https://raw.githubusercontent.com/giganano/VICE/master/LICENSE
 	:alt: MIT License
+
+..	|issues| image:: https://img.shields.io/github/issues/giganano/VICE.svg 
+	:target: https://github.com/giganano/VICE/issues 
+	:alt: issues 
 
 ..	|travis| image:: https://travis-ci.com/giganano/VICE.svg?branch=master 
 	:target: https://travis-ci.com/giganano/VICE 
