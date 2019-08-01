@@ -508,6 +508,7 @@ extern void write_history_header(SINGLEZONE sz) {
 	fprintf(sz.history_writer, "#\t7: r_eff\t\t\tEffective recycilng rate\n"); 
 	
 	unsigned int i, j, n = 8; 
+	// unsigned int i, n = 8; 
 	for (i = 0; i < sz.n_elements; i++) { 
 		/* Inflow metallicity for each element */ 
 		fprintf(sz.history_writer, 
@@ -529,6 +530,8 @@ extern void write_history_header(SINGLEZONE sz) {
 			n, (*sz.elements[i]).symbol, (*sz.elements[i]).symbol); 
 		n++; 
 	} 
+
+	// #if 0 
 	for (i = 0; i < sz.n_elements; i++) { 
 		/* Abundance by mass Mx/Mg of each element */ 
 		fprintf(sz.history_writer, 
@@ -543,7 +546,7 @@ extern void write_history_header(SINGLEZONE sz) {
 			n, (*sz.elements[i]).symbol); 
 		n++; 
 	} 
-	for (i = 0; i < sz.n_elements; i++) {
+	for (i = 1; i < sz.n_elements; i++) {
 		/* Logarithmic abundance ratio [X/Y] for all pairs of elements */ 
 		for (j = 0; j < i; j++) {
 			fprintf(sz.history_writer, 
@@ -552,6 +555,7 @@ extern void write_history_header(SINGLEZONE sz) {
 			n++; 
 		} 
 	} 
+	// #endif 
 
 } 
 
@@ -572,6 +576,7 @@ extern void write_history_output(SINGLEZONE sz) {
 	 * tracked by VICE at each timestep, but are determined at each 
 	 * output. 
 	 */ 
+	// #if 0 
 	double *Z = (double *) malloc (sz.n_elements * sizeof(double)); 
 	double *onH = (double *) malloc (sz.n_elements * sizeof(double)); 
 	unsigned int i, j; 
@@ -579,6 +584,8 @@ extern void write_history_output(SINGLEZONE sz) {
 		Z[i] = (*sz.elements[i]).mass / (*sz.ism).mass; 
 		onH[i] = log10(Z[i] / (*sz.elements[i]).solar); 
 	} 
+	// #endif 
+	// unsigned int i;
 
 	/* 
 	 * Write the evolutionary parameters 
@@ -620,6 +627,8 @@ extern void write_history_output(SINGLEZONE sz) {
 		/* total ISM mass of each element */ 
 		fprintf(sz.history_writer, "%e\t", (*sz.elements[i]).mass); 
 	} 
+
+	// #if 0
 	for (i = 0; i < sz.n_elements; i++) {
 		/* ISM metallicity Z = Mx/Mg of each element */ 
 		fprintf(sz.history_writer, "%e\t", Z[i]); 
@@ -634,6 +643,8 @@ extern void write_history_output(SINGLEZONE sz) {
 			fprintf(sz.history_writer, "%e\t", onH[i] - onH[j]); 
 		} 
 	} 
+	// #endif 
+
 	fprintf(sz.history_writer, "\n"); 
 
 } 

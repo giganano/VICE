@@ -1,8 +1,9 @@
 
 CC = gcc 
 CFLAGS = -c -fPIC -Wsign-conversion -Wsign-compare 
-OBJECTS = agb.o ccsne.o  element.o imf.o io.o ism.o mdf.o migration.o \
-	multizone.o quadrature.o singlezone.o sneia.o ssp.o tracer.o utils.o 
+OBJECTS = agb.o ccsne.o element.o fromfile.o history.o imf.o io.o ism.o mdf.o \
+	migration.o multizone.o quadrature.o singlezone.o sneia.o ssp.o tracer.o \
+	utils.o 
 
 all: vice.so 
 
