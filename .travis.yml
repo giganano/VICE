@@ -8,8 +8,10 @@ python:
   - 3.6 
   - 3.7  
 env: 
-  - COMPILER=gcc 
-  - COMPILER=clang 
+  - COMPILER=gcc CYTHON_VERSION=0.28.6 
+  - COMPILER=gcc CYTHON_VERSION=0.29.13 
+  - COMPILER=clang CYTHON_VERSION=0.28.6 
+  - COMPILER=clang CYTHON_VERSION=0.29.13 
 
 matrix: 
   fast_finish: true 
@@ -31,7 +33,7 @@ addons:
       - clang-3.6
 
 before_install: 
-  - pip install Cython==0.28.0 --install-option="--no-cython-compile" 
+  - pip install Cython==$CYTHON_VERSION --install-option="--no-cython-compile" 
   - python --version 
   - make --version 
 
