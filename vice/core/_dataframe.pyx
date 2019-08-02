@@ -716,7 +716,8 @@ Got: %s""" % (type(key)))
 		Allow item assignment via type str only. Must be of the same length as 
 		the data itself. 
 		""" 
-		value = _pyutils.numeric_check(value, TypeError, 
+		value = _pyutils.copy_array_like_object(value) 
+		_pyutils.numeric_check(value, TypeError, 
 			"All elements of assigned array must be real numbers.") 
 		if isinstance(key, strcomp): 
 			if len(value) == self._n_rows: 
