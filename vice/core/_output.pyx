@@ -147,7 +147,6 @@ def history(name):
 	""" 
 	name = _get_name(name) 
 	_check_output(name) 
-	keys = _history_keys("%s/history.out" % (name)) 
 	try: 
 		adopted_solar_z = pickle.load(open("%s/params.config" % (name), 
 			"rb"))["Z_solar"]  
@@ -156,7 +155,8 @@ def history(name):
 Error reading encoded parameters stored in output. It appears this output \
 was produced in a version of python other than the current interpreter. \
 """) 
-	return _history("%s/history.out" % (name), adopted_solar_z, labels = keys) 
+	return _history(filename = "%s/history.out" % (name), 
+		adopted_solar_z = adopted_solar_z) 
 
 
 #------------- STELLAR METALLICITY DISTRIBUTION FUNCTION READER -------------#
@@ -237,7 +237,7 @@ def mdf(name):
 		line = f.readline() 
 		keys = [i.lower() for i in line.split()[1:]] 
 		f.close() 
-	return fromfile("%s/mdf.out" % (name), labels = keys) 
+	return fromfile(filename = "%s/mdf.out" % (name), labels = keys) 
 
 
 
@@ -275,46 +275,6 @@ def _check_output(name):
 		# all good, proceed 
 		pass 
 
-def _history_keys(filename): 
-	""" 
-	Gets the column labels of output from the history file of a VICE singlezone 
-	output. 
-	""" 
-	if os.path.exists(filename): 
-		with open(filename, 'r') as f: 
-			line = f.readline() 
-			while line[0] == '#' and not line.startswith("# COLUMN NUMBERS:"): 
-				# read until we get to the column labels 
-				line = f.readline() 
-			if line[0] == '#': 
-				labels = [] 
-				while line[0] == '#':		# just append each label 
-					line = f.readline().split() 
-					labels.append(line[2].lower()) 
-				f.close() 
-				return tuple(labels[:-1]) 
-			else: 
-				# bad formatting 
-				f.close() 
-				raise IOError("""Output history file not formatted correctly: \
-%s""" % (filename)) 
-	else: 
-		raise IOError("Output history file not found: %s" % (filename)) 
-
-def _load_elements(filename): 
-	"""
-	Gets the elements tracked by a singlezone simulation from the history 
-	file of its output. 
-	""" 
-	elements = [] 
-	for i in _history_keys(filename): 
-		if i.startswith("mass("): 
-			# Find elements based on those with columns of reported masses 
-			elements.append("%s" % (i.split('(')[1][:-1].lower())) 
-		else: 
-			continue 
-	return tuple(elements[:]) 
-
 def _is_multizone(filename): 
 	""" 
 	Determines if a directory corresponds to the output of a VICE multizone 
@@ -333,7 +293,6 @@ def _is_multizone(filename):
 			return False 
 	else: 
 		return False 
-
 
 
 #------------------------------ OUTPUT OBJECT ------------------------------# 
@@ -599,7 +558,7 @@ cdef class c_output:
 		# Now pull in all of the output information 
 		self._hist = history(self.name) 
 		self._mdf = mdf(self.name) 
-		self._elements = _load_elements("%s.vice/history.out" % (self.name)) 
+		self._elements = self._hist._load_elements() 
 
 		# Read in the yield settings 
 		self.__load_ccsne_yields() 
@@ -748,16 +707,11 @@ function to fail. Install matplotlib >= 2 to prevent this in the future. \
 			ylabel = key
 
 		# Find the x-values based on the history and mdf keys 
-		if x_key.lower() in self._hist.keys(): 
-			x = self._hist[x_key.lower()]
-		elif self.__flip_key_history(x_key) in self._hist.keys(): 
-			x = [-1 * i for i in self._hist[x_key.lower()]] 
-		elif x_key == "mdf": 
+		if x_key == "mdf": 
 			x = list(map(lambda x, y: (x + y) / 2., self._mdf["bin_edge_left"], 
 				self._mdf["bin_edge_right"])) 
 		else: 
 			try: 
-				# One last shot in the dark before throwing a KeyError 
 				x = self._hist[x_key.lower()] 
 			except KeyError: 
 				plt.clf() 
@@ -766,18 +720,13 @@ function to fail. Install matplotlib >= 2 to prevent this in the future. \
 				raise KeyError("Unrecognized dataframe key: %s" % (x_key))
 
 		# Find the y-values based on the history and mdf keys 
-		if y_key.lower() in self._hist.keys(): 
-			y = self._hist[y_key.lower()] 
-		elif self.__flip_key_history(y_key) in self._hist.keys(): 
-			y = self._hist[y_key.lower()] 
-		elif y_key.lower() in self._mdf.keys(): 
+		if y_key.lower() in self._mdf.keys(): 
 			y = self._mdf[y_key.lower()] 
 		elif self.__flip_key_mdf(y_key) in self._mdf.keys(): 
 			x = [-1 * i for i in x] 
 			y = self._mdf[self.__flip_key_mdf(y_key).lower()] 
 		else: 
 			try: 
-				# One last shot in the dark before throwing a KeyError 
 				y = self._hist[y_key.lower()]
 			except KeyError:
 				plt.clf() 

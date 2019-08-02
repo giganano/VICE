@@ -264,9 +264,9 @@ extern double sum(double *arr, unsigned long len) {
 extern void set_char_p_value(char *dest, int *ords, int length) {
 
 	int i; 
-	for (i = 0; i < length; i++) {
+	for (i = 0; i < length; i++) { 
 		dest[i] = ords[i]; 
-	}
+	} 
 	dest[length] = '\0'; 	/* null terminator */ 
 
 }

@@ -9,83 +9,18 @@ extern "C" {
 #include "objects.h" 
 
 /* 
- * Allocate memory for and return a pointer to a history object. 
- * 
- * source: history.c 
- */ 
-extern HISTORY *history_initialize(void); 
-
-/* 
- * Free the memory stored in a history object 
- * 
- * source: history.c 
- */ 
-extern void history_free(HISTORY *hist); 
-
-/* 
- * Read in the data in a file into the history object 
- * 
- * Parameters 
- * ========== 
- * hist: 		A pointer to the history object 
- * 
- * Returns 
- * ======= 
- * 0 on success from reading the file; 1 on failure 
- * 
- * source: history.c 
- */ 
-extern int history_read(HISTORY *hist); 
-
-/* 
- * Modify a column of the data in a history object 
- * 
- * Parameters 
- * ========== 
- * hist: 	A pointer to the history object 
- * label: 	The label of the column to modify 
- * arr: 	The new array to put in place of the old column. Assumed to be of 
- * 			length (*hist).n_rows. 
- * 
- * Returns 
- * ======= 
- * 0 on success, 1 on failure 
- * 
- * Notes 
- * ===== 
- * In the event that the label is not recognized, history_new_column is 
- * called automatically. 
- * 
- * source: history.c 
- */ 
-extern int history_modify_column(HISTORY *hist, char *label, double *arr); 
-
-/* 
- * Add a column to the data in a history object. 
- * 
- * Parameters 
- * ========== 
- * hist: 	A pointer to the history object 
- * label: 	The label to let the new column have 
- * arr: 	The new column itself 
- * 
- * Returns 
- * ======= 
- * 0 on success; 1 on failure 
- * 
- * source: history.c 
- */ 
-extern int history_new_column(HISTORY *hist, char *label, double *arr); 
-
-/* 
  * Pull a row of data from a history object. This will automatically calculate 
  * the abundances by mass, their logarithmic counterparts, and all ratios for 
  * that output time. 
  * 
  * Parameters
  * ========== 
- * hist: 		The history object 
- * row: 		The row number to pull 
+ * ff: 				A pointer to the fromfile object 
+ * row: 			The row number to pull 
+ * elements: 		The symbols of the elements to pull 
+ * n_elements: 		The number of elements in the simulation 
+ * solar: 			The solar abundance of each element 
+ * Z_solar: 		The adopted solar metallicity by mass 
  * 
  * Returns 
  * ======= 
@@ -93,7 +28,24 @@ extern int history_new_column(HISTORY *hist, char *label, double *arr);
  * 
  * source: history.c 
  */ 
-extern double *history_row(HISTORY *hist, unsigned long row); 
+extern double *history_row(FROMFILE *ff, unsigned long row, char **elements, 
+	unsigned int n_elements, double *solar, double Z_solar); 
+
+/* 
+ * Determine the number of elements in one row of history output 
+ * 
+ * Parameters 
+ * ========== 
+ * ff: 				A pointer to the fromfile object 
+ * n_elements: 		The number of elements in the output 
+ * 
+ * Returns 
+ * ======= 
+ * The total number of elements in the output 
+ * 
+ * source: history.c 
+ */ 
+extern unsigned int row_length(FROMFILE *ff, unsigned int n_elements); 
 
 /*
  * Calculate the metallicity by mass Z of a given element in a history 
@@ -101,7 +53,7 @@ extern double *history_row(HISTORY *hist, unsigned long row);
  * 
  * Parameters 
  * ========== 
- * hist: 		The history object itself 
+ * ff:			A pointer to the fromfile object 
  * element: 	The element to calculate the metallicity by mass of 
  * 
  * Returns 
@@ -111,7 +63,7 @@ extern double *history_row(HISTORY *hist, unsigned long row);
  * 
  * source: history.c 
  */ 
-extern double *Z_element(HISTORY *hist, char *element); 
+extern double *Z_element(FROMFILE *ff, char *element); 
 
 /* 
  * Calculate the logarithmic abundance ratio of two elements [X/Y] relative 
@@ -119,9 +71,12 @@ extern double *Z_element(HISTORY *hist, char *element);
  * 
  * Parameters 
  * ========== 
- * hist: 		The history object itself 
- * element1:	The first element (element X) 
- * element2: 	The second element (element Y) 
+ * ff: 				A pointer to the fromfile object 
+ * element1: 		The symbol of element X 
+ * element2: 		The symbol of element Y 
+ * elements: 		The symbols of all of the elements in the simulation 
+ * n_elements: 		The number of elements in the simulation 
+ * solar: 			Each element's solar abundance 
  * 
  * Returns 
  * ======= 
@@ -133,10 +88,10 @@ extern double *Z_element(HISTORY *hist, char *element);
  * This function responds properly when element2 == 'h' (i.e. when asked to 
  * calculate [X/H]) 
  * 
- * header: history.h 
+ * source: history.c 
  */ 
-extern double *logarithmic_abundance_ratio(HISTORY *hist, char *element1, 
-	char *element2); 
+extern double *logarithmic_abundance_ratio(FROMFILE *ff, char *element1, 
+	char *element2, char **elements, unsigned int n_elements, double *solar); 
 
 /* 
  * Determine the scaled metallicity by mass at all output times according to: 
@@ -145,7 +100,11 @@ extern double *logarithmic_abundance_ratio(HISTORY *hist, char *element1,
  * 
  * Parameters 
  * ========== 
- * hist: 		The history object 
+ * ff: 				A pointer to the fromfile object 
+ * n_elements: 		The number of elements in the simulation 
+ * elements: 		The symbols of each element 
+ * solar: 			The solar abundance of each element 
+ * Z_solar: 		The adopted solar abundance from the simulation 
  * 
  * Returns 
  * ======= 
@@ -158,7 +117,8 @@ extern double *logarithmic_abundance_ratio(HISTORY *hist, char *element1,
  * 
  * source: history.c 
  */ 
-extern double *Zscaled(HISTORY *hist); 
+extern double *Zscaled(FROMFILE *ff, unsigned int n_elements, char **elements, 
+	double *solar, double Z_solar); 
 
 /* 
  * Determine the scaled logarithmic total metallicity relative to solar [M/H] 
@@ -166,7 +126,10 @@ extern double *Zscaled(HISTORY *hist);
  * 
  * Parameters 
  * ========== 
- * hist: 		The history object 
+ * ff: 				A pointer to the fromfile object 
+ * n_elements: 		The number of elements in the simulation 
+ * elements: 		The symbols of each element 
+ * solar: 			Each element's solar abundance 
  * 
  * Returns 
  * ======= 
@@ -176,9 +139,10 @@ extern double *Zscaled(HISTORY *hist);
  * ======== 
  * Section 5.4 of Science Documentation 
  * 
- * source: history.c 
+ * header: history.h 
  */ 
-extern double *logarithmic_scaled(HISTORY *hist); 
+extern double *logarithmic_scaled(FROMFILE *ff, unsigned int n_elements, 
+	char **elements, double *solar); 
 
 #ifdef __cplusplus 
 } 

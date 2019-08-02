@@ -98,3 +98,10 @@ cdef extern from "../src/objects.h":
 		unsigned long tracer_count 
 		TRACER **tracers 
 		int verbose 
+
+	ctypedef struct FROMFILE: 
+		char *name 
+		char **labels 
+		unsigned long n_rows 
+		unsigned int n_cols 
+		double **data 

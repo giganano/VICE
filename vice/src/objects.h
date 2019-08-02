@@ -312,32 +312,6 @@ typedef struct fromfile {
 
 } FROMFILE; 
 
-typedef struct history {
-
-	/* 
-	 * This struct holds data from a history output file, which is a square 
-	 * output file of ascii text. It has all of the attributes of the fromfile 
-	 * object. Just like the PyObject in the python interpreter, this is 
-	 * inheritance built by hand. 
-	 * 
-	 * elements: The symbols of each element tracked in the simulation 
-	 * n_elements: The number of elements 
-	 * solar: The solar abundance of each element 
-	 * Z_solar: The solar metallicity by mass adopted in the simulation 
-	 */ 
-
-	char *name; 
-	char **labels; 
-	unsigned long n_rows; 
-	unsigned int n_cols; 
-	double **data; 
-	char **elements; 
-	unsigned int n_elements; 
-	double *solar; 
-	double Z_solar; 
-
-} HISTORY; 
-
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus*/ 

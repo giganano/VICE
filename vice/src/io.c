@@ -507,8 +507,8 @@ extern void write_history_header(SINGLEZONE sz) {
 	fprintf(sz.history_writer, "#\t6: eta_0\t\t\tMass-loading factor\n"); 
 	fprintf(sz.history_writer, "#\t7: r_eff\t\t\tEffective recycilng rate\n"); 
 	
-	unsigned int i, j, n = 8; 
-	// unsigned int i, n = 8; 
+	// unsigned int i, j, n = 8; 
+	unsigned int i, n = 8; 
 	for (i = 0; i < sz.n_elements; i++) { 
 		/* Inflow metallicity for each element */ 
 		fprintf(sz.history_writer, 
@@ -531,7 +531,7 @@ extern void write_history_header(SINGLEZONE sz) {
 		n++; 
 	} 
 
-	// #if 0 
+	#if 0 
 	for (i = 0; i < sz.n_elements; i++) { 
 		/* Abundance by mass Mx/Mg of each element */ 
 		fprintf(sz.history_writer, 
@@ -555,7 +555,7 @@ extern void write_history_header(SINGLEZONE sz) {
 			n++; 
 		} 
 	} 
-	// #endif 
+	#endif 
 
 } 
 
@@ -576,7 +576,7 @@ extern void write_history_output(SINGLEZONE sz) {
 	 * tracked by VICE at each timestep, but are determined at each 
 	 * output. 
 	 */ 
-	// #if 0 
+	#if 0 
 	double *Z = (double *) malloc (sz.n_elements * sizeof(double)); 
 	double *onH = (double *) malloc (sz.n_elements * sizeof(double)); 
 	unsigned int i, j; 
@@ -584,8 +584,8 @@ extern void write_history_output(SINGLEZONE sz) {
 		Z[i] = (*sz.elements[i]).mass / (*sz.ism).mass; 
 		onH[i] = log10(Z[i] / (*sz.elements[i]).solar); 
 	} 
-	// #endif 
-	// unsigned int i;
+	#endif 
+	unsigned int i;
 
 	/* 
 	 * Write the evolutionary parameters 
@@ -628,7 +628,7 @@ extern void write_history_output(SINGLEZONE sz) {
 		fprintf(sz.history_writer, "%e\t", (*sz.elements[i]).mass); 
 	} 
 
-	// #if 0
+	#if 0
 	for (i = 0; i < sz.n_elements; i++) {
 		/* ISM metallicity Z = Mx/Mg of each element */ 
 		fprintf(sz.history_writer, "%e\t", Z[i]); 
@@ -643,7 +643,7 @@ extern void write_history_output(SINGLEZONE sz) {
 			fprintf(sz.history_writer, "%e\t", onH[i] - onH[j]); 
 		} 
 	} 
-	// #endif 
+	#endif 
 
 	fprintf(sz.history_writer, "\n"); 
 

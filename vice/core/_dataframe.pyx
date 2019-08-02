@@ -38,6 +38,11 @@ except (ModuleNotFoundError, ImportError):
 	pass 
 
 from libc.stdlib cimport malloc, realloc, free 
+from libc.string cimport strlen, strcmp 
+from ._objects cimport FROMFILE 
+from . cimport _cutils 
+from . cimport _fromfile 
+from . cimport _history 
 from . cimport _io 
 
 #------------------------- VICE DATAFRAME BASE CLASS -------------------------#
@@ -345,7 +350,7 @@ cdef class elemental_settings(base):
 			if key.lower() in self.keys(): 
 				return self._frame[key.lower()] 
 			else: 
-				raise IndexError("Unrecognized element: %s" % (key)) 
+				raise KeyError("Unrecognized element: %s" % (key)) 
 		else: 
 			raise IndexError("Dataframe key must be of type str. Got: %s" % (
 				type(key))) 
@@ -643,98 +648,108 @@ cdef class fromfile(base):
 
 	See docstring of VICE dataframe base class for more information. 
 	""" 
+	cdef FROMFILE *_ff 
 
-	cdef double **_data 
-	cdef long _n_rows 
-	cdef long _n_cols 
-	cdef object _filename 
-	cdef object _labels 
+	# Extra keyword args to __cinit__ and __init__ to not break history object 
+	def __cinit__(self, filename = None, adopted_solar_z = None, 
+		labels = None): 
+		self._ff = _fromfile.fromfile_initialize() 
 
-	def __init__(self, filename, labels = None): 
-
+	def __init__(self, filename = None, adopted_solar_z = None, 
+		labels = None): 
 		super().__init__({}) 
-
 		if os.path.exists(filename): 
-			self._data = _io.read_square_ascii_file(filename.encode("latin-1")) 
-			if self._data is NULL: 
-				raise IOError("Failed to read data file: %s" % (filename)) 
+			# Set the filename and read in the data 
+			_cutils.set_string(self._ff[0].name, filename) 
+			_fromfile.fromfile_read(self._ff) 
+			if self._ff[0].data is NULL: # Error reading the file 
+				raise IOError("Error reading square data file: %s" % ( 
+					filename)) 
+			labels = _pyutils.copy_array_like_object(labels) 
+			labels = list(dict.fromkeys(labels)) 
+			if len(labels) == self._ff[0].n_cols: 
+				if all(map(_pyutils.is_ascii, labels)): 
+					# Copy labels into C 
+					self._ff[0].labels = <char **> malloc (
+						self._ff[0].n_cols * sizeof(char *)) 
+					for i in range(self._ff[0].n_cols): 
+						self._ff[0].labels[i] = <char *> malloc (
+							(len(labels[i]) + 1) * sizeof(char)) 
+						_cutils.set_string(self._ff[0].labels[i], 
+							labels[i]) 
+				else: 
+					raise ValueError("All labels must be ascii.")
 			else: 
-				self._n_rows = _io.line_count(filename.encode("latin-1")) 
-				self._n_rows -= _io.header_length(filename.encode("latin-1")) 
-				self._n_cols = _io.file_dimension(filename.encode("latin-1")) 
+				raise ValueError("""Keyword arg 'labels' must be of \
+length the file dimension. File dimension: %d. Got: %d""" % (
+					self._ff[0].n_cols, len(labels))) 
 		else: 
 			raise IOError("File not found: %s" % (filename)) 
-		labels = _pyutils.copy_array_like_object(labels) 
-		self._filename = filename 
-		if all(map(lambda x: isinstance(x, strcomp), labels)): 
-			if len(labels) == self._n_cols: 
-				self._labels = [i.lower() for i in labels] 
-			else: 
-				raise ValueError("""Keyword arg 'labels' must be of length \
-the file dimension. File dimension: %d. Got: %d""" % (self._n_cols, 
-					len(labels))) 
-		else: 
-			raise TypeError("All labels must be of type str.") 
 
-		# Free up the memory on exit 
-		def cleanup(): 
-			if self._data is not NULL: 
-				free(self._data) 
-			else:
-				pass 
-
-		atexit.register(cleanup) 
+	def __dealloc__(self): 
+		_fromfile.fromfile_free(self._ff) 
 
 	def __getitem__(self, key): 
-		"""
+		""" 
 		Can be indexed via both str and int, allow negative indexing as well 
 		""" 
+		cdef double *item 
+		cdef char *copy 
 		if isinstance(key, strcomp): 
-			if key.lower() in self._labels: 
-				arr = self._n_rows * [0.] 
-				for i in range(self._n_rows): 
-					arr[i] = self._data[i][self._labels.index(key.lower())] 
-				return arr 
+			if _pyutils.is_ascii(key): 
+				copy = <char *> malloc ((len(key) + 1) * sizeof(char)) 
+				_cutils.set_string(copy, key.lower()) 
+				item = _fromfile.fromfile_column(self._ff, copy) 
+				free(copy) 
+				if item is not NULL: 
+					x = [item[i] for i in range(self._ff[0].n_rows)] 
+					free(item) 
+					return x 
+				else: 
+					raise KeyError("Unrecognized key: %s" % (
+						key))  
 			else: 
-				raise IndexError("Unrecognized dataframe key: %s" % (key)) 
+				raise KeyError("All keys and labels must be ascii.") 
 		elif isinstance(key, numbers.Number) and key % 1 == 0: 
-			if 0 <= key < self._n_rows: 
-				return base(dict(zip(self._labels, 
-					[self._data[int(key)][i] for i in range(self._n_cols)]))) 
-			elif -self._n_rows <= key < 0: 
-				return base(dict(zip(self._labels, 
-					[self._data[self._n_rows + int(key)][i] for i in range( 
-						self._n_cols)]))) 
+			if 0 <= key < self._ff[0].n_rows: 
+				item = _fromfile.fromfile_row(self._ff, int(key)) 
+			elif -self._ff[0].n_rows <= key < 0: 
+				item = _fromfile.fromfile_row(self._ff, 
+					self._ff[0].n_rows + int(key)) 
 			else: 
-				raise IndexError("Index out of bounds: %d" % (key)) 
+				raise IndexError("Index out of bounds: %d" % (int(key))) 
+			if item is not NULL: 
+				x = [item[i] for i in range(self._ff[0].n_cols)] 
+				free(item) 
+				return base(dict(zip(self.keys(), x))) 
+			else: 
+				raise SystemError("Internal Error") 
 		else: 
-			raise IndexError("""Dataframe key must be of type str or int. \
-Got: %s""" % (type(key))) 
+			raise KeyError("""Dataframe key must be of type str or int. \
+Got: %s""" % (type(key)))  
 
 	def __setitem__(self, key, value): 
 		""" 
 		Allow item assignment via type str only. Must be of the same length as 
 		the data itself. 
 		""" 
-		value = _pyutils.numeric_check(value, TypeError, 
+		cdef char *copy 
+		value = _pyutils.copy_array_like_object(value) 
+		_pyutils.numeric_check(value, TypeError, 
 			"All elements of assigned array must be real numbers.") 
 		if isinstance(key, strcomp): 
-			if len(value) == self._n_rows: 
-				if key.lower() in self._labels: 
-					for i in range(self._n_rows): 
-						self._data[i][self._labels.index(
-							key.lower())] = value[i] 
+			if <unsigned> len(value) == self._ff[0].n_rows: 
+				copy = <char *> malloc ((len(key) + 1) * sizeof(char)) 
+				_cutils.set_string(copy, key.lower()) 
+				if _fromfile.fromfile_modify_column(self._ff, key, 
+					_cutils.copy_pylist(value)): 
+					raise SystemError("Internal Error") 
 				else: 
-					for i in range(self._n_rows): 
-						self._data[i] = <double *> realloc(self._data[i], 
-							(self._n_cols + 1) * sizeof(double)) 
-						self._data[i][self._n_cols] = value[i] 
-					self._n_cols += 1 
+					free(copy) 
 			else: 
 				raise ValueError("""Array length mismatch. Got: %d. Must be: \
-%d""" % (len(value), self._n_rows)) 
+%d""" % (len(value), self._ff[0].n_rows)) 
 		elif isinstance(key, numbers.Number) and key % 1 == 0: 
-			# raise a custom error for users attempting to assign rows. 
 			raise TypeError("This dataframe does not support row assignment.") 
 		else: 
 			raise TypeError("""Item assignment only allowed for type str. \
@@ -746,7 +761,7 @@ Got: %s""" % (type(key)))
 		file as self. 
 		""" 
 		if isinstance(other, fromfile): 
-			return self._filename == other._filename 
+			return not strcmp(self._ff[0].name, other._ff[0].name) 
 		else: 
 			return False 
 
@@ -755,18 +770,22 @@ Got: %s""" % (type(key)))
 		Raises all exceptions inside with statements and automatically frees 
 		memory. 
 		""" 
-		if self._data is not NULL: 
-			free(self._data) 
-		else: 
-			pass 
 		return exc_value is not None 
+
+	@property 
+	def name(self): 
+		""" 
+		The name of the file that this data was imported from 
+		""" 
+		return "".join([chr(self._ff[0].name[i]) for i in range(
+			strlen(self._ff[0].name))]) 
 
 	@property 
 	def size(self): 
 		""" 
 		The (length, width) of the dataframe. 
 		""" 
-		return tuple([self._n_rows, self._n_cols]) 
+		return tuple([self._ff[0].n_rows, self._ff[0].n_cols]) 
 		
 	def keys(self): 
 		"""
@@ -774,7 +793,11 @@ Got: %s""" % (type(key)))
 
 		Returns the dataframe keys in their lower-case format 
 		""" 
-		return self._labels 
+		labels = self._ff[0].n_cols * [None] 
+		for i in range(self._ff[0].n_cols): 
+			labels[i] = "".join([chr(self._ff[0].labels[i][j]) for j in range(
+				strlen(self._ff[0].labels[i]))]) 
+		return labels 
 
 	def todict(self): 
 		"""
@@ -784,8 +807,8 @@ Got: %s""" % (type(key)))
 		that python dictionaries are case-sensitive, and are thus less 
 		versatile than this object. 
 		""" 
-		return dict(zip(self._labels, 
-			[self.__getitem__(i) for i in self._labels])) 
+		return dict(zip(self.keys(), 
+			[self.__getitem__(i) for i in self.keys()])) 
 
 
 #----------------------------- HISTORY SUBCLASS -----------------------------# 
@@ -804,15 +827,60 @@ cdef class history(fromfile):
 	the scaled metallicity of the interstellar medium. 
 	""" 
 
-	cdef double _adopted_solar_z 
+	cdef char **_elements 
+	cdef unsigned int n_elements 
+	cdef double *solar 
+	cdef double Z_solar 
 
-	def __init__(self, filename, adopted_solar_z, labels = None): 
-		super().__init__(filename, labels = labels) 
-		if isinstance(adopted_solar_z, numbers.Number): 
-			self._adopted_solar_z = adopted_solar_z 
-		else: 
-			raise TypeError("""Adopted solar metallicity must be numerical \
-value. Got: %s""" % (type(adopted_solar_z))) 
+	def __init__(self, filename = None, adopted_solar_z = None, 
+		labels = None): 
+		super().__init__(filename = filename, labels = 
+			self._load_keys(filename)) 
+		elements = self._load_elements() 
+		self.n_elements = <unsigned> len(elements) 
+		self._elements = <char **> malloc (self.n_elements * sizeof(char *)) 
+		for i in range(self.n_elements): 
+			self._elements[i] = <char *> malloc ((len(elements) + 1) * 
+				sizeof(char)) 
+			_cutils.set_string(self._elements[i], elements[i]) 
+		self.solar = <double *> malloc (self.n_elements * sizeof(double)) 
+		from ._builtin_dataframes import solar_z 
+		for i in range(self.n_elements): 
+			self.solar[i] = solar_z[elements[i]] 
+		self.Z_solar = adopted_solar_z 
+
+	def _load_keys(self, filename): 
+		with open(filename, 'r') as f: 
+			line = f.readline() 
+			while line[0] == '#': 
+				if line.startswith("# COLUMN NUMBERS:"): 
+					break 
+				line = f.readline() 
+			if line[0] == '#': 
+				labels = [] 
+				while line[0] == '#': 
+					line = f.readline().split() 
+					labels.append(line[2].lower()) 
+				f.close() 
+				return tuple(labels[:-1]) 
+			else: 
+				# bad formatting 
+				f.close() 
+				raise IOError("""Output history file not formatted correctly: \
+%s""" % (filename)) 
+
+	def _load_elements(self): 
+		elements = [] 
+		for i in self._load_keys(self.name):  
+			if i.startswith("mass("): 
+				"""
+				Find elements based on the those with columns of reported 
+				masses
+				""" 
+				elements.append("%s" % (i.split('(')[1][:-1].lower())) 
+			else: 
+				continue 
+		return tuple(elements[:]) 
 
 	def __getitem__(self, key): 
 		"""
@@ -820,65 +888,109 @@ value. Got: %s""" % (type(adopted_solar_z)))
 		Special strings [m/h] and z recognized for automatic calculation of 
 		scaled total ISM metallicity. 
 		""" 
+		cdef double *item 
+		cdef char *copy 
+		cdef char *copy2 
 		if isinstance(key, strcomp): 
-			if key.lower() in ["[m/h]", "z"]: 
-				from ._builtin_dataframes import solar_z 
-
-				# Add up the total metals present 
-				arr = self._n_rows * [0.] 
-				# The column numbers to add up and the elements tracked 
-				cols = list(filter(lambda x: x.startswith("z("), 
-					self._labels)) 
-				elements = [i[2:-1] for i in cols] 
-				solar = sum([solar_z[i] for i in elements]) 
-
-				for i in range(len(arr)): 
-					for j in cols: 
-						arr[i] += self._data[i][j] 
-					arr[i] /= solar 
-
-				del solar_z 
-				if key.lower() == "z": 
-					return [self._adopted_solar_z * i for i in arr] 
-				elif key.lower() == "[m/h]": 
-					return [m.log10(i) if i != 0 else -float(
-						"inf") for i in arr] 
+			# Check for special keys for smart indexing 
+			if key.lower().startswith("z(") and key.endswith(')'): 
+				""" 
+				Automatically calculate the metallicity by mass of a given 
+				element in the output. 
+				""" 
+				element = key.split('(')[1][:-1].lower() 
+				copy = <char *> malloc ((len(element) + 1) * sizeof(char)) 
+				_cutils.set_string(copy, element.lower()) 
+				item = _history.Z_element(self._ff, copy) 
+				free(copy) 
+				if item is not NULL: 
+					x = [item[i] for i in range(self._ff[0].n_rows)] 
+					free(item) 
+					return x 
+				else: 
+					raise KeyError("Element not tracked by simulation: %s" % (
+						element)) 
+			elif key.lower() == "z": 
+				""" 
+				Automatically calculate the scaled metallicity by mass 
+				""" 
+				item = _history.Zscaled(self._ff, self.n_elements, 
+					self._elements, self.solar, self.Z_solar)  
+				if item is not NULL: 
+					x = [item[i] for i in range(self._ff[0].n_rows)] 
+					free(item) 
+					return x 
 				else: 
 					raise SystemError("Internal Error") 
-			elif '/' in key: 
-				"""
-				Attempt to flip the key. __XoverY raises a ValueError if this 
-				isn't possible, so this can be done with a simple try-except 
-				block. 
-				"""
-				try: 
-					return self.__XoverY(key) 
-				except ValueError: 
-					return super().__getitem__(key) 
+			elif key.lower() == "[m/h]": 
+				item = _history.logarithmic_scaled(self._ff, self.n_elements, 
+					self._elements, self.solar)  
+				if item is not NULL: 
+					x = [item[i] for i in range(self._ff[0].n_rows)] 
+					free(item) 
+					return x 
+				else: 
+					raise SystemError("Internal Error") 
+			elif (key.startswith('[') and key.endswith(']') and '/' in key): 
+				""" 
+				Automatically calculate a logarithmic abundance ratio 
+				""" 
+				element1 = key.split('/')[0][1:] 
+				element2 = key.split('/')[1][:-1] 
+				copy = <char *> malloc ((len(element1) + 1) * sizeof(char)) 
+				copy2 = <char *> malloc ((len(element2) + 1) * sizeof(char)) 
+				_cutils.set_string(copy, element1.lower()) 
+				_cutils.set_string(copy2, element2.lower()) 
+				item = _history.logarithmic_abundance_ratio(self._ff, 
+					copy, copy2, self._elements, self.n_elements, self.solar) 
+				free(copy) 
+				free(copy2) 
+				if item is not NULL: 
+					x = [item[i] for i in range(self._ff[0].n_rows)] 
+					free(item) 
+					return x 
+				else: 
+					raise KeyError("Unrecognized dataframe key: %s" % (key)) 
 			else: 
 				return super().__getitem__(key) 
+		elif isinstance(key, numbers.Number) and key % 1 == 0: 
+			if 0 <= key < self._ff[0].n_rows: 
+				item = _history.history_row(self._ff, <unsigned long> key, 
+					self._elements, self.n_elements, self.solar, 
+					self.Z_solar) 
+			elif abs(key) <= self._ff[0].n_rows: 
+				item = _history.history_row(self._ff, 
+					self._ff[0].n_rows - <unsigned long> abs(key), 
+					self._elements, self.n_elements, self.solar, 
+					self.Z_solar) 
+			else: 
+				raise IndexError("Index out of bounds: %d" % (int(key))) 
+			if item is not NULL: 
+				x = [item[i] for i in range(_history.row_length(self._ff, 
+					self.n_elements))]   
+				free(item) 
+				return base(dict(zip(self.keys(), x))) 
+			else: 
+				raise SystemError("Internal Error") 
 		else: 
 			return super().__getitem__(key) 
 
+	def keys(self): 
+		"""
+		Signature: vice.dataframe.keys() 
 
-	def __XoverY(self, key): 
+		Returns the dataframe keys in their lower-case format 
 		""" 
-		If the user asks for the abundance ratio [X/Y] when the simulation 
-		tracked [Y/X], this function automatically calulates the requested 
-		abundance ratio. This is not done for the MDF outputs because that 
-		involves flipping the bins, not the values of the MDF themselves. 
-		""" 
-		element1 = key.split('/')[0][1:] 
-		element2 = key.split('/')[1][:-1] 
-		if "[%s/h]" % (element1.lower()) not in self.keys(): 
-			raise ValueError 
-		elif "[%s/h]" % (element2.lower()) not in self.keys(): 
-			raise ValueError 
-		else: 
-			return list(map(lambda x, y: x - y, 
-				self.__getitem__("[%s/h]" % (element1.lower())), 
-				self.__getitem__("[%s/h]" % (element2.lower()))
-			))
-
-
+		keys = super().keys() 
+		elements = self._load_elements() 
+		for i in elements: 
+			keys.append("z(%s)" % (i)) 
+		for i in elements: 
+			keys.append("[%s/h]" % (i)) 
+		for i in range(1, len(elements)): 
+			for j in range(i): 
+				keys.append("[%s/%s]" % (elements[i], elements[j])) 
+		keys.append("z") 
+		keys.append("[m/h]") 
+		return keys 
 
