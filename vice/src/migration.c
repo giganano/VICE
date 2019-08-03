@@ -11,6 +11,8 @@
 #include "utils.h" 
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
+static int normalize_migration_element(MULTIZONE mz, 
+	double ***migration_matrix, unsigned int row, unsigned int column); 
 static void migrate_tracer(MULTIZONE mz, TRACER *t); 
 static void migrate_gas_element(MULTIZONE *mz, int index); 
 static void migration_sanity_check(MULTIZONE *mz); 
@@ -121,7 +123,8 @@ extern void malloc_migration_matrices(MULTIZONE *mz) {
  * 
  * Returns 
  * ======= 
- * 0 if all elements of arr are between 0 and 1 at all timesteps, 1 otherwise 
+ * 1 if the normalization results in a probabiliy above 1 or below 0. 0 if 
+ * successful. 
  * 
  * header: migration.h 
  */ 
@@ -133,6 +136,19 @@ extern int setup_migration_element(MULTIZONE mz, double ***migration_matrix,
 	 * been allocated. 
 	 */ 
 	unsigned long i, length = migration_matrix_length(mz); 
+	if (row == column) {
+		for (i = 0l; i < length; i++) {
+			migration_matrix[i][row][column] = 0.0; 
+		} 
+		return 0; 
+	} else {
+		for (i = 0; i < length; i++) {
+			migration_matrix[i][row][column] = arr[i]; 
+		} 
+		return normalize_migration_element(mz, migration_matrix, row, column); 
+	}
+
+	#if 0
 	for (i = 0; i < length; i++) { 
 		if (0 <= arr[i] && arr[i] <= 1) { 
 			migration_matrix[i][row][column] = arr[i]; 
@@ -141,8 +157,49 @@ extern int setup_migration_element(MULTIZONE mz, double ***migration_matrix,
 		} 
 	} 
 	return 0; 
+	#endif 
 
 } 
+
+/* 
+ * Normalize an element of the migration matrix such based on the timestep 
+ * size. Multiplies the ij'th element by the timestep size over the 
+ * normalization time interval. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 					A copy of the multizone object 
+ * migration_matrix: 	A pointer to the migration matrix 
+ * row: 				The row number i 
+ * column: 				The column number j 
+ * 
+ * Returns 
+ * ======= 
+ * 1 if the normalization results in a probabiliy above 1 or below 0. 0 if 
+ * successful. 
+ */ 
+static int normalize_migration_element(MULTIZONE mz, 
+	double ***migration_matrix, unsigned int row, unsigned int column) {
+
+	/* 
+	 * The row,column'th element of the migration matrix will get multiplied 
+	 * by the timestep interval over 10 Myr. 
+	 * 
+	 * Notes
+	 * ===== 
+	 * This modifies the interpretation of the migration matrix. 
+	 * M_ij(1 - \delta_ij) now denotes the likelihood that 
+	 */ 
+	unsigned long i, length = migration_matrix_length(mz); 
+	for (i = 0l; i < length; i++) {
+		migration_matrix[i][row][column] *= (*mz.zones[0]).dt; 
+		migration_matrix[i][row][column] /= NORMALIZATION_TIME_INTERVAL; 
+		if (migration_matrix[i][row][column] < 0 || 
+			migration_matrix[i][row][column] > 1) return 1; 
+	} 
+	return 0; 
+
+}
 
 /* 
  * Determines the number of elements in a migration matrix. This is also the 

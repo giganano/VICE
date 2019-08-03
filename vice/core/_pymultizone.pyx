@@ -731,6 +731,11 @@ timesteps."""
 				user-specified migration matrix. Whether it is a number or a 
 				function, map it across the known evaluation times of the 
 				simulation and pipe it to C 
+
+				Notes 
+				===== 
+				Don't ignore i == j. In this case under-the-hood the migration 
+				matrix will ALWAYS be zero. 
 				""" 
 
 				# gas 
@@ -1107,10 +1112,10 @@ cdef class migration_specifications:
 
 		This matrix is defined such that the ij'th element represents the 
 		likelihood that interstellar gas or stars will migrate FROM the i'th 
-		TO the j'th zone in the simulation. These entries may be either 
-		numerical values or functions of time in Gyr. In all cases, the value 
-		at a given time must be between 0 and 1, because the elements are 
-		interpreted as likelihoods. 
+		TO the j'th zone in the simulation during a 10 Myr time interval. 
+		These entries may be either numerical values or functions of time in 
+		Gyr. In all cases, the value at a given time must be between 0 and 1, 
+		because the elements are interpreted as likelihoods. 
 		""" 
 		return self._gas 
 
@@ -1125,10 +1130,10 @@ cdef class migration_specifications:
 
 		This matrix is defined such that the ij'th element represents the 
 		likelihood that interstellar gas or stars will migrate FROM the i'th 
-		TO the j'th zone in the simulation. These entries may be either 
-		numerical values or functions of time in Gyr. In all cases, the value 
-		at a given time must be between 0 and 1, because the elements are 
-		interpreted as likelihoods. 
+		TO the j'th zone in the simulation during a 10 Myr time interval. 
+		These entries may be either numerical values or functions of time in 
+		Gyr. In all cases, the value at a given time must be between 0 and 1, 
+		because the elements are interpreted as likelihoods. 
 		""" 
 		return self._stars 
 

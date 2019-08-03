@@ -130,15 +130,25 @@ class row(object):
 
 	def __setitem__(self, key, value): 
 		key = key_check(key, self.dimension) 
-		if isinstance(key, int): 
+		if isinstance(key, numbers.Number) and key % 1 == 0: 
+			key = int(key) 
 			# user passed the proper type 
 			if isinstance(value, numbers.Number): 
-				# probability of migration must be between 0 and 1 
-				if 0 <= value <= 1: 
-					self._row[key] = float(value) 
-				else: 
-					raise ValueError("""Numerical element of migration matrix \
-must be between 0 and 1 (inclusive). Got: %g""" % (value)) 
+				"""
+				Probability of migration must be between 0 and 1 
+
+				Change Notes 
+				============ 
+				Let this raise a RuntimeError upon calling multizone.run() 
+				instead. The normalization of the migration matrix must be 
+				taken into account, and that can only be detected upon run. 
+				""" 
+				self._row[key] = float(value) 
+# 				if 0 <= value <= 1: 
+# 					self._row[key] = float(value) 
+# 				else: 
+# 					raise ValueError("""Numerical element of migration matrix \
+# must be between 0 and 1 (inclusive). Got: %g""" % (value)) 
 			elif callable(value): 
 				_pyutils.args(value, """Functional element of migration \
 matrix must accept only one numerical parameter.""") 

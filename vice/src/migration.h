@@ -6,6 +6,14 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
+/* 
+ * ij'th element represents likelihood gas or particle will migrate in a 10 Myr 
+ * time interval 
+ */ 
+#ifndef NORMALIZATION_TIME_INTERVAL 
+#define NORMALIZATION_TIME_INTERVAL 0.01 
+#endif /* NORMALIZATOIN_TIME_INTERVAL */ 
+
 #include "objects.h" 
 
 /* 
@@ -52,7 +60,8 @@ extern void malloc_migration_matrices(MULTIZONE *mz);
  * 
  * Returns 
  * ======= 
- * 0 if all elements of arr are between 0 and 1 at all timesteps, 1 otherwise 
+ * 1 if the normalization results in a probabiliy above 1 or below 0. 0 if 
+ * successful. 
  * 
  * source: migration.c 
  */ 
