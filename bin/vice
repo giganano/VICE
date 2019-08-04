@@ -13,14 +13,9 @@ This software requires the Versatile Integrator for Chemical Evolution \
 (VICE). Source code and installation instrucitons can be found at \
 <http://github.com/giganano/VICE.git>.""")
 import math as m 
+import argparse 
 import sys 
 import os 
-
-try: 
-	input = raw_input 
-except NameError: 
-	pass 
-import argparse 
 
 if "-r" in sys.argv or "--recognized" in sys.argv: 
 	print(vice._globals._RECOGNIZED_ELEMENTS_) 
