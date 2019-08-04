@@ -497,6 +497,17 @@ extern void singlezone_close_files(SINGLEZONE *sz) {
  */ 
 extern void write_history_header(SINGLEZONE sz) {
 
+	/* 
+	 * Change Notes 
+	 * ============ 
+	 * Calculation of ISM metallicities now moved to output handling functions. 
+	 * The primary motivation for this was to remove overhead from calculating 
+	 * and recording every [X/Y] combination of abundance ratios. VICE still 
+	 * does this automatically, but from the output instead of during 
+	 * simulation. This significantly improves the speed of simulations with 
+	 * high n_elements. 
+	 */ 
+
 	fprintf(sz.history_writer, "# COLUMN NUMBERS: \n"); 
 	fprintf(sz.history_writer, "#\t0: time [Gyr]\n"); 
 	fprintf(sz.history_writer, "#\t1: mgas [Msun]\t\t\tISM gas mass\n"); 
@@ -571,10 +582,14 @@ extern void write_history_header(SINGLEZONE sz) {
 extern void write_history_output(SINGLEZONE sz) {
 
 	/* 
-	 * Allocate memory to determine the mass abundance Z = Mx/Mg and the 
-	 * logarithmic abundance [X/H] of each element. These values are not 
-	 * tracked by VICE at each timestep, but are determined at each 
-	 * output. 
+	 * Change Notes 
+	 * ============ 
+	 * Calculation of ISM metallicities now moved to output handling functions. 
+	 * The primary motivation for this was to remove overhead from calculating 
+	 * and recording every [X/Y] combination of abundance ratios. VICE still 
+	 * does this automatically, but from the output instead of during 
+	 * simulation. This significantly improves the speed of simulations with 
+	 * high n_elements. 
 	 */ 
 	#if 0 
 	double *Z = (double *) malloc (sz.n_elements * sizeof(double)); 

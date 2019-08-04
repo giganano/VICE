@@ -154,7 +154,7 @@ export PATH=$PATH:$HOME/.local/bin
 		cmd = "echo \'%s\' >> %s" % (cnt % {"version": VERSION}, filename)
 		os.system(cmd)
 	else:
-		pass
+		pass 
 
 def setup_package(): 
 	src_path = os.path.dirname(os.path.abspath(sys.argv[0])) 
@@ -187,8 +187,8 @@ def setup_package():
 		write_version_info() 	# Write the version file 
 		vice._write_build() 	# save version info for packaged used in build 
 		compile_extensions()	
-		setup(**metadata)
-		set_path_variable()
+		setup(**metadata) 
+		set_path_variable()  
 	finally: 
 		del sys.path[0]
 		os.system("rm -f vice/version.py")
