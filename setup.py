@@ -1,48 +1,30 @@
 
-_MIN_CYTHON_MAJOR_ = 0
-_MIN_CYTHON_MINOR_ = 28 
-_MIN_CYTHON_MICRO_ = 0 
-
 try: 
 	ModuleNotFoundError 
 except NameError: 
 	ModuleNotFoundError = ImportError 
-try: 
-	import Cython 
-	from Cython.Build import cythonize 
-except (ImportError, ModuleNotFoundError): 
-	raise RuntimeError("""Please install Cython >= %d.%d.%d before installing \
-VICE.""" % (_MIN_CYTHON_MAJOR_, _MIN_CYTHON_MINOR_, _MIN_CYTHON_MICRO_)) 
-if len([int(i) for i in Cython.__version__.split('.')]) == 2: 
-	# Handle version numbers w/o a micro to not break the 0.28.0 installation 
-	Cython.__version__ += ".0" 
-else: 
-	pass 
-if tuple([int(i) for i in Cython.__version__.split('.')]) < tuple(
-	[_MIN_CYTHON_MAJOR_, _MIN_CYTHON_MINOR_, _MIN_CYTHON_MICRO_]): 
-	raise RuntimeError("""Building VICE requires Cython >= %d.%d.%d. Current \
-version: %s""" % (_MIN_CYTHON_MAJOR_, _MIN_CYTHON_MINOR_, _MIN_CYTHON_MICRO_, 
-		Cython.__version__)) 
-else:
-	pass 
-
 from distutils.core import setup, Extension 
-import sys
+import sys 
 import os 
 if sys.version_info[:2] == (2, 7): 
 	import __builtin__ as builtins 
 elif sys.version_info[:2] >= (3, 5): 
 	import builtins 
 else: 
-	raise RuntimeError("Vice requires python version 2.7 or >= 3.5") 
-
-package_name = "VICE" 
-base_url = "http://github.com/giganano/VICE"
+	raise RuntimeError("VICE requires python version 2.7 or >= 3.5") 
 
 # partial import 
-builtins.__VICE_SETUP__ = True
+builtins.__VICE_SETUP__ = True 
 import vice 
 
+_CYTHON_MINIMUM_ = "0.28.0" 
+vice._check_cython(_CYTHON_MINIMUM_) 
+import Cython
+from Cython.Build import cythonize 
+
+# ---------------------------- PACKAGE METADATA ---------------------------- # 
+package_name = "VICE" 
+base_url = "http://github.com/giganano/VICE"
 CLASSIFIERS = """\
 Development Status :: 4 - Beta 
 Intended Audience :: Developers 

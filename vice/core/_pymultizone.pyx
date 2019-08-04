@@ -35,6 +35,7 @@ import sys
 import os 
 if sys.version_info[:2] == (2, 7): 
 	strcomp = basestring 
+	input = raw_input 
 elif sys.version_info[:2] >= (3, 5): 
 	strcomp = str 
 else: 
@@ -686,14 +687,14 @@ zone and at least one timestep larger than 1.""")
 				Output directory exists. Ask the user if they'd like to wipe 
 				its contents and overwrite. 
 				""" 
-				answer = raw_input("""\
+				answer = input("""\
 Output directory already exists. Overwriting will delete all of its contents, \
 leaving only the results of the current simulation.\nOutput directory: \
 %s.vice\nOverwrite? (y | n) """ % (self.name)) 
 
 				# be emphatic about it 
 				while answer.lower() not in ["yes", "y", "no", "n"]: 
-					answer = raw_input("Please enter either 'y' or 'n': ") 
+					answer = input("Please enter either 'y' or 'n': ") 
 
 				if answer.lower() in ["y", "yes"]: 
 					os.system("rm -rf %s.vice" % (self.name)) 

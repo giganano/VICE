@@ -31,6 +31,7 @@ import sys
 import os 
 if sys.version_info[:2] == (2, 7): 
 	strcomp = basestring 
+	input = raw_input 
 elif sys.version_info[:2] >= (3, 5): 
 	strcomp = str 
 else: 
@@ -2546,13 +2547,13 @@ value detected in output times.""")
 				output files will overwrite anything. 
 				""" 
 				if any(map(os.path.exists, outfiles)): 
-					answer = raw_input("""At least one of the output files \
+					answer = input("""At least one of the output files \
 already exists. If you continue with the integration, their contents will \
 be lost.\nOutput directory: %s.vice\nOverwrite? (y | n) """ % (self.name)) 
 					
 					# be emphatic about it 
 					while answer.lower() not in ["yes", "y", "no", "n"]: 
-						answer = raw_input("Please enter either 'y' or 'n': ") 
+						answer = input("Please enter either 'y' or 'n': ") 
 					# Return whether or not the user said overwrite 
 					return answer.lower() in ["y", "yes"] 
 				else: 
