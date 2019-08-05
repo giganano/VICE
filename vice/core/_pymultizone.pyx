@@ -911,7 +911,7 @@ artifacts.""" % (key), ScienceWarning)
 		params = {
 			"name": 			self.name, 
 			"n_zones": 			self.n_zones, 
-			"n_tracers": 		self.n_tracers, 
+			"n_tracers": 		self.n_tracers
 		} 
 		if "dill" in sys.modules: 
 			params["migration.gas"] = self.migration.gas 
