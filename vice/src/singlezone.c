@@ -336,8 +336,7 @@ extern void singlezone_cancel(SINGLEZONE *sz) {
 static void verbosity(SINGLEZONE sz) {
 
 	if (sz.verbose) {
-		/* '\t' characters injected to flush round-off errors */ 
-		printf("\rCurrent Time: %2.f Gyr", sz.current_time); 
+		printf("\rCurrent Time: %.2f Gyr", sz.current_time); 
 	} else {} 
 
 }

@@ -2795,6 +2795,7 @@ following elements will not be saved: """
 			"smoothing": 			self.smoothing, 
 			"tau_ia": 				self.tau_ia, 
 			"tau_star": 			self.tau_star, 
+			"verbose": 				self.verbose, 
 			"Z_solar": 				self.Z_solar, 
 			"Zin": 					self.Zin
 		} 

@@ -279,6 +279,7 @@ static void migrate_tracer(MULTIZONE mz, TRACER *t) {
 	 * bookkeep whether or not the diceroll passes  
 	 */ 
 	// int *migrate = (int *) malloc (mz.n_zones * sizeof(int)); 
+	seed_random(); 
 	for (j = 0; j < mz.n_zones; j++) {
 		if (j == (*t).zone_current) {
 			/* Migration within the zone can be ignored */ 
@@ -292,7 +293,8 @@ static void migrate_tracer(MULTIZONE mz, TRACER *t) {
 			 * done independently within each zone. That is, the comparison is 
 			 * just as likely to pass or fail regardless of zone index. This 
 			 * ensures that migration never moves preferentially in one 
-			 * direction or another. 
+			 * direction or another, provided that the random value is 
+			 * re-seeded for each tracer particle and at each timestep. 
 			 */ 
 			t -> zone_current = j; 
 			break; 

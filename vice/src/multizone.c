@@ -253,7 +253,6 @@ extern int multizone_setup(MULTIZONE *mz) {
 		return 2; 
 	} else { 
 		mz -> tracer_count = 0l; 
-		seed_random(); 
 		return 0; 
 	} 
 
@@ -332,7 +331,6 @@ extern void multizone_cancel(MULTIZONE *mz) {
 static void verbosity(MULTIZONE mz) {
 
 	if (mz.verbose) { 
-		/* Spaces injected to flush round-off errors */ 
 		printf("\rCurrent Time: %.2f Gyr", (*mz.zones[0]).current_time); 
 	} else {} 
 

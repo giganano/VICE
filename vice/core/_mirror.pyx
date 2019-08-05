@@ -124,6 +124,7 @@ def mirror(arg):
 			mz = multizone(n_zones = params["n_zones"])  
 			mz.name = params["name"] 
 			mz.n_tracers = params["n_tracers"] 
+			mz.verbose = params["verbose"] 
 			zone_numbers = pickle.load(open("%s/zone_numbers.config" % (arg), 
 				"rb"))  
 			for i in zone_numbers.keys(): 
