@@ -101,6 +101,11 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 	__all__ = ["__author__", "__version__", "yields", "_globals", 
 		"ScienceWarning"] 
 
+	from .core import * 
+	from ._build_utils import * 
+	from ._globals import ScienceWarning
+	from . import yields 
+
 	try: 
 		from .core import * 
 		from ._build_utils import * 
