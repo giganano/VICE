@@ -19,6 +19,8 @@ try:
 except NameError: 
 	ModuleNotFoundError = ImportError 
 
+
+
 def save(filename): 
 	""" 
 	Save a permanent copy of yields stored in a given file for loading back 
@@ -85,7 +87,9 @@ Error message: %s""" % (str(exc)))
 		raise TypeError("Argument must be of type str. Got: %s" % (
 			type(filename))) 
 
-def remove(name): 
+
+
+def remove(name, force = False): 
 	""" 
 	Delete a copy of saved yield presets. 
 
@@ -93,6 +97,9 @@ def remove(name):
 	========== 
 	name :: str 
 		The name of the preset 
+	force :: bool [default :: False] 
+		If true, will not stop for user confirmation before removing the yield 
+		file once it's found. 
 
 	Raises 
 	====== 
@@ -131,14 +138,18 @@ def remove(name):
 			src_path = "%syields/presets/" % (_DIRECTORY_) 
 			if not name.endswith(".py"): name += ".py" 
 			if name in os.listdir(src_path): 
-				""" 
-				Confirm the user's desire to remove the yield file. Show them 
-				the full path to be sure 
-				""" 
-				ans = input("""Uninstalling yield preset file located at \
+				if force: 
+					# Simply set the confirmation response to yes in this case 
+					ans = "yes" 
+				else: 
+					""" 
+					Otherwise confirm the user's desire to remove the yield 
+					file. Show them the full path to be sure 
+					""" 
+					ans = input("""Uninstalling yield preset file located at \
 %s%s. Continue? (y | n) """ % (src_path, name)) 
-				while ans.lower() not in ["yes", "no", "y", "n"]: 
-					ans = input("Please enter either 'y' or 'n': ") 
+					while ans.lower() not in ["yes", "no", "y", "n"]: 
+						ans = input("Please enter either 'y' or 'n': ") 
 				if ans.lower() in ["y", "yes"]: 
 					os.chdir(src_path) 
 					try: 
@@ -159,7 +170,7 @@ Error message: %s""" % (str(exc)))
 installed presets: " % (name) 
 				for i in current_presets: 
 					errmsg += "\n\t\t%s" % (i) 
-				raise IOError(errmsg) 
+				raise ModuleNotFoundError(errmsg) 
 	else: 
 		raise TypeError("Argument must be of tyep str. Got: %s" % (
 			type(name))) 
