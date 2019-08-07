@@ -98,12 +98,13 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 	if not __release: 
 		warnings.warn("Using un-released version of VICE", UserWarning)
 
-	__all__ = ["__author__", "__version__", "yields", "_globals", 
+	__all__ = ["__author__", "__version__", "modeling", "yields", "_globals", 
 		"ScienceWarning"] 
 
 	from .core import * 
 	from ._build_utils import * 
-	from ._globals import ScienceWarning
+	from ._globals import ScienceWarning 
+	# from . import modeling 
 	from . import yields 
 
 	try: 

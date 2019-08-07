@@ -312,6 +312,26 @@ typedef struct fromfile {
 
 } FROMFILE; 
 
+typedef struct numparam {
+
+	/* 
+	 * This struct holds data for model parameters in the modeling package. 
+	 * 
+	 * output: A pointer to the file stream that will record the values the 
+	 * 		parameter takes on in fitting 
+	 * varies: Boolean int describing whether or not this value is being fitted 
+	 * stepsize: The 1-sigma gaussian stepsize to take in this parameter in 
+	 * 		MCMC fitting 
+	 * current: The current value of the parameter in the markov chain 
+	 */ 
+
+	FILE *output; 
+	unsigned short varies; 
+	double stepsize; 
+	double current; 
+
+} NUMPARAM; 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus*/ 

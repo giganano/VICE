@@ -23,7 +23,8 @@ tutorial:
 
 clean:
 	$(MAKE) -C vice/_build_utils/ clean
-	$(MAKE) -C vice/core/ clean
+	$(MAKE) -C vice/core/ clean 
+	$(MAKE) -C vice/modeling/ clean 
 	$(MAKE) -C vice/yields/agb/ clean
 	$(MAKE) -C vice/yields/ccsne/ clean
 	$(MAKE) -C vice/yields/sneia/ clean
