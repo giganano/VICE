@@ -88,6 +88,9 @@ boolean. Got: %s""" % (type(let_vary)))
 	def __str__(self): 
 		return self.__c_version.__str__() 
 
+	def __float__(self): 
+		return self.__c_version.__float__() 
+
 	@property 
 	def current(self): 
 		""" 
@@ -191,6 +194,9 @@ cdef class c_numerical:
 
 	def __str__(self): 
 		return self.__repr__() 
+
+	def __float__(self): 
+		return self._p[0].current 
 
 	@property 
 	def varies(self): 
