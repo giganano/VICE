@@ -287,6 +287,7 @@ typedef struct multizone {
 	double ***migration_matrix_tracers; 
 	unsigned long tracer_count; 
 	TRACER **tracers; 
+	FILE *tracers_output; 
 	int verbose; 
 
 } MULTIZONE; 

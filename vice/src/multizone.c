@@ -45,6 +45,7 @@ extern MULTIZONE *multizone_initialize(unsigned int n) {
 	mz -> migration_matrix_gas = NULL; 
 	mz -> migration_matrix_tracers = NULL; 
 	mz -> tracer_count = 0l; 
+	mz -> tracers_output = NULL; 
 	mz -> tracers = NULL; 
 	return mz; 
 
@@ -164,13 +165,23 @@ extern int multizone_evolve(MULTIZONE *mz) {
 	} 
 	if ((*mz).verbose) printf("\n"); 
 
-	/* Normalize all MDFs, write them out, and clean up */ 
+	/* Normalize all MDFs and write them out */ 
 	multizone_normalize_MDF(mz); 
 	multizone_write_MDF(*mz); 
+
+	/* Write the tracer data */ 
+	if (!multizone_open_tracer_file(mz)) { 
+		write_tracers_header(*mz); 
+		write_tracers_output(*mz); 
+		multizone_close_tracer_file(mz); 
+	} else { 
+		printf("TRACER ERROR\n"); 
+	} 
+
 	multizone_clean(mz); 
 	return 0; 
 
-}
+} 
 
 /* 
  * Advances all quantities in a multizone object forward one timestep 

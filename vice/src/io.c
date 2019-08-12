@@ -728,3 +728,111 @@ extern void write_mdf_output(SINGLEZONE sz) {
 
 } 
 
+/* 
+ * Opens the tracers output file at the end of a multizone simulation. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 			A pointer to the multizone object 
+ * 
+ * Returns 
+ * ======= 
+ * 0 on success, 1 on failure 
+ * 
+ * header: io.h 
+ */ 
+extern int multizone_open_tracer_file(MULTIZONE *mz) {
+
+	if ((*mz).tracers_output == NULL) { 
+		char filename[MAX_FILENAME_SIZE]; 
+		strcpy(filename, (*mz).name); 
+		strcat(filename, "/tracers.out"); 
+		mz -> tracers_output = fopen(filename, "w"); 
+	} else {} 
+	return (*mz).tracers_output == NULL; 
+
+}
+
+/* 
+ * Writes the header to the tracers output file at the end of a multizone 
+ * simulation 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 			The multizone object 
+ * 
+ * header: io.h 
+ */ 
+extern void write_tracers_header(MULTIZONE mz) { 
+
+	fprintf(mz.tracers_output, "# tform\tzone_origin\tzone_final\n"); 
+
+}
+
+/* 
+ * Writes the tracer data to the output file at the end of a multizone 
+ * simulation 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 			The multizone object 
+ * 
+ * header: io.h 
+ */ 
+extern void write_tracers_output(MULTIZONE mz) {
+
+	unsigned long i; 
+	for (i = 0l; i < mz.tracer_count; i++) {
+		fprintf(mz.tracers_output, "%e\t", 
+			(*mz.tracers[i]).timestep_origin * (*mz.zones[0]).dt); 
+		fprintf(mz.tracers_output, "%u\t", (*mz.tracers[i]).zone_origin); 
+		fprintf(mz.tracers_output, "%u\n", (*mz.tracers[i]).zone_current); 
+	} 
+
+} 
+
+/* 
+ * Closes the tracer output file at the end of a multizone simulation 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 			A pointer to the multizone object 
+ * 
+ * header: io.h 
+ */ 
+extern void multizone_close_tracer_file(MULTIZONE *mz) {
+
+	if ((*mz).tracers_output != NULL) {
+		fclose(mz -> tracers_output); 
+		mz -> tracers_output = NULL; 
+	} else {} 
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

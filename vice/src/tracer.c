@@ -2,6 +2,7 @@
  * This file implements the tracer particles used in multizone simulations. 
  */ 
 
+#include <Python/Python.h> 
 #include <stdlib.h> 
 #include "tracer.h" 
 #include "utils.h" 

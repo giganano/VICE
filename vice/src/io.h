@@ -198,6 +198,56 @@ extern void write_mdf_header(SINGLEZONE sz);
  */ 
 extern void write_mdf_output(SINGLEZONE sz); 
 
+/* 
+ * Opens the tracers output file at the end of a multizone simulation. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 			A pointer to the multizone object 
+ * 
+ * Returns 
+ * ======= 
+ * 0 on success, 1 on failure 
+ * 
+ * source: io.c 
+ */ 
+extern int multizone_open_tracer_file(MULTIZONE *mz); 
+
+/* 
+ * Writes the header to the tracers output file at the end of a multizone 
+ * simulation 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 			The multizone object 
+ * 
+ * source: io.c 
+ */ 
+extern void write_tracers_header(MULTIZONE mz); 
+
+/* 
+ * Writes the tracer data to the output file at the end of a multizone 
+ * simulation 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 			The multizone object 
+ * 
+ * source: io.c 
+ */ 
+extern void write_tracers_output(MULTIZONE mz); 
+
+/* 
+ * Closes the tracer output file at the end of a multizone simulation 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 			A pointer to the multizone object 
+ * 
+ * source: io.c 
+ */ 
+extern void multizone_close_tracer_file(MULTIZONE *mz); 
+
 #ifdef __cplusplus 
 }
 #endif 
