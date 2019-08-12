@@ -66,5 +66,18 @@ extern void numparam_step(NUMPARAM *p) {
 
 }
 
+#if 0
+/* 
+ * Prints the address of a numparam pointer 
+ * 
+ * header: numparam.h 
+ */ 
+extern void numparam_address(NUMPARAM *p) {
+
+	printf("Address = %p\n", (void *) p); 
+
+}
+#endif 
+
 
 

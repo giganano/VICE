@@ -6,10 +6,11 @@ This file implements the parameter object in VICE.
 # Python imports 
 from __future__ import absolute_import 
 
-__all__ = ["numerical"] 
+__all__ = ["numerical", "functional"]  
 
 from ..._globals import _VERSION_ERROR_ 
 from ..._globals import ScienceWarning 
+from ...core import _pyutils 
 import math as m 
 import warnings 
 import numbers 
@@ -31,6 +32,7 @@ except NameError:
 from libc.stdlib cimport malloc, free 
 from ._objects cimport NUMPARAM 
 from . cimport _numparam
+from . cimport _utils 
 
 """ 
 NOTES 
@@ -47,11 +49,160 @@ notes on the physical interpretation of each attribute as well as the allowed
 types and values. 
 """ 
 
+
+class functional: 
+
+	""" 
+	Encodes the informatin associated with functional model parameters, 
+	including their numerical attributes and whether or not each of them are 
+	allowed to vary 
+	""" 
+
+	def __init__(self, generator, n): 
+		if isinstance(n, numbers.Number): 
+			if n % 1 == 0: 
+				self._n = int(n) 
+			else: 
+				raise ValueError("Attribute 'n' must be an integer.") 
+		else: 
+			raise TypeError("Attribute 'n' must be an integer. Got: %s" % (
+				type(n))) 
+		self._params = self._n * [None] 
+		for i in range(self._n): 
+			self._params[i] = numerical(0) 
+		self.generator = generator 	# call the setter function 
+
+	def __call__(self, value): 
+		return self._current(value) 
+
+	def __enter__(self): 
+		""" 
+		Opens a with statement 
+		""" 
+		return self 
+
+	def __exit__(self, exc_type, exc_value, exc_tb): 
+		""" 
+		Raises all exceptions inside with statements 
+		""" 
+		return exc_value is None 
+
+	def __repr__(self): 
+		rep = "vice.modeling.parameters.functional{\n" 
+		attrs = {
+			"n":			self.n, 
+			"generator": 	self.generator, 
+		}
+		for i in attrs.keys(): 
+			rep += "    %s " % (i) 
+			for j in range(15 - len(i)): 
+				rep += '-' 
+			rep += "> %s\n" % (str(attrs[i])) 
+		for i in range(self.n): 
+			rep += "    parameters[%d] " % (i) 
+			for j in range(15 - len("parameters[%d]" % (i))): 
+				rep += '-' 
+			rep += "> current = %.5e\n" % (self.parameters[i].current) 
+			for j in range(22): 
+				rep += ' '
+			rep += "varies = %s\n" % (self.parameters[i].varies) 
+			for j in range(22): 
+				rep += ' '
+			rep += "stepsize = %.5e\n" % (self.parameters[i].stepsize) 
+		rep += '}' 
+		return rep 
+
+	def __str__(self): 
+		return self.__repr__() 
+
+	@property 
+	def n(self): 
+		""" 
+		The number of numerical parameters associated with this functional 
+		parameter 
+		""" 
+		return self._n 
+
+	# @n.setter 
+	# def n(self, value): 
+	# 	if isinstance(value, numbers.Number): 
+	# 		if value % 1 == 0: 
+	# 			if value < self._n: 
+	# 				self._n = int(value) 
+	# 				self._params = self._params[:self._n] 
+	# 			elif value > self._n: 
+	# 				self._params.extend((value - self._n) * [None]) 
+	# 				for i in range(self._n, value): 
+	# 					self._params[i] = numerical(0) 
+	# 				self._n = int(value) 
+	# 			else: 
+	# 				# value == self._n 
+	# 				pass 
+	# 		else: 
+	# 			raise ValueError("Attribute 'n' must be an integer.") 
+	# 	else: 
+	# 		raise TypeError("Attribute 'n' must be an integer. Got: %s" % (
+	# 			type(value))) 
+
+	@property 
+	def parameters(self): 
+		""" 
+		The numerical parameters associated with this functional parameter 
+		""" 
+		return self._params 
+
+	@property 
+	def generator(self): 
+		""" 
+		The generator function for this functional attribute 
+		""" 
+		return self._generator 
+
+	@generator.setter 
+	def generator(self, value): 
+		if callable(value): 
+			args = [float(i) for i in self._params] 
+			try: 
+				value(*args) 
+			except TypeError: 
+				# incorrect number of arguments -> improper generator function 
+				raise ValueError("""Attribute 'generator' must be a function \
+which accepts attribute 'n' number of parameters. Expected number of \
+arguments: %d.""" % (self._n)) 
+			if callable(value(*args)): 
+				_pyutils.args(value(*args), """Attribute 'generator' must \
+return a function which accepts one numerical parameter.""") 
+				self._generator = value 
+				self._refresh() 
+			else: 
+				raise ValueError("""Attribute 'generator' must be a function \
+which returns a callable function. Got: %s""" % (type(value(*args)))) 
+		else: 
+			raise TypeError("""Attribute 'generator' must be a callable \
+function. Got: %s""" % (type(value))) 
+
+	@property 
+	def current(self): 
+		return self._current 
+
+	# @current.setter 
+	def _refresh(self): 
+		self._current = self._generator(*[float(i) for i in self._params]) 
+
+	def step(self): 
+		for i in range(self._n): 
+			self._params[i].step() 
+		self._refresh() 
+
+
+
+
+
 class numerical: 
 
 	""" 
-	Encodes the information associated with model parameters, including 
-	whether or not they are allowed to vary 
+	Encodes the information associated with numerical model parameters, 
+	including whether or not they are allowed to vary 
 	""" 
 
 	def __init__(self, start, let_vary = False): 
@@ -141,7 +292,7 @@ boolean. Got: %s""" % (type(let_vary)))
 		""" 
 		Let the parameter take a step via a gaussian-random number
 		""" 
-		self.__c_version.step() 
+		self.__c_version.step()  
 
 
 cdef class c_numerical: 
@@ -156,7 +307,8 @@ cdef class c_numerical:
 		assert isinstance(let_vary, int), "Internal Error" 
 		assert isinstance(start, float), "Internal Error" 
 		self._p = _numparam.numparam_initialize(<double> start, 
-			<unsigned short> let_vary)  
+			<unsigned short> let_vary) 
+		_utils.seed_random()  
 
 	def __init__(self, start, let_vary): 
 		assert isinstance(let_vary, int), "Internal Error" 
@@ -183,7 +335,7 @@ cdef class c_numerical:
 			"varies": 			self.varies, 
 			"stepsize": 		self.stepsize 
 		} 
-		rep = "vice.modeling.parameter{\n" 
+		rep = "vice.modeling.parameters.numerical{\n" 
 		for i in attrs.keys(): 
 			rep += "    %s " % (i) 
 			for j in range(15 - len(i)): 

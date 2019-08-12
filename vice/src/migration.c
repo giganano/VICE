@@ -278,7 +278,6 @@ static void migrate_tracer(MULTIZONE mz, TRACER *t) {
 	 * Look at all elements of the relevant row in the migration matrix and 
 	 * bookkeep whether or not the diceroll passes  
 	 */ 
-	// int *migrate = (int *) malloc (mz.n_zones * sizeof(int)); 
 	seed_random(); 
 	for (j = 0; j < mz.n_zones; j++) {
 		if (j == (*t).zone_current) {

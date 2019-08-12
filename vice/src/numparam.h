@@ -40,6 +40,13 @@ extern void numparam_free(NUMPARAM *p);
  */ 
 extern void numparam_step(NUMPARAM *p); 
 
+/* 
+ * Prints the address of a numparam pointer 
+ * 
+ * source: numparams.c 
+ */ 
+extern void numparam_address(NUMPARAM *p); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

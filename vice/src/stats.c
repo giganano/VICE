@@ -26,7 +26,6 @@ extern double normal(double mean, double sigma) {
 	 * Start by seeding the random number generator and generating two 
 	 * pseudo-random numbers 
 	 */ 
-	seed_random(); 
 	double r1 = (double) rand() / RAND_MAX; 
 	double r2 = (double) rand() / RAND_MAX; 
 
@@ -42,10 +41,9 @@ extern double normal(double mean, double sigma) {
 	 */ 
 	if ((double) rand() / RAND_MAX >= 0.5) { 
 		return mean + z1 * sigma; 
-	} else {
+	} else { 
 		return mean + z2 * sigma; 
 	}
-
 
 }
 

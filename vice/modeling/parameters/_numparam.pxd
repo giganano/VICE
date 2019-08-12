@@ -7,4 +7,5 @@ cdef extern from "../../src/numparam.h":
 	NUMPARAM *numparam_initialize(double start, unsigned short let_vary) 
 	void numparam_free(NUMPARAM *p) 
 	void numparam_step(NUMPARAM *p) 
+	void numparam_address(NUMPARAM *p) 
 
