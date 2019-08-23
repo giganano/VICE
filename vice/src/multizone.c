@@ -14,7 +14,7 @@
 #include "io.h" 
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
-static int multizone_timestepper(MULTIZONE *mz); 
+static unsigned short multizone_timestepper(MULTIZONE *mz); 
 static void verbosity(MULTIZONE mz); 
 static void multizone_write_history(MULTIZONE mz); 
 static void multizone_normalize_MDF(MULTIZONE *mz); 
@@ -29,6 +29,24 @@ static void multizone_write_MDF(MULTIZONE mz);
  * 
  * header: multizone.h 
  */ 
+extern MULTIZONE *multizone_initialize(unsigned int n) {
+
+	/* 
+	 * Memory is allocated for n singlezone objects, but they are not 
+	 * initialized ere. When a multizone object is created through the python 
+	 * interpreter, it creates an array of singlezone objects, then calls 
+	 * link_zone to point each zone here to the proper memory addresses. 
+	 */ 
+	MULTIZONE *mz = (MULTIZONE *) malloc (sizeof(MULTIZONE)); 
+	mz -> zones = (SINGLEZONE **) malloc (n * sizeof(SINGLEZONE *)); 
+	mz -> name = (char *) malloc (MAX_FILENAME_SIZE * sizeof(char)); 
+	mz -> mig = migration_initialize(n); 
+	mz -> verbose = 0; 
+	return mz; 
+
+}
+
+#if 0
 extern MULTIZONE *multizone_initialize(unsigned int n) {
 
 	/* 
@@ -50,12 +68,41 @@ extern MULTIZONE *multizone_initialize(unsigned int n) {
 	return mz; 
 
 } 
+#endif 
 
 /*
  * Frees the memory stored in a multizone object 
  * 
  * header: multizone.h 
  */ 
+extern void multizone_free(MULTIZONE *mz) {
+
+	if (mz != NULL) {
+
+		/* 
+		 * Since the singlezone object's __dealloc__ function calls 
+		 * singlezone_free, the memory for each individual zone should not 
+		 * be freed here. Doing so will cause a memory error upon system exit. 
+		 */ 
+
+		if ((*mz).name != NULL) {
+			free(mz -> name); 
+			mz -> name = NULL; 
+		} else {} 
+
+		if ((*mz).mig != NULL) {
+			migration_free(mz -> mig); 
+			mz -> mig = NULL; 
+		}
+
+		free(mz); 
+		mz = NULL; 
+
+	} 
+
+}
+
+#if 0
 extern void multizone_free(MULTIZONE *mz) { 
 
 	if (mz != NULL) {
@@ -97,6 +144,7 @@ extern void multizone_free(MULTIZONE *mz) {
 	} 
 
 } 
+#endif 
 
 /* 
  * Links an individual zone in a multizone object to the proper address of a 
@@ -130,6 +178,60 @@ extern void link_zone(MULTIZONE *mz, unsigned long address,
  * 
  * header: multizone.h 
  */ 
+extern unsigned short multizone_evolve(MULTIZONE *mz) {
+
+	/* 
+	 * x differentiates between failed setup and migration matrix failing the 
+	 * sanity check 
+	 */ 
+	int x = multizone_setup(mz); 
+	if (x) return x; 
+
+	/* 
+	 * Use the variable n to keep track of the number of outputs. Pull a 
+	 * local copy of the first zone just for convenience. Lastly, tracer 
+	 * particles are injected at the end of each timestep, so inject them at 
+	 * the start of the simulation to account for the first timestep. 
+	 */ 
+	long n = 0l; 
+	SINGLEZONE *sz = mz -> zones[0]; 
+	inject_tracers(mz); 
+	while ((*sz).current_time <= (*sz).output_times[(*sz).n_outputs - 1l]) {
+		/* 
+		 * Run the simulation until the time reaches the final output time 
+		 * specified by the user. Write to each zone's history.out file 
+		 * whenever an output time is reached, or if the current timestep is 
+		 * closer to the next output time than the subsequent timestep. 
+		 */ 
+		if ((*sz).current_time >= (*sz).output_times[n] || 
+			2 * (*sz).output_times[n] < 2 * (*sz).current_time + (*sz).dt) { 
+			multizone_write_history(*mz); 
+			n++; 
+		} else {} 
+		if (multizone_timestepper(mz)) break; 
+		verbosity(*mz); 
+	} 
+	if ((*mz).verbose) printf("\n"); 
+
+	/* Normalize all MDFs and write them out */ 
+	multizone_normalize_MDF(mz); 
+	multizone_write_MDF(*mz); 
+
+	/* Write the tracer data */ 
+	if (!multizone_open_tracer_file(mz)) { 
+		write_tracers_header(*mz); 
+		write_tracers_output(*mz); 
+		multizone_close_tracer_file(mz); 
+	} else { 
+		printf("TRACER ERROR\n"); 
+	} 
+
+	multizone_clean(mz); 
+	return 0; 
+
+} 
+
+#if 0
 extern int multizone_evolve(MULTIZONE *mz) {
 
 	int x = multizone_setup(mz); 
@@ -182,6 +284,7 @@ extern int multizone_evolve(MULTIZONE *mz) {
 	return 0; 
 
 } 
+#endif 
 
 /* 
  * Advances all quantities in a multizone object forward one timestep 
@@ -194,6 +297,45 @@ extern int multizone_evolve(MULTIZONE *mz) {
  * ======= 
  * 0 while the simulation is running, 1 if the simulation is over  
  */ 
+static unsigned short multizone_timestepper(MULTIZONE *mz) {
+
+	update_elements(mz); 
+	update_zone_evolution(mz); 
+
+	/* 
+	 * Now each element and the ISM in each zone are at the next timestep. 
+	 * bookkeep the new metallicity and update the MDF in each zone. 
+	 */ 
+	unsigned int i, j; 
+	for (i = 0; i < (*(*mz).mig).n_zones; i++) { 
+		SINGLEZONE *sz = mz -> zones[i]; 
+		for (j = 0; j < (*sz).n_elements; j++) {
+			sz -> elements[j] -> Z[(*sz).timestep + 1l] = (
+				(*(*sz).elements[j]).mass / (*(*sz).ism).mass 
+			); 
+		} 
+		update_MDF(sz); 
+	} 
+
+	/* 
+	 * Migration must be done before incrementing the timestep number as that 
+	 * is used to determine the number of tracer particles present. Migrating 
+	 * first also ensures that newly injected tracer particles never migrate 
+	 * at the timestep they're born. 
+	 */ 
+	migrate(mz); 
+	inject_tracers(mz); 
+	for (i = 0; i < (*(*mz).mig).n_zones; i++) {
+		mz -> zones[i] -> current_time += (*(*mz).zones[i]).dt; 
+		mz -> zones[i] -> timestep++; 
+	} 
+
+	return ((*(*mz).zones[0]).current_time > 
+		(*(*mz).zones[0]).output_times[(*(*mz).zones[0]).n_outputs - 1l]); 
+
+} 
+
+#if 0
 static int multizone_timestepper(MULTIZONE *mz) {
 
 	update_elements(mz); 
@@ -231,6 +373,7 @@ static int multizone_timestepper(MULTIZONE *mz) {
 		(*(*mz).zones[0]).output_times[(*(*mz).zones[0]).n_outputs - 1l]); 
 
 } 
+#endif 
 
 /*
  * Sets up every zone in a multizone object for simulation 
@@ -245,6 +388,24 @@ static int multizone_timestepper(MULTIZONE *mz) {
  * 
  * header: multizone.h 
  */ 
+extern unsigned short multizone_setup(MULTIZONE *mz) { 
+
+	unsigned int i; 
+	for (i = 0; i < (*(*mz).mig).n_zones; i++) { 
+		if (singlezone_setup(mz -> zones[i])) return 1; 
+	} 
+
+	if (migration_matrix_sanitycheck((*(*mz).mig).gas_migration, 
+		n_timesteps((*(*mz).zones[0])), (*(*mz).mig).n_zones)) {
+		return 2; 
+	} else {
+		mz -> mig -> tracer_count = 0l; 
+		return 0; 
+	}
+
+} 
+
+#if 0
 extern int multizone_setup(MULTIZONE *mz) { 
 
 	unsigned int i; 
@@ -268,6 +429,7 @@ extern int multizone_setup(MULTIZONE *mz) {
 	} 
 
 } 
+#endif 
 
 /* 
  * Frees up the memory allocated in running a multizone simulation. This does 
@@ -280,6 +442,30 @@ extern int multizone_setup(MULTIZONE *mz) {
  * 
  * header: multizone.h 
  */ 
+extern void multizone_clean(MULTIZONE *mz) {
+
+	/* clean each singlezone object */ 
+	unsigned int i; 
+	for (i = 0; i < (*(*mz).mig).n_zones; i++) { 
+		singlezone_close_files(mz -> zones[i]); 
+		singlezone_clean(mz -> zones[i]); 
+	} 
+
+	/* free up each tracer and set the pointer to NULL again */ 
+	unsigned long j; 
+	for (j = 0l; j < (*(*mz).mig).tracer_count; j++) { 
+		tracer_free(mz -> mig -> tracers[j]); 
+	} 
+	free(mz -> mig -> tracers); 
+	mz -> mig -> tracers = NULL; 
+
+	/* free up the migration matrix */ 
+	free(mz -> mig -> gas_migration); 
+	mz -> mig -> gas_migration = NULL; 
+
+} 
+
+#if 0
 extern void multizone_clean(MULTIZONE *mz) {
 
 	/* clean each singlezone object */ 
@@ -306,6 +492,7 @@ extern void multizone_clean(MULTIZONE *mz) {
 	mz -> migration_matrix_tracers = NULL; 
 
 } 
+#endif 
 
 /* 
  * Undo the pieces of preparation to run a multizone simulation that are 
@@ -321,6 +508,19 @@ extern void multizone_clean(MULTIZONE *mz) {
 extern void multizone_cancel(MULTIZONE *mz) {
 
 	unsigned int i; 
+	for (i = 0; i < (*(*mz).mig).n_zones; i++) {
+		singlezone_cancel(mz -> zones[i]); 
+	} 
+	free(mz -> mig -> gas_migration); 
+	mz -> mig -> gas_migration = NULL;  
+
+}
+
+
+#if 0
+extern void multizone_cancel(MULTIZONE *mz) {
+
+	unsigned int i; 
 	for (i = 0; i < (*mz).n_zones; i++) {
 		singlezone_cancel(mz -> zones[i]); 
 	} 
@@ -329,7 +529,8 @@ extern void multizone_cancel(MULTIZONE *mz) {
 	mz -> migration_matrix_gas = NULL; 
 	mz -> migration_matrix_tracers = NULL; 
 
-}
+} 
+#endif 
 
 /* 
  * Prints the current time on the same line on the console if the user has 
@@ -357,11 +558,23 @@ static void verbosity(MULTIZONE mz) {
 static void multizone_write_history(MULTIZONE mz) { 
 
 	unsigned int i; 
+	for (i = 0; i < (*mz.mig).n_zones; i++) { 
+		write_history_output(*mz.zones[i]); 
+	} 
+
+} 
+
+
+#if 0
+static void multizone_write_history(MULTIZONE mz) { 
+
+	unsigned int i; 
 	for (i = 0; i < mz.n_zones; i++) { 
 		write_history_output(*mz.zones[i]); 
 	} 
 
 } 
+#endif 
 
 /* 
  * Normalizes the stellar MDFs in all zones in a multizone object. 
@@ -373,11 +586,22 @@ static void multizone_write_history(MULTIZONE mz) {
 static void multizone_normalize_MDF(MULTIZONE *mz) {
 
 	unsigned int i; 
+	for (i = 0; i < (*(*mz).mig).n_zones; i++) {
+		normalize_MDF(mz -> zones[i]); 
+	} 
+
+} 
+
+#if 0
+static void multizone_normalize_MDF(MULTIZONE *mz) {
+
+	unsigned int i; 
 	for (i = 0; i < (*mz).n_zones; i++) {
 		normalize_MDF(mz -> zones[i]); 
 	} 
 
 } 
+#endif 
 
 /* 
  * Writes the stellar MDFs to all output files. 
@@ -389,11 +613,21 @@ static void multizone_normalize_MDF(MULTIZONE *mz) {
 static void multizone_write_MDF(MULTIZONE mz) {
 
 	unsigned int i; 
+	for (i = 0; i < (*mz.mig).n_zones; i++) {
+		write_mdf_output(*mz.zones[i]); 
+	}
+
+} 
+
+#if 0
+static void multizone_write_MDF(MULTIZONE mz) {
+
+	unsigned int i; 
 	for (i = 0; i < mz.n_zones; i++) {
 		write_mdf_output(*mz.zones[i]); 
 	}
 
-}
-
+} 
+#endif 
 
 

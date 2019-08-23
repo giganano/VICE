@@ -36,7 +36,7 @@ extern void fromfile_free(FROMFILE *ff);
  * 
  * source: fromfile.c 
  */ 
-extern int fromfile_read(FROMFILE *ff); 
+extern unsigned short fromfile_read(FROMFILE *ff); 
 
 /* 
  * Pull a column from the fromfile object based on its label. 
@@ -70,7 +70,8 @@ extern double *fromfile_column(FROMFILE *ff, char *label);
  * 
  * source: fromfile.c 
  */ 
-extern int fromfile_modify_column(FROMFILE *ff, char *label, double *arr); 
+extern unsigned short fromfile_modify_column(FROMFILE *ff, char *label, 
+	double *arr); 
 
 /* 
  * Add a column to the data in a fromfile object. 
@@ -87,7 +88,8 @@ extern int fromfile_modify_column(FROMFILE *ff, char *label, double *arr);
  * 
  * source: fromfile.c 
  */ 
-extern int fromfile_new_column(FROMFILE *ff, char *label, double *arr); 
+extern unsigned short fromfile_new_column(FROMFILE *ff, char *label, 
+	double *arr); 
 
 /* 
  * Pull a row from the fromfile object based on its row number 

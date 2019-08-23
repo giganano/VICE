@@ -73,7 +73,7 @@ extern void element_free(ELEMENT *e) {
  * 
  * header: element.h 
  */ 
-extern int malloc_Z(ELEMENT *e, unsigned long n_timesteps) {
+extern unsigned short malloc_Z(ELEMENT *e, unsigned long n_timesteps) {
 
 	e -> Z = (double *) malloc (n_timesteps * sizeof(double)); 
 	if ((*e).Z == NULL) { 
@@ -113,6 +113,77 @@ extern void update_element_mass(SINGLEZONE sz, ELEMENT *e) {
 
 } 
 
+/* 
+ * Updates the mass of each element in each zone to the proper value at the 
+ * next timestep. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		A pointer to the multizone object for the current simulation 
+ * 
+ * header: element.h 
+ */ 
+extern void update_elements(MULTIZONE *mz) {
+
+	unsigned int i, j; 
+	for (i = 0; i < (*(*mz).mig).n_zones; i++) { 
+		for (j = 0; j < (*(*mz).zones[i]).n_elements; j++) { 
+			/* 
+			 * Instantaneous pieces that don't require tracer particles: 
+			 * 
+			 * Enrichment from core collapse supernovae 
+			 * depletion from star formation 
+			 * depletion from outflows 
+			 * metal-rich infall 
+			 */ 
+			mz -> zones[i] -> elements[j] -> mass += (
+				mdot_ccsne((*(*mz).zones[i]), *(*(*mz).zones[i]).elements[j]) * 
+				(*(*mz).zones[i]).dt 
+			); 
+			mz -> zones[i] -> elements[j] -> mass -= (
+				(*(*(*mz).zones[i]).ism).star_formation_rate * 
+				(*(*mz).zones[i]).dt * 
+				(*(*(*mz).zones[i]).elements[j]).mass / 
+				(*(*(*mz).zones[i]).ism).mass 
+			); 
+			mz -> zones[i] -> elements[j] -> mass -= (
+				(*(*(*mz).zones[i]).ism).enh[(*(*mz).zones[i]).timestep] * 
+				get_outflow_rate(*(*mz).zones[i]) * 
+				(*(*mz).zones[i]).dt * 
+				(*(*(*mz).zones[i]).elements[j]).mass / 
+				(*(*(*mz).zones[i]).ism).mass 
+			); 
+			mz -> zones[i] -> elements[j] -> mass += (
+				(*(*(*mz).zones[i]).ism).infall_rate * 
+				(*(*mz).zones[i]).dt * 
+				(*(*(*mz).zones[i]).elements[j]).Zin[(*(*mz).zones[i]).timestep]
+			); 
+		} 
+	} 
+
+	/* 
+	 * Non-instantaneous pieces that do require tracer particles: 
+	 * 
+	 * Enrichment from AGB stars 
+	 * Enrichment from SNe Ia 
+	 * Re-enrichment from recycling 
+	 */ 
+	agb_from_tracers(mz); 
+	sneia_from_tracers(mz); 
+	for (i = 0; i < (*(*mz).zones[0]).n_elements; i++) {
+		recycle_metals_from_tracers(mz, i); 
+	} 
+
+	/* sanity check each element in each zone */ 
+	for (i = 0; i < (*(*mz).mig).n_zones; i++) { 
+		for (j = 0; j < (*(*mz).zones[i]).n_elements; j++) { 
+			update_element_mass_sanitycheck(mz -> zones[i] -> elements[j]); 
+		}
+	}
+
+}
+
+#if 0
 /* 
  * Updates the mass of each element in each zone to the proper value at the 
  * next timestep. 
@@ -182,6 +253,7 @@ extern void update_elements(MULTIZONE *mz) {
 	}
 
 }
+#endif 
 
 /* 
  * Performs a sanity check on a given element immediately after it's mass 

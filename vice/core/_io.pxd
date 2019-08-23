@@ -10,8 +10,8 @@ cdef extern from "../src/io.h":
 	int header_length(char *file) 
 	int file_dimension(char *file) 
 	long line_count(char *file) 
-	int import_agb_grid(ELEMENT *e, char *file) 
-	int single_ia_mass_yield_lookup(char *file) 
+	unsigned short import_agb_grid(ELEMENT *e, char *file) 
+	double single_ia_mass_yield_lookup(char *file) 
 
 
 

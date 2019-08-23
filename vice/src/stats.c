@@ -45,7 +45,199 @@ extern double normal(double mean, double sigma) {
 		return mean + z2 * sigma; 
 	}
 
+} 
+
+/* 
+ * Draw a given number of samples from a known distribution. 
+ * 
+ * Parameters 
+ * ========== 
+ * dist: 		The distribution itself, assumed to be unnormalized 
+ * bins: 		The bin edges on which the distribution is sampled 
+ * n_bins: 		The number of bins in the distribution. This is always 1 less 
+ * 				than the number of bin edges. 
+ * n: 			The number of samples to draw 
+ * 
+ * Returns 
+ * ======= 
+ * A double pointer to an n-element array of values drawn from the given 
+ * distribution. 
+ * 
+ * header: stats.h 
+ */ 
+extern double *sample(double *dist, double *bins, unsigned long n_bins, 
+	unsigned long n) {
+
+	/* 
+	 * Given the cumulative distribution function associated with a known 
+	 * distribution, a sampled value can be drawn from the bin number of a 
+	 * pseudorandom number between 0 and 1. Thus first convert the 
+	 * distribution to a CDF and allocate memory for n doubles. 
+	 */ 
+	double *cdf = convert_to_CDF(dist, bins, n_bins); 
+	double *values = (double *) malloc (n * sizeof(double)); 
+	// printf("CALLED SAMPLE\n"); 
+
+	unsigned long i; 
+	// for (i = 0l; i < n_bins; i++) {
+	// 	if (cdf[i]) {
+	// 		printf("bins[%ld] = %e | cdf[%ld] = %e | bins[%ld] = %e\n", 
+	// 				i, bins[i], i, cdf[i], i + 1l, bins[i + 1l]); 
+	// 		if (cdf[i] == 1) break; 
+	// 	} else {} 
+	// }
+	seed_random(); 
+	for (i = 0l; i < n; i++) { 
+		// printf("i = %ld\n", i); 
+		double x = (double) rand() / RAND_MAX; 
+		// printf("x = %e\n", x); 
+		long bin = get_bin_number(cdf, n_bins, x); 
+		// printf("bin = %ld\n", bin); 
+		switch (bin) {
+
+			case -1l: 
+				/* 
+				 * This shouldn't happen given the nature of this 
+				 * implementation; included as a failsafe. 
+				 */ 
+				// printf("NULL"); 
+				free(cdf); 
+				free(values); 
+				return NULL; 
+
+			default: 
+				/* 
+				 * CDFs must be interpreted from the right-hand bin edges 
+				 * rather than the left, so increment the bin number by 1 
+				 * 
+				 * Assume uniform likelihood within that bin of the CDF and 
+				 * randomly draw a value in that range. 
+				 */ 
+				if ((unsigned) bin != n_bins - 1l) bin++; 
+				values[i] = rand_range(bins[bin], bins[bin + 1l]); 
+				// printf("%e\n", values[i]); 
+				break; 
+
+		}
+
+		#if 0
+		if (bin != -1l) { 
+			/* 
+			 * CDFs must be interpreted from the right-hand bin edges rather 
+			 * than the left, so increment the bin number by 1 
+			 * 
+			 * Assume uniform likelihood within that bin of the CDF and 
+			 * randomly draw a value in that range. 
+			 */ 
+			if ((unsigned) bin != n_bins - 1l) bin++; 
+			values[i] = rand_range(bins[bin], bins[bin + 1l]); 
+		} else { 
+			/* 
+			 * This shouldn't happen given the nature of this implementation; 
+			 * included as a failsafe. 
+			 */ 
+			free(cdf); 
+			free(values); 
+			return NULL; 
+		}
+		#endif 
+
+	} 
+
+	free(cdf); 
+
+	// for (i = 0l; i < n; i++) {
+	// 	printf("values[%ld] = %e\n", i, values[i]); 
+	// }
+
+	return values; 
+
 }
 
+/* 
+ * Convert a distribution to a cumulative distribution function (CDF). 
+ * 
+ * Parameters 
+ * ========== 
+ * dist: 		The values of the distribution itself in each bin 
+ * bins: 		The bin edges on which the distribution is sampled 
+ * n_bins: 		The number of bins in the distribution. This is always 1 less 
+ * 				than the number of bin edges. 
+ * 
+ * Returns 
+ * ======= 
+ * A distribution whose values represent the fraction of values with bin 
+ * numbers <= N. 
+ * 
+ * header: stats.h 
+ */ 
+extern double *convert_to_CDF(double *dist, double *bins, 
+	unsigned long n_bins) { 
+
+	/* First make a copy of the distribution */ 
+	unsigned long i; 
+	double *cdf = (double *) malloc (n_bins * sizeof(double)); 
+	for (i = 0l; i < n_bins; i++) {
+		cdf[i] = dist[i]; 
+	}
+
+	/* 
+	 * Ignoring the first bin, add the value of the distribution from all 
+	 * previous bins. 
+	 */ 
+	for (i = 1l; i < n_bins; i++) {
+		cdf[i] += cdf[i - 1]; 
+	} 
+
+	/* 
+	 * By definition a CDF converges to 1 as the bin number increases, so 
+	 * enforce that definition here. 
+	 */ 
+	for (i = 0l; i < n_bins; i++) {
+		cdf[i] /= cdf[n_bins - 1l]; 
+	} 
+
+	return cdf; 
+
+}
+
+/* 
+ * Convert a distribution in a given binspace to a probability distribution 
+ * function (PDF). 
+ * 
+ * Parameters 
+ * ========== 
+ * dist:		The values of the distribution itself in each bin 
+ * bins: 		The bin edges on which the distribution is sampled 
+ * n_bins: 		The number of bins in the distribution. This is always 1 less 
+ * 				than the number of bin edges. 
+ * 
+ * Returns 
+ * ======= 
+ * A distribution with the same trends as that which was passed, but whose 
+ * integral is equal to 1. 
+ * 
+ * header: stats.h 
+ */ 
+extern double *convert_to_PDF(double *dist, double *bins, 
+	unsigned long n_bins) { 
+
+	/* Allocate memory; start counting at zero */ 
+	double sum = 0, *pdf = (double *) malloc (n_bins * sizeof(double)); 
+	unsigned long i; 
+
+	/* Add up the area in each bin */ 
+	for (i = 0l; i < n_bins; i++) {
+		sum += dist[i] * (bins[i + 1l] - bins[i]); 
+	} 
+
+	/* Divide each element by the value of the integral */ 
+	for (i = 0l; i < n_bins; i++) {
+		pdf[i] = dist[i] / sum; 
+	} 
+
+	return pdf; 
+
+} 
 
 

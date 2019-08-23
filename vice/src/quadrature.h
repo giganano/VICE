@@ -6,26 +6,57 @@
 extern "C" {
 #endif 
 
+/* hash-code for euler's method */ 
+#ifndef EULER 
+#define EULER 541 
+#endif /* EULER */ 
+
+/* hash-code for trapezoid rule */ 
+#ifndef TRAPEZOID 
+#define TRAPEZOID 978 
+#endif /* TRAPEZOID */ 
+
+/* hash-code for midpoint rule */ 
+#ifndef MIDPOINT 
+#define MIDPOINT 868 
+#endif /* MIDPOINT */ 
+
+/* hash-code for simpson's rule */ 
+#ifndef SIMPSON 
+#define SIMPSON 777 
+#endif /* SIMPSON */ 
+
+#ifndef MAX_METHOD_SIZE 
+#define MAX_METHOD_SIZE 100l 
+#endif /* MAX_METHOD_SIZE */ 
+
+#include "objects.h" 
+
+/* 
+ * Allocate memory for and return a pointer to an integral object. 
+ * 
+ * source: integral.c 
+ */ 
+extern INTEGRAL *integral_initialize(void); 
+
+/* 
+ * Free up the memory stored in the integral object. 
+ * 
+ * source: quadrature.c 
+ */ 
+extern void integral_free(INTEGRAL *intgrl); 
+
 /*
  * Evaluate an integral from a to b numerically using quadrature 
  * 
  * Parameters 
  * ========== 
- * func:		The function to integrate
- * a:			The lower bound of integration
- * b:			The upper bound of integration
- * tolerance:	The maximum allowed fractional yield
- * method:		The method of quadrature to use
- * Nmax:		Maximum number of bins (safeguard against divergent solns)
- * Nmin:		Minimum number of bins 
+ * intgrl: 		The integral object
  * 
  * Returns 
  * ======= 
- * A 3-element array
- * returned[0]:		The estimated value of the integral
- * returned[1]:		The estimated fractional error
- * returned[2]:		The number of iterations it took to the get there 
- * NULL in the case of an unrecognized method of integration 
+ * 0 on success, 1 on an error larger than the tolerance, and 2 on an 
+ * unrecognized evaluation method 
  * 
  * Notes & References 
  * ================== 
@@ -35,8 +66,7 @@ extern "C" {
  * 
  * source: quadrature.c 
  */
-extern double *quad(double (*func)(double), double a, double b, 
-	double tolerance, char *method, unsigned long Nmax, unsigned long Nmin); 
+extern unsigned short quad(INTEGRAL *intgrl); 
 
 #ifdef __cplusplus 
 } 

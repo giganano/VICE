@@ -231,7 +231,7 @@ typedef struct singlezone {
 	unsigned long n_outputs; 
 	double Z_solar; 
 	unsigned int n_elements; 
-	int verbose; 
+	unsigned short verbose; 
 	ELEMENT **elements; 
 	ISM *ism; 
 	MDF *mdf; 
@@ -239,6 +239,72 @@ typedef struct singlezone {
 
 } SINGLEZONE; 
 
+typedef struct tracer {
+
+	/* 
+	 * This struct implements the tracer particle for multizone simulations 
+	 * 
+	 * mass: The initial mass of the tracer particle in Msun 
+	 * zone_origin: The zone in which the particle was born 
+	 * zone_current: The zone in which the particle currently resides 
+	 * zone_history: The zone number of the tracer particle at all timesteps 
+	 * 		This is -1 at timesteps before the tracer particle is born 
+	 * timestep_origin: The timestep at which the tracer particle is born 
+	 * 
+	 * Notes 
+	 * ===== 
+	 * zone_history is an array filled from user-specifications in python 
+	 */ 
+
+	double mass; 
+	int *zone_history; 
+	unsigned int zone_origin; 
+	unsigned int zone_current; 
+	unsigned int timestep_origin; 
+
+} TRACER; 
+
+typedef struct migration {
+
+	/* 
+	 * This struct encodes migration settings for multizone simulations 
+	 * 
+	 * n_zones: The number of zones in the simulation 
+	 * n_tracers: The number of tracer particles per zone per timestep 
+	 * tracer_count: The number of active tracer particles 
+	 * gas_migration: The migration matrix associated with the ISM gas 
+	 * tracers: Pointers to the tracer particles themselves 
+	 */ 
+
+	unsigned int n_zones; 
+	unsigned int n_tracers; 
+	unsigned long tracer_count; 
+	double ***gas_migration; 
+	TRACER **tracers; 
+	FILE *tracers_output; 
+
+} MIGRATION; 
+
+typedef struct multizone { 
+
+	/* 
+	 * This struct is the core of the multizone object. 
+	 * 
+	 * name: The name of the simulation 
+	 * zones: The SINGLEZONE objects corresponding to the individual zones 
+	 * mig: The migration settings for this simulation 
+	 * verbose: boolean int describing whether or not to print the time as the 
+	 * 		simulation evolves
+	 */ 
+
+	char *name; 
+	SINGLEZONE **zones; 
+	MIGRATION *mig; 
+	unsigned short verbose; 
+
+} MULTIZONE; 
+
+#if 0
 typedef struct tracer { 
 
 	/* 
@@ -291,6 +357,38 @@ typedef struct multizone {
 	int verbose; 
 
 } MULTIZONE; 
+#endif 
+
+typedef struct integral { 
+
+	/* 
+	 * This struct encodes information on a definite integral. 
+	 * 
+	 * func: The function to integrate 
+	 * a: The lower bound of integration 
+	 * b: The upper bound of integration 
+	 * tolerance: The maximum allowed numerical tolerance 
+	 * method: The hash-code for the method of integration 
+	 * Nmax: The maximum number of bins in quadrature (failsafe against 
+	 * 		non-convergent solutions) 
+	 * Nmin: The minimum number of bins in quadrature 
+	 * results: The numerically computed value of the integral, it's 
+	 * 		approximate numerical errors and the number of bins in quadrature 
+	 * 		at the time of convergence. 
+	 */ 
+
+	double (*func)(double); 
+	double a; 
+	double b; 
+	double tolerance; 
+	unsigned long method; 
+	unsigned long Nmax; 
+	unsigned long Nmin; 
+	unsigned long iters; 
+	double result; 
+	double error; 
+
+} INTEGRAL; 
 
 typedef struct fromfile {
 

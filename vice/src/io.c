@@ -231,7 +231,7 @@ extern long line_count(char *file) {
  * 
  * header: io.h 
  */ 
-extern int import_agb_grid(ELEMENT *e, char *file) {
+extern unsigned short import_agb_grid(ELEMENT *e, char *file) {
 
 	/* 
 	 * Initialize important variables for reading the file. See docstrings of 
@@ -297,6 +297,52 @@ extern int import_agb_grid(ELEMENT *e, char *file) {
 	 * that format. 
 	 */ 
 	unsigned int i, j; 
+
+	switch ( (unsigned) length % (*(*e).agb_grid).n_z ) {
+
+		case 0: 
+			/* 
+			 * The switch must be equal to zero, or else the data file has 
+			 * been tampered with. 
+			 */ 
+			e -> agb_grid -> n_m = (unsigned) length / (*(*e).agb_grid).n_z; 
+			in = fopen(file, "r"); 
+			if (in == NULL) return 1; 
+			e -> agb_grid -> m = (double *) malloc (
+				(*(*e).agb_grid).n_m * sizeof(double)); 
+			e -> agb_grid -> z = (double *) malloc (
+				(*(*e).agb_grid).n_z * sizeof(double)); 
+			e -> agb_grid -> grid = (double **) malloc (
+				(*(*e).agb_grid).n_m * sizeof(double)); 
+			for (i = 0; i < (*(*e).agb_grid).n_m; i++) { 
+				e -> agb_grid -> grid[i] = (double *) malloc (
+					(*(*e).agb_grid).n_z * sizeof(double)); 
+				for (j = 0; j < (*(*e).agb_grid).n_z; j++) {
+					if (fscanf(
+						in, "%lf %lf %lf", 
+						&(e -> agb_grid -> m[i]), 
+						&(e -> agb_grid -> z[j]), 
+						&(e -> agb_grid -> grid[i][j])
+					)) {
+						continue; 
+					} else {
+						free(e -> agb_grid -> grid); 
+						free(e -> agb_grid -> m); 
+						free(e -> agb_grid -> z); 
+						fclose(in); 
+						return 1; 
+					}
+				} 
+			} 
+			fclose(in); 
+			return 0; 		/* error handling: success */ 
+
+		default: 
+			return 1; 		/* error handling: failure */ 
+
+	}
+
+	#if 0
 	if ( (unsigned) length % (*(*e).agb_grid).n_z != 0) {
 		return 1; 
 	} else { 
@@ -332,6 +378,7 @@ extern int import_agb_grid(ELEMENT *e, char *file) {
 		fclose(in); 
 		return 0; 		/* error handling: success */ 
 	}
+	#endif 
 
 }
 
@@ -443,7 +490,7 @@ extern double single_ia_mass_yield_lookup(char *file) {
  * 
  * header: io.h 
  */ 
-extern int singlezone_open_files(SINGLEZONE *sz) {
+extern unsigned short singlezone_open_files(SINGLEZONE *sz) {
 
 	char *history_file = (char *) malloc (MAX_FILENAME_SIZE * sizeof(char)); 
 	char *mdf_file = (char *) malloc (MAX_FILENAME_SIZE * sizeof(char)); 
@@ -741,6 +788,19 @@ extern void write_mdf_output(SINGLEZONE sz) {
  * 
  * header: io.h 
  */ 
+extern unsigned short multizone_open_tracer_file(MULTIZONE *mz) {
+
+	if ((*(*mz).mig).tracers_output == NULL) {
+		char filename[MAX_FILENAME_SIZE]; 
+		strcpy(filename, (*mz).name); 
+		strcat(filename, "/tracers.out"); 
+		mz -> mig -> tracers_output = fopen(filename, "w"); 
+	} else {} 
+	return (*(*mz).mig).tracers_output == NULL; 
+
+}
+
+#if 0
 extern int multizone_open_tracer_file(MULTIZONE *mz) {
 
 	if ((*mz).tracers_output == NULL) { 
@@ -752,6 +812,7 @@ extern int multizone_open_tracer_file(MULTIZONE *mz) {
 	return (*mz).tracers_output == NULL; 
 
 }
+#endif 
 
 /* 
  * Writes the header to the tracers output file at the end of a multizone 
@@ -763,11 +824,19 @@ extern int multizone_open_tracer_file(MULTIZONE *mz) {
  * 
  * header: io.h 
  */ 
+extern void write_tracers_header(MULTIZONE mz) {
+
+	fprintf((*mz.mig).tracers_output, "# tform\tzone_origin\tzone_final\n"); 
+
+}
+
+#if 0
 extern void write_tracers_header(MULTIZONE mz) { 
 
 	fprintf(mz.tracers_output, "# tform\tzone_origin\tzone_final\n"); 
 
 }
+#endif 
 
 /* 
  * Writes the tracer data to the output file at the end of a multizone 
@@ -782,6 +851,21 @@ extern void write_tracers_header(MULTIZONE mz) {
 extern void write_tracers_output(MULTIZONE mz) {
 
 	unsigned long i; 
+	for (i = 0l; i < (*mz.mig).tracer_count; i++) {
+		fprintf((*mz.mig).tracers_output, "%e\t", 
+			(*(*mz.mig).tracers[i]).timestep_origin * (*mz.zones[0]).dt); 
+		fprintf((*mz.mig).tracers_output, "%u\t", 
+			(*(*mz.mig).tracers[i]).zone_origin); 
+		fprintf((*mz.mig).tracers_output, "%u\t", 
+			(*(*mz.mig).tracers[i]).zone_current); 
+	}
+
+}
+
+#if 0
+extern void write_tracers_output(MULTIZONE mz) {
+
+	unsigned long i; 
 	for (i = 0l; i < mz.tracer_count; i++) {
 		fprintf(mz.tracers_output, "%e\t", 
 			(*mz.tracers[i]).timestep_origin * (*mz.zones[0]).dt); 
@@ -790,6 +874,7 @@ extern void write_tracers_output(MULTIZONE mz) {
 	} 
 
 } 
+#endif 
 
 /* 
  * Closes the tracer output file at the end of a multizone simulation 
@@ -802,37 +887,21 @@ extern void write_tracers_output(MULTIZONE mz) {
  */ 
 extern void multizone_close_tracer_file(MULTIZONE *mz) {
 
+	if ((*(*mz).mig).tracers_output != NULL) {
+		fclose(mz -> mig -> tracers_output); 
+		mz -> mig -> tracers_output = NULL; 
+	} else {} 
+
+}
+
+#if 0
+extern void multizone_close_tracer_file(MULTIZONE *mz) {
+
 	if ((*mz).tracers_output != NULL) {
 		fclose(mz -> tracers_output); 
 		mz -> tracers_output = NULL; 
 	} else {} 
 
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+} 
+#endif 
 

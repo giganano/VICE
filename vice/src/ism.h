@@ -6,6 +6,21 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
+/* hash-code for gas-mode */ 
+#ifndef GAS 
+#define GAS 315 
+#endif /* GAS */ 
+
+/* hash-code for infall-mode */ 
+#ifndef IFR 
+#define IFR 321 
+#endif /* IFR */ 
+
+/* hash-code for star formation-mode */ 
+#ifndef SFR 
+#define SFR 331 
+#endif /* SFR */ 
+
 #include "objects.h" 
 
 /* 
@@ -38,7 +53,7 @@ extern void ism_free(ISM *ism);
  * 
  * source: ism.c 
  */ 
-extern int setup_gas_evolution(SINGLEZONE *sz); 
+extern unsigned short setup_gas_evolution(SINGLEZONE *sz); 
 
 /* 
  * Moves the infall rate, total gas mass, and star formation rate in a 
@@ -54,7 +69,7 @@ extern int setup_gas_evolution(SINGLEZONE *sz);
  * 
  * source: ism.c 
  */ 
-extern int update_gas_evolution(SINGLEZONE *sz); 
+extern unsigned short update_gas_evolution(SINGLEZONE *sz); 
 
 /* 
  * Moves the infall rate, total gas mass, and star formation rate in all zones 
@@ -70,7 +85,7 @@ extern int update_gas_evolution(SINGLEZONE *sz);
  * 
  * source: ism.c 
  */ 
-extern int update_zone_evolution(MULTIZONE *mz); 
+extern unsigned short update_zone_evolution(MULTIZONE *mz); 
 
 /* 
  * Determine the ISM mass outflow rate in a singlezone simulation. 

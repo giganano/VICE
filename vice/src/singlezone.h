@@ -58,7 +58,7 @@ extern long singlezone_address(SINGLEZONE *sz);
  * 
  * source: singlezone.c 
  */ 
-extern int singlezone_evolve(SINGLEZONE *sz); 
+extern unsigned short singlezone_evolve(SINGLEZONE *sz); 
 
 /* 
  * Setup the singlezone object for simulation. 
@@ -73,7 +73,7 @@ extern int singlezone_evolve(SINGLEZONE *sz);
  * 
  * source: singlezone.c 
  */ 
-extern int singlezone_setup(SINGLEZONE *sz); 
+extern unsigned short singlezone_setup(SINGLEZONE *sz); 
 
 /* 
  * Frees up the memory allocated in running a singlezone simulation. This does 
@@ -100,6 +100,22 @@ extern void singlezone_clean(SINGLEZONE *sz);
  * source: singlezone.c 
  */ 
 extern void singlezone_cancel(SINGLEZONE *sz); 
+
+/* 
+ * Determine the number of timesteps that memory is allocated for in the 
+ * singlezone object. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		The singlezone object for this simulation 
+ * 
+ * Returns 
+ * ======= 
+ * The final output time divided by the timestep size plus 10. 
+ * 
+ * source: singlezone.c 
+ */ 
+extern unsigned long n_timesteps(SINGLEZONE sz); 
 
 /* 
  * Determine the stellar mass in a singlezone simulation 

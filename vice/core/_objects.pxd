@@ -76,7 +76,7 @@ cdef extern from "../src/objects.h":
 		unsigned long n_outputs 
 		double Z_solar 
 		unsigned int n_elements 
-		int verbose 
+		unsigned short verbose 
 		ELEMENT **elements 
 		ISM *ism 
 		MDF *mdf 
@@ -84,21 +84,24 @@ cdef extern from "../src/objects.h":
 
 	ctypedef struct TRACER: 
 		double mass 
+		int *zone_history 
 		unsigned int zone_origin 
 		unsigned int zone_current 
-		unsigned long timestep_origin 
+		unsigned int timestep_origin 
+
+	ctypedef struct MIGRATION: 
+		unsigned int n_zones 
+		unsigned int n_tracers 
+		unsigned long tracer_count 
+		double ***gas_migration 
+		TRACER **tracers 
+		FILE *tracers_output 
 
 	ctypedef struct MULTIZONE: 
 		char *name 
 		SINGLEZONE **zones 
-		unsigned int n_zones 
-		unsigned int n_tracers 
-		double ***migration_matrix_gas 
-		double ***migration_matrix_tracers 
-		unsigned long tracer_count 
-		TRACER **tracers 
-		FILE *tracers_output 
-		int verbose 
+		MIGRATION *mig 
+		unsigned short verbose 
 
 	ctypedef struct FROMFILE: 
 		char *name 

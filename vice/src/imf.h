@@ -6,6 +6,18 @@
 extern "C" {
 #endif 
 
+#include "utils.h" 
+
+/* hash-code for the Kropua (2001) IMF */ 
+#ifndef KROUPA 
+#define KROUPA 658 
+#endif /* KROUPA */ 
+
+/* hash code for the Salpeter (1955) IMF */ 
+#ifndef SALPETER 
+#define SALPETER 864 
+#endif /* SALPETER */ 
+
 /* 
  * The Salpeter (1955) stellar initial mass function (IMF) up to a 
  * normalization constant. 

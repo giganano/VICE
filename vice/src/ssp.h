@@ -146,7 +146,7 @@ extern double *gas_recycled_in_zones(MULTIZONE mz);
  * 
  * source: ssp.c  
  */ 
-extern int setup_CRF(SINGLEZONE *sz); 
+extern unsigned short setup_CRF(SINGLEZONE *sz); 
 
 /* 
  * Determine the cumulative return fraction from a single stellar population 
@@ -182,7 +182,7 @@ extern double CRF(SSP spp, double time);
  * 
  * source: ssp.c  
  */ 
-extern int setup_MSMF(SINGLEZONE *sz); 
+extern unsigned short setup_MSMF(SINGLEZONE *sz); 
 
 /* 
  * Determine the main sequence mass fraction of a stellar population a some 

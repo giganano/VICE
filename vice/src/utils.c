@@ -3,10 +3,153 @@
  */ 
 
 #include <stdlib.h> 
+#include <string.h> 
+#include <ctype.h> 
 #include <math.h> 
 #include <time.h> 
 #include "utils.h" 
 #include "singlezone.h" 
+
+/* Define the checksum function adopted in this implementation */ 
+long (*checksum)(char *) = &simple_hash; 
+
+/* ---------- static function comment headers not duplicated here ---------- */ 
+#if 0
+static long factorial(long n); 
+
+/* 
+ * A slightly more complex form of a hash-checksum combo, which is more 
+ * sensitive to the spelling of the word. This is the checksum algorithm 
+ * to which hashes of built-in settings are compared. 
+ * 
+ * Parameters 
+ * ========== 
+ * str: 		The string to do the checksum on 
+ * 
+ * Returns 
+ * ======= 
+ * The checksum for a built-in hash corresponding to given mode within VICE. 
+ * 
+ * Notes 
+ * ===== 
+ * EPF: Expoential Place Factorial 
+ * 
+ * header: utils.h 
+ */
+extern long EPFchecksum(char *str) { 
+
+	long h = 0l; 
+	unsigned long i; 
+	unsigned short negative; 
+	printf(str); 
+	for (i = 0l; i < strlen(str); i++) { 
+		long x = factorial( (long) tolower(str[i]) ); 
+		printf("%ld\n", x); 
+		switch (x) {
+
+			case -1l: 
+				return -1l; 
+
+			default: 
+				h += factorial(x) * (long) pow(10, i); 
+				break; 
+
+		} 
+	} 
+	return h; 
+
+} 
+
+/*
+ * Compute the factorial of a number n. 
+ */ 
+static long factorial(long n) {
+
+	/* 
+	 * n! = n(n - 1)		(n > 0) 
+	 * 	  = 1 				(n = 0) 
+	 */ 
+	if (n < 0) { 
+		/* error checking */ 
+		return -1; 
+	} else if (n) { 
+		/* famously simple recursive definition */ 
+		return n * factorial(n - 1l); 
+	} else { 
+		/* terminate at n = 0 */ 
+		return 1; 
+	}
+
+} 
+#endif 
+
+/* 
+ * Determine the absolute value of a double x. This function extends the 
+ * standard library function abs, which only excepts values of type int. 
+ * 
+ * Parameters 
+ * ========== 
+ * x: 		The number to determine the absolute value of 
+ * 
+ * Returns 
+ * ======= 
+ * +x if x >= 0, -x if x < 0 
+ * 
+ * header: utils.h 
+ */ 
+extern double absval(double x) {
+
+	return sign(x) * x; 
+
+}
+
+/* 
+ * Determine the sign of a double x 
+ * 
+ * Parameters 
+ * ========== 
+ * x: 		The value to determine the sign of 
+ * 
+ * Returns 
+ * ======= 
+ * +1 if x >= 0, -1 if x < 0 
+ * 
+ * header: utils.h
+ */ 
+extern short sign(double x) {
+
+	return (x >= 0) - (x < 0); 
+
+} 
+
+/* 
+ * Obtain a simple hash for a string 
+ * 
+ * Parameters 
+ * ========== 
+ * str: 		The string to hash 
+ * 
+ * Returns 
+ * ======= 
+ * The sum of the ordinal numbers for each character in the string 
+ * 
+ * Notes 
+ * ===== 
+ * If this routine is modified, the following header files contain #define'd 
+ * hashes that need to be modified the match the returned value. 
+ * 
+ * header: utils.h 
+ */ 
+extern long simple_hash(char *str) {
+
+	long h = 0l; 
+	unsigned long i; 
+	for (i = 0l; i < strlen(str); i++) {
+		h += tolower(str[i]); 
+	} 
+	return h; 
+
+} 
 
 /* 
  * Seeds the random number generator off of the current time. 
@@ -16,6 +159,26 @@
 extern void seed_random(void) {
 
 	srand(time(NULL)); 
+
+} 
+
+/* 
+ * Generate a pseudorandom number in a specified range. 
+ * 
+ * Parameters 
+ * ========== 
+ * minimum: 		The minimum value 
+ * maximum: 		The maximum value 
+ * 
+ * Returns 
+ * ======= 
+ * A pseudorandom number between minimum and maximum 
+ * 
+ * header: utils.h 
+ */ 
+extern double rand_range(double minimum, double maximum) {
+
+	return minimum + (maximum - minimum) * ((double) rand() / RAND_MAX); 
 
 }
 

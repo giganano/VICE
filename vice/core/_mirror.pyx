@@ -125,8 +125,16 @@ def mirror(arg):
 			mz.name = params["name"] 
 			mz.n_tracers = params["n_tracers"] 
 			mz.verbose = params["verbose"] 
+			if params["migration.stars"] != None: 
+				mz.migration.stars = params["stars"] 
+			else: 
+				warnings.warn("""\
+Re-initializing functional attributes from VICE output objects requires the \
+python package dill (installable via pip). The following attributes will not \
+reflect the attributes of the simulation that produced this output, and will \
+instead be set to the default value: """, UserWarning)
 			zone_numbers = pickle.load(open("%s/zone_numbers.config" % (arg), 
-				"rb"))  
+				"rb")) 
 			for i in zone_numbers.keys(): 
 				""" 
 				Singlezone objects can be passed directly to the multizone 
@@ -139,7 +147,6 @@ def mirror(arg):
 				for j in range(mz.n_zones): 
 					# copy over the migration matrices 
 					mz.migration.gas[i][j] = params["migration.gas"][i][j] 
-					mz.migration.stars[i][j] = params["migration.stars"][i][j] 
 			return mz 
 		else: 
 			# assume it's singlezone, hand off to the from_path reader 

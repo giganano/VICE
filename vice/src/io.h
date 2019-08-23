@@ -98,7 +98,7 @@ extern long line_count(char *file);
  * 
  * source: io.c  
  */ 
-extern int import_agb_grid(ELEMENT *e, char *file); 
+extern unsigned short import_agb_grid(ELEMENT *e, char *file); 
 
 /* 
  * Read a yield table for CCSNe. 
@@ -144,7 +144,7 @@ extern double single_ia_mass_yield_lookup(char *file);
  * 
  * source: io.c 
  */ 
-extern int singlezone_open_files(SINGLEZONE *sz); 
+extern unsigned short singlezone_open_files(SINGLEZONE *sz); 
 
 /* 
  * Close the history.out and mdf.out output files associated with a SINGLEZONE 
@@ -211,7 +211,7 @@ extern void write_mdf_output(SINGLEZONE sz);
  * 
  * source: io.c 
  */ 
-extern int multizone_open_tracer_file(MULTIZONE *mz); 
+extern unsigned short multizone_open_tracer_file(MULTIZONE *mz); 
 
 /* 
  * Writes the header to the tracers output file at the end of a multizone 

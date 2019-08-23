@@ -68,7 +68,21 @@ def _DEFAULT_FUNC_(t):
 	singlezone runs in infall mode, meaning that this corresponds to an 
 	infall rate of 9.1 Msun yr^-1 at all times. 
 	"""
-	return 9.1
+	return 9.1 
+
+def _DEFAULT_TRACER_MIGRATION_(n, t): 
+	""" 
+	The default stellar migration prescription. This returns a function which 
+	is always a delta function at the zone number n - a migration prescription 
+	that produces no migration. 
+	""" 
+	def _DISTRIBUTION_(n2): 
+		""" 
+		The distribution of stars is a delta function at the n'th zone. 
+		""" 
+		return int(n2 == n)
+
+	return _DISTRIBUTION_ 
 
 def _VERSION_ERROR_():
 	"""

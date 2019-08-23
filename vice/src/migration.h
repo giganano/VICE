@@ -17,6 +17,24 @@ extern "C" {
 #include "objects.h" 
 
 /* 
+ * Allocate memory for an return a pointer to a migration object. 
+ * 
+ * Parameters 
+ * ========== 
+ * n:		The number of zones in the multizone simulation 
+ * 
+ * source: migration.c 
+ */ 
+extern MIGRATION *migration_initialize(unsigned int n); 
+
+/* 
+ * Free up the memory stored in a migration object. 
+ * 
+ * source: migration.c 
+ */ 
+extern void migration_free(MIGRATION *mig); 
+
+/* 
  * Performs a sanity check on a given migration matrix by making sure the sum 
  * of migration probabilities out of a given zone at all times is <= 1. 
  * 
@@ -32,9 +50,21 @@ extern "C" {
  * 
  * source: migration.c 
  */ 
-extern int migration_matrix_sanitycheck(double ***migration_matrix, 
+extern unsigned short migration_matrix_sanitycheck(double ***migration_matrix, 
 	unsigned long n_times, unsigned int n_zones); 
 
+/* 
+ * Allocates memory for the gas migration matrix. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		A pointer to the multizone object for this simulation 
+ * 
+ * source: migration.c 
+ */ 
+extern void malloc_gas_migration(MULTIZONE *mz); 
+
+#if 0
 /* 
  * Allocates memory for the migration matrices. 
  * 
@@ -45,6 +75,7 @@ extern int migration_matrix_sanitycheck(double ***migration_matrix,
  * source: migration.c 
  */ 
 extern void malloc_migration_matrices(MULTIZONE *mz); 
+#endif 
 
 /* 
  * Sets up an element of the migration matrix at each timestep that it has 
@@ -65,9 +96,11 @@ extern void malloc_migration_matrices(MULTIZONE *mz);
  * 
  * source: migration.c 
  */ 
-extern int setup_migration_element(MULTIZONE mz, double ***migration_matrix, 
-	unsigned int row, unsigned int column, double *arr); 
+extern unsigned short setup_migration_element(MULTIZONE mz, 
+	double ***migration_matrix, unsigned int row, unsigned int column, 
+	double *arr); 
 
+#if 0
 /* 
  * Determines the number of elements in a migration matrix. This is also the 
  * number of timesteps that all VICE simulations have allocated memory for. 
@@ -85,6 +118,7 @@ extern int setup_migration_element(MULTIZONE mz, double ***migration_matrix,
  * source: migration.c 
  */ 
 extern unsigned long migration_matrix_length(MULTIZONE mz); 
+#endif 
 
 /* 
  * Migrates all gas, elements, and tracer particles between zones at the 

@@ -82,10 +82,34 @@ extern void fromfile_free(FROMFILE *ff) {
  * 
  * header: fromfile.h 
  */ 
-extern int fromfile_read(FROMFILE *ff) {
+extern unsigned short fromfile_read(FROMFILE *ff) {
 
 	/* Use file I/O subroutines in io.h to error check the file */ 
 	int dimension = file_dimension((*ff).name); 
+
+	switch (dimension) {
+
+		case -1: 
+			return 1; 
+
+		default: 
+			ff -> n_cols = (unsigned) dimension; 
+			ff -> n_rows = (unsigned long) (
+				line_count((*ff).name) - header_length((*ff).name)
+			); 
+
+			switch ((*ff).n_rows) {
+				case 0: 
+					ff -> n_cols = 0; 
+					return 1; 
+				default: 
+					ff -> data = read_square_ascii_file((*ff).name); 
+					return 0; 
+			}
+
+	}
+
+	#if 0
 	if (dimension == -1) {
 		return 1; 
 	} else { 
@@ -101,6 +125,7 @@ extern int fromfile_read(FROMFILE *ff) {
 			return 0; 
 		} 
 	} 
+	#endif 
 
 }
 
@@ -121,6 +146,25 @@ extern int fromfile_read(FROMFILE *ff) {
 extern double *fromfile_column(FROMFILE *ff, char *label) {
 
 	int col = fromfile_column_number(ff, label); 
+	unsigned long i; 
+	double *column; 
+
+	switch (col) {
+
+		case -1: 
+			return NULL; 
+
+		default: 
+			column = (double *) malloc ((*ff).n_rows * sizeof(double)); 
+			for (i = 0l; i < (*ff).n_rows; i++) {
+				column[i] = (*ff).data[i][col]; 
+			} 
+			return column; 
+
+	}
+
+	#if 0
+	int col = fromfile_column_number(ff, label); 
 	if (col != -1) { 
 		unsigned long i; 
 		double *column = (double *) malloc ((*ff).n_rows * sizeof(double)); 
@@ -131,6 +175,7 @@ extern double *fromfile_column(FROMFILE *ff, char *label) {
 	} else { 
 		return NULL; 
 	}
+	#endif 
 
 } 
 
@@ -150,8 +195,27 @@ extern double *fromfile_column(FROMFILE *ff, char *label) {
  * 
  * header: fromfile.h 
  */ 
-extern int fromfile_modify_column(FROMFILE *ff, char *label, double *arr) {
+extern unsigned short fromfile_modify_column(FROMFILE *ff, char *label, 
+	double *arr) {
 
+	int column = fromfile_column_number(ff, label); 
+	unsigned long i; 
+
+	switch (column) {
+
+		case -1: 
+			/* automatically make a new column */ 
+			return fromfile_new_column(ff, label, arr); 
+
+		default: 
+			for (i = 0l; i < (*ff).n_rows; i++) {
+				ff -> data[i][column] = arr[i]; 
+			} 
+			return 0; 
+
+	}
+
+	#if 0 
 	int column = fromfile_column_number(ff, label); 
 	if (column != -1) {
 		unsigned long i; 
@@ -163,6 +227,7 @@ extern int fromfile_modify_column(FROMFILE *ff, char *label, double *arr) {
 		/* Automatically make a new column */ 
 		return fromfile_new_column(ff, label, arr); 
 	} 
+	#endif 
 
 } 
 
@@ -181,8 +246,33 @@ extern int fromfile_modify_column(FROMFILE *ff, char *label, double *arr) {
  * 
  * header: fromfile.h 
  */ 
-extern int fromfile_new_column(FROMFILE *ff, char *label, double *arr) {
+extern unsigned short fromfile_new_column(FROMFILE *ff, char *label, 
+	double *arr) {
 
+	unsigned long i; 
+	switch (fromfile_column_number(ff, label)) {
+
+		case -1: 
+			/* Only assigned the new column if the label isn't recognized */ 
+			ff -> labels = (char **) realloc (ff -> labels, 
+				((*ff).n_cols + 1) * sizeof(char *)); 
+			ff -> labels[(*ff).n_cols] = (char *) malloc ((strlen(label) + 1) * 
+				sizeof(char)); 
+			strcpy(ff -> labels[(*ff).n_cols], label); 
+			for (i = 0l; i < (*ff).n_rows; i++) {
+				ff -> data[i] = (double *) realloc (ff -> data[i], 
+					((*ff).n_cols + 1) * sizeof(double)); 
+				ff -> data[i][(*ff).n_cols] = arr[i]; 
+			} 
+			ff -> n_cols++; 
+			return 0; 
+
+		default: 
+			return 1; 
+
+	}
+
+	#if 0
 	if (fromfile_column_number(ff, label) == -1) {
 		/* Only assign the new column if the label is not yet recognized */ 
 		ff -> labels = (char **) realloc (ff -> labels, 
@@ -200,7 +290,8 @@ extern int fromfile_new_column(FROMFILE *ff, char *label, double *arr) {
 		return 0; 
 	} else {
 		return 1; 
-	}
+	} 
+	#endif 
 
 }
 
@@ -217,11 +308,7 @@ static int fromfile_column_number(FROMFILE *ff, char *label) {
 
 	unsigned int i; 
 	for (i = 0; i < (*ff).n_cols; i++) { 
-		if (!strcmp((*ff).labels[i], label)) {
-			return (signed) i; 
-		} else {
-			continue; 
-		} 
+		if (!strcmp((*ff).labels[i], label)) return (signed) i; 
 	} 
 	return -1; 
 

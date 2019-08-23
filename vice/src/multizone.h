@@ -54,7 +54,7 @@ extern void link_zone(MULTIZONE *mz, unsigned long address,
  * 
  * source: multizone.c 
  */ 
-extern int multizone_evolve(MULTIZONE *mz); 
+extern unsigned short multizone_evolve(MULTIZONE *mz); 
 
 /*
  * Sets up every zone in a multizone object for simulation 
@@ -69,7 +69,7 @@ extern int multizone_evolve(MULTIZONE *mz);
  * 
  * source: multizone.c 
  */ 
-extern int multizone_setup(MULTIZONE *mz); 
+extern unsigned short multizone_setup(MULTIZONE *mz); 
 
 /* 
  * Frees up the memory allocated in running a multizone simulation. This does 

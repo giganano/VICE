@@ -8,6 +8,7 @@
 #include <stdio.h> 
 #include <math.h> 
 #include "sneia.h" 
+#include "utils.h" 
 
 /* ---------- static function comment headers not duplicated here ---------- */
 static double mdotstarIa(SINGLEZONE sz, ELEMENT e); 
@@ -91,6 +92,31 @@ extern double mdot_sneia(SINGLEZONE sz, ELEMENT e) {
 extern void sneia_from_tracers(MULTIZONE *mz) {
 
 	unsigned long i, timestep = (*(*mz).zones[0]).timestep; 
+	for (i = 0l; i < (*(*mz).mig).tracer_count; i++) { 
+		TRACER *t = mz -> mig -> tracers[i]; 
+		unsigned int j; 
+		/* 
+		 * Enrich each element in the zone from SNe Ia associated with this 
+		 * tracer particle. Pull the yield information from the zone in 
+		 * which the tracer particle originated. 
+		 */ 
+		for (j = 0; j < (*(*mz).zones[(*t).zone_current]).n_elements; j++) {
+			ELEMENT *e = mz -> zones[(*t).zone_current] -> elements[j]; 
+			SNEIA_YIELD_SPECS *sneia = (mz -> zones[(*t).zone_origin] -> 
+				elements[j] -> sneia_yields); 
+			e -> mass += (
+				(*sneia).yield_ * (*t).mass * 
+				(*sneia).RIa[timestep - (*t).timestep_origin] 
+			); 
+		} 
+	}
+
+}
+
+#if 0
+extern void sneia_from_tracers(MULTIZONE *mz) {
+
+	unsigned long i, timestep = (*(*mz).zones[0]).timestep; 
 	for (i = 0l; i < (*mz).tracer_count; i++) { 
 		TRACER *t = mz -> tracers[i]; 
 		unsigned int j; 
@@ -111,6 +137,7 @@ extern void sneia_from_tracers(MULTIZONE *mz) {
 	}
 
 }
+#endif 
 
 /* 
  * Determine the star formation rate weighted by the SNe Ia rate. See section 
@@ -152,11 +179,46 @@ static double mdotstarIa(SINGLEZONE sz, ELEMENT e) {
  * 
  * header: sneia.h 
  */ 
-extern int setup_RIa(SINGLEZONE *sz) {
+extern unsigned short setup_RIa(SINGLEZONE *sz) {
 
 	unsigned int j; 
 	unsigned long i, length = (unsigned long) (RIA_MAX_EVAL_TIME / (*sz).dt); 
 	for (j = 0; j < (*sz).n_elements; j++) { 
+
+		switch (checksum((*(*(*sz).elements[j]).sneia_yields).dtd)) {
+
+			case PLAW: 
+				/* same as EXP */ 
+
+			case EXP: 
+				sz -> elements[j] -> sneia_yields -> RIa = (double *) malloc (
+					length * sizeof(double)); 
+				if ((*(*(*sz).elements[j]).sneia_yields).RIa == NULL) {
+					return 1; 		/* memory error */ 
+				} else {
+					for (i = 0l; i < length; i++) {
+						sz -> elements[j] -> sneia_yields -> RIa[i] = (
+							RIa_builtin(*(*sz).elements[j], i * (*sz).dt) 
+						); 
+					} 
+					normalize_RIa(sz -> elements[j], length); /* norm it */ 
+				} 
+				break; 
+
+			case CUSTOM: 
+				/* 
+				 * Python will map the custom function into this array, so 
+				 * simply normalize it here. 
+				 */ 
+				normalize_RIa(sz -> elements[j], length); 
+				break; 
+
+			default: 
+				return 1; 
+
+		} 
+
+		#if 0
 		char *dtd = (*(*(*sz).elements[j]).sneia_yields).dtd; 
 		if (!strcmp(dtd, "plaw") || !strcmp(dtd, "exp")) {
 			/* built-in DTD, map it across time */ 
@@ -180,7 +242,10 @@ extern int setup_RIa(SINGLEZONE *sz) {
 		} else {
 			return 1; 		/* Error: unrecognized DTD specification */ 
 		} 
+		#endif 
+
 	} 
+
 	return 0; 		/* success */ 
 
 }
@@ -204,7 +269,28 @@ static double RIa_builtin(ELEMENT e, double time) {
 	if (time < (*e.sneia_yields).t_d) {
 		/* Time is below minimum Ia delay time, force to zero */ 
 		return 0; 
-	} else if (!strcmp((*e.sneia_yields).dtd, "exp")) {
+	} else {
+		switch (checksum((*e.sneia_yields).dtd)) {
+
+			case EXP: 
+				/* exponential DTD w/user-specified e-folding timescale */ 
+				return exp( -time / (*e.sneia_yields).tau_ia ); 
+
+			case PLAW: 
+				/* power-law DTD w/index -1.1 Add 1e-12 to prevent numerical 
+				 * errors allowing this function to evaluate at zero without 
+				 * throwing an error. 
+				 */ 
+				return pow( time + 1e-12, -PLAW_DTD_INDEX ); 
+
+			default: 
+				return -1; 
+
+		}
+	}
+
+	#if 0
+	else if (!strcmp((*e.sneia_yields).dtd, "exp")) {
 		/* exponential DTD w/user-specified e-folding timescale */ 
 		return exp( -time / (*e.sneia_yields).tau_ia ); 
 	} else if (!strcmp((*e.sneia_yields).dtd, "plaw")) {
@@ -216,6 +302,7 @@ static double RIa_builtin(ELEMENT e, double time) {
 	} else {
 		return -1; 
 	}
+	#endif 
 
 } 
 

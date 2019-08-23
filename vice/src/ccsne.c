@@ -176,22 +176,53 @@ extern double get_cc_yield(ELEMENT e, double Z) {
  * 
  * Parameters 
  * ========== 
+ * intgrl: 		The integral object for the numerator of the yield 
  * file:		The nme of the data file containing the grid
- * IMF:			The IMF to use ('kroupa' or 'salpeter')
- * m_lower:		The lower mass limit on star formation in units of Msun
- * m_upper:		The upper mass limit on star formation in units of Msun
- * tolerance:	The maximum fractional error to allow
- * method:		The method of quadrature to use
- * Nmax:		Maximum number of bins (safeguard against divergent solns)
- * Nmin:		Minimum number of bins 
+ * IMF:			The IMF to use ('kroupa' or 'salpeter') 
  * 
  * Returns 
  * ======= 
- * The mass yield from all CCSNe in a stellar population as predicted by the 
- * built-in yields, up to the normalization of the IMF. 
+ * 3 on an unrecognized IMF, otherwise the value returned by quad (see 
+ * quadrature.h). 
  * 
  * header: ccsne.h 
  */ 
+extern unsigned short IMFintegrated_fractional_yield_numerator(
+	INTEGRAL *intgrl, char *file, char *IMF) {
+
+	/* 
+	 * Initialize these variables globally. This is such that the functions 
+	 * which execute numerical quadrature can accept only one parameter - the 
+	 * stellar mass. 
+	 */ 
+	GRIDSIZE = line_count(file) - header_length(file); 
+	GRID = cc_yield_grid(file); 
+
+	switch (checksum(IMF)) {
+
+		case KROUPA: 
+			intgrl -> func = &yield_weighted_kroupa01; 
+			break; 
+
+		case SALPETER: 
+			intgrl -> func = &yield_weighted_salpeter55; 
+			break; 
+
+		default: 
+			free(GRID); 
+			GRIDSIZE = 0; 
+			return 3; 
+
+	} 
+
+	int x = quad(intgrl); 
+	free(GRID); 
+	GRIDSIZE = 0; 
+	return x; 
+
+}
+
+#if 0
 extern double *IMFintegrated_fractional_yield_numerator(char *file, char *IMF, 
 	double m_lower, double m_upper, double tolerance, char *method, 
 	unsigned long Nmax, unsigned long Nmin) {
@@ -204,7 +235,32 @@ extern double *IMFintegrated_fractional_yield_numerator(char *file, char *IMF,
 
 	GRIDSIZE = line_count(file) - header_length(file); 
 	GRID = cc_yield_grid(file); 
+	double (*yield_weighted_IMF) (double); 
 
+	switch (checksum(IMF)) {
+
+		case KROUPA: 
+			yield_weighted_IMF = &yield_weighted_kroupa01; 
+			break; 
+
+		case SALPETER: 
+			yield_weighted_IMF = &yield_weighted_salpeter55; 
+			break; 
+
+		default: 
+			free(GRID); 
+			GRIDSIZE = 0; 
+			return NULL; 
+
+	} 
+
+	double *numerator = quad(yield_weighted_IMF, m_lower, m_upper, tolerance, 
+		method, Nmax, Nmin); 
+	free(GRID); 
+	GRIDSIZE = 0; 
+	return numerator; 
+
+	#if 0
 	double *numerator; 
 	if (!strcmp(IMF, "kroupa")) {
 		numerator = quad(yield_weighted_kroupa01, m_lower, m_upper, tolerance, 
@@ -220,8 +276,10 @@ extern double *IMFintegrated_fractional_yield_numerator(char *file, char *IMF,
 	free(GRID); 
 	GRIDSIZE = 0; 
 	return numerator; 
+	#endif 
 
 } 
+#endif 
 
 /* 
  * Determine the value of the integrated IMF weighted by stellar mass, up to 
@@ -229,25 +287,66 @@ extern double *IMFintegrated_fractional_yield_numerator(char *file, char *IMF,
  * 
  * Parameters 
  * ========== 
- * IMF:			The IMF to use ('kroupa' or 'salpeter')
- * m_lower:		The lower mass limit on star formation in units of Msun
- * m_upper:		The upper mass limit on star formation in units of Msun
- * tolerance:	The maximum fractional error to allow
- * method:		The method of quadrature to use
- * Nmax:		Maximum number of bins (safeguard against divergent solns)
- * Nmin:		Minimum number of bins 
+ * intgrl: 		The integral object for the denominator of the yield 
+ * IMF:			The IMF to use ('kroupa' or 'salpeter') 
  * 
  * Returns 
  * ======= 
- * The total mass of a stellar population in Msun, up to the normalization of 
- * the IMF. 
+ * 3 on an unrecognized IMF, otherwise the value returned by quad (see 
+ * quadrature.h) 
  * 
  * header: ccsne.h 
  */ 
+extern unsigned short IMFintegrated_fractional_yield_denominator(
+	INTEGRAL *intgrl, char *IMF) {
+
+	switch (checksum(IMF)) {
+
+		case KROUPA: 
+			intgrl -> func = &mass_weighted_kroupa01; 
+			break; 
+
+		case SALPETER: 
+			intgrl -> func = &mass_weighted_salpeter55; 
+			break; 
+
+		default: 
+			/* would be caught by python anyway, included as failsafe */ 
+			return 3; 
+
+	} 
+
+	return quad(intgrl); 
+
+}
+
+#if 0
 extern double *IMFintegrated_fractional_yield_denominator(char *IMF, 
 	double m_lower, double m_upper, double tolerance, char *method, 
 	unsigned long Nmax, unsigned long Nmin) { 
 
+	double (*mass_weighted_IMF) (double); 
+
+	switch (checksum(IMF)) { 
+
+		case KROUPA: 
+			mass_weighted_IMF = &mass_weighted_kroupa01; 
+			break; 
+
+		case SALPETER: 
+			mass_weighted_IMF = &mass_weighted_salpeter55; 
+			break; 
+
+		default: 
+			/* would be caught by python anyway, included as failsafe */ 
+			return NULL; 	/* Error: unrecognized IMF */ 
+
+	} 
+
+	return quad(mass_weighted_IMF, m_lower, m_upper, tolerance, 
+		method, Nmax, Nmin); 
+
+	#if 0
 	if (!strcmp(IMF, "kroupa")) {
 		return quad(mass_weighted_kroupa01, m_lower, m_upper, tolerance, 
 			method, Nmax, Nmin); 
@@ -258,8 +357,10 @@ extern double *IMFintegrated_fractional_yield_denominator(char *IMF,
 		/* Would be caught by python anyway, included as failsafe */ 
 		return NULL; /* Error: unrecognized IMF */ 
 	} 
+	#endif 
 
 }
+#endif 
 
 /* 
  * Interpolates the mass yield of a given element from core-collapse supernovae 

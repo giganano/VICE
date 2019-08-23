@@ -8,6 +8,6 @@ cdef extern from "../src/multizone.h":
 	void multizone_free(MULTIZONE *mz) 
 	void link_zone(MULTIZONE *mz, unsigned long address, 
 		unsigned int zone_index) 
-	int multizone_evolve(MULTIZONE *mz) 
+	unsigned short multizone_evolve(MULTIZONE *mz) 
 	void multizone_cancel(MULTIZONE *mz) 
 

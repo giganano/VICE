@@ -16,6 +16,21 @@ extern "C" {
 #define RIA_MAX_EVAL_TIME 15.0 
 #endif /* RIA_MAX_EVAL_TIME */ 
 
+/* hash-code for exp-mode */ 
+#ifndef EXP 
+#define EXP 333 
+#endif /* EXP */ 
+
+/* hash-code for plaw-mode */ 
+#ifndef PLAW 
+#define PLAW 436 
+#endif /* PLAW */ 
+
+/* hash-code for custom DTD */ 
+#ifndef CUSTOM 
+#define CUSTOM 667 
+#endif /* CUSTOM */ 
+
 #include "objects.h" 
 
 /* 
@@ -77,7 +92,7 @@ extern void sneia_from_tracers(MULTIZONE *mz);
  * 
  * source: sneia.c 
  */ 
-extern int setup_RIa(SINGLEZONE *sz); 
+extern unsigned short setup_RIa(SINGLEZONE *sz); 
 
 /* 
  * Normalize the SNe Ia delay-time distribution once it is set according to 

@@ -7,6 +7,7 @@ C, found in the vice/src/ directory within the root tree.
 
 # Python imports 
 from __future__ import absolute_import 
+from .._globals import _DEFAULT_TRACER_MIGRATION_ 
 from .._globals import _RECOGNIZED_ELEMENTS_ 
 from .._globals import _RECOGNIZED_IMFS_ 
 from .._globals import _VERSION_ERROR_ 
@@ -79,6 +80,8 @@ from . cimport _multizone
 from . cimport _singlezone 
 from . cimport _sneia 
 from . cimport _ssp 
+from . cimport _stats 
+from . cimport _tracer 
 
 """ 
 NOTES 
@@ -519,12 +522,12 @@ empty string.""")
 	@property 
 	def n_zones(self): 
 		# docstring in python version 
-		return self._mz[0].n_zones 
+		return self._mz[0].mig[0].n_zones 
 
 	@property 
 	def n_tracers(self): 
 		# docstring in python version 
-		return self._mz[0].n_tracers 
+		return self._mz[0].mig[0].n_tracers 
 
 	@n_tracers.setter 
 	def n_tracers(self, value): 
@@ -542,7 +545,7 @@ empty string.""")
 		if isinstance(value, numbers.Number): 
 			if value > 0: 
 				if value % 1 == 0: 
-					self._mz[0].n_tracers = int(value) 
+					self._mz[0].mig[0].n_tracers = <unsigned int> value 
 				else: 
 					raise ValueError("""Attribute 'n_tracers' must be \
 interpretable as an integer. Got: %g""" % (value)) 
@@ -598,7 +601,7 @@ a boolean. Got: %s""" % (type(value)))
 		cdef int enrichment 
 		if self.outfile_check(overwrite): 
 			os.system("mkdir %s.vice" % (self.name)) 
-			for i in range(self._mz[0].n_zones): 
+			for i in range(self._mz[0].mig[0].n_zones): 
 				os.system("mkdir %s.vice" % (self._zones[i].name)) 
 
 			# warn the user about r-process elements and bad solar calibrations 
@@ -611,7 +614,7 @@ a boolean. Got: %s""" % (type(value)))
 			self.save_attributes() 
 
 			# save yield settings and attributes 
-			for i in range(self._mz[0].n_zones): 
+			for i in range(self._mz[0].mig[0].n_zones): 
 				self._zones[i]._singlezone__c_version.save_yields() 
 				self._zones[i]._singlezone__c_version.save_attributes() 
 		else: 
@@ -653,7 +656,7 @@ zone and at least one timestep larger than 1.""")
 		self.align_element_attributes() 
 		self.zone_alignment_warnings() 
 		self.timestep_alignment_error() 
-		for i in range(self._mz[0].n_zones): 
+		for i in range(self._mz[0].mig[0].n_zones): 
 			times = self._zones[i]._singlezone__zone_prep(output_times) 
 			self._mz[0].zones[i][0].output_times = _cutils.copy_pylist( 
 				times)
@@ -706,7 +709,14 @@ leaving only the results of the current simulation.\nOutput directory: \
 
 	def setup_migration(self): 
 		""" 
-		Sets up the migration matrices for simulation. Cancels the simulation 
+		Sets up both the gas and stellar migration for simulation 
+		""" 
+		self.setup_gas_migration() 
+		self.setup_tracers() 
+
+	def setup_gas_migration(self): 
+		""" 
+		Sets up the gas migration matrix for simulation. Cancels the simulation 
 		if there's an error. 
 
 		Raises 
@@ -715,7 +725,7 @@ leaving only the results of the current simulation.\nOutput directory: \
 			:: 	one of the migration specifications produces a value that is 
 				not between 0 and 1 at any timestep. 
 		""" 
-		_migration.malloc_migration_matrices(self._mz) 
+		_migration.malloc_gas_migration(self._mz) 
 		cdef long length = 10l + long(
 			self._mz[0].zones[0].output_times[
 				self._mz[0].zones[0].n_outputs - 1l] / 
@@ -725,8 +735,8 @@ leaving only the results of the current simulation.\nOutput directory: \
 		errmsg = """Migration probability must be between 0 and 1 at all \
 timesteps.""" 
 
-		for i in range(self._mz[0].n_zones): 
-			for j in range(self._mz[0].n_zones): 
+		for i in range(self._mz[0].mig[0].n_zones): 
+			for j in range(self._mz[0].mig[0].n_zones): 
 				""" 
 				For both gas and stars, look at the i,j'th element of the 
 				user-specified migration matrix. Whether it is a number or a 
@@ -743,7 +753,7 @@ timesteps."""
 				if isinstance(self.migration.gas[i][j], numbers.Number): 
 					arr = length * [self.migration.gas[i][j]] 
 					if _migration.setup_migration_element(self._mz[0], 
-						self._mz[0].migration_matrix_gas, 
+						self._mz[0].mig[0].gas_migration, 
 						i, j, _cutils.copy_pylist(arr)): 
 
 						_multizone.multizone_cancel(self._mz) 
@@ -754,7 +764,7 @@ timesteps."""
 				elif callable(self.migration.gas[i][j]): 
 					arr = list(map(self.migration.gas[i][j], eval_times)) 
 					if _migration.setup_migration_element(self._mz[0], 
-						self._mz[0].migration_matrix_gas, 
+						self._mz[0].mig[0].gas_migration, 
 						i, j, _cutils.copy_pylist(arr)): 
 
 						_multizone.multizone_cancel(self._mz) 
@@ -765,29 +775,67 @@ timesteps."""
 					raise SystemError("Internal Error") 
 
 				# stars 
-				if isinstance(self.migration.stars[i][j], numbers.Number): 
-					arr = length * [self.migration.stars[i][j]] 
-					if _migration.setup_migration_element(self._mz[0], 
-						self._mz[0].migration_matrix_tracers, 
-						i, j, _cutils.copy_pylist(arr)): 
+				# if isinstance(self.migration.stars[i][j], numbers.Number): 
+				# 	arr = length * [self.migration.stars[i][j]] 
+				# 	if _migration.setup_migration_element(self._mz[0], 
+				# 		self._mz[0].migration_matrix_tracers, 
+				# 		i, j, _cutils.copy_pylist(arr)): 
 
-						_multizone.multizone_cancel(self._mz) 
-						raise RuntimeError(errmsg) 
+				# 		_multizone.multizone_cancel(self._mz) 
+				# 		raise RuntimeError(errmsg) 
+				# 	else: 
+				# 		continue 
+				# elif callable(self.migration.stars[i][j]): 
+				# 	arr = list(map(self.migration.stars[i][j], eval_times)) 
+				# 	if _migration.setup_migration_element(self._mz[0], 
+				# 		self._mz[0].migration_matrix_tracers, 
+				# 		i, j, _cutils.copy_pylist(arr)): 
+
+				# 		_multizone.multizone_cancel(self._mz) 
+				# 		raise RuntimeError(errmsg) 
+				# 	else: 
+				# 		continue 
+				# else: 
+				# 	raise SystemError("Internal Error") 
+
+	def setup_tracers(self): 
+		cdef double *zone_sample 
+		# cdef double *zone_dist 
+		_tracer.malloc_tracers(self._mz) 
+		for i in range(_singlezone.n_timesteps(self._mz[0].zones[0][0])): 
+			print("i = %d" % (i))
+			for j in range(self.n_zones): 
+				print("j = %d" % (j)) 
+				# The bins in zone number in steps of 1.e-05 
+				bins = _pyutils.range_(-1.e-5, self.n_zones + 1 - 1.e-5, 1.e-5) 
+				# The distribution specified at this zone and timestep 
+				dist = list(map(lambda x: self.migration.stars(j, 
+					i * self._mz[0].zones[0][0].dt)(x), bins)) 
+				print("a") 
+				zone_sample = _stats.sample( 
+					_cutils.copy_pylist(dist), 
+					_cutils.copy_pylist(bins), 
+					len(bins) - 1l, 
+					self.n_tracers) 
+				for k in range(self.n_tracers): 
+					print(zone_sample[k]) 
+				print("b")
+				for k in range(self.n_tracers): 
+					print("k = %d" % (k)) 
+					print("c") 
+					if _tracer.setup_zone_history(
+						self._mz[0], 
+						self._mz[0].mig[0].tracers[i], 
+						<unsigned long> j, 
+						<unsigned long> zone_sample[k], 
+						<unsigned long> i): 
+						print("d") 
+						raise SystemError("Internal Error") 
 					else: 
+						print("e") 
+						free(zone_sample) 
+						print("f") 
 						continue 
-				elif callable(self.migration.stars[i][j]): 
-					arr = list(map(self.migration.stars[i][j], eval_times)) 
-					if _migration.setup_migration_element(self._mz[0], 
-						self._mz[0].migration_matrix_tracers, 
-						i, j, _cutils.copy_pylist(arr)): 
-
-						_multizone.multizone_cancel(self._mz) 
-						raise RuntimeError(errmsg) 
-					else: 
-						continue 
-				else: 
-					raise SystemError("Internal Error") 
-
 
 	def align_name_attributes(self): 
 		""" 
@@ -801,13 +849,13 @@ timesteps."""
 		Checks for duplicate names as well 
 		""" 
 		# Start with a list of each zone's names and remove duplicates 
-		names = [self._zones[i].name for i in range(self._mz[0].n_zones)] 
+		names = [self._zones[i].name for i in range(self._mz[0].mig[0].n_zones)] 
 		names = list(dict.fromkeys(names)) 
-		if len(names) < self._mz[0].n_zones: 
+		if len(names) < self._mz[0].mig[0].n_zones: 
 			raise RuntimeError("Zones with duplicate names detected.") 
 		else: 
 			# put multizone's name in front of each zone's name 
-			for i in range(self._mz[0].n_zones): 
+			for i in range(self._mz[0].mig[0].n_zones): 
 				self._zones[i].name = "%s.vice/%s" % (self.name, names[i]) 
 
 	def dealign_name_attributes(self): 
@@ -815,7 +863,7 @@ timesteps."""
 		Removes the multizone model's name from the front of each zone's name 
 		at the end of a multizone simulation. 
 		""" 
-		for i in range(self._mz[0].n_zones): 
+		for i in range(self._mz[0].mig[0].n_zones): 
 			self._zones[i].name = self._zones[i].name.split('/')[-1] 
 
 	def align_element_attributes(self): 
@@ -824,11 +872,11 @@ timesteps."""
 		""" 
 		# take a snapshot of each zone's elements and start w/zone 0 
 		elements_attributes = [self._zones[i].elements for i in range(
-			self._mz[0].n_zones)] 
+			self._mz[0].mig[0].n_zones)] 
 		elements = list(elements_attributes[0][:]) 
 
 		# if any zone has an element not in the list, append it 
-		for i in range(1, self._mz[0].n_zones): 
+		for i in range(1, self._mz[0].mig[0].n_zones): 
 			for j in elements_attributes[i]: 
 				if j not in elements: 
 					elements.append(j) 
@@ -836,7 +884,7 @@ timesteps."""
 					continue 
 
 		# Set each zone's elements to the newly determined union 
-		for i in range(self._mz[0].n_zones): 
+		for i in range(self._mz[0].mig[0].n_zones): 
 			self._zones[i].elements = elements 
 
 	def zone_alignment_warnings(self): 
@@ -844,7 +892,7 @@ timesteps."""
 		Raises ScienceWarnings if any of a number of attributes differ between 
 		zones. 
 		""" 
-		n_zones = self._mz[0].n_zones 
+		n_zones = self._mz[0].mig[0].n_zones 
 
 		# attributes that shouldn't (but can) differ between zones 
 		attrs = { 
@@ -882,7 +930,7 @@ artifacts.""" % (key), ScienceWarning)
 		zones. 
 		""" 
 		timestep_size_checker = list(dict.fromkeys(
-			[self._zones[i].dt for i in range(self._mz[0].n_zones)] 
+			[self._zones[i].dt for i in range(self._mz[0].mig[0].n_zones)] 
 		)) 
 		if len(timestep_size_checker) > 1: 
 			raise RuntimeError("Timestep size not uniform across zones.") 
@@ -922,15 +970,15 @@ artifacts.""" % (key), ScienceWarning)
 			User doesn't have dill. Switch functional elements of migration 
 			matrices to 0.0 
 			""" 
-			gas, stars = self.copy_migration_matrices() 
+			# gas, stars = self.copy_migration_matrices() 
+			gas = self._copy_gas_migration() 
 			params["migration.gas"] = gas 
-			params["migration.stars"] = stars 
-		pickle.dump(params, open("%s.vice/params.config" % (self.name), "wb"))  
+			params["migration.stars"] = None 
+		pickle.dump(params, open("%s.vice/params.config" % (self.name), "wb")) 
 
-	def copy_migration_matrices(self): 
+	def copy_gas_migration(self): 
 		warn = False 
 		gas = migration_matrix(self.n_zones) 
-		stars = migration_matrix(self.n_zones) 
 		for i in range(self.n_zones): 
 			for j in range(self.n_zones): 
 				if callable(self.migration.gas[i][j]): 
@@ -938,21 +986,42 @@ artifacts.""" % (key), ScienceWarning)
 					gas[i][j] = 0.0 
 				else: 
 					gas[i][j] = self.migration.gas[i][j] 
-				if callable(self.migration.stars[i][j]): 
-					warn = True 
-					stars[i][j] = 0.0 
-				else: 
-					stars[i][j] = self.migration.stars[i][j] 
-
 		if warn: 
 			warnings.warn("""\
 Saving functional attributes within VICE outputs requires dill (installable \
-via pip). The functional elements of these migration matrices will not be \
-saved with this output.""", ScienceWarning) 
+via pip). The functional elements of the gas migration matrix will not be \
+saved with this output""", ScienceWarning) 
 		else: 
-			pass  
+			pass 
 
-		return [gas, stars] 
+		return gas  
+
+# 	def copy_migration_matrices(self): 
+# 		warn = False 
+# 		gas = migration_matrix(self.n_zones) 
+# 		stars = migration_matrix(self.n_zones) 
+# 		for i in range(self.n_zones): 
+# 			for j in range(self.n_zones): 
+# 				if callable(self.migration.gas[i][j]): 
+# 					warn = True 
+# 					gas[i][j] = 0.0 
+# 				else: 
+# 					gas[i][j] = self.migration.gas[i][j] 
+# 				if callable(self.migration.stars[i][j]): 
+# 					warn = True 
+# 					stars[i][j] = 0.0 
+# 				else: 
+# 					stars[i][j] = self.migration.stars[i][j] 
+
+# 		if warn: 
+# 			warnings.warn("""\
+# Saving functional attributes within VICE outputs requires dill (installable \
+# via pip). The functional elements of these migration matrices will not be \
+# saved with this output.""", ScienceWarning) 
+# 		else: 
+# 			pass  
+
+# 		return [gas, stars] 
 
 cdef class zone_array: 
 
@@ -1073,19 +1142,16 @@ cdef class migration_specifications:
 
 	def __init__(self, n): 
 		assert isinstance(n, int), "Internal Error" 
-		self._stars = migration_matrix(n) 
+		self.stars = _DEFAULT_TRACER_MIGRATION_ 
 		self._gas = migration_matrix(n) 
 
 	def __repr__(self): 
-		rep = "ISM: " 
-		for i in str(self._gas).split('\n'): 
-			rep += "    %s\n" % (i) 
+		rep = "Stars: %s\n" % (str(self._stars)) 
 		for i in range(22): 
 			rep += ' '
-		rep += "Stars: "
-		for i in str(self._stars).split('\n'): 
+		rep += "ISM: " 
+		for i in str(self._gas).split('\n'): 
 			rep += "    %s\n" % (i) 
-		rep += "" 
 		return rep 
 
 	def __str__(self): 
@@ -1124,20 +1190,35 @@ cdef class migration_specifications:
 	@property 
 	def stars(self): 
 		""" 
-		The migration matrix associated with the stars. 
+		The migration settings associated with the stellar tracer particles. 
 
-		Contains user-specified migration prescriptions for use in multizone 
-		simulations. For a multizone simulation with N zones, this is an NxN 
-		matrix. 
-
-		This matrix is defined such that the ij'th element represents the 
-		likelihood that interstellar gas or stars will migrate FROM the i'th 
-		TO the j'th zone in the simulation during a 10 Myr time interval. 
-		These entries may be either numerical values or functions of time in 
-		Gyr. In all cases, the value at a given time must be between 0 and 1, 
-		because the elements are interpreted as likelihoods. 
+		This must be a callable object accepting two numerical parameters 
+		which returns a callable object accepting one numerical parameter, and 
+		is interpreted as a function of zone number and time returning the 
+		distribution of final zone numbers. 
 		""" 
 		return self._stars 
 
+	@stars.setter 
+	def stars(self, value): 
+		if callable(value): 
+			try: 
+				x = value(0, 0) 
+			except TypeError: 
+				raise ValueError("""Stellar migration setting must accept \
+two numerical parameters.""") 
+			if callable(x): 
+				try: 
+					x(0) 
+				except TypeError: 
+					raise ValueError("""Stellar migration setting must return \
+an object accepting one numerical parameter.""") 
+				self._stars = value 
+			else: 
+				raise TypeError("""Stellar migration setting must return a \
+callable object.""") 
+		else: 
+			raise TypeError("""Stellar migration setting must be a callable \
+object.""") 
 
 

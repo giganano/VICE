@@ -17,7 +17,7 @@
 #include "io.h" 
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
-static int singlezone_timestepper(SINGLEZONE *sz); 
+static unsigned short singlezone_timestepper(SINGLEZONE *sz); 
 static void verbosity(SINGLEZONE sz); 
 
 /* 
@@ -105,7 +105,7 @@ extern long singlezone_address(SINGLEZONE *sz) {
  * 
  * header: singlezone.h 
  */ 
-extern int singlezone_evolve(SINGLEZONE *sz) {
+extern unsigned short singlezone_evolve(SINGLEZONE *sz) {
 
 	if (singlezone_setup(sz)) return 1; 	/* setup failed */ 
 
@@ -148,7 +148,7 @@ extern int singlezone_evolve(SINGLEZONE *sz) {
  * ======= 
  * 0 while the simulation is running, 1 if the simulation is over 
  */ 
-static int singlezone_timestepper(SINGLEZONE *sz) {
+static unsigned short singlezone_timestepper(SINGLEZONE *sz) {
 
 	/* 
 	 * Timestep number and current time get moved LAST. This is taken into 
@@ -184,7 +184,7 @@ static int singlezone_timestepper(SINGLEZONE *sz) {
  * 
  * header: singlezone.h 
  */ 
-extern int singlezone_setup(SINGLEZONE *sz) { 
+extern unsigned short singlezone_setup(SINGLEZONE *sz) { 
 
 	/* Open output files and write headers */ 
 	if (singlezone_open_files(sz)) { 
@@ -322,6 +322,30 @@ extern void singlezone_cancel(SINGLEZONE *sz) {
 	free(sz -> ism -> eta); 
 	free(sz -> ism -> enh); 
 	free(sz -> ism -> tau_star); 
+
+}
+
+/* 
+ * Determine the number of timesteps that memory is allocated for in the 
+ * singlezone object. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		The singlezone object for this simulation 
+ * 
+ * Returns 
+ * ======= 
+ * The final output time divided by the timestep size plus 10. 
+ * 
+ * header: singlezone.h 
+ */ 
+extern unsigned long n_timesteps(SINGLEZONE sz) {
+
+	/* 
+	 * By design, memory is allocated for 10 timesteps beyond the final 
+	 * execution time so as to prevent memory errors. 
+	 */ 
+	return 10l + (sz.output_times[sz.n_outputs - 1l] / sz.dt); 
 
 }
 

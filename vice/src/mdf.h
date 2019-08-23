@@ -39,7 +39,7 @@ extern void mdf_free(MDF *mdf);
  * 
  * source: mdf.c 
  */ 
-extern int setup_MDF(SINGLEZONE *sz); 
+extern unsigned short setup_MDF(SINGLEZONE *sz); 
 
 /* 
  * Update the metallicity distribution function. This simply determines the bin 

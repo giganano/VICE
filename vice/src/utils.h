@@ -11,12 +11,99 @@ extern "C" {
 
 #include "objects.h" 
 
+extern long (*checksum)(char *); 
+
+#if 0
+/* 
+ * A slightly more complex form of a hash-checksum combo, which is more 
+ * sensitive to the spelling of the word. This is the checksum algorithm 
+ * to which hashes of built-in settings are compared. 
+ * 
+ * Parameters 
+ * ========== 
+ * str: 		The string to do the checksum on 
+ * 
+ * Returns 
+ * ======= 
+ * The checksum for a built-in hash corresponding to given mode within VICE. 
+ * 
+ * Notes 
+ * ===== 
+ * EPF: Expoential Place Factorial 
+ * 
+ * header: utils.h 
+ */
+extern long EPFchecksum(char *str); 
+#endif 
+
+/* 
+ * Determine the absolute value of a double x. This function extends the 
+ * standard library function abs, which only excepts values of type int. 
+ * 
+ * Parameters 
+ * ========== 
+ * x: 		The number to determine the absolute value of 
+ * 
+ * Returns 
+ * ======= 
+ * +x if x >= 0, -x if x < 0 
+ * 
+ * source: utils.c 
+ */ 
+extern double absval(double x); 
+
+/* 
+ * Determine the sign of a double x 
+ * 
+ * Parameters 
+ * ========== 
+ * x: 		The value to determine the sign of 
+ * 
+ * Returns 
+ * ======= 
+ * +1 if x >= 0, -1 if x < 0 
+ * 
+ * source: utils.c 
+ */ 
+extern short sign(double x); 
+
+/* 
+ * Obtain a simple hash for a string 
+ * 
+ * Parameters 
+ * ========== 
+ * str: 		The string to hash 
+ * 
+ * Returns 
+ * ======= 
+ * The sum of the ordinal numbers for each character in the string 
+ * 
+ * header: utils.h 
+ */ 
+extern long simple_hash(char *str); 
+
 /* 
  * Seeds the random number generator off of the current time. 
  * 
  * source: utils.c 
  */ 
 extern void seed_random(void); 
+
+/* 
+ * Generate a pseudorandom number in a specified range. 
+ * 
+ * Parameters 
+ * ========== 
+ * minimum: 		The minimum value 
+ * maximum: 		The maximum value 
+ * 
+ * Returns 
+ * ======= 
+ * A pseudorandom number between minimum and maximum 
+ * 
+ * source: utils.c 
+ */ 
+extern double rand_range(double minimum, double maximum); 
 
 /* 
  * A standard interpolation function. For two points (x1, y1) and (x2, y2), 

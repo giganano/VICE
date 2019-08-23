@@ -39,13 +39,28 @@ this file impossible, so we can simply cdef the necessary functions here.
 Since there are only two of them, this is simpler than modifying the 
 vice/core/_ccsne.pxd file to allow it. 
 """ 
+cdef extern from "../../src/objects.h": 
+	ctypedef struct INTEGRAL: 
+		double (*func)(double) 
+		double a 
+		double b 
+		double tolerance 
+		unsigned long method 
+		unsigned long Nmax 
+		unsigned long Nmin 
+		unsigned long iters 
+		double result 
+		double error 
+
+cdef extern from "../../src/quadrature.h": 
+	INTEGRAL *integral_initialize() 
+	void integral_free(INTEGRAL *intgrl) 
+
 cdef extern from "../../src/ccsne.h": 
-	double *IMFintegrated_fractional_yield_numerator(char *file, char *IMF, 
-		double m_lower, double m_upper, double tolerance, char *method, 
-		long Nmax, long Nmin) 
-	double *IMFintegrated_fractional_yield_denominator(char *IMF, 
-		double m_lower, double m_upper, double tolerance, char *method, 
-		long Nmax, long Nmin) 
+	unsigned short IMFintegrated_fractional_yield_numerator(INTEGRAL *intgrl, 
+		char *file, char *IMF) 
+	unsigned short IMFintegrated_fractional_yield_denominator(INTEGRAL *intgrl, 
+		char *IMF)  
 
 
 # Recognized methods of numerical quadrature and yield studies 
@@ -325,6 +340,59 @@ own discretion by modifying their CCSNe yield settings directly.""" % (
 		pass 
 
 	# Compute the yield 
+	cdef INTEGRAL *num = integral_initialize() 
+	num[0].a = m_lower 
+	num[0].b = m_upper 
+	num[0].tolerance = tolerance 
+	num[0].method = <unsigned long> sum([ord(i) for i in method.lower()]) 
+	num[0].Nmax = <unsigned long> Nmax 
+	num[0].Nmin = <unsigned long> Nmin 
+	try: 
+		x = IMFintegrated_fractional_yield_numerator(num, 
+			filename.encode("latin-1"), 
+			IMF.lower().encode("latin-1")) 
+		if x == 1: 
+			warnings.warn("""Yield-weighted IMF integration did not converge. \
+Estimated fractional error: %.2e""" % (num[0].error), ScienceWarning) 
+		elif x: 
+			raise SystemError("Internal Error") 
+		else: 
+			pass 
+	finally: 
+		numerator = [num[0].result, num[0].error, num[0].iters] 
+		integral_free(num) 
+
+
+	cdef INTEGRAL *den = integral_initialize() 
+	den[0].a = m_lower 
+	den[0].b = m_upper 
+	den[0].tolerance = tolerance 
+	den[0].method = <unsigned long> sum([ord(i) for i in method.lower()]) 
+	den[0].Nmax = <unsigned long> Nmax 
+	den[0].Nmin = <unsigned long> Nmin 
+	try: 
+		x = IMFintegrated_fractional_yield_denominator(den, 
+			IMF.lower().encode("latin-1")) 
+		if x == 1: 
+			warnings.warn("""Mass-weighted IMF integration did not converge. \
+Estimated fractional error: %.2e""" % (den[0].error), ScienceWarning) 
+		elif x: 
+			raise SystemError("Internal Error") 
+		else: 
+			pass 
+	finally: 
+		denominator = [den[0].result, den[0].error, den[0].iters] 
+		integral_free(den) 
+
+	y = numerator[0] / denominator[0] 
+	errnum = numerator[1] * numerator[0] 
+	errden = denominator[1] * denominator[0] 
+	err = m.sqrt(errnum**2 / denominator[0]**2 + numerator[0]**2 / 
+		denominator[0]**4 * errden**2) 
+
+	return [y, err] 
+
+	"""
 	cdef double *numerator = IMFintegrated_fractional_yield_numerator(
 		filename.encode("latin-1"), 
 		IMF.lower().encode("latin-1"), 
@@ -343,30 +411,19 @@ own discretion by modifying their CCSNe yield settings directly.""" % (
 		method.lower().encode("latin-1"), 
 		Nmax, 
 		Nmin) 
+	""" 
 
-	if numerator[1] > tolerance: 
-		# If the numerator didn't converge 
-		warnings.warn("""Yield-weighted IMF integration did not converge. \
-Estimated fractional error: %.2e""" % (numerator[1]), ScienceWarning) 
-	else: 
-		pass 
-	if denominator[1] > tolerance: 
-		warnings.warn("""Mass-weighted IMF integration did not converge. \
-Estimated fractional error: %.2e""" % (denominator[1], ScienceWarning)) 
-	else: 
-		pass 
-
-	try: 
-		y = numerator[0] / denominator[0] 
-		errnum = numerator[1] * numerator[0] 
-		errden = denominator[1] * denominator[0] 
-		err = m.sqrt(errnum**2 / denominator[0]**2 + numerator[0]**2 / 
-			denominator[0]**4 * errden**2) 
-	finally: 
-		free(numerator) 
-		free(denominator) 
-
-	return [y, err] 
+# 	if numerator[1] > tolerance: 
+# 		# If the numerator didn't converge 
+# 		warnings.warn("""Yield-weighted IMF integration did not converge. \
+# Estimated fractional error: %.2e""" % (numerator[1]), ScienceWarning) 
+# 	else: 
+# 		pass 
+# 	if denominator[1] > tolerance: 
+# 		warnings.warn("""Mass-weighted IMF integration did not converge. \
+# Estimated fractional error: %.2e""" % (denominator[1], ScienceWarning)) 
+# 	else: 
+# 		pass 
 
 
 #------------------------- TYPE CHECKING SUBROUTINES -------------------------# 

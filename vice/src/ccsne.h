@@ -83,19 +83,14 @@ extern double mdot_ccsne(SINGLEZONE sz, ELEMENT e);
 extern double get_cc_yield(ELEMENT e, double Z); 
 
 /* 
- * Returns value of the integrated IMF weighted by the mass yield of a 
+ * Determine the value of the integrated IMF weighted by the mass yield of a 
  * given element, up to the normalization of the IMF. 
  * 
  * Parameters 
  * ========== 
+ * intgrl: 		The integral object for the numerator of the yield 
  * file:		The nme of the data file containing the grid
- * IMF:			The IMF to use ('kroupa' or 'salpeter')
- * m_lower:		The lower mass limit on star formation in units of Msun
- * m_upper:		The upper mass limit on star formation in units of Msun
- * tolerance:	The maximum fractional error to allow
- * method:		The method of quadrature to use
- * Nmax:		Maximum number of bins (safeguard against divergent solns)
- * Nmin:		Minimum number of bins 
+ * IMF:			The IMF to use ('kroupa' or 'salpeter') 
  * 
  * Returns 
  * ======= 
@@ -104,34 +99,27 @@ extern double get_cc_yield(ELEMENT e, double Z);
  * 
  * source: ccsne.c 
  */ 
-extern double *IMFintegrated_fractional_yield_numerator(char *file, char *IMF, 
-	double m_lower, double m_upper, double tolerance, char *method, 
-	unsigned long Nmax, unsigned long Nmin); 
+extern unsigned short IMFintegrated_fractional_yield_numerator(
+	INTEGRAL *intgrl, char *file, char *IMF); 
 
-	/* 
+/* 
  * Determine the value of the integrated IMF weighted by stellar mass, up to 
  * the normalization of the IMF. 
  * 
  * Parameters 
  * ========== 
- * IMF:			The IMF to use ('kroupa' or 'salpeter')
- * m_lower:		The lower mass limit on star formation in units of Msun
- * m_upper:		The upper mass limit on star formation in units of Msun
- * tolerance:	The maximum fractional error to allow
- * method:		The method of quadrature to use
- * Nmax:		Maximum number of bins (safeguard against divergent solns)
- * Nmin:		Minimum number of bins 
+ * intgrl: 		The integral object for the denominator of the yield 
+ * IMF:			The IMF to use ('kroupa' or 'salpeter') 
  * 
  * Returns 
  * ======= 
- * The total mass of a stellar population in Msun, up to the normalization of 
- * the IMF. 
+ * 3 on an unrecognized IMF, otherwise the value returned by quad (see 
+ * quadrature.h) 
  * 
  * source: ccsne.c 
  */ 
-extern double *IMFintegrated_fractional_yield_denominator(char *IMF, 
-	double m_lower, double m_upper, double tolerance, char *method, 
-	unsigned long Nmax, unsigned long Nmin); 
+extern unsigned short IMFintegrated_fractional_yield_denominator(
+	INTEGRAL *intgrl, char *IMF); 
 
 #ifdef __cplusplus 
 } 

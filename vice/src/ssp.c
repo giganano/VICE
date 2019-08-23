@@ -239,6 +239,57 @@ extern void recycle_metals_from_tracers(MULTIZONE *mz, unsigned int index) {
 	 */ 
 
 	unsigned long i; 
+	for (i = 0l; i < (*(*mz).mig).tracer_count; i++) {
+		TRACER *t = mz -> mig -> tracers[i]; 
+		SSP *ssp = mz -> zones[(*t).zone_origin] -> ssp; 
+
+		if ((*ssp).continuous) { 
+			/* ------------------- Continuous recycling ------------------- */ 
+			unsigned long n = (*(*mz).zones[0]).timestep - (*t).timestep_origin; 
+			/* The metallicity by mass of this element in the tracer */ 
+			double Z = (
+				(*(*(*mz).zones[(*t).zone_origin]).elements[index]).Z[(
+					*t).timestep_origin] 
+			); 
+			mz -> zones[(*t).zone_current] -> elements[index] -> mass += (
+				Z * (*t).mass * ((*ssp).crf[n + 1l] - (*ssp).crf[n])
+			); 
+		} else {}
+
+	} 
+
+	unsigned int j; 
+	for (j = 0; j < (*(*mz).mig).n_zones; j++) {
+		SSP *ssp = mz -> zones[j] -> ssp; 
+
+		if (!(*ssp).continuous) {
+			/* ------------------ Instantaneous recycling ------------------ */ 
+			mz -> zones[j] -> elements[index] -> mass += (
+				(*(*(*mz).zones[j]).ism).star_formation_rate * 
+				(*(*mz).zones[j]).dt * 
+				(*(*(*mz).zones[j]).ssp).R0 * 
+				(*(*(*mz).zones[j]).elements[index]).mass / 
+				(*(*(*mz).zones[j]).ism).mass 
+			); 
+		} else {} 
+
+	}
+
+} 
+
+#if 0
+extern void recycle_metals_from_tracers(MULTIZONE *mz, unsigned int index) { 
+
+	/* 
+	 * Look at each tracer particle and allow each that was born in a zone 
+	 * with continuous recycling to enrich its current zone via continuous 
+	 * recycling, regardless of the current zone's recycling prescription. 
+	 * Zones that have instantaneous recycling will retain their recycling 
+	 * as such as well as that from particles with continuous recycling that 
+	 * migrate into that zone. 
+	 */ 
+
+	unsigned long i; 
 	for (i = 0l; i < (*mz).tracer_count; i++) {
 		TRACER *t = mz -> tracers[i]; 
 		SSP *ssp = mz -> zones[(*t).zone_origin] -> ssp; 
@@ -275,57 +326,8 @@ extern void recycle_metals_from_tracers(MULTIZONE *mz, unsigned int index) {
 
 	}
 
-	#if 0 
-	/* ----------------------- Continuous recycling ----------------------- */ 
-	if ((*(*(*mz).zones[0]).ssp).continuous) { 
-		unsigned long i, timestep = (*(*mz).zones[0]).timestep; 
-		for (i = 0l; i < timestep * (*mz).n_zones * (*mz).n_tracers; i++) {
-			TRACER *t = mz -> tracers[i]; 
-			SSP *ssp = mz -> zones[(*t).zone_origin] -> ssp; 
-			unsigned long n = timestep - (*t).timestep_origin; 
-
-			/* Each tracer particle has a dCRF contribution */ 
-			if (index == -1) {			/* This is the gas supply */ 
-				mz -> zones[(*t).zone_current] -> ism -> mass += (
-					(*t).mass * ((*ssp).crf[n + 1l] - (*ssp).crf[n])
-				); 
-			} else {					/* element -> weight by Z */ 
-				/* The metallicity by mass of this element in the tracer */ 
-				double Z = (
-					(*(*(*mz).zones[(*t).zone_origin]).elements[index]).Z[(
-						*t).timestep_origin] 
-				); 
-				mz -> zones[(*t).zone_current] -> elements[index] -> mass += (
-					Z * (*t).mass * ((*ssp).crf[n + 1l] - (*ssp).crf[n]) 
-				); 
-			} 
-		} 
-	/* ---------------------- Instantaneous recycling ---------------------- */ 
-	} else { 
-		unsigned int i; 
-		if (index == -1) {			/* gas supply */ 
-			for (i = 0; i < (*mz).n_zones; i++) {
-				mz -> zones[i] -> ism -> mass += (
-					(*(*(*mz).zones[i]).ism).star_formation_rate * 
-					(*(*mz).zones[i]).dt * 
-					(*(*(*mz).zones[i]).ssp).R0 
-				); 
-			} 
-		} else { 				/* element -> weight by Z */ 
-			for (i = 0; i < (*mz).n_zones; i++) {
-				mz -> zones[i] -> elements[index] -> mass += (
-					(*(*(*mz).zones[i]).ism).star_formation_rate * 
-					(*(*mz).zones[i]).dt * 
-					(*(*(*mz).zones[i]).ssp).R0 * 
-					(*(*(*mz).zones[i]).elements[index]).mass / 
-					(*(*(*mz).zones[i]).ism).mass 
-				); 
-			} 
-		}
-	} 
-	#endif 
-
 } 
+#endif 
 
 /* 
  * Determine the amount of ISM gas recycled from stars in each zone in a 
@@ -345,6 +347,50 @@ extern void recycle_metals_from_tracers(MULTIZONE *mz, unsigned int index) {
  * 
  * header: ssp.h 
  */ 
+extern double *gas_recycled_in_zones(MULTIZONE mz) {
+
+	/* Store the mass recycled in each zone in this array */ 
+	unsigned int j; 
+	double *mass = (double *) malloc ((*mz.mig).n_zones * sizeof(double)); 
+	for (j = 0; j < (*mz.mig).n_zones; j++) {
+		mass[j] = 0; 
+	} 
+
+	/* Look at each tracer particle for continuous recycling */ 
+	unsigned long i; 
+	for (i = 0l; i < (*mz.mig).tracer_count; i++) {
+		TRACER *t = (*mz.mig).tracers[i]; 
+		SSP *ssp = mz.zones[(*t).zone_origin] -> ssp; 
+
+		if ((*ssp).continuous) { 
+			/* ------------------- Continuous recycling ------------------- */ 
+			unsigned long n = (*mz.zones[0]).timestep - (*t).timestep_origin; 
+			mass[(*t).zone_current] += (*t).mass * ((*ssp).crf[n + 1l] - 
+				(*ssp).crf[n]); 
+		} else {} 
+
+	} 
+
+	/* Look at each zone for instantaneous recycling */ 
+	for (j = 0; j < (*mz.mig).n_zones; j++) {
+		SSP *ssp = mz.zones[j] -> ssp; 
+
+		if (!(*ssp).continuous) {
+			/* ------------------ Instantaneous recycling ------------------ */ 
+			mass[j] += (
+				(*(*mz.zones[j]).ism).star_formation_rate * 
+				(*mz.zones[j]).dt * 
+				(*(*mz.zones[j]).ssp).R0 
+			); 
+		} else {} 
+
+	} 
+
+	return mass; 
+
+} 
+
+#if 0
 extern double *gas_recycled_in_zones(MULTIZONE mz) {
 
 	/* Store the mass recycled in each zone in this array */ 
@@ -386,7 +432,8 @@ extern double *gas_recycled_in_zones(MULTIZONE mz) {
 
 	return mass; 
 
-}
+} 
+#endif 
 
 /* 
  * Evaluate the cumulative return fraction across all timesteps in preparation 
@@ -403,7 +450,7 @@ extern double *gas_recycled_in_zones(MULTIZONE mz) {
  * 
  * header: ssp.h 
  */ 
-extern int setup_CRF(SINGLEZONE *sz) {
+extern unsigned short setup_CRF(SINGLEZONE *sz) {
 
 	double denominator = CRFdenominator((*(*sz).ssp)); 
 	if (denominator < 0) {
@@ -768,7 +815,7 @@ static double CRFdenominator_IMFrange(double m_upper, double m_lower,
  * 
  * header: ssp.h 
  */ 
-extern int setup_MSMF(SINGLEZONE *sz) {
+extern unsigned short setup_MSMF(SINGLEZONE *sz) {
 
 	double denominator = MSMFdenominator((*(*sz).ssp)); 
 	if (denominator < 0) {

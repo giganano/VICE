@@ -71,7 +71,7 @@ extern void mdf_free(MDF *mdf) {
  * 
  * header: mdf.h 
  */ 
-extern int setup_MDF(SINGLEZONE *sz) {
+extern unsigned short setup_MDF(SINGLEZONE *sz) {
 
 	/* 
 	 * The number of bins and binspace will be set by python. Give each element 
