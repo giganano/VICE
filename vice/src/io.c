@@ -856,7 +856,7 @@ extern void write_tracers_output(MULTIZONE mz) {
 			(*(*mz.mig).tracers[i]).timestep_origin * (*mz.zones[0]).dt); 
 		fprintf((*mz.mig).tracers_output, "%u\t", 
 			(*(*mz.mig).tracers[i]).zone_origin); 
-		fprintf((*mz.mig).tracers_output, "%u\t", 
+		fprintf((*mz.mig).tracers_output, "%u\n", 
 			(*(*mz.mig).tracers[i]).zone_current); 
 	}
 

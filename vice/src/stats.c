@@ -76,23 +76,12 @@ extern double *sample(double *dist, double *bins, unsigned long n_bins,
 	 */ 
 	double *cdf = convert_to_CDF(dist, bins, n_bins); 
 	double *values = (double *) malloc (n * sizeof(double)); 
-	// printf("CALLED SAMPLE\n"); 
 
 	unsigned long i; 
-	// for (i = 0l; i < n_bins; i++) {
-	// 	if (cdf[i]) {
-	// 		printf("bins[%ld] = %e | cdf[%ld] = %e | bins[%ld] = %e\n", 
-	// 				i, bins[i], i, cdf[i], i + 1l, bins[i + 1l]); 
-	// 		if (cdf[i] == 1) break; 
-	// 	} else {} 
-	// }
 	seed_random(); 
 	for (i = 0l; i < n; i++) { 
-		// printf("i = %ld\n", i); 
 		double x = (double) rand() / RAND_MAX; 
-		// printf("x = %e\n", x); 
 		long bin = get_bin_number(cdf, n_bins, x); 
-		// printf("bin = %ld\n", bin); 
 		switch (bin) {
 
 			case -1l: 
@@ -100,7 +89,6 @@ extern double *sample(double *dist, double *bins, unsigned long n_bins,
 				 * This shouldn't happen given the nature of this 
 				 * implementation; included as a failsafe. 
 				 */ 
-				// printf("NULL"); 
 				free(cdf); 
 				free(values); 
 				return NULL; 
@@ -115,7 +103,6 @@ extern double *sample(double *dist, double *bins, unsigned long n_bins,
 				 */ 
 				if ((unsigned) bin != n_bins - 1l) bin++; 
 				values[i] = rand_range(bins[bin], bins[bin + 1l]); 
-				// printf("%e\n", values[i]); 
 				break; 
 
 		}
@@ -145,11 +132,6 @@ extern double *sample(double *dist, double *bins, unsigned long n_bins,
 	} 
 
 	free(cdf); 
-
-	// for (i = 0l; i < n; i++) {
-	// 	printf("values[%ld] = %e\n", i, values[i]); 
-	// }
-
 	return values; 
 
 }

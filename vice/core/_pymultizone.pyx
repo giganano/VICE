@@ -6,7 +6,7 @@ C, found in the vice/src/ directory within the root tree.
 """ 
 
 # Python imports 
-from __future__ import absolute_import 
+from __future__ import absolute_import, division 
 from .._globals import _DEFAULT_TRACER_MIGRATION_ 
 from .._globals import _RECOGNIZED_ELEMENTS_ 
 from .._globals import _RECOGNIZED_IMFS_ 
@@ -603,6 +603,7 @@ a boolean. Got: %s""" % (type(value)))
 			os.system("mkdir %s.vice" % (self.name)) 
 			for i in range(self._mz[0].mig[0].n_zones): 
 				os.system("mkdir %s.vice" % (self._zones[i].name)) 
+			self.setup_migration() # used to be in self.prep
 
 			# warn the user about r-process elements and bad solar calibrations 
 			self._zones[0]._singlezone__c_version.nsns_warning() 
@@ -629,6 +630,8 @@ a boolean. Got: %s""" % (type(value)))
 			_multizone.multizone_cancel(self._mz) 
 			raise RuntimeError("""Sum of migration likelihoods for at least \
 zone and at least one timestep larger than 1.""") 
+		elif enrichment == 3: 
+			raise IOError("Couldn't save tracer particle data.") 
 		elif capture: 
 			return output(self.name) 
 		else: 
@@ -661,7 +664,8 @@ zone and at least one timestep larger than 1.""")
 			self._mz[0].zones[i][0].output_times = _cutils.copy_pylist( 
 				times)
 			self._mz[0].zones[i][0].n_outputs = len(times) 
-		self.setup_migration()
+		# setup migration moved to after the outfile check 
+		# self.setup_migration() 
 
 	def outfile_check(self, overwrite): 
 		""" 
@@ -799,43 +803,56 @@ timesteps."""
 				# 	raise SystemError("Internal Error") 
 
 	def setup_tracers(self): 
+		bins = _pyutils.range_(-0.05, self.n_zones + 1 - 0.05, 0.05) 
+		cdef double *zone_bins = _cutils.copy_pylist(bins)
 		cdef double *zone_sample 
-		# cdef double *zone_dist 
+		cdef double *zone_dist 
 		_tracer.malloc_tracers(self._mz) 
-		for i in range(_singlezone.n_timesteps(self._mz[0].zones[0][0])): 
-			print("i = %d" % (i))
+		n = _singlezone.n_timesteps(self._mz[0].zones[0][0]) 
+		x = 0
+		for i in range(n): 
 			for j in range(self.n_zones): 
-				print("j = %d" % (j)) 
-				# The bins in zone number in steps of 1.e-05 
-				bins = _pyutils.range_(-1.e-5, self.n_zones + 1 - 1.e-5, 1.e-5) 
 				# The distribution specified at this zone and timestep 
-				dist = list(map(lambda x: self.migration.stars(j, 
-					i * self._mz[0].zones[0][0].dt)(x), bins)) 
-				print("a") 
+				zone_dist = _cutils.copy_pylist(
+					list(map(self.migration.stars(j, 
+						i * self._mz[0].zones[0][0].dt), 
+					bins)))  
 				zone_sample = _stats.sample( 
-					_cutils.copy_pylist(dist), 
-					_cutils.copy_pylist(bins), 
+					zone_dist, 
+					zone_bins, 
 					len(bins) - 1l, 
 					self.n_tracers) 
-				for k in range(self.n_tracers): 
-					print(zone_sample[k]) 
-				print("b")
-				for k in range(self.n_tracers): 
-					print("k = %d" % (k)) 
-					print("c") 
-					if _tracer.setup_zone_history(
-						self._mz[0], 
-						self._mz[0].mig[0].tracers[i], 
-						<unsigned long> j, 
-						<unsigned long> zone_sample[k], 
-						<unsigned long> i): 
-						print("d") 
-						raise SystemError("Internal Error") 
-					else: 
-						print("e") 
-						free(zone_sample) 
-						print("f") 
-						continue 
+				free(zone_dist) 
+				if zone_sample is not NULL: 
+					for k in range(self.n_tracers): 
+						# print("k = %d" % (k)) 
+						if _tracer.setup_zone_history(
+							self._mz[0], 
+							self._mz[0].mig[0].tracers[x], 
+							<unsigned long> j, 
+							<unsigned long> zone_sample[k], 
+							<unsigned long> i): 
+							raise SystemError("Internal Error") 
+						else: 
+							# print("a") 
+							x += 1
+							# print("b") 
+							continue 
+					free(zone_sample) 
+					# print("c") 
+				else: 
+					raise RuntimeError("""\
+Could not sample from distribution at time t = %g and initial zone number = \
+%d. Please ensure that the specified stellar migration prescription does not \
+exhibit any numerical delta functions.""" % (
+						i * self._mz[0].zones[0][0].dt, j))
+			if self.verbose: 
+				sys.stdout.write("""Setting up tracer particles. Progress: \
+%.1f%%\r""" % (100 * (i + 1) / n)) 
+				sys.stdout.flush() 
+			else: 
+				pass 
+		if self.verbose: sys.stdout.write("\n") 
 
 	def align_name_attributes(self): 
 		""" 

@@ -8,6 +8,8 @@ extern "C" {
 
 #include "objects.h" 
 
+// extern void print_tracer(TRACER *t); 
+
 /* 
  * Allocates memory for and returns a pointer to a TRACER particle. 
  * 

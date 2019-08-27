@@ -184,7 +184,7 @@ extern unsigned short multizone_evolve(MULTIZONE *mz) {
 	 * x differentiates between failed setup and migration matrix failing the 
 	 * sanity check 
 	 */ 
-	int x = multizone_setup(mz); 
+	unsigned short x = multizone_setup(mz); 
 	if (x) return x; 
 
 	/* 
@@ -195,7 +195,7 @@ extern unsigned short multizone_evolve(MULTIZONE *mz) {
 	 */ 
 	long n = 0l; 
 	SINGLEZONE *sz = mz -> zones[0]; 
-	inject_tracers(mz); 
+	// inject_tracers(mz); 
 	while ((*sz).current_time <= (*sz).output_times[(*sz).n_outputs - 1l]) {
 		/* 
 		 * Run the simulation until the time reaches the final output time 
@@ -223,11 +223,11 @@ extern unsigned short multizone_evolve(MULTIZONE *mz) {
 		write_tracers_output(*mz); 
 		multizone_close_tracer_file(mz); 
 	} else { 
-		printf("TRACER ERROR\n"); 
+		x = 3; 
 	} 
 
 	multizone_clean(mz); 
-	return 0; 
+	return x; 
 
 } 
 
@@ -307,6 +307,7 @@ static unsigned short multizone_timestepper(MULTIZONE *mz) {
 	 * bookkeep the new metallicity and update the MDF in each zone. 
 	 */ 
 	unsigned int i, j; 
+
 	for (i = 0; i < (*(*mz).mig).n_zones; i++) { 
 		SINGLEZONE *sz = mz -> zones[i]; 
 		for (j = 0; j < (*sz).n_elements; j++) {

@@ -80,7 +80,7 @@ def _DEFAULT_TRACER_MIGRATION_(n, t):
 		""" 
 		The distribution of stars is a delta function at the n'th zone. 
 		""" 
-		return int(n2 == n)
+		return int(n <= n2 < n + 1) 
 
 	return _DISTRIBUTION_ 
 

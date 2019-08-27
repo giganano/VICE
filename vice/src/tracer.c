@@ -46,6 +46,18 @@ extern void tracer_free(TRACER *t) {
 }
 
 #if 0
+extern void print_tracer(TRACER *t) {
+
+	printf("======================================\n"); 
+	printf("address = %p\n", (void *) t); 
+	printf("zone_origin = %d\n", (*t).zone_origin); 
+	printf("zone_current = %d\n", (*t).zone_current); 
+	printf("timestep_origin = %d\n", (*t).timestep_origin); 
+
+}
+#endif 
+
+#if 0
 extern void tracer_free(TRACER *t) {
 
 	if (t != NULL) {
@@ -67,14 +79,17 @@ extern void tracer_free(TRACER *t) {
  */ 
 extern void inject_tracers(MULTIZONE *mz) { 
 
-	unsigned long i; 
+	unsigned long i, timestep = (*(*mz).zones[0]).timestep; 
 	MIGRATION *mig = mz -> mig; 
 	for (i = (*mig).tracer_count; 
 		i < (*mig).tracer_count + (*mig).n_tracers * (*mig).n_zones; 
 		i++) {
 
 		SINGLEZONE sz = *(*mz).zones[(*(*mig).tracers[i]).zone_origin]; 
-		mig -> tracers[i] -> mass = (*sz.ism).star_formation_rate * sz.dt; 
+		TRACER *t = mz -> mig -> tracers[i]; 
+		t -> mass = (*sz.ism).star_formation_rate * sz.dt / (*mig).n_tracers; 
+		t -> zone_current = (unsigned) (
+			(*(*mig).tracers[i]).zone_history[timestep + 1l]); 
 
 	}
 	mig -> tracer_count += (*mig).n_tracers * (*mig).n_zones; 
@@ -217,7 +232,7 @@ extern unsigned short setup_zone_history(MULTIZONE mz, TRACER *t,
 	} else if (origin > (*mz.mig).n_zones) {
 		/* zone of origin too large */ 
 		return 2; 
-	} else if (final > (*mz.mig).n_zones) {
+	} else if (final >= (*mz.mig).n_zones) {
 		/* final zone too large */ 
 		return 3; 
 	} else { 
