@@ -417,6 +417,7 @@ cdef class c_multizone:
 		n_zones = 10, 
 		name = "multizonemodel", 
 		n_tracers = 1, 
+		simple = True, 
 		verbose = False): 
 
 		assert isinstance(n_zones, int), "Internal Error" 
@@ -639,13 +640,6 @@ a boolean. Got: %s""" % (type(value)))
 		return self._migration 
 
 	def run(self, output_times, capture = False, overwrite = False): 
-		""" 
-		To-do list for this function 
-		============================ 
-		migration matrices need piped to C 
-		need to interpret value of enrichment variable once it's done: it's 
-			not a simple "1 if failed setup" as in singlezone 
-		""" 
 		self.align_name_attributes() 
 		self.prep(output_times) 
 		cdef int enrichment 
