@@ -301,6 +301,7 @@ typedef struct multizone {
 	SINGLEZONE **zones; 
 	MIGRATION *mig; 
 	unsigned short verbose; 
+	unsigned short simple; 
 
 } MULTIZONE; 
 

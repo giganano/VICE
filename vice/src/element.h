@@ -71,6 +71,22 @@ extern void update_element_mass(SINGLEZONE sz, ELEMENT *e);
  */ 
 extern void update_elements(MULTIZONE *mz); 
 
+/* 
+ * Determine the [X/H] value for a given element in a zone. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		The singlezone object to pull the ISM mass from 
+ * e: 		The element to find the [X/H] value for 
+ * 
+ * Returns 
+ * ======= 
+ * [X/H] = log10( mass(element) / mass(ISM) / solar ) 
+ * 
+ * source: element.c 
+ */ 
+extern double onH(SINGLEZONE sz, ELEMENT e); 
+
 #ifdef __cplusplus 
 } 
 #endif 

@@ -12,7 +12,15 @@ extern "C" {
 /* Maximum amount of time in Gyr that VICE supports singlezone simulations */ 
 #ifndef SINGLEZONE_MAX_EVAL_TIME 
 #define SINGLEZONE_MAX_EVAL_TIME 15 
-#endif 
+#endif /* SINGLEZONE_MAX_EVAL_TIME */ 
+
+/* 
+ * The number of timesteps beyond the final evaluation time that memory is 
+ * allocated for as a safeguard against memory errors 
+ */ 
+#ifndef BUFFER 
+#define BUFFER 10l 
+#endif /* BUFFER */ 
 
 #include "objects.h" 
 
@@ -59,6 +67,18 @@ extern long singlezone_address(SINGLEZONE *sz);
  * source: singlezone.c 
  */ 
 extern unsigned short singlezone_evolve(SINGLEZONE *sz); 
+
+/* 
+ * Evolves a singlezone simulation under current user settings, but does not 
+ * write the MDF output or normalization. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		A pointer to the singlezone object to run 
+ * 
+ * source: singlezone.c 
+ */ 
+extern void singlezone_evolve_no_setup_no_clean(SINGLEZONE *sz); 
 
 /* 
  * Setup the singlezone object for simulation. 

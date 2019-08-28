@@ -242,15 +242,15 @@ extern unsigned short setup_zone_history(MULTIZONE mz, TRACER *t,
 			/* Zone number is -1 until the tracer particle is born */ 
 			t -> zone_history[i] = -1; 
 		} 
-		for (i = birth; i < n - 10l; i++) { 
+		for (i = birth; i < n - BUFFER; i++) { 
 			/* 
 			 * Use the interpolate function to draw the line between the 
 			 * zone of birth and the final zone 
 			 */ 
-			t -> zone_history[i] = (int) interpolate(birth, n - 10l, 
+			t -> zone_history[i] = (int) interpolate(birth, n - BUFFER, 
 				origin, final, i); 
 		} 
-		for (i = n - 10l; i < n; i++) {
+		for (i = n - BUFFER; i < n; i++) {
 			/* 
 			 * Put the tracer particle in its final zone for the 10 final 
 			 * timesteps 
@@ -258,6 +258,11 @@ extern unsigned short setup_zone_history(MULTIZONE mz, TRACER *t,
 			t -> zone_history[i] = (int) final; 
 		} 
 		t -> zone_origin = origin; 
+		if (mz.simple) {
+			t -> zone_current = final; 
+		} else {
+			t -> zone_current = origin; 
+		}
 		t -> zone_current = origin; 
 		t -> timestep_origin = birth; 
 		return 0; 

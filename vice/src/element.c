@@ -3,6 +3,7 @@
  */ 
 
 #include <stdlib.h> 
+#include <math.h> 
 #include "element.h" 
 #include "ccsne.h" 
 #include "sneia.h" 
@@ -272,6 +273,26 @@ static void update_element_mass_sanitycheck(ELEMENT *e) {
 	 * heavy elements. Thus a lower bound of a true zero is implemented here. 
 	 */ 
 	if ((*e).mass < 0) e -> mass = 0; 	
+
+} 
+
+/* 
+ * Determine the [X/H] value for a given element in a zone. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		The singlezone object to pull the ISM mass from 
+ * e: 		The element to find the [X/H] value for 
+ * 
+ * Returns 
+ * ======= 
+ * [X/H] = log10( mass(element) / mass(ISM) / solar ) 
+ * 
+ * header: element.h 
+ */ 
+extern double onH(SINGLEZONE sz, ELEMENT e) {
+
+	return log10( (e.mass / (*sz.ism).mass) / e.solar ); 
 
 }
 

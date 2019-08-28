@@ -5,8 +5,13 @@
 
 #include <stdlib.h> 
 #include <math.h> 
+#include "element.h" 
 #include "mdf.h" 
 #include "utils.h" 
+
+/* ---------- Static function comment headers not duplicated here ---------- */ 
+static void update_MDF_from_tracer(MULTIZONE *mz, TRACER t); 
+static void reset_MDF(SINGLEZONE *sz); 
 
 /* 
  * Allocate memory for and return a pointer to an MDF struct. Initializes all 
@@ -102,7 +107,8 @@ extern unsigned short setup_MDF(SINGLEZONE *sz) {
 	 * The number of abundance ratios is n choose 2 = n(n - 1)/2. Initialize 
 	 * each abundance ratio to an array of zeroes as well. 
 	 */ 
-	unsigned int n_ratios = (*sz).n_elements * ((*sz).n_elements - 1) / 2; 
+	// unsigned int n_ratios = (*sz).n_elements * ((*sz).n_elements - 1) / 2; 
+	unsigned int n_ratios = choose((*sz).n_elements, 2);  
 	sz -> mdf -> ratio_distributions = (double **) malloc (n_ratios * 
 		sizeof(double *)); 
 	if ((*(*sz).mdf).ratio_distributions == NULL) {
@@ -142,13 +148,16 @@ extern void update_MDF(SINGLEZONE *sz) {
 	/* ---------------------- for each tracked element ---------------------- */ 
 	unsigned int i, j; 
 	for (i = 0; i < (*sz).n_elements; i++) {
+		#if 0
 		double onH = log10( 		/* [X/H] for this element */ 
 			((*(*sz).elements[i]).mass / (*(*sz).ism).mass) / 
 			(*(*sz).elements[i]).solar
 		); 
+		#endif 
+		double onH1 = onH(*sz, *(*sz).elements[i]); 
 		/* The bin number for [X/H] */ 
 		long bin = get_bin_number((*(*sz).mdf).bins, 
-			(*(*sz).mdf).n_bins, onH); 
+			(*(*sz).mdf).n_bins, onH1); 
 		if (bin != -1l) {
 			/* 
 			 * Increment the bin number by the star formation rate. Prefactors 
@@ -160,9 +169,10 @@ extern void update_MDF(SINGLEZONE *sz) {
 	} 
 
 	/* ---------------------- for each abundance ratio ---------------------- */ 
-	int n = 0; 
+	unsigned int n = 0; 
 	for (i = 1; i < (*sz).n_elements; i++) {
 		for (j = 0; j < i; j++) {
+			#if 0
 			double onH1 = log10(		/* [X/H] for this element */ 
 				((*(*sz).elements[i]).mass / (*(*sz).ism).mass) / 
 				(*(*sz).elements[i]).solar
@@ -171,6 +181,9 @@ extern void update_MDF(SINGLEZONE *sz) {
 				((*(*sz).elements[j]).mass / (*(*sz).ism).mass) / 
 				(*(*sz).elements[j]).solar
 			); 
+			#endif 
+			double onH1 = onH(*sz, *(*sz).elements[i]); 
+			double onH2 = onH(*sz, *(*sz).elements[j]); 
 			/* The bin number for [X/Y] */ 
 			long bin = get_bin_number((*(*sz).mdf).bins, 
 				(*(*sz).mdf).n_bins, onH1 - onH2); 
@@ -220,8 +233,7 @@ extern void normalize_MDF(SINGLEZONE *sz) {
 	} 
 
 	/* ---------------------- for each abundance ratio ---------------------- */
-	unsigned int n_ratios = (unsigned int) ((*sz).n_elements * 
-		((*sz).n_elements - 1) / 2); 
+	unsigned int n_ratios = choose((*sz).n_elements, 2); 
 	for (j = 0; j < n_ratios; j++) {
 		double integral = 0.0; 
 		for (i = 0l; i < (*(*sz).mdf).n_bins; i++) {
@@ -232,6 +244,127 @@ extern void normalize_MDF(SINGLEZONE *sz) {
 		for (i = 0l; i < (*(*sz).mdf).n_bins; i++) {
 			/* Divide by the total integral to convert to a PDF */ 
 			sz -> mdf -> ratio_distributions[j][i] /= integral; 
+		} 
+	} 
+
+}
+
+/* 
+ * Resets all MDFs in a multizone object and fills them with the data from 
+ * its tracer particles. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		A pointer to the multizone object to redo the MDF for 
+ * 
+ * header: mdf.h 
+ */ 
+extern void tracers_MDF(MULTIZONE *mz) {
+
+	unsigned long i; 
+	for (i = 0l; i < (*(*mz).mig).n_zones; i++) { 
+		/* First reset the MDF in each zone ... */ 
+		reset_MDF(mz -> zones[i]); 
+	} 
+	for (i = 0l; i < (*(*mz).mig).tracer_count; i++) {
+		/* ... then update with each tracer particle ... */ 
+		update_MDF_from_tracer(mz, *(*(*mz).mig).tracers[i]); 
+	} 
+	for (i = 0l; i < (*(*mz).mig).n_zones; i++) {
+		/* ... and finally normalize it within each zone */ 
+		normalize_MDF(mz -> zones[i]); 
+	}
+
+} 
+
+/* 
+ * Updates the MDF of a multizone object given a tracer particle. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		A pointer to the multizone object with the MDF to update 
+ * t: 		The tracer particle to update the MDF from 
+ */ 
+static void update_MDF_from_tracer(MULTIZONE *mz, TRACER t) {
+
+	SINGLEZONE *origin = (*mz).zones[t.zone_origin]; 
+	SINGLEZONE *final = (*mz).zones[t.zone_current]; 
+
+	unsigned int i; 
+	/* ---------------------- for each tracked element ---------------------- */
+	for (i = 0; i < (*origin).n_elements; i++) {
+
+		/* 
+		 * The value of [X/H] of the ISM for the i'th element at the timestep 
+		 * and in the zone that the tracer particle formed. Get the bin number 
+		 * of this value and increment that bin in the FINAL zone by the mass 
+		 * of the tracer particle (prefactors cancel in normalization). 
+		 */ 
+		double onH_ = log10( 
+			/* trailing underscore to not override function in element.h */ 
+			(*(*origin).elements[i]).Z[t.timestep_origin] / 
+			(*(*origin).elements[i]).solar 
+		); 
+
+		long bin = get_bin_number(
+			(*(*final).mdf).bins, 
+			(*(*final).mdf).n_bins, 
+			onH_
+		); 
+		if (bin != -1l) {
+			final -> mdf -> abundance_distributions[i][bin] += t.mass; 
+		} else {} 
+
+	} 
+
+	unsigned int n = 0; 
+	/* ---------------------- for each abundance ratio ---------------------- */ 
+	for (i = 1; i < (*origin).n_elements; i++) {
+		unsigned int j; 
+		for (j = 0; j < i; j++) {
+			double onH1 = log10(
+				(*(*origin).elements[i]).Z[t.timestep_origin] / 
+				(*(*origin).elements[i]).solar 
+			); 
+			double onH2 = log10(
+				(*(*origin).elements[j]).Z[t.timestep_origin] / 
+				(*(*origin).elements[j]).solar 
+			); 
+			long bin = get_bin_number(
+				(*(*final).mdf).bins, 
+				(*(*final).mdf).n_bins, 
+				onH1 - onH2
+			); 
+			if (bin != -1l) {
+				final -> mdf -> ratio_distributions[n][bin] += t.mass; 
+			} else {} 
+			n++; 
+		}
+	}
+
+}
+
+/* 
+ * Reset the MDF in a singlezone object such that the value within each bin 
+ * is equal to zero. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		A pointer to the singlezone object whose MDF is to be reset 
+ */ 
+static void reset_MDF(SINGLEZONE *sz) {
+
+	unsigned long i, j; 
+	for (i = 0l; i < (long) (*sz).n_elements; i++) {
+		for (j = 0l; j < (*(*sz).mdf).n_bins; j++) {
+			sz -> mdf -> abundance_distributions[i][j] = 0.0; 
+		} 
+	} 
+
+	unsigned long n = choose((*sz).n_elements, 2); 
+	for (i = 0l; i < n; i++) {
+		for (j = 0l; j < (*(*sz).mdf).n_bins; j++) {
+			sz -> mdf -> ratio_distributions[i][j] = 0.0; 
 		} 
 	} 
 

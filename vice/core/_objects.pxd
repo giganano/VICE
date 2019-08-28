@@ -102,6 +102,7 @@ cdef extern from "../src/objects.h":
 		SINGLEZONE **zones 
 		MIGRATION *mig 
 		unsigned short verbose 
+		unsigned short simple 
 
 	ctypedef struct FROMFILE: 
 		char *name 

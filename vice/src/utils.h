@@ -13,28 +13,26 @@ extern "C" {
 
 extern long (*checksum)(char *); 
 
-#if 0
 /* 
- * A slightly more complex form of a hash-checksum combo, which is more 
- * sensitive to the spelling of the word. This is the checksum algorithm 
- * to which hashes of built-in settings are compared. 
+ * Performs the choose operations between two positive numbers 
  * 
  * Parameters 
  * ========== 
- * str: 		The string to do the checksum on 
+ * a: 		The larger of the two values 
+ * b: 		The smaller of the two values 
  * 
  * Returns 
  * ======= 
- * The checksum for a built-in hash corresponding to given mode within VICE. 
+ * The value of a choose b. 0 if b > a. 
  * 
  * Notes 
  * ===== 
- * EPF: Expoential Place Factorial 
+ * Sometimes the choose operation is referred to as 'take' (i.e. a 'take' b 
+ * rather than a 'choose' b) 
  * 
- * header: utils.h 
- */
-extern long EPFchecksum(char *str); 
-#endif 
+ * source: utils.c 
+ */ 
+extern unsigned long choose(unsigned long a, unsigned long b); 
 
 /* 
  * Determine the absolute value of a double x. This function extends the 

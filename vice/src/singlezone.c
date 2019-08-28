@@ -108,6 +108,29 @@ extern long singlezone_address(SINGLEZONE *sz) {
 extern unsigned short singlezone_evolve(SINGLEZONE *sz) {
 
 	if (singlezone_setup(sz)) return 1; 	/* setup failed */ 
+	singlezone_evolve_no_setup_no_clean(sz); 
+
+	/* Normalize the MDF, write it out, close the files */ 
+	normalize_MDF(sz); 
+	write_mdf_output(*sz); 
+	singlezone_close_files(sz); 
+	singlezone_clean(sz); 
+
+	return 0; 
+
+} 
+
+/* 
+ * Evolves a singlezone simulation under current user settings, but does not 
+ * write the MDF output or normalization. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		A pointer to the singlezone object to run 
+ * 
+ * header: singlezone.h 
+ */ 
+extern void singlezone_evolve_no_setup_no_clean(SINGLEZONE *sz) {
 
 	long n = 0l; 	/* keep track of the number of outputs */ 
 	while ((*sz).current_time <= (*sz).output_times[(*sz).n_outputs - 1l]) {
@@ -126,14 +149,6 @@ extern unsigned short singlezone_evolve(SINGLEZONE *sz) {
 		verbosity(*sz); 
 	} 
 	if ((*sz).verbose) printf("\n"); 
-
-	/* Normalize the MDF, write it out, close the files */ 
-	normalize_MDF(sz); 
-	write_mdf_output(*sz); 
-	singlezone_close_files(sz); 
-	singlezone_clean(sz); 
-
-	return 0; 
 
 }
 
@@ -202,8 +217,7 @@ extern unsigned short singlezone_setup(SINGLEZONE *sz) {
 		 * The singlezone object always allocates memory for 10 timesteps 
 		 * beyond the ending time as a safeguard against memory errors. 
 		 */ 
-		if (malloc_Z(sz -> elements[i], (unsigned long) (
-			(*sz).output_times[(*sz).n_outputs - 1l] / (*sz).dt) + 10l)) { 
+		if (malloc_Z(sz -> elements[i], n_timesteps(*sz))) { 
 			return 1; 
 		} else {
 			sz -> elements[i] -> mass = 0.0; 
@@ -345,7 +359,7 @@ extern unsigned long n_timesteps(SINGLEZONE sz) {
 	 * By design, memory is allocated for 10 timesteps beyond the final 
 	 * execution time so as to prevent memory errors. 
 	 */ 
-	return 10l + (sz.output_times[sz.n_outputs - 1l] / sz.dt); 
+	return BUFFER + (sz.output_times[sz.n_outputs - 1l] / sz.dt); 
 
 }
 

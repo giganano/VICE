@@ -124,6 +124,7 @@ def mirror(arg):
 			mz = multizone(n_zones = params["n_zones"])  
 			mz.name = params["name"] 
 			mz.n_tracers = params["n_tracers"] 
+			mz.simple = params["simple"] 
 			mz.verbose = params["verbose"] 
 			if params["migration.stars"] != None: 
 				mz.migration.stars = params["stars"] 

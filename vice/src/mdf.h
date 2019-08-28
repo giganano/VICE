@@ -65,9 +65,21 @@ extern void update_MDF(SINGLEZONE *sz);
  * ========== 
  * sz: 		The singlezone object whose simulation just finished 
  * 
- * header: mdf.h 
+ * source: mdf.c 
  */ 
 extern void normalize_MDF(SINGLEZONE *sz); 
+
+/* 
+ * Resets all MDFs in a multizone object and fills them with the data from 
+ * its tracer particles. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		A pointer to the multizone object to redo the MDF for 
+ * 
+ * source: mdf.c 
+ */ 
+extern void tracers_MDF(MULTIZONE *mz); 
 
 #ifdef __cplusplus 
 } 

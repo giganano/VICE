@@ -50,7 +50,8 @@ extern void link_zone(MULTIZONE *mz, unsigned long address,
  * 
  * Returns
  * ======= 
- * 0 on success, 1 on setup failure 
+ * 0 on success, 1 on zone setup failure, 2 on migration normalization 
+ * error, 3 on tracer particle file I/O error. 
  * 
  * source: multizone.c 
  */ 

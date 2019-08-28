@@ -10,78 +10,62 @@
 #include "utils.h" 
 #include "singlezone.h" 
 
+/* ---------- Static function comment headers not duplicated here ---------- */ 
+static unsigned long factorial(unsigned long n); 
+
 /* Define the checksum function adopted in this implementation */ 
 long (*checksum)(char *) = &simple_hash; 
 
-/* ---------- static function comment headers not duplicated here ---------- */ 
-#if 0
-static long factorial(long n); 
-
 /* 
- * A slightly more complex form of a hash-checksum combo, which is more 
- * sensitive to the spelling of the word. This is the checksum algorithm 
- * to which hashes of built-in settings are compared. 
+ * Performs the choose operations between two positive numbers 
  * 
  * Parameters 
  * ========== 
- * str: 		The string to do the checksum on 
+ * a: 		The larger of the two values 
+ * b: 		The smaller of the two values 
  * 
  * Returns 
  * ======= 
- * The checksum for a built-in hash corresponding to given mode within VICE. 
+ * The value of a choose b. 0 if b > a. 
  * 
  * Notes 
  * ===== 
- * EPF: Expoential Place Factorial 
+ * Sometimes the choose operation is referred to as 'take' (i.e. a 'take' b 
+ * rather than a 'choose' b) 
  * 
  * header: utils.h 
- */
-extern long EPFchecksum(char *str) { 
-
-	long h = 0l; 
-	unsigned long i; 
-	unsigned short negative; 
-	printf(str); 
-	for (i = 0l; i < strlen(str); i++) { 
-		long x = factorial( (long) tolower(str[i]) ); 
-		printf("%ld\n", x); 
-		switch (x) {
-
-			case -1l: 
-				return -1l; 
-
-			default: 
-				h += factorial(x) * (long) pow(10, i); 
-				break; 
-
-		} 
-	} 
-	return h; 
-
-} 
-
-/*
- * Compute the factorial of a number n. 
  */ 
-static long factorial(long n) {
+extern unsigned long choose(unsigned long a, unsigned long b) {
 
-	/* 
-	 * n! = n(n - 1)		(n > 0) 
-	 * 	  = 1 				(n = 0) 
-	 */ 
-	if (n < 0) { 
-		/* error checking */ 
-		return -1; 
-	} else if (n) { 
-		/* famously simple recursive definition */ 
-		return n * factorial(n - 1l); 
-	} else { 
-		/* terminate at n = 0 */ 
-		return 1; 
+	if (a > b) {
+		return factorial(a) / (factorial(b) * factorial(a - b)); 
+	} else {
+		return (a == b); 
 	}
 
 } 
-#endif 
+
+/* 
+ * Performs the factorial operation 
+ * 
+ * Parameters 
+ * ========== 
+ * n: 		The number to determine the factorial (n!) 
+ * 
+ * Returns 
+ * ======= 
+ * n! = n(n - 1)! 	(n > 0) 
+ *    = 1			(n = 0) 
+ */ 
+static unsigned long factorial(unsigned long n) {
+
+	if (n) {
+		return n * factorial(n - 1l); 
+	} else {
+		return 1l; 
+	}
+
+}
 
 /* 
  * Determine the absolute value of a double x. This function extends the 

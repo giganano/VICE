@@ -313,6 +313,24 @@ Got: %s""" % (type(n_zones)))
 	def verbose(self, value): 
 		self.__c_version.verbose = value 
 
+	@property 
+	def simple(self): 
+		""" 
+		Type :: bool 
+		Default :: True 
+
+		If False, the tracer particles' zone numbers at each intermediate 
+		timestep will be taken into account. Otherwise, each zone will 
+		evolve independently of one another, and the metallicity distribution 
+		functions will be computed from the final positions of each tracer 
+		particle. 
+		""" 
+		return self.__c_version.simple 
+
+	@simple.setter 
+	def simple(self, value): 
+		self.__c_version.simple = value 
+
 	def run(self, output_times, capture = False, overwrite = False): 
 		""" 
 		Run's the built-in timestep integration routines over the parameters 
@@ -416,6 +434,7 @@ cdef class c_multizone:
 		n_zones = 10, 
 		name = "multizonemodel", 
 		n_tracers = 1, 
+		simple = True, 
 		verbose = False): 
 
 		assert isinstance(n_zones, int), "Internal Error" 
@@ -423,6 +442,7 @@ cdef class c_multizone:
 		self.name = name 
 		self._migration = migration_specifications(n_zones) 
 		self.n_tracers = n_tracers 
+		self.simple = simple 
 		self.verbose = verbose 
 
 
@@ -441,6 +461,7 @@ cdef class c_multizone:
 			"n_zones": 			self.n_zones, 
 			"n_tracers": 		self.n_tracers, 
 			"verbose": 			self.verbose, 
+			"simple": 			self.simple, 
 			"migration": 		self.migration 
 		} 
 
@@ -581,6 +602,35 @@ Got: %s""" % (type(value)))
 				self._mz[0].verbose = 0 
 		else: 
 			raise TypeError("""Attribute 'verbose' must be interpretable as \
+a boolean. Got: %s""" % (type(value))) 
+
+	@property 
+	def simple(self): 
+		# docstring in python version 
+		return bool(self._mz[0].simple) 
+
+	@simple.setter 
+	def simple(self, value): 
+		""" 
+		Whether or not to forget about the migration histories of the tracer 
+		particles. If this value is False, they're zone number at each 
+		timestep will be taken into account 
+
+		Allowed Types 
+		============= 
+		bool 
+
+		Allowed Values 
+		============== 
+		True and False 
+		""" 
+		if isinstance(value, numbers.Number) or isinstance(value, bool): 
+			if value: 
+				self._mz[0].simple = 1 
+			else: 
+				self._mz[0].simple = 0 
+		else: 
+			raise TypeError("""Attribute 'simple' must be interpretable as \
 a boolean. Got: %s""" % (type(value))) 
 
 	@property 
@@ -825,7 +875,6 @@ timesteps."""
 				free(zone_dist) 
 				if zone_sample is not NULL: 
 					for k in range(self.n_tracers): 
-						# print("k = %d" % (k)) 
 						if _tracer.setup_zone_history(
 							self._mz[0], 
 							self._mz[0].mig[0].tracers[x], 
@@ -834,12 +883,9 @@ timesteps."""
 							<unsigned long> i): 
 							raise SystemError("Internal Error") 
 						else: 
-							# print("a") 
 							x += 1
-							# print("b") 
 							continue 
 					free(zone_sample) 
-					# print("c") 
 				else: 
 					raise RuntimeError("""\
 Could not sample from distribution at time t = %g and initial zone number = \
@@ -977,6 +1023,7 @@ artifacts.""" % (key), ScienceWarning)
 			"name": 			self.name, 
 			"n_zones": 			self.n_zones, 
 			"n_tracers": 		self.n_tracers, 
+			"simple": 			self.simple, 
 			"verbose": 			self.verbose 
 		} 
 		if "dill" in sys.modules: 
@@ -988,8 +1035,7 @@ artifacts.""" % (key), ScienceWarning)
 			matrices to 0.0 
 			""" 
 			# gas, stars = self.copy_migration_matrices() 
-			gas = self._copy_gas_migration() 
-			params["migration.gas"] = gas 
+			params["migration.gas"] = self.copy_gas_migration() 
 			params["migration.stars"] = None 
 		pickle.dump(params, open("%s.vice/params.config" % (self.name), "wb")) 
 
