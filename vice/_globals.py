@@ -5,6 +5,10 @@ This module contains variables that are global to the VICE package.
 
 Contents 
 ======== 
+ScienceWarning :: <Exception> 
+	A custom warning class designed to treat as a distinct set of warnings 
+	those related to the scientific accuracy or precision of values returned 
+	from any given function. 
 _DEFAULT_FUNC_ :: <function> 
 	The default func attribute of the singlezone class. It takes in one 
 	parameter and returns the value of 9.1 always. 
@@ -18,6 +22,9 @@ _RECOGNIZED_ELEMENTS_ :: tuple
 _RECOGNIZED_IMFS_ :: tuple 
 	The stellar initial mass functions built into VICE. Currently this 
 	includes only the Kroupa (1) and Salpeter (2) IMFs. 
+_RECOGNIZED_RIAS_ :: tuple 
+	Keywords for the type Ia supernovae delay-time distributions that are 
+	built into VICE. 
 
 References 
 ========== 
@@ -29,7 +36,7 @@ import warnings
 import os
 
 __all__ = ["_DEFAULT_FUNC_", "_DEFAULT_BINS_", "_RECOGNIZED_ELEMENTS_", 
-	"_RECOGNIZED_IMFS_"] 
+	"_RECOGNIZED_IMFS_", "_RECOGNIZED_RIAS_"]  
 __all__ = [str(i) for i in __all__] # appease python 2 strings 
 
 # The path to the directory after installation 

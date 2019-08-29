@@ -6,7 +6,6 @@ upon call from the user.
 from __future__ import absolute_import
 import Cython
 import distutils 
-import ctypes
 import sys 
 import pickle 
 
