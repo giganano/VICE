@@ -94,6 +94,31 @@ extern void inject_tracers(MULTIZONE *mz) {
 	}
 	mig -> tracer_count += (*mig).n_tracers * (*mig).n_zones; 
 
+} 
+
+/* 
+ * Compute the masses of each tracer particle after a multizone simulation in 
+ * simple mode. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		A pointer to the multizone object 
+ * 
+ * header: tracer.h 
+ */ 
+extern void compute_tracer_masses(MULTIZONE *mz) {
+
+	unsigned long i; 
+	for (i = 0l; i < (*(*mz).mig).tracer_count; i++) {
+		TRACER *t = (*(*mz).mig).tracers[i]; 
+		SINGLEZONE origin = *(*mz).zones[(*t).zone_origin]; 
+
+		t -> mass = (
+			(*origin.ism).star_formation_history[(*t).timestep_origin] * 
+			origin.dt / (*(*mz).mig).n_tracers 
+		); 
+	}
+
 }
 
 #if 0
@@ -258,12 +283,11 @@ extern unsigned short setup_zone_history(MULTIZONE mz, TRACER *t,
 			t -> zone_history[i] = (int) final; 
 		} 
 		t -> zone_origin = origin; 
-		if (mz.simple) {
+		if (mz.simple) { 
 			t -> zone_current = final; 
 		} else {
 			t -> zone_current = origin; 
-		}
-		t -> zone_current = origin; 
+		} 
 		t -> timestep_origin = birth; 
 		return 0; 
 	} 

@@ -145,6 +145,7 @@ extern unsigned short multizone_evolve(MULTIZONE *mz) {
 	} 
 
 	multizone_clean(mz); 
+	if ((*mz).verbose) printf("Finished.\n"); 
 	return x; 
 
 }
@@ -171,6 +172,7 @@ static void multizone_evolve_simple(MULTIZONE *mz) {
 		(*(*mz).mig).n_zones * 
 		(*(*mz).mig).n_tracers 
 	); 
+	compute_tracer_masses(mz); 
 
 }
 

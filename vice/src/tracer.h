@@ -36,6 +36,18 @@ extern void tracer_free(TRACER *t);
 extern void inject_tracers(MULTIZONE *mz); 
 
 /* 
+ * Compute the masses of each tracer particle after a multizone simulation in 
+ * simple mode. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		A pointer to the multizone object 
+ * 
+ * source: tracer.c 
+ */ 
+extern void compute_tracer_masses(MULTIZONE *mz); 
+
+/* 
  * Determine the metallicity of a tracer particle. 
  * 
  * Parameters 

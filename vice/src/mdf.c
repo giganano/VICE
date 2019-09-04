@@ -269,7 +269,12 @@ extern void tracers_MDF(MULTIZONE *mz) {
 	for (i = 0l; i < (*(*mz).mig).tracer_count; i++) {
 		/* ... then update with each tracer particle ... */ 
 		update_MDF_from_tracer(mz, *(*(*mz).mig).tracers[i]); 
+		if ((*mz).verbose) {
+			printf("\rProgress: %.1f%%", 
+				i * 100.0 / (*(*mz).mig).tracer_count); 
+		} else {} 
 	} 
+	if ((*mz).verbose) printf("\n"); 
 	for (i = 0l; i < (*(*mz).mig).n_zones; i++) {
 		/* ... and finally normalize it within each zone */ 
 		normalize_MDF(mz -> zones[i]); 
@@ -355,7 +360,7 @@ static void update_MDF_from_tracer(MULTIZONE *mz, TRACER t) {
 static void reset_MDF(SINGLEZONE *sz) {
 
 	unsigned long i, j; 
-	for (i = 0l; i < (long) (*sz).n_elements; i++) {
+	for (i = 0l; i < (unsigned long) (*sz).n_elements; i++) {
 		for (j = 0l; j < (*(*sz).mdf).n_bins; j++) {
 			sz -> mdf -> abundance_distributions[i][j] = 0.0; 
 		} 
