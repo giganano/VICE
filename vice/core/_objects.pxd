@@ -60,6 +60,7 @@ cdef extern from "../src/objects.h":
 		char *imf 
 		double *crf 
 		double *msmf 
+		double postMS
 		double m_upper 
 		double m_lower 
 		double R0 

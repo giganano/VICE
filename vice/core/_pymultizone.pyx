@@ -847,7 +847,8 @@ timesteps."""
 				# 	raise SystemError("Internal Error") 
 
 	def setup_tracers(self): 
-		bins = _pyutils.range_(-0.05, self.n_zones + 1 - 0.05, 0.05) 
+		_diff = 0.05
+		bins = _pyutils.range_(-_diff, self.n_zones + 1 - _diff, _diff) 
 		cdef double *zone_bins = _cutils.copy_pylist(bins)
 		cdef double *zone_sample 
 		cdef double *zone_dist 
@@ -857,10 +858,15 @@ timesteps."""
 		for i in range(n): 
 			for j in range(self.n_zones): 
 				# The distribution specified at this zone and timestep 
-				zone_dist = _cutils.copy_pylist(
-					list(map(self.migration.stars(j, 
-						i * self._mz[0].zones[0][0].dt), 
-					bins)))  
+				dist = list(map(self.migration.stars(j, 
+					i * self._mz[0].zones[0][0].dt), bins)) 
+				# force first bin to zero for sampling purposes 
+				dist[0] = 0 
+				# zone_dist = _cutils.copy_pylist(
+				# 	list(map(self.migration.stars(j, 
+				# 		i * self._mz[0].zones[0][0].dt), 
+				# 	bins))) 
+				zone_dist = _cutils.copy_pylist(dist) 
 				zone_sample = _stats.sample( 
 					zone_dist, 
 					zone_bins, 
@@ -881,6 +887,7 @@ timesteps."""
 							continue 
 					free(zone_sample) 
 				else: 
+					print(list(map(dist))) 
 					raise RuntimeError("""\
 Could not sample from distribution at time t = %g and initial zone number = \
 %d. Please ensure that the specified stellar migration prescription does not \
@@ -893,6 +900,7 @@ exhibit any numerical delta functions.""" % (
 			else: 
 				pass 
 		if self.verbose: sys.stdout.write("\n") 
+		free(zone_bins)
 
 	def align_name_attributes(self): 
 		""" 

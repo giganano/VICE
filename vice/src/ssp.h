@@ -40,19 +40,24 @@ extern void ssp_free(SSP *ssp);
  * 
  * Parameters 
  * ========== 
- * t: 		Time in Gyr 
+ * t: 			Time in Gyr 
+ * postMS: 		Ratio of a star's post main sequence lifetime to its main 
+ * 				sequence lifetime 
  * 
  * Returns 
  * ======= 
- * Main sequence turnoff mass in solar masses via (t / 10 Gyr)^(-1/3.5) 
+ * Main sequence turnoff mass in solar masses via 
+ * (t / (1 + postMS)(10 Gyr))^(-1/3.5) 
  * 
  * Notes 
  * ===== 
- * 10 Gyr and 3.5 are values that can be changed in ssp.h 
+ * Versions >= 1.1: This is the mass of a dying star taking into account their 
+ * 		main sequence lifetimes. 
+ * 10 Gyr and 3.5 are values that can be changed in ssp.h  
  * 
  * source: ssp.c 
  */ 
-extern double main_sequence_turnoff_mass(double t); 
+extern double main_sequence_turnoff_mass(double t, double postMS); 
 
 /* 
  * Run a simulation of elemental production for a single element produced by a 

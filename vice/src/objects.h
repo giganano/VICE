@@ -178,6 +178,8 @@ typedef struct single_stellar_population {
 	 * recycling: The cumulative return fraction at each timestep starting at 
 	 * 		t = 0 
 	 * msmf: The main sequence mass fraction at each timestep starting at t = 0 
+	 * postMS: The ratio of a star's post main-sequence lifetime to its main 
+	 * 		sequence lifetime. 
 	 * m_upper: The upper mass limit on star formation in Msun 
 	 * m_lower: The lower mass limit on star formation in Msun 
 	 * R0: The instantaneous recycling rate, if applicable. 
@@ -188,6 +190,7 @@ typedef struct single_stellar_population {
 	char *imf; 
 	double *crf; 
 	double *msmf; 
+	double postMS; 
 	double m_upper; 
 	double m_lower; 
 	double R0; 
