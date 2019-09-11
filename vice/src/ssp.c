@@ -90,22 +90,35 @@ extern void ssp_free(SSP *ssp) {
  * 
  * Parameters 
  * ========== 
- * t: 		Time in Gyr 
+ * t: 			Time in Gyr 
+ * postMS: 		Ratio of a star's post main sequence lifetime to its main 
+ * 				sequence lifetime 
  * 
  * Returns 
  * ======= 
- * Main sequence turnoff mass in solar masses via (t / 10 Gyr)^(-1/3.5) 
+ * Main sequence turnoff mass in solar masses via 
+ * (t / (1 + postMS)(10 Gyr))^(-1/3.5) 
  * 
  * Notes 
  * ===== 
- * 10 Gyr and 3.5 are values that can be changed in ssp.h 
+ * Versions >= 1.1: This is the mass of a dying star taking into account their 
+ * 		main sequence lifetimes. 
+ * 10 Gyr and 3.5 are values that can be changed in ssp.h  
  * 
  * header: utils.h 
  */ 
-extern double main_sequence_turnoff_mass(double time) {
+extern double main_sequence_turnoff_mass(double t, double postMS) {
 
+	#if 0
 	/* m_to = (t / 10 Gyr)^(-1/3.5) */ 
 	return pow( time/SOLAR_LIFETIME, -1.0/MASS_LIFETIME_PLAW_INDEX ); 
+	#endif 
+
+	/* m_to = (t / ((1 + postMS) * 10 Gyr))^(-1/3.5) */ 
+	return pow( 
+		t / ((1 + postMS) * SOLAR_LIFETIME), 
+		-1.0 / MASS_LIFETIME_PLAW_INDEX
+	); 
 
 } 
 
@@ -157,7 +170,8 @@ extern double *single_population_enrichment(SSP *ssp, ELEMENT *e,
 
 			/* The contribution from AGB stars */ 
 			mass[i] += (
-				get_AGB_yield(*e, Z, main_sequence_turnoff_mass(times[i])) * 
+				get_AGB_yield(*e, Z, 
+					main_sequence_turnoff_mass(times[i], (*ssp).postMS)) * 
 				mstar * ((*ssp).msmf[i] - (*ssp).msmf[i + 1l])
 			); 
 
@@ -541,9 +555,9 @@ extern double CRF(SSP ssp, double time) {
  * Kalirai et al. (2008), ApJ, 676, 594 
  * Kroupa (2001), MNRAS, 322, 231 
  */ 
-static double CRFnumerator_Kalirai08(SSP ssp, double time) {
+static double CRFnumerator_Kalirai08(SSP ssp, double t) {
 
-	double turnoff_mass = main_sequence_turnoff_mass(time); 
+	double turnoff_mass = main_sequence_turnoff_mass(t, ssp.postMS); 
 
 	if (!strcmp(ssp.imf, "salpeter")) {
 		/* Salpeter IMF */
@@ -913,7 +927,7 @@ static double MSMFdenominator(SSP ssp) {
  * The total main sequence mass of the stellar population at the given age, up 
  * to the normalization constant of the IMF. 
  */ 
-static double MSMFnumerator(SSP ssp, double time) {
+static double MSMFnumerator(SSP ssp, double t) {
 
 	/* 
 	 * The integrated form of the numerator of the main sequence mass fraction 
@@ -922,7 +936,7 @@ static double MSMFnumerator(SSP ssp, double time) {
 	 * for each of the relevant mass ranges. 
 	 */ 
 
-	double turnoff_mass = main_sequence_turnoff_mass(time); 
+	double turnoff_mass = main_sequence_turnoff_mass(t, ssp.postMS); 
 
 	if (!strcmp(ssp.imf, "salpeter")) { 
 		if (turnoff_mass > ssp.m_upper) {

@@ -62,7 +62,6 @@ from ._objects cimport ISM
 from ._objects cimport MDF 
 from ._objects cimport SSP 
 from ._objects cimport SINGLEZONE 
-# from ._zoneprep cimport zoneprep 
 from . cimport _agb 
 from . cimport _ccsne 
 from . cimport _cutils 
@@ -123,6 +122,7 @@ class singlezone:
 		MgSchmidt = 6.0e+09, 
 		m_upper = 100, 
 		m_lower = 0.08, 
+		postMS = 0.1, 
 		Z_solar = 0.014, 
 		agb_model = "cristallo11" 
 	)
@@ -192,6 +192,9 @@ class singlezone:
 		The upper mass limit on star formation in solar masses 
 	m_lower :: real number [default :: 0.08] 
 		The lower mass limit on star formation in solar masses 
+	postMS :: real number [default :: 0.1] 
+		The ratio of a star's post main sequence lifetime to its main sequence 
+		lifetime 
 	Z_solar :: real number [default :: 0.014] 
 		The adopted solar metallicity by mass. 
 	agb_model :: str [default :: "cristallo11"] 
@@ -968,6 +971,21 @@ class singlezone:
 		self.__c_version.m_lower = value 
 
 	@property 
+	def postMS(self): 
+		""" 
+		Type :: real number 
+		Default :: 0.1 
+
+		The ratio of a star's post main sequence lifetime to its main sequence 
+		lifetime. 
+		""" 
+		return self.__c_version.postMS 
+
+	@postMS.setter 
+	def postMS(self, value): 
+		self.__c_version.postMS = value 
+
+	@property 
 	def Z_solar(self): 
 		"""
 		Type :: real number 
@@ -1142,6 +1160,7 @@ cdef class c_singlezone:
 		schmidt_index = 0.5, 
 		m_upper = 100, 
 		m_lower = 0.08, 
+		postMS = 0.1, 
 		Z_solar = 0.014, 
 		agb_model = "cristallo11"): 
 
@@ -1176,6 +1195,7 @@ cdef class c_singlezone:
 		self.schmidt_index = schmidt_index 
 		self.m_upper = m_upper 
 		self.m_lower = m_lower 
+		self.postMS = postMS 
 		self.Z_solar = Z_solar 
 		self.agb_model = agb_model 
 
@@ -1212,6 +1232,7 @@ cdef class c_singlezone:
 			"dt": 				self.dt, 
 			"m_upper": 			self.m_upper, 
 			"m_lower": 			self.m_lower, 
+			"postMS": 			self.postMS, 
 			"Z_solar": 			self.Z_solar, 
 			"agb_model": 		self.agb_model 
 		} 
@@ -2195,6 +2216,34 @@ formation: %g. This may introduce numerical artifacts.""" % (
 				self._sz[0].ssp[0].m_lower), ScienceWarning) 
 		else: 
 			pass 
+
+	@property 
+	def postMS(self): 
+		# docstring in python class 
+		return self._sz[0].ssp[0].postMS 
+
+	@postMS.setter 
+	def postMS(self, value): 
+		""" 
+		Ratio of a star's post main sequence lifetime to its main sequence 
+		lifetime 
+
+		Allowed Types 
+		============= 
+		real number 
+
+		Allowed Values 
+		============== 
+		> 0 and < 1 
+		""" 
+		if isinstance(value, numbers.Number): 
+			if 0 <= value <= 1: 
+				self._sz[0].ssp[0].postMS = value 
+			else: 
+				raise ValueError("Attribute 'postMS' must be between 0 and 1.") 
+		else: 
+			raise TypeError("""Attribute 'postMS' must be a numerical value. \
+Got: %s""" % (type(value))) 
 
 	@property
 	def Z_solar(self): 

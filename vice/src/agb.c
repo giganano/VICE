@@ -89,7 +89,8 @@ extern double m_AGB(SINGLEZONE sz, ELEMENT e) {
 
 			/* From section 4.4 of VICE's science documentation */ 
 			mass += (
-				get_AGB_yield(e, Z, main_sequence_turnoff_mass(i * sz.dt)) * 
+				get_AGB_yield(e, Z, 
+					main_sequence_turnoff_mass(i * sz.dt, (*sz.ssp).postMS)) * 
 				(*sz.ism).star_formation_history[sz.timestep - i] * sz.dt * 
 				((*sz.ssp).msmf[i] - (*sz.ssp).msmf[i + 1l])
 			); 
@@ -135,7 +136,7 @@ extern void agb_from_tracers(MULTIZONE *mz) {
 			ELEMENT *e = sz -> elements[j]; 
 			e -> mass += (
 				get_AGB_yield( *(*(*mz).zones[(*t).zone_origin]).elements[j], 
-				Z, main_sequence_turnoff_mass(n * (*sz).dt) ) * 
+				Z, main_sequence_turnoff_mass(n * (*sz).dt, (*ssp).postMS) ) * 
 				(*t).mass * 
 				((*ssp).msmf[n] - (*ssp).msmf[n + 1l]) 
 			); 
