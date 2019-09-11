@@ -404,7 +404,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 		# functional core-collapse yield -> map it across the yield grid 
 		_pyutils.args(ccsne.settings[element.lower()], 
 			"Functional yield must take only one numerical parameter") 
-		arr = list(map(ccsne.settings[element.lower()], _pyutils.range(
+		arr = list(map(ccsne.settings[element.lower()], _pyutils.range_(
 			_ccsne.CC_YIELD_GRID_MIN, 
 			_ccsne.CC_YIELD_GRID_MAX, 
 			_ccsne.CC_YIELD_STEP))) 
