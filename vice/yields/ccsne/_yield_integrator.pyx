@@ -65,7 +65,7 @@ cdef extern from "../../src/ccsne.h":
 
 # Recognized methods of numerical quadrature and yield studies 
 _RECOGNIZED_METHODS_ = tuple(["simpson", "midpoint", "trapezoid", "euler"]) 
-_RECOGNIZED_STUDIES_ = tuple(["WW95", "LC18", "CL13", "CL04"]) 
+_RECOGNIZED_STUDIES_ = tuple(["WW95", "LC18", "CL13", "CL04", "NKT13"])  
 
 #----------------------- FRACTIONAL_CC_YIELD FUNCTION -----------------------# 
 def integrate(element, study = "LC18", MoverH = 0, rotation = 0, 
@@ -101,30 +101,33 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		A keyword denoting which study to adopt the yield from 
 		Keywords and their Associated Studies
 		-------------------------------------
-		"LC18" :: Limongi & Chieffi (2018), ApJS, 237, 13
-		"CL13" :: Chieffi & Limongi (2013), ApJ, 764, 21 
-		"CL04" :: Chieffi & Limongi (2004), ApJ, 608, 405 
-		"WW95" :: Woosley & Weaver (1995) ApJ, 101, 181 
+		"LC18"	:: Limongi & Chieffi (2018), ApJS, 237, 13
+		"CL13"	:: Chieffi & Limongi (2013), ApJ, 764, 21 
+		"NKT13"	:: Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457
+		"CL04"	:: Chieffi & Limongi (2004), ApJ, 608, 405 
+		"WW95"	:: Woosley & Weaver (1995) ApJ, 101, 181 
 	MoverH :: real number [default :: 0] 
 		The total metallicity [M/H] of the exploding stars. There are only a 
 		handful of metallicities recognized by each study, and VICE will 
 		raise a LookupError if this value is not one of them. 
 		Keywords and their Associated Metallicities
 		-------------------------------------------
-		"LC18" :: [M/H] = -3, -2, -1, 0 
-		"CL13" :: [M/H] = 0 
-		"CL04" :: [M/H] = -inf, -4, -2, -1, -0.37, 0.15 
-		"WW95" :: [M/H] = -inf, -4, -2, -1, 0
+		"LC18"	:: [M/H] = -3, -2, -1, 0 
+		"CL13"	:: [M/H] = 0 
+		"NKT13"	:: [M/H] = -inf, -1.15, -0.54, -0.24, 0.15, 0.55 
+		"CL04"	:: [M/H] = -inf, -4, -2, -1, -0.37, 0.15 
+		"WW95"	:: [M/H] = -inf, -4, -2, -1, 0
 	rotation :: real number [default :: 0] 
 		The rotational velocity of the exploding stars in km/s. There are only 
 		a handful of rotational velocities recognized by each study, and 
 		VICE will raise a LookupError if this value is not one of them. 
 		Keywords and their Associated Rotational Velocities
 		---------------------------------------------------
-		"LC18" :: v = 0, 150, 300 
-		"CL13" :: v = 0, 300 
-		"CL04" :: v = 0 
-		"WW95" :: v = 0 
+		"LC18"	:: v = 0, 150, 300 
+		"CL13"	:: v = 0, 300 
+		"NKT13"	:: v = 0
+		"CL04"	:: v = 0 
+		"WW95"	:: v = 0 
 	IMF :: str [case-insensitive] [default :: "kroupa"] 
 		The stellar initial mass function (IMF) to adopt. This must be either 
 		"kroupa" (1) or "salpeter" (2). 
@@ -234,10 +237,11 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 
 	# Study keywords and their full citations 
 	studies = {
-		"LC18":		"Limongi & Chieffi (2018), ApJS, 237, 18", 
-		"CL13":		"Chieffi & Limongi (2013), ApJ, 764, 21", 
-		"CL04":		"Chieffi & Limongi (2004), ApJ, 608, 405", 
-		"WW95": 	"Woosley & Weaver (1995), ApJ, 101, 181"
+		"LC18":			"Limongi & Chieffi (2018), ApJS, 237, 18", 
+		"CL13":			"Chieffi & Limongi (2013), ApJ, 764, 21", 
+		"CL04":			"Chieffi & Limongi (2004), ApJ, 608, 405", 
+		"WW95": 		"Woosley & Weaver (1995), ApJ, 101, 181", 
+		"NKT13": 		"Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457" 
 	} 
 
 	# The name of the directory holding yield files at this metallicity 
@@ -254,7 +258,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	elif not os.path.exists("%syields/ccsne/%s/FeH%s" % (_DIRECTORY_, 
 		study.upper(), MoverHstr)): 
 		raise LookupError("The %s study does not have yields for [M/H] = %s" % (
-			studies[study.upper()], MoverHstr)) 
+			studies[study.upper()], MoverHstr.replace('p', '.')))  
 	elif not os.path.exists("%syields/ccsne/%s/FeH%s/v%d" % (_DIRECTORY_, 
 		study.upper(), MoverHstr, rotation)): 
 		raise LookupError("""The %s study did not report yields for v = %d \
@@ -296,13 +300,15 @@ smaller than maximum number of bins.""")
 		"LC18":		120, 
 		"CL13": 	120, 
 		"CL04": 	35, 
-		"WW95": 	40 
+		"WW95": 	40, 
+		"NKT13": 	300 if MoverH == -float("inf") else 40 
 	} 
 
 	if m_upper > upper_mass_limits[study.upper()]: 
 		warnings.warn("""Supernovae yields from the %s study are sampled on a \
-grid of stellar masses up to %d Msun. Employing an upper mass limit larger \
-than this may introduce numerical artifacts. Got: %g Msun""" % (
+grid of stellar masses up to %d Msun at this metallicity. Employing an upper \
+mass limit larger than this may introduce numerical artifacts. \
+Got: %g Msun""" % (
 		studies[study.upper()], upper_mass_limits[study.upper()], m_upper), 
 		ScienceWarning) 
 	else: 

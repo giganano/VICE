@@ -11,7 +11,7 @@
 #include "singlezone.h" 
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
-static unsigned long factorial(unsigned long n); 
+// static unsigned long factorial(unsigned long n); 
 
 /* Define the checksum function adopted in this implementation */ 
 long (*checksum)(char *) = &simple_hash; 
@@ -38,13 +38,40 @@ long (*checksum)(char *) = &simple_hash;
 extern unsigned long choose(unsigned long a, unsigned long b) {
 
 	if (a > b) {
-		return factorial(a) / (factorial(b) * factorial(a - b)); 
-	} else {
+		/* 
+		 * a choose b = (a(a - 1)(a - 2)...(a - b + 1)) / b!  
+		 */ 
+		unsigned long x = a; 
+		unsigned long y = b; 
+		unsigned long numerator = 1; 
+		unsigned long denominator = 1; 
+		while (y) {
+			numerator *= x; 
+			denominator *= y; 
+			x--; 
+			y--; 
+		} 
+		return numerator / denominator; 
+	} else { 
 		return (a == b); 
 	}
 
+	/* 
+	 * The following implementation would produce a floating point exception 
+	 * when large numbers of elements are used due to the size of a number 
+	 * like 75!. As such, the code above was implemented in its place. 
+	 */ 
+	#if 0 
+	if (a > b) {
+		return factorial(a) / (factorial(b) * factorial(a - b)); 
+	} else {
+		return (a == b); 
+	} 
+	#endif 
+
 } 
 
+#if 0 
 /* 
  * Performs the factorial operation 
  * 
@@ -65,7 +92,8 @@ static unsigned long factorial(unsigned long n) {
 		return 1l; 
 	}
 
-}
+} 
+#endif 
 
 /* 
  * Determine the absolute value of a double x. This function extends the 

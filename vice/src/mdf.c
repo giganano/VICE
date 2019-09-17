@@ -108,7 +108,7 @@ extern unsigned short setup_MDF(SINGLEZONE *sz) {
 	 * each abundance ratio to an array of zeroes as well. 
 	 */ 
 	// unsigned int n_ratios = (*sz).n_elements * ((*sz).n_elements - 1) / 2; 
-	unsigned int n_ratios = choose((*sz).n_elements, 2);  
+	unsigned int n_ratios = choose((*sz).n_elements, 2); 
 	sz -> mdf -> ratio_distributions = (double **) malloc (n_ratios * 
 		sizeof(double *)); 
 	if ((*(*sz).mdf).ratio_distributions == NULL) {
