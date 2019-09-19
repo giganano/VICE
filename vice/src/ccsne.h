@@ -83,6 +83,22 @@ extern double mdot_ccsne(SINGLEZONE sz, ELEMENT e);
 extern double get_cc_yield(ELEMENT e, double Z); 
 
 /* 
+ * Copy the explodability criteria that the user passed to 
+ * yields.ccsne.fractional. 
+ * 
+ * Parameters 
+ * ========== 
+ * masses: 			The masses themselves. Python will ensure that this is 
+ * 					always divisible by two 
+ * n_masses: 		The number of masses in the mass binspace 
+ * explodability: 	The explosion fractions 
+ * 
+ * source: ccsne.c 
+ */ 
+extern void set_explodability_criteria(double *masses, unsigned int n_masses, 
+	double *explodability); 
+
+/* 
  * Determine the value of the integrated IMF weighted by the mass yield of a 
  * given element, up to the normalization of the IMF. 
  * 

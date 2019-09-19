@@ -11,6 +11,7 @@ from ..._globals import _RECOGNIZED_IMFS_
 from ..._globals import _VERSION_ERROR_ 
 from ..._globals import ScienceWarning 
 from ...core._builtin_dataframes import atomic_number 
+from ...core import _pyutils 
 import math as m 
 import warnings 
 import numbers 
@@ -33,7 +34,7 @@ Notes
 The following pythonic relative import line: 
 from ...core cimport _ccsne 
 produced the following line in the output .c file: 
-#include "..src//objects.h" 
+#include "..src/objects.h" 
 which appears in the _ccsne.pxd file. This renders a relative import from 
 this file impossible, so we can simply cdef the necessary functions here. 
 Since there are only two of them, this is simpler than modifying the 
@@ -57,11 +58,22 @@ cdef extern from "../../src/quadrature.h":
 	void integral_free(INTEGRAL *intgrl) 
 
 cdef extern from "../../src/ccsne.h": 
+	void set_explodability_criteria(double *masses, unsigned int n_masses, 
+		double *explodability)
 	unsigned short IMFintegrated_fractional_yield_numerator(INTEGRAL *intgrl, 
 		char *file, char *IMF) 
 	unsigned short IMFintegrated_fractional_yield_denominator(INTEGRAL *intgrl, 
 		char *IMF)  
 
+cdef double *copy_pylist(source): 
+	""" 
+	Copy a python list into a C double. This is in vice/core/_cutils.pxd, but 
+	a relative import of that file is not possible; see notes above. 
+	""" 
+	cdef double *arr = <double *> malloc (len(source) * sizeof(double)) 
+	for i in range(len(source)): 
+		arr[i] = source[i] 
+	return arr 
 
 # Recognized methods of numerical quadrature and yield studies 
 _RECOGNIZED_METHODS_ = tuple(["simpson", "midpoint", "trapezoid", "euler"]) 
@@ -69,8 +81,8 @@ _RECOGNIZED_STUDIES_ = tuple(["WW95", "LC18", "CL13", "CL04", "NKT13"])
 
 #----------------------- FRACTIONAL_CC_YIELD FUNCTION -----------------------# 
 def integrate(element, study = "LC18", MoverH = 0, rotation = 0, 
-	IMF = "kroupa", method = "simpson", m_lower = 0.08, m_upper = 100, 
-	tolerance = 1e-3, Nmin = 64, Nmax = 2e8): 
+	mass_ranges = [], explodability = [], IMF = "kroupa", method = "simpson", 
+	m_lower = 0.08, m_upper = 100, tolerance = 1e-3, Nmin = 64, Nmax = 2e8): 
 	"""
 	Calculates an IMF-integrated fractional nucleosynthetic yield of a given 
 	element from core-collapse supernovae. VICE has built-in functions which 
@@ -94,7 +106,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 
 	Parameters
 	========== 
-	element :: str 
+	element :: str [case-insensitive] 
 		The symbol of the element to calculate the IMF-integrated fractional 
 		yield for. 
 	study :: str [case-insensitive] [default :: "LC18"]
@@ -128,6 +140,18 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		"NKT13"	:: v = 0
 		"CL04"	:: v = 0 
 		"WW95"	:: v = 0 
+	mass_ranges :: array-like [default :: empty list] 
+		The first piece of information on stellar explodability criteria: mass 
+		ranges of stars. The elements of this object must be 2-element 
+		array-like objects whose elements are positive numerical values 
+		denoting the lower and upper limits on stellar initial mass ranges. 
+		By default, this function assumes that all stars explode. 
+	explodability :: array-like [default :: empty list] 
+		The second piece of information on stellar explodability criteria: the 
+		fractions of stars that explode. The elements of this object are 
+		matched component-wise to the elements of the keyword argument 
+		'mass_ranges'. By default, this function assumes that all stars 
+		explode. 
 	IMF :: str [case-insensitive] [default :: "kroupa"] 
 		The stellar initial mass function (IMF) to adopt. This must be either 
 		"kroupa" (1) or "salpeter" (2). 
@@ -172,6 +196,9 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		::	The IMF is not built into VICE 
 		:: 	The method of quadrature is not built into VICE 
 		:: 	Nmin > Nmax 
+		::	Stellar mass in mass_ranges is negative 
+		:: 	Any combination of elements of mass_ranges overlap 
+		:: 	Explodability fraction not between 0 and 1 
 	LookupError :: 
 		:: 	The study did not report yields at the specified metallicity 
 		:: 	The study did not report yields at the specified rotational
@@ -184,6 +211,8 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			adopting these yields for iron peak elements. 
 		:: 	Numerical quadrature did not converge within the maximum number 
 			of allowed quadrature bins to within the specified tolerance. 
+		:: 	Explodability criteria above 25 Msun specified in combination with 
+			the Limongi & Chieffi (2018) study. 
 
 	Notes
 	=====
@@ -200,16 +229,27 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	where M_x is the mass of the element x produced in the super of a star 
 	with initial mass M, and dN/dM is the stellar IMF. 
 
+	Explodability criteria will be overspecified when calculating yields from 
+	the Limongi & Chieffi (2018) study, in which stars above 25 Msun do not 
+	explode. The yields they report at these masses are that which comes from 
+	the wind. 
+
 	Example
 	=======
-	>>> y, err = vice.fractional_cc_yield("o")
+	>>> y, err = vice.yields.ccsne.fractional("o")
 	>>> y
 	    0.005643252355030168
 	>>> err 
 	    4.137197161389483e-06
-	>>> y, err = vice.fractional_cc_yield("mg", study = "CL13") 
+	>>> y, err = vice.yields.ccsne.fractional("mg", study = "CL13") 
 	>>> y 
 	    0.000496663271667762 
+	# Stars from 12-15, 20-30, and 40-100 Msun explode 10%% of the time. 
+	>>> y, err = vice.yields.ccsne.fractional("mg", study = "CL13", 
+		mass_ranges = [[12, 15], [20, 30], [40, 100]], 
+		explodability = [0.1, 0.1, 0.1]) 
+	>>> y 
+		0.00039911211487501523 
 
 	References
 	==========
@@ -234,6 +274,41 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		__numeric_check(tolerance, "tolerance") 
 		__numeric_check(Nmin, "Nmin") 
 		__numeric_check(Nmax, "Nmax") 
+
+	""" 
+	Mass ranges must be either an empty array-like object or a series of 
+	2-element array-like objects containing numerical values. The explodability 
+	criteria must then have a number between 0 and 1 for each of those mass 
+	ranges. 
+	""" 
+	mass_ranges = _pyutils.copy_array_like_object(mass_ranges) 
+	explodability = _pyutils.copy_array_like_object(explodability) 
+	if len(explodability) == len(mass_ranges): 
+		for i in explodability: 
+			if not isinstance(i, numbers.Number): 
+				raise ValueError("""Explodability fraction must be between 0 \
+and 1. Got: %g""" % (i)) 
+			else: 
+				pass 
+		for i in mass_ranges: 
+			i = _pyutils.copy_array_like_object(i) 
+			if len(i) == 2: 
+				for j in i: 
+					if not isinstance(j, numbers.Number): 
+						raise TypeError("""Stellar mass for explodability \
+prescription must be a numerical value. Got: %s""" % (type(j))) 
+					elif j < 0: 
+						raise ValueError("""Stellar mass for explodability \
+prescription must be a non-negative. Got: %s""" % (type(j))) 
+					else: 
+						j = float(j) 
+			else: 
+				raise ValueError("""Stellar explodability mass ranges must be \
+only 2-element array-like objects.""") 
+	else: 
+		raise ValueError("""Keyword arg 'explodability' must be of the same \
+length as the keyword arg 'mass_range'. explodability length: %d; mass_ranges \
+length: %d""" % (len(explodability), len(mass_ranges))) 
 
 	# Study keywords and their full citations 
 	studies = {
@@ -276,6 +351,42 @@ km/s and [M/H] = %g""" % (study, rotation, MoverH))
 smaller than maximum number of bins.""") 
 	else: 
 		pass 
+
+	""" 
+	Set the explosion criteria in C, after making sure that none of the mass 
+	ranges overlap. 
+	""" 
+	if len(mass_ranges) > 0: 
+		_masses = (2 * len(mass_ranges)) * [0.] 
+		for i in range(len(mass_ranges)): 
+			if 0 <= explodability[i] <= 1:
+				for j in range(2): 
+					_masses[2 * i + j] = mass_ranges[i][j] 
+			else: 
+				raise ValueError("""All explosion fractions must be between 0 \
+and 1. Got: %g""" % (explodability[i]))
+		# check for overlap (there's too much information to calculate a yield) 
+		if _masses != sorted(_masses): 
+			raise ValueError("Explodability mass ranges overlap.") 
+		else: 
+			pass 
+		if _masses[-1] > 25 and study.upper() == "LC18": 
+			warnings.warn("""CCSNe progenitors above an initial mass of 25 \
+Msun did not explode in the %s study, and instead they report only the yields \
+from the stellar winds. The explodability criteria are thus \
+overspecified.""" % (studies[study.upper()]), ScienceWarning) 
+		else: 
+			pass 
+	else: 
+		_masses = [m_lower, m_upper] 
+		explodability = [1] 
+
+	# Send the explodability criteria to ccsne.c, the rest is handled there. 
+	cdef double *c_masses = copy_pylist(_masses) 
+	cdef double *c_explodability = copy_pylist(explodability) 
+	set_explodability_criteria(c_masses, len(_masses), c_explodability) 
+	free(c_masses) 
+	free(c_explodability) 
 
 	"""
 	Science Warnings 

@@ -13,6 +13,7 @@
 
 /* ---------- static function comment headers not duplicated here ---------- */
 static double interpolate_yield(double m); 
+static double get_explodability_fraction(double m); 
 static double yield_weighted_kroupa01(double m); 
 static double yield_weighted_salpeter55(double m); 
 static double mass_weighted_kroupa01(double m); 
@@ -23,11 +24,18 @@ static double mass_weighted_salpeter55(double m);
  * quadrature functions to be able to access them while still only taking one 
  * parameter. 
  * 
- * GRID: 		The stellar mass - element yield itself 
- * GRIDSIZE:	The number of stellar masses on which the yield grid is sampled 
+ * GRID: 			The stellar mass - element yield itself 
+ * GRIDSIZE:		The number of stellar masses on which the yield grid is 
+ * 					sampled 
+ * MASS_RANGES: 	Stellar initial mass ranges passed from the user for 
+ * 					stellar explodability prescription 
+ * EXPLODABILITY: 	The fractions of stars that explode in those mass ranges 
  */
 static double **GRID; 
-static int GRIDSIZE = 0; 
+static unsigned int GRIDSIZE = 0; 
+static unsigned int N_MASSES = 0; 
+static double *MASSES; 
+static double *EXPLODABILITY; 
 
 /* 
  * Allocate memory for and return a pointer to a CCSNE_YIELD_SPECS struct. 
@@ -171,6 +179,56 @@ extern double get_cc_yield(ELEMENT e, double Z) {
 } 
 
 /* 
+ * Copy the explodability criteria that the user passed to 
+ * yields.ccsne.fractional. 
+ * 
+ * Parameters 
+ * ========== 
+ * masses: 			The masses themselves. Python will ensure that this is 
+ * 					always divisible by two 
+ * n_masses: 		The number of masses in the mass binspace 
+ * explodability: 	The explosion fractions 
+ * 
+ * header: ccsne.h 
+ */ 
+extern void set_explodability_criteria(double *masses, unsigned int n_masses, 
+	double *explodability) {
+
+	/* Allocate memory, copy the number of masses on the grid */ 
+	N_MASSES = n_masses; 
+	MASSES = (double *) malloc (n_masses * sizeof(double)); 
+	EXPLODABILITY = (double *) malloc ((n_masses - 1) * sizeof(double)); 
+
+	/* 
+	 * Copy over each mass range, and set the explodability equal to 1 in 
+	 * ranges where the user didn't specify an explodability fraction. 
+	 */ 
+	unsigned int i; 
+	for (i = 0; i < n_masses; i++) { 
+		MASSES[i] = masses[i]; 
+	} 
+	for (i = 0; i < n_masses - 1; i++) { /* n_masses always divisible by 2 */ 
+		if (i % 2) { 
+			EXPLODABILITY[i] = 1; 
+		} else { 
+			EXPLODABILITY[i] = explodability[i / 2]; 
+		} 
+	} 
+
+	#if 0
+	printf("Testing\n"); 
+	printf("========================================\n"); 
+	for (i = 0; i < n_masses; i++) {
+		printf("MASSES[%d] = %g\n", i, MASSES[i]); 
+	} 
+	for (i = 0; i < n_masses - 1; i++) {
+		printf("EXPLODABILITY[%d] = %g\n", i, EXPLODABILITY[i]); 
+	}
+	#endif 
+
+} 
+
+/* 
  * Determine the value of the integrated IMF weighted by the mass yield of a 
  * given element, up to the normalization of the IMF. 
  * 
@@ -209,15 +267,21 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
 			break; 
 
 		default: 
+			free(MASSES); 
+			free(EXPLODABILITY); 
 			free(GRID); 
 			GRIDSIZE = 0; 
+			N_MASSES = 0; 
 			return 3; 
 
 	} 
 
 	int x = quad(intgrl); 
+	free(MASSES); 
+	free(EXPLODABILITY); 
 	free(GRID); 
 	GRIDSIZE = 0; 
+	N_MASSES = 0; 
 	return x; 
 
 }
@@ -379,11 +443,12 @@ static double interpolate_yield(double m) {
 	if (m < CC_MIN_STELLAR_MASS) {
 		return 0; 
 	} else {
-		int i; 
+		unsigned int i; 
+		double explosion_fraction = get_explodability_fraction(m); 
 		for (i = 0; i < GRIDSIZE; i++) {
 			/* if the mass itself is on the grid, just return that yield */ 
 			if (m == GRID[i][0]) {
-				return GRID[i][1]; 
+				return explosion_fraction * GRID[i][1]; 
 			} else {
 				continue; 
 			} 
@@ -394,8 +459,8 @@ static double interpolate_yield(double m) {
 		 */
 		for (i = 0; i < GRIDSIZE - 1; i++) {
 			if (GRID[i][0] < m && m < GRID[i + 1][0]) {
-				return interpolate(GRID[i][0], GRID[i + 1][0], GRID[i][1], 
-					GRID[i + 1][1], m); 
+				return explosion_fraction * interpolate(GRID[i][0], 
+					GRID[i + 1][0], GRID[i][1], GRID[i + 1][1], m); 
 			} else {
 				continue; 
 			} 
@@ -406,8 +471,32 @@ static double interpolate_yield(double m) {
 		 * case, python will raise a warning, and we automatically extrapolate 
 		 * yield linearly from the bottom two elements on the grid. 
 		 */ 
-		return interpolate(GRID[GRIDSIZE - 2][0], GRID[GRIDSIZE - 1][0], 
-			GRID[GRIDSIZE - 2][1], GRID[GRIDSIZE - 1][1], m); 
+		return explosion_fraction * interpolate(GRID[GRIDSIZE - 2][0], 
+			GRID[GRIDSIZE - 1][0], GRID[GRIDSIZE - 2][1], 
+			GRID[GRIDSIZE - 1][1], m); 
+	}
+
+} 
+
+/* 
+ * Determines the fraction of stars at the stellar mass m in Msun that explode 
+ * according to the user's explodability criteria. 
+ * 
+ * Parameters 
+ * ========== 
+ * m: 		The stellar mass in Msun 
+ * 
+ * Returns 
+ * ======= 
+ * The specified fraction of stars that explode. 
+ */ 
+static double get_explodability_fraction(double m) {
+
+	long bin = get_bin_number(MASSES, N_MASSES, m); 
+	if (bin != -1l) {
+		return EXPLODABILITY[bin]; 
+	} else {
+		return 1; 
 	}
 
 } 
