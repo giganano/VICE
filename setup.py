@@ -6,12 +6,12 @@ except NameError:
 from distutils.core import setup, Extension 
 import sys 
 import os 
-if sys.version_info[:2] == (2, 7): 
-	import __builtin__ as builtins 
-elif sys.version_info[:2] >= (3, 5): 
+# if sys.version_info[:2] == (2, 7): 
+# 	import __builtin__ as builtins 
+if sys.version_info[:2] >= (3, 5): 
 	import builtins 
 else: 
-	raise RuntimeError("VICE requires python version 2.7 or >= 3.5") 
+	raise RuntimeError("VICE requires python version >= 3.5") 
 
 # partial import 
 builtins.__VICE_SETUP__ = True 
@@ -38,8 +38,6 @@ Operating System :: Unix
 Programming Language :: C 
 Programming Language :: Cython 
 Programming Language :: Python 
-Programming Language :: Python :: 2 
-Programming Language :: Python :: 2.7 
 Programming Language :: Python :: 3  
 Programming Language :: Python :: 3.5 
 Programming Language :: Python :: 3.6 
@@ -61,18 +59,15 @@ def compile_extensions():
 	c_extensions = list(filter(lambda x: x.endswith(".c"), 
 		["vice/src/%s" % (i) for i in os.listdir("./vice/src/")])) 
 	for root, dirs, files in os.walk('.'): 
-		if "v0p0p0" not in root: 
-			for i in files: 
-				if i.endswith(".pyx"): 		# if it's cython code 
-					ext = "%s.%s" % (root[2:].replace('/', '.'), 
-						i.split('.')[0]) 
-					files = ["%s/%s" % (root[2:], i)] + c_extensions 
-					setup(ext_modules = cythonize([Extension(ext, files,
-						extra_compile_args = ["-Wno-unreachable-code"])])) 
-				else: 
-					continue 
-		else: 
-			continue 
+		for i in files: 
+			if i.endswith(".pyx"): 		# if it's cython code 
+				ext = "%s.%s" % (root[2:].replace('/', '.'), 
+					i.split('.')[0]) 
+				files = ["%s/%s" % (root[2:], i)] + c_extensions 
+				setup(ext_modules = cythonize([Extension(ext, files,
+					extra_compile_args = ["-Wno-unreachable-code"])])) 
+			else: 
+				continue 
 
 def find_packages(path = '.'):
 	"""

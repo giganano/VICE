@@ -62,13 +62,13 @@ import warnings
 import sys
 import os
 
-if sys.version_info[0] == 2: 
-	warnings.warn("""\
-Python 2 is set to be deprecated on January 1, 2020. A future version of VICE \
-will drop support for Python 2. \
-""", PendingDeprecationWarning) 
-else:
-	pass 
+# if sys.version_info[0] == 2: 
+# 	warnings.warn("""\
+# Python 2 is set to be deprecated on January 1, 2020. A future version of VICE \
+# will drop support for Python 2. \
+# """, PendingDeprecationWarning) 
+# else:
+# 	pass 
 
 __author__ = "James W. Johnson <giganano9@gmail.com>"
 
