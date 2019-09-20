@@ -168,6 +168,24 @@ typedef struct metallicity_distribution_function {
 
 } MDF; 
 
+typedef struct initial_mass_function {
+
+	/* 
+	 * This struct contains information on the user's specified stellar 
+	 * initial mass function. 
+	 * 
+	 * 
+	 */
+
+	char *spec; 
+	double m_lower; 
+	double m_upper; 
+	unsigned long n_bins; 
+	double *mass_bins; 
+	double *power_law_indeces; 
+
+} IMF; 
+
 typedef struct single_stellar_population {
 
 	/* 
