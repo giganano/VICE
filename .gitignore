@@ -15,6 +15,7 @@ vice/core/*.c
 vice/yields/agb/*.c 
 vice/yields/ccsne/*.c 
 vice/yields/sneia/*.c 
+vice/src/test.* # testing codes
 
 # installation artifacts 
 VICE.egg-info/* 
