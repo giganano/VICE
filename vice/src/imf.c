@@ -9,7 +9,7 @@
 #include "imf.h" 
 
 /* ---------- static function comment headers not duplicated here ---------- */
-// static void imf_add_mass_bin(IMF *imf); 
+static void imf_add_mass_bin(IMF *imf); 
 
 /* 
  * Allocate memory for and return a pointer to an IMF object. 
@@ -133,7 +133,7 @@ extern void imf_add_mass_bin(IMF *imf) {
  * 
  * header: imf.h 
  */ 
-extern void imf_free(IMF *imf) {
+static void imf_free(IMF *imf) {
 
 	if (imf != NULL) {
 

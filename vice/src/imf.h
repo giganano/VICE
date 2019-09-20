@@ -29,7 +29,7 @@ extern "C" {
 #define SPEC_CHARP_SIZE 100 
 #endif /* SPEC_CHARP_SIZE */ 
 
-extern void imf_add_mass_bin(IMF *imf); 
+// extern void imf_add_mass_bin(IMF *imf); 
 
 /* 
  * Allocate memory for and return a pointer to an IMF object. 
