@@ -48,8 +48,8 @@ int main(void) {
 		n_mass_bins(*custom) * sizeof(double)); 
 	unsigned long i; 
 	for (i = 1l; i < n_mass_bins(*custom); i++) { 
-		mass_dist[i] = custom_IMF(IMF_STEPSIZE * i); 
-		// mass_dist[i] = kroupa01(IMF_STEPSIZE * i); 
+		mass_dist[i] = custom_IMF(0.08 + IMF_STEPSIZE * i); 
+		// mass_dist[i] = kroupa01(0.08 + IMF_STEPSIZE * i); 
 	} 
 	imf_set_mass_distribution(custom, mass_dist); 
 	free(mass_dist); 

@@ -15,7 +15,7 @@ vice.so: $(OBJECTS)
 %.o: %.c *.h 
 	$(CC) $(CFLAGS) $< -o $@ 
 
-test.o: 
+test.o: *.c *.h test.c 
 	$(CC) -lm *.c -o test.o 
 
 clean: 

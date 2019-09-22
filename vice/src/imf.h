@@ -64,19 +64,6 @@ extern IMF *imf_initialize(char *user_spec, double m_lower, double m_upper);
 extern void imf_free(IMF *imf); 
 
 /* 
- * Reallocate memory for the masses on the mass distribution. 
- * 
- * Parameters 
- * ========== 
- * imf: 		The IMF object to reset 
- * m_lower: 	The lower mass limit on star formation 
- * m_upper: 	The upper mass limit on star formation 
- * 
- * source: imf.c 
- */ 
-extern void imf_reset_mass_bins(IMF *imf, double m_lower, double m_upper); 
-
-/* 
  * Set the mass distribution of the IMF. 
  * 
  * Parameters 

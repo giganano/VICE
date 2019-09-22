@@ -175,17 +175,19 @@ typedef struct initial_mass_function {
 	 * initial mass function. This is NOT a binspace; the values of the mass 
 	 * distribution are determined at the masses on the grid. 
 	 * 
-	 * 
+	 * spec: a description of the user's IMF prescription. Either "kroupa", 
+	 * 		"salpeter", or "custom" 
+	 * m_lower: The lower mass limit on star formation 
+	 * m_upper: The upper mass limit on star formation 
+	 * mass_distribution: The un-normalized value of the IMF at stellar masses 
+	 * 		in steps of IMF_STEPSIZE (declared in imf.h) from m_lower to 
+	 *		m_upper. 
 	 */
 
 	char *spec; 
 	double m_lower; 
 	double m_upper; 
-	double *masses; 
 	double *mass_distribution; 
-	// unsigned long n_bins; 
-	// double *mass_bins; 
-	// double *power_law_indeces; 
 
 } IMF; 
 
