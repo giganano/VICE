@@ -29,7 +29,10 @@ extern "C" {
 #define SPEC_CHARP_SIZE 100 
 #endif /* SPEC_CHARP_SIZE */ 
 
-// extern void imf_add_mass_bin(IMF *imf); 
+/* The stepsize taken in sampling a functional IMF */ 
+#ifndef IMF_STEPSIZE 
+#define IMF_STEPSIZE 1e-4 
+#endif /* IMF_STEPSIZE */ 
 
 /* 
  * Allocate memory for and return a pointer to an IMF object. 
@@ -61,6 +64,47 @@ extern IMF *imf_initialize(char *user_spec, double m_lower, double m_upper);
 extern void imf_free(IMF *imf); 
 
 /* 
+ * Reallocate memory for the masses on the mass distribution. 
+ * 
+ * Parameters 
+ * ========== 
+ * imf: 		The IMF object to reset 
+ * m_lower: 	The lower mass limit on star formation 
+ * m_upper: 	The upper mass limit on star formation 
+ * 
+ * source: imf.c 
+ */ 
+extern void imf_reset_mass_bins(IMF *imf, double m_lower, double m_upper); 
+
+/* 
+ * Set the mass distribution of the IMF. 
+ * 
+ * Parameters 
+ * ========== 
+ * imf: 		The IMF object to set the distribution for 
+ * arr: 		The array containing the values of the distribution. This is 
+ * 				assumed to be the same length as the mass array 
+ * 
+ * Returns 
+ * ======= 
+ * 1 on an unallowed value of the distribution; 0 on success 
+ * 
+ * source: imf.c 
+ */ 
+extern unsigned short imf_set_mass_distribution(IMF *imf, double *arr); 
+
+/* 
+ * Determines the number of mass bins on the IMF grid. 
+ * 
+ * Parameters 
+ * ========== 
+ * imf:		The IMF object to determine the number of bins for 
+ * 
+ * source: imf.c 
+ */ 
+extern unsigned long n_mass_bins(IMF imf); 
+
+/* 
  * Evaluate the IMF to an arbitrary normalization at the mass m 
  * 
  * Parameters 
@@ -74,7 +118,7 @@ extern void imf_free(IMF *imf);
  * 
  * source: imf.c 
  */ 
-extern double imf_evaluate(IMF *imf, double m); 
+extern double imf_evaluate(IMF imf, double m); 
 
 /* 
  * The Salpeter (1955) stellar initial mass function (IMF) up to a 

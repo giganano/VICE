@@ -172,7 +172,8 @@ typedef struct initial_mass_function {
 
 	/* 
 	 * This struct contains information on the user's specified stellar 
-	 * initial mass function. 
+	 * initial mass function. This is NOT a binspace; the values of the mass 
+	 * distribution are determined at the masses on the grid. 
 	 * 
 	 * 
 	 */
@@ -180,9 +181,11 @@ typedef struct initial_mass_function {
 	char *spec; 
 	double m_lower; 
 	double m_upper; 
-	unsigned long n_bins; 
-	double *mass_bins; 
-	double *power_law_indeces; 
+	double *masses; 
+	double *mass_distribution; 
+	// unsigned long n_bins; 
+	// double *mass_bins; 
+	// double *power_law_indeces; 
 
 } IMF; 
 
