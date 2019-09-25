@@ -96,7 +96,7 @@ cdef double *copy_pylist(source):
 		arr[i] = source[i] 
 	return arr 
 
-cdef IMF_ *imf_object(IMF, m_lower, m_upper): 
+cdef IMF_ *imf_object(IMF, m_lower, m_upper) except *: 
 	if callable(IMF): 
 		_pyutils.args(IMF, """Stellar IMF must accept only one numerical \
 parameter.""") 
@@ -112,7 +112,7 @@ a built-in IMF or a callable function denoting a custom IMF. Got: %s""" % (
 			type(IMF))) 
 	# cdef char *cspec = <char *> malloc (1 + len(spec) * sizeof(char)) 
 	cdef IMF_ *imf = imf_initialize(m_lower, m_upper) 
-	cdef int *ords = <int *> malloc (len(spec) * sizeof(char)) 
+	cdef int *ords = <int *> malloc (len(spec) * sizeof(int)) 
 	for i in range(len(spec)): 
 		ords[i] = ord(spec[i]) 
 	set_char_p_value(imf[0].spec, ords, len(spec)) 
@@ -521,32 +521,22 @@ own discretion by modifying their CCSNe yield settings directly.""" % (
 	else: 
 		pass 
 
-	print("a") 
 	cdef IMF_ *imf_obj = imf_object(IMF, m_lower, m_upper) 
-	print("b") 
 
 	# Compute the yield 
 	cdef INTEGRAL *num = integral_initialize() 
-	print("c") 
 	num[0].a = m_lower 
-	print("d") 
 	num[0].b = m_upper 
-	print("e") 
 	num[0].tolerance = tolerance 
-	print("f") 
 	num[0].method = <unsigned long> sum([ord(i) for i in method.lower()]) 
-	print("g") 
 	num[0].Nmax = <unsigned long> Nmax 
-	print("h") 
 	num[0].Nmin = <unsigned long> Nmin 
-	print("i") 
 	try: 
 		x = IMFintegrated_fractional_yield_numerator(num, 
 			# filename.encode("latin-1"), 
 			# IMF.lower().encode("latin-1")) 
 			imf_obj, 
 			filename.encode("latin-1")) 
-		print("j") 
 		if x == 1: 
 			warnings.warn("""Yield-weighted IMF integration did not converge. \
 Estimated fractional error: %.2e""" % (num[0].error), ScienceWarning) 
@@ -554,13 +544,9 @@ Estimated fractional error: %.2e""" % (num[0].error), ScienceWarning)
 			raise SystemError("Internal Error") 
 		else: 
 			pass 
-		print("k") 
 	finally: 
-		print("l") 
 		numerator = [num[0].result, num[0].error, num[0].iters] 
-		print("m") 
 		integral_free(num) 
-		print("n") 
 
 
 	cdef INTEGRAL *den = integral_initialize() 

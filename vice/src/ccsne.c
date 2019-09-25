@@ -285,11 +285,13 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
 	GRID = cc_yield_grid(file); 
 	adopted_imf = imf; 
 
+	#if 0 
 	printf("intgrl: %p\n", (void *) intgrl); 
 	printf("imf: %p\n", (void *) imf); 
 	printf("imf.spec (%p): %s\n", (void *) (*imf).spec, (*imf).spec); 
 	printf("imf.mass_distribution: %p\n", (void *) (*imf).mass_distribution); 
 	printf("file (%p): %s\n", (void *) file, file); 
+	#endif 
 
 	#if 0
 	switch (checksum(IMF)) {
@@ -313,25 +315,15 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
 	} 
 	#endif 
 
-	printf("A\n"); 
 	intgrl -> func = &y_cc_numerator; 
-	printf("B\n"); 
 	int x = quad(intgrl); 
-	printf("C\n"); 
 	free(MASSES); 
-	printf("D\n"); 
 	free(EXPLODABILITY); 
-	printf("E\n"); 
 	free(GRID); 
-	printf("F\n"); 
 	intgrl -> func = NULL; 
-	printf("G\n"); 
 	adopted_imf = NULL; 
-	printf("H\n"); 
 	GRIDSIZE = 0; 
-	printf("I\n"); 
 	N_MASSES = 0; 
-	printf("J\n"); 
 	return x; 
 
 }
@@ -372,10 +364,7 @@ extern unsigned short IMFintegrated_fractional_yield_denominator(
 
 	} 
 	#endif 
-
-	printf("intgrl: %p\n", (void *) intgrl); 
-	printf("imf: %p\n", (void *) imf); 
-
+	
 	adopted_imf = imf; 
 	intgrl -> func = &y_cc_denominator; 
 	int x = quad(intgrl); 

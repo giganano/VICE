@@ -31,7 +31,7 @@ extern "C" {
 
 /* The stepsize taken in sampling a functional IMF */ 
 #ifndef IMF_STEPSIZE 
-#define IMF_STEPSIZE 1e-4 
+#define IMF_STEPSIZE 1e-3 
 #endif /* IMF_STEPSIZE */ 
 
 /* 

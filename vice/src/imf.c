@@ -166,7 +166,6 @@ extern double imf_evaluate(IMF_ imf, double m) {
 
 	/* If the mass in the specified mass range */ 
 	if (imf.m_lower <= m && m <= imf.m_upper) { 
-		// long bin; 
 
 		/* check for a built-in IMF */ 
 		switch(checksum(imf.spec)) { 
@@ -178,8 +177,24 @@ extern double imf_evaluate(IMF_ imf, double m) {
 				return kroupa01(m); 
 
 			case CUSTOM: 
-				return imf.mass_distribution[(unsigned long) ((
-					m - imf.m_lower) / IMF_STEPSIZE)]; 
+				/* 
+				 * An interpolation scheme is implemented here so that the 
+				 * IMF is still quasi-continuous under the hood. The previous 
+				 * lines (below) constituted an implementation of a step 
+				 * function approximation. 
+				 * 
+				 * return imf.mass_distribution[(unsigned long) ((
+				 * 	m - imf.m_lower) / IMF_STEPSIZE)]; 
+				 */ 
+				return interpolate(
+					(unsigned long) (m / IMF_STEPSIZE) * IMF_STEPSIZE, 
+					(unsigned long) (m / IMF_STEPSIZE) * (IMF_STEPSIZE) + 1l, 
+					imf.mass_distribution[(unsigned long) ((
+						m - imf.m_lower) / IMF_STEPSIZE)], 
+					imf.mass_distribution[1l + (unsigned long) ((
+						m - imf.m_lower) / IMF_STEPSIZE)], 
+					m 
+				); 
 
 			default: 	/* error handling */ 
 				return -1; 
