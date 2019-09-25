@@ -217,12 +217,13 @@ typedef struct single_stellar_population {
 	 * 		continuous recycling. 
 	 */ 
 
-	char *imf; 
+	// char *imf; 
+	IMF_ *imf; 
 	double *crf; 
 	double *msmf; 
 	double postMS; 
-	double m_upper; 
-	double m_lower; 
+	// double m_upper; 
+	// double m_lower; 
 	double R0; 
 	int continuous; 
 

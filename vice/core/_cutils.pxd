@@ -2,6 +2,7 @@
 
 from libc.stdlib cimport malloc, free 
 from .._globals import _VERSION_ERROR_ 
+from .._globals import _RECOGNIZED_IMFS_ 
 from . import _pyutils 
 import numbers 
 import sys 
@@ -12,11 +13,44 @@ elif sys.version_info[:2] >= (3, 5):
 else: 
 	_VERSION_ERROR_() 
 
+from libc.stdlib cimport malloc, free 
+from ._objects cimport IMF_ 
 cdef extern from "../src/utils.h": 
 	double *binspace(double start, double stop, long N) 
-	void set_char_p_value(char *dest, int *ords, int length)
+	void set_char_p_value(char *dest, int *ords, int length) 
+cdef extern from "../src/imf.h": 
+	double IMF_STEPSIZE 
+	unsigned short imf_set_mass_distribution(IMF_ *imf, double *arr) 
 
-cdef inline void set_string(char *dest, pystr): 
+
+cdef inline void setup_imf(IMF_ *imf, IMF) except *: 
+	cdef double *mapped 
+	if callable(IMF): 
+		_pyutils.args(IMF, """Stellar IMF must accept only one numerical \
+parameter.""")
+		set_string(imf[0].spec, "custom") 
+		masses = _pyutils.range_(imf[0].m_lower, imf[0].m_upper, IMF_STEPSIZE) 
+		mapped = <double *> malloc (len(masses) * sizeof(double)) 
+		for i in range(len(masses)): 
+			mapped[i] = IMF(masses[i]) 
+		if (imf_set_mass_distribution(imf, mapped)): 
+			free(mapped) 
+			raise ArithmeticError("""Custom IMF evaluated to negative, inf, \
+or nan for at least one stellar mass.""") 
+		else: 
+			free(mapped) 
+	elif isinstance(IMF, strcomp): 
+		if IMF.lower() in _RECOGNIZED_IMFS_: 
+			set_string(imf[0].spec, IMF.lower()) 
+		else: 
+			raise ValueError("Unrecognized IMF: %s" % (IMF)) 
+	else: 
+		raise TypeError("""IMF must be either a string denoting a built-in \
+initial mass function or a callable function. Got: %s""" % (type(IMF))) 
+
+
+
+cdef inline void set_string(char *dest, pystr) except *: 
 	""" 
 	Sets a string value (char *) given the python string it should be 
 	set to. 
@@ -47,7 +81,7 @@ cdef inline void set_string(char *dest, pystr):
 	set_char_p_value(dest, ords, len(pystr)) 
 	free(ords) 
 
-cdef inline int *ordinals(pystr): 
+cdef inline int *ordinals(pystr) except *: 
 	""" 
 	Get a C char * from a python string. 
 
@@ -76,7 +110,7 @@ cdef inline int *ordinals(pystr):
 	return copy 
 
 
-cdef inline double *copy_pylist(pylist): 
+cdef inline double *copy_pylist(pylist) except *: 
 	"""
 	Allocate memory for a double pointer and copy each element of a python 
 	list into the resultant C array. 
@@ -99,7 +133,7 @@ cdef inline double *copy_pylist(pylist):
 			raise TypeError("Non-numerical value detected.") 
 	return copy 
 
-cdef inline double *map_pyfunc_over_array(pyfunc, pyarray): 
+cdef inline double *map_pyfunc_over_array(pyfunc, pyarray) except *: 
 	"""
 	Map a python function across an array of values and store the output in 
 	a double pointer. 

@@ -297,6 +297,10 @@ extern void singlezone_clean(SINGLEZONE *sz) {
 	sz -> output_times = NULL; 
 	sz -> current_time = 0; 
 	sz -> timestep = 0l; 
+	if ((*(*(*sz).ssp).imf).mass_distribution != NULL) {
+		free(sz -> ssp -> imf -> mass_distribution); 
+		sz -> ssp -> imf -> mass_distribution = NULL; 
+	} else {} 
 
 } 
 
@@ -313,8 +317,40 @@ extern void singlezone_clean(SINGLEZONE *sz) {
  */ 
 extern void singlezone_cancel(SINGLEZONE *sz) {
 
+	/* 
+	 * This function gets called in various situations, and it is difficult 
+	 * to know which variables will be NULL, and which ones won't in any 
+	 * given situation. Hence we check for NULL values in all cases. 
+	 */ 
+
 	unsigned int i; 
-	for (i = 0; i < (*sz).n_elements; i++) {
+	for (i = 0; i < (*sz).n_elements; i++) { 
+		if ((*(*sz).elements[i]).Zin != NULL) {
+			free(sz -> elements[i] -> Zin); 
+			sz -> elements[i] -> Zin = NULL; 
+		} else {} 
+		if ((*(*(*sz).elements[i]).ccsne_yields).yield_ != NULL) {
+			free(sz -> elements[i] -> ccsne_yields -> yield_); 
+			sz -> elements[i] -> ccsne_yields -> yield_ = NULL; 
+		} else {} 
+		if ((*(*(*sz).elements[i]).sneia_yields).RIa != NULL) {
+			free(sz -> elements[i] -> sneia_yields -> RIa); 
+			sz -> elements[i] -> sneia_yields -> RIa = NULL; 
+		} else {} 
+		if ((*(*(*sz).elements[i]).agb_grid).grid != NULL) {
+			free(sz -> elements[i] -> agb_grid -> grid); 
+			sz -> elements[i] -> agb_grid -> grid = NULL; 
+		} else {} 
+		if ((*(*(*sz).elements[i]).agb_grid).m != NULL) {
+			free(sz -> elements[i] -> agb_grid -> m); 
+			sz -> elements[i] -> agb_grid -> m = NULL; 
+		} else {} 
+		if ((*(*(*sz).elements[i]).agb_grid).z != NULL) {
+			free(sz -> elements[i] -> agb_grid -> z); 
+			sz -> elements[i] -> agb_grid -> z = NULL; 
+		} else {} 
+
+		#if 0 
 		free(sz -> elements[i] -> Zin); 
 		free(sz -> elements[i] -> ccsne_yields -> yield_); 
 		if (!strcmp((*(*(*sz).elements[i]).sneia_yields).dtd, "custom")) { 
@@ -331,11 +367,32 @@ extern void singlezone_cancel(SINGLEZONE *sz) {
 		sz -> elements[i] -> agb_grid -> grid = NULL; 
 		sz -> elements[i] -> agb_grid -> m = NULL; 
 		sz -> elements[i] -> agb_grid -> z = NULL; 
+		#endif 
 	} 
+
+	if ((*(*sz).ism).specified != NULL) {
+		free(sz -> ism -> specified); 
+		sz -> ism -> specified = NULL; 
+	} else {} 
+	if ((*(*sz).ism).eta != NULL) {
+		free(sz -> ism -> eta); 
+		sz -> ism -> eta = NULL; 
+	} else {} 
+	if ((*(*sz).ism).enh != NULL) {
+		free(sz -> ism -> enh); 
+		sz -> ism -> enh = NULL; 
+	} else {} 
+	if ((*(*sz).ism).tau_star != NULL) {
+		free(sz -> ism -> tau_star); 
+		sz -> ism -> tau_star = NULL; 
+	} else {} 
+
+	#if 0 
 	free(sz -> ism -> specified); 
 	free(sz -> ism -> eta); 
 	free(sz -> ism -> enh); 
 	free(sz -> ism -> tau_star); 
+	#endif 
 
 }
 

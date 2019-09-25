@@ -132,17 +132,19 @@ def cumulative_return_fraction(age, IMF = "kroupa", m_upper = 100,
 		__numeric_checker(m_upper, "m_upper") 
 		__numeric_checker(m_lower, "m_lower") 
 		__numeric_checker(postMS, "postMS") 
-		__msmf_crf_value_checking(IMF = IMF, m_upper = m_upper, 
-			m_lower = m_lower, postMS = postMS)  
+		__msmf_crf_value_checking(m_upper = m_upper, 
+			m_lower = m_lower, postMS = postMS) 
+
 
 	# necessary for the C subroutines 
 	cdef SSP *ssp = _ssp.ssp_initialize() 
-	_cutils.set_string(ssp[0].imf, IMF.lower()) 
-	ssp[0].m_upper = m_upper 
-	ssp[0].m_lower = m_lower 
+	# _cutils.set_string(ssp[0].imf, IMF.lower()) 
 	ssp[0].postMS = postMS 
+	ssp[0].imf[0].m_upper = m_upper 
+	ssp[0].imf[0].m_lower = m_lower 
 
 	try: 
+		_cutils.setup_imf(ssp[0].imf, IMF) 
 		x = _ssp.CRF(ssp[0], age) 
 	finally: 
 		# always free the memory 
@@ -152,7 +154,7 @@ def cumulative_return_fraction(age, IMF = "kroupa", m_upper = 100,
 
 # ------------------ MAIN SEQUENCE MASS FRACTION FUNCTION ------------------ # 
 def main_sequence_mass_fraction(age, IMF = "kroupa", m_upper = 100, 
-	m_lower = 0.08, postMS = 0.1): 	
+	m_lower = 0.08): 	
 	"""
 	Determine the main sequence mass fraction for a single stellar population 
 	at a given age. This quantity represents the fraction of the stellar 
@@ -163,8 +165,7 @@ def main_sequence_mass_fraction(age, IMF = "kroupa", m_upper = 100,
 	Signature: vice.main_sequence_mass_fraction(age, 
 		IMF = "kroupa", 
 		m_upper = 100, 
-		m_lower = 0.08, 
-		postMS = 0.1)
+		m_lower = 0.08)
 
 	Parameters 
 	========== 
@@ -177,9 +178,6 @@ def main_sequence_mass_fraction(age, IMF = "kroupa", m_upper = 100,
 		The upper mass limit on star formation in solar masses 
 	m_lower :: real number [default :: 0.08] 
 		The lower mass limit on star formation in solar masses 
-	postMS :: real number [default :: 0.1] 
-		The ratio of a star's post main sequence lifetime to its main sequence 
-		lifetime
 
 	Returns 
 	======= 
@@ -201,7 +199,6 @@ def main_sequence_mass_fraction(age, IMF = "kroupa", m_upper = 100,
 		:: m_upper <= 0 
 		:: m_lower <= 0 
 		:: m_lower >= m_upper 
-		:: postMS < 0 or > 1 
 
 	Notes 
 	===== 
@@ -232,18 +229,19 @@ def main_sequence_mass_fraction(age, IMF = "kroupa", m_upper = 100,
 	else: 
 		__numeric_checker(m_upper, "m_upper") 
 		__numeric_checker(m_lower, "m_lower") 
-		__numeric_checker(postMS, "postMS") 
-		__msmf_crf_value_checking(IMF = IMF, m_upper = m_upper, 
-			m_lower = m_lower, postMS = postMS) 
+		# __numeric_checker(postMS, "postMS") 
+		__msmf_crf_value_checking(m_upper = m_upper, 
+			m_lower = m_lower) 
 
 	# necessary for C subroutines 
 	cdef SSP *ssp = _ssp.ssp_initialize() 
-	_cutils.set_string(ssp[0].imf, IMF.lower()) 
-	ssp[0].m_upper = m_upper 
-	ssp[0].m_lower = m_lower 
-	ssp[0].postMS = postMS
+	# _cutils.set_string(ssp[0].imf, IMF.lower()) 
+	ssp[0].postMS = 0 
+	ssp[0].imf[0].m_upper = m_upper 
+	ssp[0].imf[0].m_lower = m_lower 
 
 	try: 
+		_cutils.setup_imf(ssp[0].imf, IMF) 
 		x = _ssp.MSMF(ssp[0], age) 
 	finally: 
 		# always free the memory 
@@ -251,11 +249,11 @@ def main_sequence_mass_fraction(age, IMF = "kroupa", m_upper = 100,
 	return x 
 
 
-def __msmf_crf_value_checking(IMF = "kroupa", m_upper = 100, m_lower = 0.08, 
+def __msmf_crf_value_checking(m_upper = 100, m_lower = 0.08, 
 	postMS = 0.1): 
-	if IMF.lower() not in _RECOGNIZED_IMFS_: 
-		raise ValueError("Unrecognized IMF: %s" % (IMF)) 
-	elif m_upper <= 0: 
+	# if IMF.lower() not in _RECOGNIZED_IMFS_: 
+	# 	raise ValueError("Unrecognized IMF: %s" % (IMF)) 
+	if m_upper <= 0: 
 		raise ValueError("Keyword arg 'm_upper' must be greater than zero.") 
 	elif m_lower <= 0: 
 		raise ValueError("Keyword arg 'm_lower' must be greater than zero.") 
@@ -392,7 +390,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 		"m_upper": 		m_upper, 
 		"m_lower": 		m_lower, 
 		"postMS": 		postMS, 
-		"IMF": 			IMF, 
+		# "IMF": 			IMF, 
 		"RIa": 			RIa, 
 		"delay": 		delay, 
 		"agb_model": 	agb_model
@@ -403,10 +401,10 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	# Necessary C structs for calling _ssp.single_population_enrichment
 	cdef SSP *ssp = _ssp.ssp_initialize() 
 	cdef ELEMENT *e = _element.element_initialize() 
-	_cutils.set_string(ssp[0].imf, IMF.lower()) 
-	ssp[0].m_upper = m_upper 
-	ssp[0].m_lower = m_lower 
+	# _cutils.set_string(ssp[0].imf, IMF.lower()) 
 	ssp[0].postMS = postMS
+	ssp[0].imf[0].m_upper = m_upper 
+	ssp[0].imf[0].m_lower = m_lower 
 
 	# Import the element's AGB yield grid 
 	agbfile = find_agb_yield_file(element, agb_model) 
@@ -466,6 +464,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	_sneia.normalize_RIa(e, _sneia.RIA_MAX_EVAL_TIME / dt + 1) 
 
 	# Call the C routines 
+	_cutils.setup_imf(ssp[0].imf, IMF) 
 	cdef double *evaltimes = _cutils.binspace(0, time + 10 * dt, 
 		long((time + 10 * dt) / dt)) 
 	cdef double *cresults = _ssp.single_population_enrichment(ssp, e, 
@@ -493,7 +492,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 
 
 def __ssp_type_checking(element, mstar = 1e6, Z = 0.014, time = 10, 
-	dt = 0.01, m_upper = 100, m_lower = 0.08, postMS = 0.1, IMF = "kroupa", 
+	dt = 0.01, m_upper = 100, m_lower = 0.08, postMS = 0.1, 
 	RIa = "plaw", delay = 0.15, agb_model = "cristallo11"): 
 	""" 
 	Does type checking for the single_stellar_population function. See 
@@ -504,10 +503,10 @@ def __ssp_type_checking(element, mstar = 1e6, Z = 0.014, time = 10,
 		message = "First argument must be of type string. Got: %s" % (
 			type(element))
 		raise TypeError(message)
-	elif not isinstance(IMF, strcomp): # The IMF must be a string
-		message = "Keyword arg 'IMF' must be of type string. Got: %s" % (
-			type(IMF))
-		raise TypeError(message)
+	# elif not isinstance(IMF, strcomp): # The IMF must be a string
+	# 	message = "Keyword arg 'IMF' must be of type string. Got: %s" % (
+	# 		type(IMF))
+	# 	raise TypeError(message)
 	else:
 		pass 
 	if isinstance(RIa, strcomp): 
@@ -540,7 +539,7 @@ string. Got: %s""" % (type(agb_model)))
 
 
 def __ssp_value_checking(element, mstar = 1e6, Z = 0.014, time = 10, 
-	dt = 0.01, m_upper = 100, m_lower = 0.08, postMS = 0.1, IMF = "kroupa", 
+	dt = 0.01, m_upper = 100, m_lower = 0.08, postMS = 0.1, 
 	RIa = "plaw", delay = 0.15, agb_model = "cristallo11"): 
 	"""
 	Does value checking for the single_stellar_population function. See 
@@ -581,8 +580,8 @@ timescales longer than %g Gyr.""" % (_sneia.RIA_MAX_EVAL_TIME))
 		raise ValueError("Keyword arg 'm_upper' must be larger than 'm_lower'.") 
 	elif postMS < 0 or postMS > 1: 
 		raise ValueError("Keyword arg 'postMS' must be between 0 and 1.") 
-	elif IMF.lower() not in _RECOGNIZED_IMFS_: 
-		raise ValueError("Unrecognized IMF: %s" % (IMF)) 
+	# elif IMF.lower() not in _RECOGNIZED_IMFS_: 
+	# 	raise ValueError("Unrecognized IMF: %s" % (IMF)) 
 	elif delay < 0: 
 		raise ValueError("Keyword arg 'delay' must be non-negative.") 
 	elif agb_model.lower() not in studies.keys(): 

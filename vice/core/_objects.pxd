@@ -56,19 +56,20 @@ cdef extern from "../src/objects.h":
 		double *bins 
 		unsigned long n_bins 
 
-	ctypedef struct IMF: 
+	ctypedef struct IMF_: 
 		char *spec 
 		double m_lower 
 		double m_upper 
 		double *mass_distribution 
 
 	ctypedef struct SSP: 
-		char *imf 
+		# char *imf 
+		IMF_ *imf 
 		double *crf 
 		double *msmf 
 		double postMS
-		double m_upper 
-		double m_lower 
+		# double m_upper 
+		# double m_lower 
 		double R0 
 		int continuous 
 

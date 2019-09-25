@@ -18,11 +18,17 @@
 #include <string.h> 
 #include <math.h> 
 #include "agb.h" 
+#include "imf.h" 
 #include "ccsne.h" 
 #include "sneia.h"  
 #include "ssp.h" 
+#include "singlezone.h" 
+#include "quadrature.h" 
 
 /* ---------- static function comment headers not duplicated here ---------- */
+static double Kalirai08_remnant_mass(double m); 
+static double CRFnumerator_integrand(double m); 
+static double CRFdenominator_integrand(double m); 
 static double CRFnumerator_Kalirai08(SSP ssp, double time); 
 static double CRFnumerator_Kalirai08_IMFrange(double m_upper, 
 	double turnoff_mass, double m_lower, double a); 
@@ -35,6 +41,7 @@ static double CRFdenominator_IMFrange(double m_upper, double m_lower,
 	double a); 
 static double MSMFdenominator(SSP ssp); 
 static double MSMFnumerator(SSP ssp, double time); 
+static IMF_ *ADOPTED_IMF = NULL; 
 
 /* 
  * Allocate memory for and return a pointer to an SSP struct. Automatically 
@@ -45,8 +52,16 @@ static double MSMFnumerator(SSP ssp, double time);
  */ 
 extern SSP *ssp_initialize(void) { 
 
+	/* 
+	 * The imf object is initialized with the default lower and upper mass 
+	 * limits. They will be modified by the python wrapper in VICE anyway. 
+	 * This keeps the implementation simpler in that now singlezone_initialize 
+	 * does not need to take arguments for the mass limits. 
+	 */ 
+
 	SSP *ssp = (SSP *) malloc (sizeof(SSP)); 
-	ssp -> imf = (char *) malloc (100 * sizeof(char)); 
+	// ssp -> imf = (char *) malloc (100 * sizeof(char)); 
+	ssp -> imf = imf_initialize(0.08, 100); 
 	ssp -> crf = NULL; 
 	ssp -> msmf = NULL; 
 	return ssp; 
@@ -73,7 +88,8 @@ extern void ssp_free(SSP *ssp) {
 		} else {} 
 
 		if ((*ssp).imf != NULL) {
-			free(ssp -> imf); 
+			// free(ssp -> imf); 
+			imf_free(ssp -> imf); 
 			ssp -> imf = NULL; 
 		} else {} 
 
@@ -123,6 +139,78 @@ extern double main_sequence_turnoff_mass(double t, double postMS) {
 } 
 
 /* 
+ * The Kalirai et al. (2008) initial-final remnant mass relationship 
+ * 
+ * Parameters 
+ * ========== 
+ * m: 		The initial stellar mass in Msun 
+ * 
+ * Returns 
+ * ======= 
+ * The mass of the remnant under the Kalirai et al. (2008) model. Stars with 
+ * main sequence masses >= 8 Msun leave behind a 1.44 Msun remnant. Those < 8 
+ * Msun leave behind a 0.394 + 0.109 * m Msun mass remnant. 
+ * 
+ * References 
+ * ========== 
+ * Kalirai et al. (2008), ApJ, 676, 594 
+ */ 
+static double Kalirai08_remnant_mass(double m) {
+
+	if (m >= 8) {
+		return 1.44; 
+	} else if (0 < m && m < 8) {
+		return 0.394 + 0.109 * m; 
+	} else {
+		return 0; 
+	} 
+
+} 
+
+/* 
+ * The integrand of the numerator of the cumulative return fraction (CRF). 
+ * 
+ * Parameters 
+ * ========== 
+ * m: 		The initial stellar mass in Msun 
+ * 
+ * Returns 
+ * ======= 
+ * The difference in the initial stellar mass and remnant mass weighted by 
+ * the adopted IMF 
+ * 
+ * See Also 
+ * ======== 
+ * Section 2.2 of Science Documentation: The Cumulative Return Fraction 
+ */ 
+static double CRFnumerator_integrand(double m) { 
+
+	return (m - Kalirai08_remnant_mass(m)) * imf_evaluate(*ADOPTED_IMF, m); 
+
+} 
+
+/* 
+ * The integrand of the denominator of the cumulative return fraction (CRF). 
+ * 
+ * Parameters 
+ * ========== 
+ * m: 		The initial stellar mass in Msun 
+ * 
+ * Returns 
+ * ======= 
+ * The initial stellar mass weighted by the adopted IMF 
+ * 
+ * See Also 
+ * ======== 
+ * Section 2.2 of Science Documentation: The Cumulative Return Fraction 
+ */ 
+static double CRFdenominator_integrand(double m) {
+
+	return m * imf_evaluate(*ADOPTED_IMF, m); 
+
+}
+
+/* 
  * Run a simulation of elemental production for a single element produced by a 
  * single stellar population. 
  * 
@@ -151,16 +239,28 @@ extern double *single_population_enrichment(SSP *ssp, ELEMENT *e,
 
 	ssp -> msmf = (double *) malloc (n_times * sizeof(double)); 
 	if ((*ssp).msmf == NULL) return NULL; /* memory error */ 
+	double denominator = MSMFdenominator(*ssp); 
+	if (denominator < 0) { /* unrecognized IMF */ 
+		free(mass); 
+		free(ssp -> msmf); 
+		return NULL; 
+	} else {
+		unsigned long i; 
+		for (i = 0l; i < n_times; i++) {
+			ssp -> msmf[i] = MSMFnumerator(*ssp, times[i]) / denominator; 
+		}
+	}
 
-	unsigned long i; 
-	for (i = 0l; i < n_times; i++) {
-		ssp -> msmf[i] = MSMF(*ssp, times[i]); 
-	} 
+	// unsigned long i; 
+	// for (i = 0l; i < n_times; i++) {
+	// 	ssp -> msmf[i] = MSMF(*ssp, times[i]); 
+	// } 
 
 	mass[0] = 0; 
 	if (n_times >= 2l) { 
 		/* The contribution from CCSNe */ 
 		mass[1] = get_cc_yield(*e, Z) * mstar; 
+		unsigned long i; 
 		for (i = 2l; i < n_times; i++) {
 			mass[i] = mass[i - 1l]; 		/* previous timesteps */ 
 
@@ -180,7 +280,7 @@ extern double *single_population_enrichment(SSP *ssp, ELEMENT *e,
 
 	return mass; 
 
-}
+} 
 
 /* 
  * Determine the mass recycled from all previous generations of stars for 
@@ -479,8 +579,9 @@ extern unsigned short setup_CRF(SINGLEZONE *sz) {
 		 * quantities for ten timesteps beyond the endpoint of the simulation. 
 		 * This is a safeguard against memory errors. 
 		 */ 
-		unsigned long i, n = 10l + (unsigned long) (
-			(*sz).output_times[(*sz).n_outputs - 1l] / (*sz).dt); 
+		// unsigned long i, n = 10l + (unsigned long) (
+		// 	(*sz).output_times[(*sz).n_outputs - 1l] / (*sz).dt); 
+		unsigned long i, n = n_timesteps(*sz); 
 
 		sz -> ssp -> crf = (double *) malloc (n * sizeof(double)); 
 		for (i = 0l; i < n; i++) {
@@ -558,7 +659,88 @@ extern double CRF(SSP ssp, double time) {
 static double CRFnumerator_Kalirai08(SSP ssp, double t) {
 
 	double turnoff_mass = main_sequence_turnoff_mass(t, ssp.postMS); 
+	if (turnoff_mass > (*ssp.imf).m_upper) return 0; 
+	switch (checksum((*ssp.imf).spec)) {
 
+		case SALPETER: 
+			/* Salpeter IMF */ 
+			return CRFnumerator_Kalirai08_IMFrange(
+				(*ssp.imf).m_upper, 
+				turnoff_mass, 
+				(*ssp.imf).m_lower, 
+				2.35
+			); 
+
+		case KROUPA: 
+			/* 
+			 * Kroupa IMF 
+			 * 
+			 * Prefactors here come from ensuring continuity at the breaks in 
+			 * the power-law indeces of the mass distribution 
+			 */ 
+			if (turnoff_mass > 0.5) {
+				return 0.04 * CRFnumerator_Kalirai08_IMFrange(
+					(*ssp.imf).m_upper, 
+					turnoff_mass, 
+					(*ssp.imf).m_lower, 
+					2.3 
+				); 
+			} else if (0.08 <= turnoff_mass && turnoff_mass <= 0.5) {
+				return 0.04 * CRFnumerator_Kalirai08_IMFrange(
+					(*ssp.imf).m_upper, 
+					turnoff_mass, 
+					0.5, 
+					2.3
+				) + 0.08 * CRFnumerator_Kalirai08_IMFrange(
+					0.5, 
+					turnoff_mass, 
+					(*ssp.imf).m_lower, 
+					1.3 
+				); 
+			} else {
+				return 0.04 * CRFnumerator_Kalirai08_IMFrange(
+					(*ssp.imf).m_upper, 
+					turnoff_mass, 
+					0.5, 
+					2.3
+				) + 0.08 * CRFnumerator_Kalirai08_IMFrange(
+					0.5, 
+					turnoff_mass, 
+					0.08, 
+					1.3 
+				) + CRFnumerator_Kalirai08_IMFrange(
+					0.08, 
+					turnoff_mass, 
+					(*ssp.imf).m_lower, 
+					0.3 
+				); 
+			}
+
+		case CUSTOM: 
+			/* custom IMF -> no assumptions made, must integrate numerically */ 
+			ADOPTED_IMF = ssp.imf; 
+			INTEGRAL *numerator = integral_initialize(); 
+			numerator -> func = &CRFnumerator_integrand; 
+			numerator -> a = turnoff_mass; 
+			numerator -> b = (*ssp.imf).m_upper; 
+			/* default values for these parameters */ 
+			numerator -> tolerance = SSP_TOLERANCE; 
+			numerator -> method = SSP_METHOD; 
+			numerator -> Nmin = SSP_NMIN; 
+			numerator -> Nmax = SSP_NMAX; 
+			quad(numerator); 
+			double x = (*numerator).result; 
+			integral_free(numerator); 
+			ADOPTED_IMF = NULL; 
+			return x; 
+
+		default: 
+			/* error handling */ 
+			return -1; 
+
+	}
+
+	#if 0 
 	if (!strcmp(ssp.imf, "salpeter")) {
 		/* Salpeter IMF */
 		return CRFnumerator_Kalirai08_IMFrange(
@@ -605,7 +787,8 @@ static double CRFnumerator_Kalirai08(SSP ssp, double t) {
 	} else {
 		/* unrecognized IMF, return -1 on failure */ 
 		return -1; 
-	}
+	} 
+	#endif 
 
 }
 
@@ -772,6 +955,58 @@ static double CRFnumerator_Kalirai08_below_8Msun(double m_upper,
  */ 
 static double CRFdenominator(SSP ssp) {
 
+	switch (checksum((*ssp.imf).spec)) { 
+
+		case SALPETER: 
+			/* Salpeter IMF */ 
+			return CRFdenominator_IMFrange((*ssp.imf).m_upper, 
+				(*ssp.imf).m_lower, 2.35); 
+
+		case KROUPA: 
+			/* Kroupa IMF */ 
+			if ((*ssp.imf).m_lower > 0.5) {
+				return 0.04 * CRFdenominator_IMFrange(
+					(*ssp.imf).m_upper, (*ssp.imf).m_lower, 2.3
+				); 
+			} else if (0.08 <= (*ssp.imf).m_lower && 
+				(*ssp.imf).m_lower <= 0.5) {
+				return (
+					0.04 * CRFdenominator_IMFrange((*ssp.imf).m_upper, 0.5, 2.3) 
+					+ 0.08 * CRFdenominator_IMFrange(0.5, (*ssp.imf).m_lower, 
+						1.3)
+				); 
+			} else {
+				return (0.04 * CRFdenominator_IMFrange((*ssp.imf).m_upper, 0.5, 
+					2.3) + 0.08 * CRFdenominator_IMFrange(0.5, 0.08, 1.3) + 
+					CRFdenominator_IMFrange(0.08, (*ssp.imf).m_lower, 0.3) 
+				); 
+			}
+
+		case CUSTOM: 
+			/* custom IMF -> no assumptions made, must integrate numerically */ 
+			ADOPTED_IMF = ssp.imf; 
+			INTEGRAL *denominator = integral_initialize(); 
+			denominator -> func = &CRFdenominator_integrand; 
+			denominator -> a = (*ssp.imf).m_lower; 
+			denominator -> b = (*ssp.imf).m_upper; 
+			/* default values for these properties */ 
+			denominator -> tolerance = SSP_TOLERANCE; 
+			denominator -> method = SSP_METHOD; 
+			denominator -> Nmin = SSP_NMIN; 
+			denominator -> Nmax = SSP_NMAX; 
+			quad(denominator); 
+			double x = (*denominator).result; 
+			integral_free(denominator); 
+			ADOPTED_IMF = NULL; 
+			return x; 
+
+		default: 
+			/* error handling */ 
+			return -1; 
+
+	}
+
+	#if 0 
 	if (!strcmp(ssp.imf, "salpeter")) {
 		return CRFdenominator_IMFrange(ssp.m_upper, ssp.m_lower, 2.35); 
 	} else if (!strcmp(ssp.imf, "kroupa")) {
@@ -788,7 +1023,8 @@ static double CRFdenominator(SSP ssp) {
 		} 
 	} else {
 		return -1; 
-	}
+	} 
+	#endif 
 
 }
 
@@ -810,7 +1046,7 @@ static double CRFdenominator(SSP ssp) {
 static double CRFdenominator_IMFrange(double m_upper, double m_lower, 
 	double a) {
 
-	return 1 / (2 - a) * (pow(m_upper, 2 - a) - pow(m_lower, 2- a)); 
+	return 1 / (2 - a) * (pow(m_upper, 2 - a) - pow(m_lower, 2 - a)); 
 
 } 
 
@@ -844,8 +1080,9 @@ extern unsigned short setup_MSMF(SINGLEZONE *sz) {
 		 * quantities for ten timesteps beyond the endpoint of the simulation. 
 		 * This is a safeguard against memory errors. 
 		 */ 
-		unsigned long i, n = 10l + (unsigned long) (
-			(*sz).output_times[(*sz).n_outputs - 1l] / (*sz).dt); 
+		// unsigned long i, n = 10l + (unsigned long) (
+		// 	(*sz).output_times[(*sz).n_outputs - 1l] / (*sz).dt); 
+		unsigned long i, n = n_timesteps(*sz); 
 
 		sz -> ssp -> msmf = (double *) malloc (n * sizeof(double)); 
 		for (i = 0l; i < n; i++) {
@@ -938,6 +1175,85 @@ static double MSMFnumerator(SSP ssp, double t) {
 
 	double turnoff_mass = main_sequence_turnoff_mass(t, ssp.postMS); 
 
+	/* 
+	 * First check if it's ouside the mass range of star formation and handle 
+	 * appropriately 
+	 */ 
+	if (turnoff_mass > (*ssp.imf).m_upper) { 
+		return MSMFdenominator(ssp); 
+	} else if (turnoff_mass < (*ssp.imf).m_lower) {
+		return 0; 
+	}
+
+	switch(checksum((*ssp.imf).spec)) {
+
+		case SALPETER: 
+			/* Salpeter IMF */ 
+			return CRFdenominator_IMFrange(turnoff_mass, (*ssp.imf).m_lower, 
+				2.35); 
+
+		case KROUPA: 
+			/* Kroupa IMF */ 
+			if ((*ssp.imf).m_lower < 0.08) {
+				/* Need to consider all 3 portions of the Kroupa IMF */ 
+				if (turnoff_mass > 0.5) {
+					return (
+						0.04 * CRFdenominator_IMFrange(turnoff_mass, 0.5, 2.3) + 
+						0.08 * CRFdenominator_IMFrange(0.5, 0.08, 1.3) + 
+						CRFdenominator_IMFrange(0.08, (*ssp.imf).m_lower, 0.3) 
+					); 
+				} else if (0.08 <= turnoff_mass && turnoff_mass <= 0.5) {
+					return (
+						0.08 * CRFdenominator_IMFrange(turnoff_mass, 0.08, 1.3) 
+						+ CRFdenominator_IMFrange(0.08, (*ssp.imf).m_lower, 0.3) 
+					); 
+				} else {
+					return CRFdenominator_IMFrange(turnoff_mass, 
+						(*ssp.imf).m_lower, 0.3); 
+				} 
+			} else if (0.08 <= (*ssp.imf).m_lower && (*ssp.imf).m_lower <= 0.5) {
+				/* Only two portions of the Kroupa IMF to worry about */ 
+				if (turnoff_mass > 0.5) {
+					return (
+						0.04 * CRFdenominator_IMFrange(turnoff_mass, 0.5, 2.3) + 
+						0.08 * CRFdenominator_IMFrange(0.5, (*ssp.imf).m_lower, 
+							1.3)
+					); 
+				} else {
+					return 0.08 * CRFdenominator_IMFrange(turnoff_mass, 
+						(*ssp.imf).m_lower, 1.3); 
+				} 
+			} else {
+				/* Only the high mass end of the Kroupa IMF to consider */ 
+				return 0.04 * CRFdenominator_IMFrange(turnoff_mass, 
+					(*ssp.imf).m_lower, 2.3); 
+			} 
+
+		case CUSTOM: 
+			/* custom IMF -> no assumptions made, must integrate numerically */ 
+			ADOPTED_IMF = ssp.imf; 
+			INTEGRAL *numerator = integral_initialize(); 
+			numerator -> func = &CRFdenominator_integrand; 
+			numerator -> a = (*ssp.imf).m_lower; 
+			numerator -> b = turnoff_mass; 
+			/* default values for these parameters */ 
+			numerator -> tolerance = SSP_TOLERANCE; 
+			numerator -> method = SSP_METHOD; 
+			numerator -> Nmin = SSP_NMIN; 
+			numerator -> Nmax = SSP_NMAX; 
+			quad(numerator); 
+			double x = (*numerator).result; 
+			integral_free(numerator); 
+			ADOPTED_IMF = NULL; 
+			return x; 
+
+		default: 
+			/* error handling */ 
+			return -1; 
+
+	}
+
+	#if 0 
 	if (!strcmp(ssp.imf, "salpeter")) { 
 		if (turnoff_mass > ssp.m_upper) {
 			return MSMFdenominator(ssp); /* no stars evolved off of MS yet */ 
@@ -984,5 +1300,7 @@ static double MSMFnumerator(SSP ssp, double t) {
 		/* Unrecognized IMF, return -1 on failure */ 
 		return -1; 
 	}
+	#endif 
+
 }
 

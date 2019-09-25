@@ -26,11 +26,6 @@ extern IMF_ *imf_initialize(double m_lower, double m_upper) {
 
 	IMF_ *imf = (IMF_ *) malloc (sizeof(IMF_)); 
 	imf -> spec = (char *) malloc (SPEC_CHARP_SIZE * sizeof(char)); 
-	// unsigned int i; 
-	// for (i = 0; i < strlen(user_spec); i++) {
-	// 	imf -> spec[i] = user_spec[i]; 
-	// } 
-	// imf -> spec[strlen(user_spec)] = '\0'; 
 	imf -> mass_distribution = NULL; 
 	imf -> m_lower = m_lower; 
 	imf -> m_upper = m_upper; 

@@ -1125,6 +1125,7 @@ cdef class c_singlezone:
 
 	cdef SINGLEZONE *_sz 
 	cdef object _func 
+	cdef object _imf 
 	cdef object _eta 
 	cdef object _enhancement 
 	cdef object _tau_star 
@@ -1532,8 +1533,7 @@ Got: %s""" % (type(
 	@property
 	def IMF(self): 
 		# docstring in python version 
-		return "".join([chr(self._sz[0].ssp[0].imf[i]) for i in range(
-			strlen(self._sz[0].ssp[0].imf))]) 
+		return self._imf 
 
 	@IMF.setter 
 	def IMF(self, value): 
@@ -1548,14 +1548,19 @@ Got: %s""" % (type(
 		============== 
 		"kroupa", "salpeter" 
 		""" 
-		if isinstance(value, strcomp): 
+		if callable(value): 
+			_pyutils.args(value, """\
+Attribute 'IMF' must accept only one numerical parameter.""") 
+			self._imf = value 
+		elif isinstance(value, strcomp): 
 			if value.lower() in _RECOGNIZED_IMFS_: 
-				_cutils.set_string(self._sz[0].ssp[0].imf, value.lower()) 
+				# _cutils.set_string(self._sz[0].ssp[0].imf, value.lower()) 
+				self._imf = value.lower() 
 			else: 
 				raise ValueError("Unrecognized IMF: %s" % (value)) 
 		else: 
-			raise TypeError("Attribute 'IMF' must be of type str. Got: %s" % (
-				type(value))) 
+			raise TypeError("""Attribute 'IMF' must be of type str or a \
+callable function. Got: %s""" % (type(value))) 
 
 	@property
 	def eta(self): 
@@ -2146,7 +2151,7 @@ value. Got: %s""" % (type(value)))
 	@property
 	def m_upper(self): 
 		# docstring in python version 
-		return self._sz[0].ssp[0].m_upper 
+		return self._sz[0].ssp[0].imf[0].m_upper 
 
 	@m_upper.setter 
 	def m_upper(self, value): 
@@ -2164,7 +2169,7 @@ value. Got: %s""" % (type(value)))
 		""" 
 		if isinstance(value, numbers.Number): 
 			if value > 0: 
-				self._sz[0].ssp[0].m_upper = value 
+				self._sz[0].ssp[0].imf[0].m_upper = value 
 			else: 
 				raise ValueError("""Attribute 'm_upper' must be positive. \
 Got: %s""" % (value)) 
@@ -2173,17 +2178,17 @@ Got: %s""" % (value))
 value. Got: %s""" % (type(value))) 
 
 		# Raise a ScienceWarning for upper mass limits below 80 Msun. 
-		if self._sz[0].ssp[0].m_upper < 80: 
+		if self._sz[0].ssp[0].imf[0].m_upper < 80: 
 			warnings.warn("""This is a low upper mass limit on star \
 formation: %g. This may introduce numerical artifacts.""" % (
-				self._sz[0].ssp[0].m_upper), ScienceWarning) 
+				self._sz[0].ssp[0].imf[0].m_upper), ScienceWarning) 
 		else: 
 			pass 
 
 	@property
 	def m_lower(self): 
 		# docstring in python class 
-		return self._sz[0].ssp[0].m_lower 
+		return self._sz[0].ssp[0].imf[0].m_lower 
 
 	@m_lower.setter 
 	def m_lower(self, value): 
@@ -2201,7 +2206,7 @@ formation: %g. This may introduce numerical artifacts.""" % (
 		""" 
 		if isinstance(value, numbers.Number): 
 			if value > 0: 
-				self._sz[0].ssp[0].m_lower = value 
+				self._sz[0].ssp[0].imf[0].m_lower = value 
 			else: 
 				raise ValueError("""Attribute 'm_lower' must be positive. \
 Got: %s""" % (value)) 
@@ -2210,10 +2215,10 @@ Got: %s""" % (value))
 value. Got: %s""" % (type(value))) 
 
 		# Raise a ScienceWarning for lower mass limit above 0.2 Msun 
-		if self._sz[0].ssp[0].m_lower > 0.2: 
+		if self._sz[0].ssp[0].imf[0].m_lower > 0.2: 
 			warnings.warn("""This is a high lower mass limit on star \
 formation: %g. This may introduce numerical artifacts.""" % (
-				self._sz[0].ssp[0].m_lower), ScienceWarning) 
+				self._sz[0].ssp[0].imf[0].m_lower), ScienceWarning) 
 		else: 
 			pass 
 
@@ -2454,6 +2459,7 @@ Got: %s""" % (type(value)))
 		output_times = self.output_times_check(output_times) 
 		self._sz[0].ism[0].mass = self._Mg0 # reset initial gas supply 
 		self.setup_elements() 
+		_cutils.setup_imf(self._sz[0].ssp[0].imf, self._imf) 
 
 		""" 
 		Construct the array of times at which the simulation will evaluate, and 
