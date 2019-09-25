@@ -182,6 +182,13 @@ typedef struct initial_mass_function {
 	 * mass_distribution: The un-normalized value of the IMF at stellar masses 
 	 * 		in steps of IMF_STEPSIZE (declared in imf.h) from m_lower to 
 	 *		m_upper. 
+	 * 
+	 * Notes 
+	 * ===== 
+	 * This object has a trailing _ to not produce namespace errors in 
+	 * functions that take a keyword argument "IMF" from python. Without the 
+	 * trailing underscore, the type identifier gets overridden by the keyword 
+	 * argument, producing compiler errors. 
 	 */
 
 	char *spec; 
@@ -189,7 +196,7 @@ typedef struct initial_mass_function {
 	double m_upper; 
 	double *mass_distribution; 
 
-} IMF; 
+} IMF_; 
 
 typedef struct single_stellar_population {
 

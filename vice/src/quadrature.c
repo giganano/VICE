@@ -5,6 +5,7 @@
 
 #include <stdlib.h> 
 #include <string.h> 
+#include <stdio.h> 
 #include "quadrature.h" 
 #include "utils.h" 
 
@@ -38,6 +39,9 @@ extern INTEGRAL *integral_initialize(void) {
 	intgrl -> method = (char *) malloc (MAX_METHOD_SIZE * sizeof(char)); 
 	return intgrl; 
 	#endif 
+	// INTEGRAL *intgrl = (INTEGRAL *) malloc (sizeof(INTEGRAL)); 
+	// intgrl -> func = NULL; 
+	// return intgrl; 
 	return (INTEGRAL *) malloc (sizeof(INTEGRAL)); 
 
 
@@ -58,9 +62,10 @@ extern void integral_free(INTEGRAL *intgrl) {
 			intgrl -> method = NULL; 
 		} else {} 
 		#endif 
-
+ 
 		free(intgrl); 
 		intgrl = NULL; 
+
 	} else {} 
 
 } 

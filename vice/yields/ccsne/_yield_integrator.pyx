@@ -41,6 +41,12 @@ Since there are only two of them, this is simpler than modifying the
 vice/core/_ccsne.pxd file to allow it. 
 """ 
 cdef extern from "../../src/objects.h": 
+	ctypedef struct IMF_: 
+		char *spec 
+		double m_lower 
+		double m_upper 
+		double *mass_distribution 
+
 	ctypedef struct INTEGRAL: 
 		double (*func)(double) 
 		double a 
@@ -60,10 +66,25 @@ cdef extern from "../../src/quadrature.h":
 cdef extern from "../../src/ccsne.h": 
 	void set_explodability_criteria(double *masses, unsigned int n_masses, 
 		double *explodability)
+	# unsigned short IMFintegrated_fractional_yield_numerator(INTEGRAL *intgrl, 
+	# 	char *file, char *IMF) 
+	# unsigned short IMFintegrated_fractional_yield_denominator(INTEGRAL *intgrl, 
+	# 	char *IMF)  
 	unsigned short IMFintegrated_fractional_yield_numerator(INTEGRAL *intgrl, 
-		char *file, char *IMF) 
+		IMF_ *imf, char *file) 
 	unsigned short IMFintegrated_fractional_yield_denominator(INTEGRAL *intgrl, 
-		char *IMF)  
+		IMF_ *imf)  
+
+cdef extern from "../../src/imf.h": 
+	unsigned long SPEC_CHARP_SIZE 
+	double IMF_STEPSIZE 
+	IMF_ *imf_initialize(double m_lower, double m_upper) 
+	void imf_free(IMF_ *imf) 
+	unsigned long n_mass_bins(IMF_ imf) 
+	unsigned short imf_set_mass_distribution(IMF_ *imf, double *arr) 
+
+cdef extern from "../../src/utils.h": 
+	void set_char_p_value(char *dest, int *ords, int length)
 
 cdef double *copy_pylist(source): 
 	""" 
@@ -74,6 +95,49 @@ cdef double *copy_pylist(source):
 	for i in range(len(source)): 
 		arr[i] = source[i] 
 	return arr 
+
+cdef IMF_ *imf_object(IMF, m_lower, m_upper): 
+	if callable(IMF): 
+		_pyutils.args(IMF, """Stellar IMF must accept only one numerical \
+parameter.""") 
+		spec = "custom" 
+	elif isinstance(IMF, strcomp): 
+		if IMF.lower() in _RECOGNIZED_IMFS_: 
+			spec = IMF.lower() 
+		else: 
+			raise ValueError("Unrecognized IMF: %s" % (IMF)) 
+	else: 
+		raise TypeError("""Keyword arg 'IMF' must be either a string denoting \
+a built-in IMF or a callable function denoting a custom IMF. Got: %s""" % (
+			type(IMF))) 
+	# cdef char *cspec = <char *> malloc (1 + len(spec) * sizeof(char)) 
+	cdef IMF_ *imf = imf_initialize(m_lower, m_upper) 
+	cdef int *ords = <int *> malloc (len(spec) * sizeof(char)) 
+	for i in range(len(spec)): 
+		ords[i] = ord(spec[i]) 
+	set_char_p_value(imf[0].spec, ords, len(spec)) 
+	free(ords) 
+
+	cdef double *mapped 
+	if callable(IMF): 
+		masses = _pyutils.range_(m_lower, m_upper, IMF_STEPSIZE) 
+		mapped = <double *> malloc (len(masses) * sizeof(double)) 
+		for i in range(len(masses)): 
+			mapped[i] = IMF(masses[i]) 
+		x = imf_set_mass_distribution(imf, mapped) 
+		free(mapped) 
+		if x: 
+			imf_free(imf) 
+			raise ArithmeticError("""Custom IMF evaluated to negative, inf, \
+or nan for at least one stellar mass.""") 
+		else: 
+			pass 
+	else: 
+		pass 
+	
+	return imf 
+
+
 
 # Recognized methods of numerical quadrature and yield studies 
 _RECOGNIZED_METHODS_ = tuple(["simpson", "midpoint", "trapezoid", "euler"]) 
@@ -265,7 +329,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			type(element))) 
 	else: 
 		__string_check(study, "study") 
-		__string_check(IMF, "IMF") 
+		# __string_check(IMF, "IMF") error handling now in imf_object 
 		__string_check(method, "method") 
 		__numeric_check(MoverH, "MoverH") 
 		__numeric_check(rotation, "rotation") 
@@ -274,6 +338,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		__numeric_check(tolerance, "tolerance") 
 		__numeric_check(Nmin, "Nmin") 
 		__numeric_check(Nmax, "Nmax") 
+
 
 	""" 
 	Mass ranges must be either an empty array-like object or a series of 
@@ -342,8 +407,8 @@ km/s and [M/H] = %g""" % (study, rotation, MoverH))
 		raise ValueError("Tolerance must be between 0 and 1.") 
 	elif m_lower >= m_upper: 
 		raise ValueError("Lower lass limit larger than upper mass limit.") 
-	elif IMF.lower() not in _RECOGNIZED_IMFS_: 
-		raise ValueError("Unrecognized IMF: %s" % (IMF)) 
+	# elif IMF.lower() not in _RECOGNIZED_IMFS_: moved to imf_object function 
+	# 	raise ValueError("Unrecognized IMF: %s" % (IMF)) 
 	elif method.lower() not in _RECOGNIZED_METHODS_: 
 		raise ValueError("Unrecognized method of quadrature: %s" % (method)) 
 	elif Nmin >= Nmax: 
@@ -456,18 +521,32 @@ own discretion by modifying their CCSNe yield settings directly.""" % (
 	else: 
 		pass 
 
+	print("a") 
+	cdef IMF_ *imf_obj = imf_object(IMF, m_lower, m_upper) 
+	print("b") 
+
 	# Compute the yield 
 	cdef INTEGRAL *num = integral_initialize() 
+	print("c") 
 	num[0].a = m_lower 
+	print("d") 
 	num[0].b = m_upper 
+	print("e") 
 	num[0].tolerance = tolerance 
+	print("f") 
 	num[0].method = <unsigned long> sum([ord(i) for i in method.lower()]) 
+	print("g") 
 	num[0].Nmax = <unsigned long> Nmax 
+	print("h") 
 	num[0].Nmin = <unsigned long> Nmin 
+	print("i") 
 	try: 
 		x = IMFintegrated_fractional_yield_numerator(num, 
-			filename.encode("latin-1"), 
-			IMF.lower().encode("latin-1")) 
+			# filename.encode("latin-1"), 
+			# IMF.lower().encode("latin-1")) 
+			imf_obj, 
+			filename.encode("latin-1")) 
+		print("j") 
 		if x == 1: 
 			warnings.warn("""Yield-weighted IMF integration did not converge. \
 Estimated fractional error: %.2e""" % (num[0].error), ScienceWarning) 
@@ -475,9 +554,13 @@ Estimated fractional error: %.2e""" % (num[0].error), ScienceWarning)
 			raise SystemError("Internal Error") 
 		else: 
 			pass 
+		print("k") 
 	finally: 
+		print("l") 
 		numerator = [num[0].result, num[0].error, num[0].iters] 
+		print("m") 
 		integral_free(num) 
+		print("n") 
 
 
 	cdef INTEGRAL *den = integral_initialize() 
@@ -489,7 +572,8 @@ Estimated fractional error: %.2e""" % (num[0].error), ScienceWarning)
 	den[0].Nmin = <unsigned long> Nmin 
 	try: 
 		x = IMFintegrated_fractional_yield_denominator(den, 
-			IMF.lower().encode("latin-1")) 
+			# IMF.lower().encode("latin-1")) 
+			imf_obj) 
 		if x == 1: 
 			warnings.warn("""Mass-weighted IMF integration did not converge. \
 Estimated fractional error: %.2e""" % (den[0].error), ScienceWarning) 
@@ -500,6 +584,7 @@ Estimated fractional error: %.2e""" % (den[0].error), ScienceWarning)
 	finally: 
 		denominator = [den[0].result, den[0].error, den[0].iters] 
 		integral_free(den) 
+		imf_free(imf_obj) 
 
 	y = numerator[0] / denominator[0] 
 	errnum = numerator[1] * numerator[0] 
@@ -508,39 +593,6 @@ Estimated fractional error: %.2e""" % (den[0].error), ScienceWarning)
 		denominator[0]**4 * errden**2) 
 
 	return [y, err] 
-
-	"""
-	cdef double *numerator = IMFintegrated_fractional_yield_numerator(
-		filename.encode("latin-1"), 
-		IMF.lower().encode("latin-1"), 
-		m_lower, 
-		m_upper, 
-		tolerance, 
-		method.lower().encode("latin-1"), 
-		Nmax, 
-		Nmin) 
-
-	cdef double *denominator = IMFintegrated_fractional_yield_denominator( 
-		IMF.lower().encode("latin-1"), 
-		m_lower, 
-		m_upper, 
-		tolerance, 
-		method.lower().encode("latin-1"), 
-		Nmax, 
-		Nmin) 
-	""" 
-
-# 	if numerator[1] > tolerance: 
-# 		# If the numerator didn't converge 
-# 		warnings.warn("""Yield-weighted IMF integration did not converge. \
-# Estimated fractional error: %.2e""" % (numerator[1]), ScienceWarning) 
-# 	else: 
-# 		pass 
-# 	if denominator[1] > tolerance: 
-# 		warnings.warn("""Mass-weighted IMF integration did not converge. \
-# Estimated fractional error: %.2e""" % (denominator[1], ScienceWarning)) 
-# 	else: 
-# 		pass 
 
 
 #------------------------- TYPE CHECKING SUBROUTINES -------------------------# 

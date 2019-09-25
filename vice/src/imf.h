@@ -39,8 +39,6 @@ extern "C" {
  * 
  * Parameters 
  * ========== 
- * user_spec: 	A string denoting which IMF to adopt, or "custom" in the case 
- * 				of user-specifications 
  * m_lower: 	The lower mass limit on star formation 
  * m_upper: 	The upper mass limit on star formation 
  * 
@@ -50,7 +48,7 @@ extern "C" {
  * 
  * source: imf.c 
  */ 
-extern IMF *imf_initialize(char *user_spec, double m_lower, double m_upper); 
+extern IMF_ *imf_initialize(double m_lower, double m_upper); 
 
 /* 
  * Free up the memory stored in an IMF object. 
@@ -61,7 +59,7 @@ extern IMF *imf_initialize(char *user_spec, double m_lower, double m_upper);
  * 
  * source: imf.c 
  */ 
-extern void imf_free(IMF *imf); 
+extern void imf_free(IMF_ *imf); 
 
 /* 
  * Set the mass distribution of the IMF. 
@@ -78,7 +76,7 @@ extern void imf_free(IMF *imf);
  * 
  * source: imf.c 
  */ 
-extern unsigned short imf_set_mass_distribution(IMF *imf, double *arr); 
+extern unsigned short imf_set_mass_distribution(IMF_ *imf, double *arr); 
 
 /* 
  * Determines the number of mass bins on the IMF grid. 
@@ -89,7 +87,7 @@ extern unsigned short imf_set_mass_distribution(IMF *imf, double *arr);
  * 
  * source: imf.c 
  */ 
-extern unsigned long n_mass_bins(IMF imf); 
+extern unsigned long n_mass_bins(IMF_ imf); 
 
 /* 
  * Evaluate the IMF to an arbitrary normalization at the mass m 
@@ -105,7 +103,7 @@ extern unsigned long n_mass_bins(IMF imf);
  * 
  * source: imf.c 
  */ 
-extern double imf_evaluate(IMF imf, double m); 
+extern double imf_evaluate(IMF_ imf, double m); 
 
 /* 
  * The Salpeter (1955) stellar initial mass function (IMF) up to a 

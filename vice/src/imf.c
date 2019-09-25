@@ -13,8 +13,6 @@
  * 
  * Parameters 
  * ========== 
- * user_spec: 	A string denoting which IMF to adopt, or "custom" in the case 
- * 				of user-specifications 
  * m_lower: 	The lower mass limit on star formation 
  * m_upper: 	The upper mass limit on star formation 
  * 
@@ -24,15 +22,15 @@
  * 
  * header: imf.h 
  */ 
-extern IMF *imf_initialize(char *user_spec, double m_lower, double m_upper) {
+extern IMF_ *imf_initialize(double m_lower, double m_upper) {
 
-	IMF *imf = (IMF *) malloc (sizeof(IMF)); 
+	IMF_ *imf = (IMF_ *) malloc (sizeof(IMF_)); 
 	imf -> spec = (char *) malloc (SPEC_CHARP_SIZE * sizeof(char)); 
-	unsigned int i; 
-	for (i = 0; i < strlen(user_spec); i++) {
-		imf -> spec[i] = user_spec[i]; 
-	} 
-	imf -> spec[strlen(user_spec)] = '\0'; 
+	// unsigned int i; 
+	// for (i = 0; i < strlen(user_spec); i++) {
+	// 	imf -> spec[i] = user_spec[i]; 
+	// } 
+	// imf -> spec[strlen(user_spec)] = '\0'; 
 	imf -> mass_distribution = NULL; 
 	imf -> m_lower = m_lower; 
 	imf -> m_upper = m_upper; 
@@ -49,7 +47,7 @@ extern IMF *imf_initialize(char *user_spec, double m_lower, double m_upper) {
  * 
  * header: imf.h 
  */ 
-extern void imf_free(IMF *imf) {
+extern void imf_free(IMF_ *imf) {
 
 	if (imf != NULL) {
 
@@ -62,6 +60,9 @@ extern void imf_free(IMF *imf) {
 			free(imf -> mass_distribution); 
 			imf -> mass_distribution = NULL; 
 		} else {} 
+
+		free(imf); 
+		imf = NULL; 
 
 	} else {} 
 
@@ -107,7 +108,7 @@ extern void imf_reset_mass_bins(IMF *imf, double m_lower, double m_upper) {
  * 
  * header: imf.h 
  */ 
-extern unsigned short imf_set_mass_distribution(IMF *imf, double *arr) {
+extern unsigned short imf_set_mass_distribution(IMF_ *imf, double *arr) {
 
 	/* 
 	 * For error handling purposes, copy the array into a new block of memory, 
@@ -141,7 +142,7 @@ extern unsigned short imf_set_mass_distribution(IMF *imf, double *arr) {
  * 
  * header: imf.h 
  */ 
-extern unsigned long n_mass_bins(IMF imf) {
+extern unsigned long n_mass_bins(IMF_ imf) {
 
 	return 1l + (imf.m_upper - imf.m_lower) / IMF_STEPSIZE; 
 
@@ -161,7 +162,7 @@ extern unsigned long n_mass_bins(IMF imf) {
  * 
  * header: imf.h 
  */ 
-extern double imf_evaluate(IMF imf, double m) { 
+extern double imf_evaluate(IMF_ imf, double m) { 
 
 	/* If the mass in the specified mass range */ 
 	if (imf.m_lower <= m && m <= imf.m_upper) { 

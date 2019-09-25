@@ -105,8 +105,8 @@ extern void set_explodability_criteria(double *masses, unsigned int n_masses,
  * Parameters 
  * ========== 
  * intgrl: 		The integral object for the numerator of the yield 
+ * imf:			The associated IMF object 
  * file:		The nme of the data file containing the grid
- * IMF:			The IMF to use ('kroupa' or 'salpeter') 
  * 
  * Returns 
  * ======= 
@@ -116,7 +116,7 @@ extern void set_explodability_criteria(double *masses, unsigned int n_masses,
  * source: ccsne.c 
  */ 
 extern unsigned short IMFintegrated_fractional_yield_numerator(
-	INTEGRAL *intgrl, char *file, char *IMF); 
+	INTEGRAL *intgrl, IMF_ *imf, char *file); 
 
 /* 
  * Determine the value of the integrated IMF weighted by stellar mass, up to 
@@ -125,7 +125,7 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
  * Parameters 
  * ========== 
  * intgrl: 		The integral object for the denominator of the yield 
- * IMF:			The IMF to use ('kroupa' or 'salpeter') 
+ * imf:			The associated IMF object 
  * 
  * Returns 
  * ======= 
@@ -135,7 +135,7 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
  * source: ccsne.c 
  */ 
 extern unsigned short IMFintegrated_fractional_yield_denominator(
-	INTEGRAL *intgrl, char *IMF); 
+	INTEGRAL *intgrl, IMF_ *imf); 
 
 #ifdef __cplusplus 
 } 
