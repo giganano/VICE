@@ -19,9 +19,6 @@ static void migrate_gas_element(MULTIZONE *mz, int index);
 static void migration_sanity_check(MULTIZONE *mz); 
 static double **setup_changes(unsigned int n_zones); 
 static double **get_changes(MULTIZONE mz, int index); 
-#if 0
-static double dice_roll(void); 
-#endif 
 
 /* 
  * Allocate memory for an return a pointer to a migration object. 
@@ -161,44 +158,7 @@ extern void malloc_gas_migration(MULTIZONE *mz) {
 		} 
 	} 
 
-}
-
-#if 0
-extern void malloc_migration_matrices(MULTIZONE *mz) { 
-
-	/* Allocate memory for each timestep in both matrices */ 
-	unsigned long i, length = migration_matrix_length(*mz); 
-	mz -> migration_matrix_tracers = (double ***) malloc (length * 
-		sizeof(double **)); 
-	mz -> migration_matrix_gas = (double ***) malloc (length * 
-		sizeof(double **)); 
-
-	/* 
-	 * At each timestep, allocate memory for an n_zones x n_zones array of 
-	 * doubles in both matrices.  
-	 */ 
-	for (i = 0l; i < length; i++) { 
-		mz -> migration_matrix_tracers[i] = (double **) malloc ((*mz).n_zones * 
-			sizeof(double *)); 
-		mz -> migration_matrix_gas[i] = (double **) malloc ((*mz).n_zones * 
-			sizeof(double *)); 
-		unsigned int j, k; 
-		for (j = 0; j < (*mz).n_zones; j++) { 
-			mz -> migration_matrix_tracers[i][j] = (double *) malloc (
-				(*mz).n_zones * sizeof(double)); 
-			mz -> migration_matrix_gas[i][j] = (double *) malloc (
-				(*mz).n_zones * sizeof(double)); 
-
-			/* Initially set everything to zero */ 
-			for (k = 0; k < (*mz).n_zones; k++) {
-				mz -> migration_matrix_tracers[i][j][k] = 0.0; 
-				mz -> migration_matrix_gas[i][j][k] = 0.0; 
-			} 
-		} 
-	} 
-
 } 
-#endif 
 
 /* 
  * Sets up an element of the migration matrix at each timestep that it has 
@@ -241,17 +201,6 @@ extern unsigned short setup_migration_element(MULTIZONE mz,
 		return normalize_migration_element(mz, migration_matrix, row, column); 
 	} 
 
-	#if 0
-	for (i = 0; i < length; i++) { 
-		if (0 <= arr[i] && arr[i] <= 1) { 
-			migration_matrix[i][row][column] = arr[i]; 
-		} else { 
-			return 1; 
-		} 
-	} 
-	return 0; 
-	#endif 
-
 } 
 
 /* 
@@ -292,34 +241,7 @@ static unsigned short normalize_migration_element(MULTIZONE mz,
 	} 
 	return 0; 
 
-}
-
-#if 0
-/* 
- * Determines the number of elements in a migration matrix. This is also the 
- * number of timesteps that all VICE simulations have allocated memory for. 
- * 
- * Parameters 
- * ========== 
- * mz: 		The multizone object for the current simulation 
- * 
- * Returns 
- * ======= 
- * The number of timesteps to the final output time plus 10. By design, VICE 
- * always allocates memory for 10 extra timesteps as a safeguard against 
- * memory errors 
- * 
- * header: migration.h 
- */ 
-extern unsigned long migration_matrix_length(MULTIZONE mz) {
-
-	return 10l + ( 
-		(*mz.zones[0]).output_times[(*mz.zones[0]).n_outputs - 1l] / 
-		(*mz.zones[0]).dt 
-	); 
-
-}
-#endif 
+} 
 
 /* 
  * Migrates all gas, elements, and tracer particles between zones at the 
@@ -363,50 +285,7 @@ static void migrate_tracer(MULTIZONE mz, TRACER *t) {
 	unsigned long timestep = (*mz.zones[0]).timestep; 
 	t -> zone_current = (unsigned) (*t).zone_history[timestep + 1l]; 
 
-}
-
-#if 0
-static void migrate_tracer(MULTIZONE mz, TRACER *t) { 
-
-	/* 
-	 * Bookkeeping 
-	 * =========== 
-	 * timestep: 	The timestep number, pulled from one of the zones 
-	 * i, j: 		The row and column indeces of the migration matrix 
-	 */ 
-	unsigned long timestep = (*mz.zones[0]).timestep; 
-	unsigned int j; 
-
-	/* 
-	 * Look at all elements of the relevant row in the migration matrix and 
-	 * bookkeep whether or not the diceroll passes  
-	 */ 
-	seed_random(); 
-	for (j = 0; j < mz.n_zones; j++) {
-		if (j == (*t).zone_current) {
-			/* Migration within the zone can be ignored */ 
-			continue; 
-		} else if (dice_roll() < 
-			mz.migration_matrix_tracers[timestep][(*t).zone_current][j]) { 
-			/* 
-			 * Once the particle has migrated, exit the for-loop. For  
-			 * equal migration likelihoods to a particular zone, calling 
-			 * dice_roll in the if statement ensures that the comparison is 
-			 * done independently within each zone. That is, the comparison is 
-			 * just as likely to pass or fail regardless of zone index. This 
-			 * ensures that migration never moves preferentially in one 
-			 * direction or another, provided that the random value is 
-			 * re-seeded for each tracer particle and at each timestep. 
-			 */ 
-			t -> zone_current = j; 
-			break; 
-		} else {
-			continue; 
-		} 
-	} 
-
 } 
-#endif 
 
 /* 
  * Migrates ISM gas and ISM phase elements between zones. 
@@ -443,53 +322,12 @@ static void migrate_gas_element(MULTIZONE *mz, int index) {
 						); 
 						break; 
 				}
-			}
-
-			#if 0
-			if (i == j) { 
-				/* migration within zone */ 
-				continue; 
-			} else if (index == -1) { 
-				/* gas leaves zone i and goes into zone j */ 
-				mz -> zones[i] -> ism -> mass -= changes[i][j]; 
-				mz -> zones[j] -> ism -> mass += changes[i][j]; 
-			} else {
-				/* element leaves zone i and goes into zone j */ 
-				mz -> zones[i] -> elements[index] -> mass -= changes[i][j]; 
-				mz -> zones[j] -> elements[index] -> mass += changes[i][j]; 
-			} 
-			#endif 
-		} 
-	} 
-	free(changes); 
-
-} 
-
-#if 0
-static void migrate_gas_element(MULTIZONE *mz, int index) {
-
-	unsigned int i, j; 
-	double **changes = get_changes(*mz, index); 
-	for (i = 0; i < (*mz).n_zones; i++) {
-		for (j = 0; j < (*mz).n_zones; j++) {
-			if (i == j) { 
-				/* migration within zone */ 
-				continue; 
-			} else if (index == -1) { 
-				/* gas leaves zone i and goes into zone j */ 
-				mz -> zones[i] -> ism -> mass -= changes[i][j]; 
-				mz -> zones[j] -> ism -> mass += changes[i][j]; 
-			} else {
-				/* element leaves zone i and goes into zone j */ 
-				mz -> zones[i] -> elements[index] -> mass -= changes[i][j]; 
-				mz -> zones[j] -> elements[index] -> mass += changes[i][j]; 
 			} 
 		} 
 	} 
 	free(changes); 
 
 } 
-#endif 
 
 /* 
  * Looks at the ISM mass and total element mass in each zone and takes into 
@@ -517,29 +355,7 @@ static void migration_sanity_check(MULTIZONE *mz) {
 		} 
 	} 
 
-}
-
-#if 0
-static void migration_sanity_check(MULTIZONE *mz) {
-
-	unsigned int i, j; 
-	for (i = 0; i < (*mz).n_zones; i++) {
-		for (j = 0; j < (*(*mz).zones[i]).n_elements; j++) {
-			if ((*(*(*mz).zones[i]).elements[j]).mass < 0) {
-				mz -> zones[i] -> elements[j] -> mass = 0; 
-			} else {
-				continue; 
-			} 
-		} 
-		if ((*(*(*mz).zones[i]).ism).mass < 1.e-12) {
-			mz -> zones[i] -> ism -> mass = 1.e-12; 
-		} else {
-			continue; 
-		} 
-	} 
-
-}
-#endif 
+} 
 
 /* 
  * Determine how much of the nebular phase mass migrates between all zones at 
@@ -585,63 +401,12 @@ static double **get_changes(MULTIZONE mz, int index) {
 						); 
 						break; 
 				} 
-			}
-
-			#if 0
-			if (i == j) {
-				/* migration within zone */ 
-				continue; 
-			} else if (index == -1) {
-				/* gas reservoir */ 
-				changes[i][j] = (
-					(*mz.mig).gas_migration[timestep][i][j] * 
-					(*(*mz.zones[i]).ism).mass 
-				); 
-			} else {
-				/* element in the i'th zone */ 
-				changes[i][j] = (
-					(*mz.mig).gas_migration[timestep][i][j] * 
-					(*(*mz.zones[i]).elements[index]).mass 
-				); 
-			} 
-			#endif 
-		} 
-	} 
-	return changes; 
-
-} 
-
-#if 0
-static double **get_changes(MULTIZONE mz, int index) {
-
-	unsigned int i, j; 
-	unsigned long timestep = (*mz.zones[0]).timestep; 
-	double **changes = setup_changes(mz.n_zones); 
-
-	for (i = 0; i < mz.n_zones; i++) {
-		for (j = 0; j < mz.n_zones; j++) {
-			if (i == j) {
-				/* migration within zone */ 
-				continue; 
-			} else if (index == -1) {
-				/* gas reservoir */ 
-				changes[i][j] = (
-					mz.migration_matrix_gas[timestep][i][j] * 
-					(*(*mz.zones[i]).ism).mass 
-				); 
-			} else {
-				/* element in the i'th zone */ 
-				changes[i][j] = (
-					mz.migration_matrix_gas[timestep][i][j] * 
-					(*(*mz.zones[i]).elements[index]).mass 
-				); 
 			} 
 		} 
 	} 
 	return changes; 
 
 } 
-#endif 
 
 /* 
  * Sets up a n_zones x n_zones 2D-array of zeroes, within which the change in 
@@ -669,13 +434,3 @@ static double **setup_changes(unsigned int n_zones) {
 
 } 
 
-#if 0
-/* 
- * Returns a pseudo-random double between 0 and 1. 
- */ 
-static double dice_roll(void) { 
-
-	return (double) rand() / RAND_MAX; 
-
-} 
-#endif 

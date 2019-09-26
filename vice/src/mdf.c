@@ -147,13 +147,7 @@ extern void update_MDF(SINGLEZONE *sz) {
 
 	/* ---------------------- for each tracked element ---------------------- */ 
 	unsigned int i, j; 
-	for (i = 0; i < (*sz).n_elements; i++) {
-		#if 0
-		double onH = log10( 		/* [X/H] for this element */ 
-			((*(*sz).elements[i]).mass / (*(*sz).ism).mass) / 
-			(*(*sz).elements[i]).solar
-		); 
-		#endif 
+	for (i = 0; i < (*sz).n_elements; i++) { 
 		double onH1 = onH(*sz, *(*sz).elements[i]); 
 		/* The bin number for [X/H] */ 
 		long bin = get_bin_number((*(*sz).mdf).bins, 
@@ -172,16 +166,6 @@ extern void update_MDF(SINGLEZONE *sz) {
 	unsigned int n = 0; 
 	for (i = 1; i < (*sz).n_elements; i++) {
 		for (j = 0; j < i; j++) {
-			#if 0
-			double onH1 = log10(		/* [X/H] for this element */ 
-				((*(*sz).elements[i]).mass / (*(*sz).ism).mass) / 
-				(*(*sz).elements[i]).solar
-			); 
-			double onH2 = log10(		/* [Y/H] for this element */ 
-				((*(*sz).elements[j]).mass / (*(*sz).ism).mass) / 
-				(*(*sz).elements[j]).solar
-			); 
-			#endif 
 			double onH1 = onH(*sz, *(*sz).elements[i]); 
 			double onH2 = onH(*sz, *(*sz).elements[j]); 
 			/* The bin number for [X/Y] */ 
@@ -296,7 +280,7 @@ static void update_MDF_from_tracer(MULTIZONE *mz, TRACER t) {
 	SINGLEZONE *final = (*mz).zones[t.zone_current]; 
 
 	unsigned int i; 
-	/* ---------------------- for each tracked element ---------------------- */
+	/* --------------------- for each tracked element --------------------- */
 	for (i = 0; i < (*origin).n_elements; i++) {
 
 		/* 
@@ -323,7 +307,7 @@ static void update_MDF_from_tracer(MULTIZONE *mz, TRACER t) {
 	} 
 
 	unsigned int n = 0; 
-	/* ---------------------- for each abundance ratio ---------------------- */ 
+	/* --------------------- for each abundance ratio --------------------- */ 
 	for (i = 1; i < (*origin).n_elements; i++) {
 		unsigned int j; 
 		for (j = 0; j < i; j++) {

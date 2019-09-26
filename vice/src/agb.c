@@ -143,52 +143,7 @@ extern void agb_from_tracers(MULTIZONE *mz) {
 		}
 	}
 
-}
-
-#if 0
-/* 
- * Enrich each element in each zone according to the AGB stars associated with 
- * tracer particles. 
- * 
- * Parameters 
- * ========== 
- * mz: 		The multizone object for the current simulation 
- * 
- * header: agb.h 
- */ 
-extern void agb_from_tracers(MULTIZONE *mz) {
-
-	unsigned long i, timestep = (*(*mz).zones[0]).timestep; 
-	for (i = 0l; i < (*mz).tracer_count; i++) { 
-		/* 
-		 * Get the tracer particle's current zone and metallicity. Use the SSP 
-		 * evolutionary parameters from the zone in which the tracer particle 
-		 * was born. 
-		 */ 
-		TRACER *t = mz -> tracers[i]; 
-		SINGLEZONE *sz = mz -> zones[(*t).zone_current]; 
-		SSP *ssp = mz -> zones[(*t).zone_origin] -> ssp; 
-		double Z = tracer_metallicity(*mz, *t); 
-		unsigned int j; 
-		for (j = 0; j < (*sz).n_elements; j++) { 
-			/* 
-			 * n: The number of timesteps ago the tracer particle formed. This 
-			 * times the timestep size is the age of the tracer particle in 
-			 * Gyr. 
-			 */ 
-			unsigned long n = timestep - (*t).timestep_origin; 
-			ELEMENT *e = sz -> elements[j]; 
-			e -> mass += ( 
-				get_AGB_yield( *(*(*mz).zones[(*t).zone_origin]).elements[j], 
-					Z, main_sequence_turnoff_mass(n * (*sz).dt)) 
-				* (*t).mass * 
-				((*ssp).msmf[n] - (*ssp).msmf[n + 1l]) 
-			); 
-		} 
-	} 
-
 } 
-#endif 
 
 /* 
  * Determine the fractional yield of a given element from AGB stars at a 
@@ -260,29 +215,6 @@ extern double get_AGB_yield(ELEMENT e, double Z_stars, double turnoff_mass) {
 
 		} 
 
-		#if 0
-		if (z_bin == -1l) {
-			/* Stellar metallicity above or below grid, figure out which */ 
-			if (Z_stars > (*e.agb_grid).z[(*e.agb_grid).n_z - 1l]) {
-				/* 
-				 * Stellar metallicity above the grid -> extrapolate to high 
-				 * metallicities using the top two elements of the grid 
-				 */ 
-				z_bin = (signed) (*e.agb_grid).n_z - 2l; 
-			} else if (Z_stars < (*e.agb_grid).z[0]) {
-				/* 
-				 * Stellar metallicity below the grid -> extrapolate to low 
-				 * metallicities using the bottom two elements on the grid 
-				 */ 
-				z_bin = 0l; 
-			} else {
-				return -1; /* error */ 
-			} 
-		} else {
-			/* Stellar metallicity on the grid, proceed as planned */ 
-		} 
-		#endif 
-
 		metallicities[0] = (*e.agb_grid).z[z_bin]; 
 		metallicities[1] = (*e.agb_grid).z[z_bin + 1l]; 
 
@@ -329,47 +261,7 @@ extern double get_AGB_yield(ELEMENT e, double Z_stars, double turnoff_mass) {
 				yields[1][0] = (*e.agb_grid).grid[mass_bin + 1l][z_bin]; 
 				yields[1][1] = (*e.agb_grid).grid[mass_bin + 1l][z_bin + 1l]; 
 				break; 
-		}
-
-		#if 0
-		if (mass_bin == -1l) {
-			/* Turnoff mass above or below grid, figure out which */ 
-			if (turnoff_mass > (*e.agb_grid).m[(*e.agb_grid).n_m - 1l]) {
-				/* 
-				 * Turnoff mass above the grid -> extrapolate to higher masses, 
-				 * tying the yield down to 0 at 8 Msun 
-				 */ 
-				masses[0] = (*e.agb_grid).m[(*e.agb_grid).n_m - 1l]; 
-				masses[1] = MAX_AGB_MASS; 
-				yields[0][0] = (*e.agb_grid).grid[(*e.agb_grid).n_m - 1l][z_bin]; 
-				yields[0][1] = (*e.agb_grid).grid[(
-					*e.agb_grid).n_m - 1l][z_bin + 1l]; 
-				yields[1][0] = 0; 
-				yields[1][1] = 0; 
-			} else if (turnoff_mass < (*e.agb_grid).m[0]) {
-				/* 
-				 * Turnoff mass below the grid -> extrapolate to lower masses, 
-				 * tying the yield down to 0 at 0 Msun 
-				 */ 
-				masses[0] = MIN_AGB_MASS; 
-				masses[1] = (*e.agb_grid).m[0]; 
-				yields[0][0] = 0; 
-				yields[0][1] = 0; 
-				yields[1][0] = (*e.agb_grid).grid[0][z_bin]; 
-				yields[1][1] = (*e.agb_grid).grid[0][z_bin + 1l]; 
-			} else {
-				return -1; /* error */ 
-			} 
-		} else {
-			/* Turnoff mass on the grid, proceed as planned */ 
-			masses[0] = (*e.agb_grid).m[mass_bin]; 
-			masses[1] = (*e.agb_grid).m[mass_bin + 1l]; 
-			yields[0][0] = (*e.agb_grid).grid[mass_bin][z_bin]; 
-			yields[0][1] = (*e.agb_grid).grid[mass_bin][z_bin + 1l]; 
-			yields[1][0] = (*e.agb_grid).grid[mass_bin + 1l][z_bin]; 
-			yields[1][1] = (*e.agb_grid).grid[mass_bin + 1l][z_bin + 1l]; 
-		}
-		#endif 
+		} 
 
 		return interpolate2D(
 			masses, 
@@ -381,6 +273,4 @@ extern double get_AGB_yield(ELEMENT e, double Z_stars, double turnoff_mass) {
 	}
 
 }
-
-
 

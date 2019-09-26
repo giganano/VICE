@@ -31,12 +31,9 @@ def test_parameters(**kwargs):
 		"mdf": 				True 
 	}
 	try: 
-		foo = vice.singlezone(**kwargs)
-		foo.run(_OUTTIMES_, overwrite = True) 
+		vice.singlezone(**kwargs).run(_OUTTIMES_, overwrite = True) 
 	except: 
 		tracker["singlezone"] = False 
-	finally: 
-		del foo 
 	try: 
 		assert(isinstance(vice.history("onezonemodel"), vice.dataframe)) 
 	except: 
@@ -46,20 +43,17 @@ def test_parameters(**kwargs):
 	except: 
 		tracker["mdf"] = False 
 	try: 
-		foo = vice.output("onezonemodel") 
-		assert(isinstance(foo, vice.output)) 
-		assert(isinstance(foo.history, vice.dataframe)) 
-		assert(isinstance(foo.mdf, vice.dataframe)) 
-		assert(isinstance(foo.ccsne_yields, vice.dataframe)) 
-		assert(isinstance(foo.sneia_yields, vice.dataframe)) 
-		assert(isinstance(foo.elements, tuple)) 
+		out = vice.output("onezonemodel") 
+		assert(isinstance(out, vice.output)) 
+		assert(isinstance(out.history, vice.dataframe)) 
+		assert(isinstance(out.mdf, vice.dataframe)) 
+		assert(isinstance(out.ccsne_yields, vice.dataframe)) 
+		assert(isinstance(out.sneia_yields, vice.dataframe)) 
+		assert(isinstance(out.elements, tuple)) 
 	except: 
 		tracker["output"] = False 
-	finally: 
-		del foo 
 	try: 
-		assert(isinstance(vice.mirror(vice.output("onezonemodel")), 
-			vice.singlezone)) 
+		assert(isinstance(vice.mirror(out), vice.singlezone)) 
 	except: 
 		tracker["mirror"] = False 
 	return tracker 
@@ -78,7 +72,7 @@ def main():
 	print("         vice.mirror") 
 	out = open("test_sz_output_mirror.out", 'w') 
 	_MODES_ = ["ifr", "sfr", "gas"] 
-	_IMF_ = ["kroupa", "salpeter"] 
+	_IMF_ = ["kroupa", "salpeter", lambda m: m**-2] 
 	_ETA_ = [2.5, lambda t: 2.5 * math.exp( -t / 4.0 )] 
 	_ZIN_ = [0, 1.0e-8, lambda t: 1.0e-8 * (t / 10.0), {
 		"o":		lambda t: 0.0057 * (t / 10.0),  
@@ -90,8 +84,12 @@ def main():
 	_SCHMIDT_ = [False, True] 
 	_AGB_MODEL_ = ["cristallo11", "karakas10"] 
 
-	a = 0 
-	b = 2304 
+	a = 0 # track number of integrations 
+	b = 1 # total number of integrations 
+	for i in [_MODES_, _IMF_, _ETA_, _ZIN_, _RECYCLING_, _RIA_, _TAU_STAR_, 
+		_SCHMIDT_, _AGB_MODEL_]: 
+		b *= len(i) 
+
 	keys = ["success", "failure"] 
 	singlezone_tracker = dict(zip(keys, [0, 0])) 
 	mirror_tracker = dict(zip(keys, [0, 0])) 

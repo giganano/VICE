@@ -16,12 +16,6 @@ static double y_cc_numerator(double m);
 static double y_cc_denominator(double m); 
 static double interpolate_yield(double m); 
 static double get_explodability_fraction(double m); 
-#if 0 
-static double yield_weighted_kroupa01(double m); 
-static double yield_weighted_salpeter55(double m); 
-static double mass_weighted_kroupa01(double m); 
-static double mass_weighted_salpeter55(double m); 
-#endif 
 
 /* 
  * These variables are declared globally in this file because it is easier for 
@@ -40,7 +34,7 @@ static unsigned int GRIDSIZE = 0;
 static unsigned int N_MASSES = 0; 
 static double *MASSES; 
 static double *EXPLODABILITY; 
-static IMF_ *adopted_imf = NULL; 
+static IMF_ *ADOPTED_IMF = NULL; 
 
 /* 
  * Allocate memory for and return a pointer to a CCSNE_YIELD_SPECS struct. 
@@ -220,17 +214,6 @@ extern void set_explodability_criteria(double *masses, unsigned int n_masses,
 		} 
 	} 
 
-	#if 0
-	printf("Testing\n"); 
-	printf("========================================\n"); 
-	for (i = 0; i < n_masses; i++) {
-		printf("MASSES[%d] = %g\n", i, MASSES[i]); 
-	} 
-	for (i = 0; i < n_masses - 1; i++) {
-		printf("EXPLODABILITY[%d] = %g\n", i, EXPLODABILITY[i]); 
-	}
-	#endif 
-
 } 
 
 /* 
@@ -283,37 +266,7 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
 	 */ 
 	GRIDSIZE = line_count(file) - header_length(file); 
 	GRID = cc_yield_grid(file); 
-	adopted_imf = imf; 
-
-	#if 0 
-	printf("intgrl: %p\n", (void *) intgrl); 
-	printf("imf: %p\n", (void *) imf); 
-	printf("imf.spec (%p): %s\n", (void *) (*imf).spec, (*imf).spec); 
-	printf("imf.mass_distribution: %p\n", (void *) (*imf).mass_distribution); 
-	printf("file (%p): %s\n", (void *) file, file); 
-	#endif 
-
-	#if 0
-	switch (checksum(IMF)) {
-
-		case KROUPA: 
-			intgrl -> func = &yield_weighted_kroupa01; 
-			break; 
-
-		case SALPETER: 
-			intgrl -> func = &yield_weighted_salpeter55; 
-			break; 
-
-		default: 
-			free(MASSES); 
-			free(EXPLODABILITY); 
-			free(GRID); 
-			GRIDSIZE = 0; 
-			N_MASSES = 0; 
-			return 3; 
-
-	} 
-	#endif 
+	ADOPTED_IMF = imf; 
 
 	intgrl -> func = &y_cc_numerator; 
 	int x = quad(intgrl); 
@@ -321,7 +274,7 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
 	free(EXPLODABILITY); 
 	free(GRID); 
 	intgrl -> func = NULL; 
-	adopted_imf = NULL; 
+	ADOPTED_IMF = NULL; 
 	GRIDSIZE = 0; 
 	N_MASSES = 0; 
 	return x; 
@@ -346,32 +299,13 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
  */ 
 extern unsigned short IMFintegrated_fractional_yield_denominator(
 	INTEGRAL *intgrl, IMF_ *imf) {
-
-	#if 0 
-	switch (checksum(IMF)) {
-
-		case KROUPA: 
-			intgrl -> func = &mass_weighted_kroupa01; 
-			break; 
-
-		case SALPETER: 
-			intgrl -> func = &mass_weighted_salpeter55; 
-			break; 
-
-		default: 
-			/* would be caught by python anyway, included as failsafe */ 
-			return 3; 
-
-	} 
-	#endif 
 	
-	adopted_imf = imf; 
+	ADOPTED_IMF = imf; 
 	intgrl -> func = &y_cc_denominator; 
 	int x = quad(intgrl); 
 	intgrl -> func = NULL; 
-	adopted_imf = NULL; 
+	ADOPTED_IMF = NULL; 
 	return x; 
-	// return quad(intgrl); 
 
 } 
 
@@ -440,7 +374,7 @@ static double interpolate_yield(double m) {
  */ 
 static double y_cc_numerator(double m) { 
 
-	return interpolate_yield(m) * imf_evaluate(*adopted_imf, m); 
+	return interpolate_yield(m) * imf_evaluate(*ADOPTED_IMF, m); 
 
 } 
 
@@ -457,193 +391,8 @@ static double y_cc_numerator(double m) {
  */ 
 static double y_cc_denominator(double m) {
 
-	return m * imf_evaluate(*adopted_imf, m); 
-
-}
-
-#if 0
-extern double *IMFintegrated_fractional_yield_numerator(char *file, char *IMF, 
-	double m_lower, double m_upper, double tolerance, char *method, 
-	unsigned long Nmax, unsigned long Nmin) {
-
-	/* 
-	 * Initialize these variables globally. This is such that the functions 
-	 * which execute numerical quadrature can accept only one parameter - the 
-	 * stellar mass. 
-	 */ 
-
-	GRIDSIZE = line_count(file) - header_length(file); 
-	GRID = cc_yield_grid(file); 
-	double (*yield_weighted_IMF) (double); 
-
-	switch (checksum(IMF)) {
-
-		case KROUPA: 
-			yield_weighted_IMF = &yield_weighted_kroupa01; 
-			break; 
-
-		case SALPETER: 
-			yield_weighted_IMF = &yield_weighted_salpeter55; 
-			break; 
-
-		default: 
-			free(GRID); 
-			GRIDSIZE = 0; 
-			return NULL; 
-
-	} 
-
-	double *numerator = quad(yield_weighted_IMF, m_lower, m_upper, tolerance, 
-		method, Nmax, Nmin); 
-	free(GRID); 
-	GRIDSIZE = 0; 
-	return numerator; 
-
-	#if 0
-	double *numerator; 
-	if (!strcmp(IMF, "kroupa")) {
-		numerator = quad(yield_weighted_kroupa01, m_lower, m_upper, tolerance, 
-			method, Nmax, Nmin); 
-	} else if (!strcmp(IMF, "salpeter")) {
-		numerator = quad(yield_weighted_salpeter55, m_lower, m_upper, tolerance, 
-			method, Nmax, Nmin); 
-	} else { 
-		/* Would be caught by python anyway, included as failsafe */ 
-		return NULL; /* Error: unrecognized IMF */ 
-	} 
-
-	free(GRID); 
-	GRIDSIZE = 0; 
-	return numerator; 
-	#endif 
+	return m * imf_evaluate(*ADOPTED_IMF, m); 
 
 } 
-
-extern double *IMFintegrated_fractional_yield_denominator(char *IMF, 
-	double m_lower, double m_upper, double tolerance, char *method, 
-	unsigned long Nmax, unsigned long Nmin) { 
-
-	double (*mass_weighted_IMF) (double); 
-
-	switch (checksum(IMF)) { 
-
-		case KROUPA: 
-			mass_weighted_IMF = &mass_weighted_kroupa01; 
-			break; 
-
-		case SALPETER: 
-			mass_weighted_IMF = &mass_weighted_salpeter55; 
-			break; 
-
-		default: 
-			/* would be caught by python anyway, included as failsafe */ 
-			return NULL; 	/* Error: unrecognized IMF */ 
-
-	} 
-
-	return quad(mass_weighted_IMF, m_lower, m_upper, tolerance, 
-		method, Nmax, Nmin); 
-
-	#if 0
-	if (!strcmp(IMF, "kroupa")) {
-		return quad(mass_weighted_kroupa01, m_lower, m_upper, tolerance, 
-			method, Nmax, Nmin); 
-	} else if (!strcmp(IMF, "salpeter")) {
-		return quad(mass_weighted_salpeter55, m_lower, m_upper, tolerance, 
-			method, Nmax, Nmin); 
-	} else {
-		/* Would be caught by python anyway, included as failsafe */ 
-		return NULL; /* Error: unrecognized IMF */ 
-	} 
-	#endif 
-
-}
-
-/* 
- * The Kroupa IMF weighted by the mass yield of a given element from the CCSN 
- * of a star of mass m. 
- * 
- * Parameters 
- * ========== 
- * m: 		The mass of the exploding star in Msun 
- * 
- * Returns 
- * ======= 
- * The value of the yield weighted Kroupa IMF up to its normalization. 
- * 
- * References 
- * ========== 
- * Kroupa (2001), MNRAS, 322, 231 
- */ 
-static double yield_weighted_kroupa01(double m) {
-
-	return interpolate_yield(m) * kroupa01(m); 
-
-} 
-
-/* 
- * The Salpeter IMF weighted by the mass yield of a given element from the CCSN 
- * of a star of mass m. 
- * 
- * Parameters 
- * ========== 
- * m: 		The mass of the exploding star in Msun 
- * 
- * Returns 
- * ======= 
- * The value of the yield weighted Salpeter IMF up to its normalization 
- * 
- * References 
- * ========== 
- * Salpeter (1955), ApJ, 121, 161 
- */ 
-static double yield_weighted_salpeter55(double m) {
-
-	return interpolate_yield(m) * salpeter55(m); 
-
-}
-
-/* 
- * The Kroupa IMF weighted by stellar mass. 
- * 
- * Parameters 
- * ========== 
- * m: 		The stellar mass in Msun 
- * 
- * Returns 
- * ======= 
- * The value of the mass weighted Kroupa IMF up to its normalization. 
- * 
- * References 
- * ========== 
- * Kroupa (2001), MNRAS, 322, 231 
- */ 
-static double mass_weighted_kroupa01(double m) {
-
-	return m * kroupa01(m); 
-
-} 
-
-/* 
- * The Salpeter IMF weighted by stellar mass. 
- * 
- * Parameters 
- * ========== 
- * m: 		The stellar mass in Msun 
- * 
- * Returns 
- * ======= 
- * The value of the mass weighted Salpeter IMF up to its normalization. 
- * 
- * References 
- * ========== 
- * Salpeter (1955), ApJ, 121, 161 
- */ 
-static double mass_weighted_salpeter55(double m) {
-
-	return m * salpeter55(m); 
-
-} 
-#endif 
 
 

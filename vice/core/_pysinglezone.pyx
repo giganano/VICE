@@ -1790,8 +1790,8 @@ value with a >10%% discrepancy from this value: %g""" % (value),
 				else: 
 					pass 
 			else: 
-				# unrecognized IMF, shouldn't happen unless user hacks VICE 
-				raise SystemError("Internal Error") 
+				# callable function -> custom IMF 
+				pass 
 		else: 
 			# This function shouldn't have even been called 
 			raise SystemError("Internal Error") 

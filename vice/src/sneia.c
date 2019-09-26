@@ -111,33 +111,7 @@ extern void sneia_from_tracers(MULTIZONE *mz) {
 		} 
 	}
 
-}
-
-#if 0
-extern void sneia_from_tracers(MULTIZONE *mz) {
-
-	unsigned long i, timestep = (*(*mz).zones[0]).timestep; 
-	for (i = 0l; i < (*mz).tracer_count; i++) { 
-		TRACER *t = mz -> tracers[i]; 
-		unsigned int j; 
-		/* 
-		 * Enrich each element in the zone from SNe Ia associated with this 
-		 * tracer particle. Pull the yield information from the zone in 
-		 * which the tracer particle originated. 
-		 */ 
-		for (j = 0; j < (*(*mz).zones[(*t).zone_current]).n_elements; j++) {
-			ELEMENT *e = mz -> zones[(*t).zone_current] -> elements[j]; 
-			SNEIA_YIELD_SPECS *sneia = (mz -> zones[(*t).zone_origin] -> 
-				elements[j] -> sneia_yields); 
-			e -> mass += (
-				(*sneia).yield_ * (*t).mass * 
-				(*sneia).RIa[timestep - (*t).timestep_origin] 
-			); 
-		} 
-	}
-
-}
-#endif 
+} 
 
 /* 
  * Determine the star formation rate weighted by the SNe Ia rate. See section 
@@ -218,32 +192,6 @@ extern unsigned short setup_RIa(SINGLEZONE *sz) {
 
 		} 
 
-		#if 0
-		char *dtd = (*(*(*sz).elements[j]).sneia_yields).dtd; 
-		if (!strcmp(dtd, "plaw") || !strcmp(dtd, "exp")) {
-			/* built-in DTD, map it across time */ 
-			sz -> elements[j] -> sneia_yields -> RIa = (double *) malloc (
-				length * sizeof(double)); 
-			if ((*(*(*sz).elements[j]).sneia_yields).RIa == NULL) {
-				return 1; 		/* memory error */ 
-			} else {
-				for (i = 0l; i < length; i++) {
-					sz -> elements[j] -> sneia_yields -> RIa[i] = RIa_builtin(
-						*(*sz).elements[j], i * (*sz).dt); 
-				} 
-				normalize_RIa(sz -> elements[j], length); 	/* normalize it */ 
-			} 
-		} else if (!strcmp(dtd, "custom")) {
-			/* 
-			 * Python will map the custom function into this array, so simply 
-			 * normalize it here. 
-			 */ 
-			normalize_RIa(sz -> elements[j], length); 
-		} else {
-			return 1; 		/* Error: unrecognized DTD specification */ 
-		} 
-		#endif 
-
 	} 
 
 	return 0; 		/* success */ 
@@ -277,7 +225,8 @@ static double RIa_builtin(ELEMENT e, double time) {
 				return exp( -time / (*e.sneia_yields).tau_ia ); 
 
 			case PLAW: 
-				/* power-law DTD w/index -1.1 Add 1e-12 to prevent numerical 
+				/* 
+				 * power-law DTD w/index -1.1 Add 1e-12 to prevent numerical 
 				 * errors allowing this function to evaluate at zero without 
 				 * throwing an error. 
 				 */ 
@@ -287,22 +236,7 @@ static double RIa_builtin(ELEMENT e, double time) {
 				return -1; 
 
 		}
-	}
-
-	#if 0
-	else if (!strcmp((*e.sneia_yields).dtd, "exp")) {
-		/* exponential DTD w/user-specified e-folding timescale */ 
-		return exp( -time / (*e.sneia_yields).tau_ia ); 
-	} else if (!strcmp((*e.sneia_yields).dtd, "plaw")) {
-		/* power-law DTD w/index -1.1 Add 1e-12 to prevent numerical errors 
-		 * allowing this function to evaluate at zero without throwing an 
-		 * error. 
-		 */ 
-		return pow( time + 1e-12, -PLAW_DTD_INDEX ); 
-	} else {
-		return -1; 
-	}
-	#endif 
+	} 
 
 } 
 
@@ -329,6 +263,4 @@ extern void normalize_RIa(ELEMENT *e, unsigned long length) {
 	} 
 
 }
-
-
 

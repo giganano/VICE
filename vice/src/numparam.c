@@ -34,14 +34,7 @@ extern NUMPARAM *numparam_initialize(double start, unsigned short let_vary) {
  */ 
 extern void numparam_free(NUMPARAM *p) {
 
-	if (p != NULL) {
-
-		#if 0 
-		if ((*p).value != NULL) {
-			free(p -> value); 
-			p -> value = NULL; 
-		} else {} 
-		#endif 
+	if (p != NULL) { 
 
 		free(p); 
 		p = NULL; 
@@ -64,20 +57,5 @@ extern void numparam_step(NUMPARAM *p) {
 
 	if ((*p).varies) p -> current = normal((*p).current, (*p).stepsize); 
 
-}
-
-#if 0
-/* 
- * Prints the address of a numparam pointer 
- * 
- * header: numparam.h 
- */ 
-extern void numparam_address(NUMPARAM *p) {
-
-	printf("Address = %p\n", (void *) p); 
-
-}
-#endif 
-
-
+} 
 

@@ -3,22 +3,24 @@ from __future__ import print_function
 from vice.yields.ccsne import fractional 
 from vice._globals import _RECOGNIZED_ELEMENTS_ 
 import warnings 
-import math as m 
+import math 
 
-_STUDY_ = ["LC18", "CL13", "CL04", "WW95"] 
+_STUDY_ = ["LC18", "CL13", "CL04", "WW95", "NKT13"] 
 _MOVERH_ = {
 	"LC18":			[-3, -2, -1, 0], 
 	"CL13": 		[0], 
 	"CL04":			[-float("inf"), -4, -2, -1, -0.37, 0.15], 
-	"WW95":			[-float("inf"), -4, -2, -1, 0] 
+	"WW95":			[-float("inf"), -4, -2, -1, 0], 
+	"NKT13": 		[-float("inf"), -1.15, -0.54, -0.24, 0.15, 0.55] 
 }
 _ROTATION_ = {
 	"LC18":			[0, 150, 300], 
 	"CL13":			[0, 300], 
 	"CL04":			[0], 
-	"WW95":			[0]
+	"WW95":			[0], 
+	"NKT13": 		[0] 
 }
-_IMF_ = ["kroupa", "salpeter"] 
+_IMF_ = ["kroupa", "salpeter", lambda m: m**-2] 
 _METHOD_ = ["simpson", "trapezoid", "midpoint", "euler"] 
 
 def main(): 
@@ -46,15 +48,21 @@ def main():
 							i, j, k, l, m) 
 						success = True
 						for elem in _RECOGNIZED_ELEMENTS_: 
+							foo = fractional(elem, **params) 
+							assert 0 <= foo[0] < 1
+							if foo[0] == 0: 
+								assert math.isnan(foo[1])
+							else: 
+								pass 
 							try: 
 								foo = fractional(elem, **params) 
-								assert 0 <= foo[0] < 1
+								assert 0 <= foo[0] < 1 
 								if foo[0] == 0: 
-									assert m.isnan(foo[1])
+									assert math.isnan(foo[1])
 								else: 
 									pass 
 							except: 
-								sucess = False 
+								success = False 
 						if success: 
 							message += "Success" 
 						else:
@@ -86,6 +94,12 @@ def main():
 		print("WW95 import: Success") 
 	except: 
 		print("WW95 import: Failed") 
+
+	try: 
+		from vice.yields.ccsne import NKT13 
+		print("NKT13 import: Success") 
+	except: 
+		print("NKT13 import: Failed") 
 
 
 if __name__ == "__main__": 

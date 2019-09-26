@@ -126,7 +126,7 @@ heavier than nickel (atomic number 28).""" % (studies["karakas10"]))
 
 	if not os.path.exists(filename): 
 		"""
-		File nt found ---> unless VICE was tampered with, this shouldn't 
+		File not found ---> unless VICE was tampered with, this shouldn't 
 		happen. 
 		""" 
 		raise IOError("Yield file not found. Please re-install VICE.") 
@@ -136,7 +136,7 @@ heavier than nickel (atomic number 28).""" % (studies["karakas10"]))
 	cdef ELEMENT *e = _element.element_initialize() 
 	if _io.import_agb_grid(e, filename.encode("latin-1")): 
 		free(e) 
-		raise SystemError("Internal Error: couldn't read yield file.") 
+		raise SystemError("Internal Error: couldn't read yield file.")  
 	else: 
 		try: 
 			# copy over the yields, masses, and metallicities 

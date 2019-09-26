@@ -105,29 +105,7 @@ extern double *sample(double *dist, double *bins, unsigned long n_bins,
 				values[i] = rand_range(bins[bin], bins[bin + 1l]); 
 				break; 
 
-		}
-
-		#if 0
-		if (bin != -1l) { 
-			/* 
-			 * CDFs must be interpreted from the right-hand bin edges rather 
-			 * than the left, so increment the bin number by 1 
-			 * 
-			 * Assume uniform likelihood within that bin of the CDF and 
-			 * randomly draw a value in that range. 
-			 */ 
-			if ((unsigned) bin != n_bins - 1l) bin++; 
-			values[i] = rand_range(bins[bin], bins[bin + 1l]); 
-		} else { 
-			/* 
-			 * This shouldn't happen given the nature of this implementation; 
-			 * included as a failsafe. 
-			 */ 
-			free(cdf); 
-			free(values); 
-			return NULL; 
-		}
-		#endif 
+		} 
 
 	} 
 

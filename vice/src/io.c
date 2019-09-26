@@ -244,11 +244,11 @@ extern unsigned short import_agb_grid(ELEMENT *e, char *file) {
 	long length = line_count(file); 
 	if (length == -1l) return 1; 		/* error handling */ 
 	int h_length = header_length(file); 
-	if (h_length == -1) return 1; 
+	if (h_length == -1) return 2; 
 	int dimension = file_dimension(file); 
-	if (dimension !=  3) return 1; 
+	if (dimension != 3) return 3; 
 	FILE *in = fopen(file, "r"); 
-	if (in == NULL) return 1; 
+	if (in == NULL) return 4; 
 
 	/* 
 	 * first keeps track of the first occurrence of a given mass in the 
@@ -262,7 +262,7 @@ extern unsigned short import_agb_grid(ELEMENT *e, char *file) {
 		fclose(in); 
 		free(first); 
 		free(line); 
-		return 1; 
+		return 5; 
 	} else {} 
 
 	e -> agb_grid -> n_z = 0l; 		/* start counting metallicities */ 
@@ -275,7 +275,7 @@ extern unsigned short import_agb_grid(ELEMENT *e, char *file) {
 			fclose(in); 
 			free(first); 
 			free(line); 
-			return 1; 
+			return 6; 
 		} 
 	} while (line[0] == first[0]); 
 
@@ -296,9 +296,8 @@ extern unsigned short import_agb_grid(ELEMENT *e, char *file) {
 	 * with the line number. These lines are explicitly designed to read in 
 	 * that format. 
 	 */ 
-	unsigned int i, j; 
-
-	switch ( (unsigned) length % (*(*e).agb_grid).n_z ) {
+	switch ( (unsigned) length % (*(*e).agb_grid).n_z ) { 
+		unsigned int i, j; 
 
 		case 0: 
 			/* 
@@ -330,7 +329,7 @@ extern unsigned short import_agb_grid(ELEMENT *e, char *file) {
 						free(e -> agb_grid -> m); 
 						free(e -> agb_grid -> z); 
 						fclose(in); 
-						return 1; 
+						return 7; 
 					}
 				} 
 			} 
@@ -338,47 +337,9 @@ extern unsigned short import_agb_grid(ELEMENT *e, char *file) {
 			return 0; 		/* error handling: success */ 
 
 		default: 
-			return 1; 		/* error handling: failure */ 
+			return 8; 		/* error handling: failure */ 
 
-	}
-
-	#if 0
-	if ( (unsigned) length % (*(*e).agb_grid).n_z != 0) {
-		return 1; 
-	} else { 
-		e -> agb_grid -> n_m = (unsigned) length / (*(*e).agb_grid).n_z; 
-		in = fopen(file, "r"); 
-		if (in == NULL) return 1; 
-		e -> agb_grid -> m = (double *) malloc (
-			(*(*e).agb_grid).n_m * sizeof(double)); 
-		e -> agb_grid -> z = (double *) malloc (
-			(*(*e).agb_grid).n_z * sizeof(double)); 
-		e -> agb_grid -> grid = (double **) malloc (
-			(*(*e).agb_grid).n_m * sizeof(double)); 
-		for (i = 0; i < (*(*e).agb_grid).n_m; i++) { 
-			e -> agb_grid -> grid[i] = (double *) malloc (
-				(*(*e).agb_grid).n_z * sizeof(double)); 
-			for (j = 0; j < (*(*e).agb_grid).n_z; j++) {
-				if (fscanf(
-					in, "%lf %lf %lf", 
-					&(e -> agb_grid -> m[i]), 
-					&(e -> agb_grid -> z[j]), 
-					&(e -> agb_grid -> grid[i][j])
-				)) {
-					continue; 
-				} else {
-					free(e -> agb_grid -> grid); 
-					free(e -> agb_grid -> m); 
-					free(e -> agb_grid -> z); 
-					fclose(in); 
-					return 1; 
-				}
-			} 
-		} 
-		fclose(in); 
-		return 0; 		/* error handling: success */ 
-	}
-	#endif 
+	} 
 
 }
 
@@ -589,32 +550,6 @@ extern void write_history_header(SINGLEZONE sz) {
 		n++; 
 	} 
 
-	#if 0 
-	for (i = 0; i < sz.n_elements; i++) { 
-		/* Abundance by mass Mx/Mg of each element */ 
-		fprintf(sz.history_writer, 
-			"#\t%d: z(%s)\t\t\tmetallicity by mass of element %s in ISM\n", 
-			n, (*sz.elements[i]).symbol, (*sz.elements[i]).symbol); 
-		n++; 
-	} 
-	for (i = 0; i < sz.n_elements; i++) { 
-		/* Logarithmic mass abundance [X/H] of each element */ 
-		fprintf(sz.history_writer, 
-			"#\t%d: [%s/h]\t\t\tlog-scaled abundance relative to solar\n", 
-			n, (*sz.elements[i]).symbol); 
-		n++; 
-	} 
-	for (i = 1; i < sz.n_elements; i++) {
-		/* Logarithmic abundance ratio [X/Y] for all pairs of elements */ 
-		for (j = 0; j < i; j++) {
-			fprintf(sz.history_writer, 
-			"#\t%d: [%s/%s]\t\t\tlog-scaled abundance ratio relative to solar\n", 
-			n, (*sz.elements[i]).symbol, (*sz.elements[j]).symbol); 
-			n++; 
-		} 
-	} 
-	#endif 
-
 } 
 
 /* 
@@ -638,16 +573,6 @@ extern void write_history_output(SINGLEZONE sz) {
 	 * simulation. This significantly improves the speed of simulations with 
 	 * high n_elements. 
 	 */ 
-	#if 0 
-	double *Z = (double *) malloc (sz.n_elements * sizeof(double)); 
-	double *onH = (double *) malloc (sz.n_elements * sizeof(double)); 
-	unsigned int i, j; 
-	for (i = 0; i < sz.n_elements; i++) { 
-		Z[i] = (*sz.elements[i]).mass / (*sz.ism).mass; 
-		onH[i] = log10(Z[i] / (*sz.elements[i]).solar); 
-	} 
-	#endif 
-	unsigned int i;
 
 	/* 
 	 * Write the evolutionary parameters 
@@ -675,7 +600,8 @@ extern void write_history_output(SINGLEZONE sz) {
 	} else { 
 		/* instantaneous recycling parameter otherwise */ 
 		fprintf(sz.history_writer, "%e\t", (*sz.ssp).R0); 
-	}
+	} 
+	unsigned int i;
 	for (i = 0; i < sz.n_elements; i++) {
 		/* infall metallicity */ 
 		fprintf(sz.history_writer, "%e\t", (*sz.elements[i]).Zin[sz.timestep]); 
@@ -689,24 +615,6 @@ extern void write_history_output(SINGLEZONE sz) {
 		/* total ISM mass of each element */ 
 		fprintf(sz.history_writer, "%e\t", (*sz.elements[i]).mass); 
 	} 
-
-	#if 0
-	for (i = 0; i < sz.n_elements; i++) {
-		/* ISM metallicity Z = Mx/Mg of each element */ 
-		fprintf(sz.history_writer, "%e\t", Z[i]); 
-	} 
-	for (i = 0; i < sz.n_elements; i++) {
-		/* [X/H] logarithmic abundance of each element */ 
-		fprintf(sz.history_writer, "%e\t", onH[i]); 
-	} 
-	for (i = 1; i < sz.n_elements; i++) {
-		for (j = 0; j < i; j++) {
-			/* [X/Y] abundance ratios */ 
-			fprintf(sz.history_writer, "%e\t", onH[i] - onH[j]); 
-		} 
-	} 
-	#endif 
-
 	fprintf(sz.history_writer, "\n"); 
 
 } 
@@ -798,21 +706,7 @@ extern unsigned short multizone_open_tracer_file(MULTIZONE *mz) {
 	} else {} 
 	return (*(*mz).mig).tracers_output == NULL; 
 
-}
-
-#if 0
-extern int multizone_open_tracer_file(MULTIZONE *mz) {
-
-	if ((*mz).tracers_output == NULL) { 
-		char filename[MAX_FILENAME_SIZE]; 
-		strcpy(filename, (*mz).name); 
-		strcat(filename, "/tracers.out"); 
-		mz -> tracers_output = fopen(filename, "w"); 
-	} else {} 
-	return (*mz).tracers_output == NULL; 
-
-}
-#endif 
+} 
 
 /* 
  * Writes the header to the tracers output file at the end of a multizone 
@@ -828,15 +722,7 @@ extern void write_tracers_header(MULTIZONE mz) {
 
 	fprintf((*mz.mig).tracers_output, "# tform\tzone_origin\tzone_final\n"); 
 
-}
-
-#if 0
-extern void write_tracers_header(MULTIZONE mz) { 
-
-	fprintf(mz.tracers_output, "# tform\tzone_origin\tzone_final\n"); 
-
-}
-#endif 
+} 
 
 /* 
  * Writes the tracer data to the output file at the end of a multizone 
@@ -860,21 +746,7 @@ extern void write_tracers_output(MULTIZONE mz) {
 			(*(*mz.mig).tracers[i]).zone_current); 
 	}
 
-}
-
-#if 0
-extern void write_tracers_output(MULTIZONE mz) {
-
-	unsigned long i; 
-	for (i = 0l; i < mz.tracer_count; i++) {
-		fprintf(mz.tracers_output, "%e\t", 
-			(*mz.tracers[i]).timestep_origin * (*mz.zones[0]).dt); 
-		fprintf(mz.tracers_output, "%u\t", (*mz.tracers[i]).zone_origin); 
-		fprintf(mz.tracers_output, "%u\n", (*mz.tracers[i]).zone_current); 
-	} 
-
 } 
-#endif 
 
 /* 
  * Closes the tracer output file at the end of a multizone simulation 
@@ -892,16 +764,5 @@ extern void multizone_close_tracer_file(MULTIZONE *mz) {
 		mz -> mig -> tracers_output = NULL; 
 	} else {} 
 
-}
-
-#if 0
-extern void multizone_close_tracer_file(MULTIZONE *mz) {
-
-	if ((*mz).tracers_output != NULL) {
-		fclose(mz -> tracers_output); 
-		mz -> tracers_output = NULL; 
-	} else {} 
-
 } 
-#endif 
 

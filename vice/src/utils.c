@@ -10,9 +10,6 @@
 #include "utils.h" 
 #include "singlezone.h" 
 
-/* ---------- Static function comment headers not duplicated here ---------- */ 
-// static unsigned long factorial(unsigned long n); 
-
 /* Define the checksum function adopted in this implementation */ 
 long (*checksum)(char *) = &simple_hash; 
 
@@ -54,46 +51,9 @@ extern unsigned long choose(unsigned long a, unsigned long b) {
 		return numerator / denominator; 
 	} else { 
 		return (a == b); 
-	}
-
-	/* 
-	 * The following implementation would produce a floating point exception 
-	 * when large numbers of elements are used due to the size of a number 
-	 * like 75!. As such, the code above was implemented in its place. 
-	 */ 
-	#if 0 
-	if (a > b) {
-		return factorial(a) / (factorial(b) * factorial(a - b)); 
-	} else {
-		return (a == b); 
 	} 
-	#endif 
 
 } 
-
-#if 0 
-/* 
- * Performs the factorial operation 
- * 
- * Parameters 
- * ========== 
- * n: 		The number to determine the factorial (n!) 
- * 
- * Returns 
- * ======= 
- * n! = n(n - 1)! 	(n > 0) 
- *    = 1			(n = 0) 
- */ 
-static unsigned long factorial(unsigned long n) {
-
-	if (n) {
-		return n * factorial(n - 1l); 
-	} else {
-		return 1l; 
-	}
-
-} 
-#endif 
 
 /* 
  * Determine the absolute value of a double x. This function extends the 
@@ -445,5 +405,4 @@ extern void set_char_p_value(char *dest, int *ords, int length) {
 	dest[length] = '\0'; 	/* null terminator */ 
 
 }
-
 

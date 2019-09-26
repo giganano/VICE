@@ -62,14 +62,6 @@ import warnings
 import sys
 import os
 
-# if sys.version_info[0] == 2: 
-# 	warnings.warn("""\
-# Python 2 is set to be deprecated on January 1, 2020. A future version of VICE \
-# will drop support for Python 2. \
-# """, PendingDeprecationWarning) 
-# else:
-# 	pass 
-
 __author__ = "James W. Johnson <giganano9@gmail.com>"
 
 try: 
@@ -88,7 +80,7 @@ else:
 	try:
 		from .version import version as __version__
 		from .version import release as __release
-	except: 
+	except (ModuleNotFoundError, ImportError): 
 		raise ImportError("""\
 Error importing VICE. VICE is a pre-compiled package and cannot be ran from \
 its source directory, because the compiled objects are not stored here. Please \
@@ -98,8 +90,8 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 	if not __release: 
 		warnings.warn("Using un-released version of VICE", UserWarning)
 
-	__all__ = ["__author__", "__version__", "elements", "modeling", "yields", 
-		"_globals", "ScienceWarning"] 
+	__all__ = ["__author__", "__version__", "elements", "yields", "_globals", 
+		"ScienceWarning"] 
 
 	try: 
 		from .core import * 

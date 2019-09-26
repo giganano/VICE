@@ -6,14 +6,11 @@ except NameError:
 from distutils.core import setup, Extension 
 import sys 
 import os 
-# if sys.version_info[:2] == (2, 7): 
-# 	import __builtin__ as builtins 
-if sys.version_info[:2] >= (3, 5): 
-	import builtins 
-else: 
+if sys.version_info[:2] < (3, 5): 
 	raise RuntimeError("VICE requires python version >= 3.5") 
 
 # partial import 
+import builtins 
 builtins.__VICE_SETUP__ = True 
 import vice 
 
@@ -42,7 +39,7 @@ Programming Language :: Python :: 3
 Programming Language :: Python :: 3.5 
 Programming Language :: Python :: 3.6 
 Programming Language :: Python :: 3.7 
-Programming Language :: Python :: Implementation :: CPython 
+Programming Language :: Python :: 3 :: Only 
 Topic :: Scientific/Engineering
 Topic :: Scientific/Engineering :: Astronomy 
 Topic :: Scientific/Engineering :: Physics

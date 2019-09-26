@@ -349,25 +349,6 @@ extern void singlezone_cancel(SINGLEZONE *sz) {
 			free(sz -> elements[i] -> agb_grid -> z); 
 			sz -> elements[i] -> agb_grid -> z = NULL; 
 		} else {} 
-
-		#if 0 
-		free(sz -> elements[i] -> Zin); 
-		free(sz -> elements[i] -> ccsne_yields -> yield_); 
-		if (!strcmp((*(*(*sz).elements[i]).sneia_yields).dtd, "custom")) { 
-			/* RIa needs freed only if it was custom */ 
-			free(sz -> elements[i] -> sneia_yields -> RIa); 
-			sz -> elements[i] -> sneia_yields -> RIa = NULL; 
-		} else {} 
-		free(sz -> elements[i] -> agb_grid -> grid); 
-		free(sz -> elements[i] -> agb_grid -> m); 
-		free(sz -> elements[i] -> agb_grid -> z); 
-		sz -> elements[i] -> Zin = NULL; 
-		sz -> elements[i] -> ccsne_yields -> yield_ = NULL; 
-		sz -> elements[i] -> sneia_yields -> RIa = NULL; 
-		sz -> elements[i] -> agb_grid -> grid = NULL; 
-		sz -> elements[i] -> agb_grid -> m = NULL; 
-		sz -> elements[i] -> agb_grid -> z = NULL; 
-		#endif 
 	} 
 
 	if ((*(*sz).ism).specified != NULL) {
@@ -386,13 +367,6 @@ extern void singlezone_cancel(SINGLEZONE *sz) {
 		free(sz -> ism -> tau_star); 
 		sz -> ism -> tau_star = NULL; 
 	} else {} 
-
-	#if 0 
-	free(sz -> ism -> specified); 
-	free(sz -> ism -> eta); 
-	free(sz -> ism -> enh); 
-	free(sz -> ism -> tau_star); 
-	#endif 
 
 }
 

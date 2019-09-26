@@ -19,7 +19,6 @@ static void multizone_evolve_full(MULTIZONE *mz);
 static unsigned short multizone_timestepper(MULTIZONE *mz); 
 static void verbosity(MULTIZONE mz); 
 static void multizone_write_history(MULTIZONE mz); 
-// static void multizone_normalize_MDF(MULTIZONE *mz); 
 static void multizone_write_MDF(MULTIZONE mz); 
 
 /* 
@@ -186,15 +185,6 @@ static void multizone_evolve_simple(MULTIZONE *mz) {
  */ 
 static void multizone_evolve_full(MULTIZONE *mz) {
 
-	#if 0
-	/* 
-	 * x differentiates between failed setup and migration matrix failing the 
-	 * sanity check 
-	 */ 
-	unsigned short x = multizone_setup(mz); 
-	if (x) return x; 
-	#endif 
-
 	/* 
 	 * Use the variable n to keep track of the number of outputs. Pull a 
 	 * local copy of the first zone just for convenience. Lastly, tracer 
@@ -220,24 +210,6 @@ static void multizone_evolve_full(MULTIZONE *mz) {
 		verbosity(*mz); 
 	} 
 	if ((*mz).verbose) printf("\n"); 
-
-	#if 0
-	/* Normalize all MDFs and write them out */ 
-	multizone_normalize_MDF(mz); 
-	multizone_write_MDF(*mz); 
-
-	/* Write the tracer data */ 
-	if (!multizone_open_tracer_file(mz)) { 
-		write_tracers_header(*mz); 
-		write_tracers_output(*mz); 
-		multizone_close_tracer_file(mz); 
-	} else { 
-		x = 3; 
-	} 
-
-	multizone_clean(mz); 
-	return x; 
-	#endif 
 
 } 
 
@@ -409,24 +381,6 @@ static void multizone_write_history(MULTIZONE mz) {
 
 } 
 
-#if 0
-/* 
- * Normalizes the stellar MDFs in all zones in a multizone object. 
- * 
- * Parameters 
- * ========== 
- * mz: 		A pointer to the multizone object for the current simulation 
- */ 
-static void multizone_normalize_MDF(MULTIZONE *mz) {
-
-	unsigned int i; 
-	for (i = 0; i < (*(*mz).mig).n_zones; i++) {
-		normalize_MDF(mz -> zones[i]); 
-	} 
-
-} 
-#endif 
-
 /* 
  * Writes the stellar MDFs to all output files. 
  * 
@@ -442,6 +396,4 @@ static void multizone_write_MDF(MULTIZONE mz) {
 	}
 
 } 
-
-
 

@@ -339,61 +339,6 @@ typedef struct multizone {
 
 } MULTIZONE; 
 
-#if 0
-typedef struct tracer { 
-
-	/* 
-	 * This struct implements the tracer particle for multizone simulations 
-	 * 
-	 * mass: The initial mass of the tracer particle in Msun 
-	 * zone_origin: The zone in which the particle was born 
-	 * zone_current: The zone in which the particle currently resides 
-	 * timestep_origin: The timestep at which the tracer was born 
-	 * 
-	 * Notes 
-	 * ===== 
-	 * The ONLY parameter which changes is zone_current. Even the mass does 
-	 * not change; it is only the initial mass that is required. 
-	 */ 
-
-	double mass; 
-	unsigned int zone_origin; 
-	unsigned int zone_current; 
-	unsigned long timestep_origin; 
-
-} TRACER; 
-
-typedef struct multizone {
-
-	/* 
-	 * This struct is the core implementation of the multizone object in 
-	 * VICE, as the name would suggest. 
-	 * 
-	 * name: The name of the simulation
-	 * zones: The SINGLEZONE objects corresponding to the individual zones 
-	 * n_zones: The number of zones 
-	 * n_tracers: The number of tracers per timestep per zone 
-	 * migration_matrix: The migration matrix at each timestep. 
-	 * tracer_count: The total number of tracers 
-	 * tracers: The tracer particles associated with the simulation 
-	 * verbose: boolean int describing whether or not to print the time as the 
-	 * 		simulation evolves 
-	 */ 
-
-	char *name; 
-	SINGLEZONE **zones; 
-	unsigned int n_zones; 
-	unsigned int n_tracers; 
-	double ***migration_matrix_gas; 
-	double ***migration_matrix_tracers; 
-	unsigned long tracer_count; 
-	TRACER **tracers; 
-	FILE *tracers_output; 
-	int verbose; 
-
-} MULTIZONE; 
-#endif 
-
 typedef struct integral { 
 
 	/* 

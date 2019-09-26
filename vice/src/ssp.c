@@ -60,7 +60,6 @@ extern SSP *ssp_initialize(void) {
 	 */ 
 
 	SSP *ssp = (SSP *) malloc (sizeof(SSP)); 
-	// ssp -> imf = (char *) malloc (100 * sizeof(char)); 
 	ssp -> imf = imf_initialize(0.08, 100); 
 	ssp -> crf = NULL; 
 	ssp -> msmf = NULL; 
@@ -88,7 +87,6 @@ extern void ssp_free(SSP *ssp) {
 		} else {} 
 
 		if ((*ssp).imf != NULL) {
-			// free(ssp -> imf); 
 			imf_free(ssp -> imf); 
 			ssp -> imf = NULL; 
 		} else {} 
@@ -123,12 +121,7 @@ extern void ssp_free(SSP *ssp) {
  * 
  * header: utils.h 
  */ 
-extern double main_sequence_turnoff_mass(double t, double postMS) {
-
-	#if 0
-	/* m_to = (t / 10 Gyr)^(-1/3.5) */ 
-	return pow( time/SOLAR_LIFETIME, -1.0/MASS_LIFETIME_PLAW_INDEX ); 
-	#endif 
+extern double main_sequence_turnoff_mass(double t, double postMS) { 
 
 	/* m_to = (t / ((1 + postMS) * 10 Gyr))^(-1/3.5) */ 
 	return pow( 
@@ -249,12 +242,7 @@ extern double *single_population_enrichment(SSP *ssp, ELEMENT *e,
 		for (i = 0l; i < n_times; i++) {
 			ssp -> msmf[i] = MSMFnumerator(*ssp, times[i]) / denominator; 
 		}
-	}
-
-	// unsigned long i; 
-	// for (i = 0l; i < n_times; i++) {
-	// 	ssp -> msmf[i] = MSMF(*ssp, times[i]); 
-	// } 
+	} 
 
 	mass[0] = 0; 
 	if (n_times >= 2l) { 
@@ -391,58 +379,6 @@ extern void recycle_metals_from_tracers(MULTIZONE *mz, unsigned int index) {
 
 } 
 
-#if 0
-extern void recycle_metals_from_tracers(MULTIZONE *mz, unsigned int index) { 
-
-	/* 
-	 * Look at each tracer particle and allow each that was born in a zone 
-	 * with continuous recycling to enrich its current zone via continuous 
-	 * recycling, regardless of the current zone's recycling prescription. 
-	 * Zones that have instantaneous recycling will retain their recycling 
-	 * as such as well as that from particles with continuous recycling that 
-	 * migrate into that zone. 
-	 */ 
-
-	unsigned long i; 
-	for (i = 0l; i < (*mz).tracer_count; i++) {
-		TRACER *t = mz -> tracers[i]; 
-		SSP *ssp = mz -> zones[(*t).zone_origin] -> ssp; 
-
-		if ((*ssp).continuous) { 
-			/* ------------------- Continuous recycling ------------------- */ 
-			unsigned long n = (*(*mz).zones[0]).timestep - (*t).timestep_origin; 
-			/* The metallicity by mass of this element in the tracer */ 
-			double Z = (
-				(*(*(*mz).zones[(*t).zone_origin]).elements[index]).Z[(
-					*t).timestep_origin] 
-			); 
-			mz -> zones[(*t).zone_current] -> elements[index] -> mass += (
-				Z * (*t).mass * ((*ssp).crf[n + 1l] - (*ssp).crf[n])
-			); 
-		} else {}
-
-	} 
-
-	unsigned int j; 
-	for (j = 0; j < (*mz).n_zones; j++) {
-		SSP *ssp = mz -> zones[j] -> ssp; 
-
-		if (!(*ssp).continuous) {
-			/* ------------------ Instantaneous recycling ------------------ */ 
-			mz -> zones[j] -> elements[index] -> mass += (
-				(*(*(*mz).zones[j]).ism).star_formation_rate * 
-				(*(*mz).zones[j]).dt * 
-				(*(*(*mz).zones[j]).ssp).R0 * 
-				(*(*(*mz).zones[j]).elements[index]).mass / 
-				(*(*(*mz).zones[j]).ism).mass 
-			); 
-		} else {} 
-
-	}
-
-} 
-#endif 
-
 /* 
  * Determine the amount of ISM gas recycled from stars in each zone in a 
  * multizone simulation. Just as is the case with re-enrichment of metals, 
@@ -504,51 +440,6 @@ extern double *gas_recycled_in_zones(MULTIZONE mz) {
 
 } 
 
-#if 0
-extern double *gas_recycled_in_zones(MULTIZONE mz) {
-
-	/* Store the mass recycled in each zone in this array */ 
-	unsigned int j; 
-	double *mass = (double *) malloc (mz.n_zones * sizeof(double)); 
-	for (j = 0; j < mz.n_zones; j++) {
-		mass[j] = 0; 
-	} 
-
-	/* Look at each tracer particle for continuous recycling */ 
-	unsigned long i; 
-	for (i = 0l; i < mz.tracer_count; i++) {
-		TRACER *t = mz.tracers[i]; 
-		SSP *ssp = mz.zones[(*t).zone_origin] -> ssp; 
-
-		if ((*ssp).continuous) { 
-			/* ------------------- Continuous recycling ------------------- */ 
-			unsigned long n = (*mz.zones[0]).timestep - (*t).timestep_origin; 
-			mass[(*t).zone_current] += (*t).mass * ((*ssp).crf[n + 1l] - 
-				(*ssp).crf[n]); 
-		} else {} 
-
-	} 
-
-	/* Look at each zone for instantaneous recycling */ 
-	for (j = 0; j < mz.n_zones; j++) {
-		SSP *ssp = mz.zones[j] -> ssp; 
-
-		if (!(*ssp).continuous) {
-			/* ------------------ Instantaneous recycling ------------------ */ 
-			mass[j] += (
-				(*(*mz.zones[j]).ism).star_formation_rate * 
-				(*mz.zones[j]).dt * 
-				(*(*mz.zones[j]).ssp).R0 
-			); 
-		} else {} 
-
-	} 
-
-	return mass; 
-
-} 
-#endif 
-
 /* 
  * Evaluate the cumulative return fraction across all timesteps in preparation 
  * of a singlezone simulation. This will store the CRF in the SSP struct 
@@ -579,8 +470,6 @@ extern unsigned short setup_CRF(SINGLEZONE *sz) {
 		 * quantities for ten timesteps beyond the endpoint of the simulation. 
 		 * This is a safeguard against memory errors. 
 		 */ 
-		// unsigned long i, n = 10l + (unsigned long) (
-		// 	(*sz).output_times[(*sz).n_outputs - 1l] / (*sz).dt); 
 		unsigned long i, n = n_timesteps(*sz); 
 
 		sz -> ssp -> crf = (double *) malloc (n * sizeof(double)); 
@@ -738,57 +627,7 @@ static double CRFnumerator_Kalirai08(SSP ssp, double t) {
 			/* error handling */ 
 			return -1; 
 
-	}
-
-	#if 0 
-	if (!strcmp(ssp.imf, "salpeter")) {
-		/* Salpeter IMF */
-		return CRFnumerator_Kalirai08_IMFrange(
-			ssp.m_upper, 
-			turnoff_mass, 
-			ssp.m_lower, 
-			2.35); 
-	} else if (!strcmp(ssp.imf, "kroupa")) {
-		/* kroupa IMF */ 
-		if (turnoff_mass > 0.5) {
-			return 0.04 * CRFnumerator_Kalirai08_IMFrange(
-				ssp.m_upper, 
-				turnoff_mass, 
-				ssp.m_lower, 
-				2.3); 
-		} else if (0.08 <= turnoff_mass && turnoff_mass <= 0.5) {
-			return (0.04 * CRFnumerator_Kalirai08_IMFrange(
-				ssp.m_upper, 
-				turnoff_mass, 
-				0.5, 
-				2.3) 
-			+ 0.08 * CRFnumerator_Kalirai08_IMFrange(
-				0.5, 
-				turnoff_mass, 
-				ssp.m_lower, 
-				1.3)); 
-		} else {
-			return (0.04 * CRFnumerator_Kalirai08_IMFrange(
-				ssp.m_upper, 
-				turnoff_mass, 
-				0.5, 
-				2.3) 
-			+ 0.08 * CRFnumerator_Kalirai08_IMFrange(
-				0.5, 
-				turnoff_mass, 
-				0.08, 
-				1.3) 
-			+ CRFnumerator_Kalirai08_IMFrange(
-				0.08, 
-				turnoff_mass, 
-				ssp.m_lower, 
-				0.3)); 
-		} 
-	} else {
-		/* unrecognized IMF, return -1 on failure */ 
-		return -1; 
 	} 
-	#endif 
 
 }
 
@@ -1004,27 +843,7 @@ static double CRFdenominator(SSP ssp) {
 			/* error handling */ 
 			return -1; 
 
-	}
-
-	#if 0 
-	if (!strcmp(ssp.imf, "salpeter")) {
-		return CRFdenominator_IMFrange(ssp.m_upper, ssp.m_lower, 2.35); 
-	} else if (!strcmp(ssp.imf, "kroupa")) {
-		if (ssp.m_lower > 0.5) {
-			return 0.04 * CRFdenominator_IMFrange(ssp.m_upper, ssp.m_lower, 
-				2.3); 
-		} else if (0.08 <= ssp.m_lower && ssp.m_lower <= 0.5) {
-			return (0.04 * CRFdenominator_IMFrange(ssp.m_upper, 0.5, 2.3) + 
-				0.08 * CRFdenominator_IMFrange(0.5, ssp.m_lower, 1.3)); 
-		} else {
-			return (0.04 * CRFdenominator_IMFrange(ssp.m_upper, 0.5, 2.3) + 
-				0.08 * CRFdenominator_IMFrange(0.5, 0.08, 1.3) + 
-				CRFdenominator_IMFrange(0.08, ssp.m_lower, 0.3)); 
-		} 
-	} else {
-		return -1; 
 	} 
-	#endif 
 
 }
 
@@ -1080,8 +899,6 @@ extern unsigned short setup_MSMF(SINGLEZONE *sz) {
 		 * quantities for ten timesteps beyond the endpoint of the simulation. 
 		 * This is a safeguard against memory errors. 
 		 */ 
-		// unsigned long i, n = 10l + (unsigned long) (
-		// 	(*sz).output_times[(*sz).n_outputs - 1l] / (*sz).dt); 
 		unsigned long i, n = n_timesteps(*sz); 
 
 		sz -> ssp -> msmf = (double *) malloc (n * sizeof(double)); 
@@ -1251,56 +1068,7 @@ static double MSMFnumerator(SSP ssp, double t) {
 			/* error handling */ 
 			return -1; 
 
-	}
-
-	#if 0 
-	if (!strcmp(ssp.imf, "salpeter")) { 
-		if (turnoff_mass > ssp.m_upper) {
-			return MSMFdenominator(ssp); /* no stars evolved off of MS yet */ 
-		} else if (turnoff_mass < ssp.m_lower) {
-			return 0; 		/* all stars evolved off MS */ 
-		} else { 
-			return CRFdenominator_IMFrange(turnoff_mass, ssp.m_lower, 2.35); 
-		}
-	} else if (!strcmp(ssp.imf, "kroupa")) { 
-		if (turnoff_mass > ssp.m_upper) {
-			return MSMFdenominator(ssp); 
-		} else if (turnoff_mass < ssp.m_lower) {
-			return 0; 
-		} else { 
-			if (ssp.m_lower < 0.08) { 
-				/* Need to consider all 3 portions of the Kroupa IMF */ 
-				if (turnoff_mass > 0.5) {
-					return (0.04 * CRFdenominator_IMFrange(turnoff_mass, 0.5, 
-						2.3) + 0.08 * CRFdenominator_IMFrange(0.5, 0.08, 1.3) + 
-						CRFdenominator_IMFrange(0.08, ssp.m_lower, 0.3)); 
-				} else if (0.08 <= turnoff_mass && turnoff_mass <= 0.5) {
-					return (0.08 * CRFdenominator_IMFrange(turnoff_mass, 0.08, 
-						1.3) + CRFdenominator_IMFrange(0.08, ssp.m_lower, 0.3)); 
-				} else {
-					return CRFdenominator_IMFrange(turnoff_mass, ssp.m_lower, 
-						0.3); 
-				} 
-			} else if (0.08 <= ssp.m_lower && ssp.m_lower <= 0.5) { 
-				/* Only two portions of the Kroupa IMF to worry about */ 
-				if (turnoff_mass > 0.5) {
-					return (0.04 * CRFdenominator_IMFrange(turnoff_mass, 0.5, 
-						2.3) + 0.08 * CRFdenominator_IMFrange(0.5, 
-						ssp.m_lower, 1.3)); 
-				} else {
-					return (0.08 * CRFdenominator_IMFrange(turnoff_mass, 
-						ssp.m_lower, 1.3)); 
-				} 
-			} else { 
-				/* Only the high mass end of the Kroupa IMF to consider */ 
-				return 0.04 * CRFdenominator_IMFrange(turnoff_mass, 0.5, 2.3); 
-			}
-		} 
-	} else { 
-		/* Unrecognized IMF, return -1 on failure */ 
-		return -1; 
-	}
-	#endif 
+	} 
 
 }
 

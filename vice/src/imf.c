@@ -61,32 +61,7 @@ extern void imf_free(IMF_ *imf) {
 
 	} else {} 
 
-}
-
-/* 
- * Reallocate memory for the masses on the mass distribution. 
- * 
- * Parameters 
- * ========== 
- * imf: 		The IMF object to reset 
- * m_lower: 	The lower mass limit on star formation 
- * m_upper: 	The upper mass limit on star formation 
- * 
- * header: imf.h 
- */ 
-#if 0 
-extern void imf_reset_mass_bins(IMF *imf, double m_lower, double m_upper) {
-
-	imf -> m_lower = m_lower; 
-	imf -> m_upper = m_upper; 
-	unsigned int i, n = n_mass_bins(*imf); 
-	imf -> masses = (double *) realloc (imf -> masses, n * sizeof(double)); 
-	for (i = 0l; i < n; i++) { 
-		imf -> masses[i] = (*imf).m_lower + IMF_STEPSIZE * i; 
-	} 
-
 } 
-#endif 
 
 /* 
  * Set the mass distribution of the IMF. 
