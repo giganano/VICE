@@ -216,9 +216,11 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		matched component-wise to the elements of the keyword argument 
 		'mass_ranges'. By default, this function assumes that all stars 
 		explode. 
-	IMF :: str [case-insensitive] [default :: "kroupa"] 
-		The stellar initial mass function (IMF) to adopt. This must be either 
-		"kroupa" (1) or "salpeter" (2). 
+	IMF :: string [case-insensitive] or <function> [default :: "kroupa"]
+		The stellar initial mass function (IMF) to assume. Strings denote 
+		built-in IMFs, which must be either "kroupa" (1) or "salpeter" (2). 
+		Functions must accept only one numerical parameter and will be 
+		interpreted as a custom, arbitrary stellar IMF. 
 	method :: str [case-insensitive] [default :: "simpson"] 
 		The method of quadrature. The numerical rules implemented here are of 
 		the forms outlined in chapter 4 of Numerical Recipes (Press, Teukolsky, 

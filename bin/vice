@@ -186,6 +186,13 @@ The power law index on Kennicutt-Schidt Law star formation efficiency \
 		type = float, 
 		default = 0.5) 
 
+	parser.add_argument("--postMS", 
+		help = """\
+The ratio of stellar post main sequence lifetimes to their main sequence \
+lifetimes. (Default: 0.1)""", 
+		type = float, 
+		default = 0.1) 
+
 	parser.add_argument("--end", 
 		help = "The end time of the simulation in Gyr (Default: 10)", 
 		type = float, 
@@ -276,6 +283,7 @@ def run_simulation(args):
 		schmidt = args.schmidt, 
 		MgSchmidt = args.MgSchmidt, 
 		schmidt_index = args.schmidt_index, 
+		postMS = args.postMS 
 	) 
 
 	outtimes = [i * args.dt for i in range(int(args.end / args.dt) + 1)] 
