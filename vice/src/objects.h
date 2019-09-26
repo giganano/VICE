@@ -411,6 +411,13 @@ typedef struct numparam {
 
 } NUMPARAM; 
 
+typedef struct polynomial { 
+
+	unsigned short order; 
+	NUMPARAM **coeffs; 
+
+} POLYNOMIAL; 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus*/ 

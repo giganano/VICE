@@ -13,3 +13,7 @@ cdef extern from "../../src/objects.h":
 		double stepsize 
 		double current 
 
+	ctypedef struct POLYNOMIAL: 
+		unsigned short order 
+		NUMPARAM **coeffs 
+
