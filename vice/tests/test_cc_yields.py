@@ -20,6 +20,13 @@ _ROTATION_ = {
 	"WW95":			[0], 
 	"NKT13": 		[0] 
 }
+_UPPER_ = {
+	"LC18":			120, 
+	"CL13": 		120, 
+	"CL04": 		35, 
+	"WW95": 		40, 
+	"NKT13": 		40 
+}
 _IMF_ = ["kroupa", "salpeter", lambda m: m**-2] 
 _METHOD_ = ["simpson", "trapezoid", "midpoint", "euler"] 
 
@@ -42,18 +49,13 @@ def main():
 							MoverH = j, 
 							rotation = k, 
 							IMF = l, 
-							method = m
+							method = m, 
+							m_upper = _UPPER_[i] 
 						)
 						message = "%s :: %g :: %g :: %s :: %s :: " % (
 							i, j, k, l, m) 
 						success = True
 						for elem in _RECOGNIZED_ELEMENTS_: 
-							foo = fractional(elem, **params) 
-							assert 0 <= foo[0] < 1
-							if foo[0] == 0: 
-								assert math.isnan(foo[1])
-							else: 
-								pass 
 							try: 
 								foo = fractional(elem, **params) 
 								assert 0 <= foo[0] < 1 
