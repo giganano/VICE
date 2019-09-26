@@ -64,9 +64,11 @@ def cumulative_return_fraction(age, IMF = "kroupa", m_upper = 100,
 	========== 
 	age :: real number 
 		The age of the stellar population in Gyr 
-	IMF :: string [default :: "kroupa"] [case-insensitive] 
-		The stellar initial mass function (IMF) to assume. This must be either 
-		"kroupa" (1) or "salpeter" (2). 
+	IMF :: string [case-insensitive] or <function> [default :: "kroupa"]
+		The stellar initial mass function (IMF) to assume. Strings denote 
+		built-in IMFs, which must be either "kroupa" (1) or "salpeter" (2). 
+		Functions must accept only one numerical parameter and will be 
+		interpreted as a custom, arbitrary stellar IMF. 
 	m_upper :: real number [default :: 100] 
 		The upper mass limit on star formation in solar masses 
 	m_lower :: real number [default :: 0.08] 
@@ -85,13 +87,13 @@ def cumulative_return_fraction(age, IMF = "kroupa", m_upper = 100,
 	====== 
 	TypeError :: 
 		:: age is not a real number 
-		:: IMF is not of type string 
+		:: IMF is not of type str or <function> 
 		:: m_upper is not a real number 
 		:: m_lower is not a real number 
 		:: postMS is not a real number 
 	ValueError :: 
 		:: age < 0 
-		:: IMF is not recognized 
+		:: built-in IMF is not recognized 
 		:: m_upper <= 0 
 		:: m_lower <= 0 
 		:: m_lower >= m_upper 
@@ -171,9 +173,11 @@ def main_sequence_mass_fraction(age, IMF = "kroupa", m_upper = 100,
 	========== 
 	age :: real number 
 		The age of the stellar population in Gyr 
-	IMF :: string [default :: "kroupa"] [case-insensitive] 
-		The stellar initial mass function (IMF) to assume. This must be either 
-		"kroupa" (1) or "salpeter" (2). 
+	IMF :: string [case-insensitive] or <function> [default :: "kroupa"]
+		The stellar initial mass function (IMF) to assume. Strings denote 
+		built-in IMFs, which must be either "kroupa" (1) or "salpeter" (2). 
+		Functions must accept only one numerical parameter and will be 
+		interpreted as a custom, arbitrary stellar IMF. 
 	m_upper :: real number [default :: 100] 
 		The upper mass limit on star formation in solar masses 
 	m_lower :: real number [default :: 0.08] 
@@ -189,13 +193,13 @@ def main_sequence_mass_fraction(age, IMF = "kroupa", m_upper = 100,
 	====== 
 	TypeError :: 
 		:: age is not a real number 
-		:: IMF is not of type string 
+		:: IMF is not of type str or <function> 
 		:: m_upper is not a real number 
 		:: m_lower is not a real number 
 		:: postMS is not a real number 
 	ValueError :: 
 		:: age < 0 
-		:: IMF is not recognized 
+		:: built-in IMF is not recognized 
 		:: m_upper <= 0 
 		:: m_lower <= 0 
 		:: m_lower >= m_upper 
@@ -312,9 +316,11 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	postMS :: real number [default :: 0.1] 
 		The ratio of a star's post main sequence lifetime to its main sequence 
 		lifetime 
-	IMF :: str [case-insensitive] [default :: "kroupa"]
-		The stellar initial mass function (IMF) to assume. This must be either 
-		"kroupa" (1) or "salpeter" (2). 
+	IMF :: str [case-insensitive] or <function> [default :: "kroupa"]
+		The stellar initial mass function (IMF) to assume. Strings denote 
+		built-in IMFs, which must be either "kroupa" (1) or "salpeter" (2). 
+		Functions must accept only one numerical parameter and will be 
+		interpreted as a custom, arbitrary stellar IMF. 
 	RIa :: str [case-insensitive] or <function> [default :: "plaw"] 
 		The delay-time distribution for type Ia supernovae to adopt. VICE will 
 		automatically normalize any function that is passed. Alternatively, 
@@ -341,6 +347,9 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 
 	Raises 
 	====== 
+	TypeError :: 
+		::	RIa is not of type str or <function> 
+		::	IMF is not of type str or <function> 
 	ValueError :: 
 		::	The element is not built into VICE. 
 		::	mstar < 0 
@@ -352,7 +361,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 		::	m_lower < 0 
 		::	m_lower > m_upper 
 		:: 	postMS < 0 or > 1 
-		::	The IMF is not built into VICE 
+		::	built-in IMF is not recognized 
 		::	delay < 0 
 		::	agb_model is not built into VICE 
 	LookupError :: 

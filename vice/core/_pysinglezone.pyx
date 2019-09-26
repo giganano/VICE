@@ -436,11 +436,12 @@ class singlezone:
 	@property 
 	def IMF(self): 
 		"""
-		Type :: str [case-insensitive] 
+		Type :: str [case-insensitive] or <function> 
 		Default :: "kroupa" 
 
-		The assumed stellar initial mass function (IMF). This must be either 
-		"kroupa" (1) or "salpeter" (2). These IMFs have the following form: 
+		The assumed stellar initial mass function (IMF). If assigning a string, 
+		VICE will adopt a built-in IMF. The options for such are the Kroupa (1) 
+		and Salpeter (2) IMFs, which have the following form. 
 
 		"kroupa" 
 		-------- 
@@ -453,10 +454,9 @@ class singlezone:
 		----------
 		dN/dM ~ M^-2.35 
 
-		Notes 
-		===== 
-		A future update to VICE will likely include functionality for a wider 
-		sample of IMFs. 
+		Alternatively, users may construct their own function, which must 
+		accept only one numerical parameter, and VICE will interpret this as a 
+		custom, arbitrary stellar IMF. 
 
 		See Also 
 		======== 
@@ -1542,11 +1542,12 @@ Got: %s""" % (type(
 
 		Allowed Types 
 		============= 
-		str [case-insensitive] 
+		str [case-insensitive] or <function> 
 
 		Allowed Values 
 		============== 
-		"kroupa", "salpeter" 
+		"kroupa", "salpeter", or any callable function accepting one numerical 
+		parameter 
 		""" 
 		if callable(value): 
 			_pyutils.args(value, """\
