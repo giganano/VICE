@@ -173,6 +173,8 @@ extern unsigned short setup_zone_history(MULTIZONE mz, TRACER *t,
 		return 3; 
 	} else { 
 		unsigned long i, n = n_timesteps(*mz.zones[0]); 
+		double start = rand_range(origin, origin + 1); 
+		double stop = rand_range(final, final + 1); 
 		t -> zone_history = (int *) malloc (n * sizeof(int)); 
 		for (i = 0l; i < birth; i++) { 
 			/* Zone number is -1 until the tracer particle is born */ 
@@ -184,7 +186,7 @@ extern unsigned short setup_zone_history(MULTIZONE mz, TRACER *t,
 			 * zone of birth and the final zone 
 			 */ 
 			t -> zone_history[i] = (int) interpolate(birth, n - BUFFER, 
-				origin, final, i); 
+				start, stop, i); 
 		} 
 		for (i = n - BUFFER; i < n; i++) {
 			/* 

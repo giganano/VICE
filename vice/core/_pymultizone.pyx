@@ -862,10 +862,6 @@ timesteps."""
 					i * self._mz[0].zones[0][0].dt), bins)) 
 				# force first bin to zero for sampling purposes 
 				dist[0] = 0 
-				# zone_dist = _cutils.copy_pylist(
-				# 	list(map(self.migration.stars(j, 
-				# 		i * self._mz[0].zones[0][0].dt), 
-				# 	bins))) 
 				zone_dist = _cutils.copy_pylist(dist) 
 				zone_sample = _stats.sample( 
 					zone_dist, 
@@ -887,7 +883,6 @@ timesteps."""
 							continue 
 					free(zone_sample) 
 				else: 
-					print(list(map(dist))) 
 					raise RuntimeError("""\
 Could not sample from distribution at time t = %g and initial zone number = \
 %d. Please ensure that the specified stellar migration prescription does not \
