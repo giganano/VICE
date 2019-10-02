@@ -193,7 +193,7 @@ static void multizone_evolve_full(MULTIZONE *mz) {
 	 */ 
 	long n = 0l; 
 	SINGLEZONE *sz = mz -> zones[0]; 
-	// inject_tracers(mz); 
+	inject_tracers(mz); 
 	while ((*sz).current_time <= (*sz).output_times[(*sz).n_outputs - 1l]) {
 		/* 
 		 * Run the simulation until the time reaches the final output time 
@@ -226,8 +226,8 @@ static void multizone_evolve_full(MULTIZONE *mz) {
  */ 
 static unsigned short multizone_timestepper(MULTIZONE *mz) {
 
-	update_elements(mz); 
 	update_zone_evolution(mz); 
+	update_elements(mz); 
 
 	/* 
 	 * Now each element and the ISM in each zone are at the next timestep. 
