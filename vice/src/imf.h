@@ -9,7 +9,7 @@ extern "C" {
 #include "objects.h" 
 #include "utils.h" 
 
-/* hash-code for the Kropua (2001) IMF */ 
+/* hash-code for the Kroupa (2001) IMF */ 
 #ifndef KROUPA 
 #define KROUPA 658 
 #endif /* KROUPA */ 

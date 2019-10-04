@@ -11,6 +11,7 @@
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
 static void update_gas_evolution_sanitycheck(SINGLEZONE *sz); 
+static void enforce_sfr_floor(SINGLEZONE *sz); 
 static double get_SFE_timescale(SINGLEZONE sz); 
 static double get_ism_mass_SFRmode(SINGLEZONE sz); 
 
@@ -130,6 +131,7 @@ extern unsigned short setup_gas_evolution(SINGLEZONE *sz) {
 
 	/* Run the sanity checks to impose the lower bound */ 
 	update_gas_evolution_sanitycheck(sz); 
+	enforce_sfr_floor(sz); 
 
 	/* Allocate memory for the star formation history at each timestep */ 
 	sz -> ism -> star_formation_history = (double *) malloc (
@@ -177,6 +179,7 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
 					mass_recycled(*sz, NULL)) / (*sz).dt + 
 				(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz)
 			); 
+			enforce_sfr_floor(sz); 
 			break; 
 
 		case IFR: 
@@ -188,6 +191,7 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
 				*sz).timestep + 1l]; 
 			sz -> ism -> star_formation_rate = ((*(*sz).ism).mass / 
 				get_SFE_timescale(*sz)); 
+			enforce_sfr_floor(sz); 
 			break; 
 
 		case SFR: 
@@ -256,6 +260,7 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 						- mass_recycled[i]) / (*sz).dt + 
 					(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz) 
 				); 
+				enforce_sfr_floor(sz); 
 				break; 
 
 			case IFR: 
@@ -269,6 +274,7 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 				sz -> ism -> star_formation_rate = (
 					(*(*sz).ism).mass / get_SFE_timescale(*sz) 
 				); 
+				enforce_sfr_floor(sz); 
 				break; 
 
 			case SFR: 
@@ -379,14 +385,44 @@ static void update_gas_evolution_sanitycheck(SINGLEZONE *sz) {
 		sz -> ism -> mass = 1e-12; 
 	} else {} 
 
-	if ((*(*sz).ism).star_formation_rate < 1e-12) { 
-		sz -> ism -> star_formation_rate = 1e-12;  
+	if ((*(*sz).ism).star_formation_rate < 0) { 
+		sz -> ism -> star_formation_rate = 0;  
 	} else {} 
 	
-	if ((*(*sz).ism).infall_rate < 1e-12) {
-		sz -> ism -> infall_rate = 1e-12; 
+	if ((*(*sz).ism).infall_rate < 0) {
+		sz -> ism -> infall_rate = 0; 
 	} else {} 
 
+
+} 
+
+/* 
+ * Enforces a minimum threshold on star formation. If the star formation rate 
+ * is below the minimum value, the star formation rate at that timestep is 
+ * accepted with likelihood SFR * dt / MIN_SSP_MASS 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		The singlezone object for the current simulation 
+ */ 
+static void enforce_sfr_floor(SINGLEZONE *sz) {
+
+	/* MIN_SSP_MASS defined in ism.h */ 
+	if ((*(*sz).ism).star_formation_rate * (*sz).dt < MIN_SSP_MASS) {
+		
+		sz -> ism -> star_formation_rate = 0; 
+
+		#if 0 
+		if (range_range(0, 1) < 
+			(*(*sz).ism).star_formation_rate * (*sz).dt / MIN_SSP_MASS) {
+			/* It passed, do nothing */ 
+		} else {
+			/* It didn't pass -> shut off star formation */ 
+			sz -> ism -> star_formation_rate = 0; 
+		}
+		#endif 
+
+	} else {} 
 
 }
 

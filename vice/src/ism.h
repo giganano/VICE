@@ -21,6 +21,15 @@ extern "C" {
 #define SFR 331 
 #endif /* SFR */ 
 
+/* 
+ * The minimum mass of a single stellar population to be formed in one 
+ * timestep. If the star formation rate is below this value, VICE accepts it 
+ * with likelihood SFR * dt / MIN_SSP_MASS 
+ */ 
+#ifndef MIN_SSP_MASS 
+#define MIN_SSP_MASS 100.0 
+#endif /* MIN_SSP_MASS */ 
+
 #include "objects.h" 
 
 /* 
