@@ -8,7 +8,6 @@
 #include <stdio.h> 
 #include "singlezone.h" 
 #include "element.h" 
-#include "utils.h" 
 #include "ccsne.h" 
 #include "sneia.h" 
 #include "agb.h" 
@@ -211,7 +210,6 @@ extern unsigned short singlezone_setup(SINGLEZONE *sz) {
 		sz -> timestep = 0l; 
 		write_mdf_header(*sz); 
 	} 
-	seed_random(); 
 
 	unsigned int i; 
 	for (i = 0; i < (*sz).n_elements; i++) { 
