@@ -164,6 +164,7 @@ static void multizone_evolve_simple(MULTIZONE *mz) {
 		if ((*mz).verbose) printf("Evolving zone %d...\n", i); 
 		singlezone_evolve_no_setup_no_clean(mz -> zones[i]); 
 	} 
+	// if ((*mz).verbose) printf("\n"); 
 
 	/* Set the tracer count to the proper value for computing the MDF */ 
 	mz -> mig -> tracer_count = (

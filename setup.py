@@ -153,6 +153,7 @@ def setup_package():
 	old_path = os.getcwd() 
 	os.chdir(src_path)
 	sys.path.insert(0, src_path)
+	compile_extensions() 
 
 	# Keywords to the setup() call 
 	metadata = dict(
@@ -196,10 +197,10 @@ if __name__ == "__main__":
 		import dill 
 	except (ImportError, ModuleNotFoundError): 
 		print("""\
-================================================================================
+===============================================================================
 Package 'dill' not found. This package is required for encoding functional 
 attributes with VICE outputs. It is recommended that VICE users install this 
 package to make use of these features. This can be done via 'pip install dill'. 
-================================================================================\
+===============================================================================\
 """)
 

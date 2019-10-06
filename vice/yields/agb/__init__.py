@@ -19,9 +19,16 @@ Karakas (2010), MNRAS, 403, 1413
 """
 
 from __future__ import absolute_import
+try: 
+	__VICE_SETUP__ 
+except NameError: 
+	__VICE_SETUP__ = False 
 
-__all__ = ["grid"]
-__all__ = [str(i) for i in __all__] 	# appease python 2 strings 
+if not __VICE_SETUP__: 
+	__all__ = ["grid"]
+	__all__ = [str(i) for i in __all__] 	# appease python 2 strings 
 
-from ._grid_reader import yield_grid as grid 
+	from ._grid_reader import yield_grid as grid 
+else: 
+	pass 
 

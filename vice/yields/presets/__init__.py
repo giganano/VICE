@@ -26,10 +26,15 @@ Johnson & Weinberg (2019, in prep)
 """ 
 
 from __future__ import absolute_import 
+try: 
+	__VICE_SETUP__ 
+except NameError: 
+	__VICE_SETUP__ = False 
 
-__all__ = [] 
-from ._presets import * 
-__all__.extend(_presets.__all__) 
+if not __VICE_SETUP__: 
+	__all__ = [] 
+	from ._presets import * 
+	__all__.extend(_presets.__all__) 
+else: 
+	pass 
 
-del absolute_import 
-del _presets 
