@@ -831,6 +831,10 @@ class singlezone:
 		When attribute schmidt = True, this is interpreted as the prefactor 
 		on gas-dependent star formation efficiency. 
 
+		This parameter can be set to infinity to forcibly shut off star 
+		formation. However, this is allowed only in infall and gas modes 
+		(i.e. attribute 'mode' = "ifr" or "gas"). 
+
 		If type <function> 
 		------------------ 
 		Encoding this functional attribute into VICE outputs requires the 
@@ -2489,28 +2493,40 @@ to negative value for at least one timestep.""" % (name))
 			else: 
 				pass 
 
-		def mapper(attr, name): 
+		def mapper(attr, name, allow_inf = False): 
 			""" 
 			Maps numerical/functional attributes across time 
+
+			allow_inf :: whether or not to allow infinity as a value 
+				Currently only the case for attribute 'tau_star' 
 			""" 
 			if callable(attr): 
 				arr = list(map(attr, evaltimes)) 
 				_pyutils.numeric_check(arr, ArithmeticError, """Functional \
 attribute '%s' evaluated to non-numerical value for at least one \
 timestep.""" % (name))  
+			else: 
+				arr = len(evaltimes) * [attr] 
+			if allow_inf: 
+				# only check for NaNs, allowing infs to slip through 
+				if any(list(map(m.isnan, arr))): 
+					raise ArithmeticError("""Functional attribute '%s' \
+evaluated to NaN for at least one timestep.""" % (name)) 
+				else: pass 
+			else: 
 				_pyutils.inf_nan_check(arr, ArithmeticError, """Functional \
 attribute '%s' evaluated to inf or NaN for at least one timestep.""" % (name)) 
 				negative_checker(arr, name) 
-			else: 
-				arr = len(evaltimes) * [attr] 
 			return arr 
 
 		# map attributes across time  
 		self._sz[0].ism[0].eta = _cutils.copy_pylist(mapper(self._eta, "eta"))  
 		self._sz[0].ism[0].enh = _cutils.copy_pylist(mapper(
-			self._enhancement, "enhancement"))  
+			self._enhancement, "enhancement")) 
+		# Allow inf for tau_star if in infall or gas mode, but not sfr mode 
 		self._sz[0].ism[0].tau_star = _cutils.copy_pylist(mapper(
-			self._tau_star, "tau_star"))  
+			self._tau_star, "tau_star", 
+			allow_inf = self.mode in ["ifr", "gas"]))  
 		if self.mode == "gas": 
 			self._sz[0].ism[0].specified = _cutils.copy_pylist(mapper(
 				self._func, "func"))  
@@ -2522,8 +2538,7 @@ attribute '%s' evaluated to inf or NaN for at least one timestep.""" % (name))
 		# Set a custom DTD if specified 
 		if callable(self._ria): 
 			self.set_ria() 
-		else: 
-			pass 
+		else: pass 
 
 		self.setup_Zin(output_times[-1]) 
 		return output_times 
