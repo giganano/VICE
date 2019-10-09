@@ -167,12 +167,16 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
 	 * SFR = MG * tau_star^-1 
 	 * 
 	 * dMG = (IFR - SFR - OFR) * dt + M_recycled 
+	 * 
+	 * Primordial inflow is taken into account prior to updating the infall and 
+	 * gas supply so that there isn't a 1-timestep delay or advance in the 
+	 * amount of helium added 
 	 */ 
 
+	primordial_inflow(sz); 
 	switch (checksum((*(*sz).ism).mode)) {
 
 		case GAS: 
-			primordial_inflow(sz); 
 			sz -> ism -> mass = (*(*sz).ism).specified[(*sz).timestep + 1l]; 
 			sz -> ism -> star_formation_rate = ((*(*sz).ism).mass / 
 				get_SFE_timescale(*sz)); 
@@ -185,7 +189,6 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
 			break; 
 
 		case IFR: 
-			primordial_inflow(sz); 
 			sz -> ism -> mass += (
 				((*(*sz).ism).infall_rate - (*(*sz).ism).star_formation_rate - 
 					get_outflow_rate(*sz)) * (*sz).dt + mass_recycled(*sz, NULL)
@@ -198,7 +201,6 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
 			break; 
 
 		case SFR: 
-			primordial_inflow(sz); 
 			sz -> ism -> star_formation_rate = (
 				*(*sz).ism).specified[(*sz).timestep + 1l];  
 			double dMg = get_ism_mass_SFRmode(*sz) - (*(*sz).ism).mass; 
@@ -245,17 +247,21 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 	 * SFR = MG * tau_star^-1 
 	 * 
 	 * dMG = (IFR - SFR - OFR) * dt + M_recycled 
+	 * 
+	 * Primordial inflow is taken into account prior to updating the infall and 
+	 * gas supply so that there isn't a 1-timestep delay or advance in the 
+	 * amount of helium added 
 	 */ 
 	
 	unsigned int i; 
 	double *mass_recycled = gas_recycled_in_zones(*mz); 
 	for (i = 0; i < (*(*mz).mig).n_zones; i++) { 
 		SINGLEZONE *sz = mz -> zones[i]; 
+		primordial_inflow(sz); 
 
 		switch (checksum((*(*sz).ism).mode)) {
 
 			case GAS: 
-				primordial_inflow(sz); 
 				sz -> ism -> mass = (*(*sz).ism).specified[(*sz).timestep + 1l]; 
 				sz -> ism -> star_formation_rate = (
 					(*(*sz).ism).mass / get_SFE_timescale(*sz) 
@@ -269,7 +275,6 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 				break; 
 
 			case IFR: 
-				primordial_inflow(sz); 
 				sz -> ism -> mass += (
 					((*(*sz).ism).infall_rate - 
 						(*(*sz).ism).star_formation_rate - 
@@ -284,7 +289,6 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 				break; 
 
 			case SFR: 
-				primordial_inflow(sz); 
 				sz -> ism -> star_formation_rate = (
 					*(*sz).ism).specified[(*sz).timestep + 1l]; 
 				double dMg = get_ism_mass_SFRmode(*sz) - (*(*sz).ism).mass; 
