@@ -18,7 +18,8 @@ static int get_element_index(char **elements, char *element,
 	unsigned int n_elements); 
 static double *Ztotal_by_element(FROMFILE *ff, unsigned int n_elements, 
 	char **elements); 
-static double Zsolar_by_element(double *solar, unsigned int n_elements); 
+static double Zsolar_by_element(double *solar, unsigned int n_elements, 
+	char **elements); 
 
 /* 
  * Pull a row of data from a history object. This will automatically calculate 
@@ -336,7 +337,7 @@ static int get_element_index(char **elements, char *element,
 extern double *Zscaled(FROMFILE *ff, unsigned int n_elements, char **elements, 
 	double *solar, double Z_solar) {
 
-	double solar_by_element = Zsolar_by_element(solar, n_elements); 
+	double solar_by_element = Zsolar_by_element(solar, n_elements, elements); 
 	double *total_by_element = Ztotal_by_element(ff, n_elements, elements); 
 	if (total_by_element != NULL) {
 		unsigned long i; 
@@ -346,9 +347,9 @@ extern double *Zscaled(FROMFILE *ff, unsigned int n_elements, char **elements,
 		} 
 		free(total_by_element); 
 		return scaled; 
-	} else {
+	} else { 
 		return NULL; 
-	}
+	} 
 
 }
 
@@ -376,7 +377,7 @@ extern double *Zscaled(FROMFILE *ff, unsigned int n_elements, char **elements,
 extern double *logarithmic_scaled(FROMFILE *ff, unsigned int n_elements, 
 	char **elements, double *solar) {
 
-	double solar_by_element = Zsolar_by_element(solar, n_elements); 
+	double solar_by_element = Zsolar_by_element(solar, n_elements, elements); 
 	double *total_by_element = Ztotal_by_element(ff, n_elements, elements); 
 	if (total_by_element != NULL) {
 		unsigned long i; 
@@ -416,8 +417,20 @@ static double *Ztotal_by_element(FROMFILE *ff, unsigned int n_elements,
 	/* Start by calculate Z for each element */ 
 	double **by_element = (double **) malloc (n_elements * sizeof(double *)); 
 	for (i = 0; i < n_elements; i++) {
-		by_element[i] = Z_element(ff, elements[i]); 
-		if (by_element[i] == NULL) {
+		if (strcmp(elements[i], "he")) { 
+			/* If this isn't helium */ 
+			by_element[i] = Z_element(ff, elements[i]); 
+		} else { 
+			/* Algorithm simplifies by tracking a 0 in helium's place */ 
+			by_element[i] = (double *) malloc ((*ff).n_rows * sizeof(double)); 
+			for (j = 0l; j < (*ff).n_rows; j++) { 
+				by_element[i][j] = 0; 
+			} 
+		} 
+		if (by_element[i] == NULL) { 
+			printf("i = %d\n", i); 
+			printf("element: %s\n", elements[i]); 
+			printf("NULL"); 
 			free(by_element); 
 			return NULL; 
 		} else {
@@ -447,15 +460,33 @@ static double *Ztotal_by_element(FROMFILE *ff, unsigned int n_elements,
  * ========== 
  * solar: 			A double pointer to the solar abundances 
  * n_elements: 		The number of elements in the history object 
+ * elements: 		The elements to determine Zsolar from 
  * 
  * Returns 
  * ======= 
  * The calculated total solar metallicity by mass conting only the elements 
  * from the simulation. 
  */ 
-static double Zsolar_by_element(double *solar, unsigned int n_elements) { 
+static double Zsolar_by_element(double *solar, unsigned int n_elements, 
+	char **elements) { 
 
-	return sum(solar, (unsigned long) n_elements); 
+	/* set the solar abundance of helium to zero for now */ 
+	double Z_He = 0; 
+	unsigned int i; 
+	int index = -1; 
+	for (i = 0; i < n_elements; i++) {
+		if (!strcmp(elements[i], "he")) {
+			Z_He = solar[i]; 
+			solar[i] = 0; 
+			index = (signed) i; 
+		} else {} 
+	} 
+
+	double result = sum(solar, (unsigned long) n_elements); 
+	if (index != -1) solar[index] = Z_He; /* reset helium abundance */ 
+	return result; 
+
+	// return sum(solar, (unsigned long) n_elements); 
 
 }
 

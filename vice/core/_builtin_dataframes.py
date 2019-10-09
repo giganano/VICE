@@ -5,7 +5,7 @@ This file scripts VICE's built-in dataframes.
 from __future__ import absolute_import 
 from . import _dataframe as df 
 
-__all__ = ["atomic_number", "solar_z", "sources"] 
+__all__ = ["atomic_number", "solar_z", "sources", "primordial"]  
 __all__ = [str(i) for i in __all__] 	# appease python2 strings 
 
 """
@@ -52,6 +52,7 @@ binary neutron stars, this is not modeled in the current version of VICE.
 
 #------------------------- ATOMIC NUMBER DATAFRAME -------------------------# 
 atomic_number = df.noncustomizable({
+	"he": 		2, 
 	"c":		6, 
 	"n":		7, 
 	"o":		8, 
@@ -132,6 +133,7 @@ atomic_number = df.noncustomizable({
 
 #------------------------- SOLAR ABUNDANCE DATAFRAME -------------------------# 
 solar_z = df.noncustomizable({
+	"he": 		0.272, 
 	"c":		2.36e-3,  
 	"n":		6.91e-4,  
 	"o":		5.72e-3,  
@@ -212,6 +214,7 @@ solar_z = df.noncustomizable({
 
 #----------------------------- SOURCES DATAFRAME -----------------------------# 
 sources = df.noncustomizable({
+	"he": 		["BBN", "CCSNE", "AGB"], 
 	"c":		["CCSNE", "AGB"], 
 	"n":		["CCSNE", "AGB"], 
 	"o":		["CCSNE"], 
@@ -290,9 +293,91 @@ sources = df.noncustomizable({
 	"bi": 		["AGB", "NSNS"] 
 }, "source") 
 
+# --------------------- PRIMORDIAL ABUNDANCES DATAFRAME --------------------- # 
+primordial = df.noncustomizable({
+	"he": 		0.248, 
+	"c":		0, 
+	"n":		0, 
+	"o":		0, 
+	"f":		0, 
+	"ne":		0, 
+	"na": 		0, 
+	"mg":		0, 
+	"al": 		0, 
+	"si":		0, 
+	"p": 		0, 
+	"s":		0, 
+	"cl": 		0, 
+	"ar":		0, 
+	"k": 		0, 
+	"ca": 		0, 
+	"sc":		0, 
+	"ti": 		0, 
+	"v": 		0, 
+	"cr": 		0, 
+	"mn": 		0, 
+	"fe":		0, 
+	"co": 		0, 
+	"ni": 		0, 
+	"cu": 		0, 
+	"zn": 		0, 
+	"ga": 		0, 
+	"ge": 		0, 
+	"as": 		0, 
+	"se": 		0, 
+	"br": 		0, 
+	"kr": 		0, 
+	"rb": 		0, 
+	"sr":		0, 
+	"y":		0, 
+	"zr": 		0, 
+	"nb": 		0, 
+	"mo": 		0, 
+	"ru": 		0, 
+	"rh": 		0, 
+	"pd": 		0, 
+	"ag": 		0, 
+	"cd": 		0, 
+	"in": 		0, 
+	"sn": 		0, 
+	"sb": 		0, 
+	"te": 		0, 
+	"i": 		0, 
+	"xe": 		0, 
+	"cs": 		0, 
+	"ba":		0, 
+	"la":		0, 
+	"ce": 		0, 
+	"pr": 		0, 
+	"nd": 		0, 
+	"sm": 		0, 
+	"eu":		0, 
+	"gd": 		0, 
+	"tb": 		0, 
+	"dy": 		0, 
+	"ho": 		0, 
+	"er": 		0, 
+	"tm": 		0, 
+	"yb": 		0, 
+	"lu": 		0, 
+	"hf": 		0, 
+	"ta": 		0, 
+	"w": 		0, 
+	"re": 		0, 
+	"os": 		0, 
+	"ir": 		0, 
+	"pt": 		0, 
+	"au": 		0, 
+	"hg": 		0, 
+	"tl":  		0, 
+	"pb": 		0, 
+	"bi": 		0 
+}, "primordial abundance")
+
 
 # ------------------------ STABLE ISOTOPES DATAFRAME ------------------------ # 
 stable_isotopes = df.noncustomizable({
+	"he": 		[3, 4], 
 	"c":		[12, 13], 
 	"n":		[14, 15], 
 	"o":		[16, 17, 18], 

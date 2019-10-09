@@ -3,6 +3,7 @@
  */ 
 
 #include <stdlib.h> 
+#include <string.h> 
 #include <math.h> 
 #include "element.h" 
 #include "ccsne.h" 
@@ -107,8 +108,13 @@ extern void update_element_mass(SINGLEZONE sz, ELEMENT *e) {
 	e -> mass += mass_recycled(sz, e); 
 	e -> mass -= ((*sz.ism).star_formation_rate * sz.dt * 
 		(*e).mass / (*sz.ism).mass); 
-	e -> mass -= ((*sz.ism).enh[sz.timestep] * get_outflow_rate(sz) * sz.dt / 
-		(*sz.ism).mass * (*e).mass); 
+	/* don't eject helium at an enhanced metallicity */ 
+	if (strcmp((*e).symbol, "he")) {
+		e -> mass -= ((*sz.ism).enh[sz.timestep] * get_outflow_rate(sz) * 
+			sz.dt / (*sz.ism).mass * (*e).mass); 
+	} else {
+		e -> mass -= get_outflow_rate(sz) * sz.dt / (*sz.ism).mass * (*e).mass; 
+	} 
 	e -> mass += (*sz.ism).infall_rate * sz.dt * (*e).Zin[sz.timestep]; 
 	update_element_mass_sanitycheck(e); 
 
@@ -128,7 +134,9 @@ extern void update_elements(MULTIZONE *mz) {
 
 	unsigned int i, j; 
 	for (i = 0; i < (*(*mz).mig).n_zones; i++) { 
+		SINGLEZONE *sz = mz -> zones[i]; 
 		for (j = 0; j < (*(*mz).zones[i]).n_elements; j++) { 
+			ELEMENT *e = sz -> elements[j]; 
 			/* 
 			 * Instantaneous pieces that don't require tracer particles: 
 			 * 
@@ -137,6 +145,28 @@ extern void update_elements(MULTIZONE *mz) {
 			 * depletion from outflows 
 			 * metal-rich infall 
 			 */ 
+
+			e -> mass += mdot_ccsne(*sz, *e) * (*sz).dt; 
+			e -> mass -= (
+				(*(*sz).ism).star_formation_rate * (*sz).dt * 
+				(*e).mass / (*(*sz).ism).mass
+			); 
+			if (strcmp((*e).symbol, "he")) {
+				e -> mass -= (
+					(*(*sz).ism).enh[(*sz).timestep] * get_outflow_rate(*sz) * 
+					(*sz).dt * (*e).mass / (*(*sz).ism).mass 
+				); 
+			} else {
+				e -> mass -= (
+					get_outflow_rate(*sz) * (*sz).dt * (*e).mass / 
+					(*(*sz).ism).mass 
+				); 
+			}
+			e -> mass += (
+				(*(*sz).ism).infall_rate * (*sz).dt * (*e).Zin[(*sz).timestep]
+			); 
+
+			#if 0 
 			mz -> zones[i] -> elements[j] -> mass += (
 				mdot_ccsne((*(*mz).zones[i]), *(*(*mz).zones[i]).elements[j]) * 
 				(*(*mz).zones[i]).dt 
@@ -159,6 +189,7 @@ extern void update_elements(MULTIZONE *mz) {
 				(*(*mz).zones[i]).dt * 
 				(*(*(*mz).zones[i]).elements[j]).Zin[(*(*mz).zones[i]).timestep]
 			); 
+			#endif 
 		} 
 	} 
 
@@ -220,7 +251,17 @@ static void update_element_mass_sanitycheck(ELEMENT *e) {
  */ 
 extern double onH(SINGLEZONE sz, ELEMENT e) {
 
-	return log10( (e.mass / (*sz.ism).mass) / e.solar ); 
+	/* 
+	 * Take into account the intrinsic mathematical domain of the log function 
+	 * to prevent floating point errors 
+	 */ 
+	if ((*sz.ism).mass) { 
+		return log10( (e.mass / (*sz.ism).mass) / e.solar ); 
+	} else { 
+		return -INFINITY; 
+	} 
+
+	// return log10( (e.mass / (*sz.ism).mass) / e.solar ); 
 
 }
 

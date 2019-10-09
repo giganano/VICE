@@ -15,6 +15,7 @@ from .._globals import _DEFAULT_BINS_
 from .._globals import _DIRECTORY_ 
 from .._globals import ScienceWarning 
 from ._builtin_dataframes import atomic_number 
+from ._builtin_dataframes import primordial 
 from ._builtin_dataframes import solar_z 
 from ._builtin_dataframes import sources 
 from ._output import output 
@@ -2642,6 +2643,7 @@ be lost.\nOutput directory: %s.vice\nOverwrite? (y | n) """ % (self.name))
 		""" 
 		for i in range(self._sz[0].n_elements): 
 			self._sz[0].elements[i][0].solar = solar_z[self.elements[i]] 
+			self._sz[0].elements[i][0].primordial = primordial[self.elements[i]] 
 			agbfile = agb._grid_reader.find_yield_file(self.elements[i], 
 				self._agb_model)
 			_io.import_agb_grid(self._sz[0].elements[i], 

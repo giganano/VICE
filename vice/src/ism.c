@@ -11,9 +11,10 @@
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
 static void update_gas_evolution_sanitycheck(SINGLEZONE *sz); 
-static void enforce_sfr_floor(SINGLEZONE *sz); 
+// static void enforce_sfr_floor(SINGLEZONE *sz); 
 static double get_SFE_timescale(SINGLEZONE sz); 
 static double get_ism_mass_SFRmode(SINGLEZONE sz); 
+static void primordial_inflow(SINGLEZONE *sz); 
 
 /* 
  * Allocate memory for and return a pointer to an ISM struct. Automatically 
@@ -131,7 +132,7 @@ extern unsigned short setup_gas_evolution(SINGLEZONE *sz) {
 
 	/* Run the sanity checks to impose the lower bound */ 
 	update_gas_evolution_sanitycheck(sz); 
-	enforce_sfr_floor(sz); 
+	// enforce_sfr_floor(sz); 
 
 	/* Allocate memory for the star formation history at each timestep */ 
 	sz -> ism -> star_formation_history = (double *) malloc (
@@ -171,6 +172,7 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
 	switch (checksum((*(*sz).ism).mode)) {
 
 		case GAS: 
+			primordial_inflow(sz); 
 			sz -> ism -> mass = (*(*sz).ism).specified[(*sz).timestep + 1l]; 
 			sz -> ism -> star_formation_rate = ((*(*sz).ism).mass / 
 				get_SFE_timescale(*sz)); 
@@ -179,10 +181,11 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
 					mass_recycled(*sz, NULL)) / (*sz).dt + 
 				(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz)
 			); 
-			enforce_sfr_floor(sz); 
+			// enforce_sfr_floor(sz); 
 			break; 
 
 		case IFR: 
+			primordial_inflow(sz); 
 			sz -> ism -> mass += (
 				((*(*sz).ism).infall_rate - (*(*sz).ism).star_formation_rate - 
 					get_outflow_rate(*sz)) * (*sz).dt + mass_recycled(*sz, NULL)
@@ -191,10 +194,11 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
 				*sz).timestep + 1l]; 
 			sz -> ism -> star_formation_rate = ((*(*sz).ism).mass / 
 				get_SFE_timescale(*sz)); 
-			enforce_sfr_floor(sz); 
+			// enforce_sfr_floor(sz); 
 			break; 
 
 		case SFR: 
+			primordial_inflow(sz); 
 			sz -> ism -> star_formation_rate = (
 				*(*sz).ism).specified[(*sz).timestep + 1l];  
 			double dMg = get_ism_mass_SFRmode(*sz) - (*(*sz).ism).mass; 
@@ -251,6 +255,7 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 		switch (checksum((*(*sz).ism).mode)) {
 
 			case GAS: 
+				primordial_inflow(sz); 
 				sz -> ism -> mass = (*(*sz).ism).specified[(*sz).timestep + 1l]; 
 				sz -> ism -> star_formation_rate = (
 					(*(*sz).ism).mass / get_SFE_timescale(*sz) 
@@ -260,10 +265,11 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 						- mass_recycled[i]) / (*sz).dt + 
 					(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz) 
 				); 
-				enforce_sfr_floor(sz); 
+				// enforce_sfr_floor(sz); 
 				break; 
 
 			case IFR: 
+				primordial_inflow(sz); 
 				sz -> ism -> mass += (
 					((*(*sz).ism).infall_rate - 
 						(*(*sz).ism).star_formation_rate - 
@@ -274,10 +280,11 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 				sz -> ism -> star_formation_rate = (
 					(*(*sz).ism).mass / get_SFE_timescale(*sz) 
 				); 
-				enforce_sfr_floor(sz); 
+				// enforce_sfr_floor(sz); 
 				break; 
 
 			case SFR: 
+				primordial_inflow(sz); 
 				sz -> ism -> star_formation_rate = (
 					*(*sz).ism).specified[(*sz).timestep + 1l]; 
 				double dMg = get_ism_mass_SFRmode(*sz) - (*(*sz).ism).mass; 
@@ -396,6 +403,7 @@ static void update_gas_evolution_sanitycheck(SINGLEZONE *sz) {
 
 } 
 
+#if 0 
 /* 
  * Enforces a minimum threshold on star formation. If the star formation rate 
  * is below the minimum value, the star formation rate at that timestep is 
@@ -424,7 +432,27 @@ static void enforce_sfr_floor(SINGLEZONE *sz) {
 
 	} else {} 
 
-}
+} 
+#endif 
+
+/* 
+ * Takes into account each element's primordial abundance in the inflow 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		A pointer to the singlezone object for this simulation 
+ */ 
+static void primordial_inflow(SINGLEZONE *sz) { 
+
+	unsigned int i; 
+	for (i = 0; i < (*sz).n_elements; i++) {
+		sz -> elements[i] -> mass += (
+			(*(*sz).ism).infall_rate * (*sz).dt * 
+			(*(*sz).elements[i]).primordial 
+		); 
+	} 
+
+} 
 
 /* 
  * Determine the ISM mass outflow rate in a singlezone simulation. 

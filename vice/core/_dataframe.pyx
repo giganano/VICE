@@ -921,7 +921,7 @@ cdef class history(fromfile):
 					free(item) 
 					return x 
 				else: 
-					raise SystemError("Internal Error") 
+					raise SystemError("Internal Error: 1") 
 			elif key.lower() == "[m/h]": 
 				item = _history.logarithmic_scaled(self._ff, self.n_elements, 
 					self._elements, self.solar)  
@@ -930,7 +930,7 @@ cdef class history(fromfile):
 					free(item) 
 					return x 
 				else: 
-					raise SystemError("Internal Error") 
+					raise SystemError("Internal Error: 2") 
 			elif (key.startswith('[') and key.endswith(']') and '/' in key): 
 				""" 
 				Automatically calculate a logarithmic abundance ratio 
@@ -971,7 +971,7 @@ cdef class history(fromfile):
 				free(item) 
 				return base(dict(zip(self.keys(), x))) 
 			else: 
-				raise SystemError("Internal Error") 
+				raise SystemError("Internal Error: 3") 
 		else: 
 			return super().__getitem__(key) 
 

@@ -211,19 +211,14 @@ extern unsigned short singlezone_setup(SINGLEZONE *sz) {
 		write_mdf_header(*sz); 
 	} 
 
-	unsigned int i; 
-	for (i = 0; i < (*sz).n_elements; i++) { 
-		/* 
-		 * The singlezone object always allocates memory for 10 timesteps 
-		 * beyond the ending time as a safeguard against memory errors. 
-		 */ 
-		if (malloc_Z(sz -> elements[i], n_timesteps(*sz))) { 
-			return 1; 
-		} else {
-			sz -> elements[i] -> mass = 0.0; 
-			sz -> elements[i] -> Z[0l] = 0.0; 
-		} 
-	} 
+	/* 
+	 * Change Notes 
+	 * ============ 
+	 * The for-loop in the final else statement of this function used to be 
+	 * here. It was moved to its current position after a primordial 
+	 * abundance was taken into account, for which the ISM mass is necessary. 
+	 * This is not set until after setup_gas_evolution() is called. 
+	 */ 
 
 	/* 
 	 * Setup the cumulative return fraction, main sequence mass fraction, 
@@ -240,6 +235,21 @@ extern unsigned short singlezone_setup(SINGLEZONE *sz) {
 	} else if (setup_gas_evolution(sz)) { 
 		return 1; 
 	} else { 
+		unsigned int i; 
+		for (i = 0; i < (*sz).n_elements; i++) { 
+			/* 
+			 * The singlezone object always allocates memory for 10 timesteps 
+			 * beyond the ending time as a safeguard against memory errors. 
+			 */ 
+			if (malloc_Z(sz -> elements[i], n_timesteps(*sz))) { 
+				return 1; 
+			} else {
+				sz -> elements[i] -> mass = ( 
+					(*(*sz).elements[i]).primordial * (*(*sz).ism).mass 
+				); 
+				sz -> elements[i] -> Z[0l] = 0.0; 
+			} 
+		} 
 		return 0; 
 	}
 

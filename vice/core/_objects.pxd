@@ -32,6 +32,7 @@ cdef extern from "../src/objects.h":
 		char *symbol 
 		double *Z 
 		double *Zin 
+		double primordial 
 		double mass 
 		double solar 
 

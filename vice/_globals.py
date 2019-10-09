@@ -50,7 +50,7 @@ Elements and initial mass functions built into VICE. The user cannot simply
 modify these fields and have new elements or IMFs built into the software. As 
 such, we do not recommend the user modify these attributes. 
 """
-_RECOGNIZED_ELEMENTS_ = tuple(["c", "n", "o", "f", "ne", "na", 
+_RECOGNIZED_ELEMENTS_ = tuple(["he", "c", "n", "o", "f", "ne", "na", 
 	"mg", "al", "si", "p", "s", "cl", "ar", "k", "ca", "sc", "ti", "v", "cr", 
 	"mn", "fe", "co", "ni", "cu", "zn", "ga", "ge", "as", "se", "br", "kr", 
 	"rb", "sr", "y", "zr", "nb", "mo", "ru", "rh", "pd", "ag", "cd", "in", 

@@ -45,6 +45,7 @@ if not __VICE_SETUP__:
 
 	# settings = _customizable_yield_table({ 
 	settings = yield_settings({ 
+		"he": 	0, 
 		"c":	5.74e-6, 
 		"n":	6.43e-9, 
 		"o":	5.79e-5, 
