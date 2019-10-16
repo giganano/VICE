@@ -910,6 +910,12 @@ cdef class history(fromfile):
 				else: 
 					raise KeyError("Element not tracked by simulation: %s" % (
 						element)) 
+			elif key.lower() == "y": 
+				"""
+				Automatically calculate the helium abundance. Error can be 
+				handled in the recursive call 
+				""" 
+				return self.__getitem__("z(he)") 
 			elif key.lower() == "z": 
 				""" 
 				Automatically calculate the scaled metallicity by mass 
@@ -921,7 +927,7 @@ cdef class history(fromfile):
 					free(item) 
 					return x 
 				else: 
-					raise SystemError("Internal Error: 1") 
+					raise SystemError("Internal Error") 
 			elif key.lower() == "[m/h]": 
 				item = _history.logarithmic_scaled(self._ff, self.n_elements, 
 					self._elements, self.solar)  
@@ -930,7 +936,7 @@ cdef class history(fromfile):
 					free(item) 
 					return x 
 				else: 
-					raise SystemError("Internal Error: 2") 
+					raise SystemError("Internal Error") 
 			elif (key.startswith('[') and key.endswith(']') and '/' in key): 
 				""" 
 				Automatically calculate a logarithmic abundance ratio 
@@ -971,7 +977,7 @@ cdef class history(fromfile):
 				free(item) 
 				return base(dict(zip(self.keys(), x))) 
 			else: 
-				raise SystemError("Internal Error: 3") 
+				raise SystemError("Internal Error") 
 		else: 
 			return super().__getitem__(key) 
 
