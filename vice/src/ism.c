@@ -448,13 +448,15 @@ static void enforce_sfr_floor(SINGLEZONE *sz) {
  */ 
 static void primordial_inflow(SINGLEZONE *sz) { 
 
-	unsigned int i; 
-	for (i = 0; i < (*sz).n_elements; i++) {
-		sz -> elements[i] -> mass += (
-			(*(*sz).ism).infall_rate * (*sz).dt * 
-			(*(*sz).elements[i]).primordial 
-		); 
-	} 
+	if (!isnan((*(*sz).ism).infall_rate)) {
+		unsigned int i; 
+		for (i = 0; i < (*sz).n_elements; i++) {
+			sz -> elements[i] -> mass += (
+				(*(*sz).ism).infall_rate * (*sz).dt * 
+				(*(*sz).elements[i]).primordial 
+			); 
+		} 
+	} else {} 
 
 } 
 
