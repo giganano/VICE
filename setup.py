@@ -79,19 +79,16 @@ def compile_extensions():
 	c_extensions = list(filter(lambda x: x.endswith(".c"), 
 		["vice/src/%s" % (i) for i in os.listdir("./vice/src/")])) 
 	for root, dirs, files in os.walk('.'): 
-		if "v0p0p0" not in root: 
-			for i in files: 
-				if i.endswith(".pyx"): 		# if it's cython code 
-					ext = "%s.%s" % (root[2:].replace('/', '.'), 
-						i.split('.')[0]) 
-					files = ["%s/%s" % (root[2:], i)] + c_extensions 
-					setup(ext_modules = cythonize([Extension(ext, files,
-						extra_compile_args = ["-Wno-unreachable-code"])])) 
-				else: 
-					continue 
-		else: 
-			continue 
-
+		for i in files: 
+			if i.endswith(".pyx"): 		# if it's cython code 
+				ext = "%s.%s" % (root[2:].replace('/', '.'), 
+					i.split('.')[0]) 
+				files = ["%s/%s" % (root[2:], i)] + c_extensions 
+				setup(ext_modules = cythonize([Extension(ext, files,
+					extra_compile_args = ["-Wno-unreachable-code"])])) 
+			else: 
+				continue 
+					
 def find_packages(path = '.'):
 	"""
 	Finds each subpackage given the presence of an __init__.py file 

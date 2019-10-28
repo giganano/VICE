@@ -79,7 +79,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 
 	Parameters
 	========== 
-	element :: str 
+	element :: str [case-insensitive] 
 		The symbol of the element to calculate the IMF-integrated fractional 
 		yield for. 
 	study :: str [case-insensitive] [default :: "LC18"]
@@ -184,12 +184,12 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 
 	Example
 	=======
-	>>> y, err = vice.fractional_cc_yield("o")
+	>>> y, err = vice.yields.ccsne.fractional("o")
 	>>> y
 	    0.005643252355030168
 	>>> err 
 	    4.137197161389483e-06
-	>>> y, err = vice.fractional_cc_yield("mg", study = "CL13") 
+	>>> y, err = vice.yields.ccsne.fractional("mg", study = "CL13") 
 	>>> y 
 	    0.000496663271667762 
 

@@ -35,8 +35,7 @@ from .. import fractional as __fractional
 from ...._globals import _RECOGNIZED_ELEMENTS_ 
 
 for i in range(len(_RECOGNIZED_ELEMENTS_)): 
-	__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(_RECOGNIZED_ELEMENTS_[i], 
-		study = "WW95", m_upper = 40)[0] 
+	__settings[i] = __fractional(i, study = "WW95", m_upper = 40)[0] 
 del i 
 del absolute_import 
 
@@ -56,7 +55,7 @@ def set_params(**kwargs):
 		::	The user has specified a keyword argument "study". 
 	Other exceptions are raised by yields.ccsne.fractional  
 
-	See also 
+	See Also 
 	======== 
 	yields.ccsne.fractional docstring 
 
@@ -73,8 +72,7 @@ def set_params(**kwargs):
 		raise TypeError("set_params got an unexpected keyword argument: 'study'") 
 	else:
 		for i in range(len(_RECOGNIZED_ELEMENTS_)): 
-			__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(
-				_RECOGNIZED_ELEMENTS_[i], study = "WW95", **kwargs)[0] 
+			__settings[i] = __fractional(i, study = "WW95", **kwargs)[0] 
 		del i 
 
 
