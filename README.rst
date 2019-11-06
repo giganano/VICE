@@ -216,7 +216,7 @@ Journal-Related Features
 ========================
 We provide here the ``python`` code which produces all of the figures in 
 Johnson & Weinberg (2019). From ``VICE``'s root directory, users can run 
-``make jw19plots`` in a terminal, which will automatically run the simulations 
+``make starburst`` in a terminal, which will automatically run the simulations 
 and produce the figures exactly as they appear in that paper. Users may also 
 use these scripts as example code if they so choose. 
 
