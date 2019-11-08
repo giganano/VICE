@@ -1,7 +1,7 @@
 
 all: src
 
-.PHONY: src tests tests2 tests3 jw19plots tutorial clean 
+.PHONY: src tests tests2 tests3 starburst tutorial clean 
 
 src: 
 	$(MAKE) -C vice/src/ 
@@ -15,8 +15,8 @@ tests2:
 tests3:
 	cd vice && python3 tests && cd - 
 
-jw19plots: 
-	$(MAKE) -C JW19/ 
+starburst: 
+	$(MAKE) -C starbursts/ 
 
 tutorial: 
 	$(MAKE) -C docs/ tutorial
