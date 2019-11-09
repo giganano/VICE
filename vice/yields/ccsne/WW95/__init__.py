@@ -34,10 +34,11 @@ from .. import settings as __settings
 from .. import fractional as __fractional
 from ...._globals import _RECOGNIZED_ELEMENTS_ 
 
-for i in range(len(_RECOGNIZED_ELEMENTS_)): 
+for i in _RECOGNIZED_ELEMENTS_: 
 	__settings[i] = __fractional(i, study = "WW95", m_upper = 40)[0] 
 del i 
 del absolute_import 
+
 
 def set_params(**kwargs): 
 	"""
@@ -71,9 +72,8 @@ def set_params(**kwargs):
 	if "study" in kwargs.keys(): 
 		raise TypeError("set_params got an unexpected keyword argument: 'study'") 
 	else:
-		for i in range(len(_RECOGNIZED_ELEMENTS_)): 
+		for i in _RECOGNIZED_ELEMENTS_: 
 			__settings[i] = __fractional(i, study = "WW95", **kwargs)[0] 
 		del i 
-
 
 

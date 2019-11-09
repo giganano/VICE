@@ -48,7 +48,6 @@ def main():
 						for elem in _RECOGNIZED_ELEMENTS_: 
 							try: 
 								foo = fractional(elem, **params) 
-								assert 0 <= foo[0] < 1
 								if foo[0] == 0: 
 									assert math.isnan(foo[1])
 								else: 
