@@ -64,7 +64,7 @@ outputs. It can be installed via ``pip install dill [--user]``.
 
 2) ``matplotlib >= 2.0.0`` is necessary for ``VICE``'s ``show`` function, 
 intended to allow users to visually inspect their integrations visually in 
-``ipython``, a ``jupyter notebook`` or similar without having to plot it 
+``ipython``, a ``jupyter notebook``, or similar without having to plot it 
 themselves. This functionality is not intended to produce publication-quality 
 figures, and is included purely for convenience. This function does not 
 contribute to the scientific features of ``VICE`` and for that reason is not 
@@ -245,8 +245,7 @@ University.
 Citing
 ======
 Usage of ``VICE`` leading to a publication should cite 
-`Johnson & Weinberg (2019)`__. A ``BibTex`` entry will be added here once 
-the paper is announced. 
+`Johnson & Weinberg (2019)`__. 
 
 LICENSE
 =======
