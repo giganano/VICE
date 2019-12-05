@@ -720,7 +720,19 @@ extern unsigned short multizone_open_tracer_file(MULTIZONE *mz) {
  */ 
 extern void write_tracers_header(MULTIZONE mz) {
 
-	fprintf((*mz.mig).tracers_output, "# tform\tzone_origin\tzone_final\n"); 
+	// fprintf((*mz.mig).tracers_output, "# tform\tzone_origin\tzone_final\n"); 
+	fprintf((*mz.mig).tracers_output, "# COLUMN NUMBERS: \n"); 
+	fprintf((*mz.mig).tracers_output, "#\t0: Formation time [Gyr]\n"); 
+	fprintf((*mz.mig).tracers_output, "#\t1: Origin zone number\n"); 
+	fprintf((*mz.mig).tracers_output, "#\t2: Final zone number\n"); 
+	fprintf((*mz.mig).tracers_output, "#\t3: Mass [Msun]\n"); 
+
+	unsigned int i, n = 4; 
+	for (i = 0; i < (*mz.zones[0]).n_elements; i++) {
+		fprintf((*mz.mig).tracers_output, "#\t%d: Z(%s)\n", n, 
+			(*(*mz.zones[0]).elements[i]).symbol); 
+		n++; 
+	} 
 
 } 
 
@@ -736,6 +748,7 @@ extern void write_tracers_header(MULTIZONE mz) {
  */ 
 extern void write_tracers_output(MULTIZONE mz) {
 
+	#if 0 
 	unsigned long i; 
 	for (i = 0l; i < (*mz.mig).tracer_count; i++) {
 		fprintf((*mz.mig).tracers_output, "%e\t", 
@@ -744,7 +757,33 @@ extern void write_tracers_output(MULTIZONE mz) {
 			(*(*mz.mig).tracers[i]).zone_origin); 
 		fprintf((*mz.mig).tracers_output, "%u\n", 
 			(*(*mz.mig).tracers[i]).zone_current); 
-	}
+	} 
+	#endif 
+
+	if (mz.verbose) printf("Saving tracer particle data....\n"); 
+	unsigned long i; 
+	for (i = 0l; i < (*mz.mig).tracer_count; i++) { 
+		FILE *out = (*mz.mig).tracers_output; 
+		TRACER t = *(*mz.mig).tracers[i]; 
+		SINGLEZONE origin = *(mz.zones[t.zone_origin]); 
+
+		fprintf(out, "%e\t", t.timestep_origin * origin.dt); 
+		fprintf(out, "%u\t", t.zone_origin); 
+		fprintf(out, "%u\t", t.zone_current); 
+		fprintf(out, "%e\t", t.mass); 
+
+		unsigned int j; 
+		for (j = 0; j < origin.n_elements; j++) {
+			fprintf(out, "%e\t", (*origin.elements[j]).Z[t.timestep_origin]); 
+		} 
+		fprintf(out, "\n"); 
+
+		if (mz.verbose) {
+			printf("Progress: %.1f%%\r", 
+				100.0 * (i + 1) / (*mz.mig).tracer_count); 
+		} 
+	} 
+	if (mz.verbose) printf("\n"); 
 
 } 
 
