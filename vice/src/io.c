@@ -720,7 +720,14 @@ extern unsigned short multizone_open_tracer_file(MULTIZONE *mz) {
  */ 
 extern void write_tracers_header(MULTIZONE mz) {
 
-	// fprintf((*mz.mig).tracers_output, "# tform\tzone_origin\tzone_final\n"); 
+	/* 
+	 * Change Notes 
+	 * ============ 
+	 * Tracer output expanded to contain the mass and metallicity of each 
+	 * tracer particle along with the formation time and initial and final 
+	 * zone numbers. 
+	 */ 
+
 	fprintf((*mz.mig).tracers_output, "# COLUMN NUMBERS: \n"); 
 	fprintf((*mz.mig).tracers_output, "#\t0: Formation time [Gyr]\n"); 
 	fprintf((*mz.mig).tracers_output, "#\t1: Origin zone number\n"); 
@@ -748,17 +755,13 @@ extern void write_tracers_header(MULTIZONE mz) {
  */ 
 extern void write_tracers_output(MULTIZONE mz) {
 
-	#if 0 
-	unsigned long i; 
-	for (i = 0l; i < (*mz.mig).tracer_count; i++) {
-		fprintf((*mz.mig).tracers_output, "%e\t", 
-			(*(*mz.mig).tracers[i]).timestep_origin * (*mz.zones[0]).dt); 
-		fprintf((*mz.mig).tracers_output, "%u\t", 
-			(*(*mz.mig).tracers[i]).zone_origin); 
-		fprintf((*mz.mig).tracers_output, "%u\n", 
-			(*(*mz.mig).tracers[i]).zone_current); 
-	} 
-	#endif 
+	/* 
+	 * Change Notes 
+	 * ============ 
+	 * Tracer output expanded to contain the mass and metallicity of each 
+	 * tracer particle along with the formation time and initial and final 
+	 * zone numbers. 
+	 */ 
 
 	if (mz.verbose) printf("Saving tracer particle data....\n"); 
 	unsigned long i; 
@@ -767,11 +770,13 @@ extern void write_tracers_output(MULTIZONE mz) {
 		TRACER t = *(*mz.mig).tracers[i]; 
 		SINGLEZONE origin = *(mz.zones[t.zone_origin]); 
 
+		/* Formation time, final and origin zones, and mass in Msun */ 
 		fprintf(out, "%e\t", t.timestep_origin * origin.dt); 
 		fprintf(out, "%u\t", t.zone_origin); 
 		fprintf(out, "%u\t", t.zone_current); 
 		fprintf(out, "%e\t", t.mass); 
 
+		/* Metallicity by mass of each element in the simulation */ 
 		unsigned int j; 
 		for (j = 0; j < origin.n_elements; j++) {
 			fprintf(out, "%e\t", (*origin.elements[j]).Z[t.timestep_origin]); 
