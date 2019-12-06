@@ -7,7 +7,7 @@ it themselves.
 
 from __future__ import absolute_import 
 
-__all__ = ["history", "mdf", "output"] 
+__all__ = ["history", "mdf", "output", "multioutput"] 
 __all__ = [str(i) for i in __all__] 		# appease python 2 strings 
 
 from .._globals import _DIRECTORY_ 
@@ -354,16 +354,10 @@ class output(object):
 	def __new__(cls, name): 
 		"""
 		__new__ is overridden such that in the event of a multizone object, 
-		a VICE dataframe of names to output objects for each zone is returned. 
+		a multioutput object is returned.  
 		""" 
 		name = _get_name(name) 
 		if _is_multizone(name): 
-			# zones = list(filter(lambda x: x.endswith(".vice"), 
-			# 	os.listdir(name))) 
-			# zones = [i[:-5] for i in zones]
-			# return base(
-			# 	dict(zip(zones, [output("%s/%s" % (name, i)) for i in zones]))
-			# ) 
 			return multioutput(name) 
 		else: 
 			return super(output, cls).__new__(cls) 
@@ -570,7 +564,7 @@ cdef class c_output:
 		"""
 		Prints the name of the simulation 
 		"""
-		return "<VICE output object from simulation: %s>" % (self._name[:-5]) 
+		return "<VICE output from singlezone: %s>" % (self._name[:-5]) 
 
 	def __str__(self): 
 		""" 
@@ -875,26 +869,89 @@ class multioutput(object):
 	attribute to hold the tracer particle data. 
 	""" 
 
+	def __new__(cls, name): 
+		"""
+		__new__ is overridden such that in the event of a singlezone object, 
+		an output object is returned.  
+		""" 
+		name = _get_name(name) 
+		if _is_multizone(name): 
+			return super(multioutput, cls).__new__(cls) 
+		else: 
+			return output(name) 
+
 	def __init__(self, name): 
 		""" 
 		This function will only be called from the __new__ function of the 
 		output class, where _get_name and _is_multizone will have already 
 		been called. 
 		""" 
+		self._name = _get_name(name)
+
 		# Find the zones within the output directory 
-		zones = list(filter(lambda x: x.endswith(".vice"), os.listdir(name))) 
+		zones = list(filter(lambda x: x.endswith(".vice"), 
+			os.listdir(self._name))) 
 		zones = [i[:-5] for i in zones] 
 
 		# Setup the zones attribute as a base dataframe 
 		self._zones = base(
-			dict(zip(zones, [output("%s/%s" % (name, i)) for i in zones])) 
+			dict(zip(zones, [output("%s/%s" % (self._name, i)) for i in zones])) 
 		) 
 
 		# Setup the tracers attribute as a fromfile object 
-		self._tracers = fromfile(filename = "%s/tracers.out" % (name), 
+		self._tracers = fromfile(filename = "%s/tracers.out" % (self._name), 
 			labels = _load_column_labels_from_file_header("%s/tracers.out" % (
-				name)))  
+				self._name))) 
 
+	def __repr__(self): 
+		"""
+		Prints the name of the simulation 
+		"""
+		return "<VICE multioutput from multizone: %s>" % (self._name[:-5]) 
+
+	def __str__(self): 
+		""" 
+		Returns self.__repr__() 
+		""" 
+		return self.__repr__() 
+
+	def __eq__(self, other): 
+		""" 
+		Returns True if the outputs point to the same simulation 
+		""" 
+		if isinstance(other, multioutput): 
+			return os.path.abspath(self.name) == os.path.abspath(other.name) 
+		else: 
+			return False 
+
+	def __ne__(self, other): 
+		""" 
+		Returns not self.__eq__(other) 
+		""" 
+		return not self.__eq__(other) 
+
+	def __enter__(self): 
+		""" 
+		Opens a with statement 
+		""" 
+		return self 
+
+	def __exit__(self, exc_type, exc_value, exc_tb): 
+		""" 
+		Raises all exceptions inside with statements. 
+		""" 
+		return exc_value is None 
+
+	@property 
+	def name(self): 
+		""" 
+		Type :: str 
+
+		The name of the ".vice" directory containing the output of a 
+		multizone object. The ".vice" extension need not be specified with 
+		the name. 
+		""" 
+		return self._name[:-5] 
 
 	@property 
 	def zones(self): 
@@ -905,7 +962,6 @@ class multioutput(object):
 		names of each zone, and these map onto the associated output objects. 
 		""" 
 		return self._zones 
-
 
 	@property 
 	def tracers(self): 
