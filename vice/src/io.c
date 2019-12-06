@@ -729,9 +729,9 @@ extern void write_tracers_header(MULTIZONE mz) {
 	 */ 
 
 	fprintf((*mz.mig).tracers_output, "# COLUMN NUMBERS: \n"); 
-	fprintf((*mz.mig).tracers_output, "#\t0: Formation time [Gyr]\n"); 
-	fprintf((*mz.mig).tracers_output, "#\t1: Origin zone number\n"); 
-	fprintf((*mz.mig).tracers_output, "#\t2: Final zone number\n"); 
+	fprintf((*mz.mig).tracers_output, "#\t0: Formation_time [Gyr]\n"); 
+	fprintf((*mz.mig).tracers_output, "#\t1: Zone_origin\n"); 
+	fprintf((*mz.mig).tracers_output, "#\t2: Zone_final\n"); 
 	fprintf((*mz.mig).tracers_output, "#\t3: Mass [Msun]\n"); 
 
 	unsigned int i, n = 4; 

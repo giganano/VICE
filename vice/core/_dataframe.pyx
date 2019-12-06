@@ -713,7 +713,7 @@ length the file dimension. File dimension: %d. Got: %d""" % (
 		elif isinstance(key, numbers.Number) and key % 1 == 0: 
 			if 0 <= key < self._ff[0].n_rows: 
 				item = _fromfile.fromfile_row(self._ff, int(key)) 
-			elif -self._ff[0].n_rows <= key < 0: 
+			elif key < 0 and -key <= self._ff[0].n_rows: 
 				item = _fromfile.fromfile_row(self._ff, 
 					self._ff[0].n_rows + int(key)) 
 			else: 
@@ -811,7 +811,35 @@ Got: %s""" % (type(key)))
 			[self.__getitem__(i) for i in self.keys()])) 
 
 
-#----------------------------- HISTORY SUBCLASS -----------------------------# 
+
+def _load_column_labels_from_file_header(filename): 
+	""" 
+	A subroutine used in initialization of both history and multioutput objects. 
+
+	Obtains the column labels from the header of the file in the appropriate 
+	format. 
+	""" 
+	with open(filename, 'r') as f: 
+		line = f.readline() 
+		while line[0] == '#': 
+			if line.startswith("# COLUMN NUMBERS:"): break 
+			line = f.readline() 
+		if line[0] == '#': 
+			labels = [] 
+			while line[0] == '#': 
+				line = f.readline().split() 
+				labels.append(line[2].lower()) 
+			f.close() 
+			return tuple(labels[:-1]) 
+		else: 
+			# bad formatting 
+			f.close() 
+			raise IOError("Output file not formatted correctly: %s" % (
+				filename))
+
+
+
+#------------------------------ HISTORY SUBCLASS ------------------------------# 
 cdef class history(fromfile): 
 
 	""" 
@@ -835,7 +863,7 @@ cdef class history(fromfile):
 	def __init__(self, filename = None, adopted_solar_z = None, 
 		labels = None): 
 		super().__init__(filename = filename, labels = 
-			self._load_keys(filename)) 
+			_load_column_labels_from_file_header(filename)) 
 		elements = self._load_elements() 
 		self.n_elements = <unsigned> len(elements) 
 		self._elements = <char **> malloc (self.n_elements * sizeof(char *)) 
@@ -849,29 +877,29 @@ cdef class history(fromfile):
 			self.solar[i] = solar_z[elements[i]] 
 		self.Z_solar = adopted_solar_z 
 
-	def _load_keys(self, filename): 
-		with open(filename, 'r') as f: 
-			line = f.readline() 
-			while line[0] == '#': 
-				if line.startswith("# COLUMN NUMBERS:"): 
-					break 
-				line = f.readline() 
-			if line[0] == '#': 
-				labels = [] 
-				while line[0] == '#': 
-					line = f.readline().split() 
-					labels.append(line[2].lower()) 
-				f.close() 
-				return tuple(labels[:-1]) 
-			else: 
-				# bad formatting 
-				f.close() 
-				raise IOError("""Output history file not formatted correctly: \
-%s""" % (filename)) 
+# 	def _load_keys(self, filename): 
+# 		with open(filename, 'r') as f: 
+# 			line = f.readline() 
+# 			while line[0] == '#': 
+# 				if line.startswith("# COLUMN NUMBERS:"): 
+# 					break 
+# 				line = f.readline() 
+# 			if line[0] == '#': 
+# 				labels = [] 
+# 				while line[0] == '#': 
+# 					line = f.readline().split() 
+# 					labels.append(line[2].lower()) 
+# 				f.close() 
+# 				return tuple(labels[:-1]) 
+# 			else: 
+# 				# bad formatting 
+# 				f.close() 
+# 				raise IOError("""Output history file not formatted correctly: \
+# %s""" % (filename)) 
 
 	def _load_elements(self): 
 		elements = [] 
-		for i in self._load_keys(self.name):  
+		for i in _load_column_labels_from_file_header(self.name):  
 			if i.startswith("mass("): 
 				"""
 				Find elements based on the those with columns of reported 

@@ -53,8 +53,7 @@ further details and copyright information.
 Citing
 ====== 
 If usage of this software leads to a publication, please cite Johnson & 
-Weinberg (2019, in prep). A BibTeX entry will be added to the git repository 
-once the paper is announced. 
+Weinberg (2019), arXiv:1911.02598. 
 """ 
 
 from __future__ import absolute_import

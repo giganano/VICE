@@ -17,6 +17,7 @@ from ._dataframe import base
 from ._dataframe import history as _history 
 from ._dataframe import fromfile 
 from ._dataframe import saved_yields 
+from ._dataframe import _load_column_labels_from_file_header 
 import math as m 
 import warnings 
 import inspect 
@@ -357,12 +358,13 @@ class output(object):
 		""" 
 		name = _get_name(name) 
 		if _is_multizone(name): 
-			zones = list(filter(lambda x: x.endswith(".vice"), 
-				os.listdir(name))) 
-			zones = [i[:-5] for i in zones]
-			return base(
-				dict(zip(zones, [output("%s/%s" % (name, i)) for i in zones]))
-			) 
+			# zones = list(filter(lambda x: x.endswith(".vice"), 
+			# 	os.listdir(name))) 
+			# zones = [i[:-5] for i in zones]
+			# return base(
+			# 	dict(zip(zones, [output("%s/%s" % (name, i)) for i in zones]))
+			# ) 
+			return multioutput(name) 
 		else: 
 			return super(output, cls).__new__(cls) 
 
@@ -863,4 +865,57 @@ may not reflect the yield settings at the time of integration: """
 			raise IOError("""Core-collapse yield settings not found for \
 simulation: %s/ccsne_yields.config""" % (self._name)) 
 
+
+class multioutput(object): 
+
+	""" 
+	The base class for output from a multizone object. 
+
+	At it's core, this is simply a sequence of output objects with an extra 
+	attribute to hold the tracer particle data. 
+	""" 
+
+	def __init__(self, name): 
+		""" 
+		This function will only be called from the __new__ function of the 
+		output class, where _get_name and _is_multizone will have already 
+		been called. 
+		""" 
+		# Find the zones within the output directory 
+		zones = list(filter(lambda x: x.endswith(".vice"), os.listdir(name))) 
+		zones = [i[:-5] for i in zones] 
+
+		# Setup the zones attribute as a base dataframe 
+		self._zones = base(
+			dict(zip(zones, [output("%s/%s" % (name, i)) for i in zones])) 
+		) 
+
+		# Setup the tracers attribute as a fromfile object 
+		self._tracers = fromfile(filename = "%s/tracers.out" % (name), 
+			labels = _load_column_labels_from_file_header("%s/tracers.out" % (
+				name)))  
+
+
+	@property 
+	def zones(self): 
+		""" 
+		Type :: VICE dataframe 
+
+		The data for each simulated zone. The keys of this dataframe are the 
+		names of each zone, and these map onto the associated output objects. 
+		""" 
+		return self._zones 
+
+
+	@property 
+	def tracers(self): 
+		""" 
+		Type :: VICE dataframe 
+
+		The data for the tracer particles of this simulation. This stores the 
+		formation time in Gyr of each particle, its mass, its formation and 
+		final zone numbers, and the metallicity by mass of each element in the 
+		simulation. 
+		""" 
+		return self._tracers  
 
