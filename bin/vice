@@ -61,6 +61,10 @@ SFE ~ Mgas^n)""",
 		help = "Run the simulation in verbose mode", 
 		action = "store_true") 
 
+	parser.add_argument("-V", "--version", 
+		help = "Print the current version of VICE.", 
+		action = "store_true")  
+
 	parser.add_argument("--timedep", 
 		help = """\
 The time dependence of the evolutionary model. Either 'constant', 'exp' \
@@ -225,6 +229,20 @@ directory.\
 		return True 
 
 
+def print_version(args): 
+	""" 
+	Prints the VICE version number if necessary 
+
+	Returns 
+	======= 
+	True if this program should continue with a simulation 
+	""" 
+	if args.version: print("VICE %s" % (vice.__version__)) 
+	if "-V" in sys.argv: sys.argv.remove("-V") 
+	if "--version" in sys.argv: sys.argv.remove("--version") 
+	return len(sys.argv) > 1 
+
+
 def print_recognized_elements(args): 
 	""" 
 	Prints the recognized elements if necessary 
@@ -233,12 +251,9 @@ def print_recognized_elements(args):
 	======= 
 	True if this program should continue with a simulation 
 	""" 
-	if args.recognized: 
-		print(vice._globals._RECOGNIZED_ELEMENTS_) 
-	if "-r" in sys.argv: 
-		sys.argv.remove("-r") 
-	if "--recognized" in sys.argv: 
-		sys.argv.remove("--recognized") 
+	if args.recognized: print(vice._globals._RECOGNIZED_ELEMENTS_) 
+	if "-r" in sys.argv: sys.argv.remove("-r") 
+	if "--recognized" in sys.argv: sys.argv.remove("--recognized") 
 	return len(sys.argv) > 1 
 
 
@@ -298,8 +313,11 @@ def main():
 	parser = parse() 
 	if print_help_message(parser): 
 		args = parser.parse_args() 
-		if print_recognized_elements(args): 
-			run_simulation(args) 
+		if print_version(args): 
+			if print_recognized_elements(args): 
+				run_simulation(args) 
+			else: 
+				pass 
 		else: 
 			pass 
 	else: 
