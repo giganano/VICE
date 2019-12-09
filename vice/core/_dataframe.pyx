@@ -45,6 +45,7 @@ from . cimport _fromfile
 from . cimport _history 
 from . cimport _io 
 
+
 #------------------------- VICE DATAFRAME BASE CLASS -------------------------#
 cdef class base: 
 
@@ -162,39 +163,45 @@ Got: %s""" % (type(frame)))
 
 		In this case, the returned value will also be a dataframe. 
 		""" 
-		if isinstance(key, strcomp): # If they're indexing by column label 
-			if key.lower() in self.keys(): # If it's in the frame 
-				return self._frame[key.lower()] 
-			else: 
-				# Otherwise KeyError
-				raise KeyError("Unrecognized dataframe key: %s" % (key)) 
-
-		elif isinstance(key, numbers.Number): # If they're indexing by number 
-			if key % 1 == 0: # If it's an integer 
-				try: 
-					lengths = [len(self._frame[i]) for i in self.keys()] 
-				except TypeError: 
-					# This only works if every field is array-like 
-					raise IndexError("""This dataframe cannot be indexed by \
-a key of type int (not all fields are array-like).""") 
-
-				# If it's within the range allowed by the minimum length 
-				if abs(key) <= min(lengths) and key != min(lengths): 
-					return base(dict(zip(self.keys(), 
-						[self._frame[i][int(key)] for i in self.keys()]
-					)))
-				else:
-					# Otherwise it's an IndexError 
-					raise IndexError("Index out of bounds: %d" % (int(key)))
-
-			else: 
-				# If it couldn't be interpreted as an integer 
-				raise IndexError("""Index must be interpreted as an integer. \
+		if isinstance(key, strcomp): # index via column label 
+			return self.__subget__str(key) 
+		elif isinstance(key, numbers.Number): # index via row number 
+			return self.__subget__number(key) 
+		else: 
+			raise IndexError("""Only integers and strings are valid indeces. \
 Got: %s""" % (type(key))) 
 
+	def __subget__str(self, key): 
+		""" 
+		Performs the __getitem__ operation when the key is a string. 
+		""" 
+		if key.lower() in self.keys(): 
+			return self._frame[key.lower()] 
 		else: 
-			# If it was neither an integer nor a string 
-			raise IndexError("""Only integers and strings are valid indeces. \
+			raise KeyError("Unrecognized dataframe key: %s" % (key)) 
+
+	def __subget__number(self, key): 
+		""" 
+		Performs the __getitem__ operation when the key is a number 
+		""" 
+		if key % 1 == 0: 
+			# index by int only works when all fields are array-like 
+			try: 
+				lengths = [len(self._frame[i]) for i in self.keys()] 
+			except TypeError: 
+				raise IndexError("""This dataframe cannot be indexed by a key \
+of type int, because not all fields are array-like.""") 
+
+			# This if condition allows -key to pass if -key == min(lengths) 
+			if abs(key) <= min(lengths) and key != min(lengths): 
+				return base(dict(zip(self.keys(), 
+					[self._frame[i][int(key)] for i in self.keys()]
+				))) 
+			else: 
+				raise IndexError("Index out of bounds: %d" % (int(key))) 
+
+		else: 
+			raise IndexError("""Index must be interpreted as an integer. \
 Got: %s""" % (type(key))) 
 
 	def __setitem__(self, key, value): 
@@ -356,6 +363,7 @@ cdef class elemental_settings(base):
 				type(key))) 
 
 
+#---------------------- EVOOLUTIONARY SETTINGS SUBCLASS ----------------------#
 cdef class evolutionary_settings(elemental_settings): 
 
 	""" 
@@ -601,6 +609,8 @@ Package 'dill' not found. At least one element is set to have a functional \
 yield, and saving this requires dill (installable via pip). After installing \
 dill and relaunching your python interpreter, these yields can be saved.""") 
 
+
+#--------------------------- SAVED YIELDS SUBCLASS ---------------------------# 
 cdef class saved_yields(elemental_settings): 
 
 	""" 
@@ -663,8 +673,7 @@ cdef class fromfile(base):
 			_cutils.set_string(self._ff[0].name, filename) 
 			_fromfile.fromfile_read(self._ff) 
 			if self._ff[0].data is NULL: # Error reading the file 
-				raise IOError("Error reading square data file: %s" % ( 
-					filename)) 
+				raise IOError("Error reading square data file: %s" % (filename)) 
 			labels = _pyutils.copy_array_like_object(labels) 
 			labels = list(dict.fromkeys(labels)) 
 			if len(labels) == self._ff[0].n_cols: 
@@ -693,24 +702,41 @@ length the file dimension. File dimension: %d. Got: %d""" % (
 		""" 
 		Can be indexed via both str and int, allow negative indexing as well 
 		""" 
+		if isinstance(key, strcomp): 
+			return self.__subget__str(key) 
+		elif isinstance(key, numbers.Number): 
+			return self.__subget__number(key) 
+		else: 
+			raise KeyError("""Dataframe key must be of type str or int. \
+Got: %s""" % (type(key))) 
+
+	def __subget__str(self, key): 
+		""" 
+		Performs the __getitem__ operation when the key is of type str 
+		""" 
 		cdef double *item 
 		cdef char *copy 
-		if isinstance(key, strcomp): 
-			if _pyutils.is_ascii(key): 
-				copy = <char *> malloc ((len(key) + 1) * sizeof(char)) 
-				_cutils.set_string(copy, key.lower()) 
-				item = _fromfile.fromfile_column(self._ff, copy) 
-				free(copy) 
-				if item is not NULL: 
-					x = [item[i] for i in range(self._ff[0].n_rows)] 
-					free(item) 
-					return x 
-				else: 
-					raise KeyError("Unrecognized key: %s" % (
-						key))  
+		if _pyutils.is_ascii(key): 
+			copy = <char *> malloc ((len(key) + 1) * sizeof(char)) 
+			_cutils.set_string(copy, key.lower()) 
+			item = _fromfile.fromfile_column(self._ff, copy) 
+			free(copy) 
+			if item is not NULL: 
+				x = [item[i] for i in range(self._ff[0].n_rows)] 
+				free(item) 
+				return x 
 			else: 
-				raise KeyError("All keys and labels must be ascii.") 
-		elif isinstance(key, numbers.Number) and key % 1 == 0: 
+				raise KeyError("Unrecognized key: %s" % (key)) 
+		else: 
+			raise KeyError("All keys and labels must be ascii.") 
+
+	def __subget__number(self, key): 
+		""" 
+		Performs the __getitem__ operation when the key is of type int 
+		""" 
+		cdef double *item 
+		if key % 1 == 0: 
+			# Get the row from the data, allowing negative indexing 
 			if 0 <= key < self._ff[0].n_rows: 
 				item = _fromfile.fromfile_row(self._ff, int(key)) 
 			elif key < 0 and -key <= self._ff[0].n_rows: 
@@ -718,15 +744,15 @@ length the file dimension. File dimension: %d. Got: %d""" % (
 					self._ff[0].n_rows + int(key)) 
 			else: 
 				raise IndexError("Index out of bounds: %d" % (int(key))) 
-			if item is not NULL: 
-				x = [item[i] for i in range(self._ff[0].n_cols)] 
-				free(item) 
-				return base(dict(zip(self.keys(), x))) 
-			else: 
-				raise SystemError("Internal Error") 
 		else: 
 			raise KeyError("""Dataframe key must be of type str or int. \
-Got: %s""" % (type(key)))  
+Got: %s""" % (type(key))) 
+		if item is not NULL: 
+			x = [item[i] for i in range(self._ff[0].n_cols)] 
+			free(item) 
+			return base(dict(zip(self.keys(), x))) 
+		else: 
+			raise SystemError("Internal Error") 
 
 	def __setitem__(self, key, value): 
 		""" 
@@ -750,7 +776,8 @@ Got: %s""" % (type(key)))
 				raise ValueError("""Array length mismatch. Got: %d. Must be: \
 %d""" % (len(value), self._ff[0].n_rows)) 
 		elif isinstance(key, numbers.Number) and key % 1 == 0: 
-			raise TypeError("This dataframe does not support row assignment.") 
+			raise TypeError("""This dataframe does not support row assignment. \
+Item assignment only allows for type str. Got: %s""" % (type(key)))  
 		else: 
 			raise TypeError("""Item assignment only allowed for type str. \
 Got: %s""" % (type(key))) 
@@ -877,26 +904,6 @@ cdef class history(fromfile):
 			self.solar[i] = solar_z[elements[i]] 
 		self.Z_solar = adopted_solar_z 
 
-# 	def _load_keys(self, filename): 
-# 		with open(filename, 'r') as f: 
-# 			line = f.readline() 
-# 			while line[0] == '#': 
-# 				if line.startswith("# COLUMN NUMBERS:"): 
-# 					break 
-# 				line = f.readline() 
-# 			if line[0] == '#': 
-# 				labels = [] 
-# 				while line[0] == '#': 
-# 					line = f.readline().split() 
-# 					labels.append(line[2].lower()) 
-# 				f.close() 
-# 				return tuple(labels[:-1]) 
-# 			else: 
-# 				# bad formatting 
-# 				f.close() 
-# 				raise IOError("""Output history file not formatted correctly: \
-# %s""" % (filename)) 
-
 	def _load_elements(self): 
 		elements = [] 
 		for i in _load_column_labels_from_file_header(self.name):  
@@ -916,98 +923,139 @@ cdef class history(fromfile):
 		Special strings [m/h] and z recognized for automatic calculation of 
 		scaled total ISM metallicity. 
 		""" 
+		if isinstance(key, strcomp): 
+			return self.__subget__str(key) 
+		elif isinstance(key, numbers.Number) and key % 1 == 0: 
+			return self.__subget__int(key) 
+		else: 
+			# No error yet, other possibilities in super's __getitem__ 
+			return super().__getitem__(key) 
+
+	def __subget__str(self, key): 
+		""" 
+		Performs the __getitem__ operation when the key is of type str 
+		""" 
+		# See docstrings of subroutines for further info 
+		if key.lower().startswith("z(") and key.endswith(')'): 
+			return self.__subget__str_z(key) 
+		elif key.lower() == "y": 
+			return self.__subget__str_y(key) 
+		elif key.lower() == "z": 
+			return self.__subget__str_ztot(key) 
+		elif key.lower() == "[m/h]": 
+			return self.__subget__str_logztot(key) 
+		elif key.startswith('[') and key.endswith(']') and '/' in key: 
+			return self.__subget__str_logzratio(key) 
+		else: 
+			# No error yet, other possibilities in super's __getitem__ 
+			return super().__getitem__(key) 
+
+	def __subget__str_z(self, key): 
+		""" 
+		Performs the __getitem__ operation when the key is of type str and is 
+		requesting a metallicity by mass Z of a given element. 
+		""" 
+		cdef double *item 
+		cdef char *copy 
+		element = key.split('(')[1][:-1].lower() 
+		copy = <char *> malloc ((len(element) + 1) * sizeof(char)) 
+		_cutils.set_string(copy, element.lower()) 
+		item = _history.Z_element(self._ff, copy) 
+		free(copy) 
+		if item is not NULL: 
+			x = [item[i] for i in range(self._ff[0].n_rows)] 
+			free(item) 
+			return x 
+		else: 
+			raise KeyError("Element not tracked by simulation: %s" % (
+				element)) 
+
+	def __subget__str_y(self, key): 
+		""" 
+		Performs the __getitem__ operation when the key is of type str and is 
+		requesting the helium mass fraction Y. 
+		""" 
+		return self.__subget__str_z("z(he)") 
+
+	def __subget__str_ztot(self, key): 
+		""" 
+		Performs the __getitem__ operation when the key is of type str and is 
+		requesting the total metallicity by mass Z
+		""" 
+		cdef double *item 
+		item = _history.Zscaled(self._ff, self.n_elements, 
+			self._elements, self.solar, self.Z_solar)  
+		if item is not NULL: 
+			x = [item[i] for i in range(self._ff[0].n_rows)] 
+			free(item) 
+			return x 
+		else: 
+			raise SystemError("Internal Error") 
+
+	def __subget__str_logztot(self, key): 
+		""" 
+		Performs the __getitem__ operation when the key is of type str and is 
+		requesting the log of the total metallicity by mass [M/H]. 
+		""" 
+		cdef double *item
+		item = _history.logarithmic_scaled(self._ff, self.n_elements, 
+			self._elements, self.solar)  
+		if item is not NULL: 
+			x = [item[i] for i in range(self._ff[0].n_rows)] 
+			free(item) 
+			return x 
+		else: 
+			raise SystemError("Internal Error") 
+
+	def __subget__str_logzratio(self, key): 
+		""" 
+		Performs the __getitem__ operation when the key is of type str and is 
+		requesting a logarithmic abundance ratio [X/Y]. This is generalized to 
+		handle absolute abundances in the case that [X/H] is passed. 
+		""" 
 		cdef double *item 
 		cdef char *copy 
 		cdef char *copy2 
-		if isinstance(key, strcomp): 
-			# Check for special keys for smart indexing 
-			if key.lower().startswith("z(") and key.endswith(')'): 
-				""" 
-				Automatically calculate the metallicity by mass of a given 
-				element in the output. 
-				""" 
-				element = key.split('(')[1][:-1].lower() 
-				copy = <char *> malloc ((len(element) + 1) * sizeof(char)) 
-				_cutils.set_string(copy, element.lower()) 
-				item = _history.Z_element(self._ff, copy) 
-				free(copy) 
-				if item is not NULL: 
-					x = [item[i] for i in range(self._ff[0].n_rows)] 
-					free(item) 
-					return x 
-				else: 
-					raise KeyError("Element not tracked by simulation: %s" % (
-						element)) 
-			elif key.lower() == "y": 
-				"""
-				Automatically calculate the helium abundance. Error can be 
-				handled in the recursive call 
-				""" 
-				return self.__getitem__("z(he)") 
-			elif key.lower() == "z": 
-				""" 
-				Automatically calculate the scaled metallicity by mass 
-				""" 
-				item = _history.Zscaled(self._ff, self.n_elements, 
-					self._elements, self.solar, self.Z_solar)  
-				if item is not NULL: 
-					x = [item[i] for i in range(self._ff[0].n_rows)] 
-					free(item) 
-					return x 
-				else: 
-					raise SystemError("Internal Error") 
-			elif key.lower() == "[m/h]": 
-				item = _history.logarithmic_scaled(self._ff, self.n_elements, 
-					self._elements, self.solar)  
-				if item is not NULL: 
-					x = [item[i] for i in range(self._ff[0].n_rows)] 
-					free(item) 
-					return x 
-				else: 
-					raise SystemError("Internal Error") 
-			elif (key.startswith('[') and key.endswith(']') and '/' in key): 
-				""" 
-				Automatically calculate a logarithmic abundance ratio 
-				""" 
-				element1 = key.split('/')[0][1:] 
-				element2 = key.split('/')[1][:-1] 
-				copy = <char *> malloc ((len(element1) + 1) * sizeof(char)) 
-				copy2 = <char *> malloc ((len(element2) + 1) * sizeof(char)) 
-				_cutils.set_string(copy, element1.lower()) 
-				_cutils.set_string(copy2, element2.lower()) 
-				item = _history.logarithmic_abundance_ratio(self._ff, 
-					copy, copy2, self._elements, self.n_elements, self.solar) 
-				free(copy) 
-				free(copy2) 
-				if item is not NULL: 
-					x = [item[i] for i in range(self._ff[0].n_rows)] 
-					free(item) 
-					return x 
-				else: 
-					raise KeyError("Unrecognized dataframe key: %s" % (key)) 
-			else: 
-				return super().__getitem__(key) 
-		elif isinstance(key, numbers.Number) and key % 1 == 0: 
-			if 0 <= key < self._ff[0].n_rows: 
-				item = _history.history_row(self._ff, <unsigned long> key, 
-					self._elements, self.n_elements, self.solar, 
-					self.Z_solar) 
-			elif abs(key) <= self._ff[0].n_rows: 
-				item = _history.history_row(self._ff, 
-					self._ff[0].n_rows - <unsigned long> abs(key), 
-					self._elements, self.n_elements, self.solar, 
-					self.Z_solar) 
-			else: 
-				raise IndexError("Index out of bounds: %d" % (int(key))) 
-			if item is not NULL: 
-				x = [item[i] for i in range(_history.row_length(self._ff, 
-					self.n_elements))]   
-				free(item) 
-				return base(dict(zip(self.keys(), x))) 
-			else: 
-				raise SystemError("Internal Error") 
+		element1 = key.split('/')[0][1:] 
+		element2 = key.split('/')[1][:-1] 
+		copy = <char *> malloc ((len(element1) + 1) * sizeof(char)) 
+		copy2 = <char *> malloc ((len(element2) + 1) * sizeof(char)) 
+		_cutils.set_string(copy, element1.lower()) 
+		_cutils.set_string(copy2, element2.lower()) 
+		item = _history.logarithmic_abundance_ratio(self._ff, 
+			copy, copy2, self._elements, self.n_elements, self.solar) 
+		free(copy) 
+		free(copy2) 
+		if item is not NULL: 
+			x = [item[i] for i in range(self._ff[0].n_rows)] 
+			free(item) 
+			return x 
 		else: 
-			return super().__getitem__(key) 
+			raise KeyError("Unrecognized dataframe key: %s" % (key)) 
+
+	def __subget__int(self, key): 
+		""" 
+		Performs the __getitem__ operation when the key is of type int. 
+		""" 
+		cdef double *item 
+		if 0 <= key < self._ff[0].n_rows: 
+			item = _history.history_row(self._ff, <unsigned long> key, 
+				self._elements, self.n_elements, self.solar, 
+				self.Z_solar) 
+		elif abs(key) <= self._ff[0].n_rows: 
+			item = _history.history_row(self._ff, 
+				self._ff[0].n_rows - <unsigned long> abs(key), 
+				self._elements, self.n_elements, self.solar, 
+				self.Z_solar) 
+		else: 
+			raise IndexError("Index out of bounds: %d" % (int(key))) 
+		if item is not NULL: 
+			x = [item[i] for i in range(_history.row_length(self._ff, 
+				self.n_elements))]   
+			free(item) 
+			return base(dict(zip(self.keys(), x))) 
+		else: 
+			raise SystemError("Internal Error") 
 
 	def keys(self): 
 		"""
