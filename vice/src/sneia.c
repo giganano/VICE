@@ -9,9 +9,10 @@
 #include <math.h> 
 #include "sneia.h" 
 #include "utils.h" 
+#include "tracer.h" 
 
 /* ---------- static function comment headers not duplicated here ---------- */
-static double mdotstarIa(SINGLEZONE sz, ELEMENT e); 
+// static double mdotstarIa(SINGLEZONE sz, ELEMENT e); 
 static double RIa_builtin(ELEMENT e, double time); 
 
 /* 
@@ -27,6 +28,24 @@ extern SNEIA_YIELD_SPECS *sneia_yield_initialize(void) {
 		SNEIA_YIELD_SPECS)); 
 	sneia_yields -> dtd = (char *) malloc (100 * sizeof(char)); 
 	sneia_yields -> RIa = NULL; 
+
+	sneia_yields -> yield_ = NULL; 
+
+	/* 
+	 * The number of elements on the yield grid between IA_YIELD_GRID_MIN and 
+	 * IA_YIELD_GRID_MAX in steps of IA_YIELD_STEP (inclusve). 
+	 */ 
+	unsigned long num_grid_elements = (long) (
+		(IA_YIELD_GRID_MAX - IA_YIELD_GRID_MIN) / IA_YIELD_STEP 
+	) + 1l; 
+
+	/* Fill the grid starting at IA_YIELD_GRID_MIN in steps of IA_YIELD_STEP */ 
+	unsigned long i; 
+	sneia_yields -> grid = (double *) malloc (num_grid_elements * sizeof(double)); 
+	for (i = 0l; i < num_grid_elements; i++) {
+		sneia_yields -> grid[i] = IA_YIELD_GRID_MIN + i * IA_YIELD_STEP; 
+	} 
+
 	return sneia_yields; 
 
 } 
@@ -48,6 +67,16 @@ extern void sneia_yield_free(SNEIA_YIELD_SPECS *sneia_yields) {
 		if ((*sneia_yields).dtd != NULL) {
 			free(sneia_yields -> dtd); 
 			sneia_yields -> dtd = NULL; 
+		} else {} 
+
+		if ((*sneia_yields).yield_ != NULL) {
+			free(sneia_yields -> yield_); 
+			sneia_yields -> yield_ = NULL; 
+		} else {} 
+
+		if ((*sneia_yields).grid != NULL) {
+			free(sneia_yields -> grid); 
+			sneia_yields -> grid = NULL; 
 		} else {} 
 
 		free(sneia_yields); 
@@ -75,9 +104,73 @@ extern void sneia_yield_free(SNEIA_YIELD_SPECS *sneia_yields) {
  */ 
 extern double mdot_sneia(SINGLEZONE sz, ELEMENT e) { 
 
-	return (*e.sneia_yields).yield_ * mdotstarIa(sz, e); 
+	// return (*e.sneia_yields).yield_ * mdotstarIa(sz, e); 
+	unsigned long i; 
+	double mdotia = 0; 
+	for (i = 0l; i < sz.timestep; i++) {
+		mdotia += (
+			get_ia_yield(e, scale_metallicity(sz, i)) * 
+			(*sz.ism).star_formation_history[i] * 
+			(*e.sneia_yields).RIa[sz.timestep - i] 
+		); 
+	} 
+	return mdotia; 
 
 } 
+
+/* 
+ * Obtain the IMF-integrated fractional mass yield of a given element from its 
+ * internal yield table. 
+ * 
+ * Parameters 
+ * ========== 
+ * e: 			The element to find the yield for 
+ * Z: 			The metallicity to look up on the grid 
+ * 
+ * Returns 
+ * ======= 
+ * The interpolated yield off of the stored yield grid within the ELEMENT 
+ * struct. 
+ * 
+ * header: sneia.h  
+ */ 
+extern double get_ia_yield(ELEMENT e, double Z) {
+
+	long lower_bound_idx; 
+	if (Z < IA_YIELD_GRID_MIN) { 
+		/* 
+		 * Metallicity below the yield grid. Unless the user changes the 
+		 * IA_YIELD_GRID_MIN in sneia.h to something other than zero, this 
+		 * would be unphysical. Included as a failsafe for users modifying 
+		 * VICE. Interpolate off bottom two elements of yield grid. 
+		 */ 
+		lower_bound_idx = 0l; 
+	} else if (IA_YIELD_GRID_MIN <= Z && Z <= IA_YIELD_GRID_MAX) { 
+		/* 
+		 * Metallicity on the grid. This will always be true for simulations 
+		 * even remotely realistic without modified grid parameters. 
+		 * Interpolate off neighboring elements of yield grid. 
+		 */ 
+		lower_bound_idx = (long) (Z / IA_YIELD_STEP); 
+	} else {
+		/* 
+		 * Metallicity above the grid. Without modified grid parameters, this 
+		 * is unrealistically high, but included as a failsafe against 
+		 * segmentation faults. Interpolate off top two elements of yield grid. 
+		 */ 
+		lower_bound_idx = (long) ((IA_YIELD_GRID_MAX - IA_YIELD_GRID_MIN) / 
+			IA_YIELD_STEP) - 1l; 
+	}
+
+	return interpolate(
+		lower_bound_idx * IA_YIELD_STEP, 
+		lower_bound_idx * IA_YIELD_STEP + IA_YIELD_STEP, 
+		(*e.sneia_yields).yield_[lower_bound_idx], 
+		(*e.sneia_yields).yield_[lower_bound_idx + 1l], 
+		Z 
+	); 
+
+}
 
 /* 
  * Enrich each element in each zone according to the SNe Ia associated with 
@@ -105,7 +198,8 @@ extern void sneia_from_tracers(MULTIZONE *mz) {
 			SNEIA_YIELD_SPECS *sneia = (mz -> zones[(*t).zone_origin] -> 
 				elements[j] -> sneia_yields); 
 			e -> mass += (
-				(*sneia).yield_ * (*t).mass * 
+				// (*sneia).yield_ * (*t).mass * 
+				get_ia_yield(*e, tracer_metallicity(*mz, *t)) * (*t).mass * 
 				(*sneia).RIa[timestep - (*t).timestep_origin] 
 			); 
 		} 
@@ -113,6 +207,7 @@ extern void sneia_from_tracers(MULTIZONE *mz) {
 
 } 
 
+#if 0 
 /* 
  * Determine the star formation rate weighted by the SNe Ia rate. See section 
  * 4.3 of VICE's science documentation for more details. 
@@ -139,6 +234,7 @@ static double mdotstarIa(SINGLEZONE sz, ELEMENT e) {
 	return sfria; 
 
 } 
+#endif 
 
 /* 
  * Setup the SNe Ia rate in preparation for a singlezone simulation. 

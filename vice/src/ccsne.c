@@ -164,7 +164,8 @@ extern double get_cc_yield(ELEMENT e, double Z) {
 		 * segmentation faults. Interpolate off top two elements of yield 
 		 * grid. 
 		 */ 
-		lower_bound_idx = (long) (CC_YIELD_GRID_MAX / CC_YIELD_STEP) - 1l; 
+		lower_bound_idx = (long) ((CC_YIELD_GRID_MAX - CC_YIELD_GRID_MIN) / 
+			CC_YIELD_STEP) - 1l; 
 	} 
 
 	return interpolate(

@@ -43,7 +43,6 @@ if not __VICE_SETUP__:
 	from ._yield_lookup import integrated_yield as fractional 
 	from ...core._dataframe import yield_settings 
 
-	# settings = _customizable_yield_table({ 
 	settings = yield_settings({ 
 		"he": 	0, 
 		"c":	5.74e-6, 
@@ -122,7 +121,7 @@ if not __VICE_SETUP__:
 		"tl":	0, 
 		"pb":	0, 
 		"bi":	0, 
-	}, "SNe Ia yield", False, "sneia")
+	}, "SNe Ia yield", True, "sneia")
 else: 
 	pass 
 

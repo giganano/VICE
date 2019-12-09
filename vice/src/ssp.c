@@ -245,6 +245,7 @@ extern double *single_population_enrichment(SSP *ssp, ELEMENT *e,
 	} 
 
 	mass[0] = 0; 
+	double ia_yield = get_ia_yield(*e, Z); 
 	if (n_times >= 2l) { 
 		/* The contribution from CCSNe */ 
 		mass[1] = get_cc_yield(*e, Z) * mstar; 
@@ -253,8 +254,8 @@ extern double *single_population_enrichment(SSP *ssp, ELEMENT *e,
 			mass[i] = mass[i - 1l]; 		/* previous timesteps */ 
 
 			/* The contribution from SNe Ia */ 
-			mass[i] += ((*(*e).sneia_yields).yield_ * 
-				(*(*e).sneia_yields).RIa[i] * mstar); 
+			// mass[i] += ((*(*e).sneia_yields).yield_ * 
+			mass[i] += ia_yield * (*(*e).sneia_yields).RIa[i] * mstar; 
 
 			/* The contribution from AGB stars */ 
 			mass[i] += (

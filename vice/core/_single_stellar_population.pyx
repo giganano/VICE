@@ -425,8 +425,30 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	else: 
 		raise IOError("AGB yield file not found. Please re-install VICE.") 
 
-	# Setup the SNe Ia yield
-	e[0].sneia_yields[0].yield_ = sneia.settings[element.lower()] 
+	# Setup the SN yields 
+	# e[0].sneia_yields[0].yield_ = sneia.settings[element.lower()] 
+	if isinstance(sneia.settings[element.lower()], numbers.Number): 
+		# constant ia yield -> fill the yield grid w/that value 
+		length = int((_sneia.IA_YIELD_GRID_MAX - _sneia.IA_YIELD_GRID_MIN) / 
+			_sneia.IA_YIELD_STEP) + 1 
+		e[0].sneia_yields[0].yield_ = _cutils.copy_pylist(
+			length * [sneia.settings[element.lower()]]) 
+	elif callable(sneia.settings[element.lower()]): 
+		# functional ia yield -> map it across the yield grid 
+		_pyutils.args(sneia.settings[element.lower()], 
+			"Functional yield must take only one numerical parameter") 
+		arr = list(map(sneia.settings[element.lower()], _pyutils.range_(
+			_sneia.IA_YIELD_GRID_MIN, 
+			_sneia.IA_YIELD_GRID_MAX, 
+			_sneia.IA_YIELD_STEP 
+		))) 
+		_pyutils.numeric_check(arr, ArithmeticError, 
+			"Functional yield mapped to non-numerical value") 
+		e[0].sneia_yields[0].yield_ = _cutils.copy_pylist(arr) 
+	else: 
+		# failsafe ---> should already be caught 
+		raise SystemError("Internal Error") 
+
 	if isinstance(ccsne.settings[element.lower()], numbers.Number): 
 		# constant core-collapse yield -> fill the yield grid w/that value  
 		length = int((_ccsne.CC_YIELD_GRID_MAX - 
@@ -440,7 +462,8 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 		arr = list(map(ccsne.settings[element.lower()], _pyutils.range_(
 			_ccsne.CC_YIELD_GRID_MIN, 
 			_ccsne.CC_YIELD_GRID_MAX, 
-			_ccsne.CC_YIELD_STEP))) 
+			_ccsne.CC_YIELD_STEP
+		))) 
 		_pyutils.numeric_check(arr, ArithmeticError, 
 			"Functional yield mapped to non-numerical value") 
 		e[0].ccsne_yields[0].yield_ = _cutils.copy_pylist(arr) 

@@ -20,7 +20,9 @@ cdef extern from "../src/objects.h":
 
 	ctypedef struct SNEIA_YIELD_SPECS: 
 		char *dtd 
-		double yield_ 
+		# double yield_ 
+		double *yield_ 
+		double *grid 
 		double *RIa 
 		double tau_ia 
 		double t_d 

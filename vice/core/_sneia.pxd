@@ -6,6 +6,9 @@ from ._objects cimport SNEIA_YIELD_SPECS, ELEMENT
 cdef extern from "../src/sneia.h": 
 	cdef double PLAW_DTD_INDEX 
 	cdef double RIA_MAX_EVAL_TIME 
+	cdef double IA_YIELD_STEP 
+	cdef double IA_YIELD_GRID_MIN 
+	cdef double IA_YIELD_GRID_MAX 
 	SNEIA_YIELD_SPECS *sneia_yield_initialize() 
 	void sneia_yield_free(SNEIA_YIELD_SPECS *sneia_yield) 
 	void normalize_RIa(ELEMENT *e, unsigned long length) 

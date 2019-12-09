@@ -44,7 +44,6 @@ if not __VICE_SETUP__:
 	from ...core._dataframe import yield_settings
 	import sys 
 
-	# settings = _customizable_yield_table({ 
 	settings = yield_settings({ 
 		"he": 	0.0616, 
 		"c":	2.36e-3, 

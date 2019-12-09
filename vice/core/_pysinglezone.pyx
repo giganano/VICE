@@ -2648,8 +2648,9 @@ be lost.\nOutput directory: %s.vice\nOverwrite? (y | n) """ % (self.name))
 				self._agb_model)
 			_io.import_agb_grid(self._sz[0].elements[i], 
 				agbfile.encode("latin-1")) 
-			self._sz[0].elements[i][0].sneia_yields[0].yield_ = (
-				sneia.settings[self.elements[i]]) 
+			# self._sz[0].elements[i][0].sneia_yields[0].yield_ = (
+			# 	sneia.settings[self.elements[i]]) 
+			self.setup_sneia_yield(i) 
 			self.setup_ccsne_yield(i) 
 
 
@@ -2662,7 +2663,7 @@ be lost.\nOutput directory: %s.vice\nOverwrite? (y | n) """ % (self.name))
 		========== 
 		element_index :: int 
 			The index of the element to setup the yield for. This is simply 
-			the position of that elements symbol in self.elements. 
+			the position of that element's symbol in self.elements. 
 		""" 
 		ccyield = ccsne.settings[self.elements[element_index]] 
 		if callable(ccyield): 
@@ -2671,7 +2672,8 @@ be lost.\nOutput directory: %s.vice\nOverwrite? (y | n) """ % (self.name))
 when callable, must take only one numerical parameter.""") 
 			z_arr = _pyutils.range_(_ccsne.CC_YIELD_GRID_MIN, 
 				_ccsne.CC_YIELD_GRID_MAX, 
-				_ccsne.CC_YIELD_STEP) 
+				_ccsne.CC_YIELD_STEP
+			) 
 			arr = list(map(ccyield, z_arr)) 
 			_pyutils.numeric_check(arr, ArithmeticError, """Yield as a \
 function of metallicity mapped to non-numerical value.""") 
@@ -2690,6 +2692,49 @@ supernovae must be either a numerical value or a function of metallicity. \
 Got: %s""" % (type(ccyield))) 
 
 		self._sz[0].elements[element_index][0].ccsne_yields[0].yield_ = (
+			_cutils.copy_pylist(arr)) 
+
+	def setup_sneia_yield(self, element_index): 
+		""" 
+		Fills the yield array for a given element based on the user's current 
+		setting for that particular element 
+
+		Parameters 
+		========== 
+		element_index :: int 
+			The index of the element to setup the yield for. This is simply 
+			the position of that element's symbol in self.elements. 
+		""" 
+		iayield = sneia.settings[self.elements[element_index]] 
+		if callable(iayield): 
+			# each line ensures basic requirements of the yield settings 
+			_pyutils.args(iayield, """Yields from type Ia supernovae, when \
+callable, must take only one numerical parameter.""") 
+			z_arr = _pyutils.range_(
+				_sneia.IA_YIELD_GRID_MIN, 
+				_sneia.IA_YIELD_GRID_MAX, 
+				_sneia.IA_YIELD_STEP
+			) 
+			arr = list(map(iayield, z_arr)) 
+			_pyutils.numeric_check(arr, ArithmeticError, """Yield as a \
+function of metallicity mapped to non-numerical value.""") 
+			_pyutils.inf_nan_check(arr, ArithmeticError, """Yield as a \
+function of metallicity mapped to NaN or inf for at least one metallicity.""") 
+		elif isinstance(iayield, numbers.Number): 
+			if m.isinf(iayield) or m.isnan(iayield): 
+				raise ArithmeticError("Yield cannot be inf or NaN.") 
+			else: 
+				arr = len(_pyutils.range_(
+					_sneia.IA_YIELD_GRID_MIN, 
+					_sneia.IA_YIELD_GRID_MAX, 
+					_sneia.IA_YIELD_STEP
+				)) * [iayield] 
+		else: 
+			raise TypeError("""IMF-integrated yield from type Ia supernovae \
+must be either a numerical value or a function of metallicity. Got: %s""" % (
+				type(iayield))) 
+
+		self._sz[0].elements[element_index][0].sneia_yields[0].yield_ = (
 			_cutils.copy_pylist(arr)) 
 
 	def set_ria(self): 
@@ -2808,19 +2853,41 @@ negative value for at least one timestep.""")
 		ccsne_yields = dict(zip(self.elements, ccsne_yields)) 
 		sneia_yields = dict(zip(self.elements, sneia_yields)) 
 
-		# Wee which elements have functional yields 
-		encoded = tuple(filter(lambda x: callable(ccsne_yields[x.lower()]), 
+		# See which elements have functional yields 
+		encoded_cc = tuple(filter(lambda x: callable(ccsne_yields[x.lower()]), 
 			self.elements)) 
-		if len(encoded) > 0: 
+		if len(encoded_cc) > 0: 
 			if "dill" not in sys.modules: 
 				# certain elements will be saved with yield = None 
 				message = """\
 Encoding functional yields from core-collapse supernovae along with VICE \
 outputs requires the package dill (installable via pip). Yields for the \
 following elements will not be saved: """
-				for i in encoded: 
+				for i in encoded_cc: 
 					message += "%s " % (i) 
 					ccsne_yields[i.lower()] = None 
+
+				# warn the user 
+				warnings.warn(message, UserWarning) 
+			else: 
+				# user has dill, everything will be encoded just fine 
+				pass 
+		else: 
+			# none are encoded anyway, dill doesn't matter 
+			pass 
+
+		encoded_ia = tuple(filter(lambda x: callable(sneia_yields[x.lower()]), 
+			self.elements)) 
+		if len(encoded_ia) > 0: 
+			if "dill" not in sys.modules: 
+				# certain element will be saved with yield = None 
+				message = """\
+Encoding function yields from type Ia supernovae along with VICE outputs \
+requires the package dill (installable via pip). Yields for the following \
+elements will not be saved: """ 
+				for i in encoded_ia: 
+					message += "%s " % (i) 
+					sneia_yields[i.lower()] = None 
 
 				# warn the user 
 				warnings.warn(message, UserWarning) 

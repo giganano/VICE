@@ -948,7 +948,7 @@ cdef class history(fromfile):
 			return self.__subget__str_logzratio(key) 
 		else: 
 			# No error yet, other possibilities in super's __getitem__ 
-			return super().__getitem__(key) 
+			return super().__subget__str(key) 
 
 	def __subget__str_z(self, key): 
 		""" 

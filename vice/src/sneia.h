@@ -16,6 +16,18 @@ extern "C" {
 #define RIA_MAX_EVAL_TIME 15.0 
 #endif /* RIA_MAX_EVAL_TIME */ 
 
+#ifndef IA_YIELD_STEP 
+#define IA_YIELD_STEP 1e-5 
+#endif /* IA_YIELD_STEP */ 
+
+#ifndef IA_YIELD_GRID_MIN 
+#define IA_YIELD_GRID_MIN 0 
+#endif /* IA_YIELD_GRID_MIN */ 
+
+#ifndef IA_YIELD_GRID_MAX 
+#define IA_YIELD_GRID_MAX 0.5 
+#endif /* IA_YIELD_GRID_MAX */ 
+
 /* hash-code for exp-mode */ 
 #ifndef EXP 
 #define EXP 333 
@@ -66,6 +78,24 @@ extern void sneia_yield_free(SNEIA_YIELD_SPECS *sneia_yields);
  * source: sneia.c 
  */ 
 extern double mdot_sneia(SINGLEZONE sz, ELEMENT e); 
+
+/* 
+ * Obtain the IMF-integrated fractional mass yield of a given element from its 
+ * internal yield table. 
+ * 
+ * Parameters 
+ * ========== 
+ * e: 			The element to find the yield for 
+ * Z: 			The metallicity to look up on the grid 
+ * 
+ * Returns 
+ * ======= 
+ * The interpolated yield off of the stored yield grid within the ELEMENT 
+ * struct. 
+ * 
+ * source: sneia.c 
+ */ 
+extern double get_ia_yield(ELEMENT e, double Z); 
 
 /* 
  * Enrich each element in each zone according to the SNe Ia associated with 

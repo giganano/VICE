@@ -56,7 +56,10 @@ typedef struct sneia_yield_specs {
 	 * This struct holds the yield specifications for type Ia supernovae 
 	 * (SNe Ia). 
 	 * 
-	 * yield: The IMF-integrated yield itself 
+	 * yield: The IMF-integrated yields themselves 
+	 * grid: The grid of metallicity on which they're sampled. This is defined 
+	 * 		by IA_YIELD_STEP, IA_YIELD_MIN, and IA_YIELD_MAX and is initialized 
+	 *  	automatically in sneia_yield_initialize. 
 	 * RIa: The normed Ia rate itself 
 	 * dtd: A string denoting a built-in Ia delay-time distribution, if adopted 
 	 * 		by the user 
@@ -65,7 +68,9 @@ typedef struct sneia_yield_specs {
 	 */ 
 
 	char *dtd; 
-	double yield_; 
+	// double yield_; 
+	double *yield_; 
+	double *grid; 
 	double *RIa; 
 	double tau_ia; 
 	double t_d; 
