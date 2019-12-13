@@ -74,6 +74,7 @@ extern double tracer_metallicity(MULTIZONE mz, TRACER t);
  */ 
 extern void malloc_tracers(MULTIZONE *mz); 
 
+#if 0 
 /*
  * Setup the zone history of a tracer particle assuming uniform migration 
  * 
@@ -95,6 +96,7 @@ extern void malloc_tracers(MULTIZONE *mz);
  */ 
 extern unsigned short setup_zone_history(MULTIZONE mz, TRACER *t, 
 	unsigned long origin, unsigned long final, unsigned long birth); 
+#endif 
 
 #ifdef __cplusplus 
 } 

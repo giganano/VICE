@@ -154,7 +154,7 @@ extern double get_cc_yield(ELEMENT e, double Z) {
 		/* 
 		 * Metallicity on the grid. This will always be true for simulations 
 		 * even remotely realistic without modified grid parameters. 
-		 * Interpolate off neighbroding elements of yield grid. 
+		 * Interpolate off neighboring elements of yield grid. 
 		 */ 
 		lower_bound_idx = (long) (Z / CC_YIELD_STEP); 
 	} else { 

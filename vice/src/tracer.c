@@ -140,6 +140,7 @@ extern void malloc_tracers(MULTIZONE *mz) {
 
 } 
 
+#if 0 
 /*
  * Setup the zone history of a tracer particle assuming uniform migration 
  * 
@@ -206,3 +207,4 @@ extern unsigned short setup_zone_history(MULTIZONE mz, TRACER *t,
 	} 
 
 } 
+#endif 

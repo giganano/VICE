@@ -70,19 +70,43 @@ def _DEFAULT_FUNC_(t):
 	"""
 	return 9.1 
 
-def _DEFAULT_TRACER_MIGRATION_(n, t): 
-	""" 
-	The default stellar migration prescription. This returns a function which 
-	is always a delta function at the zone number n - a migration prescription 
-	that produces no migration. 
-	""" 
-	def _DISTRIBUTION_(n2): 
-		""" 
-		The distribution of stars is a delta function at the n'th zone. 
-		""" 
-		return int(n <= n2 < n + 1) 
+# def _DEFAULT_TRACER_MIGRATION_(n, t): 
+# 	""" 
+# 	The default stellar migration prescription. This returns a function which 
+# 	is always a delta function at the zone number n - a migration prescription 
+# 	that produces no migration. 
+# 	""" 
+# 	def _DISTRIBUTION_(n2): 
+# 		""" 
+# 		The distribution of stars is a delta function at the n'th zone. 
+# 		""" 
+# 		return int(n <= n2 < n + 1) 
 
-	return _DISTRIBUTION_ 
+# 	return _DISTRIBUTION_ 
+
+def _DEFAULT_TRACER_MIGRATION_(zone, tform): 
+	""" 
+	The default stellar migration prescription for multizone simulations. 
+	This is a function of initial zone number and formation time for the 
+	stellar population tracer particles, which returns a funtion of time. 
+	This function then returns zone numbers for tracer particles that form 
+	in that zone at that time. 
+
+	By default, the tracer particles do not migrate between zones. That is, 
+	the zone number for particles forming in zone n remain in zone n at all 
+	times. 
+
+	See Also 
+	======== 
+	multizone.migration.stars 
+	""" 
+	def _ZONE_OCCUPATION_(time): 
+		""" 
+		The zone number the tracer particle occupies is simply the one it 
+		forms in. 
+		""" 
+		return zone 
+	return _ZONE_OCCUPATION_ 
 
 def _VERSION_ERROR_():
 	"""

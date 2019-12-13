@@ -4,7 +4,8 @@ from __future__ import absolute_import
 from ._objects cimport SINGLEZONE 
 
 cdef extern from "../src/singlezone.h": 
-	double SINGLEZONE_MAX_EVAL_TIME
+	double SINGLEZONE_MAX_EVAL_TIME 
+	long BUFFER 
 	SINGLEZONE *singlezone_initialize() 
 	void singlezone_free(SINGLEZONE *sz) 
 	long singlezone_address(SINGLEZONE *sz) 

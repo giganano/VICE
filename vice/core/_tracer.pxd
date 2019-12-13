@@ -8,6 +8,6 @@ cdef extern from "../src/tracer.h":
 	TRACER *tracer_initialize() 
 	void tracer_free(TRACER *t) 
 	void malloc_tracers(MULTIZONE *mz) 
-	unsigned short setup_zone_history(MULTIZONE mz, TRACER *t, 
-		unsigned long origin, unsigned long final, unsigned long birth) 
+	# unsigned short setup_zone_history(MULTIZONE mz, TRACER *t, 
+	# 	unsigned long origin, unsigned long final, unsigned long birth) 
 

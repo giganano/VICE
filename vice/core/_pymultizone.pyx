@@ -30,6 +30,7 @@ from . import _dataframe as df
 from . import _pyutils 
 import math as m 
 import warnings 
+import inspect 
 import numbers 
 import pickle 
 import sys 
@@ -80,7 +81,7 @@ from . cimport _multizone
 from . cimport _singlezone 
 from . cimport _sneia 
 from . cimport _ssp 
-from . cimport _stats 
+# from . cimport _stats 
 from . cimport _tracer 
 
 """ 
@@ -417,7 +418,7 @@ cdef class c_multizone:
 		n_zones = 10, 
 		name = "multizonemodel", 
 		n_tracers = 1, 
-		simple = True, 
+		simple = False, 
 		verbose = False): 
 
 		assert isinstance(n_zones, int), "Internal Error" 
@@ -640,6 +641,9 @@ a boolean. Got: %s""" % (type(value)))
 		return self._migration 
 
 	def run(self, output_times, capture = False, overwrite = False): 
+		""" 
+		See docstring in python version of this class. 
+		""" 
 		self.align_name_attributes() 
 		self.prep(output_times) 
 		cdef int enrichment 
@@ -796,8 +800,6 @@ timesteps."""
 				Don't ignore i == j. In this case under-the-hood the migration 
 				matrix will ALWAYS be zero. 
 				""" 
-
-				# gas 
 				if isinstance(self.migration.gas[i][j], numbers.Number): 
 					arr = length * [self.migration.gas[i][j]] 
 					if _migration.setup_migration_element(self._mz[0], 
@@ -822,72 +824,63 @@ timesteps."""
 				else: 
 					raise SystemError("Internal Error") 
 
-				# stars 
-				# if isinstance(self.migration.stars[i][j], numbers.Number): 
-				# 	arr = length * [self.migration.stars[i][j]] 
-				# 	if _migration.setup_migration_element(self._mz[0], 
-				# 		self._mz[0].migration_matrix_tracers, 
-				# 		i, j, _cutils.copy_pylist(arr)): 
-
-				# 		_multizone.multizone_cancel(self._mz) 
-				# 		raise RuntimeError(errmsg) 
-				# 	else: 
-				# 		continue 
-				# elif callable(self.migration.stars[i][j]): 
-				# 	arr = list(map(self.migration.stars[i][j], eval_times)) 
-				# 	if _migration.setup_migration_element(self._mz[0], 
-				# 		self._mz[0].migration_matrix_tracers, 
-				# 		i, j, _cutils.copy_pylist(arr)): 
-
-				# 		_multizone.multizone_cancel(self._mz) 
-				# 		raise RuntimeError(errmsg) 
-				# 	else: 
-				# 		continue 
-				# else: 
-				# 	raise SystemError("Internal Error") 
-
 	def setup_tracers(self): 
-		_diff = 0.05
-		bins = _pyutils.range_(-_diff, self.n_zones + 1 - _diff, _diff) 
-		cdef double *zone_bins = _cutils.copy_pylist(bins)
-		cdef double *zone_sample 
-		cdef double *zone_dist 
-		_tracer.malloc_tracers(self._mz) 
+		""" 
+		Setup the tracer zone histories according to the user's prescription 
+
+		This will call the function of initial zone number and time which 
+		they have constructed, and expect a function of time to be returned. 
+		The zone number passed to the first function is the zone number in which 
+		the tracer particle forms, and the time is the time at which it forms. 
+		The function of time returned must always return an integer, describing 
+		the zone number of the tracer particle at all subsequent times. The time 
+		is interpreted not as the age of the tracer particle, but as time in 
+		the simulation. 
+		""" 
 		n = _singlezone.n_timesteps(self._mz[0].zones[0][0]) 
-		x = 0
-		for i in range(n): 
-			for j in range(self.n_zones): 
-				# The distribution specified at this zone and timestep 
-				dist = list(map(self.migration.stars(j, 
-					i * self._mz[0].zones[0][0].dt), bins)) 
-				# force first bin to zero for sampling purposes 
-				dist[0] = 0 
-				zone_dist = _cutils.copy_pylist(dist) 
-				zone_sample = _stats.sample( 
-					zone_dist, 
-					zone_bins, 
-					len(bins) - 1l, 
-					self.n_tracers) 
-				free(zone_dist) 
-				if zone_sample is not NULL: 
-					for k in range(self.n_tracers): 
-						if _tracer.setup_zone_history(
-							self._mz[0], 
-							self._mz[0].mig[0].tracers[x], 
-							<unsigned long> j, 
-							<unsigned long> zone_sample[k], 
-							<unsigned long> i): 
-							raise SystemError("Internal Error") 
-						else: 
-							x += 1
-							continue 
-					free(zone_sample) 
-				else: 
-					raise RuntimeError("""\
-Could not sample from distribution at time t = %g and initial zone number = \
-%d. Please ensure that the specified stellar migration prescription does not \
-exhibit any numerical delta functions.""" % (
-						i * self._mz[0].zones[0][0].dt, j))
+		eval_times = [i * self._mz[0].zones[0][0].dt for i in range(n)] 
+		x = 0 
+		takes_keyword = True  
+		try: # check for an optional keyword argument 'n' 
+			self.migration.stars(0, 0, n = 1) 
+		except TypeError: 
+			takes_keyword = False 
+		_tracer.malloc_tracers(self._mz) 
+		for i in range(n): 		# for each timestep 
+			for j in range(self.n_zones): 		# for each zone 
+				for k in range(self.n_tracers): 
+					# for each tracer particle forming in that zone at that time 
+					# get the zone number as a function of time 
+					if takes_keyword: 
+						zone_occupation = self.migration.stars(j, 
+							i * self._mz[0].zones[0][0].dt, n = k) 
+					else: 
+						zone_occupation = self.migration.stars(j, 
+							i * self._mz[0].zones[0][0].dt) 
+					# map it across all timesteps 
+					zone_history = list(map(zone_occupation, eval_times)) 
+					if i < n - _singlezone.BUFFER: 
+						""" 
+						For tracer particles formed before the timestep buffer, 
+						set their zone numbers to that of the final timestep 
+						in the buffer 
+						""" 
+						for l in range(_singlezone.BUFFER): 
+							zone_history[-(l + 1)] = zone_history[-(
+								_singlezone.BUFFER + 1)] 
+					else: 
+						""" 
+						For those that form in the buffer, set their zone 
+						number to the zone of origin always. 
+						""" 
+						for l in range(i, n): 
+							zone_history[l] = j 
+
+					# error handling, then send it down to C 
+					self.check_zone_history(zone_history, i, j) 
+					zone_history = [int(l) for l in zone_history] 
+					self.copy_zone_history(zone_history, x, i, n) 
+					x += 1 # increment tracer particle index 
 			if self.verbose: 
 				sys.stdout.write("""Setting up tracer particles. Progress: \
 %.1f%%\r""" % (100 * (i + 1) / n)) 
@@ -895,7 +888,126 @@ exhibit any numerical delta functions.""" % (
 			else: 
 				pass 
 		if self.verbose: sys.stdout.write("\n") 
-		free(zone_bins)
+
+	def check_zone_history(self, zones, timestep_origin, zone_origin): 
+		""" 
+		Ensures that the zone history mapped across time that the user has 
+		specified maps to integers between 0 and self.n_zones - 1, and raises 
+		an exception if necessary. 
+
+		Parameters 
+		========== 
+		zones :: list 
+			The tracer particle's zone occupation number evaluated at all 
+			timesteps 
+		timestep_origin :: int 
+			The timestep at which the tracer particle will form 
+		zone_origin :: int 
+			The zone number in which the tracer particle will form 
+		""" 
+		if not all(map(lambda x: isinstance(x, numbers.Number), zones)): 
+			raise TypeError("""Zone history for tracer particle mapped to \
+non-numerical value.""") 
+		elif not all(map(lambda x: x % 1 == 0, zones)): 
+			raise ValueError("""Zone history for tracer particle must be an \
+integer.""") 
+		elif not all(map(lambda x: 0 <= x < self.n_zones, zones)): 
+			raise ValueError("""All zone numbers must be between 0 and \
+self.n_zones - 1 (inclusive).""") 
+		elif zones[timestep_origin] != zone_origin: 
+			raise ValueError("""Tracer particle's zone history, evaluated at \
+its time of formation, must equal its zone of origin.""") 
+		else: 
+			pass 
+
+	def copy_zone_history(self, zones, idx, formation_timestep, 
+		n_timesteps): 
+		""" 
+		Copies a tracer particle's zone history to the pointer in C. 
+
+		Parameters 
+		========== 
+		zones :: list 
+			The zone numbers the tracer particle occupies at all timesteps 
+		idx :: int 
+			The tracer particle's index 
+		formation_timestep :: int 
+			The timestep number at which the tracer particle will form 
+		n_timesteps :: int 
+			The number of timesteps the simulation will evaluate at, counting 
+			the 10-timestep memory buffer. 
+		""" 
+		self._mz[0].mig[0].tracers[idx][0].zone_history = <int *> malloc (
+			n_timesteps * sizeof(int)) 
+		for i in range(n_timesteps): 
+			if i < formation_timestep: 
+				# zone number is -1 until it forms 
+				self._mz[0].mig[0].tracers[idx][0].zone_history[i] = -1 
+			else: 
+				self._mz[0].mig[0].tracers[idx][0].zone_history[i] = zones[i] 
+
+		# more bookkeeping 
+		self._mz[0].mig[0].tracers[idx][0].timestep_origin = formation_timestep 
+		self._mz[0].mig[0].tracers[idx][0].zone_origin = int(
+			zones[formation_timestep])
+		if self.simple: 
+			self._mz[0].mig[0].tracers[idx][0].zone_current = int(
+				zones[n_timesteps - _singlezone.BUFFER]) 
+		else: 
+			self._mz[0].mig[0].tracers[idx][0].zone_current = int(
+				zones[formation_timestep])
+
+
+# 	def setup_tracers(self): 
+# 		_diff = 0.05
+# 		bins = _pyutils.range_(-_diff, self.n_zones + 1 - _diff, _diff) 
+# 		cdef double *zone_bins = _cutils.copy_pylist(bins)
+# 		cdef double *zone_sample 
+# 		cdef double *zone_dist 
+# 		_tracer.malloc_tracers(self._mz) 
+# 		n = _singlezone.n_timesteps(self._mz[0].zones[0][0]) 
+# 		x = 0
+# 		for i in range(n): 
+# 			for j in range(self.n_zones): 
+# 				# The distribution specified at this zone and timestep 
+# 				dist = list(map(self.migration.stars(j, 
+# 					i * self._mz[0].zones[0][0].dt), bins)) 
+# 				# force first bin to zero for sampling purposes 
+# 				dist[0] = 0 
+# 				zone_dist = _cutils.copy_pylist(dist) 
+# 				zone_sample = _stats.sample( 
+# 					zone_dist, 
+# 					zone_bins, 
+# 					len(bins) - 1l, 
+# 					self.n_tracers) 
+# 				free(zone_dist) 
+# 				if zone_sample is not NULL: 
+# 					for k in range(self.n_tracers): 
+# 						if _tracer.setup_zone_history(
+# 							self._mz[0], 
+# 							self._mz[0].mig[0].tracers[x], 
+# 							<unsigned long> j, 
+# 							<unsigned long> zone_sample[k], 
+# 							<unsigned long> i): 
+# 							raise SystemError("Internal Error") 
+# 						else: 
+# 							x += 1
+# 							continue 
+# 					free(zone_sample) 
+# 				else: 
+# 					raise RuntimeError("""\
+# Could not sample from distribution at time t = %g and initial zone number = \
+# %d. Please ensure that the specified stellar migration prescription does not \
+# exhibit any numerical delta functions.""" % (
+# 						i * self._mz[0].zones[0][0].dt, j))
+# 			if self.verbose: 
+# 				sys.stdout.write("""Setting up tracer particles. Progress: \
+# %.1f%%\r""" % (100 * (i + 1) / n)) 
+# 				sys.stdout.flush() 
+# 			else: 
+# 				pass 
+# 		if self.verbose: sys.stdout.write("\n") 
+# 		free(zone_bins)
 
 	def align_name_attributes(self): 
 		""" 
@@ -1252,10 +1364,38 @@ cdef class migration_specifications:
 		""" 
 		The migration settings associated with the stellar tracer particles. 
 
-		This must be a callable object accepting two numerical parameters 
-		which returns a callable object accepting one numerical parameter, and 
-		is interpreted as a function of zone number and time returning the 
-		distribution of final zone numbers. 
+		This must be a callable object accepting two numerical parameters and 
+		optionally a keyword argument "n". The first parameter will be 
+		interpreted as the initial zone number of a tracer particle, and the 
+		second its formation time in Gyr. If a keyword argument "n" is accepted, 
+		it is interpreted as the index of the tracer particle that forms in 
+		that zone at that time. Upon setting up the user's multizone simulation, 
+		VICE will then call this function with "n" = 0, "n" = 1, "n" = 2, ... , 
+		"n" = n_tracers - 1. That is, if the user wishes to treat multiple 
+		tracer particles forming in the same zone at the same time differently, 
+		they must do so via a keyword argument "n" to this callable object. 
+
+		The returned value from this function must itself also be a callable 
+		object, accepting only one numerical parameter and returning an 
+		integer. The accepted parameter is interpreted as the zone occupation 
+		number as a function of time in Gyr, and the returned value as the 
+		zone number of that tracer particle at that time. 
+
+		In this manner, users may manipulate the detailed zone occupation of 
+		every individual tracer particle in their simulation as a function of 
+		time. 
+
+		Notes 
+		===== 
+		The function of time describing the zone number of each tracer particle 
+		is interpreted as the time in the simulation, not the age of the 
+		tracer particle. Times in the simulation before a given tracer particle 
+		forms are neglected. 
+
+		The function of time describing an individual tracer particle's zone 
+		occupation evaluated at its formation time must match the zone from 
+		which the tracer particle forms. If this is ever not the case, an 
+		exception will be raised when a multizone simulation is ran. 
 		""" 
 		return self._stars 
 
