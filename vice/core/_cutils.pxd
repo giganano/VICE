@@ -4,7 +4,11 @@ from libc.stdlib cimport malloc, free
 from .._globals import _VERSION_ERROR_ 
 from .._globals import _RECOGNIZED_IMFS_ 
 from . import _pyutils 
+from ..yields import agb 
+from ..yields import ccsne 
+from ..yields import sneia 
 import numbers 
+import math as m 
 import sys 
 if sys.version_info[:2] == (2, 7): 
 	strcomp = basestring 
@@ -15,12 +19,132 @@ else:
 
 from libc.stdlib cimport malloc, free 
 from ._objects cimport IMF_ 
+from ._objects cimport AGB_YIELD_GRID 
+from . cimport _agb 
+from . cimport _ccsne 
+from . cimport _sneia 
 cdef extern from "../src/utils.h": 
 	double *binspace(double start, double stop, long N) 
 	void set_char_p_value(char *dest, int *ords, int length) 
 cdef extern from "../src/imf.h": 
 	double IMF_STEPSIZE 
 	unsigned short imf_set_mass_distribution(IMF_ *imf, double *arr) 
+
+
+cdef inline object map_ccsne_yield(element): 
+	""" 
+	Maps the user's current CCSN yield setting across the yield array defined 
+	by CC_YIELD_GRID_MIN, CC_YIELD_GRID_MAX, and CC_YIELD_STEP. 
+
+	Parameters 
+	========== 
+	element :: str [case-insensitive] 
+		The element to map the yield for. 
+	""" 
+	ccyield = ccsne.settings[element] 
+	if callable(ccyield): 
+		# each line ensures basic requirements of the yield settings 
+		_pyutils.args(ccyield, """Yields from core-collapse supernovae, when \
+callable, must take only one numerical parameter.""") 
+		z_arr = _pyutils.range_(_ccsne.CC_YIELD_GRID_MIN, 
+			_ccsne.CC_YIELD_GRID_MAX, 
+			_ccsne.CC_YIELD_STEP
+		) 
+		arr = list(map(ccyield, z_arr)) 
+		_pyutils.numeric_check(arr, ArithmeticError, """Yield as a function \
+of metallicity mapped to non-numerical value.""") 
+		_pyutils.inf_nan_check(arr, ArithmeticError, """Yield as a function \
+of metallicity mapped to NaN or inf for at least one metallicity.""") 
+		return arr 
+	elif isinstance(ccyield, numbers.Number): 
+		if m.isinf(ccyield) or m.isnan(ccyield): 
+			raise ArithmeticError("Yield cannot be inf or NaN.") 
+		else: 
+			return len(_pyutils.range_(_ccsne.CC_YIELD_GRID_MIN, 
+				_ccsne.CC_YIELD_GRID_MAX, 
+				_ccsne.CC_YIELD_STEP
+			)) * [ccyield] 
+	else: 
+		raise TypeError("""IMF-integrated yield from core collapse \
+supernovae must be either a numerical value or a function of metallicity. \
+Got: %s""" % (type(ccyield))) 
+
+
+cdef inline object map_sneia_yield(element): 
+	""" 
+	Map's the user's current SN Ia yield setting across the yield array defined 
+	by IA_YIELD_GRID_MIN, IA_YIELD_GRID_MAX, and IA_YIELD_STEP 
+
+	Parameters 
+	========== 
+	element :: str [case-insensitive] 
+		The element to map the yield for 
+	""" 
+	iayield = sneia.settings[element] 
+	if callable(iayield): 
+		# each line ensures basic requirements of the yield settings 
+		_pyutils.args(iayield, """Yields from type Ia supernovae, when \
+callable, must take only one numerical parameter.""") 
+		z_arr = _pyutils.range_(
+			_sneia.IA_YIELD_GRID_MIN, 
+			_sneia.IA_YIELD_GRID_MAX, 
+			_sneia.IA_YIELD_STEP
+		) 
+		arr = list(map(iayield, z_arr)) 
+		_pyutils.numeric_check(arr, ArithmeticError, """Yield as a \
+function of metallicity mapped to non-numerical value.""") 
+		_pyutils.inf_nan_check(arr, ArithmeticError, """Yield as a \
+function of metallicity mapped to NaN or inf for at least one metallicity.""") 
+		return arr 
+	elif isinstance(iayield, numbers.Number): 
+		if m.isinf(iayield) or m.isnan(iayield): 
+			raise ArithmeticError("Yield cannot be inf or NaN.") 
+		else: 
+			return len(_pyutils.range_(
+				_sneia.IA_YIELD_GRID_MIN, 
+				_sneia.IA_YIELD_GRID_MAX, 
+				_sneia.IA_YIELD_STEP
+			)) * [iayield] 
+	else: 
+		raise TypeError("""IMF-integrated yield from type Ia supernovae \
+must be either a numerical value or a function of metallicity. Got: %s""" % (
+			type(iayield))) 
+
+
+cdef inline object map_agb_yield(element, masses): 
+	""" 
+	Maps the user's current AGB star yield setting across the 2-D yield array 
+	defined by AGB_Z_GRID_MIN, AGB_Z_GRID_MAX, and AGB_Z_GRID_STEP 
+
+	Parameters 
+	========== 
+	element :: str [case-insensitive] 
+		The element to map the yield for 
+	masses :: list 
+		The masses resulting from calling main_sequence_turnoff_mass for all 
+		of the times at which the simulation will evaluate. 
+
+	Notes 
+	===== 
+	This function will only be called when the user has set a custom AGB star 
+	yield. Otherwise VICE will automatically import it. 
+	""" 
+	agbyield = agb.settings[element] 
+	z_arr = _pyutils.range_(
+		_agb.AGB_Z_GRID_MIN, 
+		_agb.AGB_Z_GRID_MAX, 
+		_agb.AGB_Z_GRID_STEPSIZE 
+	) 
+	arr = len(masses) * [None] 
+	for i in range(len(arr)): 
+		arr[i] = len(z_arr[i]) * [0.] 
+		for j in range(len(arr[i])): 
+			arr[i][j] = agbyield(masses[i], z_arr[j]) 
+		_pyutils.numeric_check(arr[i], ArithmeticError, """Yield as a \
+function of mass and metallicity mapped to non-numerical value.""") 
+		_pyutils.inf_nan_check(arr[i], ArithmeticError, """Yield as a \
+function of metallicity mapped to NaN or inf for at least one metallicity.""") 
+	return arr 
 
 
 cdef inline void setup_imf(IMF_ *imf, IMF) except *: 
@@ -47,7 +171,6 @@ or nan for at least one stellar mass.""")
 	else: 
 		raise TypeError("""IMF must be either a string denoting a built-in \
 initial mass function or a callable function. Got: %s""" % (type(IMF))) 
-
 
 
 cdef inline void set_string(char *dest, pystr) except *: 
@@ -80,6 +203,7 @@ cdef inline void set_string(char *dest, pystr) except *:
 	cdef int *ords = ordinals(pystr) 
 	set_char_p_value(dest, ords, len(pystr)) 
 	free(ords) 
+
 
 cdef inline int *ordinals(pystr) except *: 
 	""" 
@@ -132,6 +256,33 @@ cdef inline double *copy_pylist(pylist) except *:
 		else: 
 			raise TypeError("Non-numerical value detected.") 
 	return copy 
+
+
+cdef inline double **copy_2Dpylist(pylist) except *: 
+	""" 
+	Allocate memory for a 2-D double pointer array and copy each element of a 
+	python list into the resultant C array. 
+
+	Parameters 
+	========== 
+	pylist :: array-like 
+		A python 2D array-like object that can be indexed via pylist[x][y] 
+
+	Raises 
+	====== 
+	TypeError :: 
+		:: pylist has a non-numerical value 
+	""" 
+	cdef double **copy = <double **> malloc (len(pylist) * sizeof(double *)) 
+	for i in range(len(pylist)): 
+		copy[i] = <double *> malloc (len(pylist[i]) * sizeof(double)) 
+		for j in range(len(pylist[i])): 
+			if isinstance(pylist[i][j], numbers.Number): 
+				copy[i][j] = pylist[i][j] 
+			else: 
+				raise TypeError("Non-numerical value detected.") 
+	return copy 
+
 
 cdef inline double *map_pyfunc_over_array(pyfunc, pyarray) except *: 
 	"""

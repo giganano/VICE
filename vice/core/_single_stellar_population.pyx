@@ -16,7 +16,7 @@ from .._globals import _RECOGNIZED_ELEMENTS_
 from .._globals import _RECOGNIZED_IMFS_ 
 from .._globals import _RECOGNIZED_RIAS_ 
 from .._globals import _VERSION_ERROR_ 
-from ..core._builtin_dataframes import atomic_number 
+from ._builtin_dataframes import atomic_number 
 from ..yields.agb._grid_reader import find_yield_file as find_agb_yield_file 
 from ..yields import agb 
 from ..yields import sneia 
@@ -272,7 +272,7 @@ def __msmf_crf_value_checking(m_upper = 100, m_lower = 0.08,
 #--------------- SINGLE STELLAR POPULATION ENRICHMENT FUNCTION ---------------# 
 def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10, 
 	dt = 0.01, m_upper = 100, m_lower = 0.08, postMS = 0.1, IMF = "kroupa", 
-	RIa = "plaw", delay = 0.15, agb_model = "cristallo11"): 
+	RIa = "plaw", delay = 0.15, agb_model = None): 
 	"""
 	Simulate the nucleosynthesis of a given element from a single star cluster 
 	of given mass and metallicity. This does not take into account galactic 
@@ -293,7 +293,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 		IMF = "kroupa", 
 		RIa = "plaw", 
 		delay = 0.15, 
-		agb_model = "cristallo11"
+		agb_model = None"
 	)
 
 	Parameters 
@@ -329,7 +329,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	delay :: real number [default :: 0.15] 
 		The minimum delay time following the formation of a single stellar 
 		population before the onset of type Ia supernovae in Gyr. 
-	agb_model :: str [case-insensitive] [default :: "cristallo11"] 
+	agb_model :: str [case-insensitive] [default :: None] [DEPRECATED]  
 		A keyword denoting which table of nucleosynthetic yields from AGB stars 
 		to adopt. 
 		Recognized Keywords and their Associated Studies 

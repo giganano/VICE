@@ -6,6 +6,7 @@
 #include <string.h> 
 #include <math.h> 
 #include "element.h" 
+#include "channel.h" 
 #include "ccsne.h" 
 #include "sneia.h" 
 #include "agb.h" 
@@ -30,6 +31,8 @@ extern ELEMENT *element_initialize(void) {
 	e -> agb_grid = agb_yield_grid_initialize(); 
 	e -> ccsne_yields = ccsne_yield_initialize(); 
 	e -> sneia_yields = sneia_yield_initialize(); 
+	e -> channels = NULL; 
+	e -> n_channels = 0u; 
 	return e; 
 
 } 
@@ -50,6 +53,15 @@ extern void element_free(ELEMENT *e) {
 		if ((*e).symbol != NULL) {
 			free(e -> symbol); 
 			e -> symbol = NULL; 
+		} else {} 
+
+		if ((*e).channels != NULL) {
+			unsigned short i; 
+			for (i = 0lu; i < (*e).n_channels; i++) {
+				channel_free(e -> channels[i]); 
+			} 
+			free(e -> channels); 
+			e -> channels = NULL; 
 		} else {} 
 
 		free(e); 

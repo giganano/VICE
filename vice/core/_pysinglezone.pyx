@@ -7,6 +7,7 @@ are in C, found in the vice/src/ directory within the root tree.
 
 # Python imports 
 from __future__ import absolute_import 
+from ..version import version as _VERSION_ 
 from .._globals import _RECOGNIZED_ELEMENTS_ 
 from .._globals import _RECOGNIZED_IMFS_ 
 from .._globals import _VERSION_ERROR_ 
@@ -125,7 +126,7 @@ class singlezone:
 		m_lower = 0.08, 
 		postMS = 0.1, 
 		Z_solar = 0.014, 
-		agb_model = "cristallo11" 
+		agb_model = None 
 	)
 
 	Attributes 
@@ -198,7 +199,7 @@ class singlezone:
 		lifetime 
 	Z_solar :: real number [default :: 0.014] 
 		The adopted solar metallicity by mass. 
-	agb_model :: str [default :: "cristallo11"] 
+	agb_model :: str [default :: None] [DEPRECATED]  
 		A keyword denoting which AGB yield grid to adopt. Must be either 
 		"cristallo11" (6) or "karakas10" (7). 
 
@@ -1019,8 +1020,10 @@ class singlezone:
 	@property 
 	def agb_model(self): 
 		"""
+		[DEPRECATED] 
+
 		Type :: str [case-insensitive] 
-		Default :: "cristallo11"
+		Default :: None
 
 		A keyword denoting which stellar mass-metallicity grid of fractional 
 		nucleosynthetic yields from asymptotic giant branch stars to adopt 
@@ -1037,6 +1040,13 @@ class singlezone:
 		tracked by the simulation are heavier than nickel, a LookupError will 
 		be raised. The Karakas (2010) study did not report yields for elements 
 		heavier than nickel. 
+
+		Deprecation Notes 
+		================= 
+		This feature has been deprecated on the development branch following 
+		the release of version 1.0.0. In this build, vice.yields.agb.settings 
+		is a dataframe whose fields must be modified in the same way as 
+		CCSN and SN Ia yields. Default value for this field switched to None. 
 
 		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
 		======== 
@@ -1170,7 +1180,7 @@ cdef class c_singlezone:
 		m_lower = 0.08, 
 		postMS = 0.1, 
 		Z_solar = 0.014, 
-		agb_model = "cristallo11"): 
+		agb_model = None): 
 
 		"""
 		All properties may be specified via __init__ as a keyword. 
@@ -2308,7 +2318,7 @@ spaces yielding significantly super-solar total metallicities.""",
 	@agb_model.setter 
 	def agb_model(self, value): 
 		""" 
-		Keyword for AGB grid to adopt 
+		Keyword for AGB grid to adopt [DEPRECATED] 
 
 		Allowed Types 
 		============= 
@@ -2319,23 +2329,62 @@ spaces yielding significantly super-solar total metallicities.""",
 		"cristallo11" 
 		"karakas10" 
 		""" 
-		if isinstance(value, strcomp): 
-			if value.lower() in agb._grid_reader._RECOGNIZED_STUDIES_: 
-				if (any(map(lambda x: atomic_number[x] > 28, self.elements)) 
-					and value.lower() == "karakas10"): 
-					raise LookupError("""\
-The Karakas (2010), MNRAS, 403, 1413 study did not report yields for elements \
-heavier than nickel. Please modify the attribute 'elements' to exclude these \
-elements from the simulation (or adopt an alternate yield model) before 
-proceeding.""") 
+		if value is not None: 
+			msg = """\
+Setting AGB star yield model globally in a singlezone object is deprecated in \
+this version of VICE (%s). Instead, modify the yield settings for each \
+element individually at vice.yields.agb.settings. Functions of stellar mass \
+in solar masses and metallicity by mass (respectively) are also supported. 
+""" % (_VERSION_) 
+			
+			# Change the settings if possible, if not just move on w/simulation  
+			if isinstance(value, strcomp): 
+				if value.lower() in agb._grid_reader._RECOGNIZED_STUDIES_: 
+					
+					# Study keywords to full journal citations. 
+					studies = {
+						"cristallo11": "Cristallo et al. (2011), ApJ, 197, 17", 
+						"karakas10": "Karakas (2010), MNRAS, 403, 1413" 
+					} 
+
+					# Let the user know their yields will be altered. 
+					msg += """
+All elemental yields in the current simulation will be set to the table of \
+%s with linear interpolation between masses and metallicities on the grid. 
+""" % (studies[value.lower()]) 
+					
+					for i in self.elements: 
+						agb.settings[i] = value.lower() 
+
 				else: 
-					self._agb_model = value.lower() 
+					pass 
 			else: 
-				raise ValueError("Unrecognized AGB yield model: %s" % (
-					value)) 
+				pass 
+
+			msg += "\nThis feature will be removed in a future release of VICE." 
+			warnings.warn(msg, DeprecationWarning) 
+
 		else: 
-			raise TypeError("""Attribute 'agb_model' must be of type string. \
-Got: %s""" % (type(value))) 
+			self._agb_model = None 
+
+####### DEPRECATED IN DEVELOPMENT BRANCH AFTER RELEASE OF VERSION 1.0.0 #######
+# 		if isinstance(value, strcomp): 
+# 			if value.lower() in agb._grid_reader._RECOGNIZED_STUDIES_: 
+# 				if (any(map(lambda x: atomic_number[x] > 28, self.elements)) 
+# 					and value.lower() == "karakas10"): 
+# 					raise LookupError("""\
+# The Karakas (2010), MNRAS, 403, 1413 study did not report yields for elements \
+# heavier than nickel. Please modify the attribute 'elements' to exclude these \
+# elements from the simulation (or adopt an alternate yield model) before 
+# proceeding.""") 
+# 				else: 
+# 					self._agb_model = value.lower() 
+# 			else: 
+# 				raise ValueError("Unrecognized AGB yield model: %s" % (
+# 					value)) 
+# 		else: 
+# 			raise TypeError("""Attribute 'agb_model' must be of type string. \
+# Got: %s""" % (type(value))) 
 
 
 
@@ -2466,7 +2515,6 @@ Got: %s""" % (type(value)))
 		# Make sure the output times are as they should be 
 		output_times = self.output_times_check(output_times) 
 		self._sz[0].ism[0].mass = self._Mg0 # reset initial gas supply 
-		self.setup_elements() 
 		_cutils.setup_imf(self._sz[0].ssp[0].imf, self._imf) 
 
 		""" 
@@ -2474,8 +2522,11 @@ Got: %s""" % (type(value)))
 		map specified functions across those times. In the case of sfr and ifr 
 		mode, the factor of 1e9 converts from Msun yr^-1 to Msun Gyr^-1. 
 		""" 
-		evaltimes = _pyutils.range_(0, output_times[-1] + 10 * self.dt, 
-			self.dt) 
+		evaltimes = _pyutils.range_(0, 
+			output_times[-1] + 10 * self.dt, 
+			self.dt
+		) 
+		self.setup_elements(evaltimes) 
 		if evaltimes[-1] > _singlezone.SINGLEZONE_MAX_EVAL_TIME: 
 			warnings.warn("""\
 VICE does not support simulations of timescales longer than %g Gyr. This 
@@ -2637,21 +2688,44 @@ be lost.\nOutput directory: %s.vice\nOverwrite? (y | n) """ % (self.name))
 				# output directory doesn't even exist yet 
 				return True 
 
-	def setup_elements(self): 
+
+	def setup_elements(self, evaltimes): 
 		""" 
 		Setup each element's AGB grid, CCSNe yield grid, and SNe Ia yield 
 		""" 
 		for i in range(self._sz[0].n_elements): 
 			self._sz[0].elements[i][0].solar = solar_z[self.elements[i]] 
 			self._sz[0].elements[i][0].primordial = primordial[self.elements[i]] 
-			agbfile = agb._grid_reader.find_yield_file(self.elements[i], 
-				self._agb_model)
-			_io.import_agb_grid(self._sz[0].elements[i], 
-				agbfile.encode("latin-1")) 
-			# self._sz[0].elements[i][0].sneia_yields[0].yield_ = (
-			# 	sneia.settings[self.elements[i]]) 
-			self.setup_sneia_yield(i) 
-			self.setup_ccsne_yield(i) 
+			
+			# agbfile = agb._grid_reader.find_yield_file(self.elements[i], 
+			# 	self._agb_model)
+			# _io.import_agb_grid(self._sz[0].elements[i], 
+			# 	agbfile.encode("latin-1")) 
+			# self.setup_sneia_yield(i) 
+			# self.setup_ccsne_yield(i) 
+			
+			self._sz[0].elements[i][0].ccsne_yields[0].yield_ = (
+				_cutils.copy_pylist(_cutils.map_ccsne_yield(self.elements[i]))
+			)  
+			self._sz[0].elements[i][0].sneia_yields[0].yield_ = (
+				_cutils.copy_pylist(_cutils.map_sneia_yield(self.elements[i]))
+			) 
+
+			if callable(agb.settings[self.elements[i]]): 
+				self._sz[0].elements[i][0].agb_grid[0].grid = (
+					_cutils.copy_2Dpylist(_cutils.map_agb_yield(
+						self.elements[i], 
+						[_ssp.main_sequence_turnoff_mass(i, 
+							self.postMS) for i in evaltimes] 
+						) 
+					) 
+				) 
+			else: 
+				agbfile = agb._grid_reader.find_yield_file(self.elements[i], 
+					agb.settings[self.elements[i]]) 
+				_io.import_agb_grid(self._sz[0].elements[i], 
+					agbfile.encode("latin-1")) 
+				
 
 
 	def setup_ccsne_yield(self, element_index): 

@@ -42,7 +42,6 @@ if not __VICE_SETUP__:
 
 	from ._yield_integrator import integrate as fractional 
 	from ...core._dataframe import yield_settings
-	import sys 
 
 	settings = yield_settings({ 
 		"he": 	0.0616, 

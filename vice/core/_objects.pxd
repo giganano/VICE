@@ -27,10 +27,17 @@ cdef extern from "../src/objects.h":
 		double tau_ia 
 		double t_d 
 
+	ctypedef struct CHANNEL: 
+		double *yield_ 
+		double *grid 
+		double *rate 
+
 	ctypedef struct ELEMENT: 
 		AGB_YIELD_GRID *agb_grid 
 		CCSNE_YIELD_SPECS *ccsne_yields 
 		SNEIA_YIELD_SPECS *sneia_yields 
+		CHANNEL **channels 
+		unsigned short n_channels 
 		char *symbol 
 		double *Z 
 		double *Zin 

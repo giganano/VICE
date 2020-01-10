@@ -17,8 +17,8 @@ static double RIa_builtin(ELEMENT e, double time);
 
 /* 
  * Allocate memory for and return a pointer to a SNEIA_YIELD_SPECS struct. 
- * Automatically initializes RIa to NULL. Allocates memory for a 100-character 
- * dtd char * specifier. 
+ * Automatically initializes RIa and yield_ to NULL. Allocates memory for a 
+ * 100-character dtd char * specifier. 
  * 
  * header: sneia.h 
  */ 

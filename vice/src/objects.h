@@ -77,6 +77,26 @@ typedef struct sneia_yield_specs {
 
 } SNEIA_YIELD_SPECS; 
 
+typedef struct arbitrary_channel {
+
+	/* 
+	 * This struct holds the information and yield specifications for 
+	 * arbitrary channels of enrichment. 
+	 * 
+	 * yield_: The IMF-integrated yields themselves, as a function of 
+	 * 		metallicity 
+	 * grid: The grid of metallicities on which the yields themselves are 
+	 * 		sampled. 
+	 * rate: The delay-time distribution of the channel: its rate following the 
+	 * 		formation of a simple stellar population. 
+	 */ 
+
+	double *yield_; 
+	double *grid; 
+	double *rate; 
+
+} CHANNEL; 
+
 typedef struct element { 
 
 	/* 
@@ -96,6 +116,8 @@ typedef struct element {
 	AGB_YIELD_GRID *agb_grid; 
 	CCSNE_YIELD_SPECS *ccsne_yields; 
 	SNEIA_YIELD_SPECS *sneia_yields; 
+	CHANNEL **channels; 
+	unsigned short n_channels; 
 	char *symbol; 
 	double *Z; 
 	double *Zin; 
