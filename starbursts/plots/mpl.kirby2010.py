@@ -1,0 +1,149 @@
+""" 
+The following produces a scatter plot of the Kirby et al. (2010) data for 
+Milky Way satellite galaxies. 
+""" 
+
+import visuals # visuals.py -> matplotlib subroutines in this directory 
+import matplotlib.pyplot as plt 
+import vice 
+import sys 
+import warnings 
+warnings.filterwarnings("ignore") 
+
+
+_NAMES_ = {
+	"Scl": 		"Sculptor", 
+	"LeoI": 	"Leo I", 
+	"Sex": 		"Sextans", 
+	"LeoII": 	"Leo II", 
+	"CVnI": 	"Canes Venatici I", 
+	"UMi": 		"Ursa Minor", 
+	"Dra": 		"Draco" 
+} 
+
+_COLORS_ = {
+	"Scl": 		"crimson", 
+	"LeoI": 	"grey", 
+	"Sex": 		"lime", 
+	"LeoII": 	"deepskyblue", 
+	"CVnI": 	"darkviolet", 
+	"UMi": 		"black", 
+	"Dra": 		"gold" 
+} 
+
+_MARKERS_ = {
+	"Scl": 		"circle", 
+	"LeoI": 	"square", 
+	"Sex": 		"star", 
+	"LeoII": 	"thin_diamond", 
+	"CVnI": 	"pentagon", 
+	"UMi": 		"hexagon2", 
+	"Dra": 		"triangle_up" 
+} 
+
+_SIZES_ = {
+	"Scl": 		30, 
+	"LeoI": 	10, 
+	"Sex": 		80, 
+	"LeoII": 	30, 
+	"CVnI": 	60, 
+	"UMi": 		10, 
+	"Dra": 		40
+}
+
+
+def setup_axis(): 
+	""" 
+	Sets up the axis with the proper labels and ranges 
+
+	Returns 
+	======= 
+	axis :: matplotlib subplot 
+		The axis to plot the data on 
+	""" 
+	fig = plt.figure(figsize = (10, 7)) 
+	ax = fig.add_subplot(111, facecolor = "white") 
+	ax.set_xlabel("[Fe/H]") 
+	ax.set_ylabel("[Mg/Fe]") 
+	ax.set_xlim([-3.2, -0.4]) 
+	ax.set_ylim([-1.1, 1.8]) 
+	return ax 
+
+
+def read_data(filename = "../data/kirby2010processed.dat"): 
+	""" 
+	Import the data from the associated file. 
+
+	Args 
+	==== 
+	filename :: str [default :: ../data/kirby2010processed.dat] 
+		The path to the data file 
+
+	Returns 
+	======= 
+	An 2D-ascii list containing the data as it appears in the file 
+	""" 
+	data = 849 * [None] 
+	with open(filename, 'r') as f: 
+		f.readline() # header 
+		for i in range(len(data)): 
+			data[i] = f.readline().split() 
+			for j in range(2, len(data[i])): 
+				data[i][j] = float(data[i][j]) 
+		f.close() 
+	return data 
+	# return np.genfromtxt(filename).tolist() 
+
+
+def plot_data(ax, data, dwarf): 
+	FeH_column = 12 
+	err_FeH_column = 13 
+	MgFe_column = 14 
+	err_MgFe_column = 15 
+	fltrd = list(filter(lambda x: x[0] == dwarf, data)) 
+	kwargs = {
+		# "xerr": 			[row[err_FeH_column] for row in fltrd], 
+		# "yerr": 			[row[err_MgFe_column] for row in fltrd], 
+		"c": 				visuals.colors()[_COLORS_[dwarf]], 
+		"marker": 			visuals.markers()[_MARKERS_[dwarf]], 
+		"linestyle": 		"None", 
+		"label": 			_NAMES_[dwarf], 
+		# "s": 				_SIZES_[dwarf] 
+	} 
+	if dwarf == "LeoI": kwargs["zorder"] = 0 
+	if dwarf == "UMi": 
+		kwargs["ms"] = _SIZES_[dwarf] 
+		kwargs["xerr"] = [row[err_FeH_column] for row in fltrd] 
+		kwargs["yerr"] = [row[err_MgFe_column] for row in fltrd] 
+		kwargs["zorder"] = 0 
+		ax.errorbar(
+			[row[FeH_column] for row in fltrd], 
+			[row[MgFe_column] for row in fltrd], 
+			**kwargs
+		) 
+	else: 
+		kwargs["s"] = _SIZES_[dwarf] 
+		ax.scatter(
+			[row[FeH_column] for row in fltrd], 
+			[row[MgFe_column] for row in fltrd], 
+			**kwargs 
+		) 
+
+
+def main(): 
+	plt.clf() 
+	ax = setup_axis() 
+	data = read_data() 
+	# for i in ["Sex", "LeoII", "CVnI", "UMi", "Dra"]: 
+	for i in _NAMES_.keys(): 
+		plot_data(ax, data, i) 
+	ax.legend(loc = visuals.mpl_loc()["upper left"], ncol = 1, frameon = False, 
+		bbox_to_anchor = (1.02, 0.98), fontsize = 18) 
+	plt.tight_layout() 
+	plt.savefig(sys.argv[1]) 
+	plt.clf() 
+
+
+if __name__ == "__main__": 
+	main() 
+
