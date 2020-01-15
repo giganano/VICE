@@ -1,6 +1,6 @@
 """ 
 This script runs the simulations of starburst models analyzed in 
-Johnson & Weinberg (2019). 
+Johnson & Weinberg (2020). 
 """ 
 
 from __future__ import division, print_function 
@@ -19,7 +19,7 @@ _TIMESTEP_ = float(sys.argv[1])
 try: 
 	import numpy as np 
 	_SLOWBURST_TIMES_ = np.linspace(0, 14, 1401).tolist() 
-	_ALL_TIMES_ = np.linspace(0, 10, 10001).tolist()  
+	_ALL_TIMES_ = np.linspace(0, 10, 10001).tolist() 
 	_TIMES_ = np.linspace(0, 10, 1001).tolist() 
 	bins = np.linspace(-3, 1, 401).tolist() 
 except ModuleNotFoundError: 
@@ -36,7 +36,7 @@ import os
 
 def reset_yields(): 
 	""" 
-	Sets the yields according to those in Johnson & Weinberg (2019). 
+	Sets the yields according to those in Johnson & Weinberg (2020). 
 	""" 
 	vice.yields.ccsne.settings["o"] = 0.015 
 	vice.yields.ccsne.settings["sr"] = 3.5e-8 
@@ -163,7 +163,6 @@ def single_burst(which, generator, *gen_args, **kwargs):
 		One of the two generators to use 
 	gen_args :: real numbers 
 		The parameters to pass to the generator function 
-		See burst_generators.py for generator arguments 
 	kwargs :: varying types 
 		Other keyword args to pass as attributes to a vice.singlezone object 
 	""" 
@@ -345,7 +344,7 @@ def run_slow_burst_models():
 		"schmidt": 			True, 
 		"schmidt_index": 	0.5, 
 		"dt": 				_TIMESTEP_, 
-		"bins": 			np.linspace(-3, 1, 401) 
+		"bins": 			bins[:] 
 	} 
 	sz1 = vice.singlezone(name = "simulations/slowburst_episodic_infall", 
 		func = slow_gaussian_generator(lambda t: 10 * t**2 * m.exp(-t / 2.2), 
@@ -370,12 +369,47 @@ def run_slow_burst_models():
 	sz2.run(_SLOWBURST_TIMES_[:], overwrite = True) 
 
 
+def run_kirby2010_comparisons(): 
+	""" 
+	Runs the models intended for comparison with the Kirby et al. (2010) 
+	data in the Appendix of Johnson & Weinberg (2020). 
+	""" 
+	vice.yields.ccsne.settings["mg"] = 0.00261
+	kwargs = { 
+		"dt": 			_TIMESTEP_, 
+		"bins": 		bins[:], 
+		"Mg0": 			0, 
+		"tau_star": 	50, 
+		"eta": 			100, 
+		"elements": 	["fe", "sr", "mg"] 
+	} 
+	sz1 = vice.singlezone(name = "simulations/kirby2010_smooth", 
+		func = lambda t: 9.1 * m.exp(-t / 2), 
+		**kwargs) 
+	print(sz1) 
+	sz1.run(_TIMES_, overwrite = True) 
+	def exp_with_burst(t): 
+		if 5. <= t < 5. + _TIMESTEP_: 
+			return 5 / _TIMESTEP_ 
+		else: 
+			return 9.1 * m.exp(-t / 2) 
+	sz2 = vice.singlezone(name = "simulations/kirby2010_burst", 
+		func = exp_with_burst, 
+		**kwargs) 
+	print(sz2) 
+	outtimes = _TIMES_[:] 
+	for i in range(10): 
+		outtimes.append(5. + (i + 1) * _TIMESTEP_) 
+	sz2.run(outtimes[:], overwrite = True) 
+
+
 if __name__ == "__main__": 
 	reset_yields() 
-	run_burstless_model() 
-	run_gas_driven_models() 
-	run_efficiency_driven_models() 
-	run_alternate_sr_yield_models() 
-	run_oscillatory_models() 
-	run_slow_burst_models() 
+	# run_burstless_model() 
+	# run_gas_driven_models() 
+	# run_efficiency_driven_models() 
+	# run_alternate_sr_yield_models() 
+	# run_oscillatory_models() 
+	# run_slow_burst_models() 
+	run_kirby2010_comparisons() 
 

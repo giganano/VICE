@@ -1,6 +1,7 @@
 """ 
-The following produces a scatter plot of the Kirby et al. (2010) data for 
-Milky Way satellite galaxies. 
+Produces Fig. A1 of Johnson & Weinberg (2020), a single axis plot showing the 
+abundance data of several dwarf galaxies taken from Kirby et al. (2010) in 
+comparison to a smooth and single-burst model simulated in VICE. 
 """ 
 
 import visuals # visuals.py -> matplotlib subroutines in this directory 
@@ -47,7 +48,7 @@ _SIZES_ = {
 	"Sex": 		80, 
 	"LeoII": 	30, 
 	"CVnI": 	60, 
-	"UMi": 		10, 
+	"UMi": 		50, 
 	"Dra": 		40
 }
 
@@ -70,7 +71,7 @@ def setup_axis():
 	return ax 
 
 
-def read_data(filename = "../data/kirby2010processed.dat"): 
+def read_data(filename = "../../data/kirby2010processed.dat"): 
 	""" 
 	Import the data from the associated file. 
 
@@ -92,51 +93,70 @@ def read_data(filename = "../data/kirby2010processed.dat"):
 				data[i][j] = float(data[i][j]) 
 		f.close() 
 	return data 
-	# return np.genfromtxt(filename).tolist() 
 
 
 def plot_data(ax, data, dwarf): 
+	""" 
+	Plots an individual dwarf galaxy's abundance data on the subplot. 
+
+	Parameters 
+	========== 
+	ax :: matplotlib subplot 
+		The axis to plot the abundance data on 
+	data :: 2D-list 
+		The raw data itself
+	dwarf :: str 
+		A key denoting which dwarf is being plotted. These appear in the first 
+		column of the argument data. 
+	""" 
 	FeH_column = 12 
 	err_FeH_column = 13 
 	MgFe_column = 14 
 	err_MgFe_column = 15 
 	fltrd = list(filter(lambda x: x[0] == dwarf, data)) 
 	kwargs = {
-		# "xerr": 			[row[err_FeH_column] for row in fltrd], 
-		# "yerr": 			[row[err_MgFe_column] for row in fltrd], 
 		"c": 				visuals.colors()[_COLORS_[dwarf]], 
 		"marker": 			visuals.markers()[_MARKERS_[dwarf]], 
 		"linestyle": 		"None", 
 		"label": 			_NAMES_[dwarf], 
-		# "s": 				_SIZES_[dwarf] 
+		"s": 				_SIZES_[dwarf] 
 	} 
 	if dwarf == "LeoI": kwargs["zorder"] = 0 
-	if dwarf == "UMi": 
-		kwargs["ms"] = _SIZES_[dwarf] 
-		kwargs["xerr"] = [row[err_FeH_column] for row in fltrd] 
-		kwargs["yerr"] = [row[err_MgFe_column] for row in fltrd] 
-		kwargs["zorder"] = 0 
-		ax.errorbar(
-			[row[FeH_column] for row in fltrd], 
-			[row[MgFe_column] for row in fltrd], 
-			**kwargs
-		) 
-	else: 
-		kwargs["s"] = _SIZES_[dwarf] 
-		ax.scatter(
-			[row[FeH_column] for row in fltrd], 
-			[row[MgFe_column] for row in fltrd], 
-			**kwargs 
-		) 
+	ax.scatter(
+		[row[FeH_column] for row in fltrd], 
+		[row[MgFe_column] for row in fltrd], 
+		**kwargs 
+	) 
+
+
+def plot_vice_comparison(ax, name): 
+	""" 
+	Plots the [Mg/Fe]-[Fe/H] track of a given VICE model on the subplot. 
+
+	Parameters 
+	========== 
+	ax :: matplotlib subplot 
+		The axis to plot on 
+	name :: str 
+		The relative path to the VICE output 
+	""" 
+	out = vice.output(name) 
+	ax.plot(out.history["[fe/h]"], out.history["[mg/fe]"], 
+		c = visuals.colors()["black"], 
+		linestyle = '--') 
 
 
 def main(): 
+	""" 
+	Produces the figure and saves it as a PDF. 
+	""" 
 	plt.clf() 
 	ax = setup_axis() 
 	data = read_data() 
-	# for i in ["Sex", "LeoII", "CVnI", "UMi", "Dra"]: 
 	for i in _NAMES_.keys(): 
 		plot_data(ax, data, i) 
+	plot_vice_comparison(ax, "../../simulations/kirby2010_smooth") 
+	plot_vice_comparison(ax, "../../simulations/kirby2010_burst") 
 	ax.legend(loc = visuals.mpl_loc()["upper left"], ncol = 1, frameon = False, 
 		bbox_to_anchor = (1.02, 0.98), fontsize = 18) 
 	plt.tight_layout() 

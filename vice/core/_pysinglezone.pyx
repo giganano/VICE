@@ -1251,8 +1251,7 @@ cdef class c_singlezone:
 			"m_upper": 			self.m_upper, 
 			"m_lower": 			self.m_lower, 
 			"postMS": 			self.postMS, 
-			"Z_solar": 			self.Z_solar, 
-			"agb_model": 		self.agb_model 
+			"Z_solar": 			self.Z_solar 
 		} 
 
 		if len(self.bins) >= 10: 
