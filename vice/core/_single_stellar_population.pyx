@@ -11,6 +11,7 @@ __all__ = ["single_stellar_population", "cumulative_return_fraction",
 	"main_sequence_mass_fraction"] 
 
 # Python functions 
+from ..version import version as _VERSION_ 
 from .._globals import _DIRECTORY_ 
 from .._globals import _RECOGNIZED_ELEMENTS_ 
 from .._globals import _RECOGNIZED_IMFS_ 
@@ -23,6 +24,7 @@ from ..yields import sneia
 from ..yields import ccsne 
 from . import _pyutils 
 import math as m 
+import warnings 
 import numbers 
 import sys 
 import os 
@@ -43,6 +45,12 @@ from . cimport _element
 from . cimport _io 
 from . cimport _sneia 
 from . cimport _ssp 
+
+# Study keywords to their full citations ---> agb_model keywords 
+_AGB_STUDIES_ = {
+	"cristallo11": 		"Cristallo et al. (2011), ApJS, 197, 17", 
+	"karakas10": 		"Karakas et al. (2010), MNRAS, 403, 1413" 
+} 
 
 # ------------------- CUMULATIVE RETURN FRACTION FUNCTION ------------------- # 
 def cumulative_return_fraction(age, IMF = "kroupa", m_upper = 100, 
@@ -293,7 +301,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 		IMF = "kroupa", 
 		RIa = "plaw", 
 		delay = 0.15, 
-		agb_model = None"
+		agb_model = None 
 	)
 
 	Parameters 
@@ -329,7 +337,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	delay :: real number [default :: 0.15] 
 		The minimum delay time following the formation of a single stellar 
 		population before the onset of type Ia supernovae in Gyr. 
-	agb_model :: str [case-insensitive] [default :: None] [DEPRECATED]  
+	agb_model :: str [case-insensitive] [default :: None] [DEPRECATED] 
 		A keyword denoting which table of nucleosynthetic yields from AGB stars 
 		to adopt. 
 		Recognized Keywords and their Associated Studies 
@@ -415,61 +423,114 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	ssp[0].imf[0].m_upper = m_upper 
 	ssp[0].imf[0].m_lower = m_lower 
 
-	# Import the element's AGB yield grid 
-	agbfile = find_agb_yield_file(element, agb_model) 
-	if os.path.exists(agbfile): 
-		if _io.import_agb_grid(e, agbfile.encode("latin-1")): 
-			raise IOError("Failed to read AGB yield file.") 
+	# Setup the yields 
+	e[0].sneia_yields[0].yield_ = _cutils.copy_pylist(
+		_cutils.map_sneia_yield(element.lower())) 
+	e[0].ccsne_yields[0].yield_ = _cutils.copy_pylist(
+		_cutils.map_ccsne_yield(element.lower())) 
+
+	# Take into account deprecation of the keyword arg "agb_model" 
+	def builtin_agb_grid(model): 
+		agbfile = find_agb_yield_file(element, model) 
+		if os.path.exists(agbfile): 
+			if _io.import_agb_grid(e, agbfile.encode("latin-1")): 
+				raise IOError("Failed to read AGB yield file.") 
+			else: 
+				pass 
 		else: 
-			pass 
+			raise IOError("AGB yield file not found. Please re-install VICE.")  
+	if agb_model is None: 
+		# take into account deprecation of the keyword arg 'agb_model' 
+		if callable(agb.settings[element.lower()]): 
+			masses = [_ssp.main_sequence_turnoff_mass(i, 
+				postMS) for i in _pyutils.range_(0, time + 10 * dt, dt)] 
+			metallicities = _pyutils.range_(
+				_agb.AGB_Z_GRID_MIN, 
+				_agb.AGB_Z_GRID_MAX, 
+				_agb.AGB_Z_GRID_STEPSIZE 
+			) 
+			yield_grid = _cutils.map_agb_yield(element.lower(), masses) 
+			e[0].agb_grid[0].n_m = len(masses) 
+			e[0].agb_grid[0].n_z = len(metallicities)  
+			e[0].agb_grid[0].grid = (
+				_cutils.copy_2Dpylist(yield_grid) 
+			) 
+			e[0].agb_grid[0].m = _cutils.copy_pylist(masses) 
+			e[0].agb_grid[0].z = _cutils.copy_pylist(metallicities) 
+		else: 
+			builtin_agb_grid(agb.settings[element.lower()]) 
 	else: 
-		raise IOError("AGB yield file not found. Please re-install VICE.") 
+		msg = """\
+Setting AGB star yield model via keyword argument to this function is \
+deprecated in this version of VICE (%s). Instead, modify the yield settings \
+for the desired element via vice.yields.agb.settings. Function of stellar \
+masses and metallicity by mass (respectively) are also supported. 
 
-	# Setup the SN yields 
-	# e[0].sneia_yields[0].yield_ = sneia.settings[element.lower()] 
-	if isinstance(sneia.settings[element.lower()], numbers.Number): 
-		# constant ia yield -> fill the yield grid w/that value 
-		length = int((_sneia.IA_YIELD_GRID_MAX - _sneia.IA_YIELD_GRID_MIN) / 
-			_sneia.IA_YIELD_STEP) + 1 
-		e[0].sneia_yields[0].yield_ = _cutils.copy_pylist(
-			length * [sneia.settings[element.lower()]]) 
-	elif callable(sneia.settings[element.lower()]): 
-		# functional ia yield -> map it across the yield grid 
-		_pyutils.args(sneia.settings[element.lower()], 
-			"Functional yield must take only one numerical parameter") 
-		arr = list(map(sneia.settings[element.lower()], _pyutils.range_(
-			_sneia.IA_YIELD_GRID_MIN, 
-			_sneia.IA_YIELD_GRID_MAX, 
-			_sneia.IA_YIELD_STEP 
-		))) 
-		_pyutils.numeric_check(arr, ArithmeticError, 
-			"Functional yield mapped to non-numerical value") 
-		e[0].sneia_yields[0].yield_ = _cutils.copy_pylist(arr) 
-	else: 
-		# failsafe ---> should already be caught 
-		raise SystemError("Internal Error") 
+Elemental yields in the current simulation will be set to the table of %s \
+with linear interpolation between masses and metallicities on the grid. 
 
-	if isinstance(ccsne.settings[element.lower()], numbers.Number): 
-		# constant core-collapse yield -> fill the yield grid w/that value  
-		length = int((_ccsne.CC_YIELD_GRID_MAX - 
-			_ccsne.CC_YIELD_GRID_MIN) / _ccsne.CC_YIELD_STEP) + 1 
-		e[0].ccsne_yields[0].yield_ = _cutils.copy_pylist(
-			length * [ccsne.settings[element.lower()]])  
-	elif callable(ccsne.settings[element.lower()]): 
-		# functional core-collapse yield -> map it across the yield grid 
-		_pyutils.args(ccsne.settings[element.lower()], 
-			"Functional yield must take only one numerical parameter") 
-		arr = list(map(ccsne.settings[element.lower()], _pyutils.range_(
-			_ccsne.CC_YIELD_GRID_MIN, 
-			_ccsne.CC_YIELD_GRID_MAX, 
-			_ccsne.CC_YIELD_STEP
-		))) 
-		_pyutils.numeric_check(arr, ArithmeticError, 
-			"Functional yield mapped to non-numerical value") 
-		e[0].ccsne_yields[0].yield_ = _cutils.copy_pylist(arr) 
-	else: 
-		# failsafe ---> should already be caught 
-		raise SystemError("Internal Error") 
+This feature will be removed in a future release of VICE. 
+""" % (_VERSION_, _AGB_STUDIES_[agb_model])  
+		warnings.warn(msg, DeprecationWarning) 
+		builtin_agb_grid(agb_model) 
+		
+
+
+######## DEPRECATED IN DEVELOPMENT REPO AFTER RELEASE OF VERSION 1.0.0 ########
+	# Import the element's AGB yield grid 
+	# agbfile = find_agb_yield_file(element, agb_model) 
+	# if os.path.exists(agbfile): 
+	# 	if _io.import_agb_grid(e, agbfile.encode("latin-1")): 
+	# 		raise IOError("Failed to read AGB yield file.") 
+	# 	else: 
+	# 		pass 
+	# else: 
+	# 	raise IOError("AGB yield file not found. Please re-install VICE.") 
+
+	# # e[0].sneia_yields[0].yield_ = sneia.settings[element.lower()] 
+	# if isinstance(sneia.settings[element.lower()], numbers.Number): 
+	# 	# constant ia yield -> fill the yield grid w/that value 
+	# 	length = int((_sneia.IA_YIELD_GRID_MAX - _sneia.IA_YIELD_GRID_MIN) / 
+	# 		_sneia.IA_YIELD_STEP) + 1 
+	# 	e[0].sneia_yields[0].yield_ = _cutils.copy_pylist(
+	# 		length * [sneia.settings[element.lower()]]) 
+	# elif callable(sneia.settings[element.lower()]): 
+	# 	# functional ia yield -> map it across the yield grid 
+	# 	_pyutils.args(sneia.settings[element.lower()], 
+	# 		"Functional yield must take only one numerical parameter") 
+	# 	arr = list(map(sneia.settings[element.lower()], _pyutils.range_(
+	# 		_sneia.IA_YIELD_GRID_MIN, 
+	# 		_sneia.IA_YIELD_GRID_MAX, 
+	# 		_sneia.IA_YIELD_STEP 
+	# 	))) 
+	# 	_pyutils.numeric_check(arr, ArithmeticError, 
+	# 		"Functional yield mapped to non-numerical value") 
+	# 	e[0].sneia_yields[0].yield_ = _cutils.copy_pylist(arr) 
+	# else: 
+	# 	# failsafe ---> should already be caught 
+	# 	raise SystemError("Internal Error") 
+
+	# if isinstance(ccsne.settings[element.lower()], numbers.Number): 
+	# 	# constant core-collapse yield -> fill the yield grid w/that value  
+	# 	length = int((_ccsne.CC_YIELD_GRID_MAX - 
+	# 		_ccsne.CC_YIELD_GRID_MIN) / _ccsne.CC_YIELD_STEP) + 1 
+	# 	e[0].ccsne_yields[0].yield_ = _cutils.copy_pylist(
+	# 		length * [ccsne.settings[element.lower()]])  
+	# elif callable(ccsne.settings[element.lower()]): 
+	# 	# functional core-collapse yield -> map it across the yield grid 
+	# 	_pyutils.args(ccsne.settings[element.lower()], 
+	# 		"Functional yield must take only one numerical parameter") 
+	# 	arr = list(map(ccsne.settings[element.lower()], _pyutils.range_(
+	# 		_ccsne.CC_YIELD_GRID_MIN, 
+	# 		_ccsne.CC_YIELD_GRID_MAX, 
+	# 		_ccsne.CC_YIELD_STEP
+	# 	))) 
+	# 	_pyutils.numeric_check(arr, ArithmeticError, 
+	# 		"Functional yield mapped to non-numerical value") 
+	# 	e[0].ccsne_yields[0].yield_ = _cutils.copy_pylist(arr) 
+	# else: 
+	# 	# failsafe ---> should already be caught 
+	# 	raise SystemError("Internal Error") 
 
 	# Map RIa across time 
 	if RIa == "exp": 
@@ -525,7 +586,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 
 def __ssp_type_checking(element, mstar = 1e6, Z = 0.014, time = 10, 
 	dt = 0.01, m_upper = 100, m_lower = 0.08, postMS = 0.1, 
-	RIa = "plaw", delay = 0.15, agb_model = "cristallo11"): 
+	RIa = "plaw", delay = 0.15, agb_model = None): 
 	""" 
 	Does type checking for the single_stellar_population function. See 
 	docstring for details on each parameter. 
@@ -553,9 +614,12 @@ value as an argument.""")
 	else: 
 		raise TypeError("""Keyword arg 'RIa' must be either of type string or \
 a callable function with only one parameter. Got: %s""" % (type(RIa))) 
-	if not isinstance(agb_model, strcomp): 
-		raise TypeError("""Keyword argument 'agb_model' must be of type \
-string. Got: %s""" % (type(agb_model))) 
+	if agb_model is not None: 
+		if not isinstance(agb_model, strcomp): 
+			raise TypeError("""Keyword argument 'agb_model' must be of type \
+	string. Got: %s""" % (type(agb_model))) 
+		else: 
+			pass 
 	else: 
 		pass 
 
@@ -572,7 +636,7 @@ string. Got: %s""" % (type(agb_model)))
 
 def __ssp_value_checking(element, mstar = 1e6, Z = 0.014, time = 10, 
 	dt = 0.01, m_upper = 100, m_lower = 0.08, postMS = 0.1, 
-	RIa = "plaw", delay = 0.15, agb_model = "cristallo11"): 
+	RIa = "plaw", delay = 0.15, agb_model = None): 
 	"""
 	Does value checking for the single_stellar_population function. See 
 	docstring for details on each parameter. 
@@ -585,12 +649,6 @@ def __ssp_value_checking(element, mstar = 1e6, Z = 0.014, time = 10,
 	Also of note is that the Karakas et al. (2010) study of AGB star 
 	nucleosynthetic yields did not study elements heavier than nickel.  
 	""" 
-	# Study keywords to their full citations ---> agb_model keywords 
-	studies = {
-		"cristallo11": 		"Cristallo et al. (2011), ApJS, 197, 17", 
-		"karakas10": 		"Karakas et al. (2010), MNRAS, 403, 1413" 
-	} 
-	
 	if element.lower() not in _RECOGNIZED_ELEMENTS_: 
 		raise ValueError("Unrecognized element: %s" % (element)) 
 	elif mstar <= 0: 
@@ -616,13 +674,16 @@ timescales longer than %g Gyr.""" % (_sneia.RIA_MAX_EVAL_TIME))
 	# 	raise ValueError("Unrecognized IMF: %s" % (IMF)) 
 	elif delay < 0: 
 		raise ValueError("Keyword arg 'delay' must be non-negative.") 
-	elif agb_model.lower() not in studies.keys(): 
-		raise ValueError("""Unrecognized AGB yield model: %s. See docstring \
-for list of recognized models.""" % (agb_model)) 
-	elif (agb_model.lower() == "karakas10" and 
-		atomic_number[element.lower()] > 28): 
-		raise LookupError("""The %s study did not report yields for elements \
-heavier than nickel.""" % (studies["karakas10"])) 
+	elif agb_model is not None: 
+		if agb_model.lower() not in _AGB_STUDIES_.keys(): 
+			raise ValueError("""Unrecognized AGB yield model: %s. See docstring \
+	for list of recognized models.""" % (agb_model)) 
+		elif (agb_model.lower() == "karakas10" and 
+			atomic_number[element.lower()] > 28): 
+			raise LookupError("""The %s study did not report yields for elements \
+	heavier than nickel.""" % (_AGB_STUDIES_["karakas10"])) 
+		else: 
+			pass 
 	else: 
 		pass 
 

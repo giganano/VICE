@@ -2366,7 +2366,7 @@ All elemental yields in the current simulation will be set to the table of \
 		else: 
 			self._agb_model = None 
 
-####### DEPRECATED IN DEVELOPMENT BRANCH AFTER RELEASE OF VERSION 1.0.0 #######
+####### DEPRECATED IN DEVELOPMENT REPO AFTER RELEASE OF VERSION 1.0.0 #######
 # 		if isinstance(value, strcomp): 
 # 			if value.lower() in agb._grid_reader._RECOGNIZED_STUDIES_: 
 # 				if (any(map(lambda x: atomic_number[x] > 28, self.elements)) 
@@ -2705,20 +2705,31 @@ be lost.\nOutput directory: %s.vice\nOverwrite? (y | n) """ % (self.name))
 			
 			self._sz[0].elements[i][0].ccsne_yields[0].yield_ = (
 				_cutils.copy_pylist(_cutils.map_ccsne_yield(self.elements[i]))
-			)  
+			) 
 			self._sz[0].elements[i][0].sneia_yields[0].yield_ = (
 				_cutils.copy_pylist(_cutils.map_sneia_yield(self.elements[i]))
 			) 
 
 			if callable(agb.settings[self.elements[i]]): 
-				self._sz[0].elements[i][0].agb_grid[0].grid = (
-					_cutils.copy_2Dpylist(_cutils.map_agb_yield(
-						self.elements[i], 
-						[_ssp.main_sequence_turnoff_mass(i, 
-							self.postMS) for i in evaltimes] 
-						) 
-					) 
+				masses = [_ssp.main_sequence_turnoff_mass(i, 
+					self.postMS) for i in evaltimes] 
+				metallicities = _pyutils.range_(
+					_agb.AGB_Z_GRID_MIN, 
+					_agb.AGB_Z_GRID_MAX, 
+					_agb.AGB_Z_GRID_STEPSIZE 
 				) 
+				yield_grid = _cutils.map_agb_yield(self.elements[i], masses) 
+				self._sz[0].elements[i][0].agb_grid[0].n_m = len(masses) 
+				self._sz[0].elements[i][0].agb_grid[0].n_z = len(metallicities)  
+				self._sz[0].elements[i][0].agb_grid[0].grid = (
+					_cutils.copy_2Dpylist(yield_grid) 
+				) 
+				self._sz[0].elements[i][0].agb_grid[0].m = (
+					_cutils.copy_pylist(masses) 
+				) 
+				self._sz[0].elements[i][0].agb_grid[0].z = (
+					_cutils.copy_pylist(metallicities) 
+				)
 			else: 
 				agbfile = agb._grid_reader.find_yield_file(self.elements[i], 
 					agb.settings[self.elements[i]]) 
@@ -2727,88 +2738,88 @@ be lost.\nOutput directory: %s.vice\nOverwrite? (y | n) """ % (self.name))
 				
 
 
-	def setup_ccsne_yield(self, element_index): 
-		""" 
-		Fills the yield array for a given element based on the user's curent 
-		setting for that particular element. 
+# 	def setup_ccsne_yield(self, element_index): 
+# 		""" 
+# 		Fills the yield array for a given element based on the user's curent 
+# 		setting for that particular element. 
 
-		Parameters 
-		========== 
-		element_index :: int 
-			The index of the element to setup the yield for. This is simply 
-			the position of that element's symbol in self.elements. 
-		""" 
-		ccyield = ccsne.settings[self.elements[element_index]] 
-		if callable(ccyield): 
-			# each line ensures basic requirements of the yield settings 
-			_pyutils.args(ccyield, """Yields from core-collapse supernovae, \
-when callable, must take only one numerical parameter.""") 
-			z_arr = _pyutils.range_(_ccsne.CC_YIELD_GRID_MIN, 
-				_ccsne.CC_YIELD_GRID_MAX, 
-				_ccsne.CC_YIELD_STEP
-			) 
-			arr = list(map(ccyield, z_arr)) 
-			_pyutils.numeric_check(arr, ArithmeticError, """Yield as a \
-function of metallicity mapped to non-numerical value.""") 
-			_pyutils.inf_nan_check(arr, ArithmeticError, """Yield as a \
-function of metallicity mapped to NaN or inf for at least one metallicity.""") 
-		elif isinstance(ccyield, numbers.Number): 
-			if m.isinf(ccyield) or m.isnan(ccyield): 
-				raise ArithmeticError("Yield cannot be inf or NaN.") 
-			else: 
-				arr = len(_pyutils.range_(_ccsne.CC_YIELD_GRID_MIN, 
-					_ccsne.CC_YIELD_GRID_MAX, 
-					_ccsne.CC_YIELD_STEP)) * [ccyield] 
-		else: 
-			raise TypeError("""IMF-integrated yield from core collapse \
-supernovae must be either a numerical value or a function of metallicity. \
-Got: %s""" % (type(ccyield))) 
+# 		Parameters 
+# 		========== 
+# 		element_index :: int 
+# 			The index of the element to setup the yield for. This is simply 
+# 			the position of that element's symbol in self.elements. 
+# 		""" 
+# 		ccyield = ccsne.settings[self.elements[element_index]] 
+# 		if callable(ccyield): 
+# 			# each line ensures basic requirements of the yield settings 
+# 			_pyutils.args(ccyield, """Yields from core-collapse supernovae, \
+# when callable, must take only one numerical parameter.""") 
+# 			z_arr = _pyutils.range_(_ccsne.CC_YIELD_GRID_MIN, 
+# 				_ccsne.CC_YIELD_GRID_MAX, 
+# 				_ccsne.CC_YIELD_STEP
+# 			) 
+# 			arr = list(map(ccyield, z_arr)) 
+# 			_pyutils.numeric_check(arr, ArithmeticError, """Yield as a \
+# function of metallicity mapped to non-numerical value.""") 
+# 			_pyutils.inf_nan_check(arr, ArithmeticError, """Yield as a \
+# function of metallicity mapped to NaN or inf for at least one metallicity.""") 
+# 		elif isinstance(ccyield, numbers.Number): 
+# 			if m.isinf(ccyield) or m.isnan(ccyield): 
+# 				raise ArithmeticError("Yield cannot be inf or NaN.") 
+# 			else: 
+# 				arr = len(_pyutils.range_(_ccsne.CC_YIELD_GRID_MIN, 
+# 					_ccsne.CC_YIELD_GRID_MAX, 
+# 					_ccsne.CC_YIELD_STEP)) * [ccyield] 
+# 		else: 
+# 			raise TypeError("""IMF-integrated yield from core collapse \
+# supernovae must be either a numerical value or a function of metallicity. \
+# Got: %s""" % (type(ccyield))) 
 
-		self._sz[0].elements[element_index][0].ccsne_yields[0].yield_ = (
-			_cutils.copy_pylist(arr)) 
+# 		self._sz[0].elements[element_index][0].ccsne_yields[0].yield_ = (
+# 			_cutils.copy_pylist(arr)) 
 
-	def setup_sneia_yield(self, element_index): 
-		""" 
-		Fills the yield array for a given element based on the user's current 
-		setting for that particular element 
+# 	def setup_sneia_yield(self, element_index): 
+# 		""" 
+# 		Fills the yield array for a given element based on the user's current 
+# 		setting for that particular element 
 
-		Parameters 
-		========== 
-		element_index :: int 
-			The index of the element to setup the yield for. This is simply 
-			the position of that element's symbol in self.elements. 
-		""" 
-		iayield = sneia.settings[self.elements[element_index]] 
-		if callable(iayield): 
-			# each line ensures basic requirements of the yield settings 
-			_pyutils.args(iayield, """Yields from type Ia supernovae, when \
-callable, must take only one numerical parameter.""") 
-			z_arr = _pyutils.range_(
-				_sneia.IA_YIELD_GRID_MIN, 
-				_sneia.IA_YIELD_GRID_MAX, 
-				_sneia.IA_YIELD_STEP
-			) 
-			arr = list(map(iayield, z_arr)) 
-			_pyutils.numeric_check(arr, ArithmeticError, """Yield as a \
-function of metallicity mapped to non-numerical value.""") 
-			_pyutils.inf_nan_check(arr, ArithmeticError, """Yield as a \
-function of metallicity mapped to NaN or inf for at least one metallicity.""") 
-		elif isinstance(iayield, numbers.Number): 
-			if m.isinf(iayield) or m.isnan(iayield): 
-				raise ArithmeticError("Yield cannot be inf or NaN.") 
-			else: 
-				arr = len(_pyutils.range_(
-					_sneia.IA_YIELD_GRID_MIN, 
-					_sneia.IA_YIELD_GRID_MAX, 
-					_sneia.IA_YIELD_STEP
-				)) * [iayield] 
-		else: 
-			raise TypeError("""IMF-integrated yield from type Ia supernovae \
-must be either a numerical value or a function of metallicity. Got: %s""" % (
-				type(iayield))) 
+# 		Parameters 
+# 		========== 
+# 		element_index :: int 
+# 			The index of the element to setup the yield for. This is simply 
+# 			the position of that element's symbol in self.elements. 
+# 		""" 
+# 		iayield = sneia.settings[self.elements[element_index]] 
+# 		if callable(iayield): 
+# 			# each line ensures basic requirements of the yield settings 
+# 			_pyutils.args(iayield, """Yields from type Ia supernovae, when \
+# callable, must take only one numerical parameter.""") 
+# 			z_arr = _pyutils.range_(
+# 				_sneia.IA_YIELD_GRID_MIN, 
+# 				_sneia.IA_YIELD_GRID_MAX, 
+# 				_sneia.IA_YIELD_STEP
+# 			) 
+# 			arr = list(map(iayield, z_arr)) 
+# 			_pyutils.numeric_check(arr, ArithmeticError, """Yield as a \
+# function of metallicity mapped to non-numerical value.""") 
+# 			_pyutils.inf_nan_check(arr, ArithmeticError, """Yield as a \
+# function of metallicity mapped to NaN or inf for at least one metallicity.""") 
+# 		elif isinstance(iayield, numbers.Number): 
+# 			if m.isinf(iayield) or m.isnan(iayield): 
+# 				raise ArithmeticError("Yield cannot be inf or NaN.") 
+# 			else: 
+# 				arr = len(_pyutils.range_(
+# 					_sneia.IA_YIELD_GRID_MIN, 
+# 					_sneia.IA_YIELD_GRID_MAX, 
+# 					_sneia.IA_YIELD_STEP
+# 				)) * [iayield] 
+# 		else: 
+# 			raise TypeError("""IMF-integrated yield from type Ia supernovae \
+# must be either a numerical value or a function of metallicity. Got: %s""" % (
+# 				type(iayield))) 
 
-		self._sz[0].elements[element_index][0].sneia_yields[0].yield_ = (
-			_cutils.copy_pylist(arr)) 
+# 		self._sz[0].elements[element_index][0].sneia_yields[0].yield_ = (
+# 			_cutils.copy_pylist(arr)) 
 
 	def set_ria(self): 
 		""" 

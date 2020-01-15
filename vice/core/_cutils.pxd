@@ -137,7 +137,7 @@ cdef inline object map_agb_yield(element, masses):
 	) 
 	arr = len(masses) * [None] 
 	for i in range(len(arr)): 
-		arr[i] = len(z_arr[i]) * [0.] 
+		arr[i] = len(z_arr) * [0.] 
 		for j in range(len(arr[i])): 
 			arr[i][j] = agbyield(masses[i], z_arr[j]) 
 		_pyutils.numeric_check(arr[i], ArithmeticError, """Yield as a \
