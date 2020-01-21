@@ -5,9 +5,12 @@
 #include <stdlib.h> 
 #include <string.h> 
 #include <math.h> 
+#include "agb.h" 
 #include "ism.h" 
 #include "ssp.h" 
 #include "utils.h" 
+#include "ccsne.h" 
+#include "sneia.h" 
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
 static void update_gas_evolution_sanitycheck(SINGLEZONE *sz); 
@@ -461,7 +464,8 @@ static void primordial_inflow(SINGLEZONE *sz) {
 } 
 
 /* 
- * Determine the ISM mass outflow rate in a singlezone simulation. 
+ * Determine the ISM mass outflow rate in a singlezone simulation taking 
+ * into account the unretained metals. 
  * 
  * Parameters 
  * ========== 
@@ -480,12 +484,20 @@ extern double get_outflow_rate(SINGLEZONE sz) {
 		 * If the smoothing time is less than the timestep, there's no 
 		 * timesteps to smooth over. 
 		 * 
-		 * outflow_rate = eta * smoothed star formation rate 
+		 * outflow_rate = eta * smoothed star formation rate + unretained 
 		 */ 
-		return (*sz.ism).eta[sz.timestep] * (*sz.ism).star_formation_rate; 
+		double *unretained = singlezone_unretained(sz); 
+		double ofr = (
+			(*sz.ism).eta[sz.timestep] * (*sz.ism).star_formation_rate + 
+			sum(unretained, sz.n_elements) 
+		); 
+		free(unretained); 
+		return ofr; 
+		// return (*sz.ism).eta[sz.timestep] * (*sz.ism).star_formation_rate; 
 	} else {
 		/* The number of timesteps to smooth over */ 
-		unsigned long i, n = (unsigned long) ((*sz.ism).smoothing_time / sz.dt); 
+		unsigned long i, n = (unsigned long) ((*sz.ism).smoothing_time / 
+			sz.dt); 
 		double mean_sfr = 0; 
 		if (n > sz.timestep) {
 			/* If the simulation hasn't reached this many timesteps yet. 
@@ -503,8 +515,49 @@ extern double get_outflow_rate(SINGLEZONE sz) {
 			} 
 			mean_sfr /= n + 1l; 
 		} 
-		return (*sz.ism).eta[sz.timestep] * mean_sfr; 
+		double ofr = (*sz.ism).eta[sz.timestep] * mean_sfr; 
+		double *unretained = singlezone_unretained(sz); 
+		ofr += sum(unretained, sz.n_elements); 
+		free(unretained); 
+		return ofr; 
 	}
 
 } 
+
+/* 
+ * Determines the mass outflow rate of each element in a singlezone simulation 
+ * due solely to entrainment. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		The singlezone object for the current simulation 
+ * 
+ * Returns 
+ * ======= 
+ * mass: An array containing each element's outflowing mass in Msun 
+ * 
+ * header: ism.h 
+ */ 
+extern double *singlezone_unretained(SINGLEZONE sz) {
+
+	unsigned short i; 
+	double *unretained = (double *) malloc (sz.n_elements * sizeof(double)); 
+	for (i = 0u; i < sz.n_elements; i++) {
+		unretained[i] = 0; 
+		unretained[i] += (
+			(1 - (*(*sz.elements[i]).agb_grid).entrainment) * m_AGB(
+			sz, *sz.elements[i]) / sz.dt
+		); 
+		unretained[i] += (
+			(1 - (*(*sz.elements[i]).ccsne_yields).entrainment) * mdot_ccsne(
+			sz, *sz.elements[i])
+		);
+		unretained[i] += (
+			(1 - (*(*sz.elements[i]).sneia_yields).entrainment) * mdot_sneia(
+			sz, *sz.elements[i])
+		); 
+	} 
+	return unretained; 
+
+}
 

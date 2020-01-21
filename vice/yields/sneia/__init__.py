@@ -41,7 +41,8 @@ if not __VICE_SETUP__:
 
 	from ._yield_lookup import single_detonation as single 
 	from ._yield_lookup import integrated_yield as fractional 
-	from ...core._dataframe import yield_settings 
+	# from ...core._dataframe import yield_settings 
+	from ...core.dataframe import yield_settings 
 
 	settings = yield_settings({ 
 		"he": 	0, 

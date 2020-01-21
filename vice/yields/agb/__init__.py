@@ -29,7 +29,8 @@ if not __VICE_SETUP__:
 	__all__ = [str(i) for i in __all__] 	# appease python 2 strings 
 
 	from ._grid_reader import yield_grid as grid 
-	from ...core._dataframe import agb_yield_settings 
+	# from ...core._dataframe import agb_yield_settings 
+	from ...core.dataframe import agb_yield_settings
 
 	settings = agb_yield_settings({ 
 		"he": 	"cristallo11", 

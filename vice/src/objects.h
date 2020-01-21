@@ -29,6 +29,7 @@ typedef struct asymptotic_giant_branch_star_yield_grid {
 	double *z; 
 	unsigned long n_m; 
 	unsigned long n_z; 
+	double entrainment; 
 
 } AGB_YIELD_GRID; 
 
@@ -46,6 +47,7 @@ typedef struct ccsne_yield_specs {
 
 	double *yield_; 
 	double *grid; 
+	double entrainment; 
 
 } CCSNE_YIELD_SPECS; 
 
@@ -72,6 +74,7 @@ typedef struct sneia_yield_specs {
 	double *yield_; 
 	double *grid; 
 	double *RIa; 
+	double entrainment; 
 	double tau_ia; 
 	double t_d; 
 
@@ -94,6 +97,7 @@ typedef struct arbitrary_channel {
 	double *yield_; 
 	double *grid; 
 	double *rate; 
+	double entrainment; 
 
 } CHANNEL; 
 

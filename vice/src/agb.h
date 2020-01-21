@@ -63,6 +63,7 @@ extern void agb_yield_grid_free(AGB_YIELD_GRID *agb_grid);
  */ 
 extern double m_AGB(SINGLEZONE sz, ELEMENT e); 
 
+#if 0 
 /* 
  * Enrich each element in each zone according to the AGB stars associated with 
  * tracer particles. 
@@ -74,6 +75,25 @@ extern double m_AGB(SINGLEZONE sz, ELEMENT e);
  * source: agb.c 
  */ 
 extern void agb_from_tracers(MULTIZONE *mz); 
+#endif 
+
+/* 
+ * Determine the mass of a given element produced by AGB stars in each 
+ * zone. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 			The multizone object for the current simulation 
+ * index: 		The index of the element to determine the mass production for 
+ * 
+ * Returns 
+ * ======= 
+ * The mass of the given element produced in each zone in the next timestep by 
+ * AGB stars. 
+ * 
+ * source: agb.c 
+ */ 
+extern double *m_AGB_from_tracers(MULTIZONE mz, unsigned short index); 
 
 /* 
  * Determine the fractional yield of a given element from AGB stars at a 

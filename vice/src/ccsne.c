@@ -67,6 +67,8 @@ extern CCSNE_YIELD_SPECS *ccsne_yield_initialize(void) {
 		ccsne_yield -> grid[i] = CC_YIELD_GRID_MIN + i * CC_YIELD_STEP; 
 	} 
 
+	ccsne_yield -> entrainment = 1; 
+
 	return ccsne_yield; 
 
 } 
@@ -118,6 +120,7 @@ extern void ccsne_yield_free(CCSNE_YIELD_SPECS *ccsne_yield) {
  */ 
 extern double mdot_ccsne(SINGLEZONE sz, ELEMENT e) {
 	
+	// return (*e.ccsne_yields).entrainment * (
 	return (get_cc_yield(e, scale_metallicity(sz, sz.timestep)) * 
 		(*sz.ism).star_formation_rate); 
 

@@ -46,6 +46,8 @@ extern SNEIA_YIELD_SPECS *sneia_yield_initialize(void) {
 		sneia_yields -> grid[i] = IA_YIELD_GRID_MIN + i * IA_YIELD_STEP; 
 	} 
 
+	sneia_yields -> entrainment = 1; 
+
 	return sneia_yields; 
 
 } 
@@ -114,6 +116,7 @@ extern double mdot_sneia(SINGLEZONE sz, ELEMENT e) {
 			(*e.sneia_yields).RIa[sz.timestep - i] 
 		); 
 	} 
+	// return (*e.sneia_yields).entrainment * mdotia; 
 	return mdotia; 
 
 } 
@@ -170,8 +173,48 @@ extern double get_ia_yield(ELEMENT e, double Z) {
 		Z 
 	); 
 
+} 
+
+/* 
+ * Determine the rate of mass production of a given element produced by SNe Ia 
+ * in each zone. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		The multizone object for the current simulation 
+ * index: 	The index of the element to calculate the yield information for 
+ * 
+ * Returns 
+ * ======= 
+ * The rate of mass production of the given element in each zone 
+ * 
+ * header: sneia.h 
+ */ 
+extern double *m_sneia_from_tracers(MULTIZONE mz, unsigned short index) {
+
+	unsigned long i, timestep = (*mz.zones[0]).timestep; 
+	double *mass = (double *) malloc ((*mz.mig).n_zones * sizeof(double)); 
+	for (i = 0l; i < (*mz.mig).n_zones; i++) {
+		mass[i] = 0; 
+	} 
+	for (i = 0l; i < (*mz.mig).tracer_count; i++) {
+		TRACER *t = mz.mig -> tracers[i]; 
+		SNEIA_YIELD_SPECS sneia = *(
+			mz.zones[(*t).zone_current] -> elements[index] -> sneia_yields
+		); 
+		/* pull yield information from the zone this particle originated */ 
+		mass[(*t).zone_current] += (
+			get_ia_yield(*(*mz.zones[(*t).zone_origin]).elements[index], 
+				tracer_metallicity(mz, *t)) * 
+			(*t).mass * 
+			sneia.RIa[timestep - (*t).timestep_origin] 
+		); 
+	} 
+	return mass; 
+
 }
 
+#if 0 
 /* 
  * Enrich each element in each zone according to the SNe Ia associated with 
  * tracer particles. 
@@ -198,7 +241,7 @@ extern void sneia_from_tracers(MULTIZONE *mz) {
 			SNEIA_YIELD_SPECS *sneia = (mz -> zones[(*t).zone_origin] -> 
 				elements[j] -> sneia_yields); 
 			e -> mass += (
-				// (*sneia).yield_ * (*t).mass * 
+				// (*(*e).sneia_yields).entrainment * 
 				get_ia_yield(*e, tracer_metallicity(*mz, *t)) * (*t).mass * 
 				(*sneia).RIa[timestep - (*t).timestep_origin] 
 			); 
@@ -207,7 +250,6 @@ extern void sneia_from_tracers(MULTIZONE *mz) {
 
 } 
 
-#if 0 
 /* 
  * Determine the star formation rate weighted by the SNe Ia rate. See section 
  * 4.3 of VICE's science documentation for more details. 

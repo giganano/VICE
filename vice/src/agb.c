@@ -24,6 +24,7 @@ extern AGB_YIELD_GRID *agb_yield_grid_initialize(void) {
 	agb_grid -> grid = NULL; 
 	agb_grid -> m = NULL; 
 	agb_grid -> z = NULL; 
+	agb_grid -> entrainment = 1; 
 
 	return agb_grid; 
 
@@ -97,11 +98,13 @@ extern double m_AGB(SINGLEZONE sz, ELEMENT e) {
 			
 		} 
 
+		// return (*e.agb_grid).entrainment * mass; 
 		return mass; 
 	}
 
 } 
 
+#if 0
 /* 
  * Enrich each element in each zone according to the AGB stars associated with 
  * tracer particles. 
@@ -134,6 +137,7 @@ extern void agb_from_tracers(MULTIZONE *mz) {
 			 */ 
 			unsigned long n = timestep - (*t).timestep_origin; 
 			ELEMENT *e = sz -> elements[j]; 
+			// e -> mass += (*(*e).agb_grid).entrainment * (
 			e -> mass += (
 				get_AGB_yield( *(*(*mz).zones[(*t).zone_origin]).elements[j], 
 				Z, main_sequence_turnoff_mass(n * (*sz).dt, (*ssp).postMS) ) * 
@@ -144,6 +148,54 @@ extern void agb_from_tracers(MULTIZONE *mz) {
 	}
 
 } 
+#endif 
+
+/* 
+ * Determine the mass of a given element produced by AGB stars in each 
+ * zone. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 			The multizone object for the current simulation 
+ * index: 		The index of the element to determine the mass production for 
+ * 
+ * Returns 
+ * ======= 
+ * The mass of the given element produced in each zone in the next timestep by 
+ * AGB stars. 
+ * 
+ * header: agb.h 
+ */ 
+extern double *m_AGB_from_tracers(MULTIZONE mz, unsigned short index) {
+
+	unsigned long i, timestep = (*mz.zones[0]).timestep; 
+	double *mass = (double *) malloc ((*mz.mig).n_zones * sizeof(double)); 
+	for (i = 0l; i < (*mz.mig).n_zones; i++) {
+		mass[i] = 0; 
+	}
+	for (i = 0l; i < (*mz.mig).tracer_count; i++) {
+		/* 
+		 * Get the tracer particle's current zone and metallicity. Use the SSP 
+		 * evolutionary parameters from the zone in which the tracer particle 
+		 * was born. 
+		 * 
+		 * n: The number of timesteps ago the tracer particle formed. 
+		 */ 
+		TRACER *t = mz.mig -> tracers[i]; 
+		SINGLEZONE *sz = mz.zones[(*t).zone_current]; 
+		SSP *ssp = mz.zones[(*t).zone_origin] -> ssp; 
+		double Z = tracer_metallicity(mz, *t); 
+		unsigned long n = timestep - (*t).timestep_origin; 
+		mass[(*t).zone_current] += (
+			get_AGB_yield( *(*mz.zones[(*t).zone_origin]).elements[index], 
+				Z, main_sequence_turnoff_mass(n * (*sz).dt, (*ssp).postMS) ) * 
+			(*t).mass * 
+			((*ssp).msmf[n] - (*ssp).msmf[n + 1l]) 
+		); 
+	} 
+	return mass; 
+
+}
 
 /* 
  * Determine the fractional yield of a given element from AGB stars at a 

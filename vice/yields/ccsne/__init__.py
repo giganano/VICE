@@ -41,7 +41,8 @@ if not __VICE_SETUP__:
 	__all__ = [str(i) for i in __all__] 	# appease python 2 strings 
 
 	from ._yield_integrator import integrate as fractional 
-	from ...core._dataframe import yield_settings
+	# from ...core._dataframe import yield_settings
+	from ...core.dataframe import yield_settings 
 
 	settings = yield_settings({ 
 		"he": 	0.0616, 

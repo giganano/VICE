@@ -111,6 +111,22 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz);
  */ 
 extern double get_outflow_rate(SINGLEZONE sz); 
 
+/* 
+ * Determines the outflow rate of each element in a singlezone simulation due 
+ * solely to entrainment. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		The singlezone object for the current simulation 
+ * 
+ * Returns 
+ * ======= 
+ * mass: An array containing each element's outflowing mass in Msun 
+ * 
+ * source: ism.c 
+ */ 
+extern double *singlezone_unretained(SINGLEZONE sz); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

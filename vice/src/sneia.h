@@ -98,6 +98,24 @@ extern double mdot_sneia(SINGLEZONE sz, ELEMENT e);
 extern double get_ia_yield(ELEMENT e, double Z); 
 
 /* 
+ * Determine the rate of mass production of a given element produced by SNe Ia 
+ * in each zone. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		The multizone object for the current simulation 
+ * index: 	The index of the element to calculate the yield information for 
+ * 
+ * Returns 
+ * ======= 
+ * The rate of mass production of the given element in each zone 
+ * 
+ * source: sneia.c 
+ */ 
+extern double *m_sneia_from_tracers(MULTIZONE mz, unsigned short index); 
+
+#if 0 
+/* 
  * Enrich each element in each zone according to the SNe Ia associated with 
  * tracer particles. 
  * 
@@ -108,6 +126,7 @@ extern double get_ia_yield(ELEMENT e, double Z);
  * source: sneia.c 
  */ 
 extern void sneia_from_tracers(MULTIZONE *mz); 
+#endif 
 
 /* 
  * Setup the SNe Ia rate in preparation for a singlezone simulation. 

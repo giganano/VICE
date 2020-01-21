@@ -12,11 +12,13 @@ cdef extern from "../src/objects.h":
 		double *m
 		double *z
 		unsigned long n_m
-		unsigned long n_z
+		unsigned long n_z 
+		double entrainment 
 
 	ctypedef struct CCSNE_YIELD_SPECS: 
 		double *yield_ 
 		double *grid 
+		double entrainment 
 
 	ctypedef struct SNEIA_YIELD_SPECS: 
 		char *dtd 
@@ -26,11 +28,13 @@ cdef extern from "../src/objects.h":
 		double *RIa 
 		double tau_ia 
 		double t_d 
+		double entrainment 
 
 	ctypedef struct CHANNEL: 
 		double *yield_ 
 		double *grid 
 		double *rate 
+		double entrainment 
 
 	ctypedef struct ELEMENT: 
 		AGB_YIELD_GRID *agb_grid 

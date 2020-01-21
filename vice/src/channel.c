@@ -100,7 +100,7 @@ extern double mdot(SINGLEZONE sz, ELEMENT e) {
 	for (i = 0lu; i < e.n_channels; i++) {
 		unsigned long j; 
 		for (j = 0l; j < sz.timestep; j++) {
-			mdot_ += (
+			mdot_ += (*e.channels[i]).entrainment * (
 				get_yield((*e.channels[i]), scale_metallicity(sz, j)) * 
 				(*sz.ism).star_formation_history[j] * 
 				(*e.channels[i]).rate[sz.timestep - j] 
@@ -195,7 +195,7 @@ extern void from_tracers(MULTIZONE *mz) {
 			for (k = 0u; k < (*e).n_channels; k++) { 
 				CHANNEL *ch = (mz -> zones[(*t).zone_origin] -> elements[j] -> 
 					channels[k]); 
-				e -> mass += (
+				e -> mass += (*(*e).channels[k]).entrainment * (
 					get_yield(*ch, tracer_metallicity(*mz, *t) * (*t).mass * 
 						(*ch).rate[timestep - (*t).timestep_origin] )
 				); 

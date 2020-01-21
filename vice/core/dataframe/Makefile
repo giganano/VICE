@@ -3,5 +3,6 @@
 
 clean: 
 	rm -f *.c 
-	$(MAKE) -C dataframe/ clean 
+	rm -f *.so 
+
 

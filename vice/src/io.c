@@ -606,11 +606,15 @@ extern void write_history_output(SINGLEZONE sz) {
 		/* infall metallicity */ 
 		fprintf(sz.history_writer, "%e\t", (*sz.elements[i]).Zin[sz.timestep]); 
 	} 
+	double *unretained = singlezone_unretained(sz); 
 	for (i = 0; i < sz.n_elements; i++) { 
 		/* outflow metallicity = enhancement factor x ISM metallicity */ 
 		fprintf(sz.history_writer, "%e\t", 
-			(*sz.ism).enh[sz.timestep] * (*sz.elements[i]).Z[sz.timestep]); 
+			// (*sz.ism).enh[sz.timestep] * (*sz.elements[i]).Z[sz.timestep]); 
+			(*sz.ism).enh[sz.timestep] * (*sz.elements[i]).Z[sz.timestep] + 
+			unretained[i] / get_outflow_rate(sz)); 
 	} 
+	free(unretained); 
 	for (i = 0; i < sz.n_elements; i++) {
 		/* total ISM mass of each element */ 
 		fprintf(sz.history_writer, "%e\t", (*sz.elements[i]).mass); 

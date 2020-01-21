@@ -40,6 +40,7 @@ except (ModuleNotFoundError, ImportError):
 from libc.stdlib cimport malloc, realloc, free 
 from libc.string cimport strlen, strcmp 
 from ._objects cimport FROMFILE 
+from . cimport _dataframe 
 from . cimport _cutils 
 from . cimport _fromfile 
 from . cimport _history 
@@ -128,7 +129,7 @@ cdef class base:
 	Johnson (2019), Science, 6426, 474 
 	"""
 
-	cdef object _frame 
+	# cdef object _frame 
 
 	def __init__(self, frame): 
 		""" 
@@ -308,6 +309,68 @@ Got: %s""" % (type(key)))
 		return self._frame 
 
 
+# cdef class entrainment_settings(base): 
+
+# 	""" 
+# 	A subclass of the VICE dataframe which only allows three keys: "ccsne", 
+# 	"sneia", and "agb". The fields of this dataframe are fractions between 
+# 	0 and 1, and denote the mass fraction of this material's yield that is 
+# 	retained by the ISM. 
+# 	""" 
+
+# 	def __init__(self): 
+# 		"""
+# 		Parameters 
+# 		==========
+# 		frame :: dict 
+# 			A python dictionary to construct the dataframe from 
+# 		""" 
+# 		# =================================================================== # 
+# 		""" 
+# 		(The above docstring is entered purely to keep the __init__ docstring 
+# 		consistent across subclasses and instances of the VICE dataframe. 
+# 		Below is the actual docstring for this function.) 
+
+# 		A highly specialized class in implementation, this dataframe is 
+# 		designed for the sole purpose of holding the entrainment fractions for 
+# 		each enrichment channel recognized by VICE. 
+# 		""" 
+# 		super().__init__({
+# 			"agb": 		1.0, 
+# 			"ccsne": 	1.0, 
+# 			"sneia": 	1.0 
+# 		}) 
+# 		self._recognized_keys = ["agb", "ccsne", "sneia"]  
+
+# 	def __getitem__(self, key): 
+# 		if isinstance(key, strcomp): 
+# 			if key.lower() in self._recognized_keys: 
+# 				return self._frame[key.lower()] 
+# 			else: 
+# 				raise KeyError("Unrecognized dataframe key: %s" % (key)) 
+# 		else: 
+# 			raise IndexError("""Only strings are valid keys to this \
+# dataframe. Got: %s""" % (type(key))) 
+
+# 	def __setitem__(self, key, value): 
+# 		if isinstance(key, strcomp): 
+# 			if key.lower() in self._recognized_keys: 
+# 				if isinstance(value, numbers.Number): 
+# 					if 0 <= value <= 1: 
+# 						self._frame[key.lower()] = value 
+# 					else: 
+# 						raise ValueError("""Entrainment fraction must be \
+# between 0 and 1. Got: %g""" % (value)) 
+# 				else: 
+# 					raise TypeError("""Entrainment fraction must be a real \
+# number. Got: %s""" % (value)) 
+# 			else: 
+# 				raise ValueError("Unrecognized enrichment channel: %s" % (key)) 
+# 		else: 
+# 			raise TypeError("""Item assignment must be done via type str. \
+# Got:%s""" % (type(key))) 
+
+
 #---------------------------- ELEMENTAL SETTINGS ----------------------------# 
 cdef class elemental_settings(base): 
 
@@ -318,32 +381,15 @@ cdef class elemental_settings(base):
 	See docstring of VICE dataframe base class for more information. 
 	""" 
 
-	cdef object _name 
-
-	def __init__(self, frame, name): 
+	def __init__(self, frame): 
 		"""
 		Parameters 
 		==========
 		frame :: dict 
 			A python dictionary to construct the dataframe from 
 		""" 
-		#=====================================================================# 
-		"""
-		(The above docstring is entered purely to keep the __init__ docstring 
-		consistent across subclasses and instances of the VICE dataframe. 
-		Below is the actual docstring for this function.) 
-
-		Parameters 
-		========== 
-		frame :: dict 
-			A python dictionary to construct the dataframe from 
-		name :: str 
-			A string denoting the name of the objects stored as fields in 
-			this dataframe (i.e. infall metallicity.) 
-		""" 
 		# super will make sure frame is a dict whose keys are of type str 
 		super().__init__(frame) 
-		self._name = name 
 
 		# Now make sure each keys is a recognized element 
 		for i in self.keys(): 
@@ -373,6 +419,8 @@ cdef class evolutionary_settings(elemental_settings):
 	See docstring of VICE dataframe base class for more information. 
 	""" 
 
+	# cdef object _name
+
 	def __init__(self, frame, name): 
 		""" 
 		Parameters 
@@ -380,12 +428,24 @@ cdef class evolutionary_settings(elemental_settings):
 		frame :: dict 
 			A python dictionary to construct the dataframe from 
 		""" 
+		"""
+		(The above docstring is entered purely to keep the __init__ docstring 
+		consistent across subclasses and instances of the VICE dataframe. 
+		Below is the actual docstring for this function.) 
 
-		""" 
-		super will make sure that frame is a dict with keys of type str that 
+		super() will make sure that frame is a dict with keys of type str that 
 		are recognized elements 
+
+		Parameters 
+		========== 
+		frame :: dict 
+			A python dictionary to construct the dataframe from 
+		name :: str 
+			A string denoting the name of the objects stored as fields in 
+			this dataframe (i.e. infall metallicity.) 
 		""" 
-		super().__init__(frame, name) 
+		super().__init__(frame) 
+		self._name = name 
 
 		""" 
 		Now make sure that they're all either numerical values or functions of 
@@ -432,6 +492,8 @@ cdef class noncustomizable(elemental_settings):
 	See docstring of VICE dataframe base class for more information. 
 	""" 
 
+	# cdef object _name 
+
 	def __init__(self, frame, name): 
 		"""
 		Parameters 
@@ -444,7 +506,8 @@ cdef class noncustomizable(elemental_settings):
 		super will make sure frame is a dict and that all keys are recognized 
 		elements. 
 		"""
-		super().__init__(frame, name) 
+		super().__init__(frame) 
+		self._name = name 
 
 		"""
 		Instances of this class store built-in data. They must be either 
@@ -489,9 +552,9 @@ cdef class yield_settings(elemental_settings):
 	See docstring of VICE dataframe base class for more information. 
 	""" 
 
-	cdef object __defaults 
-	cdef object _allow_funcs 
-	cdef object _config_field 
+	# cdef object __defaults 
+	# cdef object _allow_funcs 
+	# cdef object _config_field 
 
 	def __init__(self, frame, name, allow_funcs, config_field): 
 		"""
@@ -523,10 +586,10 @@ cdef class yield_settings(elemental_settings):
 			config_field)): 
 			# load settings based on saved yields 
 			super().__init__(pickle.load(open("%syields/%s/settings.config" % (
-				_DIRECTORY_, config_field), "rb")), name) 
+				_DIRECTORY_, config_field), "rb"))) 
 		else: 
 			# load what was passed 
-			super().__init__(frame, name) 
+			super().__init__(frame) 
 
 		"""
 		first argument to this function will always be the factory default 
@@ -727,7 +790,7 @@ cdef class saved_yields(elemental_settings):
 	""" 
 
 	def __init__(self, frame, name): 
-		super().__init__(frame, name) 
+		super().__init__(frame) 
 
 		""" 
 		Saved yields will have already passed the necessary type-checking 
@@ -761,14 +824,14 @@ cdef class fromfile(base):
 
 	See docstring of VICE dataframe base class for more information. 
 	""" 
-	cdef FROMFILE *_ff 
+	# cdef FROMFILE *_ff 
 
 	# Extra keyword args to __cinit__ and __init__ to not break history object 
 	def __cinit__(self, filename = None, adopted_solar_z = None, 
 		labels = None): 
 		self._ff = _fromfile.fromfile_initialize() 
 
-	def __init__(self, filename = None, adopted_solar_z = None, 
+	def __init__(self, filename = None, adoped_solar_z = None, 
 		labels = None): 
 		super().__init__({}) 
 		if os.path.exists(filename): 
@@ -985,10 +1048,10 @@ cdef class history(fromfile):
 	the scaled metallicity of the interstellar medium. 
 	""" 
 
-	cdef char **_elements 
-	cdef unsigned int n_elements 
-	cdef double *solar 
-	cdef double Z_solar 
+	# cdef char **_elements 
+	# cdef unsigned int n_elements 
+	# cdef double *solar 
+	# cdef double Z_solar 
 
 	def __init__(self, filename = None, adopted_solar_z = None, 
 		labels = None): 
