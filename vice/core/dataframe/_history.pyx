@@ -6,6 +6,8 @@ file associated with outputs of the singlezone class.
 """ 
 
 from ..._globals import _VERSION_ERROR_ 
+from ..outputs import _output_utils 
+from .. import _pyutils 
 from . import _base 
 import numbers 
 import sys 
@@ -44,7 +46,7 @@ cdef class history(fromfile):
 	def __init__(self, filename = None, adopted_solar_z = None, 
 		labels = None): 
 		super().__init__(filename = filename, labels = 
-			_load_column_labels_from_file_header(filename)) 
+			_output_utils._load_column_labels_from_file_header(filename)) 
 		elements = self._load_elements() 
 		self.n_elements = <unsigned> len(elements) 
 		self._elements = <char **> malloc (self.n_elements * sizeof(char *)) 
@@ -60,7 +62,7 @@ cdef class history(fromfile):
 
 	def _load_elements(self): 
 		elements = [] 
-		for i in _load_column_labels_from_file_header(self.name):  
+		for i in _output_utils._load_column_labels_from_file_header(self.name):  
 			if i.startswith("mass("): 
 				"""
 				Find elements based on the those with columns of reported 
@@ -229,33 +231,4 @@ cdef class history(fromfile):
 		keys.append("z") 
 		keys.append("[m/h]") 
 		return keys 
-
-
-
-def _load_column_labels_from_file_header(filename): 
-	""" 
-	A subroutine used in initialization of both history and multioutput 
-	objects. 
-
-	Obtains the column labels from the header of the file in the appropriate 
-	format. 
-	""" 
-	with open(filename, 'r') as f: 
-		line = f.readline() 
-		while line[0] == '#': 
-			if line.startswith("# COLUMN NUMBERS:"): break 
-			line = f.readline() 
-		if line[0] == '#': 
-			labels = [] 
-			while line[0] == '#': 
-				line = f.readline().split() 
-				labels.append(line[2].lower()) 
-			f.close() 
-			return tuple(labels[:-1]) 
-		else: 
-			# bad formatting 
-			f.close() 
-			raise IOError("Output file not formatted correctly: %s" % (
-				filename))
-
 

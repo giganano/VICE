@@ -157,12 +157,18 @@ parameter.""")
 		mapped = <double *> malloc (len(masses) * sizeof(double)) 
 		for i in range(len(masses)): 
 			mapped[i] = IMF(masses[i]) 
-		if (imf_set_mass_distribution(imf, mapped)): 
-			free(mapped) 
+		x = imf_set_mass_distribution(imf, mapped) 
+		free(mapped) 
+		if x: 
 			raise ArithmeticError("""Custom IMF evaluated to negative, inf, \
 or nan for at least one stellar mass.""") 
-		else: 
-			free(mapped) 
+		else: pass 
+# 		if (imf_set_mass_distribution(imf, mapped)): 
+# 			free(mapped) 
+# 			raise ArithmeticError("""Custom IMF evaluated to negative, inf, \
+# or nan for at least one stellar mass.""") 
+# 		else: 
+# 			free(mapped) 
 	elif isinstance(IMF, strcomp): 
 		if IMF.lower() in _RECOGNIZED_IMFS_: 
 			set_string(imf[0].spec, IMF.lower()) 

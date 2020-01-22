@@ -3,10 +3,10 @@
 from __future__ import absolute_import 
 from libc.stdio cimport FILE 
 from ..dataframe._entrainment cimport zone_entrainment 
-from . cimport _element 
-from . cimport _ism 
-from . cimport _mdf 
-from . cimport _ssp 
+from ._element cimport ELEMENT 
+from ._ism cimport ISM 
+from ._mdf cimport MDF 
+from ._ssp cimport SSP 
 
 cdef extern from "../../src/objects.h": 
 	ctypedef struct SINGLEZONE: 
@@ -21,10 +21,10 @@ cdef extern from "../../src/objects.h":
 		double Z_solar 
 		unsigned int n_elements 
 		unsigned short verbose 
-		_element.ELEMENT **elements 
-		_ism.ISM *ism 
-		_mdf.MDF *mdf 
-		_ssp.SSP *ssp 
+		ELEMENT **elements 
+		ISM *ism 
+		MDF *mdf 
+		SSP *ssp 
 
 
 cdef extern from "../../src/singlezone.h": 

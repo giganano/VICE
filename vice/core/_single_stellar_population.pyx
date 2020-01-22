@@ -680,8 +680,8 @@ timescales longer than %g Gyr.""" % (_sneia.RIA_MAX_EVAL_TIME))
 	for list of recognized models.""" % (agb_model)) 
 		elif (agb_model.lower() == "karakas10" and 
 			atomic_number[element.lower()] > 28): 
-			raise LookupError("""The %s study did not report yields for elements \
-	heavier than nickel.""" % (_AGB_STUDIES_["karakas10"])) 
+			raise LookupError("""The %s study did not report yields for \
+elements heavier than nickel.""" % (_AGB_STUDIES_["karakas10"])) 
 		else: 
 			pass 
 	else: 

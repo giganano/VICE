@@ -24,10 +24,23 @@ The mass number (protons + neutrons) of stable isotopes of each element
 """ 
 
 from __future__ import absolute_import 
-__all__ = ["atomic_number", "primordial", "solar_z", "sources"] 
-from ._atomic_number import atomic_number 
-from ._primordial import primordial 
-from ._solar_z import solar_z 
-from ._sources import sources 
-from ._stable_isotopes import stable_isotopes 
+try: 
+	__VICE_SETUP__ 
+except NameError: 
+	__VICE_SETUP__ = False 
+
+if not __VICE_SETUP__: 
+	__all__ = [
+		"atomic_number", 
+		"primordial", 
+		"solar_z", 
+		"sources"
+	] 
+	from ._atomic_number import atomic_number 
+	from ._primordial import primordial 
+	from ._solar_z import solar_z 
+	from ._sources import sources 
+	from ._stable_isotopes import stable_isotopes 
+else: 
+	pass 
 
