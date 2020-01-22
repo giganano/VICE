@@ -1,6 +1,7 @@
 # cython: language_level = 3, boundscheck = False 
 
 from __future__ import absolute_import 
+from ..._globals import _RECOGNIZED_ELEMENTS_ 
 from ..singlezone import singlezone 
 import numbers 
 from . cimport _zone_array 
@@ -87,32 +88,42 @@ integer. Got: %g""" % (key))
 		""" 
 		assert isinstance(key, int), "Internal Error" 
 		assert isinstance(sz, singlezone), "Internal Error" 
-		self._zones[int(key)].agb_model 		= sz.agb_model
-		self._zones[int(key)].bins 				= sz.bins
-		self._zones[int(key)].delay 			= sz.delay
-		self._zones[int(key)].dt 				= sz.dt
-		self._zones[int(key)].RIa 				= sz.RIa
-		self._zones[int(key)].elements 			= sz.elements
-		self._zones[int(key)].enhancement 		= sz.enhancement 
-		self._zones[int(key)].entrainment 		= sz.entrainment 
-		self._zones[int(key)].eta 				= sz.eta
-		self._zones[int(key)].func 				= sz.func
-		self._zones[int(key)].IMF 				= sz.IMF
-		self._zones[int(key)].m_lower 			= sz.m_lower
-		self._zones[int(key)].m_upper 			= sz.m_upper
-		self._zones[int(key)].Mg0 				= sz.Mg0
-		self._zones[int(key)].MgSchmidt 		= sz.MgSchmidt
-		self._zones[int(key)].mode 				= sz.mode
-		self._zones[int(key)].name 				= sz.name 
-		self._zones[int(key)].postMS			= sz.postMS 
-		self._zones[int(key)].recycling 		= sz.recycling 
-		self._zones[int(key)].RIa 				= sz.RIa 
-		self._zones[int(key)].schmidt 			= sz.schmidt
-		self._zones[int(key)].schmidt_index 	= sz.schmidt_index
-		self._zones[int(key)].smoothing 		= sz.smoothing
-		self._zones[int(key)].tau_ia 			= sz.tau_ia
-		self._zones[int(key)].tau_star 			= sz.tau_star 
-		self._zones[int(key)].Z_solar 			= sz.Z_solar
-		self._zones[int(key)].Zin 				= sz.Zin
+		self.__copy_entrainment_settings(key, sz)
+		self._zones[key].agb_model 			= sz.agb_model 
+		self._zones[key].bins 				= sz.bins
+		self._zones[key].delay 				= sz.delay
+		self._zones[key].dt 				= sz.dt
+		self._zones[key].RIa 				= sz.RIa
+		self._zones[key].elements 			= sz.elements
+		self._zones[key].enhancement 		= sz.enhancement 
+		self._zones[key].eta 				= sz.eta
+		self._zones[key].func 				= sz.func
+		self._zones[key].IMF 				= sz.IMF
+		self._zones[key].m_lower 			= sz.m_lower
+		self._zones[key].m_upper 			= sz.m_upper
+		self._zones[key].Mg0 				= sz.Mg0
+		self._zones[key].MgSchmidt 			= sz.MgSchmidt
+		self._zones[key].mode 				= sz.mode
+		self._zones[key].name 				= sz.name 
+		self._zones[key].postMS				= sz.postMS 
+		self._zones[key].recycling 			= sz.recycling 
+		self._zones[key].RIa 				= sz.RIa 
+		self._zones[key].schmidt 			= sz.schmidt
+		self._zones[key].schmidt_index 		= sz.schmidt_index
+		self._zones[key].smoothing 			= sz.smoothing
+		self._zones[key].tau_ia 			= sz.tau_ia
+		self._zones[key].tau_star 			= sz.tau_star 
+		self._zones[key].Z_solar 			= sz.Z_solar
+		self._zones[key].Zin 				= sz.Zin
 
+	def __copy_entrainment_settings(self, key, sz): 
+		""" 
+		Copies the entrainment settings into the new zone 
+		""" 
+		assert isinstance(key, int), "Internal Error" 
+		assert isinstance(sz, singlezone), "Internal Error" 
+		for i in _RECOGNIZED_ELEMENTS_: 
+			self._zones[key].entrainment.agb[i] = sz.entrainment.agb[i] 
+			self._zones[key].entrainment.ccsne[i] = sz.entrainment.ccsne[i] 
+			self._zones[key].entrainment.sneia[i] = sz.entrainment.sneia[i] 
 

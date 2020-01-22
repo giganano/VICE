@@ -24,7 +24,8 @@ if not __VICE_SETUP__:
 	from .singlezone import singlezone 
 	from .multizone import multizone 
 	from .outputs import * 
-	from ._mirror import mirror 
+	# from ._mirror import mirror 
+	from .mirror import mirror 
 
 	# __all__.extend(_single_stellar_population.__all__) 
 	__all__.extend(ssp.__all__) 
