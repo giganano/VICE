@@ -15,8 +15,9 @@ if not __VICE_SETUP__:
 	from .dataframe._builtin_dataframes import * 
 	from ._output import * 
 	# from ._pysinglezone import singlezone 
+	# from ._pymultizone import multizone 
 	from .singlezone import singlezone 
-	from ._pymultizone import multizone 
+	from .multizone import multizone 
 	from ._mirror import mirror 
 
 	__all__.extend(_single_stellar_population.__all__) 
