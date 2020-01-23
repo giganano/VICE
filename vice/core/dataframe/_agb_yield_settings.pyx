@@ -83,17 +83,17 @@ cdef class agb_yield_settings(yield_settings):
 		if isinstance(key, strcomp): 
 			if key.lower() in _RECOGNIZED_ELEMENTS_: 
 				if isinstance(value, strcomp): 
-
-					# Type str -> adopt a given study from a keyword 
 					if value.lower() in _RECOGNIZED_STUDIES_: 
-						# Double check for compatibility with Karakas (2010) 
-						if value.lower() == "karakas10" and any(map(lambda x: 
-							atomic_number[x] > 28, self.elements)): 
-								raise LookupError("""\
+						if (value.lower() == "karakas10" and 
+							atomic_number[key] > 28): 
+							""" 
+							Karakas et al. (2010) table only goes up to Ni. 
+							""" 
+							raise LookupError("""\
 The Karakas (2010), MNRAS, 403, 1413 study did not report yields for elements \
 heavier than nickel. Please modify the attribute 'elements' to exclude these \
-elements from the simulation (or adopt an alternate yield model) before 
-proceeding.""") 
+elements from the simulation (or adopt an alternate yield model) before \
+proceeding.""") 		
 						else: 
 							self._frame[key.lower()] = value.lower() 
 					else: 

@@ -30,10 +30,11 @@ def test_parameters(**kwargs):
 		"history":			True, 
 		"mdf": 				True 
 	}
-	try: 
-		vice.singlezone(**kwargs).run(_OUTTIMES_, overwrite = True) 
-	except: 
-		tracker["singlezone"] = False 
+	vice.singlezone(**kwargs).run(_OUTTIMES_, overwrite = True) 
+	# try: 
+		# vice.singlezone(**kwargs).run(_OUTTIMES_, overwrite = True) 
+	# except: 
+		# tracker["singlezone"] = False 
 	try: 
 		assert(isinstance(vice.history("onezonemodel"), vice.dataframe)) 
 	except: 
@@ -106,7 +107,7 @@ def main():
 							for o in _TAU_STAR_: 
 								for p in _SCHMIDT_: 
 									for q in _AGB_MODEL_: 
-										params["elements"] = ["fe", "o", "c"]  
+										params["elements"] = ["fe", "o", "c"] 
 										params["mode"] = i 
 										params["IMF"] = j 
 										params["eta"] = k 

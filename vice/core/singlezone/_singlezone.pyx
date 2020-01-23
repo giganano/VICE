@@ -14,7 +14,8 @@ from ..._globals import _VERSION_ERROR_
 from ..._globals import _DEFAULT_FUNC_ 
 from ..._globals import _DEFAULT_BINS_ 
 from ..._globals import _DIRECTORY_ 
-from ..._globals import ScienceWarning
+from ..._globals import VisibleDeprecationWarning 
+from ..._globals import ScienceWarning 
 from ..dataframe import evolutionary_settings 
 from ..dataframe import atomic_number 
 from ..dataframe import primordial 
@@ -1316,6 +1317,7 @@ All elemental yields in the current simulation will be set to the table of \
 %s with linear interpolation between masses and metallicities on the grid. 
 """ % (studies[value.lower()]) 
 					
+					self._agb_model = value.lower() 
 					for i in self.elements: 
 						agb.settings[i] = value.lower() 
 
@@ -1325,7 +1327,7 @@ All elemental yields in the current simulation will be set to the table of \
 				pass 
 
 			msg += "\nThis feature will be removed in a future release of VICE." 
-			warnings.warn(msg, DeprecationWarning) 
+			warnings.warn(msg, VisibleDeprecationWarning) 
 
 		else: 
 			self._agb_model = None 
@@ -1899,63 +1901,66 @@ negative value for at least one timestep.""")
 		# Take a snapshot of the current yield settings 
 		ccsne_yields = self._sz[0].n_elements * [None] 
 		sneia_yields = self._sz[0].n_elements * [None] 
+		agb_yields = self._sz[0].n_elements * [None] 
 		for i in range(self._sz[0].n_elements): 
 			ccsne_yields[i] = ccsne.settings[self.elements[i]] 
 			sneia_yields[i] = sneia.settings[self.elements[i]] 
+			agb_yields[i] = agb.settings[self.elements[i]] 
 
 		# Turn them back into dictionaries 
 		ccsne_yields = dict(zip(self.elements, ccsne_yields)) 
 		sneia_yields = dict(zip(self.elements, sneia_yields)) 
+		agb_yields = dict(zip(self.elements, agb_yields)) 
 
-		# See which elements have functional yields 
-		encoded_cc = tuple(filter(lambda x: callable(ccsne_yields[x.lower()]), 
-			self.elements)) 
-		if len(encoded_cc) > 0: 
-			if "dill" not in sys.modules: 
-				# certain elements will be saved with yield = None 
-				message = """\
-Encoding functional yields from core-collapse supernovae along with VICE \
-outputs requires the package dill (installable via pip). Yields for the \
-following elements will not be saved: """
-				for i in encoded_cc: 
-					message += "%s " % (i) 
-					ccsne_yields[i.lower()] = None 
+		def forget_functionals(settings, name): 
+			""" 
+			Modifies local copy of functional yield to None in the case that 
+			dill is not installed. 
 
-				# warn the user 
-				warnings.warn(message, UserWarning) 
+			Parameters 
+			========== 
+			settings :: dict 
+				The local copy of the current settings 
+			name :: str 
+				The name of the enrichment channel 
+
+			Returns 
+			======= 
+			A (modified, if necessary) copy of the settings 
+
+			Raises 
+			====== 
+			UserWarning :: 
+				::	Dill is not installed and there's a functional yield 
+			""" 
+			encoded = tuple(filter(lambda x: callable(settings[x.lower()]), 
+				self.elements)) 
+			if len(encoded) > 0: 
+				if "dill" not in sys.modules: 
+					msg = """\
+Encoding functional yields from %s along with VICE outputs requires the \
+package dill (installable via pip). Yields for the following elements will \
+not be saved: """ % (name) 
+					for i in encoded: 
+						msg += "%s " % (i) 
+						settings[i.lower()] = None 
+					warnings.warn(msg, UserWarning) 
+				else: 
+					pass 
 			else: 
-				# user has dill, everything will be encoded just fine 
 				pass 
-		else: 
-			# none are encoded anyway, dill doesn't matter 
-			pass 
+			return settings 
 
-		encoded_ia = tuple(filter(lambda x: callable(sneia_yields[x.lower()]), 
-			self.elements)) 
-		if len(encoded_ia) > 0: 
-			if "dill" not in sys.modules: 
-				# certain element will be saved with yield = None 
-				message = """\
-Encoding function yields from type Ia supernovae along with VICE outputs \
-requires the package dill (installable via pip). Yields for the following \
-elements will not be saved: """ 
-				for i in encoded_ia: 
-					message += "%s " % (i) 
-					sneia_yields[i.lower()] = None 
-
-				# warn the user 
-				warnings.warn(message, UserWarning) 
-			else: 
-				# user has dill, everything will be encoded just fine 
-				pass 
-		else: 
-			# none are encoded anyway, dill doesn't matter 
-			pass 
+		ccsne_yields = forget_functionals(ccsne_yields, "CCSNe") 
+		sneia_yields = forget_functionals(sneia_yields, "SNe Ia") 
+		agb_yields = forget_functionals(agb_yields, "AGB stars") 
 
 		# pickle the dataframes 
 		pickle.dump(ccsne_yields, open("%s.vice/ccsne_yields.config" % (
 			self.name), "wb")) 
 		pickle.dump(sneia_yields, open("%s.vice/sneia_yields.config" % (
+			self.name), "wb")) 
+		pickle.dump(agb_yields, open("%s.vice/agb_yields.config" % (
 			self.name), "wb")) 
 
 	def save_attributes(self): 

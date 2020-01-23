@@ -51,7 +51,9 @@ cdef class saved_yields(elemental_settings):
 			if i.lower() not in _RECOGNIZED_ELEMENTS_: 
 				raise ValueError("Unrecognized element: %s" % (i))  
 			elif not (isinstance(self._frame[i.lower()], numbers.Number) or 
-				callable(self._frame[i.lower()])): 
+				isinstance(self._frame[i.lower()], strcomp) or 
+				callable(self._frame[i.lower()]) 
+				): 
 				raise TypeError("""%s yield setting must be either a \
 numerical value or a callable function. Got: %s""" % (self._name, 
 					type(self._frame[i.lower()]))) 

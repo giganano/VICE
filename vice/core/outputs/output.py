@@ -172,6 +172,19 @@ class output:
 		"""
 		return self.__c_version.mdf 
 
+	@property 
+	def agb_yields(self): 
+		""" 
+		Type :: dataframe 
+
+		A dataframe encoding the settings for nucleosynthetic yields from 
+		asymptotic giant branch stars at the time the simulation was ran. 
+
+		See Also 
+		======== 
+		vice.yields.agb.settings 
+		""" 
+
 	@property
 	def ccsne_yields(self): 
 		"""

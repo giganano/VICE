@@ -46,7 +46,7 @@ def sources_assertions(x):
 
 def solar_z_assertions(x): 
 	assert isinstance(x, numbers.Number) 
-	assert x < 0.02  
+	assert 0 < x < 1 
 
 def cc_settings_assertions(x): 
 	if isinstance(x, numbers.Number): 

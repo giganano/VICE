@@ -25,12 +25,12 @@ References
 (2) Salpeter (1955), ApJ, 121, 161 
 """
 
+__all__ = ["_DEFAULT_FUNC_", "_DEFAULT_BINS_", "_RECOGNIZED_ELEMENTS_", 
+	"_RECOGNIZED_IMFS_"] 
+
 import warnings
 import os
 
-__all__ = ["_DEFAULT_FUNC_", "_DEFAULT_BINS_", "_RECOGNIZED_ELEMENTS_", 
-	"_RECOGNIZED_IMFS_"] 
-__all__ = [str(i) for i in __all__] # appease python 2 strings 
 
 # The path to the directory after installation 
 _DIRECTORY_ = "%s/" % (os.path.dirname(os.path.abspath(__file__)))
@@ -40,10 +40,8 @@ The default bins into which a stellar metallicity distribution function
 will be sorted by the singlezone class. It spans the range from -3 to 1 in each 
 [X/H] abundance and [X/Y] abundance ratio with 0.01-dex width bins. 
 """
-_DEFAULT_BINS_ = 81 * [0.]
-for i in range(81): 
-	_DEFAULT_BINS_[i] = -3. + 0.05 * i 
-del i
+_DEFAULT_BINS_ = 81 * [0.] 
+_DEFAULT_BINS_ = [-3. + 0.05 * i for i in range(81)] 
 
 """
 Elements and initial mass functions built into VICE. The user cannot simply 
@@ -70,19 +68,6 @@ def _DEFAULT_FUNC_(t):
 	"""
 	return 9.1 
 
-# def _DEFAULT_TRACER_MIGRATION_(n, t): 
-# 	""" 
-# 	The default stellar migration prescription. This returns a function which 
-# 	is always a delta function at the zone number n - a migration prescription 
-# 	that produces no migration. 
-# 	""" 
-# 	def _DISTRIBUTION_(n2): 
-# 		""" 
-# 		The distribution of stars is a delta function at the n'th zone. 
-# 		""" 
-# 		return int(n <= n2 < n + 1) 
-
-# 	return _DISTRIBUTION_ 
 
 def _DEFAULT_TRACER_MIGRATION_(zone, tform): 
 	""" 
@@ -108,6 +93,7 @@ def _DEFAULT_TRACER_MIGRATION_(zone, tform):
 		return zone 
 	return _ZONE_OCCUPATION_ 
 
+
 def _VERSION_ERROR_():
 	"""
 	Raises a RuntimeError in the event that the user has import VICE into a 
@@ -116,6 +102,7 @@ def _VERSION_ERROR_():
 	"""
 	message = "Only python version 2.7 and >= 3.5 are supported by VICE" 
 	raise RuntimeError(message)	
+
 
 class ScienceWarning(UserWarning): 
 	"""
@@ -136,7 +123,12 @@ class ScienceWarning(UserWarning):
 	"""
 	pass 
 
-# Get rid of local variables 
-del warnings 
-del os 
+
+class VisibleDeprecationWarning(UserWarning): 
+	""" 
+	A deprecation warning which - contrary to the python default deprecation 
+	warning - is visible by default. Features which raise this warning are 
+	deprecated and will be removed in a future release of VICE. 
+	""" 
+	pass 
 

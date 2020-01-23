@@ -64,6 +64,7 @@ def _check_singlezone_output(name):
 	singlezone_output_files = [
 		"history.out", 
 		"mdf.out", 
+		"agb_yields.config", 
 		"ccsne_yields.config", 
 		"sneia_yields.config", 
 		"params.config" 

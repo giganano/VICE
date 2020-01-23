@@ -62,8 +62,22 @@ cdef class c_output:
 		self._elements = self._hist._load_elements() 
 
 		# Read in the yield settings 
-		self.__load_ccsne_yields() 
-		self.__load_sneia_yields() 
+		# self.__load_ccsne_yields() 
+		# self.__load_sneia_yields() 
+		# self.__load_agb_yields() 
+
+		from ...yields import agb 
+		from ...yields import ccsne 
+		from ...yields import sneia 
+		self._agb_yields = self.__load_saved_yields(
+			"agb_yields.config", agb.settings, "AGB star" 
+		) 
+		self._ccsne_yields = self.__load_saved_yields(
+			"ccsne_yields.config", ccsne.settings, "CCSN"
+		) 
+		self._sneia_yields = self.__load_saved_yields(
+			"sneia_yields.config", sneia.settings, "SN Ia"
+		) 
 
 	@property 
 	def name(self): 
@@ -94,6 +108,11 @@ cdef class c_output:
 	def sneia_yields(self): 
 		# docstring in python version 
 		return self._sneia_yields 
+
+	@property 
+	def agb_yields(self): 
+		# docstring in python version 
+		return self._agb_yields 
 
 	def show(self, key, xlim = None, ylim = None): 
 		# docstring in python version 
@@ -252,117 +271,169 @@ function to fail. Install matplotlib >= 2 to prevent this in the future. \
 		else:
 			return key 
 
-	def __load_ccsne_yields(self): 
-		"""
-		Reads in the CCSNe yield settings from the output 
+	def __load_saved_yields(self, config_filename, yield_settings, name): 
+		""" 
+		Loads the saved_yields object associated with a given enrichment 
+		channel from the output. 
 
-		These may have functional yield settings 
-		"""
-		if os.path.exists("%s/ccsne_yields.config" % (self._name)): 
-			try: 
-				"""
-				If functional yields can't be read in, that indicates the 
-				simulation was ran on a computer that had dill installed, but 
-				is reading them in on a computer that does not have dill. 
-				"""
-				yields = pickle.load(open("%s/ccsne_yields.config" % (
-					self._name), "rb"))
-			except ImportError: 
-				raise ImportError("""\
-This output has encoded functional yields, indicating that it was ran on a \
-system on which dill is installed (installable via pip). to read in this \
-VICE output, please either install dill or rerun the integration on this 
-machine if its parameters are known.""") 
+		Parameters 
+		========== 
+		config_filename :: str 
+			The name of the file that stores the saved yields within the 
+			output. 
+		yield_settings :: str 
+			The current yield settings for this enrichment channel. 
+		name :: str 
+			The name of the enrichment channel. 
 
-			"""
-			Check for forgotten functional attributes if the user doesn't have 
-			dill 
-			"""
-			if any(list(map(lambda x: yields[x] == None, self._elements))): 
-				"""
-				Not the most elegant solution to needing an instance of a yield 
-				dataframe here, but this doesn't cause nested import errors and 
-				works in only one line. 
-				"""
-				from ...yields.ccsne import settings 
-				message = """\
+		Returns 
+		======= 
+		A reconstructed copy of the yield settings as a saved_yield object 
+
+		Raises 
+		====== 
+		IOError :: 
+			::	File holding encoded settings not found 
+		ScienceWarning :: 
+			::	Functional yields not saved in the output 
+		""" 
+		if os.path.exists("%s/%s" % (self._name, config_filename)): 
+			yields = pickle.load(
+				open("%s/%s" % (self._name, config_filename), "rb") 
+			) 
+			if "dill" not in sys.modules: 
+				if any([yields[i] is None for i in self.elements]): 
+					lost = list(filter(
+						lambda x: yields[x] is None, self.elements
+					))
+					msg = """\
 Re-instancing functional yields from a VICE output requires the python \
 package dill (installable via pip). The following elements tracked by this \
-simulation will have a core-collapse yield set to the current setting, which \
-may not reflect the yield settings at the time of integration: """
-				for i in self._elements: 
-					if yields[i] == None: 
-						yields[i] = settings[i]
-						message += "%s " % (i) 
-					else:
-						continue 
+simulation will have a %s yield set to the current setting, which may not \
+reflect the yield settings at the time of integration: """ % (name) 
+					for i in lost: 
+						yields[i] = yield_settings[i] 
+						msg += "%s " % (i) 
+					warnings.warn(msg, ScienceWarning) 
+				else: pass # no functions anway, move on 
+			else: pass # functions would've been read just fine 
+			return saved_yields(yields, name) 
+		else: 
+			raise IOError("""%s yield settings not found for simulation: \
+%s/%s""" % (name, self._name, config_filename)) 
 
-				del settings
-				warnings.warn(message, ScienceWarning)
 
-			else:
-				pass 
+# 	def __load_ccsne_yields(self): 
+# 		"""
+# 		Reads in the CCSNe yield settings from the output 
 
-			# Cast as a non-customizable dataframe 
-			self._ccsne_yields = saved_yields(yields, "CCSNe")  
-		else:
-			raise IOError("""Core-collapse yield settings not found for \
-simulation: %s/ccsne_yields.config""" % (self._name)) 
+# 		These may have functional yield settings 
+# 		"""
+# 		if os.path.exists("%s/ccsne_yields.config" % (self._name)): 
+# 			try: 
+# 				"""
+# 				If functional yields can't be read in, that indicates the 
+# 				simulation was ran on a computer that had dill installed, but 
+# 				is reading them in on a computer that does not have dill. 
+# 				"""
+# 				yields = pickle.load(open("%s/ccsne_yields.config" % (
+# 					self._name), "rb"))
+# 			except ImportError: 
+# 				raise ImportError("""\
+# This output has encoded functional yields, indicating that it was ran on a \
+# system on which dill is installed (installable via pip). to read in this \
+# VICE output, please either install dill or rerun the integration on this 
+# machine if its parameters are known.""") 
 
-	def __load_sneia_yields(self): 
-		"""
-		Reads in the SN Ia yield settings from the output 
+# 			"""
+# 			Check for forgotten functional attributes if the user doesn't have 
+# 			dill 
+# 			"""
+# 			if any(list(map(lambda x: yields[x] == None, self._elements))): 
+# 				"""
+# 				Not the most elegant solution to needing an instance of a yield 
+# 				dataframe here, but this doesn't cause nested import errors and 
+# 				works in only one line. 
+# 				"""
+# 				from ...yields.ccsne import settings 
+# 				message = """\
+# Re-instancing functional yields from a VICE output requires the python \
+# package dill (installable via pip). The following elements tracked by this \
+# simulation will have a core-collapse yield set to the current setting, which \
+# may not reflect the yield settings at the time of integration: """
+# 				for i in self._elements: 
+# 					if yields[i] == None: 
+# 						yields[i] = settings[i]
+# 						message += "%s " % (i) 
+# 					else:
+# 						continue 
 
-		These may have functional yield settings 
-		"""
-		if os.path.exists("%s/sneia_yields.config" % (self._name)): 
-			try: 
-				"""
-				If functional yields can't be read in, that indicates the 
-				simulation was ran on a computer that had dill installed, but 
-				is reading them in on a computer that does not have dill. 
-				"""
-				yields = pickle.load(open("%s/sneia_yields.config" % (
-					self._name), "rb"))
-			except ImportError: 
-				raise ImportError("""\
-This output has encoded functional yields, indicating that it was ran on a \
-system on which dill is installed (installable via pip). to read in this \
-VICE output, please either install dill or rerun the integration on this 
-machine if its parameters are known.""") 
+# 				del settings
+# 				warnings.warn(message, ScienceWarning)
 
-			"""
-			Check for forgotten functional attributes if the user doesn't have 
-			dill 
-			"""
-			if any(list(map(lambda x: yields[x] == None, self._elements))): 
-				"""
-				Not the most elegant solution to needing an instance of a yield 
-				dataframe here, but this doesn't cause nested import errors and 
-				works in only one line. 
-				"""
-				from ...yields.sneia import settings 
-				message = """\
-Re-instancing functional yields from a VICE output requires the python \
-package dill (installable via pip). The following elements tracked by this \
-simulation will have a type Ia supernova yield set to the current setting, \
-which may not reflect the yield settings at the time of integration: """
-				for i in self._elements: 
-					if yields[i] == None: 
-						yields[i] = settings[i]
-						message += "%s " % (i) 
-					else:
-						continue 
+# 			else:
+# 				pass 
 
-				del settings
-				warnings.warn(message, ScienceWarning)
+# 			# Cast as a non-customizable dataframe 
+# 			self._ccsne_yields = saved_yields(yields, "CCSNe")  
+# 		else:
+# 			raise IOError("""Core-collapse yield settings not found for \
+# simulation: %s/ccsne_yields.config""" % (self._name)) 
 
-			else:
-				pass 
+# 	def __load_sneia_yields(self): 
+# 		"""
+# 		Reads in the SN Ia yield settings from the output 
 
-			# Cast as a non-customizable dataframe 
-			self._sneia_yields = saved_yields(yields, "SNe Ia")  
-		else:
-			raise IOError("""Type Ia supernova yield settings not found for \
-simulation: %s/ccsne_yields.config""" % (self._name)) 
+# 		These may have functional yield settings 
+# 		"""
+# 		if os.path.exists("%s/sneia_yields.config" % (self._name)): 
+# 			try: 
+# 				"""
+# 				If functional yields can't be read in, that indicates the 
+# 				simulation was ran on a computer that had dill installed, but 
+# 				is reading them in on a computer that does not have dill. 
+# 				"""
+# 				yields = pickle.load(open("%s/sneia_yields.config" % (
+# 					self._name), "rb"))
+# 			except ImportError: 
+# 				raise ImportError("""\
+# This output has encoded functional yields, indicating that it was ran on a \
+# system on which dill is installed (installable via pip). to read in this \
+# VICE output, please either install dill or rerun the integration on this 
+# machine if its parameters are known.""") 
+
+# 			"""
+# 			Check for forgotten functional attributes if the user doesn't have 
+# 			dill 
+# 			"""
+# 			if any(list(map(lambda x: yields[x] == None, self._elements))): 
+# 				"""
+# 				Not the most elegant solution to needing an instance of a yield 
+# 				dataframe here, but this doesn't cause nested import errors and 
+# 				works in only one line. 
+# 				"""
+# 				from ...yields.sneia import settings 
+# 				message = """\
+# Re-instancing functional yields from a VICE output requires the python \
+# package dill (installable via pip). The following elements tracked by this \
+# simulation will have a type Ia supernova yield set to the current setting, \
+# which may not reflect the yield settings at the time of integration: """
+# 				for i in self._elements: 
+# 					if yields[i] == None: 
+# 						yields[i] = settings[i]
+# 						message += "%s " % (i) 
+# 					else:
+# 						continue 
+
+# 				del settings
+# 				warnings.warn(message, ScienceWarning)
+
+# 			else:
+# 				pass 
+
+# 			# Cast as a non-customizable dataframe 
+# 			self._sneia_yields = saved_yields(yields, "SNe Ia")  
+# 		else:
+# 			raise IOError("""Type Ia supernova yield settings not found for \
+# simulation: %s/ccsne_yields.config""" % (self._name)) 
 
