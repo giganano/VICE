@@ -21,7 +21,7 @@ from ..dataframe import primordial
 from ..dataframe import solar_z 
 from ..dataframe import sources 
 from ..dataframe import base 
-from .._output import output 
+from ..outputs import output 
 from ...yields import agb 
 from ...yields import ccsne 
 from ...yields import sneia 

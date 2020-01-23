@@ -7,7 +7,7 @@ from ..._globals import ScienceWarning
 from ..dataframe._builtin_dataframes import atomic_number 
 from ..dataframe._builtin_dataframes import solar_z 
 from ..dataframe._builtin_dataframes import sources 
-from .._output import output 
+from ..outputs import output 
 from ...yields import agb 
 from ...yields import ccsne 
 from ...yields import sneia 
