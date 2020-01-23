@@ -8,7 +8,7 @@ from __future__ import absolute_import
 from ..._globals import _DIRECTORY_ 
 from ..._globals import _RECOGNIZED_ELEMENTS_ 
 from ..._globals import _VERSION_ERROR_ 
-from ...core._builtin_dataframes import atomic_number 
+from ...core.dataframe._builtin_dataframes import atomic_number 
 from ...core import _pyutils 
 import sys 
 import os 
@@ -21,11 +21,11 @@ else:
 
 # C imports 
 from libc.stdlib cimport malloc, free 
-from ...core._objects cimport AGB_YIELD_GRID, ELEMENT 
-from ...core cimport _agb 
-from ...core cimport _cutils 
-from ...core cimport _element 
-from ...core cimport _io 
+from ...core.singlezone._agb cimport AGB_YIELD_GRID 
+from ...core.singlezone._element cimport ELEMENT 
+from ...core.singlezone cimport _agb 
+from ...core.singlezone cimport _element 
+from ...core.singlezone cimport _io 
 
 _RECOGNIZED_STUDIES_ = tuple(["cristallo11", "karakas10"]) 
 
@@ -158,6 +158,7 @@ heavier than nickel (atomic number 28).""" % (studies["karakas10"]))
 		return [tuple(i) for i in [[tuple(j) for j in yields], masses, 
 			metallicities]] 
 
+
 def find_yield_file(element, study): 
 	""" 
 	Determines the full path to the file containing the mass-metallicity 
@@ -197,8 +198,5 @@ def find_yield_file(element, study):
 	else: 
 		return "%syields/agb/%s/%s.dat" % (_DIRECTORY_, study.lower(), 
 			element.lower()) 
-
-
-
 
 

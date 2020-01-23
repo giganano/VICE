@@ -18,11 +18,11 @@ else:
 	_VERSION_ERROR_() 
 
 from libc.stdlib cimport malloc, free 
-from ._objects cimport IMF_ 
-from ._objects cimport AGB_YIELD_GRID 
-from . cimport _agb 
-from . cimport _ccsne 
-from . cimport _sneia 
+from .singlezone._imf cimport IMF_ 
+from .singlezone._agb cimport AGB_YIELD_GRID 
+from .singlezone cimport _agb 
+from .singlezone cimport _ccsne 
+from .singlezone cimport _sneia 
 cdef extern from "../src/utils.h": 
 	double *binspace(double start, double stop, long N) 
 	void set_char_p_value(char *dest, int *ords, int length) 

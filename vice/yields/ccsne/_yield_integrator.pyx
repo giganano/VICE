@@ -10,7 +10,7 @@ from ..._globals import _RECOGNIZED_ELEMENTS_
 from ..._globals import _RECOGNIZED_IMFS_ 
 from ..._globals import _VERSION_ERROR_ 
 from ..._globals import ScienceWarning 
-from ...core._builtin_dataframes import atomic_number 
+from ...core.dataframe._builtin_dataframes import atomic_number 
 from ...core import _pyutils 
 import math as m 
 import warnings 
@@ -25,125 +25,17 @@ else:
 	_VERSION_ERROR_() 
 
 # C Functions 
-from libc.stdlib cimport malloc, free 
-""" 
-<--------------- C routine comment headers not duplicated here ---------------> 
-
-Notes 
-===== 
-The following pythonic relative import line: 
-from ...core cimport _ccsne 
-produced the following line in the output .c file: 
-#include "..src/objects.h" 
-which appears in the _ccsne.pxd file. This renders a relative import from 
-this file impossible, so we can simply cdef the necessary functions here. 
-Since there are only two of them, this is simpler than modifying the 
-vice/core/_ccsne.pxd file to allow it. 
-""" 
-cdef extern from "../../src/objects.h": 
-	ctypedef struct IMF_: 
-		char *spec 
-		double m_lower 
-		double m_upper 
-		double *mass_distribution 
-
-	ctypedef struct INTEGRAL: 
-		double (*func)(double) 
-		double a 
-		double b 
-		double tolerance 
-		unsigned long method 
-		unsigned long Nmax 
-		unsigned long Nmin 
-		unsigned long iters 
-		double result 
-		double error 
-
-cdef extern from "../../src/quadrature.h": 
-	INTEGRAL *integral_initialize() 
-	void integral_free(INTEGRAL *intgrl) 
-
-cdef extern from "../../src/ccsne.h": 
-	void set_explodability_criteria(double *masses, unsigned int n_masses, 
-		double *explodability)
-	# unsigned short IMFintegrated_fractional_yield_numerator(INTEGRAL *intgrl, 
-	# 	char *file, char *IMF) 
-	# unsigned short IMFintegrated_fractional_yield_denominator(INTEGRAL *intgrl, 
-	# 	char *IMF)  
-	unsigned short IMFintegrated_fractional_yield_numerator(INTEGRAL *intgrl, 
-		IMF_ *imf, char *file) 
-	unsigned short IMFintegrated_fractional_yield_denominator(INTEGRAL *intgrl, 
-		IMF_ *imf)  
-
-cdef extern from "../../src/imf.h": 
-	unsigned long SPEC_CHARP_SIZE 
-	double IMF_STEPSIZE 
-	IMF_ *imf_initialize(double m_lower, double m_upper) 
-	void imf_free(IMF_ *imf) 
-	unsigned long n_mass_bins(IMF_ imf) 
-	unsigned short imf_set_mass_distribution(IMF_ *imf, double *arr) 
-
-cdef extern from "../../src/utils.h": 
-	void set_char_p_value(char *dest, int *ords, int length)
-
-cdef double *copy_pylist(source): 
-	""" 
-	Copy a python list into a C double. This is in vice/core/_cutils.pxd, but 
-	a relative import of that file is not possible; see notes above. 
-	""" 
-	cdef double *arr = <double *> malloc (len(source) * sizeof(double)) 
-	for i in range(len(source)): 
-		arr[i] = source[i] 
-	return arr 
-
-cdef IMF_ *imf_object(IMF, m_lower, m_upper) except *: 
-	if callable(IMF): 
-		_pyutils.args(IMF, """Stellar IMF must accept only one numerical \
-parameter.""") 
-		spec = "custom" 
-	elif isinstance(IMF, strcomp): 
-		if IMF.lower() in _RECOGNIZED_IMFS_: 
-			spec = IMF.lower() 
-		else: 
-			raise ValueError("Unrecognized IMF: %s" % (IMF)) 
-	else: 
-		raise TypeError("""Keyword arg 'IMF' must be either a string denoting \
-a built-in IMF or a callable function denoting a custom IMF. Got: %s""" % (
-			type(IMF))) 
-	# cdef char *cspec = <char *> malloc (1 + len(spec) * sizeof(char)) 
-	cdef IMF_ *imf = imf_initialize(m_lower, m_upper) 
-	cdef int *ords = <int *> malloc (len(spec) * sizeof(int)) 
-	for i in range(len(spec)): 
-		ords[i] = ord(spec[i]) 
-	set_char_p_value(imf[0].spec, ords, len(spec)) 
-	free(ords) 
-
-	cdef double *mapped 
-	if callable(IMF): 
-		masses = _pyutils.range_(m_lower, m_upper, IMF_STEPSIZE) 
-		mapped = <double *> malloc (len(masses) * sizeof(double)) 
-		for i in range(len(masses)): 
-			mapped[i] = IMF(masses[i]) 
-		x = imf_set_mass_distribution(imf, mapped) 
-		free(mapped) 
-		if x: 
-			imf_free(imf) 
-			raise ArithmeticError("""Custom IMF evaluated to negative, inf, \
-or nan for at least one stellar mass.""") 
-		else: 
-			pass 
-	else: 
-		pass 
-	
-	return imf 
-
-
+from libc.stdlib cimport free 
+from ...core._cutils cimport copy_pylist 
+from ._yield_integrator cimport IMF_ 
+from ._yield_integrator cimport INTEGRAL 
+from . cimport _yield_integrator 
 
 # Recognized methods of numerical quadrature and yield studies 
 _RECOGNIZED_METHODS_ = tuple(["simpson", "midpoint", "trapezoid", "euler"]) 
 _RECOGNIZED_STUDIES_ = tuple(["WW95", "LC18", "CL13", "CL04", "NKT13"])  
 
-#----------------------- FRACTIONAL_CC_YIELD FUNCTION -----------------------# 
+
 def integrate(element, study = "LC18", MoverH = 0, rotation = 0, 
 	mass_ranges = [], explodability = [], IMF = "kroupa", method = "simpson", 
 	m_lower = 0.08, m_upper = 100, tolerance = 1e-3, Nmin = 64, Nmax = 2e8): 
@@ -451,7 +343,8 @@ overspecified.""" % (studies[study.upper()]), ScienceWarning)
 	# Send the explodability criteria to ccsne.c, the rest is handled there. 
 	cdef double *c_masses = copy_pylist(_masses) 
 	cdef double *c_explodability = copy_pylist(explodability) 
-	set_explodability_criteria(c_masses, len(_masses), c_explodability) 
+	_yield_integrator.set_explodability_criteria(c_masses, len(_masses), 
+		c_explodability) 
 	free(c_masses) 
 	free(c_explodability) 
 
@@ -526,7 +419,7 @@ own discretion by modifying their CCSNe yield settings directly.""" % (
 	cdef IMF_ *imf_obj = imf_object(IMF, m_lower, m_upper) 
 
 	# Compute the yield 
-	cdef INTEGRAL *num = integral_initialize() 
+	cdef INTEGRAL *num = _yield_integrator.integral_initialize() 
 	num[0].a = m_lower 
 	num[0].b = m_upper 
 	num[0].tolerance = tolerance 
@@ -534,7 +427,7 @@ own discretion by modifying their CCSNe yield settings directly.""" % (
 	num[0].Nmax = <unsigned long> Nmax 
 	num[0].Nmin = <unsigned long> Nmin 
 	try: 
-		x = IMFintegrated_fractional_yield_numerator(num, 
+		x = _yield_integrator.IMFintegrated_fractional_yield_numerator(num, 
 			# filename.encode("latin-1"), 
 			# IMF.lower().encode("latin-1")) 
 			imf_obj, 
@@ -548,10 +441,10 @@ Estimated fractional error: %.2e""" % (num[0].error), ScienceWarning)
 			pass 
 	finally: 
 		numerator = [num[0].result, num[0].error, num[0].iters] 
-		integral_free(num) 
+		_yield_integrator.integral_free(num) 
 
 
-	cdef INTEGRAL *den = integral_initialize() 
+	cdef INTEGRAL *den = _yield_integrator.integral_initialize() 
 	den[0].a = m_lower 
 	den[0].b = m_upper 
 	den[0].tolerance = tolerance 
@@ -559,7 +452,7 @@ Estimated fractional error: %.2e""" % (num[0].error), ScienceWarning)
 	den[0].Nmax = <unsigned long> Nmax 
 	den[0].Nmin = <unsigned long> Nmin 
 	try: 
-		x = IMFintegrated_fractional_yield_denominator(den, 
+		x = _yield_integrator.IMFintegrated_fractional_yield_denominator(den, 
 			# IMF.lower().encode("latin-1")) 
 			imf_obj) 
 		if x == 1: 
@@ -571,8 +464,8 @@ Estimated fractional error: %.2e""" % (den[0].error), ScienceWarning)
 			pass 
 	finally: 
 		denominator = [den[0].result, den[0].error, den[0].iters] 
-		integral_free(den) 
-		imf_free(imf_obj) 
+		_yield_integrator.integral_free(den) 
+		_yield_integrator.imf_free(imf_obj) 
 
 	y = numerator[0] / denominator[0] 
 	errnum = numerator[1] * numerator[0] 

@@ -12,25 +12,15 @@ if not __VICE_SETUP__:
 		"multizone", 
 		"mirror"
 	]    
-	# from ._single_stellar_population import * 
 	from .ssp import * 
-	# from ._dataframe import base as dataframe 
-	# from ._builtin_dataframes import * 
-	from .dataframe import base as dataframe 
 	from .dataframe._builtin_dataframes import * 
-	# from ._output import * 
-	# from ._pysinglezone import singlezone 
-	# from ._pymultizone import multizone 
+	__all__.extend(dataframe._builtin_dataframes.__all__) 
+	from .dataframe import base as dataframe 
 	from .singlezone import singlezone 
 	from .multizone import multizone 
 	from .outputs import * 
-	# from ._mirror import mirror 
 	from .mirror import mirror 
-
-	# __all__.extend(_single_stellar_population.__all__) 
 	__all__.extend(ssp.__all__) 
-	__all__.extend(_builtin_dataframes.__all__) 
-	# __all__.extend(_output.__all__) 
 	__all__.extend(outputs.__all__) 
 
 else: 

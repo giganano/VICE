@@ -240,5 +240,3 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 	else: 
 		raise TypeError("Keyword arg 'n' must be a real number.")
 
-
-
