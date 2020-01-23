@@ -90,11 +90,12 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 		warnings.warn("Using un-released version of VICE", UserWarning)
 
 	__all__ = ["__author__", "__version__", "elements", "yields", "_globals", 
-		"ScienceWarning"] 
+		"ScienceWarning", "VisibleDeprecationWarning"]  
 
 	from .core import * 
 	from ._build_utils import * 
 	from ._globals import ScienceWarning
+	from ._globals import VisibleDeprecationWarning 
 	from . import elements 
 	from . import yields 
 
@@ -102,6 +103,7 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 		from .core import * 
 		from ._build_utils import * 
 		from ._globals import ScienceWarning
+		from ._globals import VisibleDeprecationWarning 
 		from . import elements 
 		from . import yields 
 	except (ImportError, ModuleNotFoundError): 
