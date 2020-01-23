@@ -11,9 +11,9 @@ from __future__ import absolute_import
 
 from .._globals import _RECOGNIZED_ELEMENTS_ 
 from .._globals import _VERSION_ERROR_ 
-from ..core._builtin_dataframes import atomic_number 
-from ..core._builtin_dataframes import solar_z 
-from ..core._builtin_dataframes import sources 
+from ..core.dataframe._builtin_dataframes import atomic_number 
+from ..core.dataframe._builtin_dataframes import solar_z 
+from ..core.dataframe._builtin_dataframes import sources 
 from ..yields import agb 
 from ..yields import ccsne 
 from ..yields import sneia 
