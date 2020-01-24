@@ -16,10 +16,7 @@ elif sys.version_info[:2] >= (3, 5):
 	strcomp = str 
 else: 
 	_VERSION_ERROR_() 
-# from ._yield_settings import yield_settings 
 from . cimport _agb_yield_settings 
-# from ._yield_settings cimport yield_settings
-# from ._objects cimport yield_settings 
 
 
 #------------------------ AGB YIELD SETTINGS SUBCLASS ------------------------# 
