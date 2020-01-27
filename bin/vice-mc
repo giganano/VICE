@@ -1,0 +1,77 @@
+#!/usr/bin/env python
+
+from __future__ import print_function 
+try: 
+	ModuleNotFoundError 
+except NameError: 
+	ModuleNotFoundError = ImportError 
+try: 
+	import vice 
+except (ModuleNotFoundError, ImportError): 
+	raise ModuleNotFoundError("""\
+VICE not found. Source code and installation instructions can be found at \
+<http://github.com/giganano/VICE.git>.""") 
+from vice.modeling.config import reader 
+import argparse 
+import sys 
+import os 
+
+
+def parse(): 
+	""" 
+	Parse the command line argument using argparse.ArgumentParser 
+	""" 
+	parser = argparse.ArgumentParser(
+		description = """\
+Run fitting Markov chain Monte Carlo (MCMC) fitting routines over \
+observational data. """) 
+
+	parser.add_argument("configfile", 
+		help = """\
+The name of the config file storing information on the data and the fitting \
+parameters.
+
+For instructions on how to write the config file, see section X of VICE's \
+User's Guide, available at \
+<github.com/giganano/VICE/blob/master/docs/users_guide.pdf>. 
+""") 
+
+	return parser 
+
+
+def print_help_message(parser): 
+	""" 
+	Prints the help message if necessary 
+
+	Returns 
+	======= 
+	True if this program should continue with the fitting routines 
+	""" 
+	if len(sys.argv) == 1: 
+		parser.print_usage() 
+		print("""
+help: vice-mc -h 
+      vice-mc --help 
+""") 
+		return False 
+	else: 
+		return True 
+
+
+def main(): 
+	""" 
+	Print the help message and/or run fitting routines based on the 
+	information in the config file. 
+	""" 
+	parser = parse() 
+	if print_help_message(parser): 
+		args = parser.parse_args() 
+		print("configfile = %s" % (args.configfile)) 
+		reader.read(args.configfile)  
+	else: pass 
+	parser.exit() 
+
+
+if __name__ == "__main__": 
+	main() 
+
