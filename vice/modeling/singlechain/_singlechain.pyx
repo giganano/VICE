@@ -16,6 +16,7 @@ else:
 from ...core.singlezone._singlezone cimport c_singlezone 
 from . cimport _singlechain 
 from ._fitting_function cimport fitting_function 
+from ._dataset cimport dataset 
 
 
 cdef class c_singlechain: 
@@ -46,7 +47,8 @@ cdef class c_singlechain:
 		m_lower = 0.08, 
 		postMS = 0.1, 
 		Z_solar = 0.014, 
-		agb_model = None): 
+		agb_model = None, 
+		which = "stars"): 
 
 		self._sz = c_singlezone() 
 		self.name = name 
@@ -75,12 +77,7 @@ cdef class c_singlechain:
 		self.postMS = postMS 
 		self.Z_solar = Z_solar 
 		self.agb_model = agb_model 
-
-	def __repr__(self): 
-		return self._sz.__repr__().replace("singlezone", "singlechain") 
-
-	def __str__(self): 
-		return self.__repr__() 
+		self._data = dataset(which = which) 
 
 	@property 
 	def name(self): 
@@ -89,7 +86,7 @@ cdef class c_singlechain:
 
 		The name of the singlechain fit. 
 		""" 
-		return self._name 
+		return self._sz.name 
 
 	@name.setter 
 	def name(self, value): 
@@ -324,6 +321,10 @@ cdef class c_singlechain:
 	@agb_model.setter 
 	def agb_model(self, value): 
 		self._sz.agb_model = value 
+
+	@property 
+	def data(self): 
+		return self._data 
 
 
 

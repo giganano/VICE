@@ -86,22 +86,46 @@ Got: %s""" % (type(n_zones)))
 		self.__c_version = c_multizone(n_zones = int(n_zones), **kwargs) 
 
 	def __repr__(self): 
-		return self.__c_version.__repr__() 
+		""" 
+		Prints in the format: vice.singlezone{ 
+			attr1 -----------> value 
+			attribute2 ------> value 
+		}
+		""" 
+		attrs = {
+			"name": 			self.name, 
+			"n_zones": 			self.n_zones, 
+			"n_tracers": 		self.n_tracers, 
+			"verbose": 			self.verbose, 
+			"simple": 			self.simple, 
+			"zones": 			[self.zones[i].name for i in range(
+									self.n_zones)], 
+			"migration": 		self.migration 
+		} 
+
+		rep = "vice.multizone{\n" 
+		for i in attrs.keys(): 
+			rep += "    %s " % (i) 
+			for j in range(15 - len(i)): 
+				rep += '-' 
+			rep += "> %s\n" % (str(attrs[i])) 
+		rep += '}' 
+		return rep 
 
 	def __str__(self): 
-		return self.__c_version.__str__() 
+		return self.__repr__() 
 
 	def __enter__(self): 
 		""" 
 		Opens a with statement 
 		""" 
-		return self.__c_version.__enter__() 
+		return self 
 
 	def __exit__(self, exc_type, exc_value, exc_tb): 
 		""" 
 		Raises all exceptions inside with statements 
 		""" 
-		return self.__c_version.__exit__(exc_type, exc_value, exc_tb)  
+		return exc_value is None 
 
 	@property 
 	def name(self): 

@@ -94,7 +94,7 @@ cdef class c_multizone:
 		n_zones = 10, 
 		name = "multizonemodel", 
 		n_tracers = 1, 
-		simple = True, 
+		simple = False, 
 		verbose = False): 
 
 		assert isinstance(n_zones, int), "Internal Error" 
@@ -105,51 +105,9 @@ cdef class c_multizone:
 		self.simple = simple 
 		self.verbose = verbose 
 
-
 	def __dealloc__(self): 
 		_multizone.multizone_free(self._mz) 
 
-	def __repr__(self): 
-		""" 
-		Prints in the format: vice.singlezone{ 
-			attr1 -----------> value 
-			attribute2 ------> value 
-		}
-		""" 
-		attrs = {
-			"name": 			self.name, 
-			"n_zones": 			self.n_zones, 
-			"n_tracers": 		self.n_tracers, 
-			"verbose": 			self.verbose, 
-			"simple": 			self.simple, 
-			"zones": 			[self._zones[i].name for i in range(
-									self.n_zones)], 
-			"migration": 		self.migration 
-		} 
-
-		rep = "vice.multizone{\n" 
-		for i in attrs.keys(): 
-			rep += "    %s " % (i) 
-			for j in range(15 - len(i)): 
-				rep += '-' 
-			rep += "> %s\n" % (str(attrs[i])) 
-		rep += '}' 
-		return rep 
-
-	def __str__(self): 
-		return self.__repr__() 
-
-	def __enter__(self): 
-		""" 
-		Opens a with statement 
-		""" 
-		return self 
-
-	def __exit__(self, exc_type, exc_value, exc_tb): 
-		""" 
-		Raises all exceptions inside with statements 
-		""" 
-		return exc_value is None 
 
 	@property 
 	def zones(self): 

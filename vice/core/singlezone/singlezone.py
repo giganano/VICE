@@ -165,7 +165,50 @@ class singlezone:
 			attribute2 ------> value 
 		}
 		""" 
-		return self.__c_version.__repr__() 
+		attrs = {
+			"name": 			self.name, 	
+			"func": 			self.func, 
+			"mode":				self.mode, 
+			"verbose": 			self.verbose, 
+			"elements":			self.elements, 
+			"IMF": 				self.IMF, 
+			"eta": 				self.eta, 
+			"enhancement":		self.enhancement, 
+			"entrainment": 		self.entrainment, 
+			"Zin": 				self.Zin, 
+			"recycling": 		self.recycling, 
+			"delay": 			self.delay, 
+			"RIa": 				self.RIa, 
+			"Mg0": 				self.Mg0, 
+			"smoothing": 		self.smoothing, 
+			"tau_ia": 			self.tau_ia, 
+			"tau_star": 		self.tau_star, 
+			"schmidt": 			self.schmidt, 
+			"schmidt_index": 	self.schmidt_index, 
+			"MgSchmidt": 		self.MgSchmidt, 
+			"dt": 				self.dt, 
+			"m_upper": 			self.m_upper, 
+			"m_lower": 			self.m_lower, 
+			"postMS": 			self.postMS, 
+			"Z_solar": 			self.Z_solar 
+		} 
+
+		if len(self.bins) >= 10: 
+			attrs["bins"] = "[%g, %g, %g, ... , %g, %g, %g]" % (
+				self.bins[0], self.bins[1], self.bins[2], 
+				self.bins[-3], self.bins[-2], self.bins[-1] 
+			) 
+		else: 
+			attrs["bins"] = str(self.bins) 
+
+		rep = "vice.singlezone{\n" 
+		for i in attrs.keys(): 
+			rep += "    %s " % (i) 
+			for j in range(15 - len(i)): 
+				rep += '-' 
+			rep += "> %s\n" % (str(attrs[i])) 
+		rep += '}' 
+		return rep 
 
 	def __str__(self): 
 		""" 
