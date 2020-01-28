@@ -237,18 +237,6 @@ cdef class c_singlezone:
 		""" 
 		return self.__repr__() 
 
-	def __enter__(self): 
-		""" 
-		Opens a with statement 
-		""" 
-		return self 
-
-	def __exit__(self, exc_type, exc_value, exc_tb): 
-		""" 
-		Raises all exceptions inside with statements 
-		""" 
-		return exc_value is None 
-
 	def object_address(self): 
 		""" 
 		Returns the memory address of the associated SINGLEZONE struct in C. 

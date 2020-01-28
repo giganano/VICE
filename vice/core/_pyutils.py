@@ -20,8 +20,9 @@ try:
 except (ModuleNotFoundError, ImportError): 
 	pass 
 import math as m 
-import numbers 
 import warnings 
+import inspect 
+import numbers 
 import array 
 import sys 
 import os 
@@ -183,6 +184,35 @@ def args(func, errmsg):
 	else: 
 		raise TypeError("Must be a callable python function. Got: %s" % (
 			type(func))) 
+
+def arg_count(func): 
+	""" 
+	Determine the number of positional arguments accepted by a given python 
+	function. 
+
+	Parameters 
+	========== 
+	func :: callable 
+		python function 
+
+	Returns 
+	======= 
+	The number of parameters to the function that do not accept a default 
+	value. 
+
+	Raises 
+	====== 
+	TypeError :: 
+		::	func is not callable 
+	""" 
+	if callable(func): 
+		n = 0 
+		sig = inspect.signature(func) 
+		for i in sig.parameters.keys(): 
+			n += int(sig.parameters[i].default == inspect._empty) 
+		return n 
+	else: 
+		raise TypeError("Must be a callable object. Got: %s" % (type(func))) 
 
 def is_ascii(pystr): 
 	""" 

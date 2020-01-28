@@ -159,16 +159,31 @@ class singlezone:
 		self.__c_version = c_singlezone(**kwargs) 
 
 	def __repr__(self): 
+		""" 
+		Prints in the format: vice.singlezone{ 
+			attr1 -----------> value 
+			attribute2 ------> value 
+		}
+		""" 
 		return self.__c_version.__repr__() 
 
 	def __str__(self): 
-		return self.__c_version.__str__() 
+		""" 
+		Returns self.__repr__() 
+		""" 
+		return self.__repr__() 
 
 	def __enter__(self): 
-		return self.__c_version.__enter__() 
+		""" 
+		Opens a with statement 
+		""" 
+		return self 
 
 	def __exit__(self, exc_type, exc_value, exc_tb): 
-		return self.__c_version.__exit__(exc_type, exc_value, exc_tb)  
+		""" 
+		Raises all exceptions inside with statements 
+		""" 
+		return exc_value is None 
 
 	def __zone_object_address(self): 
 		""" 
@@ -245,7 +260,19 @@ class singlezone:
 		or the gas supply in Msun. 
 
 		The default function returns the value of 9.1 always. With a default 
-		mode of "ifr", if these attributes are not changed, the simulation 
+		mode of "ifr", if these attributes are not changed			
+			"Mg0": 				self.Mg0, 
+			"smoothing": 		self.smoothing, 
+			"tau_ia": 			self.tau_ia, 
+			"tau_star": 		self.tau_star, 
+			"schmidt": 			self.schmidt, 
+			"schmidt_index": 	self.schmidt_index, 
+			"MgSchmidt": 		self.MgSchmidt, 
+			"dt": 				self.dt, 
+			"m_upper": 			self.m_upper, 
+			"m_lower": 			self.m_lower, 
+			"postMS": 			self.postMS, 
+			"Z_solar": 			self.Z_solar , the simulation 
 		will run with an infall rate of 9.1 Msun/yr at all times. 
 
 		Notes 

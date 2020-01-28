@@ -7,8 +7,9 @@ except NameError:
 
 if not __VICE_SETUP__: 
 	__all__ = [
-		"singlechain"
-	] 
-	from .singlechain import singlechain  
+		"singlechain" 
+	]
+	from .singlechain import singlechain 
 else: 
 	pass 
+

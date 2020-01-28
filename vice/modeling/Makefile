@@ -2,5 +2,5 @@
 .PHONY: clean 
 
 clean: 
-	$(MAKE) -C parameters/ clean 
+	$(MAKE) -C singlechain/ clean 
 

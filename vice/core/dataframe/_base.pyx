@@ -39,7 +39,7 @@ cdef class base:
 	Functions
 	=========
 	keys		
-	todict
+	todict 
 
 	Yield Setting Dataframes 
 	======================== 
