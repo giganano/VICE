@@ -7,8 +7,10 @@ except NameError:
 
 if not __VICE_SETUP__: 
 	__all__ = [
-		"singlechain"
+		"singlechain", 
+		"parameter" 
 	] 
-	from .singlechain import singlechain  
+	from .singlechain import singlechain 
+	from .singlechain import parameter  
 else: 
 	pass 

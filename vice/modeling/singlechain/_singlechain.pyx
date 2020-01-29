@@ -81,11 +81,6 @@ cdef class c_singlechain:
 
 	@property 
 	def name(self): 
-		""" 
-		Type :: str 
-
-		The name of the singlechain fit. 
-		""" 
 		return self._sz.name 
 
 	@name.setter 
@@ -94,25 +89,14 @@ cdef class c_singlechain:
 
 	@property 
 	def func(self): 
-		""" 
-		Type :: <function> 
-		Default :: _DEFAULT_FUNC_ 
-
-		A callable python function of time which returns a real number. This 
-		attribute may take any number of real numbers as parameters, the 
-		first of which will be interpreted as time in Gyr. All subsequent 
-		parameters will be treated as numerical values to be fit to the 
-		observational data. 
-		""" 
 		return self._sz.func 
 
 	@func.setter 
 	def func(self, value): 
-		if callable(value): 
+		if callable(value) and _pyutils.arg_count(value) > 1: 
 			self._sz.func = fitting_function(value) 
 		else: 
-			raise TypeError("Must be a callable object. Got: %s" % (
-				type(value))) 
+			self._sz.func = value 
 
 	@property 
 	def mode(self): 
@@ -144,7 +128,7 @@ cdef class c_singlechain:
 
 	@IMF.setter 
 	def IMF(self, value): 
-		if callable(value): 
+		if callable(value) and _pyutils.arg_count(value) > 1: 
 			self._sz.IMF = fitting_function(value) 
 		else: 
 			self._sz.IMF = value 
@@ -155,7 +139,7 @@ cdef class c_singlechain:
 
 	@eta.setter 
 	def eta(self, value): 
-		if callable(value): 
+		if callable(value) and _pyutils.arg_count(value) > 1: 
 			self._sz.eta = fitting_function(value) 
 		else: 
 			self._sz.eta = value 
@@ -166,7 +150,10 @@ cdef class c_singlechain:
 
 	@enhancement.setter 
 	def enhancement(self, value): 
-		self._sz.enhancement = value 
+		if callable(value) and _pyutils.arg_count(value) > 1: 
+			self._sz.enhancement = fitting_function(value) 
+		else: 
+			pass 
 
 	@property 
 	def entrainment(self): 
@@ -210,7 +197,7 @@ cdef class c_singlechain:
 
 	@RIa.setter 
 	def RIa(self, value): 
-		if callable(value): 
+		if callable(value) and _pyutils.arg_count(value) > 1: 
 			self._sz.RIa = fitting_function(value) 
 		else: 
 			self._sz.RIa = value 
@@ -245,7 +232,7 @@ cdef class c_singlechain:
 
 	@tau_star.setter 
 	def tau_star(self, value): 
-		if callable(value): 
+		if callable(value) and _pyutils.arg_count(value) > 1: 
 			self._sz.tau_star = fitting_function(value) 
 		else: 
 			self._sz.tau_star = value 

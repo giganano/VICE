@@ -4,6 +4,18 @@ from ._singlechain import c_singlechain
 
 class singlechain: 
 
+	""" 
+	An object which fits numerical models to external data using the 
+	singlezone object. Functional forms of models can be fit to data in the 
+	same manner as SciPy's curve_fit function - in all cases, the first 
+	parameter is as the singlezone object expects. Numerical values can also 
+	be fit via the parameter object in this module. 
+
+	See Also 
+	======== 
+	vice.singlezone 
+	""" 
+
 	def __init__(self, **kwargs): 
 		self.__c_version = c_singlechain(**kwargs) 
 

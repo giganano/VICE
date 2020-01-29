@@ -4,19 +4,45 @@ from __future__ import absolute_import
 from ...core import _pyutils 
 from . cimport _fitting_function 
 from ._parameters cimport parameters 
-from ._stepsizes cimport stepsizes 
 
 
 cdef class fitting_function: 
 
+	""" 
+	An object containing the functional form and parameters of a numerical 
+	model to be fit to external data. 
+
+	Attributes 
+	========== 
+	function :: <function> 
+		The functional form of the model to be fit to the data. 
+	n :: int [automatically assigned] 
+		The number of numerical parameters to be fit to the function. 
+	parameters :: parameters object 
+		The numerical parameters to be fit to the data 
+
+	Functions 
+	========= 
+	take_step :: 
+		Update each parameter by adding a pseudorandom number drawn from a 
+		normal distribution. 
+	revert :: 
+		Undo the most recent call to take_step 
+
+	Notes 
+	===== 
+	This function is callable with only one numerical argument, allowing it 
+	to be assigned to the 'func' attribute of the singlezone object. 
+	""" 
+
 	def __init__(self, func): 
-		self.func = func 
+		self.function = func 
 
 	def __call__(self, time): 
-		return self._func(time, *tuple(self._parameters)) 
+		return self._function(time, *tuple(self._parameters)) 
 
 	@property 
-	def func(self): 
+	def function(self): 
 		""" 
 		Type :: <function> 
 
@@ -25,15 +51,14 @@ cdef class fitting_function:
 		interpreted as time in Gyr. All subsequent arguments will be treated as 
 		free parameters to be fit to the data. 
 		""" 
-		return self._func 
+		return self._function 
 
-	@func.setter 
-	def func(self, value): 
+	@function.setter 
+	def function(self, value): 
 		if callable(value): 
 			self._n = _pyutils.arg_count(value) - 1 
 			self._parameters = parameters(self._n * [0.]) 
-			self._stepsizes = stepsizes(self._n * [0.1]) 
-			self._func = value 
+			self._function = value 
 		else: 
 			raise TypeError("Attribute 'func' must be a callable object.") 
 
@@ -49,20 +74,12 @@ cdef class fitting_function:
 	@property 
 	def parameters(self): 
 		""" 
-		Type :: list [elements are real numbers] 
+		Type :: parameters object  
 
-		The current value of all fit parameters in the Markov chain. 
+		An array-like object containing each numerical parameter to be fit to 
+		the data, its current value, and its stepsize. 
 		""" 
 		return self._parameters 
-
-	@property 
-	def stepsizes(self): 
-		""" 
-		Type :: array-like [elements are real numbers] 
-
-		The stepsizes to take in each fit parameter in the Markov chain. 
-		""" 
-		return self._stepsizes 
 
 	def take_step(self): 
 		""" 
@@ -71,14 +88,12 @@ cdef class fitting_function:
 		1-sigma width is given by the stepsizes associated with each parameter, 
 		adding that to the current value. 
 		""" 
-		self._parameters._take_step(self._stepsizes) 
+		self._parameters.take_step() 
 
 	def revert(self): 
 		""" 
-		Undo a step in parameter space. This function will revert the current 
-		parameters to their immediately previous values. 
+		Undo the previous call to take_step(), reverting all parameters to 
+		their immediately previous values. 
 		""" 
-		self._parameters._revert() 
-
-
+		self._parameters.revert() 
 
