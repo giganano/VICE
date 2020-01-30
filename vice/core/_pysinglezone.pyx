@@ -1518,7 +1518,7 @@ function or a numerical value. Got: %s""" % (type(value)))
 must accept only one numerical parameter.""") 
 			self._enhancement = value 
 		elif isinstance(value, numbers.Number): 
-			if 0 <= value <= 1: 
+			if value >= 0: 
 				self._enhancement = float(value) 
 			else: 
 				raise ValueError("""Attribute 'enhancement' must be \
