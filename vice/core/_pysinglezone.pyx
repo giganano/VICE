@@ -180,7 +180,7 @@ class singlezone:
 		The timestep size in Gyr. 
 	schmidt :: bool [default :: False] 
 		A boolean switch describing whether or not to implement star formation 
-		efficiency dependent on the gas-supply (3; 4). 
+		efficiency dependent on the gas-supply (3; 4; 5). 
 	schmidt_index :: real number [default :: 0.5] 
 		The power-law index on gas-dependent star formation efficiency 
 	MgSchmidt :: real number [default :: 6.0e+09] 
@@ -193,7 +193,7 @@ class singlezone:
 		The adopted solar metallicity by mass. 
 	agb_model :: str [default :: "cristallo11"] 
 		A keyword denoting which AGB yield grid to adopt. Must be either 
-		"cristallo11" (5) or "karakas10" (6). 
+		"cristallo11" (6) or "karakas10" (7). 
 
 	Functions 
 	========= 
@@ -207,12 +207,13 @@ class singlezone:
 
 	References 
 	========== 
-	(5) Cristallo et al. (2011), ApJS, 197, 17 
-	(6) Karakas (2010), MNRAS, 403, 1413 
-	(1) Kroupa (2001), MNRAS, 322, 231 
-	(4) Leroy et al. (2008), AJ, 136, 2782 
+	(6) Cristallo et al. (2011), ApJS, 197, 17 
+	(7) Karakas (2010), MNRAS, 403, 1413 
+	(4) Kennicutt (1998), ApJ, 498, 541 
+	(1) Kroupa (2001), MNRAS, 322, 231  
 	(2) Salpeter (1955), ApJ, 121, 161 
 	(3) Schmidt (1959), ApJ, 129, 243 
+	(5) Schmidt (1963), ApJ, 137, 758 
 	""" 
 
 	def __init__(self, **kwargs): 
@@ -824,7 +825,7 @@ class singlezone:
 
 		A boolean describing whether or not to use an implementation of 
 		gas-dependent star formation efficiency (i.e. the Kennicutt-Schmidt 
-		Law: Schmidt (1959); Leroy et al. (2008)). At each timestep, the 
+		Law: Schmidt 1959; 1963; Kennicutt 1998). At each timestep, the 
 		attributes tau_star, MgSchmidt, and schmidt_index determine the 
 		star formation efficiency at that timestep via: 
 
@@ -836,8 +837,9 @@ class singlezone:
 
 		References 
 		========== 
+		Kennicutt (1998), ApJ, 498, 541 
 		Schmidt (1959), ApJ, 129, 243 
-		Leroy et al. (2008), AJ, 136, 2782 
+		Schmidt (1963), ApJ, 137, 758 
 		""" 
 		return self.__c_version.schmidt 
 

@@ -3,7 +3,7 @@ from __future__ import print_function
 from vice.yields.ccsne import fractional 
 from vice._globals import _RECOGNIZED_ELEMENTS_ 
 import warnings 
-import math as m 
+import math 
 
 _STUDY_ = ["LC18", "CL13", "CL04", "WW95"] 
 _MOVERH_ = {
@@ -48,13 +48,12 @@ def main():
 						for elem in _RECOGNIZED_ELEMENTS_: 
 							try: 
 								foo = fractional(elem, **params) 
-								assert 0 <= foo[0] < 1
 								if foo[0] == 0: 
-									assert m.isnan(foo[1])
+									assert math.isnan(foo[1])
 								else: 
 									pass 
 							except: 
-								sucess = False 
+								success = False 
 						if success: 
 							message += "Success" 
 						else:

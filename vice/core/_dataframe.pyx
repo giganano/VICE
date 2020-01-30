@@ -119,7 +119,7 @@ cdef class base:
 	References 
 	========== 
 	Asplund et al. (2009), ARA&A, 47, 481 
-	Johnson (2019), Science, 6426, 474 
+	Johnson (2019), Science, 363, 474 
 	"""
 
 	cdef object _frame 

@@ -38,23 +38,12 @@ element. With finer timestepping (e.g. 1 Myr), the simulation finishes in ~6.0
 seconds per simulated element. These simulations require only ~3 and ~25 MB of 
 RAM per simulated element, respectively, and are thus not memory-limited. 
 
-Installation
+Dependencies 
 ============
 
-System Requirements
--------------------
-
-``VICE`` is implemented using only ``C`` and ``python`` standard libraries; 
-for this reason it is entirely cross-platform. ``VICE`` is however only 
-packaged for installation on ``linux`` kernels, meaning that ``Windows`` users 
-must install and run ``VICE`` entirely from within the upcoming ``Windows 
-Terminal``. Users running any derivative of ``Mac OS X`` or any linux operating 
-system such as ``CentOS`` or ``Ubuntu`` should be able to install ``VICE`` 
-from any terminal included with the source distribution of their operating 
-system. 
-
-The following system requirements must be satisfied for ``VICE`` to install 
-properly: 
+Primary 
+-------
+The following dependencies must be satisfied for ``VICE`` to install properly: 
 
 1) ``Cython >= 0.28.0``
 
@@ -62,24 +51,41 @@ properly:
 
 3) ``Make >= 3.81``
 
-4) ``Clang >= 3.6.0 or gcc >= 4.6``
+4) ``Clang >= 3.6.0 or gcc >= 4.6`` 
 
-**NOTE**: While ``VICE`` will run independently of ``dill`` and is thus not 
-dependent on it, it is nonetheless strongly recommended that users install 
-``dill``. This simply makes certain useful features possible, and can be 
-achieved via ``pip install dill``. 
+Secondary
+---------
+``VICE`` will run independently of the following, but either enable extra 
+features or make it easier to use ``VICE``. 
 
-``VICE``'s tutorial is dependent on ``numpy`` only weakly in that it 
-uses ``numpy``'s ``linspace`` function. While ``VICE`` is compatible with 
-``numpy``, it is implemented independently of ``numpy`` and is thus not 
-dependent on it. Users may replace these lines in the tutorial if they so 
-choose. 
+1) ``dill >= 0.2.0`` is required for saving functional attributes within 
+``VICE`` outputs. Without ``dill``, these attributes are simply not saved with 
+outputs. It can be installed via ``pip install dill [--user]``. 
 
-Preferred Install Method
+2) ``matplotlib >= 2.0.0`` is necessary for ``VICE``'s ``show`` function, 
+intended to allow users to visually inspect their integrations visually in 
+``ipython``, a ``jupyter notebook``, or similar without having to plot it 
+themselves. This functionality is not intended to produce publication-quality 
+figures, and is included purely for convenience. This function does not 
+contribute to the scientific features of ``VICE`` and for that reason is not 
+listed as a primary dependency. 
+
+3) ``numpy`` is used in ``VICE``'s tutorial, which makes use of the 
+``linspace`` function. 
+
+A Note on Implementation 
 ------------------------
+``VICE`` is implemented in ``ANSI/ISO C`` and is wrapped using only standard 
+library ``python`` and ``Cython``. It is thus independent of the user's 
+version of Anaconda, or lackthereof. It is NumPy- and Pandas-compatible, but 
+neither NumPy- nor Pandas-dependent. That is, it will recognize user input 
+from NumPy and Pandas data types, but is designed to run independently of 
+them. 
 
-We recommend users install ``VICE`` from a terminal using the following 
-sequence of commands:
+Installation
+============
+``VICE`` must be installed from a terminal using the following sequence of 
+commands:
 
 :: 
 	
@@ -128,8 +134,8 @@ include the ``base`` default environment associated with later versions of
 
 ``VICE`` will *run* within whatever ``conda`` environments users create; it 
 is only the installation process that this applies to. ``VICE`` is implemented 
-independently of ``anaconda``, and for this reason, it does not make sense to 
-install it in a ``conda`` environment anyway.
+independently of ``anaconda``, and for this reason, ``conda`` environments are 
+irrelevant to the installation anyway. 
 
 Usage 
 =====
@@ -215,8 +221,8 @@ Example Code: A Simulation of a Galaxy with Known Star Formation History
 Journal-Related Features
 ========================
 We provide here the ``python`` code which produces all of the figures in 
-Johnson & Weinberg (2019). From ``VICE``'s root directory, users can run 
-``make jw19plots`` in a terminal, which will automatically run the simulations 
+`Johnson & Weinberg (2019)`__. From ``VICE``'s root directory, users can run 
+``make starburst`` in a terminal, which will automatically run the simulations 
 and produce the figures exactly as they appear in that paper. Users may also 
 use these scripts as example code if they so choose. 
 
@@ -230,36 +236,19 @@ Authors & Maintainers
 The current version of ``VICE`` was written by James W. Johnson at The Ohio 
 State University. See authors_ for details. 
 
-Implementation
-==============
-``VICE`` is implemented entirely in ``ANSI/ISO C`` and standard library 
-``python`` and ``Cython``. It is therefore entirely cross-platform. It is 
-NumPy- and Pandas-compatible, but neither NumPy- nor Pandas-dependent. That is, 
-it will recognize user input from NumPy and Pandas data types but will run 
-independently of these software packages. All internal data is stored and 
-handled using ``C`` and ``python`` standard libraries. It is thus independent 
-of the user's version of Anaconda, or lackthereof. 
-
-The only feature in this software requiring the use of Anaconda is the 
-``show`` function associated with the ``output`` class, which requires 
-``matplotlib >= 2``. This function is however not a part of the integration 
-features associated with chemical evolution modeling, and is purely intended 
-so that the user may inspect the results of their integrations visually in 
-``ipython``, a ``jupyter notebook``, or similar without having to plot it 
-themselves. This functionality is not intended to produce publication-quality 
-figures, and is included purely for user convenience. 
-
 Acknowledgements 
 ================
-J.W.J. acknowledges the valuable guidance on the implementation of the 
-cumulative return fraction contributed by Jenna Freudenburg at The Ohio State 
-University. 
+J.W.J. is grateful to David H. Weinberg and Jennifer A. Johnson at The Ohio 
+State University for continual guidance in galactic chemical evolution 
+modeling. J.W.J. also aknowledges valuable discussion on the implementation of 
+the cumulative return fraction contributed by Jenna Freudenburg at The Ohio 
+State University. Construction of this software was supported in part by an 
+Ohio State University graduate fellowship. 
 
 Citing
 ======
-Usage of ``VICE`` leading to a publication should cite Johnson & Weinberg 
-(2019, in prep). A ``BibTex`` entry will be added here once the paper is 
-announced. 
+Usage of ``VICE`` leading to a publication should cite 
+`Johnson & Weinberg (2019)`__. 
 
 LICENSE
 =======
@@ -306,6 +295,10 @@ under the terms of the associated LICENSE_.
 
 .. _tutorial: https://github.com/giganano/VICE/blob/master/docs/QuickStartTutorial.ipynb
 
+.. _citelink: https://arxiv.org/abs/1911.02598
+
 __ userguide_
 __ scidocs_
 __ tutorial_ 
+__ citelink_ 
+__ citelink_ 
