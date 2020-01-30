@@ -4,8 +4,10 @@ from __future__ import absolute_import
 from ..._globals import _VERSION_ERROR_ 
 from ..._globals import _DEFAULT_FUNC_ 
 from ..._globals import _DEFAULT_BINS_ 
+from ...core.dataframe import base 
 from ...core.singlezone import singlezone 
 from ...core import _pyutils 
+from ._parameters import parameter 
 import sys 
 if sys.version_info[:2] == (2, 7): 
 	strcomp = basestring 
@@ -312,6 +314,130 @@ cdef class c_singlechain:
 	@property 
 	def data(self): 
 		return self._data 
+
+	def update_parameters(self): 
+		""" 
+		error handling needs to happen here, or else exceptions will stop the 
+		fitting functions 
+		""" 
+		if isinstance(self.func, fitting_function): self.func.take_step() 
+		if isinstance(self.IMF, fitting_function): self.IMF.take_step() 
+		if isinstance(self.eta, fitting_function): 
+			self.eta.take_step() 
+		elif isinstance(self.eta, parameter): 
+			self.eta = self._new_parameter_nonngative(self.eta) 
+		else: 
+			pass 
+		if isinstance(self.enhancement, fitting_function): 
+			self.enhancement.take_step() 
+		elif isinstance(self.enhancement, parameter): 
+			self.enhancement = self._new_parameter_nonngative(self.enhancement) 
+		else: 
+			pass 
+		for i in self.elements: 
+			if isinstance(self.entrainment.agb[i], parameter): 
+				self.entrainment.agb[i] = self._new_parameter_fraction(
+					self.entrainment.agb[i] 
+				) 
+			if isinstance(self.entrainment.ccsne[i], parameter): 
+				self.entrainment.ccsne[i] = self._new_parameter_fraction(
+					self.entrainment.ccsne[i]
+				) 
+			if isinstance(self.entrainment.sneia[i], parameter): 
+				self.entrainment.sneia[i] = self._new_parameter_fraction(
+					self.entrainment.sneia[i]
+				) 
+		if isinstance(self.Zin, base): 
+			for i in self.elements: 
+				if isinstance(self.Zin[i], fitting_function): 
+					self.Zin[i].take_step() 
+				elif isinstance(self.Zin[i], parameter): 
+					self.Zin[i] = self._new_parameter_fraction(self.Zin[i]) 
+		if isinstance(self.delay, parameter): 
+			self.delay = self._new_parameter_nonnegative(self.delay) 
+		if isinstance(self.RIa, fitting_function): self.RIa.take_step() 
+		if isinstance(self.Mg0, parameter): 
+			self.Mg0 = self._new_parameter_nonnegative(self.Mg0) 
+		if isinstance(self.smoothing, parameter): 
+			self.smoothing = self._new_parameter_nonnegative(self.smoothing) 
+		if isinstance(self.tau_ia, parameter): 
+			self.tau_ia = self._new_parameter_nonnegative(self.tau_ia) 
+		if isinstance(self.tau_star, fitting_function): 
+			self.tau_star.take_step() 
+		elif isinstance(self.tau_star, parameter): 
+			self.tau_star = self._new_parameter_nonnegative(self.tau_star) 
+		else: 
+			pass 
+		if isinstance(self.schmidt_index, parameter): 
+			self.schmidt_index = self.schmidt_index.new() 
+		if isinstance(self.m_upper, parameter): 
+			self.m_upper = self._new_parameter_nonnegative(self.m_upper) 
+		if isinstance(self.m_lower, parameter): 
+			test = self._new_parameter_nonnegative(self.m_lower) 
+			while test > self.m_upper: 
+				test = self._new_parameter_nonnegative(self.m_lower) 
+			self.m_lower = test 
+
+	@staticmethod 
+	def _new_parameter_nonnegative(param): 
+		test = param.new() 
+		while test < 0: 
+			test = param.new() 
+		return test 
+
+	@staticmethod 
+	def _new_parameter_fraction(param): 
+		test = param.new() 
+		while test < 0 or test > 1: 
+			test = param.new() 
+		return test 
+
+	def revert_parameters(self): 
+		""" 
+		Reversion can be handled without error handling -> previous values 
+		would have had to pass the singlezone object's error handling anyway 
+		""" 
+		if isinstance(self.func, fitting_function): self.func.revert() 
+		if isinstance(self.IMF, fitting_function): self.IMF.revert() 
+		if isinstance(self.eta, fitting_function): 
+			self.eta.revert() 
+		elif isinstance(self.eta, parameter): 
+			self.eta = self.eta.old() 
+		else: 
+			pass 
+		if isinstance(self.enhancement, fitting_function): 
+			self.enhancement.revert() 
+		elif isinstance(self.enhancement, parameter): 
+			self.enhancement = self.enhancement.old() 
+		else: 
+			pass 
+		for i in self.elements: 
+			if isinstance(self.entrainment.agb[i], parameter): 
+				self.entrainment.agb[i] = self.entrainment.agb[i].old() 
+			if isinstance(self.entrainment.ccsne[i], parameter): 
+				self.entrainment.ccsne[i] = self.entrainment.ccsne[i].old() 
+			if isinstance(self.entrainment.sneia[i], parameter): 
+				self.etrainment.sneia[i] = self.entrainment.sneia[i].old() 
+		if isinstance(self.Zin, base): 
+			for i in self.elements: 
+				if isinstance(self.Zin[i], fitting_function): 
+					self.Zin[i].revert() 
+		if isinstance(self.delay, parameter): self.delay = self.delay.old() 
+		if isinstance(self.RIa, fitting_function): self.RIa.revert() 
+		if isinstance(self.Mg0, parameter): self.Mg0 = self.Mg0.old() 
+		if isinstance(self.smoothing, parameter): 
+			self.smoothing = self.smoothing.old() 
+		if isinstance(self.tau_ia, parameter): self.tau_ia = self.tau_ia.old() 
+		if isinstance(self.tau_star, fitting_function): 
+			self.tau_star.revert() 
+		elif isinstance(self.tau_star, parameter): 
+			self.tau_star = self.tau_star.old() 
+		else: 
+			pass 
+		if isinstance(self.schmidt_index, parameter): 
+			self.schmidt_index = self.schmidt_index.old() 
+		if isinstance(self.m_upper, parameter): self.m_upper = self.m_upper.old() 
+		if isinstance(self.m_lower, parameter): self.m_lower = self.m_lower.old() 
 
 
 

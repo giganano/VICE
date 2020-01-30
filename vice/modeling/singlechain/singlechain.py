@@ -312,3 +312,10 @@ class singlechain:
 	def data(self): 
 		return self.__c_version.data 
 
+	def update_parameters(self): 
+		self.__c_version.update_parameters() 
+
+	def revert_parameters(self): 
+		self.__c_version.revert_parameters() 
+		
+
