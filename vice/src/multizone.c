@@ -18,8 +18,6 @@ static void multizone_evolve_simple(MULTIZONE *mz);
 static void multizone_evolve_full(MULTIZONE *mz); 
 static unsigned short multizone_timestepper(MULTIZONE *mz); 
 static void verbosity(MULTIZONE mz); 
-static void multizone_write_history(MULTIZONE mz); 
-static void multizone_write_MDF(MULTIZONE mz); 
 
 /* 
  * Allocates memory for and returns a pointer to a multizone object 
@@ -132,7 +130,7 @@ extern unsigned short multizone_evolve(MULTIZONE *mz) {
 	} 
 	if ((*mz).verbose) printf("Computing distribution functions....\n"); 
 	tracers_MDF(mz); 
-	multizone_write_MDF(*mz); 
+	write_multizone_mdf(*mz); 
 
 	/* Write the tracer particle data */ 
 	if (!multizone_open_tracer_file(mz)) {
@@ -204,7 +202,7 @@ static void multizone_evolve_full(MULTIZONE *mz) {
 		 */ 
 		if ((*sz).current_time >= (*sz).output_times[n] || 
 			2 * (*sz).output_times[n] < 2 * (*sz).current_time + (*sz).dt) { 
-			multizone_write_history(*mz); 
+			write_multizone_history(*mz); 
 			n++; 
 		} else {} 
 		if (multizone_timestepper(mz)) break; 
@@ -346,9 +344,40 @@ extern void multizone_cancel(MULTIZONE *mz) {
 		singlezone_cancel(mz -> zones[i]); 
 	} 
 	free(mz -> mig -> gas_migration); 
-	mz -> mig -> gas_migration = NULL;  
+	mz -> mig -> gas_migration = NULL; 
 
 } 
+
+/* 
+ * Determine the stellar mass in each zone in a multizone simulation. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		The multizone object for this simulation 
+ * 
+ * Returns 
+ * ======= 
+ * A pointer to the present-day stellar mass in each zone. 
+ * 
+ * header: multizone.h 
+ */ 
+extern double *multizone_stellar_mass(MULTIZONE mz) {
+
+	unsigned long i; 
+	double *mstar = (double *) malloc ((*mz.mig).n_zones * sizeof(double)); 
+	for (i = 0ul; i < (*mz.mig).n_zones; i++) {
+		mstar[i] = 0; 
+	} 
+	for (i = 0l; i < (*mz.mig).tracer_count; i++) {
+		TRACER t = *(*mz.mig).tracers[i]; 
+		unsigned long timestep = (*mz.zones[0]).timestep; 
+		
+		mstar[t.zone_current] += t.mass * (1 - 
+			(*(*mz.zones[t.zone_origin]).ssp).crf[timestep - t.timestep_origin]); 
+	} 
+	return mstar; 
+
+}
 
 /* 
  * Prints the current time on the same line on the console if the user has 
@@ -365,36 +394,4 @@ static void verbosity(MULTIZONE mz) {
 	} else {} 
 
 }
-
-/* 
- * Writes history output for each zone in a multizone simulation 
- * 
- * Parameters 
- * ========== 
- * mz: 		The multizone object to write output from 
- */ 
-static void multizone_write_history(MULTIZONE mz) { 
-
-	unsigned int i; 
-	for (i = 0; i < (*mz.mig).n_zones; i++) { 
-		write_history_output(*mz.zones[i]); 
-	} 
-
-} 
-
-/* 
- * Writes the stellar MDFs to all output files. 
- * 
- * Parameters 
- * ========== 
- * mz: 		The multizone object to write the MDF from 
- */ 
-static void multizone_write_MDF(MULTIZONE mz) {
-
-	unsigned int i; 
-	for (i = 0; i < (*mz.mig).n_zones; i++) {
-		write_mdf_output(*mz.zones[i]); 
-	}
-
-} 
 

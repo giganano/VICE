@@ -24,8 +24,6 @@ extern "C" {
 
 #include "objects.h" 
 
-extern void singlezone_printname(SINGLEZONE sz); 
-
 /* 
  * Allocate memory for and return a pointer to a SINGLEZONE struct. 
  * Automatically initializes all fields to NULL. 
@@ -148,9 +146,9 @@ extern unsigned long n_timesteps(SINGLEZONE sz);
  * ======= 
  * The instantaneous stellar mass in Msun 
  * 
- * source: singlezone.c 
+ * header: singlezone.h 
  */ 
-extern double get_stellar_mass(SINGLEZONE sz); 
+extern double singlezone_stellar_mass(SINGLEZONE sz); 
 
 #ifdef __cplusplus 
 } 

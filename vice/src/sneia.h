@@ -98,7 +98,7 @@ extern double mdot_sneia(SINGLEZONE sz, ELEMENT e);
 extern double get_ia_yield(ELEMENT e, double Z); 
 
 /* 
- * Determine the rate of mass production of a given element produced by SNe Ia 
+ * Determine the total mass production of a given element produced by SNe Ia 
  * in each zone. 
  * 
  * Parameters 
@@ -108,7 +108,7 @@ extern double get_ia_yield(ELEMENT e, double Z);
  * 
  * Returns 
  * ======= 
- * The rate of mass production of the given element in each zone 
+ * The total mass production of the given element in each zone 
  * 
  * source: sneia.c 
  */ 
