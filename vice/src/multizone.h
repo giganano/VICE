@@ -98,6 +98,21 @@ extern void multizone_clean(MULTIZONE *mz);
  */ 
 extern void multizone_cancel(MULTIZONE *mz); 
 
+/* 
+ * Determine the stellar mass in each zone in a multizone simulation. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		The multizone object for this simulation 
+ * 
+ * Returns 
+ * ======= 
+ * A pointer to the present-day stellar mass in each zone. 
+ * 
+ * header: multizone.h 
+ */ 
+extern double *multizone_stellar_mass(MULTIZONE mz); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

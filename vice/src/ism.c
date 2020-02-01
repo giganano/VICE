@@ -534,7 +534,7 @@ extern double get_outflow_rate(SINGLEZONE sz) {
  * 
  * Returns 
  * ======= 
- * mass: An array containing each element's outflowing mass in Msun 
+ * mass: An array containing each element's outflowing mass in Msun / Gyr 
  * 
  * header: ism.h 
  */ 
@@ -545,17 +545,67 @@ extern double *singlezone_unretained(SINGLEZONE sz) {
 	for (i = 0u; i < sz.n_elements; i++) {
 		unretained[i] = 0; 
 		unretained[i] += (
-			(1 - (*(*sz.elements[i]).agb_grid).entrainment) * m_AGB(
-			sz, *sz.elements[i]) / sz.dt
+			(1 - (*(*sz.elements[i]).agb_grid).entrainment) * 
+			m_AGB(sz, *sz.elements[i]) / sz.dt
 		); 
 		unretained[i] += (
-			(1 - (*(*sz.elements[i]).ccsne_yields).entrainment) * mdot_ccsne(
-			sz, *sz.elements[i])
+			(1 - (*(*sz.elements[i]).ccsne_yields).entrainment) * 
+			mdot_ccsne(sz, *sz.elements[i])
 		);
 		unretained[i] += (
-			(1 - (*(*sz.elements[i]).sneia_yields).entrainment) * mdot_sneia(
-			sz, *sz.elements[i])
+			(1 - (*(*sz.elements[i]).sneia_yields).entrainment) * 
+			mdot_sneia(sz, *sz.elements[i])
 		); 
+	} 
+	return unretained; 
+
+} 
+
+/* 
+ * Determine the mass outflow rate of each element in each zone of a multizone 
+ * simulation due solely to entrainment. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 			The multizone object for the current simulation 
+ * 
+ * Returns 
+ * ======= 
+ * mass: A 2D-pointer indexable via [zone][element] containing the mass 
+ * outflow rate of the given element in Msun / Gyr 
+ * 
+ * header: ism.h 
+ */ 
+extern double **multizone_unretained(MULTIZONE mz) {
+
+	unsigned int i, j; 
+	double **unretained = (double **) malloc ((*mz.mig).n_zones * sizeof(
+		double *)); 
+	for (i = 0u; i < (*mz.mig).n_zones; i++) {
+		unretained[i] = (double *) malloc ((*mz.zones[0]).n_elements * sizeof(
+			double)); 
+		for (j = 0u; j < (*mz.zones[0]).n_elements; j++) {
+			unretained[i][j] = 0; 
+		} 
+	} 
+
+	for (i = 0u; i < (*mz.zones[0]).n_elements; i++) {
+		double *agb = m_AGB_from_tracers(mz, i); 
+		double *sneia = m_sneia_from_tracers(mz, i); 
+		for (j = 0u; j < (*mz.mig).n_zones; j++) {
+			unretained[j][i] += (
+				(1 - (*(*(*mz.zones[j]).elements[i]).agb_grid).entrainment) * 
+				agb[j] / (*mz.zones[j]).dt 
+			); 
+			unretained[j][i] += (
+				(1 - (*(*(*mz.zones[j]).elements[i]).ccsne_yields).entrainment) * 
+				mdot_ccsne(*mz.zones[j], *(*mz.zones[j]).elements[i]) 
+			); 
+			unretained[j][i] += (
+				(1 - (*(*(*mz.zones[j]).elements[i]).sneia_yields).entrainment) * 
+				sneia[j] / (*mz.zones[j]).dt 
+			); 
+		} 
 	} 
 	return unretained; 
 

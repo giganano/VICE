@@ -8,10 +8,15 @@
 #include <ctype.h> 
 #include <math.h> 
 #include "singlezone.h" 
+#include "multizone.h" 
 #include "ism.h" 
 #include "mdf.h" 
 #include "ssp.h" 
 #include "io.h" 
+
+/* ---------- static function comment headers not duplicated here ---------- */
+static void write_zone_history(SINGLEZONE sz, double mstar, 
+	double mass_recycled, double *unretained); 
 
 /* 
  * Open the history.out and mdf.out output files associated with a SINGLEZONE 
@@ -130,11 +135,14 @@ extern void write_history_header(SINGLEZONE sz) {
  * Parameters 
  * ========== 
  * sz: 		The SINGLEZONE struct for the current simulation 
+ * mstar: 	The stellar mass in the zone. This will differ between singlezone 
+ * 			and multizone simulations due to stellar migration. 
  * 
  * header: io.h 
  */ 
-extern void write_history_output(SINGLEZONE sz) {
+extern void write_singlezone_history(SINGLEZONE sz) {
 
+	#if 0
 	/* 
 	 * Change Notes 
 	 * ============ 
@@ -160,7 +168,7 @@ extern void write_history_output(SINGLEZONE sz) {
 	 */ 
 	fprintf(sz.history_writer, "%e\t", sz.current_time); 
 	fprintf(sz.history_writer, "%e\t", (*sz.ism).mass); 
-	fprintf(sz.history_writer, "%e\t", get_stellar_mass(sz)); 
+	fprintf(sz.history_writer, "%e\t", singlezone_stellar_mass(sz)); 
 	fprintf(sz.history_writer, "%e\t", (*sz.ism).star_formation_rate / 1e9); 
 	fprintf(sz.history_writer, "%e\t", (*sz.ism).infall_rate / 1e9); 
 	fprintf(sz.history_writer, "%e\t", get_outflow_rate(sz) / 1e9); 
@@ -192,8 +200,112 @@ extern void write_history_output(SINGLEZONE sz) {
 		fprintf(sz.history_writer, "%e\t", (*sz.elements[i]).mass); 
 	} 
 	fprintf(sz.history_writer, "\n"); 
+	#endif 
+
+	double *unretained = singlezone_unretained(sz); 
+	write_zone_history(sz, singlezone_stellar_mass(sz), mass_recycled(sz, NULL), 
+		unretained); 
+	free(unretained); 
 
 } 
+
+/* 
+ * Writes history output for each zone in a multizone simulation 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		The multizone object to write output from 
+ * 
+ * header: io.h 
+ */ 
+extern void write_multizone_history(MULTIZONE mz) {
+
+	unsigned int i; 
+	double *mstar = multizone_stellar_mass(mz); 
+	double *recycled = gas_recycled_in_zones(mz); 
+	double **unretained = multizone_unretained(mz); 
+	for (i = 0u; i < (*mz.mig).n_zones; i++) {
+		write_zone_history(*mz.zones[i], mstar[i], recycled[i], unretained[i]); 
+	} 
+	free(unretained); 
+	free(mstar); 
+	free(recycled);
+
+}
+
+/* 
+ * Write a zone's history output, either in a singlezone simulation or 
+ * embedded in a multizone object. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 				The singlezone object associated with the zone 
+ * mstar: 			The stellar mass in the zone 
+ * mass_recycled: 	The recycled mass in the zone 
+ * unretained: 		The amount of mass unretained in the given zone for each 
+ * 					element 
+ */ 
+static void write_zone_history(SINGLEZONE sz, double mstar, 
+	double mass_recycled, double *unretained) {
+
+	/* 
+	 * Change Notes 
+	 * ============ 
+	 * Calculation of ISM metallicities now moved to output handling functions. 
+	 * The primary motivation for this was to remove overhead from calculating 
+	 * and recording every [X/Y] combination of abundance ratios. VICE still 
+	 * does this automatically, but from the output instead of during 
+	 * simulation. This significantly improves the speed of simulations with 
+	 * high n_elements. 
+	 */ 
+
+	/* 
+	 * Write the evolutionary parameters 
+	 * 
+	 * Notes 
+	 * ===== 
+	 * Factor of 1e9 on star formation rate, infall rate, and outflow rate 
+	 * converts from Msun/Gyr to Msun/yr to report quantities in conventional 
+	 * units. 
+	 * 
+	 * mass_recycled expected a second argument of type ELEMENT *, but 
+	 * determines the total ISM mass recycled in the case of NULL. 
+	 */ 
+
+	fprintf(sz.history_writer, "%e\t", sz.current_time); 
+	fprintf(sz.history_writer, "%e\t", (*sz.ism).mass); 
+	fprintf(sz.history_writer, "%e\t", mstar); 
+	fprintf(sz.history_writer, "%e\t", (*sz.ism).star_formation_rate / 1e9); 
+	fprintf(sz.history_writer, "%e\t", (*sz.ism).infall_rate / 1e9); 
+	fprintf(sz.history_writer, "%e\t", get_outflow_rate(sz) / 1e9); 
+	fprintf(sz.history_writer, "%e\t", (*sz.ism).eta[sz.timestep]); 
+	if ((*sz.ssp).continuous) { 
+		/* effective recycling factor in case of continuous recycling */ 
+		fprintf(sz.history_writer, "%e\t", mass_recycled / 
+			((*sz.ism).star_formation_rate * sz.dt)); 
+	} else { 
+		/* instantaneous recycling parameter otherwise */ 
+		fprintf(sz.history_writer, "%e\t", (*sz.ssp).R0); 
+	} 
+	unsigned int i;
+	for (i = 0; i < sz.n_elements; i++) {
+		/* infall metallicity */ 
+		fprintf(sz.history_writer, "%e\t", (*sz.elements[i]).Zin[sz.timestep]); 
+	} 
+	for (i = 0; i < sz.n_elements; i++) { 
+		/* outflow metallicity = enhancement factor x ISM metallicity */ 
+		fprintf(sz.history_writer, "%e\t", 
+			// (*sz.ism).enh[sz.timestep] * (*sz.elements[i]).Z[sz.timestep]); 
+			(*sz.ism).enh[sz.timestep] * (*sz.elements[i]).Z[sz.timestep] + 
+			unretained[i] / get_outflow_rate(sz)); 
+	} 
+	for (i = 0; i < sz.n_elements; i++) {
+		/* total ISM mass of each element */ 
+		fprintf(sz.history_writer, "%e\t", (*sz.elements[i]).mass); 
+	} 
+	fprintf(sz.history_writer, "\n"); 
+
+}
 
 /* 
  * Writes the header to the mdf output file. 
@@ -258,6 +370,24 @@ extern void write_mdf_output(SINGLEZONE sz) {
 	} 
 
 } 
+
+/* 
+ * Writes the stellar MDFs to all output files. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		The multizone object to write the MDF from 
+ * 
+ * header: io.h 
+ */ 
+extern void write_multizone_mdf(MULTIZONE mz) {
+
+	unsigned int i; 
+	for (i = 0u; i < (*mz.mig).n_zones; i++) {
+		write_mdf_output(*mz.zones[i]); 
+	} 
+
+}
 
 /* 
  * Opens the tracers output file at the end of a multizone simulation. 

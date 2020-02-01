@@ -61,7 +61,18 @@ extern void write_history_header(SINGLEZONE sz);
  * 
  * source: io.c 
  */ 
-extern void write_history_output(SINGLEZONE sz); 
+extern void write_singlezone_history(SINGLEZONE sz); 
+
+/* 
+ * Writes history output for each zone in a multizone simulation 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		The multizone object to write output from 
+ * 
+ * source: io.c 
+ */ 
+extern void write_multizone_history(MULTIZONE mz); 
 
 /* 
  * Writes the header to the mdf output file. 
@@ -84,6 +95,17 @@ extern void write_mdf_header(SINGLEZONE sz);
  * source: io.c 
  */ 
 extern void write_mdf_output(SINGLEZONE sz); 
+
+/* 
+ * Writes the stellar MDFs to all output files. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		The multizone object to write the MDF from 
+ * 
+ * source: io.c 
+ */ 
+extern void write_multizone_mdf(MULTIZONE mz); 
 
 /* 
  * Opens the tracers output file at the end of a multizone simulation. 

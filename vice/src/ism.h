@@ -121,11 +121,28 @@ extern double get_outflow_rate(SINGLEZONE sz);
  * 
  * Returns 
  * ======= 
- * mass: An array containing each element's outflowing mass in Msun 
+ * mass: An array containing each element's outflowing mass in Msun / Gyr 
  * 
  * source: ism.c 
  */ 
 extern double *singlezone_unretained(SINGLEZONE sz); 
+
+/* 
+ * Determine the mass outflow rate of each element in each zone of a multizone 
+ * simulation due solely to entrainment. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 			The multizone object for the current simulation 
+ * 
+ * Returns 
+ * ======= 
+ * mass: A 2D-pointer indexable via [zone][element] containing the mass 
+ * outflow rate of the given element in Msun / Gyr 
+ * 
+ * source: ism.c 
+ */ 
+extern double **multizone_unretained(MULTIZONE mz); 
 
 #ifdef __cplusplus 
 } 

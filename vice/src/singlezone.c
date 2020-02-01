@@ -142,7 +142,7 @@ extern void singlezone_evolve_no_setup_no_clean(SINGLEZONE *sz) {
 		 */ 
 		if ((*sz).current_time >= (*sz).output_times[n] || 
 			2 * (*sz).output_times[n] < 2 * (*sz).current_time + (*sz).dt) {
-			write_history_output(*sz); 
+			write_singlezone_history(*sz); 
 			n++; 
 		} else {} 
 		if (singlezone_timestepper(sz)) break; 
@@ -433,7 +433,7 @@ static void verbosity(SINGLEZONE sz) {
  * 
  * header: singlezone.h 
  */ 
-extern double get_stellar_mass(SINGLEZONE sz) {
+extern double singlezone_stellar_mass(SINGLEZONE sz) {
 
 	unsigned long i; 
 	double mass = 0; 
