@@ -1,6 +1,6 @@
 
 CC = gcc 
-CFLAGS = -c -fPIC -Wsign-conversion -Wsign-compare 
+CFLAGS = -fPIC -Wsign-conversion -Wsign-compare 
 SOURCES = $(wildcard *.c) 
 OBJECTS = $(SOURCES:.c=.o) 
 EXTS = dataframe/*.o io/*.o modeling/*.o multizone/*.o objects/*.o \
@@ -20,9 +20,6 @@ vice.so: $(OBJECTS)
 	$(MAKE) -C yields/ 
 	$(CC) *.o $(EXTS) -shared -o vice.so 
 
-%.o: %.c *.h 
-	$(CC) $(CFLAGS) $< -o $@ 
-
 clean: 
 	$(MAKE) -C dataframe/ clean 
 	$(MAKE) -C io/ clean 
@@ -34,5 +31,4 @@ clean:
 	$(MAKE) -C yields/ clean 
 	rm -f *.o 
 	rm -f *.so 
-
 

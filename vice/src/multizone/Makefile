@@ -1,6 +1,6 @@
 
 CC = gcc 
-CFLAGS = -c -fPIC -Wsign-conversion -Wsign-compare 
+CFLAGS = -fPIC -Wsign-conversion -Wsign-compare 
 SOURCES = $(wildcard *.c) 
 OBJECTS = $(SOURCES:.c=.o) 
 
