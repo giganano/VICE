@@ -7,6 +7,6 @@ cdef extern from "../../src/objects.h":
 		double *bins 
 		unsigned long n_bins 
 
-cdef extern from "../../src/mdf.h": 
+cdef extern from "../../src/objects/mdf.h": 
 	MDF *mdf_initialize() 
 	void mdf_free(MDF *mdf) 

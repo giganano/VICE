@@ -12,7 +12,7 @@ cdef extern from "../../src/objects.h":
 		unsigned int zone_current 
 		unsigned int timestep_origin 
 
-cdef extern from "../../src/tracer.h": 
+cdef extern from "../../src/multizone/tracer.h": 
 	TRACER *tracer_initialize() 
 	void tracer_free(_tracer.TRACER *t) 
 	void malloc_tracers(_multizone.MULTIZONE *mz) 

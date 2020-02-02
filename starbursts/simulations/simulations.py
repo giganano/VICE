@@ -379,9 +379,10 @@ def run_kirby2010_comparisons():
 		"dt": 			_TIMESTEP_, 
 		"bins": 		bins[:], 
 		"Mg0": 			0, 
-		"tau_star": 	50, 
-		"eta": 			100, 
-		"elements": 	["fe", "sr", "mg"] 
+		"tau_star": 	10, 
+		"eta": 			30, 
+		"elements": 	["fe", "sr", "mg"], 
+		"enhancement": 	3 
 	} 
 	sz1 = vice.singlezone(name = "simulations/kirby2010_smooth", 
 		func = lambda t: 9.1 * m.exp(-t / 2), 

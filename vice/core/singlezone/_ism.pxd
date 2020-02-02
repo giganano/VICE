@@ -16,7 +16,7 @@ cdef extern from "../../src/objects.h":
 		double smoothing_time 
 		int schmidt 
 
-cdef extern from "../../src/ism.h": 
+cdef extern from "../../src/objects/ism.h": 
 	ISM *ism_initialize() 
 	void ism_free(ISM *ism) 
 

@@ -18,23 +18,7 @@ else:
 	_VERSION_ERROR_() 
 
 _RECOGNIZED_STUDIES_ = ["seitenzahl13", "iwamoto99"] 
-
-""" 
-<--------------- C routine comment headers not duplicated here ---------------> 
-
-Notes 
-===== 
-The following pythonic relative import line: 
-from ...core cimport _ccsne 
-produced the following line in the output .c file: 
-#include "../src/objects.h" 
-which appears in the _ccsne.pxd file. This renders a relative import from 
-this file impossible, so we can simply cdef the necessary functions here. 
-Since there is only one of them, this is simpler than modifying the 
-vice/core/_ccsne.pxd file to allow it. 
-""" 
-cdef extern from "../../src/io.h": 
-	double single_ia_mass_yield_lookup(char *file) 
+from ._yield_lookup cimport single_ia_mass_yield_lookup 
 
 #------------------------- SINGLE_IA_YIELD FUNCTION -------------------------# 
 def single_detonation(element, study = "seitenzahl13", model = "N1"): 

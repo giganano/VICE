@@ -1,24 +1,37 @@
 
 CC = gcc 
 CFLAGS = -c -fPIC -Wsign-conversion -Wsign-compare 
-OBJECTS = agb.o ccsne.o channel.o element.o fromfile.o history.o imf.o io.o \
-	ism.o mdf.o migration.o multizone.o quadrature.o singlezone.o sneia.o \
-	ssp.o stats.o tracer.o utils.o 
+SOURCES = $(wildcard *.c) 
+OBJECTS = $(SOURCES:.c=.o) 
+EXTS = dataframe/*.o io/*.o modeling/*.o multizone/*.o objects/*.o \
+	singlezone/*.o ssp/*.o yields/*.o 
 
 all: vice.so 
-
 .PHONY: clean 
 
 vice.so: $(OBJECTS) 
-	$(CC) *.o -shared -o vice.so 
+	$(MAKE) -C dataframe/ 
+	$(MAKE) -C io/ 
+	$(MAKE) -C modeling/ 
+	$(MAKE) -C multizone/ 
+	$(MAKE) -C objects/ 
+	$(MAKE) -C singlezone/ 
+	$(MAKE) -C ssp/ 
+	$(MAKE) -C yields/ 
+	$(CC) *.o $(EXTS) -shared -o vice.so 
 
 %.o: %.c *.h 
 	$(CC) $(CFLAGS) $< -o $@ 
 
-test.o: *.c *.h test.c 
-	$(CC) -lm *.c -o test.o 
-
 clean: 
+	$(MAKE) -C dataframe/ clean 
+	$(MAKE) -C io/ clean 
+	$(MAKE) -C modeling/ clean 
+	$(MAKE) -C multizone/ clean 
+	$(MAKE) -C objects/ clean 
+	$(MAKE) -C singlezone/ clean 
+	$(MAKE) -C ssp/ clean 
+	$(MAKE) -C yields/ clean 
 	rm -f *.o 
 	rm -f *.so 
 

@@ -29,90 +29,9 @@ extern "C" {
 #endif /* AGB_Z_GRID_MAX */ 
 
 #include "objects.h" 
-
-/* 
- * Allocate memory for and return a pointer to an AGB_YIELD_GRID struct and 
- * initialize all fields to NULL. 
- * 
- * source: agb.c 
- */ 
-extern AGB_YIELD_GRID *agb_yield_grid_initialize(void); 
-
-/* 
- * Free up the memory stored in an AGB_YIELD_GRID struct 
- * 
- * source: agb.c 
- */ 
-extern void agb_yield_grid_free(AGB_YIELD_GRID *agb_grid); 
-
-/* 
- * Determine the mass of a given element produced by AGB stars at the current 
- * timestep of a singlezone simulation. 
- * 
- * Parameters 
- * ========== 
- * sz: 			The SINGLEZONE struct associated with the current simulation 
- * e: 			The ELEMENT struct to find the total mass yield for 
- * 
- * Returns 
- * ======= 
- * The mass of the given element in solar masses produced by AGB stars in one 
- * timestep from all previous generations of stars. 
- * 
- * header: agb.h 
- */ 
-extern double m_AGB(SINGLEZONE sz, ELEMENT e); 
-
-#if 0 
-/* 
- * Enrich each element in each zone according to the AGB stars associated with 
- * tracer particles. 
- * 
- * Parameters 
- * ========== 
- * mz: 		The multizone object for the current simulation 
- * 
- * source: agb.c 
- */ 
-extern void agb_from_tracers(MULTIZONE *mz); 
-#endif 
-
-/* 
- * Determine the mass of a given element produced by AGB stars in each 
- * zone. 
- * 
- * Parameters 
- * ========== 
- * mz: 			The multizone object for the current simulation 
- * index: 		The index of the element to determine the mass production for 
- * 
- * Returns 
- * ======= 
- * The mass of the given element produced in each zone in the next timestep by 
- * AGB stars. 
- * 
- * source: agb.c 
- */ 
-extern double *m_AGB_from_tracers(MULTIZONE mz, unsigned short index); 
-
-/* 
- * Determine the fractional yield of a given element from AGB stars at a 
- * given mass and metallicity. 
- * 
- * Parameters 
- * ========== 
- * e: 				The element struct containing AGB yield information 
- * Z_stars: 		The metallicity by mass Z of the AGB stars 
- * turnoff_mass:	The mass of the AGB stars 
- * 
- * Returns
- * ======= 
- * The fraction of each AGB star's mass that is converted into the element e 
- * under the current yield settings. 
- * 
- * source: agb.c 
- */ 
-extern double get_AGB_yield(ELEMENT e, double Z_stars, double turnoff_mass); 
+#include "singlezone/agb.h" 
+#include "multizone/agb.h" 
+#include "objects/agb.h" 
 
 #ifdef __cplusplus 
 } 

@@ -831,14 +831,10 @@ Got: %s""" % (type(value)))
 		>= 0 
 		""" 
 		if isinstance(value, numbers.Number): 
-			if value > 0: 
+			if value >= 0: 
 				self._Mg0 = float(value) 
-			elif value == 0: 
-				""" 
-				Set the initial gas supply to be barely above zero to avoid 
-				ZeroDivisionErrors 
-				""" 
-				self._Mg0 = 1.e-12 
+				# avoid ZeroDivisionError 
+				if self._Mg0 == 0: self._Mg0 += 1e-12 
 			else: 
 				raise ValueError("""Attribute 'Mg0' must be non-negative. \
 Got: %s""" % (value)) 

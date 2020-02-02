@@ -35,12 +35,12 @@ cdef extern from "../../src/objects.h":
 		double error 
 
 
-cdef extern from "../../src/quadrature.h": 
+cdef extern from "../../src/objects/integral.h": 
 	INTEGRAL *integral_initialize() 
 	void integral_free(INTEGRAL *intgrl) 
 
 
-cdef extern from "../../src/ccsne.h": 
+cdef extern from "../../src/yields/ccsne.h": 
 	void set_explodability_criteria(double *masses, unsigned int n_masses, 
 		double *explodability)
 	unsigned short IMFintegrated_fractional_yield_numerator(INTEGRAL *intgrl, 

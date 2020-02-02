@@ -24,7 +24,7 @@ cdef extern from "../../src/objects.h":
 		double mass 
 		double solar 
 
-cdef extern from "../../src/element.h": 
+cdef extern from "../../src/objects/element.h": 
 	ELEMENT *element_initialize() 
 	void element_free(ELEMENT *e) 
 

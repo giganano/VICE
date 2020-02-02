@@ -53,14 +53,15 @@ VERSION 		= "%d.%d.%d" % (MAJOR, MINOR, MICRO)
 
 def compile_extensions(): 
 	# compile each Cython extension 
-	c_extensions = list(filter(lambda x: x.endswith(".c"), 
-		["vice/src/%s" % (i) for i in os.listdir("./vice/src/")])) 
+	# c_extensions = list(filter(lambda x: x.endswith(".c"), 
+	# 	["vice/src/%s" % (i) for i in os.listdir("./vice/src/")])) 
 	for root, dirs, files in os.walk('.'): 
 		for i in files: 
 			if i.endswith(".pyx"): 		# if it's cython code 
 				ext = "%s.%s" % (root[2:].replace('/', '.'), 
 					i.split('.')[0]) 
-				files = ["%s/%s" % (root[2:], i)] + c_extensions 
+				# files = ["%s/%s" % (root[2:], i)] + c_extensions 
+				files = ["%s/%s" % (root[2:], i)] + vice.find_c_extensions() 
 				setup(ext_modules = cythonize([Extension(ext, files,
 					extra_compile_args = ["-Wno-unreachable-code"])])) 
 			else: 

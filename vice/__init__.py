@@ -73,6 +73,7 @@ except NameError:
 	ModuleNotFoundError = ImportError 
 
 if __VICE_SETUP__: 
+	from .src import find_c_extensions 
 	from ._build_utils import * 
 	_LONG_DESCRIPTION_ = __doc__
 else:

@@ -11,7 +11,7 @@ cdef extern from "../../src/objects.h":
 		unsigned long n_cols 
 		double **data 
 
-cdef extern from "../../src/fromfile.h": 
+cdef extern from "../../src/dataframe/fromfile.h": 
 	FROMFILE *fromfile_initialize() 
 	void fromfile_free(FROMFILE *ff) 
 	unsigned short fromfile_read(FROMFILE *ff) 

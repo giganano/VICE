@@ -14,7 +14,7 @@ cdef extern from "../../src/objects.h":
 		_tracer.TRACER **tracers 
 		FILE *tracers_output 
 
-cdef extern from "../../src/migration.h": 
+cdef extern from "../../src/multizone/migration.h": 
 	void malloc_gas_migration(_multizone.MULTIZONE *mz) 
 	unsigned short setup_migration_element(_multizone.MULTIZONE mz, 
 		double ***migration_matrix, unsigned int row, unsigned int column, 

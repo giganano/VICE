@@ -137,25 +137,29 @@ cdef class c_singlechain:
 
 	@property 
 	def eta(self): 
-		return self._sz.eta 
+		return self._eta 
 
 	@eta.setter 
 	def eta(self, value): 
 		if callable(value) and _pyutils.arg_count(value) > 1: 
 			self._sz.eta = fitting_function(value) 
 		else: 
+			# let the singlezone object do the error handling 
 			self._sz.eta = value 
+			self._eta = value 
 
 	@property 
 	def enhancement(self): 
-		return self._sz.enhancement 
+		return self._enhancement 
 
 	@enhancement.setter 
 	def enhancement(self, value): 
 		if callable(value) and _pyutils.arg_count(value) > 1: 
 			self._sz.enhancement = fitting_function(value) 
 		else: 
-			pass 
+			# let the singlezone object do the error handling 
+			self._sz.enhancement = value 
+			self._enhancement = value 
 
 	@property 
 	def entrainment(self): 
@@ -171,11 +175,13 @@ cdef class c_singlechain:
 
 	@property 
 	def recycling(self): 
-		return self._sz.recycling 
+		return self._recycling 
 
 	@recycling.setter 
 	def recycling(self, value): 
+		# let the singlezone object do the error handling 
 		self._sz.recycling = value 
+		self._recycling = value 
 
 	@property 
 	def bins(self): 
@@ -187,11 +193,13 @@ cdef class c_singlechain:
 
 	@property 
 	def delay(self): 
-		return self._sz.delay 
+		return self._delay 
 
 	@delay.setter 
 	def delay(self, value): 
+		# let the singlezone object do the error handling 
 		self._sz.delay = value 
+		self._delay = value 
 
 	@property 
 	def RIa(self): 
@@ -206,38 +214,46 @@ cdef class c_singlechain:
 
 	@property 
 	def Mg0(self): 
-		return self._sz.Mg0 
+		return self._Mg0 
 
 	@Mg0.setter 
 	def Mg0(self, value): 
+		# let the singlezone object do the error handling 
 		self._sz.Mg0 = value 
+		self._Mg0 = value 
 
 	@property 
 	def smoothing(self): 
-		return self._sz.smoothing 
+		return self._smoothing 
 
 	@smoothing.setter 
 	def smoothing(self, value): 
+		# let the singlezone object do the error handling 
 		self._sz.smoothing = value 
+		self._smoothing = value 
 
 	@property 
 	def tau_ia(self): 
-		return self._sz.tau_ia 
+		return self._tau_ia 
 
 	@tau_ia.setter 
 	def tau_ia(self, value): 
+		# let the singlezone object do the error handling 
 		self._sz.tau_ia = value 
+		self._tau_ia = value 
 
 	@property 
 	def tau_star(self): 
-		return self._sz.tau_star 
+		return self._tau_star 
 
 	@tau_star.setter 
 	def tau_star(self, value): 
 		if callable(value) and _pyutils.arg_count(value) > 1: 
 			self._sz.tau_star = fitting_function(value) 
 		else: 
+			# let the singlezone object do the error handling 
 			self._sz.tau_star = value 
+			self._tau_star = value 
 
 	@property 
 	def dt(self): 
@@ -265,27 +281,33 @@ cdef class c_singlechain:
 
 	@property 
 	def schmidt_index(self): 
-		return self._sz.schmidt_index 
+		return self._schmidt_index 
 
 	@schmidt_index.setter 
 	def schmidt_index(self, value): 
+		# let the singlezone object do the error handling 
 		self._sz.schmidt_index = value 
+		self._schmidt_index = value 
 
 	@property 
 	def m_upper(self): 
-		return self._sz.m_upper 
+		return self._m_upper 
 
 	@m_upper.setter 
 	def m_upper(self, value): 
+		# let the singlezone object do the error handling 
 		self._sz.m_upper = value 
+		self._m_upper = value 
 
 	@property 
 	def m_lower(self): 
-		return self._sz.m_lower 
+		return self._m_lower 
 
 	@m_lower.setter 
 	def m_lower(self, value): 
+		# let the singlezone object do the error handling 
 		self._sz.m_lower = value 
+		self._m_lower = value 
 
 	@property 
 	def postMS(self): 
@@ -417,11 +439,15 @@ cdef class c_singlechain:
 			if isinstance(self.entrainment.ccsne[i], parameter): 
 				self.entrainment.ccsne[i] = self.entrainment.ccsne[i].old() 
 			if isinstance(self.entrainment.sneia[i], parameter): 
-				self.etrainment.sneia[i] = self.entrainment.sneia[i].old() 
+				self.entrainment.sneia[i] = self.entrainment.sneia[i].old() 
 		if isinstance(self.Zin, base): 
 			for i in self.elements: 
 				if isinstance(self.Zin[i], fitting_function): 
 					self.Zin[i].revert() 
+				elif isinstance(self.Zin[i], parameter): 
+					self.Zin[i] = self.Zin[i].revert() 
+				else: 
+					pass 
 		if isinstance(self.delay, parameter): self.delay = self.delay.old() 
 		if isinstance(self.RIa, fitting_function): self.RIa.revert() 
 		if isinstance(self.Mg0, parameter): self.Mg0 = self.Mg0.old() 
