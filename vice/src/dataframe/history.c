@@ -11,16 +11,15 @@
 #include "../io.h" 
 #include "fromfile.h" 
 #include "history.h" 
+#include "utils.h" 
 
 /* ---------- static function comment headers not duplicated here ---------- */ 
 static double *logarithmic_abundance(FROMFILE *ff, char *element, 
 	char **elements, unsigned int n_elements, double *solar); 
-static int get_element_index(char **elements, char *element, 
-	unsigned int n_elements); 
 static double *Ztotal_by_element(FROMFILE *ff, unsigned int n_elements, 
 	char **elements); 
-static double Zsolar_by_element(double *solar, unsigned int n_elements, 
-	char **elements); 
+// static double Zsolar_by_element(double *solar, unsigned int n_elements, 
+// 	char **elements); 
 
 
 /* 
@@ -51,7 +50,7 @@ extern double *history_row(FROMFILE *ff, unsigned long row, char **elements,
 
 	/* 
 	 * One for each column already there, another two for each z(x) and [x/h] 
-	 * measurement, then n chose 2 cross combinations of [X/Y] abundance 
+	 * measurement, then n choose 2 cross combinations of [X/Y] abundance 
 	 * ratios, and one for Z and [M/H] 
 	 */ 
 	unsigned int length = row_length(ff, n_elements); 
@@ -292,33 +291,6 @@ static double *logarithmic_abundance(FROMFILE *ff, char *element,
 
 
 /* 
- * Determine the index of an element in a history object. 
- * 
- * Parameters 
- * ========== 
- * elements: 	The element symbols themselves 
- * element: 	The symbol of the element to get the index for 
- * n_elements: 	The number of elements tracked by the simulation 
- * 
- * Returns 
- * ======= 
- * The element's index: the integer such that hist.elements[index] is the 
- * same symbol as char *element. -1 if the element is not found in the history 
- * object. 
- */ 
-static int get_element_index(char **elements, char *element, 
-	unsigned int n_elements) {
-
-	unsigned int i; 
-	for (i = 0; i < n_elements; i++) {
-		if (!strcmp(elements[i], element)) return (signed) i; 
-	} 
-	return -1; 
-
-} 
-
-
-/* 
  * Determine the scaled metallicity by mass at all output times according to: 
  * 
  * Z = Z_solar * sum(Z_i) / sum(Z_i_solar) 
@@ -463,6 +435,7 @@ static double *Ztotal_by_element(FROMFILE *ff, unsigned int n_elements,
 }
 
 
+#if 0 
 /* 
  * Determine the total solar abundance by summing the solar abundances of 
  * each element in the history object. 
@@ -500,4 +473,5 @@ static double Zsolar_by_element(double *solar, unsigned int n_elements,
 	// return sum(solar, (unsigned long) n_elements); 
 
 }
+#endif 
 

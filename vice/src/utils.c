@@ -13,6 +13,7 @@
 /* Define the checksum function adopted in this implementation */ 
 long (*checksum)(char *) = &simple_hash; 
 
+
 /* 
  * Performs the choose operations between two positive numbers 
  * 
@@ -55,6 +56,7 @@ extern unsigned long choose(unsigned long a, unsigned long b) {
 
 } 
 
+
 /* 
  * Determine the absolute value of a double x. This function extends the 
  * standard library function abs, which only excepts values of type int. 
@@ -75,6 +77,7 @@ extern double absval(double x) {
 
 }
 
+
 /* 
  * Determine the sign of a double x 
  * 
@@ -93,6 +96,7 @@ extern short sign(double x) {
 	return (x >= 0) - (x < 0); 
 
 } 
+
 
 /* 
  * Obtain a simple hash for a string 
@@ -123,6 +127,7 @@ extern long simple_hash(char *str) {
 
 } 
 
+
 /* 
  * Seeds the random number generator off of the current time. 
  * 
@@ -133,6 +138,7 @@ extern void seed_random(void) {
 	srand(time(NULL)); 
 
 } 
+
 
 /* 
  * Generate a pseudorandom number in a specified range. 
@@ -153,6 +159,7 @@ extern double rand_range(double minimum, double maximum) {
 	return minimum + (maximum - minimum) * ((double) rand() / RAND_MAX); 
 
 }
+
 
 /* 
  * A standard interpolation function. For two points (x1, y1) and (x2, y2), 
@@ -182,6 +189,7 @@ extern double interpolate(double x1, double x2, double y1, double y2,
 	return (y2 - y1) / (x2 - x1) * (x - x1) + y1; 
 
 } 
+
 
 /* 
  * Two dimensional interpolation. For four points (x1, y1), (x1, y2), (x2, y1), 
@@ -224,6 +232,7 @@ extern double interpolate2D(double x[2], double y[2], double f[2][2], double x0,
 
 }
 
+
 /* 
  * Gets the bin number for a given value in a specified array of bin edges. 
  * 
@@ -264,6 +273,7 @@ extern long get_bin_number(double *binspace, unsigned long num_bins,
 	return -1l; 
 
 } 
+
 
 /* 
  * Determine the metallicity by mass of the ISM. This is not simply the sum 
@@ -306,6 +316,7 @@ extern double scale_metallicity(SINGLEZONE sz, unsigned long timestep) {
 
 } 
 
+
 /* 
  * Returns a pointer to an array of linearly spaced doubles between two 
  * specified values. For a binspace with N bins, the resulting array is of 
@@ -330,6 +341,7 @@ extern double *binspace(double start, double stop, unsigned long N) {
 	return arr; 
 
 }
+
 
 /* 
  * Determine the center of each bin in an array of bin edges by taking the 
@@ -359,6 +371,7 @@ extern double *bin_centers(double *edges, unsigned long n_bins) {
 
 } 
 
+
 /* 
  * Determine the sum of an array of double with known length. 
  * 
@@ -384,6 +397,7 @@ extern double sum(double *arr, unsigned long len) {
 
 }
 
+
 /* 
  * Sets the value of a string according to the ordinals of its values. Assumes 
  * that the destination char * has already had memory allocated. 
@@ -403,6 +417,38 @@ extern void set_char_p_value(char *dest, int *ords, int length) {
 		dest[i] = ords[i]; 
 	} 
 	dest[length] = '\0'; 	/* null terminator */ 
+
+}
+
+
+/* 
+ * Determine the maximum value stored in an array of double precision values. 
+ * 
+ * Parameters 
+ * ========== 
+ * arr: 		A pointer to the array itself 
+ * length: 		The number of values stored in the array 
+ * 
+ * Returns 
+ * ======= 
+ * max_: The maximum value of the array 
+ * 
+ * header: utils.h 
+ */ 
+extern double max(double *arr, unsigned long length) {
+
+	if (length > 2) {
+		unsigned long i; 
+		double max_ = arr[0] > arr[1] ? arr[0] : arr[1]; 
+		for (i = 2ul; i < length; i++) {
+			max_ = arr[i] > max_ ? arr[i] : max_; 
+		} 
+		return max_; 
+	} else if (length == 1) {
+		return arr[0]; 
+	} else {
+		return 0; 
+	}
 
 }
 

@@ -18,6 +18,6 @@ cdef extern from "../../src/dataframe/history.h":
 
 cdef class history(fromfile): 
 	cdef char **_elements 
-	cdef unsigned int n_elements 
-	cdef double *solar 
-	cdef double Z_solar 
+	cdef unsigned int _n_elements 
+	cdef double *_solar 
+	cdef double _Z_solar 

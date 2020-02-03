@@ -48,26 +48,23 @@ cdef class history(fromfile):
 		super().__init__(filename = filename, labels = 
 			_output_utils._load_column_labels_from_file_header(filename)) 
 		elements = self._load_elements() 
-		self.n_elements = <unsigned> len(elements) 
-		self._elements = <char **> malloc (self.n_elements * sizeof(char *)) 
-		for i in range(self.n_elements): 
+		self._n_elements = <unsigned> len(elements) 
+		self._elements = <char **> malloc (self._n_elements * sizeof(char *)) 
+		for i in range(self._n_elements): 
 			self._elements[i] = <char *> malloc ((len(elements) + 1) * 
 				sizeof(char)) 
 			set_string(self._elements[i], elements[i]) 
-		self.solar = <double *> malloc (self.n_elements * sizeof(double)) 
+		self._solar = <double *> malloc (self._n_elements * sizeof(double)) 
 		from ._builtin_dataframes import solar_z 
-		for i in range(self.n_elements): 
-			self.solar[i] = solar_z[elements[i]] 
-		self.Z_solar = adopted_solar_z 
+		for i in range(self._n_elements): 
+			self._solar[i] = solar_z[elements[i]] 
+		self._Z_solar = adopted_solar_z 
 
 	def _load_elements(self): 
 		elements = [] 
 		for i in _output_utils._load_column_labels_from_file_header(self.name):  
 			if i.startswith("mass("): 
-				"""
-				Find elements based on the those with columns of reported 
-				masses
-				""" 
+				# Find elements based on the columns of reported masses
 				elements.append("%s" % (i.split('(')[1][:-1].lower())) 
 			else: 
 				continue 
@@ -139,8 +136,8 @@ cdef class history(fromfile):
 		requesting the total metallicity by mass Z
 		""" 
 		cdef double *item 
-		item = _history.Zscaled(self._ff, self.n_elements, 
-			self._elements, self.solar, self.Z_solar)  
+		item = _history.Zscaled(self._ff, self._n_elements, 
+			self._elements, self._solar, self._Z_solar)  
 		if item is not NULL: 
 			x = [item[i] for i in range(self._ff[0].n_rows)] 
 			free(item) 
@@ -154,8 +151,8 @@ cdef class history(fromfile):
 		requesting the log of the total metallicity by mass [M/H]. 
 		""" 
 		cdef double *item
-		item = _history.logarithmic_scaled(self._ff, self.n_elements, 
-			self._elements, self.solar)  
+		item = _history.logarithmic_scaled(self._ff, self._n_elements, 
+			self._elements, self._solar)  
 		if item is not NULL: 
 			x = [item[i] for i in range(self._ff[0].n_rows)] 
 			free(item) 
@@ -179,7 +176,7 @@ cdef class history(fromfile):
 		set_string(copy, element1.lower()) 
 		set_string(copy2, element2.lower()) 
 		item = _history.logarithmic_abundance_ratio(self._ff, 
-			copy, copy2, self._elements, self.n_elements, self.solar) 
+			copy, copy2, self._elements, self._n_elements, self._solar) 
 		free(copy) 
 		free(copy2) 
 		if item is not NULL: 
@@ -196,18 +193,18 @@ cdef class history(fromfile):
 		cdef double *item 
 		if 0 <= key < self._ff[0].n_rows: 
 			item = _history.history_row(self._ff, <unsigned long> key, 
-				self._elements, self.n_elements, self.solar, 
-				self.Z_solar) 
+				self._elements, self._n_elements, self._solar, 
+				self._Z_solar) 
 		elif abs(key) <= self._ff[0].n_rows: 
 			item = _history.history_row(self._ff, 
 				self._ff[0].n_rows - <unsigned long> abs(key), 
-				self._elements, self.n_elements, self.solar, 
-				self.Z_solar) 
+				self._elements, self._n_elements, self._solar, 
+				self._Z_solar) 
 		else: 
 			raise IndexError("Index out of bounds: %d" % (int(key))) 
 		if item is not NULL: 
 			x = [item[i] for i in range(_history.row_length(self._ff, 
-				self.n_elements))]   
+				self._n_elements))]   
 			free(item) 
 			return _base.base(dict(zip(self.keys(), x))) 
 		else: 

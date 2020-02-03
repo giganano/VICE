@@ -76,7 +76,7 @@ extern short sign(double x);
  * ======= 
  * The sum of the ordinal numbers for each character in the string 
  * 
- * header: utils.h 
+ * source: utils.c  
  */ 
 extern long simple_hash(char *str); 
 
@@ -146,7 +146,7 @@ extern double interpolate(double x1, double x2, double y1, double y2,
  * interpolation operations, allowing for extrapolation to points of 
  * interest (x0, y0) not bound by the square definfed by x1, x2, y1, and y2. 
  * 
- * header: utils.h 
+ * source: utils.c  
  */ 
 extern double interpolate2D(double x[2], double y[2], double f[2][2], double x0, 
 	double y0); 
@@ -259,6 +259,22 @@ extern double sum(double *arr, unsigned long len);
  * source: utils.c 
  */ 
  extern void set_char_p_value(char *dest, int *ords, int length); 
+
+/* 
+ * Determine the maximum value stored in an array of double precision values. 
+ * 
+ * Parameters 
+ * ========== 
+ * arr: 		A pointer to the array itself 
+ * length: 		The number of values stored in the array 
+ * 
+ * Returns 
+ * ======= 
+ * max_: The maximum value of the array 
+ * 
+ * source: utils.c 
+ */ 
+extern double max(double *arr, unsigned long length); 
 
 #ifdef __cplusplus 
 } 
