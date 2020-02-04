@@ -11,7 +11,10 @@
 #include "../yields/integral.h" 
 #include "../utils.h" 
 #include "msmf.h" 
+#include "mlr.h" 
 
+/* ---------- static function comment headers not duplicated here ---------- */ 
+static double MSMFnumerator_integrand(double m); 
 static IMF_ *ADOPTED_IMF = NULL; 
 
 
@@ -78,7 +81,7 @@ extern unsigned short setup_MSMF(SINGLEZONE *sz) {
 		unsigned long i, n = n_timesteps(*sz); 
 
 		sz -> ssp -> msmf = (double *) malloc (n * sizeof(double)); 
-		for (i = 0l; i < n; i++) {
+		for (i = 0l; i < n; i++) { 
 			sz -> ssp -> msmf[i] = MSMFnumerator((*(*sz).ssp), 
 				i * (*sz).dt) / denominator; 
 		} 
@@ -203,7 +206,7 @@ extern double MSMFnumerator(SSP ssp, double t) {
 			/* custom IMF -> no assumptions made, must integrate numerically */ 
 			ADOPTED_IMF = ssp.imf; 
 			INTEGRAL *numerator = integral_initialize(); 
-			numerator -> func = &CRFdenominator_integrand; 
+			numerator -> func = &MSMFnumerator_integrand; 
 			numerator -> a = (*ssp.imf).m_lower; 
 			numerator -> b = turnoff_mass; 
 			/* default values for these parameters */ 
@@ -224,4 +227,26 @@ extern double MSMFnumerator(SSP ssp, double t) {
 	} 
 
 } 
+
+
+/* 
+ * The integrand of the numerator of the main sequence mass fraction (MSMF). 
+ * 
+ * Parameters 
+ * ========== 
+ * m: 			The initial stellar mass in Msun 
+ * 
+ * Returns 
+ * ======= 
+ * The initial stellar mass weighted by the adopted IMF 
+ * 
+ * See Also 
+ * ======== 
+ * Section 2.3 of Science Documentation: The Main Sequence Mass Fraction 
+ */ 
+static double MSMFnumerator_integrand(double m) {
+
+	return m * imf_evaluate(*ADOPTED_IMF, m); 
+
+}
 

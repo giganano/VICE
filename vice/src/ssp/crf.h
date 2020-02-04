@@ -45,25 +45,6 @@ extern double CRF(SSP spp, double time);
 extern unsigned short setup_CRF(SINGLEZONE *sz); 
 
 /* 
- * The integrand of the denominator of the cumulative return fraction (CRF). 
- * 
- * Parameters 
- * ========== 
- * m: 		The initial stellar mass in Msun 
- * 
- * Returns 
- * ======= 
- * The initial stellar mass weighted by the adopted IMF 
- * 
- * See Also 
- * ======== 
- * Section 2.2 of Science Documentation: The Cumulative Return Fraction 
- * 
- * source: crf.c 
- */ 
-extern double CRFdenominator_integrand(double m); 
-
-/* 
  * Determine the denominator of the cumulative return fraction. This is the 
  * total mass of a single stellar population up to the normalization 
  * constant of the IMF. This is determined by the mass range of star 

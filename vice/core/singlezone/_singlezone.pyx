@@ -1361,6 +1361,7 @@ All elemental yields in the current simulation will be set to the table of \
 			else: 
 				pass 
 
+
 			# warn the user about r-process elements and bad solar calibrations 
 			self.nsns_warning() 
 			self.solar_z_warning() 
@@ -1422,7 +1423,7 @@ All elemental yields in the current simulation will be set to the table of \
 			warnings.warn("""\
 VICE does not support simulations of timescales longer than %g Gyr. This 
 simulation may produce numerical artifacts or a segmentation fault at late 
-times.""" % (_singlezone.SINGLEZONE_MAX_EVAL_TIME, ScienceWarning))  
+times.""" % (_singlezone.SINGLEZONE_MAX_EVAL_TIME, ScienceWarning)) 
 		else: 
 			pass 
 

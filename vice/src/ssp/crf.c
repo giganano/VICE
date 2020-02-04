@@ -11,8 +11,10 @@
 #include "../yields/integral.h" 
 #include "../utils.h" 
 #include "crf.h" 
+#include "mlr.h" 
 
 /* ---------- static function comment headers not duplicated here ---------- */ 
+static double CRFdenominator_integrand(double m); 
 static double CRFnumerator_integrand(double m); 
 static double CRFnumerator_Kalirai08(SSP ssp, double time); 
 static double CRFnumerator_Kalirai08_IMFrange(double m_upper, 
@@ -134,10 +136,8 @@ static double CRFnumerator_integrand(double m) {
  * See Also 
  * ======== 
  * Section 2.2 of Science Documentation: The Cumulative Return Fraction 
- * 
- * header: crf.h 
  */ 
-extern double CRFdenominator_integrand(double m) {
+static double CRFdenominator_integrand(double m) {
 
 	return m * imf_evaluate(*ADOPTED_IMF, m); 
 

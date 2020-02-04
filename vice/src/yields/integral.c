@@ -49,12 +49,14 @@ extern unsigned short quad(INTEGRAL *intgrl) {
 	 * Start with half the specified minimum b/c there will always be at least 
 	 * two iterations. Ensure that the number of bins is even. 
 	 */ 
+
 	unsigned long N = (*intgrl).Nmin / 2l; 
 	if (N % 2l != 0l) N += 1l; 
 
 	double (*integrate)(INTEGRAL, unsigned long); 
 	double old_int = 0; 
 	double new_int; 
+
 
 	switch ((*intgrl).method) {
 
