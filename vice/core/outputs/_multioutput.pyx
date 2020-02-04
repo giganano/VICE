@@ -6,7 +6,8 @@ from . import _output_utils
 import os 
 from . cimport _multioutput 
 from ..dataframe._base cimport base 
-from ..dataframe._fromfile cimport fromfile 
+from . cimport _tracers 
+
 
 cdef class c_multioutput: 
 
@@ -20,7 +21,7 @@ cdef class c_multioutput:
 		Args 
 		==== 
 		name :: str 
-			The name of the output 		
+			The name of the output 
 		""" 
 		self._name = _output_utils._get_name(name) 
 
@@ -35,12 +36,8 @@ cdef class c_multioutput:
 			[output("%s/%s" % (self._name, i)) for i in zones]
 		))) 
 
-		# setup the tracers attribute as a fromfile object 
-		self._tracers = fromfile(
-			filename = "%s/tracers.out" % (self._name), 
-			labels = _output_utils._load_column_labels_from_file_header(
-				"%s/tracers.out" % (self._name))
-		)
+		# setup the tracers attribute as a tracers object 
+		self._tracers = _tracers.c_tracers(self._name) 
 
 	@property 
 	def name(self): 

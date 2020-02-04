@@ -23,6 +23,7 @@ if not __VICE_SETUP__:
 		"history", 
 		"noncustomizable", 
 		"saved_yield", 
+		"tracers", 
 		"yield_settings", 
 		"zone_entrainment" 
 	] 
@@ -35,6 +36,7 @@ if not __VICE_SETUP__:
 	from ._history import history 
 	from ._noncustomizable import noncustomizable 
 	from ._saved_yields import saved_yields 
+	from ._tracers import tracers 
 	from ._yield_settings import yield_settings 
 	from ._entrainment import zone_entrainment 
 	from ._builtin_dataframes import * 

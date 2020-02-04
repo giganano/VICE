@@ -22,6 +22,7 @@ try:
 except (ModuleNotFoundError, ImportError): 
 	pass 
 from ..dataframe._history cimport history as history_obj 
+from . cimport _history 
 
 
 def history(name): 
@@ -58,7 +59,7 @@ def history(name):
 	===== 
 	For an output under a given name, the history file is stored under 
 	name.vice/history.out, and it is a simple ascii text file with a comment 
-	header detailing each column. By storing the output in this manner, user's 
+	header detailing each column. By storing the output in this manner, users 
 	may analyze the results of VICE simulations in languages other than 
 	python. 
 

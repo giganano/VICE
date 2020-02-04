@@ -20,6 +20,23 @@ from . cimport _base
 
 cdef class tracers(history): 
 
+	""" 
+	A subclass of the VICE dataframe which holds data from a square data file 
+	containing numerical values. This particular subclass allows users to call 
+	__getitem__ with '[m/h]', 'z', and 'age' to calculate the total (scaled) 
+	metallicity of stars in multizone simulations automatically. 
+
+	See docstring of VICE dataframe base class for more information. 
+
+	See Also 
+	======== 
+	VICE dataframe base class 
+
+	Section 5.4 of VICE's science documentation (available at 
+	https://github.com/giganano/VICE/blob/master/docs/) for information on 
+	the scaled metallicity of the interstellar medium and stars. 
+	""" 
+
 	def __init__(self, filename = None, adopted_solar_z = None, 
 		labels = None): 
 		super().__init__(filename = filename, 
@@ -114,7 +131,7 @@ cdef class tracers(history):
 
 	def __subget__str_age(self, key): 
 		cdef double *item 
-		item = _tracers.tracers_ages(self._ff) 
+		item = _tracers.tracers_age(self._ff) 
 		if item is not NULL: 
 			x = [item[i] for i in range(self._ff[0].n_rows)] 
 			free(item) 
@@ -132,8 +149,8 @@ cdef class tracers(history):
 		copy2 = <char *> malloc ((len(element2) + 1) * sizeof(char)) 
 		set_string(copy, element1.lower()) 
 		set_string(copy2, element2.lower()) 
-		item = _tracers.tracers_log_abundance_ratio(self._ff, copy, copy2, 
-			self._elements, self._n_elements, self._solar) 
+		item = _tracers.tracers_logarithmic_abundance_ratio(self._ff, copy, 
+			copy2, self._elements, self._n_elements, self._solar) 
 		free(copy)
 		free(copy2) 
 		if item is not NULL: 
@@ -143,10 +160,40 @@ cdef class tracers(history):
 		else: 
 			raise KeyError("Unrecognized dataframe key: %s" % (key)) 
 
-	# def __subget__int(self, key): 
-	# 	cdef double *item 
-	# 	if 0 <= key < self._ff[0].n_rows: 
-	# 		item = _fromfile.fromfile_row()
+	def __subget__int(self, key): 
+		""" 
+		Performs the __getitem__ operation when the key is of type int. 
+		""" 
+		cdef double *item 
+		if 0 <= key < self._ff[0].n_rows: 
+			item = _tracers.tracers_row(self._ff, <unsigned long> key, 
+				self._elements, self._n_elements, self._solar, self._Z_solar)  
+		elif abs(key) <= self._ff[0].n_rows: 
+			item = _tracers.tracers_row(self._ff, 
+				self._ff[0].n_rows - <unsigned long> abs(key), 
+				self._elements, self._n_elements, self._solar, self._Z_solar) 
+		else: 
+			raise IndexError("Index out of bounds: %d" % (int(key))) 
+		if item is not NULL: 
+			x = [item[i] for i in range(_tracers.tracers_row_length(self._ff, 
+				self._n_elements))] 
+			free(item) 
+			return _base.base(dict(zip(self.keys(), x))) 
+
+	def keys(self): 
+		keys = ["formation_time", "zone_origin", "zone_final", "mass"] 
+		elements = self._load_elements() 
+		for i in elements: 
+			keys.append("z(%s)" % (i)) 
+		for i in elements: 
+			keys.append("[%s/h]" % (i)) 
+		for i in range(1, len(elements)): 
+			for j in range(i): 
+				keys.append("[%s/%s]" % (elements[i], elements[j])) 
+		keys.append("z") 
+		keys.append("[m/h]") 
+		keys.append("age") 
+		return keys 
 
 
 

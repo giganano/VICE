@@ -31,9 +31,11 @@ cdef class history(fromfile):
 	call __getitem__ with '[m/h]' and 'z' to calculate the total (scaled) 
 	metallicity of the interstellar medium at each output time automatically. 
 
-	See docstring of VICE dataframe base class for more information. 
+	See Also 
+	======== 
+	VICE dataframe base class  
 
-	See section 5.4 of VICE's science documentation (available at 
+	Section 5.4 of VICE's science documentation (available at 
 	https://github.com/giganano/VICE/blob/master/docs/) for information on 
 	the scaled metallicity of the interstellar medium. 
 	""" 
@@ -99,6 +101,8 @@ cdef class history(fromfile):
 			return self.__subget__str_logztot(key) 
 		elif key.startswith('[') and key.endswith(']') and '/' in key: 
 			return self.__subget__str_logzratio(key) 
+		elif key.lower() == "lookback": 
+			return self.__subget__str_lookback(key) 
 		else: 
 			# No error yet, other possibilities in super's __getitem__ 
 			return super().__subget__str(key) 
@@ -113,7 +117,7 @@ cdef class history(fromfile):
 		element = key.split('(')[1][:-1].lower() 
 		copy = <char *> malloc ((len(element) + 1) * sizeof(char)) 
 		set_string(copy, element.lower()) 
-		item = _history.Z_element(self._ff, copy) 
+		item = _history.history_Z_element(self._ff, copy) 
 		free(copy) 
 		if item is not NULL: 
 			x = [item[i] for i in range(self._ff[0].n_rows)] 
@@ -136,7 +140,7 @@ cdef class history(fromfile):
 		requesting the total metallicity by mass Z
 		""" 
 		cdef double *item 
-		item = _history.Zscaled(self._ff, self._n_elements, 
+		item = _history.history_Zscaled(self._ff, self._n_elements, 
 			self._elements, self._solar, self._Z_solar)  
 		if item is not NULL: 
 			x = [item[i] for i in range(self._ff[0].n_rows)] 
@@ -151,7 +155,7 @@ cdef class history(fromfile):
 		requesting the log of the total metallicity by mass [M/H]. 
 		""" 
 		cdef double *item
-		item = _history.logarithmic_scaled(self._ff, self._n_elements, 
+		item = _history.history_logarithmic_scaled(self._ff, self._n_elements, 
 			self._elements, self._solar)  
 		if item is not NULL: 
 			x = [item[i] for i in range(self._ff[0].n_rows)] 
@@ -175,7 +179,7 @@ cdef class history(fromfile):
 		copy2 = <char *> malloc ((len(element2) + 1) * sizeof(char)) 
 		set_string(copy, element1.lower()) 
 		set_string(copy2, element2.lower()) 
-		item = _history.logarithmic_abundance_ratio(self._ff, 
+		item = _history.history_logarithmic_abundance_ratio(self._ff, 
 			copy, copy2, self._elements, self._n_elements, self._solar) 
 		free(copy) 
 		free(copy2) 
@@ -186,6 +190,20 @@ cdef class history(fromfile):
 		else: 
 			raise KeyError("Unrecognized dataframe key: %s" % (key)) 
 
+	def __subget__str_lookback(self, key): 
+		""" 
+		Performs the __getitem__ operation when the key is of type str and is 
+		requesting the lookback time. 
+		""" 
+		assert key.lower() == "lookback", "Internal Error" 
+		cdef double *item = _history.history_lookback(self._ff) 
+		if item is not NULL: 
+			x = [item[i] for i in range(self._ff[0].n_rows)] 
+			free(item) 
+			return x 
+		else: 
+			raise SystemError("Internal Error") 
+
 	def __subget__int(self, key): 
 		""" 
 		Performs the __getitem__ operation when the key is of type int. 
@@ -193,17 +211,15 @@ cdef class history(fromfile):
 		cdef double *item 
 		if 0 <= key < self._ff[0].n_rows: 
 			item = _history.history_row(self._ff, <unsigned long> key, 
-				self._elements, self._n_elements, self._solar, 
-				self._Z_solar) 
+				self._elements, self._n_elements, self._solar, self._Z_solar) 
 		elif abs(key) <= self._ff[0].n_rows: 
 			item = _history.history_row(self._ff, 
 				self._ff[0].n_rows - <unsigned long> abs(key), 
-				self._elements, self._n_elements, self._solar, 
-				self._Z_solar) 
+				self._elements, self._n_elements, self._solar, self._Z_solar) 
 		else: 
 			raise IndexError("Index out of bounds: %d" % (int(key))) 
 		if item is not NULL: 
-			x = [item[i] for i in range(_history.row_length(self._ff, 
+			x = [item[i] for i in range(_history.history_row_length(self._ff, 
 				self._n_elements))]   
 			free(item) 
 			return _base.base(dict(zip(self.keys(), x))) 
@@ -227,5 +243,6 @@ cdef class history(fromfile):
 				keys.append("[%s/%s]" % (elements[i], elements[j])) 
 		keys.append("z") 
 		keys.append("[m/h]") 
+		keys.append("lookback") 
 		return keys 
 
