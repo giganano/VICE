@@ -20,6 +20,9 @@ vice.so: $(OBJECTS)
 	$(MAKE) -C yields/ 
 	$(CC) *.o $(EXTS) -shared -o vice.so 
 
+%.o: %.c *.h 
+	$(CC) $(CFLAGS)   -c -o $@ $< 
+
 clean: 
 	$(MAKE) -C dataframe/ clean 
 	$(MAKE) -C io/ clean 
