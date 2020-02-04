@@ -37,7 +37,7 @@ before_install:
   - make --version 
 
 install: 
-  - make -r CC=$COMPILER 
+  - make CC=$COMPILER 
   - python setup.py install 
   - make clean 
 
