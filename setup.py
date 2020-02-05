@@ -51,23 +51,50 @@ MICRO 			= 0
 ISRELEASED		= False  
 VERSION 		= "%d.%d.%d" % (MAJOR, MINOR, MICRO)
 
-def compile_extensions(): 
-	# compile each Cython extension 
-	# c_extensions = list(filter(lambda x: x.endswith(".c"), 
-	# 	["vice/src/%s" % (i) for i in os.listdir("./vice/src/")])) 
-	for root, dirs, files in os.walk('.'): 
-		for i in files: 
-			if i.endswith(".pyx"): 		# if it's cython code 
-				ext = "%s.%s" % (root[2:].replace('/', '.'), 
-					i.split('.')[0]) 
-				# files = ["%s/%s" % (root[2:], i)] + c_extensions 
-				files = ["%s/%s" % (root[2:], i)] + vice.find_c_extensions() 
-				setup(ext_modules = cythonize([Extension(ext, files,
-					extra_compile_args = ["-Wno-unreachable-code"])])) 
-			else: 
-				continue 
 
-def find_packages(path = '.'):
+def find_extensions(path = '.'): 
+	""" 
+	Finds each extension to install 
+
+	This function allows extra command line arguments in the format of 
+	ext="path.to.extension" to install/update an individual extension 
+	""" 
+	specified = list(filter(lambda x: x.startswith("ext="), sys.argv)) 
+	extensions = [] 
+	if len(specified): 
+		# The user has specified a specific extension 
+		for i in specified: 
+			ext = i.split('=')[1] 
+			src = "./%s.pyx" % (ext.replace('.', '/')) 
+			if os.path.exists(src): 
+				extensions.append(Extension(
+					# The name of the extension 
+					ext, 
+					# Its associated file along w/VICE's C library 
+					[src] + vice.find_c_extensions(),  
+					extra_compile_args = ["-Wno-unreachable-code"] 
+				)) 
+				sys.argv.remove(i) # get rid of this for setup install 
+			else: 
+				raise RuntimeError("Source file for extension not found: %s" % (
+					ext)) 
+	else: 
+		# User hasn't specified any extensions -> install all of them 
+		for root, dirs, files in os.walk(path): 
+			for i in files: 
+				if i.endswith(".pyx"): 
+					extensions.append(Extension( 
+						# The name of the extension 
+						"%s.%s" % (root[2:].replace('/', '.'), i.split('.')[0]), 
+						# Its associated file along w/VICE's C library 
+						["%s/%s" % (root[2:], i)] + vice.find_c_extensions(), 
+						extra_compile_args = ["-Wno-unreachable-code"] 
+					)) 
+				else: continue 
+	return extensions 
+
+
+def find_packages(path = '.'): 
 	"""
 	Finds each subpackage given the presence of an __init__.py file 
 	
@@ -80,6 +107,7 @@ def find_packages(path = '.'):
 		else:
 			continue
 	return packages
+
 
 def find_package_data(): 
 	# Finds data files associated with each package 
@@ -111,6 +139,7 @@ def find_package_data():
 					continue 
 	return data 
 
+
 def write_version_info(filename = "vice/version.py"): 
 	"""
 	Writes the version info to filename
@@ -129,6 +158,7 @@ release = %(isreleased)s
 				})
 		finally: 
 			f.close()
+
 
 def set_path_variable(filename = "~/.bash_profile"):
 	"""
@@ -149,12 +179,12 @@ export PATH=$PATH:$HOME/.local/bin
 	else:
 		pass 
 
+
 def setup_package(): 
 	src_path = os.path.dirname(os.path.abspath(sys.argv[0])) 
 	old_path = os.getcwd() 
-	os.chdir(src_path)
+	os.chdir(src_path) 
 	sys.path.insert(0, src_path)
-	compile_extensions() 
 
 	# Keywords to the setup() call 
 	metadata = dict(
@@ -165,7 +195,7 @@ def setup_package():
 		maintainer = "James W. Johnson", 
 		maintainer_email = "giganano9@gmail.com", 
 		url = base_url, 
-		description = "Single-Zone Galactic Chemical Evolution Integrator", 
+		description = "Galactic Chemical Evolution Integrator", 
 		long_description = vice._LONG_DESCRIPTION_, 
 		classifiers = CLASSIFIERS, 
 		license = "MIT", 
@@ -174,20 +204,21 @@ def setup_package():
 		provides = [package_name], 
 		packages = find_packages(), 
 		package_data = find_package_data(), 
-		scripts = ["bin/%s" % (i) for i in os.listdir("./bin/")]
+		scripts = ["bin/%s" % (i) for i in os.listdir("./bin/")], 
+		ext_modules = cythonize(find_extensions()) 
 	)
 
 	try: 
 		write_version_info() 	# Write the version file 
 		vice._write_build() 	# save version info for packaged used in build 
-		compile_extensions()	
 		setup(**metadata) 
-		set_path_variable()  
+		set_path_variable() 
 	finally: 
 		del sys.path[0]
 		os.system("rm -f vice/version.py")
 		os.chdir(old_path)
 	return 
+
 
 if __name__ == "__main__":
 	setup_package()
