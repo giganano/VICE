@@ -110,7 +110,6 @@ def mirror(arg):
 		m_upper --------> 100.0
 		m_lower --------> 0.08
 		Z_solar --------> 0.014
-		agb_model ------> cristallo11
 		bins -----------> [-3, -2.95, -2.9, ... , 0.9, 0.95, 1]
 	}
 	>>> import numpy as np 
@@ -213,7 +212,7 @@ singlezone object from this output, please install dill.""")
 			copy = {} 
 			functional = [] 
 			for i in params.keys(): 
-				if i.startswith("entrainment"): 
+				if i.startswith("entrainment") or i == "agb_model": 
 					# skip copying entrainment object until the end 
 					continue 
 				elif params[i] == None: 
@@ -254,7 +253,7 @@ instead be set to the default value: """
 				sz.entrainment.ccsne[i] = params["entrainment.ccsne"][i] 
 				sz.entrainment.sneia[i] = params["entrainment.sneia"][i] 
 
-			return sz 
+		return sz 
 
 	else: 
 		raise TypeError("Argument must be of type vice.output. Got: %s" % (
