@@ -36,5 +36,5 @@ extern double **normalize_by_errors(double **data, double **errors,
 	} 
 	return normed; 
 
-}
+} 
 
