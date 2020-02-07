@@ -119,6 +119,22 @@ extern double **transpose(double **mat, unsigned long m, unsigned long n);
  */ 
 extern double determinant(double **mat, unsigned long size); 
 
+/* 
+ * Invert a square matrix 
+ * 
+ * Parameters 
+ * ========== 
+ * mat: 			The matrix itself (assumed to be square) 
+ * n: 				The size of the matrix (n x n) 
+ * 
+ * Returns 
+ * ======= 
+ * The inverse of the matrix. NULL if non-invertible. 
+ * 
+ * source: linalg.c 
+ */ 
+extern double **invert(double **mat, unsigned long n); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

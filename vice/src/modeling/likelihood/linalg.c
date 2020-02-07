@@ -12,6 +12,9 @@ static double **get_minor(double **mat, unsigned long n, unsigned long i,
 	unsigned long j); 
 static double *get_minor_row(double **mat, unsigned long n, unsigned long i, 
 	unsigned long j); 
+static double cofactor(double **mat, unsigned long n, unsigned long i, 
+	unsigned long j); 
+
 
 /* 
  * Multiply two matrices 
@@ -296,6 +299,88 @@ static double *get_minor_row(double **mat, unsigned long n, unsigned long i,
 		} else {} 
 	} 
 	return row; 
+
+}
+
+
+/* 
+ * Invert a square matrix 
+ * 
+ * Parameters 
+ * ========== 
+ * mat: 			The matrix itself (assumed to be square) 
+ * n: 				The size of the matrix (n x n) 
+ * 
+ * Returns 
+ * ======= 
+ * The inverse of the matrix. NULL if non-invertible. 
+ * 
+ * header: linalg.h 
+ */ 
+extern double **invert(double **mat, unsigned long n) { 
+
+	/*
+	 * The inverse of a matrix is equal to its adjoint divided by its 
+	 * determinant, and the adjoint is the transpose of the cofactors matrix. 
+	 */ 
+
+	double det = determinant(mat, n); 
+	if (det) {
+		/* The matrix is invertible if the determinant is nonzero */ 
+		unsigned long i, j; 
+		double **inverse_transpose = (double **) malloc (n * sizeof(double *)); 
+		for (i = 0ul; i < n; i++) {
+			inverse_transpose[i] = (double *) malloc (n * sizeof(double)); 
+			for (j = 0ul; j < n; j++) { 
+				/* 
+				 * The ij'th element of the adjoint is the ij'th cofactor 
+				 * divided by the determinant 
+				 */ 
+				inverse_transpose[i][j] = 1.0 / det * cofactor(mat, n, i, j); 
+			} 
+		} 
+		double **inverse = transpose(inverse_transpose, n, n); 
+		free(inverse_transpose); 
+		return inverse; 
+	} else {
+		return NULL; 
+	}
+
+}
+
+
+/* 
+ * Obtain the ij'th cofactor of a matrix 
+ * 
+ * Parameters 
+ * ========== 
+ * mat: 			The matrix itself, assumed to be square 
+ * n: 				The size of the matrix (n x n) 
+ * i: 				The row number of the cofactor 
+ * j: 				The column number of the cofactor 
+ * 
+ * Returns 
+ * ======= 
+ * The ij'th cofactor, defined by (-1)^(i + j)|M_ij| where M_ij is the ij'th 
+ * minor the matrix 
+ */ 
+static double cofactor(double **mat, unsigned long n, unsigned long i, 
+	unsigned long j) {
+
+	/* 
+	 * The ij'th cofactor is defined as (-1)^(i + j)|M_ij| -> the determinant 
+	 * of the ij'th minor 
+	 */ 
+
+	double **minor_ = get_minor(mat, n, i, j); 
+	double cof; 
+	if ((i + j) % 2) {
+		cof = -1 * determinant(minor_, n - 1ul); 
+	} else {
+		cof = determinant(minor_, n - 1ul); 
+	} 
+	free(minor_); 
+	return cof; 
 
 }
 
