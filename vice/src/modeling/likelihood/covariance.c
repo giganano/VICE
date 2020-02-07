@@ -17,6 +17,35 @@ static double **square_ones_matrix(unsigned long N);
 
 
 /* 
+ * Obtain the inverse covariance matrix of a set of data points. In calculating 
+ * chi-squared likelihoods, this matrix (rather than the covariance matrix 
+ * itself) is of interest. 
+ * 
+ * Parameters 
+ * ========== 
+ * data: 			The observed data set 
+ * dimension: 		The dimensionality of the data (i.e. number of quantities) 
+ * n_points: 		The number of observations in the data set (length of the 
+ * 					array) 
+ * 
+ * Returns 
+ * ======= 
+ * C^-1 - the matrix to be used in computing chi-squared likelihoods 
+ * 
+ * header: covariance.h 
+ */ 
+extern double **inverse_covariance_matrix(double **data, 
+	unsigned short dimension, unsigned long n_points) {
+
+	double **cov = covariance_matrix(data, dimension, n_points); 
+	double **inv_cov = invert(cov, dimension); 
+	free(cov); 
+	return inv_cov; 
+
+}
+
+
+/* 
  * Calculate the covariance matrix for a set of data 
  * 
  * Parameters 

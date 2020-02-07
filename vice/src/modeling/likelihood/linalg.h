@@ -23,7 +23,7 @@ extern "C" {
  * ======= 
  * A pointer to the resulting l x n matrix 
  * 
- * source: linalg.c   
+ * source: linalg.c 
  */ 
 extern double **multiply_matrices(double **mat1, double **mat2, 
 	unsigned long l, unsigned long m, unsigned long n); 

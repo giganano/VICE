@@ -9,36 +9,27 @@ extern "C" {
 #include "../../objects.h" 
 
 /* 
- * Determine the likelihood via e^(-chi^2 / 2) that a set of predictions 
- * reproduce a given set of observational data. In a minimum chi-squared 
- * fit, this is the quantity that is to be maximized. In the case of a 
- * biased fit, chi-squared is measured from a set of data and predictions 
- * normalized by the uncertainty, giving weight to the measurements with the 
- * highest precision. 
+ * Calculate the likelihood to an arbitrary normalization (only relative 
+ * likelihoods are necessary in fitting) that model predictions reproduce a 
+ * given data set via L \propto e^(-chi^2 / 2) 
  * 
  * Parameters 
  * ========== 
- * data: 			The n-dimensional measurements 
- * errors: 			The errors on each measurement 
- * predictions: 	The n-dimensional predictions for each point 
- * dimension: 		The dimensionality of the data 
- * n_points: 		The number of points and predictions (assumed to be the 
- * 					same) 
- * biased: 			0 for an unbiased fit, nonzero for biased 
+ * inv_cov: 			The inverse covariance matrix of the data 
+ * data: 				The data themselves 
+ * predictions: 		The model predictions for each data point 
+ * dimension: 			The dimensionality of the data 
+ * n_points: 			The number of points in the data and predicted data sets 
+ * 						(assumed to be the same) 
  * 
  * Returns 
  * ======= 
- * e^-(chi^2 / 2) to an arbitrary normalization. 
- * 
- * Notes  
- * ===== 
- * In the case of an unbiasd fit, NULL may be passed for the errors parameter. 
+ * The value of e^(-chi^2 / 2) 
  * 
  * source: chi_squared.c 
- */  
-extern double chi_squared_likelihood(double **data, double **errors, 
-	double **predictions, unsigned short dimension, unsigned long n_points, 
-	unsigned short biased); 
+ */ 
+extern double chi_squared_likelihood(double **inv_cov, double **data, 
+	double **predictions, unsigned short dimension, unsigned long n_points); 
 
 #ifdef __cplusplus 
 } 

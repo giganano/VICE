@@ -8,8 +8,10 @@ extern "C" {
 
 #include "../objects.h" 
 #include "likelihood/chi_squared.h" 
-#include "likelihood/vertical_offset.h" 
+#include "likelihood/covariance.h" 
+#include "likelihood/linalg.h" 
 #include "likelihood/utils.h" 
+#include "likelihood/vertical_offset.h" 
 
 #ifdef __cplusplus 
 } 

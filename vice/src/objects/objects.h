@@ -423,6 +423,15 @@ typedef struct fromfile {
 
 } FROMFILE; 
 
+typedef struct dataset {
+
+	double **data; 
+	double **predictions; 
+	unsigned short n_quantities; 
+	unsigned long n_points; 
+
+} DATASET; 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus*/ 
