@@ -136,4 +136,3 @@ static double **square_ones_matrix(unsigned long N) {
 
 }
 
-

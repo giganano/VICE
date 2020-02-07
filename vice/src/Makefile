@@ -3,8 +3,8 @@ CC = gcc
 CFLAGS = -fPIC -Wsign-conversion -Wsign-compare 
 SOURCES = $(wildcard *.c) 
 OBJECTS = $(SOURCES:.c=.o) 
-EXTS = dataframe/*.o io/*.o modeling/*.o multizone/*.o objects/*.o \
-	singlezone/*.o ssp/*.o yields/*.o 
+EXTS = dataframe/*.o io/*.o modeling/*.o modeling/likelihood/*.o multizone/*.o \
+	objects/*.o singlezone/*.o ssp/*.o yields/*.o 
 
 all: vice.so 
 .PHONY: clean 
@@ -18,7 +18,7 @@ vice.so: $(OBJECTS)
 	$(MAKE) -C singlezone/ 
 	$(MAKE) -C ssp/ 
 	$(MAKE) -C yields/ 
-	$(CC) *.o $(EXTS) -shared -o vice.so 
+	$(CC) *.o $(EXTS) -shared -o $@ 
 
 %.o: %.c *.h 
 	$(CC) $(CFLAGS)   -c -o $@ $< 

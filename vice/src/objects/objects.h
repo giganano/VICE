@@ -426,6 +426,7 @@ typedef struct fromfile {
 typedef struct dataset {
 
 	double **data; 
+	double **inv_cov; 
 	double **predictions; 
 	unsigned short n_quantities; 
 	unsigned long n_points; 

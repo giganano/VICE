@@ -1,3 +1,6 @@
+/* 
+ * This file implements utility functions for the likelihood calculations 
+ */ 
 
 #include <stdlib.h> 
 #include "../likelihood.h" 
