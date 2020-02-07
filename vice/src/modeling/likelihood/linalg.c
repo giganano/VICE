@@ -191,6 +191,21 @@ extern double **transpose(double **mat, unsigned long m, unsigned long n) {
 } 
 
 
+/* 
+ * Calculate the determinant of a square matrix. 
+ * 
+ * Parameters 
+ * ========== 
+ * mat: 			The matrix to calculate the determinant for, assumed to 
+ * 					be square 
+ * size: 			The number of rows and column in the matrix 
+ * 
+ * Returns 
+ * ======= 
+ * The determinant of the matrix, calculated via recursive expansion by minors 
+ * 
+ * header: linalg.h 
+ */ 
 extern double determinant(double **mat, unsigned long size) {
 
 	if (size == 2) { 
@@ -199,14 +214,20 @@ extern double determinant(double **mat, unsigned long size) {
 	} else {
 		/* 
 		 * Expand by minors in 0th column, calling this function 
-		 * recursively using an iterative sum approach 
+		 * recursively using an iterative sum approach until all 2x2 minors 
+		 * are found. 
 		 */ 
 		double det = 0; 
 		unsigned long i; 
 		for (i = 0ul; i < size; i++) {
 			double **minor_ = get_minor(mat, size, i, 0); 
-			if (i % 1) { 
-				/* expanding in column 0, (-1)^(i+j) = (-1)^i always */ 
+			if (i % 2) { 
+				/* 
+				 * j is ignored in this if statement because we're expanding in 
+				 * the zero'th column. The sign appears inverted here because 
+				 * the zero'th column in memory is the first column of the 
+				 * matrix. 
+				 */ 
 				det -= mat[i][0] * determinant(minor_, size - 1ul); 
 			} else {
 				det += mat[i][0] * determinant(minor_, size - 1ul); 
@@ -219,6 +240,20 @@ extern double determinant(double **mat, unsigned long size) {
 }
 
 
+/* 
+ * Obtain the ij'th minor of an nxn matrix 
+ * 
+ * Parameters 
+ * ========== 
+ * mat: 			The matrix itself 
+ * n: 				The height and width of the matrix 
+ * i: 				The row number to pull the minor for 
+ * j: 				The column number to pull the minor for 
+ * 
+ * Returns 
+ * ======= 
+ * A copy of the matrix mat with the i'th row and j'th column omitted. 
+ */ 
 static double **get_minor(double **mat, unsigned long n, unsigned long i, 
 	unsigned long j) {
 

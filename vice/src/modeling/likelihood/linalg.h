@@ -102,6 +102,21 @@ extern double **subtract_matrices(double **mat1, double **mat2,
  */ 
 extern double **transpose(double **mat, unsigned long m, unsigned long n); 
 
+/* 
+ * Calculate the determinant of a square matrix. 
+ * 
+ * Parameters 
+ * ========== 
+ * mat: 			The matrix to calculate the determinant for, assumed to 
+ * 					be square 
+ * size: 			The number of rows and column in the matrix 
+ * 
+ * Returns 
+ * ======= 
+ * The determinant of the matrix, calculated via recursive expansion by minors 
+ * 
+ * source: linalg.c 
+ */ 
 extern double determinant(double **mat, unsigned long size); 
 
 #ifdef __cplusplus 
