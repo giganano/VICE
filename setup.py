@@ -113,7 +113,7 @@ def find_package_data():
 	# Finds data files associated with each package 
 	packages = find_packages()
 	data = {}
-	data_extensions = [".dat", ".so", ".obj", ".o"]  
+	data_extensions = [".dat", ".so", ".obj", ".o", ".pdf"]  
 	for i in packages: 
 		""" 
 		Extensions 
@@ -123,6 +123,7 @@ def find_package_data():
 			dictionary containing version info of build dependencies 
 		.so :: shared object 
 		.o :: compiled C code 
+		.pdf :: documentation 
 
 		VICE's C extensions are compiled individually and wrapped into a 
 		shared object using make. All of this output is moved to the install 
@@ -185,6 +186,7 @@ def setup_package():
 	old_path = os.getcwd() 
 	os.chdir(src_path) 
 	sys.path.insert(0, src_path)
+	vice._copy_docs() 		# copy documentation to install directory 
 
 	# Keywords to the setup() call 
 	metadata = dict(

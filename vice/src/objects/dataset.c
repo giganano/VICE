@@ -23,6 +23,7 @@ extern DATASET *dataset_initialize(void) {
 	ds -> predictions = NULL; 
 	ds -> n_quantities = 0u; 
 	ds -> n_points = 0ul; 
+	return ds; 
 
 } 
 

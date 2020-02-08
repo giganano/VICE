@@ -1,0 +1,122 @@
+#!/usr/bin/env python
+
+from __future__ import print_function 
+try: 
+	ModuleNotFoundError 
+except NameError: 
+	ModuleNotFoundError = ImportError
+try: 
+	import vice
+except (ImportError, ModuleNotFoundError): 
+	raise ModuleNotFoundError("""\
+VICE not found. Source code and installation instructions can be found at \
+<http://github.com/giganano/VICE.git>.""") 
+from vice._globals import _DIRECTORY_ 
+import argparse 
+import sys 
+import os 
+
+
+def parse(): 
+	""" 
+	Parse the comand line arguments using argparse.ArgumentParser 
+	""" 
+	parser = argparse.ArgumentParser(
+		description = "Open VICE's documentation."
+	)
+
+	parser.add_argument("-g", "--guide", 
+		help = "Open VICE's User's Guide.", 
+		action = "store_true") 
+
+	parser.add_argument("-s", "--science", 
+		help = "Open VICE's Science Documentation.", 
+		action = "store_true") 
+
+	parser.add_argument("-a", "--all", 
+		help = "Open all of VICE's documentation.", 
+		action = "store_true") 
+
+	parser.add_argument("--app", "--application", 
+		help = """\
+The command-line argument that opens the documentation.
+Default: 'open'""", 
+		type = str, 
+		default = "open") 
+
+	return parser 
+
+
+def open_file(filename, application): 
+	""" 
+	Opens a file via a command line argument. 
+
+	Parameters 
+	========== 
+	filename :: str 
+		The name of the file 
+	application :: str 
+		The command-line argument to run that will open the file 
+	""" 
+	os.system("%s %s" % (application, filename)) 
+
+
+def print_help_message(parser): 
+	""" 
+	Prints a help message if there are no command line arguments. 
+
+	Parameters 
+	========== 
+	parser :: ArgumentParser 
+		The ArgumentParser object obtained with argparse, before parse_args 
+		has been called. 
+
+	Returns 
+	======= 
+	True if this program should continue, False if not 
+	""" 
+	if len(sys.argv) == 1: 
+		parser.print_usage() 
+		print("""
+help: vice-docs -h
+      vice-docs --help 
+
+To open all of VICE's documentation, vice-docs -a will achieve this. 
+""") 
+		return False 
+	else: 
+		return True 
+
+
+def open_files(args): 
+	""" 
+	Opens the files the user wants to open 
+	""" 
+	files = {
+		"users_guide":		"%sdocs/users_guide.pdf" % (_DIRECTORY_), 
+		"sci_docs":			"%sdocs/science_documentation.pdf" % (_DIRECTORY_) 
+	} 
+	if args.all: 
+		args.guide = True 
+		args.science = True 
+	else: 
+		pass 
+	if args.guide: open_file(files["users_guide"], args.app) 
+	if args.science: open_file(files["sci_docs"], args.app) 
+
+
+def main(): 
+	""" 
+	Run automatic documentation-opening feature. 
+	""" 
+	parser = parse() 
+	if print_help_message(parser): 
+		args = parser.parse_args() 
+		open_files(args) 
+	else: pass 
+	parser.exit() 
+
+
+if __name__ == "__main__": 
+	main() 
+
