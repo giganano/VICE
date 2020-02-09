@@ -367,8 +367,16 @@ proceeding.""")
 				else: 
 					pass 
 
+				""" 
+				SNe Ia settings will be lost on reassignment of this 
+				attribute, so store the e-folding timescale and delay in 
+				temporary variables. Additionally, initialize them to None 
+				first - this suppresses a warning on compilation that worries 
+				they may be used uninitialized. 
+				""" 
 				# if we need to reassign old SNe Ia settings 
 				assign_ia_params = False 
+				x = y = None 
 				# Free an existing set of elements 
 				if self._sz[0].elements is not NULL: 
 					"""

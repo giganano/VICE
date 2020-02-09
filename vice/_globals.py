@@ -40,7 +40,6 @@ The default bins into which a stellar metallicity distribution function
 will be sorted by the singlezone class. It spans the range from -3 to 1 in each 
 [X/H] abundance and [X/Y] abundance ratio with 0.01-dex width bins. 
 """
-_DEFAULT_BINS_ = 81 * [0.] 
 _DEFAULT_BINS_ = [-3. + 0.05 * i for i in range(81)] 
 
 """

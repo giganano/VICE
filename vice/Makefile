@@ -10,3 +10,4 @@ clean:
 	$(MAKE) -C tests/ clean 
 	rm -f *.out 
 	rm -rf *.vice 
+	rm -rf docs/ 
