@@ -437,7 +437,7 @@ extern void set_char_p_value(char *dest, int *ords, int length) {
  */ 
 extern double max(double *arr, unsigned long length) {
 
-	if (length > 2) {
+	if (length >= 2) {
 		unsigned long i; 
 		double max_ = arr[0] > arr[1] ? arr[0] : arr[1]; 
 		for (i = 2ul; i < length; i++) {

@@ -22,6 +22,18 @@ extern DATASET *dataset_initialize(void);
  */ 
 extern void dataset_free(DATASET *ds); 
 
+/* 
+ * Clear all of the memory stored in a dataset object, but leave it intact so 
+ * that it may store new data 
+ * 
+ * Parameters 
+ * ========== 
+ * ds: 			The dataset object to reset 
+ * 
+ * source: dataset.c 
+ */ 
+extern void dataset_reset(DATASET *ds); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

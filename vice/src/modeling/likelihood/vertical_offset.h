@@ -29,7 +29,7 @@ extern "C" {
  * The sum-squared distance between the predictions and the data in the 
  * n-dimensional parameter space, weighted by observational uncertainty. 
  * 
- * source: utils.c 
+ * source: vertical_offset.c 
  */ 
 extern double biased_sum_square_vertical_offset(double **data, double **errors, 
 	double **predictions, unsigned short dimension, unsigned long n_points); 
@@ -54,7 +54,7 @@ extern double biased_sum_square_vertical_offset(double **data, double **errors,
  * The sum-squared distance between the predictions and the data in the 
  * n-dimensional parameter space, unweighted by observational uncertainty. 
  * 
- * source: utils.c 
+ * source: vertical_offset.c 
  */ 
 extern double unbiased_sum_square_vertical_offset(double **data, 
 	double **predictions, unsigned short dimension, unsigned long n_points); 
