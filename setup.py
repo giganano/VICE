@@ -186,7 +186,7 @@ def setup_package():
 	old_path = os.getcwd() 
 	os.chdir(src_path) 
 	sys.path.insert(0, src_path)
-	vice._copy_docs() 		# copy documentation to install directory 
+	vice._copy_docs(VERSION) 		# copy documentation to install directory 
 
 	# Keywords to the setup() call 
 	metadata = dict(

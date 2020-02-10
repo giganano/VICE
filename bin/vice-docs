@@ -12,6 +12,7 @@ except (ImportError, ModuleNotFoundError):
 VICE not found. Source code and installation instructions can be found at \
 <http://github.com/giganano/VICE.git>.""") 
 from vice._globals import _DIRECTORY_ 
+from vice.docs import default_reader as _DEFAULT_READER_ 
 import argparse 
 import sys 
 import os 
@@ -40,9 +41,15 @@ def parse():
 	parser.add_argument("--app", "--application", 
 		help = """\
 The command-line argument that opens the documentation.
-Default: 'open'""", 
+Default: '%s'""" % (_DEFAULT_READER_), 
 		type = str, 
-		default = "open") 
+		default = _DEFAULT_READER_)  
+
+	parser.add_argument("--set-default-reader", 
+		help = """
+Set the argument 'app' as the default PDF reader for this application. \
+""", 
+		action = "store_true") 
 
 	return parser 
 
@@ -105,6 +112,23 @@ def open_files(args):
 	if args.science: open_file(files["sci_docs"], args.app) 
 
 
+def save_default_reader(args): 
+	""" 
+	Save the assigned PDF reader as the default 
+
+	Parameters 
+	========== 
+	args :: parsed args 
+		The command line arguments, parsed via argparse 
+	""" 
+	os.system("rm -f %sdocs/reader.py" % (_DIRECTORY_)) 
+	with open("%sdocs/reader.py" % (_DIRECTORY_), 'w') as f: 
+		try: 
+			f.write("default_reader = \"%s\"\n" % (args.app)) 
+		finally: 
+			f.close() 
+
+
 def main(): 
 	""" 
 	Run automatic documentation-opening feature. 
@@ -113,6 +137,7 @@ def main():
 	if print_help_message(parser): 
 		args = parser.parse_args() 
 		open_files(args) 
+		if args.set_default_reader: save_default_reader(args) 
 	else: pass 
 	parser.exit() 
 
