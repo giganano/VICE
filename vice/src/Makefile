@@ -18,6 +18,7 @@ vice.so: $(OBJECTS)
 	$(MAKE) -C singlezone/ 
 	$(MAKE) -C ssp/ 
 	$(MAKE) -C yields/ 
+	$(MAKE) -C tests/ 
 	$(CC) *.o $(EXTS) -shared -o $@ 
 
 %.o: %.c *.h 
@@ -32,6 +33,7 @@ clean:
 	$(MAKE) -C singlezone/ clean 
 	$(MAKE) -C ssp/ clean 
 	$(MAKE) -C yields/ clean 
+	$(MAKE) -C tests/ clean 
 	rm -f *.o 
 	rm -f *.so 
 

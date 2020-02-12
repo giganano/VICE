@@ -40,6 +40,7 @@ extern CHANNEL *channel_initialize(void) {
 	for (i = 0l; i < n_grid_elements; i++) {
 		ch -> grid[i] = CHANNEL_YIELD_GRID_MIN + i * CHANNEL_YIELD_GRID_STEP; 
 	} 
+	ch -> entrainment = 1; 
 
 	return ch; 
 

@@ -39,7 +39,10 @@ extern SNEIA_YIELD_SPECS *sneia_yield_initialize(void) {
 		sneia_yields -> grid[i] = IA_YIELD_GRID_MIN + i * IA_YIELD_STEP; 
 	} 
 
-	sneia_yields -> entrainment = 1; 
+	/* defaults to prevent errors */ 
+	sneia_yields -> entrainment = 1;  
+	sneia_yields -> tau_ia = 1.5; 
+	sneia_yields -> t_d = 0.15; 
 
 	return sneia_yields; 
 

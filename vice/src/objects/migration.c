@@ -22,8 +22,8 @@ extern MIGRATION *migration_initialize(unsigned int n) {
 
 	MIGRATION *mig = (MIGRATION *) malloc (sizeof(MIGRATION)); 
 	mig -> n_zones = n; 
-	mig -> n_tracers = 0; 
-	mig -> tracer_count = 0l; 
+	mig -> n_tracers = 0u; 
+	mig -> tracer_count = 0ul; 
 	mig -> gas_migration = NULL; 
 	mig -> tracers = NULL; 
 	mig -> tracers_output = NULL; 

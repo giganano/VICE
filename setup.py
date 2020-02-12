@@ -67,11 +67,13 @@ def find_extensions(path = '.'):
 			ext = i.split('=')[1] 
 			src = "./%s.pyx" % (ext.replace('.', '/')) 
 			if os.path.exists(src): 
+				src_files = [src] + vice.find_c_extensions() 
+				if "tests" in src: src_files += vice.find_test_extensions() 
 				extensions.append(Extension(
 					# The name of the extension 
 					ext, 
 					# Its associated file along w/VICE's C library 
-					[src] + vice.find_c_extensions(),  
+					src_files, 
 					extra_compile_args = ["-Wno-unreachable-code"] 
 				)) 
 				sys.argv.remove(i) # get rid of this for setup install 
@@ -83,11 +85,14 @@ def find_extensions(path = '.'):
 		for root, dirs, files in os.walk(path): 
 			for i in files: 
 				if i.endswith(".pyx"): 
+					src_files = ["%s/%s" % (root[2:], 
+						i)] + vice.find_c_extensions() 
+					if "tests" in root: src_files += vice.find_test_extensions() 
 					extensions.append(Extension( 
 						# The name of the extension 
 						"%s.%s" % (root[2:].replace('/', '.'), i.split('.')[0]), 
 						# Its associated file along w/VICE's C library 
-						["%s/%s" % (root[2:], i)] + vice.find_c_extensions(), 
+						src_files, 
 						extra_compile_args = ["-Wno-unreachable-code"] 
 					)) 
 				else: continue 

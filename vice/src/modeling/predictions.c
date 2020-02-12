@@ -43,12 +43,27 @@ static double *copy_pt(double *pt, unsigned short dimension);
  * but is not of concern when finding the simulated data point that best suits 
  * a single observed data point. 
  * 
+ * This function will overwrite any assigned predictions already in the 
+ * dataframe. 
+ * 
  * header: predictions.h 
  */ 
 extern void assign_predictions(DATASET *ds, double **simulated_data, 
-	unsigned long n_simulated_pts) {
+	unsigned long n_simulated_pts) { 
 
+	/* overwrite predictions currently there */ 
 	unsigned long i; 
+	if ((*ds).predictions != NULL) {
+		for (i = 0ul; i < (*ds).n_points; i++) {
+			if ((*ds).predictions[i] != NULL) {
+				free(ds -> predictions[i]); 
+				ds -> predictions[i] = NULL; 
+			} else {} 
+		} 
+		free(ds -> predictions); 
+		ds -> predictions = NULL; 
+	} else {} 
+
 	ds -> predictions = (double **) malloc ((*ds).n_points * sizeof(double *)); 
 	for (i = 0ul; i < (*ds).n_points; i++) {
 		ds -> predictions[i] = assign_prediction((*ds).data[i], (*ds).errors[i], 

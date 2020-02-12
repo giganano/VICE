@@ -29,6 +29,9 @@ extern "C" {
  * but is not of concern when finding the simulated data point that best suits 
  * a single observed data point. 
  * 
+ * This function will overwrite any assigned predictions already in the 
+ * dataframe. 
+ * 
  * source: predictions.c 
  */ 
 extern void assign_predictions(DATASET *ds, double **simulated_data, 

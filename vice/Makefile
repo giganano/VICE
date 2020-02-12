@@ -9,5 +9,6 @@ clean:
 	$(MAKE) -C src/ clean 
 	$(MAKE) -C tests/ clean 
 	rm -f *.out 
+	rm -f *.pyc 
 	rm -rf *.vice 
 	rm -rf docs/ 

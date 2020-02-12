@@ -17,7 +17,6 @@ extern INTEGRAL *integral_initialize(void) {
 
 	return (INTEGRAL *) malloc (sizeof(INTEGRAL)); 
 
-
 } 
 
 

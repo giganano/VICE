@@ -19,8 +19,8 @@ extern FROMFILE *fromfile_initialize(void) {
 
 	FROMFILE *ff = (FROMFILE *) malloc (sizeof(FROMFILE)); 
 	ff -> name = (char *) malloc (MAX_FILENAME_SIZE * sizeof(char)); 
-	ff -> n_rows = 0l; 
-	ff -> n_cols = 0; 
+	ff -> n_rows = 0ul; 
+	ff -> n_cols = 0u; 
 	ff -> labels = NULL; 
 	ff -> data = NULL; 
 	return ff; 

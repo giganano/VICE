@@ -16,9 +16,18 @@ test_sz_output_mirror
 
 from __future__ import absolute_import 
 
-__all__ = ["test_agb_yields", "test_cc_yields", "test_dataframes", 
-	"test_ia_yields", "test_ssp", "test_presets", "test_sz_output_mirror", 
-	"run_comprehensive_tests"] 
+__all__ = [
+	"modeling", 
+	"objects", 
+	"test_agb_yields", 
+	"test_cc_yields", 
+	"test_dataframes", 
+	"test_ia_yields", 
+	"test_ssp", 
+	"test_presets", 
+	"test_sz_output_mirror", 
+	"run_comprehensive_tests" 
+] 
 
 from .test_agb_yields import main as test_agb_yields 
 from .test_cc_yields import main as test_cc_yields 
@@ -27,6 +36,8 @@ from .test_ia_yields import main as test_ia_yields
 from .test_presets import main as test_presets 
 from .test_ssp import main as test_ssp 
 from .test_sz_output_mirror import main as test_sz_output_mirror 
+from . import modeling 
+from . import objects 
 
 def run_comprehensive_tests(): 
 	"""
