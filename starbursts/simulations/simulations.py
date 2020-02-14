@@ -41,10 +41,11 @@ def reset_yields():
 	vice.yields.ccsne.settings["o"] = 0.015 
 	vice.yields.ccsne.settings["sr"] = 3.5e-8 
 	vice.yields.ccsne.settings["fe"] = 0.0012 
+	vice.yields.ccsne.settings["mg"] = 0.00261
 	vice.yields.sneia.settings["o"] = 0.0 
 	vice.yields.sneia.settings["sr"] = 0.0 
 	vice.yields.sneia.settings["fe"] = 0.0017 
-
+	vice.yields.sneia.settings["mg"] = 0.0 
 
 
 
@@ -374,7 +375,6 @@ def run_kirby2010_comparisons():
 	Runs the models intended for comparison with the Kirby et al. (2010) 
 	data in the Appendix of Johnson & Weinberg (2020). 
 	""" 
-	vice.yields.ccsne.settings["mg"] = 0.00261
 	kwargs = { 
 		"dt": 			_TIMESTEP_, 
 		"bins": 		bins[:], 
@@ -387,6 +387,10 @@ def run_kirby2010_comparisons():
 	sz1 = vice.singlezone(name = "simulations/kirby2010_smooth", 
 		func = lambda t: 9.1 * m.exp(-t / 2), 
 		**kwargs) 
+	print(sz1) 
+	sz1.run(_TIMES_, overwrite = True) 
+	sz1.name = "simulations/kirby2010_smooth_enh1" 
+	sz1.enhancement = 1 
 	print(sz1) 
 	sz1.run(_TIMES_, overwrite = True) 
 	def exp_with_burst(t): 

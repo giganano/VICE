@@ -63,9 +63,11 @@ extern void singlezone_evolve_no_setup_no_clean(SINGLEZONE *sz);
 extern unsigned short singlezone_setup(SINGLEZONE *sz); 
 
 /* 
- * Frees up the memory allocated in running a singlezone simulation. This does 
- * not free up the memory stored by simpling having a singlezone object in the 
- * python interpreter. That is cleared by calling singlezone_free. 
+ * Frees up the memory allocated in running a singlezone simulation. These 
+ * values are objects that are stored at the python level and copied at 
+ * runtime. This does not free up the memory stored by simpling having a 
+ * singlezone object in the python interpreter. That is cleared by calling 
+ * singlezone_free. 
  * 
  * Parameters 
  * ========== 

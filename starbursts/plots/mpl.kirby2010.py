@@ -67,7 +67,7 @@ def setup_axis():
 	ax.set_xlabel("[Fe/H]") 
 	ax.set_ylabel("[Mg/Fe]") 
 	ax.set_xlim([-3.2, -0.4]) 
-	ax.set_ylim([-1.1, 1.8]) 
+	ax.set_ylim([-0.9, 1.4]) 
 	return ax 
 
 
@@ -110,9 +110,7 @@ def plot_data(ax, data, dwarf):
 		column of the argument data. 
 	""" 
 	FeH_column = 12 
-	err_FeH_column = 13 
 	MgFe_column = 14 
-	err_MgFe_column = 15 
 	fltrd = list(filter(lambda x: x[0] == dwarf, data)) 
 	kwargs = {
 		"c": 				visuals.colors()[_COLORS_[dwarf]], 
@@ -127,6 +125,28 @@ def plot_data(ax, data, dwarf):
 		[row[MgFe_column] for row in fltrd], 
 		**kwargs 
 	) 
+
+
+def plot_representative_errorbar(ax, data, dwarf): 
+	""" 
+	Plots a representative error bar in the lower-left corner of the figure 
+
+	Parameters 
+	========== 
+	ax :: matplotlib subplot 
+		The axis object to put the errorbar on 
+	data :: 2D-list 
+		The raw data itself 
+	dwarf :: str 
+		The name of the dwarf to take the median errors from 
+	""" 
+	err_FeH_column = 13 
+	err_MgFe_column = 15 
+	fltrd = list(filter(lambda x: x[0] == dwarf, data)) 
+	ax.errorbar(-2.8, -0.4, 
+		xerr = sorted([row[err_FeH_column] for row in fltrd])[len(fltrd) // 2], 
+		yerr = sorted([row[err_MgFe_column] for row in fltrd])[len(fltrd) // 2], 
+		ms = 0, color = visuals.colors()[_COLORS_[dwarf]])  
 
 
 def plot_vice_comparison(ax, name): 
@@ -155,8 +175,10 @@ def main():
 	data = read_data() 
 	for i in _NAMES_.keys(): 
 		plot_data(ax, data, i) 
+	plot_vice_comparison(ax, "../../simulations/kirby2010_smooth_enh1") 
 	plot_vice_comparison(ax, "../../simulations/kirby2010_smooth") 
 	plot_vice_comparison(ax, "../../simulations/kirby2010_burst") 
+	plot_representative_errorbar(ax, data, "UMi")
 	ax.legend(loc = visuals.mpl_loc()["upper left"], ncol = 1, frameon = False, 
 		bbox_to_anchor = (1.02, 0.98), fontsize = 18) 
 	plt.tight_layout() 
