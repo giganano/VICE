@@ -4,7 +4,6 @@
 
 #include <stdlib.h> 
 #include <string.h> 
-#include <stdio.h> 
 #include <math.h> 
 #include "../imf.h" 
 #include "../utils.h" 
@@ -117,28 +116,15 @@ extern unsigned short test_imf_evaluate(void) {
 	 * between elements of the grid, also returning 0 outside the grid 
 	 */ 
 	unsigned long i; 
-	// double max_frac_deviation = 0; 
 	for (i = 0ul; i < n_mass_bins(*test); i++) { 
 		if (absval(
 			imf_evaluate(*test, TEST_IMF_MIN_MASS + IMF_STEPSIZE * i) / 
 			(*test).mass_distribution[i] - 1)) { 
 			imf_free(test); 
 			return 0u; 
-		// double dev = absval(imf_evaluate(*test, TEST_IMF_MIN_MASS + 
-		// 	IMF_STEPSIZE * i) / (*test).mass_distribution[i] - 1); 
-		// if (dev > max_frac_deviation) max_frac_deviation = dev; 
-		// if (dev > 1e-2) { 
-		// 	printf("Failure: 2\n"); 
-		// 	printf("i = %ld\n", i); 
-		// 	printf("mass = %e\n", TEST_IMF_MIN_MASS + IMF_STEPSIZE * i); 
-		// 	printf("%e\n", imf_evaluate(*test, TEST_IMF_MIN_MASS + IMF_STEPSIZE * i)); 
-		// 	printf("%e\n", (*test).mass_distribution[i]); 
-		// 	printf("%e\n", dev); 
-			// imf_free(test); 
-			// return 0u; 
+
 		} else {} 
 	} 
-	// printf("max_frac_deviation = %e\n", max_frac_deviation); 
 
 	if (imf_evaluate(*test, TEST_IMF_MIN_MASS + 0.5 * IMF_STEPSIZE) != 
 		interpolate(TEST_IMF_MIN_MASS, TEST_IMF_MIN_MASS + IMF_STEPSIZE, 
