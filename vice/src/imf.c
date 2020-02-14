@@ -9,6 +9,7 @@
 #include "imf.h" 
 #include "utils.h" 
 
+
 /* 
  * Set the mass distribution of the IMF. 
  * 
@@ -32,7 +33,7 @@ extern unsigned short imf_set_mass_distribution(IMF_ *imf, double *arr) {
 	 */ 
 	unsigned long i, n = n_mass_bins(*imf); 
 	double *new = (double *) malloc (n * sizeof(double)); 
-	for (i = 1l; i < n; i++) { 
+	for (i = 0l; i < n; i++) { 
 		if (arr[i] >= 0 && arr[i] != INFINITY && arr[i] != NAN) {
 			new[i] = arr[i]; 
 		} else { 
@@ -49,6 +50,7 @@ extern unsigned short imf_set_mass_distribution(IMF_ *imf, double *arr) {
 
 }
 
+
 /* 
  * Determines the number of mass bins on the IMF grid. 
  * 
@@ -63,6 +65,7 @@ extern unsigned long n_mass_bins(IMF_ imf) {
 	return 1l + (imf.m_upper - imf.m_lower) / IMF_STEPSIZE; 
 
 } 
+
 
 /* 
  * Evaluate the IMF at the stellar mass m in Msun 
@@ -84,6 +87,7 @@ extern double imf_evaluate(IMF_ imf, double m) {
 	if (imf.m_lower <= m && m <= imf.m_upper) { 
 
 		/* check for a built-in IMF */ 
+		unsigned long lower_bound_idx; 
 		switch(checksum(imf.spec)) { 
 
 			case SALPETER: 
@@ -102,13 +106,12 @@ extern double imf_evaluate(IMF_ imf, double m) {
 				 * return imf.mass_distribution[(unsigned long) ((
 				 * 	m - imf.m_lower) / IMF_STEPSIZE)]; 
 				 */ 
-				return interpolate(
-					(unsigned long) (m / IMF_STEPSIZE) * IMF_STEPSIZE, 
-					(unsigned long) (m / IMF_STEPSIZE) * (IMF_STEPSIZE) + 1l, 
-					imf.mass_distribution[(unsigned long) ((
-						m - imf.m_lower) / IMF_STEPSIZE)], 
-					imf.mass_distribution[1l + (unsigned long) ((
-						m - imf.m_lower) / IMF_STEPSIZE)], 
+				lower_bound_idx = (unsigned long) ( (m - imf.m_lower) / IMF_STEPSIZE ); 
+				return interpolate( 
+					imf.m_lower + IMF_STEPSIZE * lower_bound_idx, 
+					imf.m_lower + IMF_STEPSIZE * (lower_bound_idx + 1l), 
+					imf.mass_distribution[lower_bound_idx], 
+					imf.mass_distribution[lower_bound_idx + 1l], 
 					m 
 				); 
 
@@ -123,6 +126,7 @@ extern double imf_evaluate(IMF_ imf, double m) {
 	} 
 
 }
+
 
 /* 
  * The Salpeter (1955) stellar initial mass function (IMF) up to a 
@@ -152,6 +156,7 @@ extern double salpeter55(double m) {
 	}
 
 } 
+
 
 /* 
  * The Kroupa (2001) stellar initial mass function (IMF) up to a 

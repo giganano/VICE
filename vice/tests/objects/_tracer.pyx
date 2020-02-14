@@ -5,12 +5,8 @@ __all__ = [
 	"test_tracer_constructor", 
 	"test_tracer_destructor" 
 ] 
+from .._test_utils import _RETURN_VALUE_MESSAGE_ 
 from . cimport _tracer 
-
-_RETURN_VALUE_MESSAGE_ = { 
-	1: 		"Success", 
-	0: 		"Failure" 
-}
 
 
 def test_tracer_constructor(): 

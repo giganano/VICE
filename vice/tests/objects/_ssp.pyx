@@ -5,12 +5,8 @@ __all__ = [
 	"test_ssp_constructor", 
 	"test_ssp_destructor" 
 ] 
+from .._test_utils import _RETURN_VALUE_MESSAGE_ 
 from . cimport _ssp 
-
-_RETURN_VALUE_MESSAGE_ = { 
-	1: 		"Success", 
-	0: 		"Failure" 
-}
 
 
 def test_ssp_constructor(): 

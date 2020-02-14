@@ -5,12 +5,8 @@ __all__ = [
 	"test_element_constructor", 
 	"test_element_destructor" 
 ] 
+from .._test_utils import _RETURN_VALUE_MESSAGE_ 
 from . cimport _element 
-
-_RETURN_VALUE_MESSAGE_ = { 
-	1: 		"Success", 
-	0: 		"Failure" 
-}
 
 
 def test_element_constructor(): 

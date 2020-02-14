@@ -5,12 +5,8 @@ __all__ = [
 	"test_imf_constructor", 
 	"test_imf_destructor" 
 ] 
+from .._test_utils import _RETURN_VALUE_MESSAGE_ 
 from . cimport _imf 
-
-_RETURN_VALUE_MESSAGE_ = { 
-	1: 		"Success", 
-	0: 		"Failure" 
-}
 
 
 def test_imf_constructor(): 

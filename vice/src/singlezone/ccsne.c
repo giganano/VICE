@@ -70,7 +70,7 @@ extern double get_cc_yield(ELEMENT e, double Z) {
 		 * even remotely realistic without modified grid parameters. 
 		 * Interpolate off neighboring elements of yield grid. 
 		 */ 
-		lower_bound_idx = (long) (Z / CC_YIELD_STEP); 
+		lower_bound_idx = (long) ((Z - CC_YIELD_GRID_MIN) / CC_YIELD_STEP); 
 	} else { 
 		/* 
 		 * Metallicity above the grid. Without modified grid parameters, this 

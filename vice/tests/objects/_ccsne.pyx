@@ -5,12 +5,8 @@ __all__ = [
 	"test_ccsne_yield_specs_constructor", 
 	"test_ccsne_yield_specs_destructor" 
 ] 
+from .._test_utils import _RETURN_VALUE_MESSAGE_ 
 from . cimport _ccsne 
-
-_RETURN_VALUE_MESSAGE_ = {
-	1: 		"Success", 
-	0: 		"Failure" 
-} 
 
 
 def test_ccsne_yield_specs_constructor(): 

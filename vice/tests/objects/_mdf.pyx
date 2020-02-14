@@ -5,12 +5,8 @@ __all__ = [
 	"test_mdf_constructor", 
 	"test_mdf_destructor" 
 ] 
+from .._test_utils import _RETURN_VALUE_MESSAGE_ 
 from . cimport _mdf 
-
-_RETURN_VALUE_MESSAGE_ = { 
-	1: 		"Success", 
-	0: 		"Failure" 
-}
 
 
 def test_mdf_constructor(): 

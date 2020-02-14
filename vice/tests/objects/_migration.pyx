@@ -5,12 +5,8 @@ __all__ = [
 	"test_migration_constructor", 
 	"test_migration_destructor" 
 ] 
+from .._test_utils import _RETURN_VALUE_MESSAGE_ 
 from . cimport _migration 
-
-_RETURN_VALUE_MESSAGE_ = { 
-	1: 		"Success", 
-	0: 		"Failure" 
-}
 
 
 def test_migration_constructor(): 

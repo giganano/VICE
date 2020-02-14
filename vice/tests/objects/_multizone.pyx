@@ -5,12 +5,8 @@ __all__ = [
 	"test_multizone_constructor", 
 	"test_multizone_destructor" 
 ] 
+from .._test_utils import _RETURN_VALUE_MESSAGE_ 
 from . cimport _multizone 
-
-_RETURN_VALUE_MESSAGE_ = { 
-	1: 		"Success", 
-	0: 		"Failure" 
-}
 
 
 def test_multizone_constructor(): 

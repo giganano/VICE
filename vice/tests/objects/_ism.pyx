@@ -5,12 +5,8 @@ __all__ = [
 	"test_ism_constructor", 
 	"test_ism_destructor" 
 ] 
+from .._test_utils import _RETURN_VALUE_MESSAGE_ 
 from . cimport _ism 
-
-_RETURN_VALUE_MESSAGE_ = { 
-	1: 		"Success", 
-	0: 		"Failure" 
-}
 
 
 def test_ism_constructor(): 

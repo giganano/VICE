@@ -5,12 +5,8 @@ __all__ = [
 	"test_channel_constructor", 
 	"test_channel_destructor" 
 ] 
+from .._test_utils import _RETURN_VALUE_MESSAGE_ 
 from . cimport _channel 
-
-_RETURN_VALUE_MESSAGE_ = {
-	1: 		"Success", 
-	0: 		"Failure" 
-}
 
 
 def test_channel_constructor(): 

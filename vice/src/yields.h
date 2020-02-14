@@ -26,10 +26,6 @@ extern "C" {
 #define SIMPSON 777 
 #endif /* SIMPSON */ 
 
-#ifndef MAX_METHOD_SIZE 
-#define MAX_METHOD_SIZE 100l 
-#endif /* MAX_METHOD_SIZE */ 
-
 #include "objects.h" 
 #include "objects/integral.h" 
 #include "objects/ccsne.h" 

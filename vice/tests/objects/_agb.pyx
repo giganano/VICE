@@ -5,12 +5,8 @@ __all__ = [
 	"test_agb_grid_constructor", 
 	"test_agb_grid_destructor" 
 ] 
+from .._test_utils import _RETURN_VALUE_MESSAGE_ 
 from . cimport _agb 
-
-_RETURN_VALUE_MESSAGE_ = {
-	1: 		"Success", 
-	0: 		"Failure" 
-}
 
 
 def test_agb_grid_constructor(): 

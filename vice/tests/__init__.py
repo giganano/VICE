@@ -17,6 +17,7 @@ test_sz_output_mirror
 from __future__ import absolute_import 
 
 __all__ = [
+	"imf", 
 	"modeling", 
 	"objects", 
 	"test_agb_yields", 
@@ -36,8 +37,10 @@ from .test_ia_yields import main as test_ia_yields
 from .test_presets import main as test_presets 
 from .test_ssp import main as test_ssp 
 from .test_sz_output_mirror import main as test_sz_output_mirror 
+from . import _imf as imf 
 from . import modeling 
 from . import objects 
+from . import yields 
 
 def run_comprehensive_tests(): 
 	"""

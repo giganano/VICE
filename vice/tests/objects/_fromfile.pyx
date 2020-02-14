@@ -5,12 +5,8 @@ __all__ = [
 	"test_fromfile_constructor", 
 	"test_fromfile_destructor" 
 ] 
+from .._test_utils import _RETURN_VALUE_MESSAGE_ 
 from . cimport _fromfile 
-
-_RETURN_VALUE_MESSAGE_ = { 
-	1: 		"Success", 
-	0: 		"Failure" 
-}
 
 
 def test_fromfile_constructor(): 
