@@ -8,5 +8,6 @@ clean:
 	$(MAKE) -C yields/ clean 
 	rm -f *.pyc 
 	rm -f *.out 
+	rm -f *.c 
 	rm -rf *.vice/ 
 
