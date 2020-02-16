@@ -55,6 +55,7 @@ if not __VICE_SETUP__:
 			for i in range(len(header) - 1): 
 				header += "="  
 			print("\033[091m%s\033[00m" % (header)) 
+			print("This may take a few minutes.") 
 			test.run() 
 		else: 
 			return test 
