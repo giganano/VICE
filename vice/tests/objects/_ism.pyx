@@ -5,7 +5,7 @@ __all__ = [
 	"test_ism_constructor", 
 	"test_ism_destructor" 
 ] 
-from .._test_utils import _RETURN_VALUE_MESSAGE_ 
+from .._test_utils import unittest 
 from . cimport _ism 
 
 
@@ -13,16 +13,13 @@ def test_ism_constructor():
 	""" 
 	Tests the ISM constructor function at vice/src/objects/ism.h 
 	""" 
-	print("ISM constructor: %s" % (
-		_RETURN_VALUE_MESSAGE_[_ism.test_ism_initialize()] 
-	)) 
+	return unittest("Interstellar medium constructor", 
+		_ism.test_ism_initialize) 
 
 
 def test_ism_destructor(): 
 	""" 
 	Tests the ISM destructor function at vice/src/objects/ism.h 
 	""" 
-	print("ISM destructor: %s" % (
-		_RETURN_VALUE_MESSAGE_[_ism.test_ism_free()] 
-	)) 
+	return unittest("Interstellar medium destructor", _ism.test_ism_free) 
 

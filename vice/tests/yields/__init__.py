@@ -6,19 +6,23 @@ except NameError:
 	__VICE_SETUP__ = False 
 
 if not __VICE_SETUP__: 
-	__all__ = ["test_all"] 
+	__all__ = [
+		"test", 
+		"integral" 
+	] 
+	from .._test_utils import moduletest 
+	from . import _integral as integral 
 
-	from ._integral import * 
-	__all__.extend(_integral.__all__) 
-
-	def test_all(): 
+	def test(run = True): 
 		""" 
 		Run all test functions in this module 
 		""" 
-		test_euler() 
-		test_trapezoid() 
-		test_midpoint() 
-		test_simpson() 
+		test = moduletest("VICE yield calculation functions") 
+		test.new(integral.test()) 
+		if run:	
+			test.run() 
+		else: 
+			return test 
 
 else: 
 	pass 

@@ -5,7 +5,7 @@ __all__ = [
 	"test_integral_constructor", 
 	"test_integral_destructor" 
 ] 
-from .._test_utils import _RETURN_VALUE_MESSAGE_ 
+from .._test_utils import unittest 
 from . cimport _integral 
 
 
@@ -13,16 +13,12 @@ def test_integral_constructor():
 	""" 
 	Tests the integral constructor function at vice/src/objects/integral.h 
 	""" 
-	print("Integral constructor: %s" % (
-		_RETURN_VALUE_MESSAGE_[_integral.test_integral_initialize()] 
-	)) 
+	return unittest("Integral constructor", _integral.test_integral_initialize) 
 
 
 def test_integral_destructor(): 
 	""" 
 	Tests the integral destructor function at vice/src/objects/integral.h 
 	""" 
-	print("Integral destructor: %s" % (
-		_RETURN_VALUE_MESSAGE_[_integral.test_integral_free()] 
-	)) 
+	return unittest("Integral destructor", _integral.test_integral_free) 
 

@@ -7,21 +7,17 @@ __all__ = [
 	"test_matrix_transposition", 
 	"test_matrix_determinant", 
 	"test_matrix_inversion" 
-]
+] 
+from ..._test_utils import unittest 
 from . cimport _linalg 
 
-_RETURN_VALUE_MESSAGE_ = {
-	1: 		"Success", 
-	0: 		"Failure" 
-}
+
 
 def test_matrix_addition(): 
 	""" 
 	Test the matrix addition function at vice/src/modeling/likelihood/linalg.h 
 	""" 
-	print("Matrix addition: %s" % (
-		_RETURN_VALUE_MESSAGE_[_linalg.test_add_matrices()]
-	)) 
+	return unittest("Matrix addition", _linalg.test_add_matrices) 
 
 
 def test_matrix_subtraction(): 
@@ -29,9 +25,7 @@ def test_matrix_subtraction():
 	Test the matrix subtraction function at 
 	vice/src/modeling/likelihood/linalg.h 
 	""" 
-	print("Matrix subtraction: %s" % (
-		_RETURN_VALUE_MESSAGE_[_linalg.test_subtract_matrices()]
-	)) 
+	return unittest("Matrix subtraction", _linalg.test_subtract_matrices) 
 
 
 def test_matrix_transposition(): 
@@ -39,9 +33,7 @@ def test_matrix_transposition():
 	Test the matrix transposition function at 
 	vice/src/modeling/likelihood/linalg.h 
 	""" 
-	print("Matrix transposition: %s" % (
-		_RETURN_VALUE_MESSAGE_[_linalg.test_transpose()]
-	)) 
+	return unittest("Matrix transposition", _linalg.test_transpose) 
 
 
 def test_matrix_determinant(): 
@@ -49,9 +41,7 @@ def test_matrix_determinant():
 	Test the matrix determinant function at 
 	vice/src/modeling/likelihood/linalg.h 
 	""" 
-	print("Matrix determinant: %s" % (
-		_RETURN_VALUE_MESSAGE_[_linalg.test_determinant()]
-	)) 
+	return unittest("Matrix determinant", _linalg.test_determinant) 
 
 
 def test_matrix_inversion(): 
@@ -59,7 +49,5 @@ def test_matrix_inversion():
 	Test the matrix inversion function at 
 	vice/src/modeling/likelihood/linalg.h 
 	""" 
-	print("Matrix inversion: %s" % (
-		_RETURN_VALUE_MESSAGE_[_linalg.test_inversion()]
-	)) 
+	return unittest("Matrix inversion", _linalg.test_inversion) 
 

@@ -7,19 +7,27 @@ except NameError:
 
 if not __VICE_SETUP__: 
 
-	__all__ = ["test_all"] 
-	from ._linalg import * 
-	__all__.extend(_linalg.__all__) 
+	__all__ = [
+		"test", 
+		"linalg" 
+	] 
+	from ..._test_utils import moduletest 
+	from . import _linalg as linalg 
 	
-	def test_all(): 
+	def test(run = True): 
 		""" 
 		Runs all test functions in this module 
 		""" 
-		test_matrix_addition() 
-		test_matrix_subtraction() 
-		test_matrix_transposition() 
-		test_matrix_determinant() 
-		test_matrix_inversion() 
+		test = moduletest("VICE linear algebra functions") 
+		test.new(linalg.test_matrix_addition()) 
+		test.new(linalg.test_matrix_subtraction()) 
+		test.new(linalg.test_matrix_transposition()) 
+		test.new(linalg.test_matrix_determinant()) 
+		test.new(linalg.test_matrix_inversion()) 
+		if run: 
+			test.run() 
+		else: 
+			return test 
 
 else: 
 	pass 

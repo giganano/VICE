@@ -25,7 +25,9 @@ extern SSP *ssp_initialize(void) {
 	 */ 
 
 	SSP *ssp = (SSP *) malloc (sizeof(SSP)); 
-	ssp -> imf = imf_initialize(0.08, 100); 
+	ssp -> imf = imf_initialize(
+		SSP_IMF_DEFAULT_M_LOWER, SSP_IMF_DEFAULT_M_UPPER
+	); 
 	ssp -> crf = NULL; 
 	ssp -> msmf = NULL; 
 	return ssp; 

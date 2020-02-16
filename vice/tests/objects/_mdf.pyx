@@ -5,7 +5,7 @@ __all__ = [
 	"test_mdf_constructor", 
 	"test_mdf_destructor" 
 ] 
-from .._test_utils import _RETURN_VALUE_MESSAGE_ 
+from .._test_utils import unittest 
 from . cimport _mdf 
 
 
@@ -13,16 +13,14 @@ def test_mdf_constructor():
 	""" 
 	Tests the MDF constructor function at vice/src/objects/mdf.h 
 	""" 
-	print("MDF constructor: %s" % (
-		_RETURN_VALUE_MESSAGE_[_mdf.test_mdf_initialize()] 
-	)) 
+	return unittest("Stellar metallicity distribution function constructor", 
+		_mdf.test_mdf_initialize) 
 
 
 def test_mdf_destructor(): 
 	""" 
 	Tests the MDF destructor function at vice/src/objects/mdf.h 
 	""" 
-	print("MDF destructor: %s" % (
-		_RETURN_VALUE_MESSAGE_[_mdf.test_mdf_free()] 
-	)) 
+	return unittest("Stellar metallicity distribution function destructor", 
+		_mdf.test_mdf_free) 
 

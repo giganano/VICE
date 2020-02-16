@@ -5,7 +5,7 @@ __all__ = [
 	"test_element_constructor", 
 	"test_element_destructor" 
 ] 
-from .._test_utils import _RETURN_VALUE_MESSAGE_ 
+from .._test_utils import unittest 
 from . cimport _element 
 
 
@@ -13,16 +13,12 @@ def test_element_constructor():
 	""" 
 	Tests the element constructor function at vice/src/objects/element.h 
 	""" 
-	print("Element constructor: %s" % (
-		_RETURN_VALUE_MESSAGE_[_element.test_element_initialize()]
-	)) 
+	return unittest("Element constructor", _element.test_element_initialize) 
 
 
 def test_element_destructor(): 
 	""" 
 	Tests the element destructor function at vice/src/objects/element.h 
 	""" 
-	print("Element destructor: %s" % (
-		_RETURN_VALUE_MESSAGE_[_element.test_element_free()] 
-	)) 
+	return unittest("Element destructor", _element.test_element_free) 
 

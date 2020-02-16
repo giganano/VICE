@@ -5,7 +5,7 @@ __all__ = [
 	"test_fromfile_constructor", 
 	"test_fromfile_destructor" 
 ] 
-from .._test_utils import _RETURN_VALUE_MESSAGE_ 
+from .._test_utils import unittest 
 from . cimport _fromfile 
 
 
@@ -13,16 +13,12 @@ def test_fromfile_constructor():
 	""" 
 	Tests the fromfile constructor function at vice/src/objects/fromfile.h 
 	""" 
-	print("Fromfile constructor: %s" % (
-		_RETURN_VALUE_MESSAGE_[_fromfile.test_fromfile_initialize()] 
-	)) 
+	return unittest("Fromfile constructor", _fromfile.test_fromfile_initialize) 
 
 
 def test_fromfile_destructor(): 
 	""" 
 	Tests the fromfile destructor function at vice/src/objects/fromfile.h 
 	""" 
-	print("Fromfile destructor: %s" % (
-		_RETURN_VALUE_MESSAGE_[_fromfile.test_fromfile_free()]
-	)) 
+	return unittest("Fromfile destructor", _fromfile.test_fromfile_free) 
 

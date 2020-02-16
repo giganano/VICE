@@ -8,21 +8,21 @@ except NameError:
 if not __VICE_SETUP__: 
 	__all__ = [
 		"test", 
-		"likelihood" 
 	] 
 	from .._test_utils import moduletest 
-	from . import likelihood 
+	from . import _crf 
 
 	def test(run = True): 
 		""" 
-		Run the tests over this module 
+		Run all test functions in this module 
 		""" 
-		test = moduletest("VICE modeling features") 
-		test.new(likelihood.test(run = False)) 
+		test = moduletest("VICE single stellar population functions") 
+		test.new(_crf.test_cumulative_return_fraction()) 
 		if run: 
 			test.run() 
 		else: 
-			return test   
+			return test 
 
 else: 
 	pass 
+

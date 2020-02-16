@@ -11,7 +11,7 @@ extern "C" {
 
 #include "objects.h" 
 
-extern long (*checksum)(char *); 
+extern unsigned long (*checksum)(char *); 
 
 /* 
  * Performs the choose operations between two positive numbers 
@@ -78,7 +78,7 @@ extern short sign(double x);
  * 
  * source: utils.c  
  */ 
-extern long simple_hash(char *str); 
+extern unsigned long simple_hash(char *str); 
 
 /* 
  * Seeds the random number generator off of the current time. 

@@ -6,6 +6,16 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
+/* default lower mass limit before being overridden in python */ 
+#ifndef SSP_IMF_DEFAULT_M_LOWER 
+#define SSP_IMF_DEFAULT_M_LOWER 0.08 
+#endif /* SSP_IMF_DEFAULT_M_LOWER */ 
+
+/* default upper mass limit before being overridden in python */ 
+#ifndef SSP_IMF_DEFAULT_M_UPPER 
+#define SSP_IMF_DEFAULT_M_UPPER 100 
+#endif /* SSP_IMF_DEFAULT_M_UPPER */ 
+
 #include "objects.h" 
 
 /* 

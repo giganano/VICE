@@ -71,6 +71,17 @@ extern unsigned short test_salpeter55(void);
  */ 
 extern unsigned short test_kroupa01(void); 
 
+/* 
+ * Sets a custom mass distribution according to test_imf 
+ * 
+ * Returns 
+ * ======= 
+ * The value of imf_set_mass_distribution at vice/src/imf.h 
+ * 
+ * source: imf.c 
+ */ 
+extern unsigned short set_test_custom_mass_distribution(IMF_ *test); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

@@ -9,53 +9,55 @@ run_comprehensive_tests
 test_agb_yields
 test_cc_yields
 test_dataframes
-test_ia_yields
+test_ia_yields 
 test_ssp
 test_sz_output_mirror
 """
 
 from __future__ import absolute_import 
+try: 
+	__VICE_SETUP__ 
+except NameError: 
+	__VICE_SETUP__ = False 
 
-__all__ = [
-	"imf", 
-	"modeling", 
-	"objects", 
-	"test_agb_yields", 
-	"test_cc_yields", 
-	"test_dataframes", 
-	"test_ia_yields", 
-	"test_ssp", 
-	"test_presets", 
-	"test_sz_output_mirror", 
-	"run_comprehensive_tests" 
-] 
+if not __VICE_SETUP__: 
 
-from .test_agb_yields import main as test_agb_yields 
-from .test_cc_yields import main as test_cc_yields 
-from .test_dataframes import main as test_dataframes 
-from .test_ia_yields import main as test_ia_yields 
-from .test_presets import main as test_presets 
-from .test_ssp import main as test_ssp 
-from .test_sz_output_mirror import main as test_sz_output_mirror 
-from . import _imf as imf 
-from . import modeling 
-from . import objects 
-from . import yields 
+	__all__ = [ 
+		"test", 
+		"imf", 
+		"modeling", 
+		"objects", 
+		"ssp", 
+		"utils", 
+	] 
 
-def run_comprehensive_tests(): 
-	"""
-	Runs the full comprehensive set of tests. 
-	"""
-	print("""\
-Running comprehensive tests. This will take several minutes, the exact \
-duration depending on the processing speed of the system. \
-""")
-	test_sz_output_mirror() 
-	test_agb_yields() 
-	test_cc_yields() 
-	test_dataframes() 
-	test_ia_yields() 
-	test_ssp() 
+	from ._test_utils import moduletest 
+	from . import _utils as utils 
+	from . import _imf as imf 
+	from . import modeling 
+	from . import objects 
+	from . import ssp 
+	from . import yields 
 
-del absolute_import
+	def test(run = True): 
+		""" 
+		Runs VICE's comprehensive tests 
+		""" 
+		test = moduletest(None) 
+		test.new(utils.test(run = False)) 
+		test.new(imf.test(run = False)) 
+		test.new(modeling.test(run = False)) 
+		test.new(objects.test(run = False)) 
+		test.new(ssp.test(run = False)) 
+		test.new(yields.test(run = False)) 
+		if run: 
+			header = "VICE Comprehensive Tests\n" 
+			for i in range(len(header) - 1): 
+				header += "="  
+			print("\033[091m%s\033[00m" % (header)) 
+			test.run() 
+		else: 
+			return test 
 
+else: 
+	pass 

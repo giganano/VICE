@@ -1,7 +1,6 @@
 # cython: language_level = 3, boundscheck = False 
 
 from __future__ import absolute_import 
-from .._test_utils import _RETURN_VALUE_MESSAGE_ 
 from . cimport _singlezone 
 
 

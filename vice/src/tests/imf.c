@@ -10,7 +10,6 @@
 #include "imf.h" 
 
 /* ---------- static function comment headers not duplicated here ---------- */
-static unsigned short set_test_custom_mass_distribution(IMF_ *test); 
 static double test_imf(double m); 
 static IMF_ *get_test_imf(void); 
 
@@ -195,11 +194,14 @@ extern unsigned short test_kroupa01(void) {
  * Returns 
  * ======= 
  * The value of imf_set_mass_distribution at vice/src/imf.h 
+ * 
+ * header: imf.h 
  */ 
-static unsigned short set_test_custom_mass_distribution(IMF_ *test) {
+extern unsigned short set_test_custom_mass_distribution(IMF_ *test) {
 
 	unsigned long i; 
-	double *mass_dist = (double *) malloc (n_mass_bins(*test) * sizeof(double)); 
+	double *mass_dist = (double *) malloc (n_mass_bins(*test) * 
+		sizeof(double)); 
 	for (i = 0ul; i < n_mass_bins(*test); i++) {
 		mass_dist[i] = test_imf(TEST_IMF_MIN_MASS + IMF_STEPSIZE * i); 
 	} 

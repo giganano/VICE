@@ -5,7 +5,7 @@ __all__ = [
 	"test_migration_constructor", 
 	"test_migration_destructor" 
 ] 
-from .._test_utils import _RETURN_VALUE_MESSAGE_ 
+from .._test_utils import unittest 
 from . cimport _migration 
 
 
@@ -13,16 +13,14 @@ def test_migration_constructor():
 	""" 
 	Tests the migration constructor function at vice/src/objects/migration.h 
 	""" 
-	print("Migration constructor: %s" % (
-		_RETURN_VALUE_MESSAGE_[_migration.test_migration_initialize()] 
-	)) 
+	return unittest("Stellar migration constructor", 
+		_migration.test_migration_initialize) 
 
 
 def test_migration_destructor(): 
 	""" 
 	Tests the migration destructor functioon at vice/src/objects/migration.h 
 	""" 
-	print("Migration destructor: %s" % (
-		_RETURN_VALUE_MESSAGE_[_migration.test_migration_free()] 
-	)) 
+	return unittest("Stellar migration destructor", 
+		_migration.test_migration_free) 
 

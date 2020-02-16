@@ -11,7 +11,7 @@
 #include "singlezone.h" 
 
 /* Define the checksum function adopted in this implementation */ 
-long (*checksum)(char *) = &simple_hash; 
+unsigned long (*checksum)(char *) = &simple_hash; 
 
 
 /* 
@@ -116,12 +116,13 @@ extern short sign(double x) {
  * 
  * header: utils.h 
  */ 
-extern long simple_hash(char *str) {
+extern unsigned long simple_hash(char *str) {
 
-	long h = 0l; 
+	unsigned long h = 0l; 
 	unsigned long i; 
-	for (i = 0l; i < strlen(str); i++) {
-		h += tolower(str[i]); 
+	for (i = 0l; i < strlen(str); i++) { 
+		/* VICE only allows ascii strings, so cast to unsigned is fine */ 
+		h += (unsigned) tolower(str[i]); 
 	} 
 	return h; 
 
@@ -133,7 +134,7 @@ extern long simple_hash(char *str) {
  * 
  * header: utils.h 
  */ 
-extern void seed_random(void) {
+extern void seed_random(void) { 
 
 	srand(time(NULL)); 
 
@@ -177,8 +178,7 @@ extern double rand_range(double minimum, double maximum) {
  * Returns 
  * ======= 
  * y: The expected value for y such that (x, y) lies on the same line 
- * defined by 
- * (x1, y1) and (x2, y2). 
+ * defined by (x1, y1) and (x2, y2). 
  * 
  * header: utils.h 
  */ 
@@ -201,7 +201,8 @@ extern double interpolate(double x1, double x2, double y1, double y2,
  * ========== 
  * x: 		A pointer to the values [x1, x2] 
  * y: 		A pointer to the values [y1, y2] 
- * f: 		A pointer to the values [f(x1, y1), f(x1, y2), f(x2, y1), f(x2, y2)] 
+ * f: 		A pointer to the values [f(x1, y1), f(x1, y2), f(x2, y1), 
+ * 				f(x2, y2)] 
  * x0: 		The x-coordinate of the point of interest 
  * y0: 		The y-coordinate of the point of interest 
  * 
@@ -213,8 +214,8 @@ extern double interpolate(double x1, double x2, double y1, double y2,
  * 
  * header: utils.h 
  */ 
-extern double interpolate2D(double x[2], double y[2], double f[2][2], double x0, 
-	double y0) { 
+extern double interpolate2D(double x[2], double y[2], double f[2][2], 
+	double x0, double y0) { 
 
 	/* 
 	 * By implementing this is a chain of two 1-D interpolations, 
