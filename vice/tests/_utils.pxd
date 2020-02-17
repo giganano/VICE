@@ -10,3 +10,7 @@ cdef extern from "../src/tests/utils.h":
 	unsigned short test_interpolate2D() 
 	unsigned short test_get_bin_number() 
 	unsigned short test_binspace() 
+	unsigned short test_bin_centers() 
+	unsigned short test_sum() 
+	unsigned short test_set_char_p_value() 
+	unsigned short test_max() 

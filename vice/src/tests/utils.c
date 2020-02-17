@@ -3,6 +3,7 @@
  */ 
 
 #include <stdlib.h> 
+#include <string.h> 
 #include <stdio.h> 
 #include "../utils.h" 
 #include "../yields.h" 
@@ -312,7 +313,127 @@ extern unsigned short test_binspace(void) {
 	} 
 	return 1u; 
 
+} 
+
+
+/* 
+ * Test the bin_centers function at vice/src/utils.h 
+ * 
+ * Returns 
+ * ======= 
+ * 1 on success, 0 on failure 
+ * 
+ * header: utils.h 
+ */ 
+extern unsigned short test_bin_centers(void) { 
+
+	unsigned short i; 
+	double *bins = binspace( 
+		TEST_RANDOM_RANGE_MIN, 
+		TEST_RANDOM_RANGE_MAX, 
+		TEST_BINSPACE_N_BINS 
+	); 
+	/* brute-force test by simply calculating the mean value */ 
+	double *test = bin_centers(bins, TEST_BINSPACE_N_BINS); 
+	for (i = 0u; i < TEST_BINSPACE_N_BINS; i++) { 
+		if (test[i] != (bins[i] + bins[i + 1u]) / 2) { 
+			free(bins); 
+			free(test); 
+			return 0u; 
+		} else {} 
+	} 
+	free(bins); 
+	free(test); 
+	return 1u; 
+
+} 
+
+
+/* 
+ * Test the sum function at vice/src/utils.h 
+ * 
+ * Returns 
+ * ======= 
+ * 1 on success, 0 on failure 
+ * 
+ * header: utils.h 
+ */ 
+extern unsigned short test_sum(void) {
+
+	/* 
+	 * test-by adding up integers and comparing with the results of the 
+	 * sum function (i.e. the triangle numbers) 
+	 */ 
+
+	unsigned short i; 
+	double *test = (double *) malloc (100u * sizeof(double)); 
+	for (i = 0u; i < 100u; i++) {
+		test[i] = i; 
+	} 
+	double s = 0; 
+	for (i = 0u; i < 100u; i++) {
+		s += test[i]; 
+		if (sum(test, i + 1) != s) { 
+			free(test); 
+			return 0u; 
+		} else {} 
+	} 
+	free(test); 
+	return 1u; 
+
+} 
+
+
+/* 
+ * Test the function which sets char pointer values from ordinal numbers 
+ * sent from Python at vice/src/utils.h 
+ * 
+ * Returns 
+ * ======= 
+ * 1 on success, 0 on failure 
+ * 
+ * header: utils.h 
+ */ 
+extern unsigned short test_set_char_p_value(void) { 
+
+	unsigned short i; 
+	char *test = (char *) malloc (11u * sizeof(char)); 
+	int *ords = (int *) malloc (10u * sizeof(int)); 
+	for (i = 0u; i < 10u; i++) {
+		ords[i] = 97 + i; 
+	} 
+	set_char_p_value(test, ords, 10u); 
+	unsigned short result = !strcmp(test, "abcdefghij"); 
+	free(test); 
+	free(ords); 
+	return result; 
+
+} 
+
+
+/* 
+ * Test the max function at vice/src/utils.h 
+ * 
+ * Returns 
+ * ======= 
+ * 1 on success, 0 on failure 
+ * 
+ * header: utils.h 
+ */ 
+extern unsigned short test_max(void) { 
+
+	/* 
+	 * Test by ensuring it returns the final element from an array of 
+	 * least-to-greatest sorted values 
+	 */ 
+	unsigned short i; 
+	double *test = (double *) malloc (100u * sizeof(double)); 
+	for (i = 0u; i < 100u; i++) {
+		test[i] = i; 
+	} 
+	unsigned short result = max(test, 100u) == test[99]; 
+	free(test); 
+	return result; 
+
 }
-
-
 

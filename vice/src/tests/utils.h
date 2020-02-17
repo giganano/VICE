@@ -105,6 +105,51 @@ extern unsigned short test_get_bin_number(void);
  */ 
 extern unsigned short test_binspace(void); 
 
+/* 
+ * Test the bin_centers function at vice/src/utils.h 
+ * 
+ * Returns 
+ * ======= 
+ * 1 on success, 0 on failure 
+ * 
+ * source: utils.c 
+ */ 
+extern unsigned short test_bin_centers(void); 
+
+/* 
+ * Test the sum function at vice/src/utils.h 
+ * 
+ * Returns 
+ * ======= 
+ * 1 on success, 0 on failure 
+ * 
+ * source: utils.c 
+ */ 
+extern unsigned short test_sum(void); 
+
+/* 
+ * Test the function which sets char pointer values from ordinal numbers 
+ * sent from Python at vice/src/utils.h 
+ * 
+ * Returns 
+ * ======= 
+ * 1 on success, 0 on failure 
+ * 
+ * source: utils.c 
+ */ 
+extern unsigned short test_set_char_p_value(void); 
+
+/* 
+ * Test the max function at vice/src/utils.h 
+ * 
+ * Returns 
+ * ======= 
+ * 1 on success, 0 on failure 
+ * 
+ * source: utils.c 
+ */ 
+extern unsigned short test_max(void); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

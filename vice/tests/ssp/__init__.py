@@ -11,6 +11,8 @@ if not __VICE_SETUP__:
 	] 
 	from .._test_utils import moduletest 
 	from . import _crf 
+	from . import _msmf 
+	from . import _mlr 
 
 	def test(run = True): 
 		""" 
@@ -18,6 +20,8 @@ if not __VICE_SETUP__:
 		""" 
 		test = moduletest("VICE single stellar population functions") 
 		test.new(_crf.test_cumulative_return_fraction()) 
+		test.new(_msmf.test_main_sequence_mass_fraction()) 
+		test.new(_mlr.test_mass_lifetime_relationship()) 
 		if run: 
 			test.run() 
 		else: 

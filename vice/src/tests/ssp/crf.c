@@ -12,7 +12,7 @@
 
 /* ---------- static function comment headers not duplicated here ---------- */ 
 static unsigned short test_CRF_common(char imf[]); 
-static unsigned short test_CRF_engine(SSP ssp, double *times); 
+static unsigned short test_CRF_engine(SSP test, double *times); 
 static double *get_test_times(void); 
 
 /* The number of times to call CRF for a given IMF */ 
@@ -61,6 +61,7 @@ static unsigned short test_CRF_common(char imf[]) {
 	double *times = get_test_times(); 
 	unsigned short result = test_CRF_engine(*test, times); 
 	free(times); 
+	ssp_free(test); 
 	return result; 
 
 } 
@@ -72,18 +73,18 @@ static unsigned short test_CRF_common(char imf[]) {
  * 
  * Parameters 
  * ========== 
- * ssp: 		The SSP object to send to the CRF function 
+ * test: 		The SSP object to send to the CRF function 
  * times: 		Times at which to evaluate the CRF function 
  * 
  * Returns 
  * ======= 
  * 1 on success, 0 on failure 
  */ 
-static unsigned short test_CRF_engine(SSP ssp, double *times) { 
+static unsigned short test_CRF_engine(SSP test, double *times) { 
 
-	unsigned long i; 
-	for (i = 1ul; i < TEST_N_TIMES; i++) { 
-		if (CRF(ssp, times[i]) < CRF(ssp, times[i - 1ul])) return 0u; 
+	unsigned short i; 
+	for (i = 1u; i < TEST_N_TIMES; i++) { 
+		if (CRF(test, times[i]) < CRF(test, times[i - 1ul])) return 0u; 
 	} 
 	return 1u; 
 
@@ -95,7 +96,7 @@ static unsigned short test_CRF_engine(SSP ssp, double *times) {
  * 
  * Returns 
  * ======= 
- * 0 to 10 in steps of 0.01 
+ * 0 to 10 in steps of 0.01, inclusive  
  */ 
 static double *get_test_times(void) {
 
