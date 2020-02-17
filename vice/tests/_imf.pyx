@@ -2,7 +2,7 @@
 
 from __future__ import absolute_import 
 __all__ = [ 
-	"test_all", 
+	"test", 
 	"test_custom_mass_distribution", 
 	"test_mass_bin_counter", 
 	"test_imf_evaluation", 

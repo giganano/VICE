@@ -300,7 +300,7 @@ km/s and [M/H] = %g""" % (study, rotation, MoverH))
 	elif tolerance < 0 or tolerance > 1: 
 		raise ValueError("Tolerance must be between 0 and 1.") 
 	elif m_lower >= m_upper: 
-		raise ValueError("Lower lass limit larger than upper mass limit.") 
+		raise ValueError("Lower mass limit larger than upper mass limit.") 
 	# elif IMF.lower() not in _RECOGNIZED_IMFS_: moved to imf_object function 
 	# 	raise ValueError("Unrecognized IMF: %s" % (IMF)) 
 	elif method.lower() not in _RECOGNIZED_METHODS_: 

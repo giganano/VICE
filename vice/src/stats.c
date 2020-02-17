@@ -4,6 +4,7 @@
 #include "stats.h" 
 #include "utils.h" 
 
+
 /* 
  * Generate a pseudo-random number from a normal distribution. This function 
  * makes use of the Box-Muller tranformation to do so. 
@@ -20,7 +21,7 @@
  * 
  * header: stats.h 
  */ 
-extern double normal(double mean, double sigma) {
+extern double normal(double mean, double sigma) { 
 
 	/* 
 	 * Start by seeding the random number generator and generating two 
@@ -31,7 +32,7 @@ extern double normal(double mean, double sigma) {
 
 	/* The Box-Muller Transformation */ 
 	double z1 = sqrt(-2 * log(r1)) * cos(2 * PI * r2); 
-	double z2 = sqrt(-2 * log(r2)) * sin(2 * PI * r1); 
+	double z2 = sqrt(-2 * log(r1)) * sin(2 * PI * r2); 
 
 	/* 
 	 * Box-Muller give two pseudo-random numbers generated according to a 
@@ -47,6 +48,8 @@ extern double normal(double mean, double sigma) {
 
 } 
 
+
+#if 0 
 /* 
  * Draw a given number of samples from a known distribution. 
  * 
@@ -114,6 +117,7 @@ extern double *sample(double *dist, double *bins, unsigned long n_bins,
 
 }
 
+
 /* 
  * Convert a distribution to a cumulative distribution function (CDF). 
  * 
@@ -160,6 +164,8 @@ extern double *convert_to_CDF(double *dist, double *bins,
 	return cdf; 
 
 }
+#endif 
+
 
 /* 
  * Convert a distribution in a given binspace to a probability distribution 
@@ -199,5 +205,4 @@ extern double *convert_to_PDF(double *dist, double *bins,
 	return pdf; 
 
 } 
-
 

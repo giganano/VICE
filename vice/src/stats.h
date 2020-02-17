@@ -7,7 +7,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #ifndef PI 
-#define PI 3.14159265358979 
+#define PI 3.14159265358979323846 
 #endif /* PI */ 
 
 /* 
@@ -28,6 +28,7 @@ extern "C" {
  */ 
 extern double normal(double mean, double sigma); 
 
+#if 0 
 /* 
  * Draw a given number of samples from a known distribution. 
  * 
@@ -68,6 +69,7 @@ extern double *sample(double *dist, double *bins, unsigned long n_bins,
  */ 
 extern double *convert_to_CDF(double *dist, double *bins, 
 	unsigned long n_bins); 
+#endif 
 
 /* 
  * Convert a distribution in a given binspace to a probability distribution 

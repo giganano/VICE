@@ -28,6 +28,7 @@ if not __VICE_SETUP__:
 		"modeling", 
 		"objects", 
 		"ssp", 
+		"stats", 
 		"utils", 
 	] 
 
@@ -37,6 +38,7 @@ if not __VICE_SETUP__:
 	from . import modeling 
 	from . import objects 
 	from . import ssp 
+	from . import _stats as stats 
 	from . import yields 
 
 	def test(run = True): 
@@ -49,6 +51,7 @@ if not __VICE_SETUP__:
 		test.new(modeling.test(run = False)) 
 		test.new(objects.test(run = False)) 
 		test.new(ssp.test(run = False)) 
+		test.new(stats.test(run = False)) 
 		test.new(yields.test(run = False)) 
 		if run: 
 			header = "VICE Comprehensive Tests\n" 

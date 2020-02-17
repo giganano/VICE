@@ -18,7 +18,7 @@ if not __VICE_SETUP__:
 		Run all test functions in this module 
 		""" 
 		test = moduletest("VICE yield calculation functions") 
-		test.new(integral.test()) 
+		test.new(integral.test(run = False)) 
 		if run:	
 			test.run() 
 		else: 

@@ -3,6 +3,7 @@
 #include "../singlezone.h" 
 #include "../mdf.h" 
 #include "../utils.h" 
+#include "../stats.h" 
 #include "mdf.h" 
 
 
@@ -31,8 +32,9 @@ extern unsigned short setup_MDF(SINGLEZONE *sz) {
 	 */ 
 	unsigned long i; 
 	unsigned int j; 
-	sz -> mdf -> abundance_distributions = (double **) malloc ((*sz).n_elements * 
-		sizeof(double *)); 
+	sz -> mdf -> abundance_distributions = (double **) malloc (
+		(*sz).n_elements * sizeof(double *)
+	); 
 	if ((*(*sz).mdf).abundance_distributions == NULL) {
 		return 1; 
 	} else {
@@ -148,39 +150,23 @@ extern void update_MDF(SINGLEZONE *sz) {
  */ 
 extern void normalize_MDF(SINGLEZONE *sz) {
 
-	/* ---------------------- for each tracked element ---------------------- */ 
-	unsigned long i; 
-	unsigned int j; 
-	for (j = 0; j < (*sz).n_elements; j++) { 
-		double integral = 0.0; 
-		for (i = 0l; i < (*(*sz).mdf).n_bins; i++) { 
-			/* Sum up the value of the distribution times each bin width */ 
-			integral += (*(*sz).mdf).abundance_distributions[j][i] * (
-				(*(*sz).mdf).bins[i + 1l] - (*(*sz).mdf).bins[i]); 
-		} 
-		for (i = 0l; i < (*(*sz).mdf).n_bins; i++) {
-			/* Divide by the total integral to convert to a PDF */ 
-			sz -> mdf -> abundance_distributions[j][i] /= integral; 
-		} 
+	unsigned short i, n_ratios = choose((*sz).n_elements, 2); 
+
+	/* --------------------- for each tracked element --------------------- */ 
+	for (i = 0u; i < (*sz).n_elements; i++) {
+		double *new = convert_to_PDF((*(*sz).mdf).abundance_distributions[i], 
+			(*(*sz).mdf).bins, (*(*sz).mdf).n_bins); 
+		free(sz -> mdf -> abundance_distributions[i]); 
+		sz -> mdf -> abundance_distributions[i] = new; 
 	} 
 
-	/* ---------------------- for each abundance ratio ---------------------- */
-	unsigned int n_ratios = choose((*sz).n_elements, 2); 
-	for (j = 0; j < n_ratios; j++) {
-		double integral = 0.0; 
-		for (i = 0l; i < (*(*sz).mdf).n_bins; i++) {
-			/* Sum up the value of the distribution times each bin width */ 
-			integral += (*(*sz).mdf).ratio_distributions[j][i] * (
-				(*(*sz).mdf).bins[i + 1l] - (*(*sz).mdf).bins[i]); 
-		} 
-		for (i = 0l; i < (*(*sz).mdf).n_bins; i++) {
-			/* Divide by the total integral to convert to a PDF */ 
-			sz -> mdf -> ratio_distributions[j][i] /= integral; 
-		} 
+	/* --------------------- for each abundance ratio --------------------- */ 
+	for (i = 0u; i < n_ratios; i++) { 
+		double *new = convert_to_PDF((*(*sz).mdf).ratio_distributions[i], 
+			(*(*sz).mdf).bins, (*(*sz).mdf).n_bins); 
+		free(sz -> mdf -> ratio_distributions[i]); 
+		sz -> mdf -> ratio_distributions[i] = new; 
 	} 
 
 }
-
-
-
 

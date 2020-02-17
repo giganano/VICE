@@ -10,10 +10,6 @@ extern "C" {
 #define TEST_INTEGRAL_TOLERANCE 1e-6 
 #endif /* TEST_INTEGRAL_TOLERANCE */ 
 
-#ifndef PI 
-#define PI 3.14159265358979323846 
-#endif /* PI */ 
-
 #include "../../objects.h" 
 
 /* 

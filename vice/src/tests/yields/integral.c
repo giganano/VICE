@@ -12,6 +12,7 @@
 #include <math.h> 
 #include "../../yields.h" 
 #include "../../utils.h" 
+#include "../../stats.h" 
 #include "integral.h" 
 
 /* ---------- static function comment headers not duplicated here ---------- */
@@ -130,7 +131,7 @@ static INTEGRAL *get_test_integral(void) {
 	INTEGRAL *test = integral_initialize(); 
 	test -> func = &test_function; 
 	test -> a = 0; 
-	test -> b = M_PI / 2; 
+	test -> b = PI / 2; 
 	test -> tolerance = TEST_INTEGRAL_TOLERANCE; 
 	test -> Nmin = 64; 
 	test -> Nmax = 2e8; 
