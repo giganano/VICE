@@ -2,6 +2,7 @@
 .PHONY: clean 
 
 clean: 
+	$(MAKE) -C io/ clean 
 	$(MAKE) -C modeling/ clean 
 	$(MAKE) -C objects/ clean 
 	$(MAKE) -C singlezone/ clean 

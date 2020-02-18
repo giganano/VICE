@@ -9,6 +9,7 @@ __all__ = [
 ] 
 from .._globals import _VERSION_ERROR_ 
 from ..core import _pyutils 
+import time 
 import sys 
 if sys.version_info[:2] == (2, 7): 
 	strcomp = basestring 
@@ -80,7 +81,6 @@ class moduletest(object):
 			pass 
 		for i in self._unittests: 
 			i.run() 
-
 
 
 class unittest(object): 

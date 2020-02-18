@@ -26,22 +26,6 @@ if not __VICE_SETUP__:
 		"ssp", 
 		"tracer" 
 	] 
-	# from ._agb import * 
-	# from ._ccsne import * 
-	# from ._channel import * 
-	# from ._dataset import * 
-	# from ._element import * 
-	# from ._fromfile import * 
-	# from ._imf import * 
-	# from ._integral import * 
-	# from ._ism import * 
-	# from ._mdf import * 
-	# from ._migration import * 
-	# from ._multizone import * 
-	# from ._singlezone import * 
-	# from ._sneia import * 
-	# from ._ssp import * 
-	# from ._tracer import * 
 
 	from .._test_utils import moduletest 
 	from . import _agb as agb 
@@ -60,23 +44,6 @@ if not __VICE_SETUP__:
 	from . import _sneia as sneia 
 	from . import _ssp as ssp 
 	from . import _tracer as tracer 
-
-	# __all__.extend(agb.__all__) 
-	# __all__.extend(ccsne.__all__) 
-	# __all__.extend(channel.__all__) 
-	# __all__.extend(dataset.__all__) 
-	# __all__.extend(element.__all__) 
-	# __all__.extend(fromfile.__all__) 
-	# __all__.extend(imf.__all__) 
-	# __all__.extend(integral.__all__) 
-	# __all__.extend(ism.__all__) 
-	# __all__.extend(mdf.__all__) 
-	# __all__.extend(migration.__all__) 
-	# __all__.extend(multizone.__all__) 
-	# __all__.extend(singlezone.__all__) 
-	# __all__.extend(sneia.__all__) 
-	# __all__.extend(ssp.__all__) 
-	# __all__.extend(tracer.__all__) 
 
 	def test(run = True): 
 		""" 

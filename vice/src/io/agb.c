@@ -23,7 +23,7 @@
  * 
  * Returns 
  * ======= 
- * 0 on success; 1 on failure 
+ * 0 on success; nonezero on failure 
  * 
  * header: io.h 
  */ 

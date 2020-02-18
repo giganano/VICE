@@ -9,6 +9,7 @@
 #include "../io.h" 
 #include "utils.h" 
 
+
 /* 
  * Reads in a square ascii file given the name of the file. 
  * 
@@ -74,6 +75,7 @@ extern double **read_square_ascii_file(char *file) {
 
 }
 
+
 /* 
  * Determine the length of the header at the top of a data file assuming all 
  * header lines begin with #. 
@@ -92,11 +94,14 @@ extern int header_length(char *file) {
 
 	/* Open the file and check for error opening the file */ 
 	FILE *in = fopen(file, "r"); 
-	if (in == NULL) return -1; 
+	if (in == NULL) {
+		return -1; 
+	} 
 
 	/* Store a line in memory, check for error reading the first line */  
 	char *line = (char *) malloc (LINESIZE * sizeof(char)); 
 	if (fgets(line, LINESIZE, in) == NULL) { 
+		printf("%s\n", line); 
 		fclose(in); 
 		free(line); 
 		return -1; 
@@ -106,7 +111,7 @@ extern int header_length(char *file) {
 	int n = 0; 
 	while (line[0] == '#') { 
 		n++; 
-		if (fgets(line, LINESIZE, in) == NULL) {
+		if (fgets(line, LINESIZE, in) == NULL) { 
 			fclose(in); 
 			free(line); 
 			return -1; 
@@ -120,6 +125,7 @@ extern int header_length(char *file) {
 	return n; 
 
 } 
+
 
 /* 
  * Determine the dimensionality of a data file off of the first line passed the 
@@ -176,6 +182,7 @@ extern int file_dimension(char *file) {
 	return dimension; 
 
 } 
+
 
 /* 
  * Determine the number of lines in an text file 

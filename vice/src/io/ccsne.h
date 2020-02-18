@@ -20,7 +20,7 @@ extern "C" {
  * 		returned[i][1]: total mass yield of the element 
  * NULL on failure to read from the file 
  * 
- * source: ccsne..c  
+ * source: ccsne.c  
  */ 
 extern double **cc_yield_grid(char *file); 
 

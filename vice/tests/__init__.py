@@ -25,6 +25,7 @@ if not __VICE_SETUP__:
 	__all__ = [ 
 		"test", 
 		"imf", 
+		"io", 
 		"modeling", 
 		"objects", 
 		"ssp", 
@@ -35,6 +36,7 @@ if not __VICE_SETUP__:
 	from ._test_utils import moduletest 
 	from . import _utils as utils 
 	from . import _imf as imf 
+	from . import io 
 	from . import modeling 
 	from . import objects 
 	from . import ssp 
@@ -48,6 +50,7 @@ if not __VICE_SETUP__:
 		test = moduletest(None) 
 		test.new(utils.test(run = False)) 
 		test.new(imf.test(run = False)) 
+		test.new(io.test(run = False)) 
 		test.new(modeling.test(run = False)) 
 		test.new(objects.test(run = False)) 
 		test.new(ssp.test(run = False)) 

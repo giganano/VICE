@@ -4,8 +4,11 @@ CFLAGS = -fPIC -Wsign-conversion -Wsign-compare
 SOURCES = $(wildcard *.c) 
 OBJECTS = $(SOURCES:.c=.o) 
 
-all: $(OBJECTS) modeling objects singlezone ssp yields 
-.PHONY: clean modeling objects singlezone ssp yields 
+all: $(OBJECTS) io modeling objects singlezone ssp yields 
+.PHONY: clean io modeling objects singlezone ssp yields 
+
+io: 
+	$(MAKE) -C io/ 
 
 modeling: 
 	$(MAKE) -C modeling/ 
@@ -23,6 +26,7 @@ yields:
 	$(MAKE) -C yields/ 
 
 clean: 
+	$(MAKE) -C io/ clean 
 	$(MAKE) -C modeling/ clean 
 	$(MAKE) -C objects/ clean 
 	$(MAKE) -C singlezone/ clean 

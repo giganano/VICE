@@ -20,7 +20,7 @@ extern "C" {
  * 
  * Returns 
  * ======= 
- * 0 on success; 1 on failure 
+ * 0 on success; nonzer on failure 
  * 
  * source: agb.c  
  */ 
