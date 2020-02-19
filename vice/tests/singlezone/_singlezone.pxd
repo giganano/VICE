@@ -10,6 +10,4 @@ cdef extern from "../../src/tests/singlezone/singlezone.h":
 
 
 cdef class singlezone_tester(c_singlezone): 
-	cdef object _tracker 
-	cdef object _names 
-
+	pass 

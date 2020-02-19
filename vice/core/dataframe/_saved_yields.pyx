@@ -55,7 +55,7 @@ cdef class saved_yields(elemental_settings):
 				callable(self._frame[i.lower()]) 
 				): 
 				raise TypeError("""%s yield setting must be either a \
-numerical value or a callable function. Got: %s""" % (self._name, 
+numerical value, callable function, or string. Got: %s""" % (self._name, 
 					type(self._frame[i.lower()]))) 
 			else: 
 				continue 

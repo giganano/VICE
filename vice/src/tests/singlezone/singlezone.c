@@ -49,7 +49,8 @@ extern unsigned short test_singlezone_address(SINGLEZONE *test) {
 extern unsigned short test_n_timesteps(SINGLEZONE *test) { 
 
 	/* A 1-timestep simulation should always return this */ 
-	return n_timesteps(*test) == 1l + BUFFER; 
+	return n_timesteps(*test) == BUFFER + (
+		(*test).output_times[(*test).n_outputs - 1l] / (*test).dt); 
 
 } 
 

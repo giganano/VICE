@@ -184,6 +184,7 @@ class output:
 		======== 
 		vice.yields.agb.settings 
 		""" 
+		return self.__c_version.agb_yields 
 
 	@property
 	def ccsne_yields(self): 

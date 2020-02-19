@@ -1325,6 +1325,9 @@ All elemental yields in the current simulation will be set to the table of \
 		ValueError :: 
 			::	Any element of output_times is negative 
 			:: 	An inflow metallicity evaluates to a negative value 
+		RuntimeError :: 
+			::	Output directory could not be created - attribute 'name' is an 
+				invalid path 
 		ArithmeticError :: 
 			::	An inflow metallicity evaluates to NaN or inf 
 			::	Any functional attribute evaluates to NaN or inf at any 
@@ -1361,14 +1364,8 @@ All elemental yields in the current simulation will be set to the table of \
 		>>> sz.run(outtimes) 
 		"""
 		output_times = self.prep(output_times) 
-		# zoneprep(self._sz, self, output_times, overwrite) 
 		cdef int enrichment 
-		if self.outfile_check(overwrite): 
-			if not os.path.exists("%s.vice" % (self.name)): 
-				os.system("mkdir %s.vice" % (self.name)) 
-			else: 
-				pass 
-
+		if self.open_output_dir(overwrite): 
 
 			# warn the user about r-process elements and bad solar calibrations 
 			self.nsns_warning() 
@@ -1393,6 +1390,7 @@ All elemental yields in the current simulation will be set to the table of \
 			return output(self.name) 
 		else: 
 			pass 
+
 
 	def prep(self, output_times): 
 		""" 
@@ -1423,7 +1421,7 @@ All elemental yields in the current simulation will be set to the table of \
 		ifr mode, the factor of 1e9 converts from Msun yr^-1 to Msun Gyr^-1. 
 		""" 
 		evaltimes = _pyutils.range_(0, 
-			output_times[-1] + 10 * self.dt, 
+			output_times[-1] + _singlezone.BUFFER * self.dt, 
 			self.dt
 		) 
 		self.setup_elements(evaltimes) 
@@ -1495,6 +1493,7 @@ attribute '%s' evaluated to inf or NaN for at least one timestep.""" % (name))
 		self.setup_Zin(output_times[-1]) 
 		return output_times 
 
+
 	def output_times_check(self, output_times): 
 		""" 
 		Ensures that the output times have only numerical values above zero. 
@@ -1523,6 +1522,7 @@ value detected in output times.""")
 		# Some more refinement to ensure cleaner outputs 
 		return self.refine_output_times(output_times) 
 
+
 	def refine_output_times(self, output_times): 
 		""" 
 		Removes any elements of the user's specified output_times array that 
@@ -1544,6 +1544,43 @@ value detected in output times.""")
 				continue 
 
 		return arr[:(n + 1)] 
+
+
+	def open_output_dir(self, overwrite): 
+		""" 
+		Creates/opens the output directory 
+
+		Parameters 
+		==========
+		overwrite :: bool 
+			The user's overwrite specification - True to force overwrite 
+
+		Returns 
+		======= 
+		True if the simultion can proceed and run, overwriting any files that 
+		may already exist. False if the user wishes to abort. 
+
+		Raises 
+		====== 
+		RuntimeError :: 
+			:: 	Output directory could not be opened - name is an invalid path 
+		""" 
+		if self.outfile_check(overwrite): 
+			if not os.path.exists("%s.vice" % (self.name)): 
+				os.system("mkdir %s.vice" % (self.name)) 
+				if not os.path.exists("%s.vice" % (self.name)): 
+					raise RuntimeError("""\
+Invalid path: could not create output directory from name: %s.vice/\
+""" % (self.name)) 
+				else: 
+					pass 
+			else: 
+				pass 
+			return True 
+
+		else: 
+			return False 
+
 
 	def outfile_check(self, overwrite): 
 		"""
@@ -1603,13 +1640,6 @@ be lost.\nOutput directory: %s.vice\nOverwrite? (y | n) """ % (self.name))
 			self._sz[0].elements[i][0].sneia_yields[0].entrainment = (
 				self.entrainment.sneia[self.elements[i]]) 
 			
-			# agbfile = agb._grid_reader.find_yield_file(self.elements[i], 
-			# 	self._agb_model)
-			# _io.import_agb_grid(self._sz[0].elements[i], 
-			# 	agbfile.encode("latin-1")) 
-			# self.setup_sneia_yield(i) 
-			# self.setup_ccsne_yield(i) 
-			
 			self._sz[0].elements[i][0].ccsne_yields[0].yield_ = (
 				copy_pylist(map_ccsne_yield(self.elements[i]))
 			) 
@@ -1642,91 +1672,7 @@ be lost.\nOutput directory: %s.vice\nOverwrite? (y | n) """ % (self.name))
 					agb.settings[self.elements[i]]) 
 				_io.import_agb_grid(self._sz[0].elements[i], 
 					agbfile.encode("latin-1")) 
-				
 
-
-# 	def setup_ccsne_yield(self, element_index): 
-# 		""" 
-# 		Fills the yield array for a given element based on the user's curent 
-# 		setting for that particular element. 
-
-# 		Parameters 
-# 		========== 
-# 		element_index :: int 
-# 			The index of the element to setup the yield for. This is simply 
-# 			the position of that element's symbol in self.elements. 
-# 		""" 
-# 		ccyield = ccsne.settings[self.elements[element_index]] 
-# 		if callable(ccyield): 
-# 			# each line ensures basic requirements of the yield settings 
-# 			_pyutils.args(ccyield, """Yields from core-collapse supernovae, \
-# when callable, must take only one numerical parameter.""") 
-# 			z_arr = _pyutils.range_(_ccsne.CC_YIELD_GRID_MIN, 
-# 				_ccsne.CC_YIELD_GRID_MAX, 
-# 				_ccsne.CC_YIELD_STEP
-# 			) 
-# 			arr = list(map(ccyield, z_arr)) 
-# 			_pyutils.numeric_check(arr, ArithmeticError, """Yield as a \
-# function of metallicity mapped to non-numerical value.""") 
-# 			_pyutils.inf_nan_check(arr, ArithmeticError, """Yield as a \
-# function of metallicity mapped to NaN or inf for at least one metallicity.""") 
-# 		elif isinstance(ccyield, numbers.Number): 
-# 			if m.isinf(ccyield) or m.isnan(ccyield): 
-# 				raise ArithmeticError("Yield cannot be inf or NaN.") 
-# 			else: 
-# 				arr = len(_pyutils.range_(_ccsne.CC_YIELD_GRID_MIN, 
-# 					_ccsne.CC_YIELD_GRID_MAX, 
-# 					_ccsne.CC_YIELD_STEP)) * [ccyield] 
-# 		else: 
-# 			raise TypeError("""IMF-integrated yield from core collapse \
-# supernovae must be either a numerical value or a function of metallicity. \
-# Got: %s""" % (type(ccyield))) 
-
-# 		self._sz[0].elements[element_index][0].ccsne_yields[0].yield_ = (
-# 			copy_pylist(arr)) 
-
-# 	def setup_sneia_yield(self, element_index): 
-# 		""" 
-# 		Fills the yield array for a given element based on the user's current 
-# 		setting for that particular element 
-
-# 		Parameters 
-# 		========== 
-# 		element_index :: int 
-# 			The index of the element to setup the yield for. This is simply 
-# 			the position of that element's symbol in self.elements. 
-# 		""" 
-# 		iayield = sneia.settings[self.elements[element_index]] 
-# 		if callable(iayield): 
-# 			# each line ensures basic requirements of the yield settings 
-# 			_pyutils.args(iayield, """Yields from type Ia supernovae, when \
-# callable, must take only one numerical parameter.""") 
-# 			z_arr = _pyutils.range_(
-# 				_sneia.IA_YIELD_GRID_MIN, 
-# 				_sneia.IA_YIELD_GRID_MAX, 
-# 				_sneia.IA_YIELD_STEP
-# 			) 
-# 			arr = list(map(iayield, z_arr)) 
-# 			_pyutils.numeric_check(arr, ArithmeticError, """Yield as a \
-# function of metallicity mapped to non-numerical value.""") 
-# 			_pyutils.inf_nan_check(arr, ArithmeticError, """Yield as a \
-# function of metallicity mapped to NaN or inf for at least one metallicity.""") 
-# 		elif isinstance(iayield, numbers.Number): 
-# 			if m.isinf(iayield) or m.isnan(iayield): 
-# 				raise ArithmeticError("Yield cannot be inf or NaN.") 
-# 			else: 
-# 				arr = len(_pyutils.range_(
-# 					_sneia.IA_YIELD_GRID_MIN, 
-# 					_sneia.IA_YIELD_GRID_MAX, 
-# 					_sneia.IA_YIELD_STEP
-# 				)) * [iayield] 
-# 		else: 
-# 			raise TypeError("""IMF-integrated yield from type Ia supernovae \
-# must be either a numerical value or a function of metallicity. Got: %s""" % (
-# 				type(iayield))) 
-
-# 		self._sz[0].elements[element_index][0].sneia_yields[0].yield_ = (
-# 			copy_pylist(arr)) 
 
 	def set_ria(self): 
 		""" 
@@ -1761,8 +1707,8 @@ negative, NaN, or inf for at least one timestep.""")
 		about that here. 
 		"""
 		for i in range(self._sz[0].n_elements): 
-			self._sz[0].elements[i][0].sneia_yields[0].RIa = (
-				copy_pylist(ria)) 
+			self._sz[0].elements[i][0].sneia_yields[0].RIa = copy_pylist(ria) 
+
 
 	def setup_Zin(self, endtime): 
 		""" 
@@ -1775,7 +1721,8 @@ negative, NaN, or inf for at least one timestep.""")
 		""" 
 		assert endtime > 0, "Endtime < 0" 
 		# The times at which the simulation will evaluate
-		evaltimes = _pyutils.range_(0, endtime + 10 * self.dt, self.dt) 
+		evaltimes = _pyutils.range_(0, endtime + _singlezone.BUFFER * self.dt, 
+			self.dt) 
 
 		# maps a function of metallicity across time 
 		def zin_mapper(func): 
@@ -1828,6 +1775,7 @@ negative value for at least one timestep.""")
 		else: 
 			# failesafe 
 			raise SystemError("Internal Error") 
+
 
 	def save_yields(self): 
 		""" 
@@ -1897,6 +1845,7 @@ not be saved: """ % (name)
 			self.name), "wb")) 
 		pickle.dump(agb_yields, open("%s.vice/agb_yields.config" % (
 			self.name), "wb")) 
+
 
 	def save_attributes(self): 
 		""" 
@@ -1977,6 +1926,7 @@ output: """
 
 		pickle.dump(params, open("%s.vice/params.config" % (self.name), "wb")) 
 
+
 	def nsns_warning(self): 
 		""" 
 		Determines which, if any, or the tracked elements are enriched via the 
@@ -1997,6 +1947,7 @@ r-process. These elements will likely be under-abundant in the output."""
 			warnings.warn(message, ScienceWarning) 
 		else: 
 			pass 
+
 
 	def solar_z_warning(self): 
 		""" 

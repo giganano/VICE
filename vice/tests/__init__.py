@@ -28,6 +28,7 @@ if not __VICE_SETUP__:
 		"io", 
 		"modeling", 
 		"objects", 
+		"singlezone", 
 		"ssp", 
 		"stats", 
 		"utils", 
@@ -39,6 +40,8 @@ if not __VICE_SETUP__:
 	from . import io 
 	from . import modeling 
 	from . import objects 
+	from . import outputs 
+	from . import singlezone 
 	from . import ssp 
 	from . import _stats as stats 
 	from . import yields 
@@ -48,6 +51,9 @@ if not __VICE_SETUP__:
 		Runs VICE's comprehensive tests 
 		""" 
 		test = moduletest(None) 
+		test.new(singlezone.test(run = False)) 
+		test.new(singlezone.trials(run = False)) 
+		test.new(outputs.test(run = False)) 
 		test.new(utils.test(run = False)) 
 		test.new(imf.test(run = False)) 
 		test.new(io.test(run = False)) 

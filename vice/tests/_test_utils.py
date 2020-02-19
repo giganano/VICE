@@ -8,8 +8,6 @@ __all__ = [
 	"unittest" 
 ] 
 from .._globals import _VERSION_ERROR_ 
-from ..core import _pyutils 
-import time 
 import sys 
 if sys.version_info[:2] == (2, 7): 
 	strcomp = basestring 
@@ -24,6 +22,8 @@ class moduletest(object):
 	""" 
 	A class designed to hold the information associated with a module test 
 	(i.e. a set of unit tests) and subsequently run it. 
+
+	User access of this class is strongly discouraged. 
 	""" 
 
 	def __init__(self, name): 
@@ -88,6 +88,8 @@ class unittest(object):
 	""" 
 	A class designed to hold the information associated with a unit test and 
 	subsequently run it. 
+
+	User access of this class is strongly discouraged. 
 	""" 
 
 	def __init__(self, name, function): 
@@ -136,11 +138,7 @@ str. Got: %s""" % (type(value)))
 	@function.setter 
 	def function(self, value): 
 		if callable(value): 
-			if not _pyutils.arg_count(value): 
-				self._function = value 
-			else: 
-				raise TypeError("""Unit test function must not take any \
-parameters.""") 
+			self._function = value 
 		else: 
 			raise TypeError("Unit test function must be a callable object.") 
 

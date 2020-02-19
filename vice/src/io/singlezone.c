@@ -30,8 +30,6 @@ extern unsigned short singlezone_open_files(SINGLEZONE *sz) {
 	strcpy(mdf_file, (*sz).name); 
 	strcat(history_file, "/history.out"); 
 	strcat(mdf_file, "/mdf.out"); 
-	printf("history: %s\n", history_file); 
-	printf("mdf: %s\n", mdf_file); 
 
 	sz -> history_writer = fopen(history_file, "w"); 
 	sz -> mdf_writer = fopen(mdf_file, "w"); 

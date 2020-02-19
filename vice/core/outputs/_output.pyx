@@ -69,7 +69,7 @@ cdef class c_output:
 		from ...yields import agb 
 		from ...yields import ccsne 
 		from ...yields import sneia 
-		self._agb_yields = self.__load_saved_yields(
+		self._agb_yields = self.__load_saved_yields( 
 			"agb_yields.config", agb.settings, "AGB star" 
 		) 
 		self._ccsne_yields = self.__load_saved_yields(
