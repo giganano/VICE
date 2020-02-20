@@ -135,7 +135,6 @@ heavier than nickel (atomic number 28).""" % (studies["karakas10"]))
 
 	cdef ELEMENT *e = _element.element_initialize() 
 	if _io.import_agb_grid(e, filename.encode("latin-1")): 
-		# free(e) 
 		_element.element_free(e) 
 		raise SystemError("Internal Error: couldn't read yield file.")  
 	else: 
@@ -151,10 +150,6 @@ heavier than nickel (atomic number 28).""" % (studies["karakas10"]))
 			metallicities = [e[0].agb_grid[0].z[i] for i in range(
 				e[0].agb_grid[0].n_z)] 
 		finally: 
-			# free(e[0].agb_grid[0].m) 
-			# free(e[0].agb_grid[0].z) 
-			# free(e[0].agb_grid[0].grid) 
-			# free(e) 
 			_element.element_free(e) 
 
 		return [tuple(i) for i in [[tuple(j) for j in yields], masses, 

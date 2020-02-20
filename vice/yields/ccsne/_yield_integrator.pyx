@@ -12,6 +12,11 @@ from ..._globals import _VERSION_ERROR_
 from ..._globals import ScienceWarning 
 from ...core.dataframe._builtin_dataframes import atomic_number 
 from ...core import _pyutils 
+from .errors import _NAMES_ 
+from .errors import _RECOGNIZED_METHODS_ 
+from .errors import _RECOGNIZED_STUDIES_ 
+from .errors import numeric_check 
+from .errors import string_check 
 import math as m 
 import warnings 
 import numbers 
@@ -30,10 +35,6 @@ from ...core._cutils cimport copy_pylist
 from ._yield_integrator cimport IMF_ 
 from ._yield_integrator cimport INTEGRAL 
 from . cimport _yield_integrator 
-
-# Recognized methods of numerical quadrature and yield studies 
-_RECOGNIZED_METHODS_ = tuple(["simpson", "midpoint", "trapezoid", "euler"]) 
-_RECOGNIZED_STUDIES_ = tuple(["WW95", "LC18", "CL13", "CL04", "NKT13"])  
 
 
 def integrate(element, study = "LC18", MoverH = 0, rotation = 0, 
@@ -222,16 +223,15 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		raise TypeError("First argument must be of type string. Got: %s" % ( 
 			type(element))) 
 	else: 
-		__string_check(study, "study") 
-		# __string_check(IMF, "IMF") error handling now in imf_object 
-		__string_check(method, "method") 
-		__numeric_check(MoverH, "MoverH") 
-		__numeric_check(rotation, "rotation") 
-		__numeric_check(m_lower, "m_lower") 
-		__numeric_check(m_upper, "m_upper") 
-		__numeric_check(tolerance, "tolerance") 
-		__numeric_check(Nmin, "Nmin") 
-		__numeric_check(Nmax, "Nmax") 
+		string_check(study, "study") 
+		string_check(method, "method") 
+		numeric_check(MoverH, "MoverH") 
+		numeric_check(rotation, "rotation") 
+		numeric_check(m_lower, "m_lower") 
+		numeric_check(m_upper, "m_upper") 
+		numeric_check(tolerance, "tolerance") 
+		numeric_check(Nmin, "Nmin") 
+		numeric_check(Nmax, "Nmax") 
 
 
 	""" 
@@ -269,15 +269,6 @@ only 2-element array-like objects.""")
 length as the keyword arg 'mass_range'. explodability length: %d; mass_ranges \
 length: %d""" % (len(explodability), len(mass_ranges))) 
 
-	# Study keywords and their full citations 
-	studies = {
-		"LC18":			"Limongi & Chieffi (2018), ApJS, 237, 18", 
-		"CL13":			"Chieffi & Limongi (2013), ApJ, 764, 21", 
-		"CL04":			"Chieffi & Limongi (2004), ApJ, 608, 405", 
-		"WW95": 		"Woosley & Weaver (1995), ApJ, 101, 181", 
-		"NKT13": 		"Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457" 
-	} 
-
 	# The name of the directory holding yield files at this metallicity 
 	if MoverH % 1 == 0: 
 		MoverHstr = "%d" % (MoverH) 
@@ -292,7 +283,7 @@ length: %d""" % (len(explodability), len(mass_ranges)))
 	elif not os.path.exists("%syields/ccsne/%s/FeH%s" % (_DIRECTORY_, 
 		study.upper(), MoverHstr)): 
 		raise LookupError("The %s study does not have yields for [M/H] = %s" % (
-			studies[study.upper()], MoverHstr.replace('p', '.')))  
+			_NAMES_[study.upper()], MoverHstr.replace('p', '.')))  
 	elif not os.path.exists("%syields/ccsne/%s/FeH%s/v%d" % (_DIRECTORY_, 
 		study.upper(), MoverHstr, rotation)): 
 		raise LookupError("""The %s study did not report yields for v = %d \
@@ -301,8 +292,6 @@ km/s and [M/H] = %g""" % (study, rotation, MoverH))
 		raise ValueError("Tolerance must be between 0 and 1.") 
 	elif m_lower >= m_upper: 
 		raise ValueError("Lower mass limit larger than upper mass limit.") 
-	# elif IMF.lower() not in _RECOGNIZED_IMFS_: moved to imf_object function 
-	# 	raise ValueError("Unrecognized IMF: %s" % (IMF)) 
 	elif method.lower() not in _RECOGNIZED_METHODS_: 
 		raise ValueError("Unrecognized method of quadrature: %s" % (method)) 
 	elif Nmin >= Nmax: 
@@ -333,7 +322,7 @@ and 1. Got: %g""" % (explodability[i]))
 			warnings.warn("""CCSNe progenitors above an initial mass of 25 \
 Msun did not explode in the %s study, and instead they report only the yields \
 from the stellar winds. The explodability criteria are thus \
-overspecified.""" % (studies[study.upper()]), ScienceWarning) 
+overspecified.""" % (_NAMES_[study.upper()]), ScienceWarning) 
 		else: 
 			pass 
 	else: 
@@ -380,7 +369,7 @@ overspecified.""" % (studies[study.upper()]), ScienceWarning)
 grid of stellar masses up to %d Msun at this metallicity. Employing an upper \
 mass limit larger than this may introduce numerical artifacts. \
 Got: %g Msun""" % (
-		studies[study.upper()], upper_mass_limits[study.upper()], m_upper), 
+		_NAMES_[study.upper()], upper_mass_limits[study.upper()], m_upper), 
 		ScienceWarning) 
 	else: 
 		pass 
@@ -390,7 +379,7 @@ Got: %g Msun""" % (
 		warnings.warn("""The %s study published only the results which \
 adopted a fixed yield of nickel-56, and these are the yields which are 
 installed in this version of VICE. For this reason, we caution the user on \
-these yields of iron peak elements.""" % (studies[study.upper()]), 
+these yields of iron peak elements.""" % (_NAMES_[study.upper()]), 
 			ScienceWarning) 
 	else: 
 		pass 
@@ -410,8 +399,8 @@ these yields of iron peak elements.""" % (studies[study.upper()]),
 		warnings.warn("""The %s study did not report yields for the element \
 %s. If adopting these yields for simulation, it is likely that this yield \
 can be approximated as zero at this metallicity. Users may exercise their \
-own discretion by modifying their CCSNe yield settings directly.""" % (
-			studies[study.upper()], element), ScienceWarning) 
+own discretion by modifying their CCSN yield settings directly.""" % (
+			_NAMES_[study.upper()], element), ScienceWarning) 
 		return [0, float("nan")] 
 	else: 
 		pass 
@@ -428,8 +417,6 @@ own discretion by modifying their CCSNe yield settings directly.""" % (
 	num[0].Nmin = <unsigned long> Nmin 
 	try: 
 		x = _yield_integrator.IMFintegrated_fractional_yield_numerator(num, 
-			# filename.encode("latin-1"), 
-			# IMF.lower().encode("latin-1")) 
 			imf_obj, 
 			filename.encode("latin-1")) 
 		if x == 1: 
@@ -474,27 +461,4 @@ Estimated fractional error: %.2e""" % (den[0].error), ScienceWarning)
 		denominator[0]**4 * errden**2) 
 
 	return [y, err] 
-
-
-#------------------------- TYPE CHECKING SUBROUTINES -------------------------# 
-def __numeric_check(param, name): 
-	if not isinstance(param, numbers.Number): 
-		raise TypeError("Keyword arg '%g' must be a real number. Got: %s" % (
-			name, type(param))) 
-	else: 
-		pass 
-
-
-def __string_check(param, name):
-	"""
-	Determines if the passed parameter is of type string, and throws a 
-	TypeError if it isn't. It also takes in the name for the purposes of 
-	printing an error message. 
-	"""
-	if not isinstance(param, strcomp): 
-		message = "Keyword Arg '%s' must be of type string. Got: %s" % (
-			name, type(param))
-		raise TypeError(message) 
-	else:
-		pass
 
