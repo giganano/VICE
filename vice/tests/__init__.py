@@ -1,17 +1,10 @@
 """
 VICE Tests 
 ========== 
-This module includes all of VICE's internal testing routines. 
-
-Functions 
-========= 
-run_comprehensive_tests 
-test_agb_yields
-test_cc_yields
-test_dataframes
-test_ia_yields 
-test_ssp
-test_sz_output_mirror
+This module includes all of VICE's internal testing routines. The tests are 
+implemented in a tree strucutre - all tests can be ran via the test() 
+function, or alternatively, individual modules are imported here, and 
+their tests can also be ran, by calling their associated test() function 
 """
 
 from __future__ import absolute_import 
@@ -69,7 +62,9 @@ if not __VICE_SETUP__:
 				header += "="  
 			print("\033[091m%s\033[00m" % (header)) 
 			print("This may take a few minutes.") 
+			yields.presets.spawn_dummy_yield_file() 
 			test.run() 
+			yields.presets.remove_dummy_yield_file() 
 		else: 
 			return test 
 

@@ -15,6 +15,7 @@ if not __VICE_SETUP__:
 	from . import agb 
 	from . import ccsne 
 	from . import sneia 
+	from . import presets 
 	from . import _integral as integral 
 
 	def test(run = True): 
@@ -26,8 +27,11 @@ if not __VICE_SETUP__:
 		test.new(ccsne.test(run = False)) 
 		test.new(sneia.test(run = False)) 
 		test.new(integral.test(run = False)) 
+		test.new(presets.test(run = False)) 
 		if run:	
+			presets.spawn_dummy_yield_file() 
 			test.run() 
+			presets.remove_dummy_yield_file() 
 		else: 
 			return test 
 
