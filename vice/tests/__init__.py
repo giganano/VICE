@@ -37,6 +37,7 @@ if not __VICE_SETUP__:
 	from ._test_utils import moduletest 
 	from . import _utils as utils 
 	from . import _imf as imf 
+	from . import dataframe 
 	from . import io 
 	from . import modeling 
 	from . import objects 
@@ -52,10 +53,10 @@ if not __VICE_SETUP__:
 		""" 
 		test = moduletest(None) 
 		test.new(singlezone.test(run = False)) 
-		test.new(singlezone.trials(run = False)) 
 		test.new(outputs.test(run = False)) 
 		test.new(utils.test(run = False)) 
 		test.new(imf.test(run = False)) 
+		test.new(dataframe.test(run = False)) 
 		test.new(io.test(run = False)) 
 		test.new(modeling.test(run = False)) 
 		test.new(objects.test(run = False)) 

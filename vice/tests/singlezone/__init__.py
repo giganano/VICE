@@ -10,7 +10,7 @@ if not __VICE_SETUP__:
 	__all__ = ["test", "trials"] 
 	from .._test_utils import moduletest 
 	from ._singlezone import singlezone_tester 
-	from .singlezone import TRIAL_TESTS 
+	from . import singlezone 
 
 	def test(run = True): 
 		test = moduletest("VICE singlezone object") 
@@ -48,15 +48,7 @@ if not __VICE_SETUP__:
 		test.new(st.test_setup_Zin()) 
 		test.new(st.test_save_yields()) 
 		test.new(st.test_save_attributes()) 
-		if run: 
-			test.run() 
-		else: 
-			return test 
-
-	def trials(run = True): 
-		test = moduletest("VICE singlezone trial tests") 
-		for i in TRIAL_TESTS: 
-			test.new(i) 
+		test.new(singlezone.test(run = False)) 
 		if run: 
 			test.run() 
 		else: 

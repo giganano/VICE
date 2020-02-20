@@ -37,7 +37,7 @@ def main():
 	"""
 	warnings.filterwarnings("ignore") 
 	print("=================================================================")
-	print("TESTING: vice.yields.ccsne.fractional")  
+	print("TESTING: vice.yields.ccsne.fractional") 
 	out = open("test_cc_yields.out", 'w') 
 	for i in _STUDY_: 
 		for j in _MOVERH_[i]: 

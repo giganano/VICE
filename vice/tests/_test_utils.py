@@ -73,7 +73,7 @@ class moduletest(object):
 		Run the module tests 
 		""" 
 		if self.name is not None: 
-			header = "Testing: %s\n" % (self.name) 
+			header = "Module Test: %s\n" % (self.name) 
 			for i in range(len(header) - 1): 
 				header += "=" 
 			print("\n\033[96m%s\033[00m" % (header)) 

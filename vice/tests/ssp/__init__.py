@@ -13,6 +13,7 @@ if not __VICE_SETUP__:
 	from . import _crf 
 	from . import _msmf 
 	from . import _mlr 
+	from . import ssp 
 
 	def test(run = True): 
 		""" 
@@ -22,6 +23,7 @@ if not __VICE_SETUP__:
 		test.new(_crf.test_cumulative_return_fraction()) 
 		test.new(_msmf.test_main_sequence_mass_fraction()) 
 		test.new(_mlr.test_mass_lifetime_relationship()) 
+		test.new(ssp.test(run = False)) 
 		if run: 
 			test.run() 
 		else: 

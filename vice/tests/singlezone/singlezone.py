@@ -5,9 +5,10 @@ attribute which can vary by type does not produce an error at runtime.
 
 from __future__ import absolute_import 
 __all__ = [
-	"TRIAL_TESTS" 
+	"test" 
 ]
 from ...core.singlezone.singlezone import singlezone 
+from .._test_utils import moduletest 
 from .._test_utils import unittest 
 import math 
 try: 
@@ -21,13 +22,18 @@ except (ModuleNotFoundError, ImportError):
 	_OUTTIMES_ = [0.05 * i for i in range(21)] 
 
 
+""" 
+Below are each of the parameters that either have a limited range of values 
+or may vary by type. The singlezone object is tested by running one of each 
+and ensuring that the simulation runs under each parameter. 
+""" 
 _MODES_ = ["ifr", "sfr", "gas"] 
 _IMF_ = ["kroupa", "salpeter", lambda m: m**-2] 
 _ETA_ = [2.5, lambda t: 2.5 * math.exp( -t / 4.0 )] 
 _ZIN_ = [0, 1.0e-8, lambda t: 1.0e-8 * (t / 10.0), {
 	"o":		lambda t: 0.0057 * (t / 10.0),  
 	"fe": 		0.0013
-}]
+}] 
 _RECYCLING_ = ["continuous", 0.4] 
 _RIA_ = ["plaw", "exp", lambda t: t**-1.5] 
 _TAU_STAR_ = [2.0, lambda t: 2.0 + t / 10.0] 
@@ -35,6 +41,11 @@ _SCHMIDT_ = [False, True]
 
 
 class generator: 
+
+	""" 
+	A callable object which can be cast as a unittest object for the 
+	singlezone object 
+	""" 
 
 	def __init__(self, **kwargs): 
 		self._sz = singlezone(name = "test", dt = 0.05, **kwargs) 
@@ -47,34 +58,32 @@ class generator:
 		return True 
 
 
-# Make the trial tests 
-TRIAL_TESTS = [] 
-
-for i in _MODES_: 
-	TRIAL_TESTS.append(unittest("mode: %s" % (str(i)), generator(mode = i))) 
-
-for i in _IMF_: 
-	TRIAL_TESTS.append(unittest("IMF: %s" % (str(i)), generator(IMF = i))) 
-
-for i in _ETA_: 
-	TRIAL_TESTS.append(unittest("eta: %s" % (str(i)), generator(eta = i))) 
-
-for i in _ZIN_: 
-	TRIAL_TESTS.append(unittest("Zin: %s" % (str(i)), generator(Zin = i))) 
-
-for i in _RECYCLING_: 
-	TRIAL_TESTS.append(unittest("recycling: %s" % (str(i)), 
-		generator(recycling = i))) 
-
-for i in _RIA_: 
-	TRIAL_TESTS.append(unittest("RIa: %s" % (str(i)), generator(RIa = i))) 
-
-for i in _TAU_STAR_: 
-	TRIAL_TESTS.append(unittest("SFE timescale: %s" % (str(i)), 
-		generator(tau_star = i))) 
-
-for i in _SCHMIDT_: 
-	TRIAL_TESTS.append(unittest("Schmidt: %s" % (str(i)), 
-		generator(schmidt = i))) 
+def test(run = True): 
+	""" 
+	Run the trial tests of the singlezone object 
+	""" 
+	test = moduletest("VICE singlezone trial tests") 
+	for i in _MODES_: 
+		test.new(unittest("mode: %s" % (str(i)), generator(mode = i))) 
+	for i in _IMF_: 
+		test.new(unittest("IMF: %s" % (str(i)), generator(IMF = i))) 
+	for i in _ETA_: 
+		test.new(unittest("eta: %s" % (str(i)), generator(eta = i))) 
+	for i in _ZIN_: 
+		test.new(unittest("Zin: %s" % (str(i)), generator(Zin = i))) 
+	for i in _RECYCLING_: 
+		test.new(unittest("recycling: %s" % (str(i)), 
+			generator(recycling = i))) 
+	for i in _RIA_: 
+		test.new(unittest("RIa: %s" % (str(i)), generator(RIa = i))) 
+	for i in _TAU_STAR_: 
+		test.new(unittest("SFE timescale: %s" % (str(i)), 
+			generator(tau_star = i))) 
+	for i in _SCHMIDT_: 
+		test.new(unittest("Schmidt: %s" % (str(i)), generator(schmidt = i))) 
+	if run: 
+		test.run() 
+	else: 
+		return test 
 
 
