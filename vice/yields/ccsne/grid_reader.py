@@ -76,20 +76,10 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, isotopic = False):
 
 	Returns 
 	======= 
-		If isotopic is True  
-		------------------- 
-		yields :: dataframe 
-			A VICE dataframe indexable by either the stellar mass or the 
-			isotope name, storing the mass yields of individual isotopes 
-
-		If isotopic is False 
-		-------------------- 
-		yields :: tuple 
-			The total mass yield of the element at each stellar mass sampled 
-			by the specified study 
-
-		masses :: tuple 
-			The stellar masses sampled by the specified study 
+	yields :: dataframe 
+		A VICE dataframe designed to hold a CCSN yield table. It can be 
+		indexed via stellar mass or (if isotopic = True) the isotopes of the 
+		requested element 
 
 	Raises 
 	====== 
