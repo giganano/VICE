@@ -2,7 +2,7 @@
 
 from __future__ import absolute_import 
 from libc.stdio cimport FILE 
-from ..dataframe._entrainment cimport zone_entrainment 
+# from ..dataframe._entrainment cimport zone_entrainment 
 from ._element cimport ELEMENT 
 from ._ism cimport ISM 
 from ._mdf cimport MDF 
@@ -44,7 +44,7 @@ cdef class c_singlezone:
 	cdef object _imf 
 	cdef object _eta 
 	cdef object _enhancement 
-	cdef zone_entrainment _entrainment 
+	cdef object _entrainment 
 	cdef object _tau_star 
 	cdef object _zin 
 	cdef object _ria 

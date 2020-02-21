@@ -104,6 +104,7 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, isotopic = False):
 	else: 
 		pass 
 
+	# Type check keyword args 
 	string_check(study, "study")  
 	numeric_check(MoverH, "MoverH")  
 	numeric_check(rotation, "rotation")  
@@ -113,6 +114,7 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, isotopic = False):
 		raise TypeError("""Keyword 'isotopic' must be interpretable as a \
 boolean. Got: %s""" % (type(isotopic))) 
 
+	# value check keyword args 
 	if study.upper() not in _RECOGNIZED_STUDIES_: 
 		raise ValueError("Unrecognized study: %s" % (study)) 
 	elif MoverH not in _MOVERH_[study.upper()]: 
@@ -124,6 +126,7 @@ km/s and [M/H] = %g""" % (rotation, MoverH))
 	else: 
 		filename = find_yield_file(study, MoverH, rotation, element) 
 
+	# Find and read the file 
 	if not os.path.exists(filename): 
 		raise LookupError("""The %s study did not report yields for the \
 element %s. If adopting these yields for simulation, it is likely that this \
@@ -142,6 +145,7 @@ their own discretion by modifying their CCSN yield settings directly.""" % (
 				line = f.readline() 
 			f.close() 
 
+	# Format them as total or isotopic mass yields, and return a yield table 
 	masses = tuple([i[0] for i in contents]) 
 	isotopic_yields = (len(contents[0]) - 1) * [None] 
 	for i in range(1, len(contents[0])): 

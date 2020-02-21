@@ -16,6 +16,7 @@ from ..._globals import _DEFAULT_BINS_
 from ..._globals import _DIRECTORY_ 
 from ..._globals import VisibleDeprecationWarning 
 from ..._globals import ScienceWarning 
+from .entrainment import entrainment 
 from ..dataframe import evolutionary_settings 
 from ..dataframe import atomic_number 
 from ..dataframe import primordial 
@@ -102,7 +103,7 @@ cdef class c_singlezone:
 	# cdef object _imf 
 	# cdef object _eta 
 	# cdef object _enhancement 
-	# cdef zone_entrainment _entrainment 
+	# cdef object _entrainment 
 	# cdef object _tau_star 
 	# cdef object _zin 
 	# cdef object _ria 
@@ -156,7 +157,7 @@ cdef class c_singlezone:
 		self.IMF = IMF 
 		self.eta = eta 
 		self.enhancement = enhancement 
-		self._entrainment = zone_entrainment() 
+		self._entrainment = entrainment() 
 		self.Zin = Zin 
 		self.recycling = recycling 
 		self.bins = bins 

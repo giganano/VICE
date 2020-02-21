@@ -25,7 +25,7 @@ if not __VICE_SETUP__:
 		"saved_yield", 
 		"tracers", 
 		"yield_settings", 
-		"zone_entrainment" 
+		"channel_entrainment" 
 	] 
 
 	from ._agb_yield_settings import agb_yield_settings 
@@ -38,7 +38,7 @@ if not __VICE_SETUP__:
 	from ._saved_yields import saved_yields 
 	from ._tracers import tracers 
 	from ._yield_settings import yield_settings 
-	from ._entrainment import zone_entrainment 
+	from ._entrainment import channel_entrainment 
 	from ._builtin_dataframes import * 
 	__all__.extend(_builtin_dataframes.__all__) 
 

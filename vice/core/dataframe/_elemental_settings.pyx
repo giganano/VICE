@@ -17,7 +17,6 @@ elif sys.version_info[:2] >= (3, 5):
 else: 
 	_VERSION_ERROR_() 
 from . cimport _elemental_settings 
-# from ._base cimport base 
 
 
 #---------------------------- ELEMENTAL SETTINGS ----------------------------# 

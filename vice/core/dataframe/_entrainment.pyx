@@ -14,7 +14,6 @@ from ..._globals import _RECOGNIZED_ELEMENTS_
 from ..._globals import _VERSION_ERROR_ 
 from ..._globals import _DIRECTORY_ 
 from ..._globals import ScienceWarning 
-# from ...modeling.singlechain._parameters import parameter 
 from .. import _pyutils 
 import math as m 
 import warnings 
@@ -28,7 +27,6 @@ elif sys.version_info[:2] >= (3, 5):
 else: 
 	_VERSION_ERROR_() 
 from . cimport _entrainment 
-# from ._elemental_settings cimport elemental_settings 
 
 
 cdef class channel_entrainment(elemental_settings): 
@@ -72,81 +70,4 @@ real number. Got: %s""" % (type(value)))
 		else: 
 			raise TypeError("""Item assignment must be done via type str. \
 Got: %s""" % (type(key))) 
-
-
-cdef class zone_entrainment: 
-
-	""" 
-	An object containing the entrainment settings for all enrichment channels 
-	in a given zone. 
-
-	Attributes 
-	========== 
-	agb :: VICE dataframe 
-		The entrainment fraction of each element from AGB stars 
-	ccsne :: VICE dataframe 
-		The entrainment fraction of each element from CCSNe 
-	sneia :: VICE dataframe 
-		The entrainment fraction of each element from SNe Ia 
-	""" 
-
-	# cdef object _agb 
-	# cdef object _ccsne 
-	# cdef object _sneia 
-
-	def __init__(self): 
-		self._agb = channel_entrainment(dict(zip(
-			_RECOGNIZED_ELEMENTS_, 
-			len(_RECOGNIZED_ELEMENTS_) * [1.]
-		))) 
-		self._ccsne = channel_entrainment(dict(zip(
-			_RECOGNIZED_ELEMENTS_, 
-			len(_RECOGNIZED_ELEMENTS_) * [1.]
-		)))
-		self._sneia = channel_entrainment(dict(zip(
-			_RECOGNIZED_ELEMENTS_, 
-			len(_RECOGNIZED_ELEMENTS_) * [1.]
-		))) 
-
-	def __repr__(self): 
-		""" 
-		Returns a simple string for all objects 
-		""" 
-		return "<entrainment settings>" 
-
-	def __str__(self): 
-		""" 
-		Returns self.__repr__() 
-		""" 
-		return self.__repr__() 
-
-	@property 
-	def agb(self): 
-		""" 
-		Type :: VICE dataframe 
-		Default :: all recognized elements with a value of 1.0. 
-
-		The entrainment fraction of each element from AGB stars. 
-		""" 
-		return self._agb 
-
-	@property 
-	def ccsne(self): 
-		""" 
-		Type :: VICE dataframe 
-		Default :: all recognized elements with a value of 1.0. 
-
-		The entrainment fraction of each element from CCSNe. 
-		""" 
-		return self._ccsne 
-
-	@property 
-	def sneia(self): 
-		""" 
-		Type :: VICE dataframe 
-		Default :: all recognized elements with a value of 1.0. 
-
-		The entrainment fraction of each element from SNe Ia. 
-		""" 
-		return self._sneia 
 
