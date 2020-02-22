@@ -68,3 +68,12 @@ list. Got: %s""" % (type(self._frame[i.lower()])))
 		""" 
 		raise TypeError("This dataframe does not support item assignment.") 
 
+
+	def remove(self, key): 
+		""" 
+		This function throws a TypeError whenever called. This derived class 
+		of the VICE dataframe does not support item deletion. 
+		""" 
+		# Noncustomizability also means not being able to remove anything 
+		raise TypeError("This dataframe does not support item deletion.") 
+

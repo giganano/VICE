@@ -9,7 +9,6 @@ an arbitrary element x.
 from __future__ import absolute_import 
 from ..._globals import _VERSION_ERROR_ 
 from ..._globals import _RECOGNIZED_ELEMENTS_ 
-# from ...modeling.singlechain._parameters import parameter 
 from .. import _pyutils 
 import numbers 
 import sys 
@@ -19,9 +18,8 @@ elif sys.version_info[:2] >= (3, 5):
 	strcomp = str 
 else: 
 	_VERSION_ERROR_() 
-# from . cimport _objects 
 from . cimport _evolutionary_settings 
-# from ._elemental_settings cimport elemental_settings 
+
 
 #---------------------- EVOOLUTIONARY SETTINGS SUBCLASS ----------------------#
 cdef class evolutionary_settings(elemental_settings): 
@@ -104,4 +102,12 @@ value or a function accepting one numerical parameter. Got: %s""" % (
 			raise TypeError("Dataframe key must be of type str. Got: %s" % (
 				type(key))) 
 
+
+	def remove(self, key): 
+		""" 
+		This function throws a TypeError whenever called. This derived class 
+		of the VICE dataframe does not support item deletion. 
+		""" 
+		# Suppring item deletion here could break singlezone simulations 
+		raise TypeError("This dataframe does not support item deletion.") 
 

@@ -287,3 +287,24 @@ Got: %s""" % (type(key)))
 		""" 
 		return self._frame 
 
+	def remove(self, key): 
+		""" 
+		Remove an element of the dataframe 
+
+		Signature: vice.dataframe.remove(key) 
+
+		Parameters 
+		========== 
+		key :: str [case-insensitive] 
+			The dataframe key to remove 
+
+		Raises 
+		====== 
+		KeyError :: 
+			::	Invalid dataframe key 
+		""" 
+		if key.lower() in self._frame.keys(): 
+			del self._frame[key.lower()] 
+		else: 
+			raise KeyError("Unrecognized dataframe key: %s" % (key)) 
+

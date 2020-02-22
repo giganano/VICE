@@ -186,3 +186,11 @@ Package 'dill' not found. At least one element is set to have a functional \
 yield, and saving this requires dill (installable via pip). After installing \
 dill and relaunching your python interpreter, these yields can be saved.""") 
 
+	def remove(self, key): 
+		""" 
+		This function throws a TypeError whenever called. This derived class 
+		of the VICE dataframe does not support item deletion. 
+		""" 
+		# Suppring item deletion here could break singlezone simulations 
+		raise TypeError("This dataframe does not support item deletion.") 
+

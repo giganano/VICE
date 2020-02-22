@@ -2,7 +2,6 @@
 
 from __future__ import absolute_import 
 from libc.stdio cimport FILE 
-# from ..dataframe._entrainment cimport zone_entrainment 
 from ._element cimport ELEMENT 
 from ._ism cimport ISM 
 from ._mdf cimport MDF 

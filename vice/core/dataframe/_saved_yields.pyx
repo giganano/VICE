@@ -66,3 +66,12 @@ numerical value, callable function, or string. Got: %s""" % (self._name,
 		""" 
 		raise TypeError("This dataframe does not support item assignment.") 
 
+
+	def remove(self, key): 
+		""" 
+		This function throws a TypeError whenever called. This derived class 
+		of the VICE dataframe does not support item deletion. 
+		""" 
+		# This dataframe is noncustomizable 
+		raise TypeError("This dataframe does not support item deletion.") 
+

@@ -22,8 +22,6 @@ from libc.stdlib cimport malloc, free
 from libc.string cimport strlen, strcmp 
 from .._cutils cimport set_string, copy_pylist
 from . cimport _fromfile 
-# from . cimport _objects 
-# from ._base cimport base 
 
 
 #----------------------------- FROMFILE SUBCLASS -----------------------------# 
@@ -213,4 +211,13 @@ Got: %s""" % (type(key)))
 		""" 
 		return dict(zip(self.keys(), 
 			[self.__getitem__(i) for i in self.keys()])) 
+
+
+	def remove(self, key): 
+		""" 
+		This function throws a TypeError whenever called. This derived class 
+		of the VICE dataframe does not support item deletion. 
+		""" 
+		# data is stored in C -> no keys to delete from 
+		raise TypeError("This dataframe does not support item deletion.") 
 
