@@ -3,11 +3,11 @@ This file implements the solar_z built-in dataframe
 """ 
 
 from __future__ import absolute_import 
-from .._noncustomizable import noncustomizable 
+from .._builtin_elemental_data import builtin_elemental_data 
 
 
 #------------------------- SOLAR ABUNDANCE DATAFRAME -------------------------# 
-solar_z = noncustomizable({
+solar_z = builtin_elemental_data({
 	"he": 		0.272, 
 	"c":		2.36e-3,  
 	"n":		6.91e-4,  

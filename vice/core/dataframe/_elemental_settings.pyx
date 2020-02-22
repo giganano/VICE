@@ -45,7 +45,7 @@ cdef class elemental_settings(base):
 				raise ValueError("Unrecognized element: %s" % (i)) 
 			else: 
 				continue 
-			
+
 	def __getitem__(self, key): 
 		if isinstance(key, strcomp): 
 			if key.lower() in self.keys(): 
@@ -56,4 +56,12 @@ cdef class elemental_settings(base):
 			raise IndexError("Dataframe key must be of type str. Got: %s" % (
 				type(key))) 
 
+
+	def remove(self, key): 
+		""" 
+		This function throws a TypeError whenever called. This derived class 
+		of the VICE dataframe does not support item deletion. 
+		""" 
+		# Allowing this could let user's break their own singlezone objects 
+		raise TypeError("This dataframe does not support item deletion.") 
 

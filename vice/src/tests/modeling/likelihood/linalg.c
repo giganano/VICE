@@ -99,7 +99,7 @@ extern unsigned short test_subtract_matrices(void) {
  * 
  * header: linalg.h 
  */ 
-extern double test_transpose(void) { 
+extern unsigned short test_transpose(void) { 
 
 	/* 
 	 * Test the function by transposing a test dummy, which will be equal to 

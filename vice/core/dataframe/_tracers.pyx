@@ -195,6 +195,3 @@ cdef class tracers(history):
 		keys.append("age") 
 		return keys 
 
-
-
-

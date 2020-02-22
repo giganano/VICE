@@ -3,11 +3,11 @@ This file implements the atomic_number built-in dataframe
 """ 
 
 from __future__ import absolute_import 
-from .._noncustomizable import noncustomizable 
+from .._builtin_elemental_data import builtin_elemental_data 
 
 
 #------------------------- ATOMIC NUMBER DATAFRAME -------------------------# 
-atomic_number = noncustomizable({
+atomic_number = builtin_elemental_data({
 	"he": 		2, 
 	"c":		6, 
 	"n":		7, 

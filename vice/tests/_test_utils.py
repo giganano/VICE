@@ -147,11 +147,11 @@ str. Got: %s""" % (type(value)))
 		""" 
 		Type :: str 
 
-		The 'success' or 'failure' message as a string. Runs the test 
+		The 'Passed' or 'Failed' message as a string. Runs the test 
 		automatically. 
 		""" 
 		if self.function(): 
-			return "\033[92mSuccess\033[00m" 
+			return "\033[92mPassed\033[00m" 
 		else: 
 			return "\033[91mFailed\033[00m" 
 

@@ -102,12 +102,3 @@ value or a function accepting one numerical parameter. Got: %s""" % (
 			raise TypeError("Dataframe key must be of type str. Got: %s" % (
 				type(key))) 
 
-
-	def remove(self, key): 
-		""" 
-		This function throws a TypeError whenever called. This derived class 
-		of the VICE dataframe does not support item deletion. 
-		""" 
-		# Suppring item deletion here could break singlezone simulations 
-		raise TypeError("This dataframe does not support item deletion.") 
-

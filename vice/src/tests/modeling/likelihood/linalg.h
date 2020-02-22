@@ -42,7 +42,7 @@ extern unsigned short test_subtract_matrices(void);
  * 
  * source: linalg.c 
  */ 
-extern double test_transpose(void); 
+extern unsigned short test_transpose(void); 
 
 /* 
  * Test the function which calculates the determinant of a matrix of given size 

@@ -3,11 +3,11 @@ This file implements the primordial built-in dataframe
 """ 
 
 from __future__ import absolute_import 
-from .._noncustomizable import noncustomizable 
+from .._builtin_elemental_data import builtin_elemental_data 
 
 
 # --------------------- PRIMORDIAL ABUNDANCES DATAFRAME --------------------- # 
-primordial = noncustomizable({
+primordial = builtin_elemental_data({
 	"he": 		0.248, 
 	"c":		0, 
 	"n":		0, 

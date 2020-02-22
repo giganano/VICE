@@ -2,9 +2,7 @@
 """ 
 This file implements the saved_yields object, a subclass of the VICE dataframe 
 which is designed to hold saved nucleosynthetic yields. For that reason, it is 
-noncustomizable, but is different from the noncustomizable subclass 
-(see _noncustomizable.pyx) in that the two subclasses allow the storage of 
-different data types. 
+noncustomizable. 
 """ 
 
 from ..._globals import _VERSION_ERROR_ 
@@ -22,7 +20,7 @@ from . cimport _saved_yields
 
 
 #--------------------------- SAVED YIELDS SUBCLASS ---------------------------# 
-cdef class saved_yields(elemental_settings): 
+cdef class saved_yields(noncustomizable): 
 
 	""" 
 	A subclass of the VICE dataframe which holds the user's settings from 
@@ -35,12 +33,18 @@ cdef class saved_yields(elemental_settings):
 	""" 
 
 	def __init__(self, frame, name): 
-		super().__init__(frame) 
-		if isinstance(name, strcomp): 
-			self._name = name 
-		else: 
-			raise TypeError("Attribute 'name' must be of type str. Got: %s" % (
-				type(name))) 
+		"""
+		Parameters 
+		========== 
+		frame :: dict 
+			A python dictionary to construct the dataframe from 
+		""" 
+
+		"""
+		super will make sure frame is a dict and that all keys are recognized 
+		elements. 
+		"""
+		super().__init__(frame, name) 
 
 		""" 
 		Saved yields will have already passed the necessary type-checking 
@@ -48,9 +52,8 @@ cdef class saved_yields(elemental_settings):
 		need for _pyutils.args. 
 		""" 
 		for i in self.keys(): 
-			if i.lower() not in _RECOGNIZED_ELEMENTS_: 
-				raise ValueError("Unrecognized element: %s" % (i))  
-			elif not (isinstance(self._frame[i.lower()], numbers.Number) or 
+			if not (
+				isinstance(self._frame[i.lower()], numbers.Number) or 
 				isinstance(self._frame[i.lower()], strcomp) or 
 				callable(self._frame[i.lower()]) 
 				): 
@@ -59,19 +62,4 @@ numerical value, callable function, or string. Got: %s""" % (self._name,
 					type(self._frame[i.lower()]))) 
 			else: 
 				continue 
-
-	def __setitem__(self, key, value): 
-		""" 
-		Doesn't allow customization of saved parameters by nature. 
-		""" 
-		raise TypeError("This dataframe does not support item assignment.") 
-
-
-	def remove(self, key): 
-		""" 
-		This function throws a TypeError whenever called. This derived class 
-		of the VICE dataframe does not support item deletion. 
-		""" 
-		# This dataframe is noncustomizable 
-		raise TypeError("This dataframe does not support item deletion.") 
 

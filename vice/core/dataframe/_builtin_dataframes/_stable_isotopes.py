@@ -3,11 +3,11 @@ This file implements the stable_isotopes built-in dataframe
 """ 
 
 from __future__ import absolute_import 
-from .._noncustomizable import noncustomizable 
+from .._builtin_elemental_data import builtin_elemental_data 
 
 
 # ------------------------ STABLE ISOTOPES DATAFRAME ------------------------ # 
-stable_isotopes = noncustomizable({
+stable_isotopes = builtin_elemental_data({
 	"he": 		[3, 4], 
 	"c":		[12, 13], 
 	"n":		[14, 15], 

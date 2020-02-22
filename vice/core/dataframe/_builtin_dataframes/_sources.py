@@ -3,11 +3,11 @@ This file implements the sources built-in dataframe
 """ 
 
 from __future__ import absolute_import 
-from .._noncustomizable import noncustomizable 
+from .._builtin_elemental_data import builtin_elemental_data 
 
 
 #----------------------------- SOURCES DATAFRAME -----------------------------# 
-sources = noncustomizable({
+sources = builtin_elemental_data({
 	"he": 		["BBN", "CCSNE", "AGB"], 
 	"c":		["CCSNE", "AGB"], 
 	"n":		["CCSNE", "AGB"], 
