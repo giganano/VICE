@@ -8,8 +8,7 @@ except NameError:
 
 if not __VICE_SETUP__: 
 
-	from vice import tests 
-	from vice._globals import _VERSION_ERROR_ 
+	from vice.tests import test 
 	import sys 
 	import os 
 	if sys.version_info[:2] == (2, 7): input = raw_input 
@@ -20,11 +19,11 @@ if not __VICE_SETUP__:
 		while answer.lower() not in ["yes", "y", "no", "n"]: 
 			answer = input("Please enter either 'y' or 'n': ") 
 		if answer.lower() in ["yes", "y"]: 
-			tests.test(run = True) 
+			test(run = True) 
 		else: 
 			pass 
 	else: 
-		tests.test(run = True) 
+		test(run = True) 
 
 else: 
 	pass 

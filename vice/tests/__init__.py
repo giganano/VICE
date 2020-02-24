@@ -17,20 +17,22 @@ if not __VICE_SETUP__:
 
 	__all__ = [ 
 		"test", 
+		"dataframe", 
 		"imf", 
 		"io", 
 		"modeling", 
 		"objects", 
+		"outputs", 
 		"singlezone", 
 		"ssp", 
 		"stats", 
 		"utils", 
+		"yields" 
 	] 
 
 	from ._test_utils import moduletest 
-	from . import _utils as utils 
-	from . import _imf as imf 
 	from . import dataframe 
+	from . import _imf as imf 
 	from . import io 
 	from . import modeling 
 	from . import objects 
@@ -38,6 +40,7 @@ if not __VICE_SETUP__:
 	from . import singlezone 
 	from . import ssp 
 	from . import _stats as stats 
+	from . import _utils as utils 
 	from . import yields 
 
 	def test(run = True): 
@@ -63,7 +66,7 @@ if not __VICE_SETUP__:
 			print("\033[091m%s\033[00m" % (header)) 
 			print("This may take a few minutes.") 
 			yields.presets.spawn_dummy_yield_file() 
-			test.run(print_results = True)  
+			test.run(print_results = True) 
 			yields.presets.remove_dummy_yield_file() 
 		else: 
 			return test 
