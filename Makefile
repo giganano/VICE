@@ -7,7 +7,7 @@ src:
 	$(MAKE) -C vice/src/ 
 
 tests:
-	cd vice && python tests && cd - 
+	$(MAKE) tests3 
 
 tests2: 
 	cd vice && python2 tests && cd - 

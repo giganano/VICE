@@ -373,7 +373,7 @@ extern unsigned short test_sum(void) {
 	double s = 0; 
 	for (i = 0u; i < 100u; i++) {
 		s += test[i]; 
-		if (sum(test, i + 1) != s) { 
+		if (sum(test, (unsigned long) (i + 1l)) != s) { 
 			free(test); 
 			return 0u; 
 		} else {} 
