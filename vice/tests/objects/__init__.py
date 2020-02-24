@@ -83,7 +83,7 @@ if not __VICE_SETUP__:
 		test.new(tracer.test_tracer_constructor()) 
 		test.new(tracer.test_tracer_destructor()) 
 		if run: 
-			test.run() 
+			test.run(print_results = True) 
 		else: 
 			return test 
 

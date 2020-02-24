@@ -30,7 +30,7 @@ if not __VICE_SETUP__:
 		test.new(presets.test(run = False)) 
 		if run:	
 			presets.spawn_dummy_yield_file() 
-			test.run() 
+			test.run(print_results = True) 
 			presets.remove_dummy_yield_file() 
 		else: 
 			return test 

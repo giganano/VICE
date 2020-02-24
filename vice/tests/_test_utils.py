@@ -17,6 +17,11 @@ else:
 	_VERSION_ERROR_() 
 
 
+# "Passed" and "Failed" as green and red strings, respectively 
+_PASSED_MESSAGE_ = "\033[92mPassed\033[00m" 
+_FAILED_MESSAGE_ = "\033[91mFailed\033[00m" 
+
+
 class moduletest(object): 
 
 	""" 
@@ -68,10 +73,12 @@ class moduletest(object):
 			raise TypeError("Object must be of type unittest. Got: %s" % (
 				type(obj))) 
 
-	def run(self): 
+	def run(self, print_results = False): 
 		""" 
 		Run the module tests 
 		""" 
+		passed = 0 
+		failed = 0 
 		if self.name is not None: 
 			header = "Module Test: %s\n" % (self.name) 
 			for i in range(len(header) - 1): 
@@ -80,7 +87,26 @@ class moduletest(object):
 		else: 
 			pass 
 		for i in self._unittests: 
-			i.run() 
+			if isinstance(i, unittest): 
+				if i.run(): 
+					print("\t%s :: %s" % (i.name, _PASSED_MESSAGE_)) 
+					passed += 1 
+				else: 
+					print("\t%s :: %s" % (i.name, _FAILED_MESSAGE_)) 
+					failed += 1 
+			else: 
+				passed_, failed_ = i.run() 
+				passed += passed_ 
+				failed += failed_ 
+		if print_results: 
+			if not failed: 
+				print("\n\033[92mAll tests passed.\033[00m\n") 
+			else: 
+				print("\n\033[92m%d tests passed.\033[00m" % (passed)) 
+				print("\033[91m%d tests failed.\033[00m\n" % (failed)) 
+		else: 
+			pass 
+		return [passed, failed] 
 
 
 class unittest(object): 
@@ -97,7 +123,8 @@ class unittest(object):
 		self.function = function 
 
 	def __repr__(self): 
-		return "%s :: %s" % (self.name, self.message) 
+		return "%s :: %s" % (self.name, 
+			_PASSED_MESSAGE_ if self.run() else _FAILED_MESSAGE_) 
 
 	def __str__(self): 
 		return self.__repr__() 
@@ -142,22 +169,10 @@ str. Got: %s""" % (type(value)))
 		else: 
 			raise TypeError("Unit test function must be a callable object.") 
 
-	@property 
-	def message(self): 
-		""" 
-		Type :: str 
-
-		The 'Passed' or 'Failed' message as a string. Runs the test 
-		automatically. 
-		""" 
-		if self.function(): 
-			return "\033[92mPassed\033[00m" 
-		else: 
-			return "\033[91mFailed\033[00m" 
-
 	def run(self): 
 		""" 
 		Run this unit test 
 		""" 
-		print("\t%s" % (self.__str__()))  
+		return self.function() 
+
 

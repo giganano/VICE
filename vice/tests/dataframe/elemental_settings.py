@@ -11,22 +11,34 @@ from .._test_utils import moduletest
 from .._test_utils import unittest 
 
 
-_TEST_FRAME_ = elemental_settings(dict(zip(
-	_RECOGNIZED_ELEMENTS_, 
-	len(_RECOGNIZED_ELEMENTS_) * [list(range(10))] 
-)))  
-
-
 def test(run = True): 
 	""" 
 	Tests the elemental_settings derived class of the VICE dataframe 
 	""" 
 	test = moduletest("Elemental settings derived class") 
-	test.new(unittest("getitem", test_getitem)) 
+	test.new(unittest("Initialization", test_initialization)) 
+	test.new(unittest("Getitem", test_getitem)) 
+	test.new(unittest("Remove", test_remove)) 
 	if run: 
 		test.run() 
 	else: 
 		return test 
+
+
+def test_initialization(): 
+	""" 
+	Tests the initialization of the elemental_settings derived class 
+	""" 
+	global _TEST_FRAME_ 
+	_TEST_FRAME_ = dict(zip(
+		_RECOGNIZED_ELEMENTS_, 
+		len(_RECOGNIZED_ELEMENTS_) * [list(range(10))] 
+	)) 
+	try: 
+		_TEST_FRAME_ = elemental_settings(_TEST_FRAME_) 
+	except: 
+		return False 
+	return isinstance(_TEST_FRAME_, elemental_settings) 
 
 
 def test_getitem(): 
@@ -39,4 +51,17 @@ def test_getitem():
 	except: 
 		return False 
 	return True 
+
+
+def test_remove(): 
+	""" 
+	Tests the remove function, which should always throw a TypeError 
+	""" 
+	try: 
+		_TEST_FRAME_.remove(_RECOGNIZED_ELEMENTS_[0]) 
+	except TypeError: 
+		return True 
+	except: 
+		return False 
+	return False 
 

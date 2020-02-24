@@ -20,7 +20,7 @@ if not __VICE_SETUP__:
 		test = moduletest("VICE modeling features") 
 		test.new(likelihood.test(run = False)) 
 		if run: 
-			test.run() 
+			test.run(print_results = True) 
 		else: 
 			return test   
 

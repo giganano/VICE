@@ -34,7 +34,6 @@ try:
 	import dill as pickle 
 except (ModuleNotFoundError, ImportError): 
 	pass 
-# from . cimport _objects 
 from . cimport _yield_settings 
 
 

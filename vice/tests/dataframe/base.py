@@ -9,28 +9,39 @@ from .._test_utils import moduletest
 from .._test_utils import unittest 
 
 
-_TEST_FRAME_ = base(dict(zip(
-	[str(i) for i in range(10)], 
-	10 * [list(range(10))] 
-))) 
-
-
 def test(run = True): 
 	""" 
 	Run all tests of the VICE dataframe base class 
 	""" 
 	# reset_test_frame() 
 	test = moduletest("Base class") 
-	test.new(unittest("keys", test_keys)) 
-	test.new(unittest("todict", test_todict)) 
-	test.new(unittest("getitem", test_getitem)) 
-	test.new(unittest("setitem", test_setitem)) 
-	test.new(unittest("remove", test_remove)) 
-	test.new(unittest("call", test_call)) 
+	test.new(unittest("Initialization", test_initialization)) 
+	test.new(unittest("Keys", test_keys)) 
+	test.new(unittest("Todict", test_todict)) 
+	test.new(unittest("Getitem", test_getitem)) 
+	test.new(unittest("Setitem", test_setitem)) 
+	test.new(unittest("Remove", test_remove)) 
+	test.new(unittest("Call", test_call)) 
 	if run: 
 		test.run() 
 	else: 
 		return test 
+
+
+def test_initialization(): 
+	""" 
+	Test the initialization of the VICE dataframe base class 
+	""" 
+	global _TEST_FRAME_ 
+	_TEST_FRAME_ = dict(zip(
+		[str(i) for i in range(10)], 
+		10 * [list(range(10))] 
+	)) 
+	try: 
+		_TEST_FRAME_ = base(_TEST_FRAME_) 
+	except: 
+		return False 
+	return isinstance(_TEST_FRAME_, base) 
 
 
 def test_keys(): 

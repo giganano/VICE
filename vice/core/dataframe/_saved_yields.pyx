@@ -15,7 +15,6 @@ elif sys.version_info[:2] >= (3, 5):
 	strcomp = str 
 else: 
 	_VERSION_ERROR_() 
-# from . cimport _objects 
 from . cimport _saved_yields
 
 
@@ -56,7 +55,7 @@ cdef class saved_yields(noncustomizable):
 				isinstance(self._frame[i.lower()], numbers.Number) or 
 				isinstance(self._frame[i.lower()], strcomp) or 
 				callable(self._frame[i.lower()]) 
-				): 
+			): 
 				raise TypeError("""%s yield setting must be either a \
 numerical value, callable function, or string. Got: %s""" % (self._name, 
 					type(self._frame[i.lower()]))) 

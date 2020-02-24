@@ -22,7 +22,7 @@ if not __VICE_SETUP__:
 		test.new(integrator.test(run = False)) 
 		test.new(imports.test(run = False)) 
 		if run: 
-			test.run() 
+			test.run(print_results = True) 
 		else: 
 			return test 
 

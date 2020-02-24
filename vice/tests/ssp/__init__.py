@@ -25,7 +25,7 @@ if not __VICE_SETUP__:
 		test.new(_mlr.test_mass_lifetime_relationship()) 
 		test.new(ssp.test(run = False)) 
 		if run: 
-			test.run() 
+			test.run(print_results = True) 
 		else: 
 			return test 
 

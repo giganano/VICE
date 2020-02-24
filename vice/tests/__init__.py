@@ -63,7 +63,7 @@ if not __VICE_SETUP__:
 			print("\033[091m%s\033[00m" % (header)) 
 			print("This may take a few minutes.") 
 			yields.presets.spawn_dummy_yield_file() 
-			test.run() 
+			test.run(print_results = True)  
 			yields.presets.remove_dummy_yield_file() 
 		else: 
 			return test 

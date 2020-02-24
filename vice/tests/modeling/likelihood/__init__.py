@@ -25,7 +25,7 @@ if not __VICE_SETUP__:
 		test.new(linalg.test_matrix_determinant()) 
 		test.new(linalg.test_matrix_inversion()) 
 		if run: 
-			test.run() 
+			test.run(print_results = True) 
 		else: 
 			return test 
 

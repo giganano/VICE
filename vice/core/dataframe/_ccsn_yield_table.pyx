@@ -72,7 +72,6 @@ cdef class ccsn_yield_table:
 			if key.lower() in self._isotopes: 
 				yields = self._yields[self._isotopes.index(key.lower())] 
 				return ccsn_yield_table(self._masses, yields, isotopes = None) 
-				# return base(dict(zip(self._masses, yields))) 
 			else: 
 				raise IndexError("Unrecognized isotope: %s" % (key)) 
 		else: 
