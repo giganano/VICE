@@ -308,3 +308,74 @@ Got: %s""" % (type(key)))
 		else: 
 			raise KeyError("Unrecognized dataframe key: %s" % (key)) 
 
+	def filter(self, key, relation, value): 
+		""" 
+		Obtain a copy of the dataframe whose elements satisfy a filter 
+
+		Signature: vice.dataframe.filter(key, relation, value) 
+
+		Parameters 
+		========== 
+		key :: str [case-insensitive] 
+			The dataframe key to train the filter on 
+		relation :: str 
+			Either '<', '<=', '=', '==', '>=', or '>', denoting the relation to 
+			train the filter on 
+		value :: real number 
+			The value to compare to in filtering 
+
+		Returns 
+		======= 
+		filtered :: dataframe 
+			A dataframe whose elements are only those which satisfy the 
+			specified filter. This will always be an instance of the base class, 
+			even if this function is called from an instance of a derived class. 
+
+		Raises 
+		====== 
+		KeyError :: 
+			::	Invalid dataframe key 
+			::	key is not a string 
+		ValueError :: 
+			::	Invalid relation 
+		TypeError :: 
+			::	Value is a not a real number 
+		""" 
+		if isinstance(key, strcomp): 
+			if key.lower() in self.keys(): 
+				if isinstance(value, numbers.Number): 
+					idx = self.keys().index(key.lower()) 
+					qtys = [self.__getitem__(i) for i in self.keys()] 
+					copy = len(qtys[0]) * [None] 
+					for i in range(len(copy)): 
+						copy[i] = [row[i] for row in qtys] 
+
+					if relation == '<': 
+						fltrd = list(filter(lambda x: x[idx] < value, copy)) 
+					elif relation == '<=': 
+						fltrd = list(filter(lambda x: x[idx] <= value, copy)) 
+					elif relation == '=' or relation == '==': 
+						fltrd = list(filter(lambda x: x[idx] == value, copy)) 
+					elif relation == '>=': 
+						fltrd = list(filter(lambda x: x[idx] >= value, copy)) 
+					elif relation == '>': 
+						fltrd = list(filter(lambda x: x[idx] > value, copy)) 
+					else: 
+						raise ValueError("Invalid relation: %s" % (
+							str(relation))) 
+
+					new = {} 
+					for i in range(len(self.keys())): 
+						new[self.keys()[i]] = [row[i] for row in fltrd] 
+
+					return base(new) 
+
+				else: 
+					raise TypeError("Value must be a real number. Got: %s" % (
+						type(value))) 
+			else: 
+				raise KeyError("Invalid dataframe key: %s" % (key)) 
+		else: 
+			raise KeyError("Key must be of type str for sieve. Got: %s" % (
+				type(key))) 
+

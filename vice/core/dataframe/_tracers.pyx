@@ -12,6 +12,7 @@ elif sys.version_info[:2] >= (3, 5):
 else: 
 	_VERSION_ERROR_() 
 from libc.stdlib cimport malloc, free 
+from libc.string cimport strlen 
 from .._cutils cimport set_string 
 from . cimport _tracers 
 from . cimport _fromfile 
@@ -181,17 +182,22 @@ cdef class tracers(history):
 			return _base.base(dict(zip(self.keys(), x))) 
 
 	def keys(self): 
-		keys = ["formation_time", "zone_origin", "zone_final", "mass"] 
+		""" 
+		Signature: vice.dataframe.keys() 
+
+		Returns the dataframe keys in their lower-case format 
+		""" 
+		labels = self._ff[0].n_cols * [None] 
+		for i in range(self._ff[0].n_cols): 
+			labels[i] = "".join([chr(self._ff[0].labels[i][j]) for j in range(
+				strlen(self._ff[0].labels[i]))]) 
 		elements = self._load_elements() 
 		for i in elements: 
-			keys.append("z(%s)" % (i)) 
-		for i in elements: 
-			keys.append("[%s/h]" % (i)) 
+			labels.append("[%s/h]" % (i)) 
 		for i in range(1, len(elements)): 
 			for j in range(i): 
-				keys.append("[%s/%s]" % (elements[i], elements[j])) 
-		keys.append("z") 
-		keys.append("[m/h]") 
-		keys.append("age") 
-		return keys 
+				labels.append("[%s/%s]" % (elements[i], elements[j])) 
+		labels.append("z") 
+		labels.append("age") 
+		return labels 
 

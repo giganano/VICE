@@ -22,6 +22,7 @@ def test(run = True):
 	test.new(unittest("Setitem", test_setitem)) 
 	test.new(unittest("Remove", test_remove)) 
 	test.new(unittest("Call", test_call)) 
+	test.new(unittest("Filter", test_filter)) 
 	if run: 
 		test.run() 
 	else: 
@@ -119,4 +120,28 @@ def test_remove():
 	except: 
 		return False 
 	return "foo" not in _TEST_FRAME_.keys() 
+
+
+def test_filter(): 
+	""" 
+	Test the filter function 
+	""" 
+	try: 
+		for i in _TEST_FRAME_.keys(): 
+			for j in range(10): 
+				test = _TEST_FRAME_.filter(i, "<", j) 
+				assert all(map(lambda x: x < j, test[i])) 
+				test = _TEST_FRAME_.filter(i, "<=", j) 
+				assert all(map(lambda x: x <= j, test[i])) 
+				test = _TEST_FRAME_.filter(i, "=", j) 
+				assert all(map(lambda x: x == j, test[i])) 
+				test = _TEST_FRAME_.filter(i, "==", j) 
+				assert all(map(lambda x: x == j, test[i])) 
+				test = _TEST_FRAME_.filter(i, ">=", j) 
+				assert all(map(lambda x: x >= j, test[i])) 
+				test = _TEST_FRAME_.filter(i, ">", j) 
+				assert all(map(lambda x: x > j, test[i])) 
+	except: 
+		return False 
+	return True 
 

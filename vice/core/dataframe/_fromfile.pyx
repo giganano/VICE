@@ -142,7 +142,7 @@ Got: %s""" % (type(key)))
 			if <unsigned> len(value) == self._ff[0].n_rows: 
 				copy = <char *> malloc ((len(key) + 1) * sizeof(char)) 
 				set_string(copy, key.lower()) 
-				if _fromfile.fromfile_modify_column(self._ff, key, 
+				if _fromfile.fromfile_modify_column(self._ff, copy, 
 					copy_pylist(value)): 
 					raise SystemError("Internal Error") 
 				else: 
