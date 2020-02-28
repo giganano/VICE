@@ -246,6 +246,11 @@ a boolean. Got: %s""" % (type(value)))
 		""" 
 		if isinstance(value, numbers.Number) or isinstance(value, bool): 
 			if value: 
+				warnings.warn("""\
+Mixture models in which the positions of stars at intermediate times are not \
+taken into account have been shown to oversimply age-abundance relations \
+(Johnson & Weinberg 2020, in prep). More accurate simulations arise when this \
+attribute is False.""", ScienceWarning) 
 				self._mz[0].simple = 1 
 			else: 
 				self._mz[0].simple = 0 

@@ -70,7 +70,6 @@ typedef struct sneia_yield_specs {
 	 */ 
 
 	char *dtd; 
-	// double yield_; 
 	double *yield_; 
 	double *grid; 
 	double *RIa; 
