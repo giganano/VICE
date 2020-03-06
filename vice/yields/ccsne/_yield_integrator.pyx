@@ -44,8 +44,8 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	Calculates an IMF-integrated fractional nucleosynthetic yield of a given 
 	element from core-collapse supernovae. VICE has built-in functions which 
 	implement Gaussian quadrature to evaluate these integrals numerically. 
-	See section 5.2 of VICE's science documentation at http://github.com/gigana
-	no/VICE/tree/master/docs for further details. 
+	See section 5.2 of VICE's science documentation at 
+	http://github.com/giganano/VICE/tree/master/docs for further details. 
 
 	Signature: vice.yields.ccsne.fractional(
 		element, 
