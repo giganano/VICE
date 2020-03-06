@@ -7,9 +7,10 @@ table built into VICE.
 
 from __future__ import absolute_import 
 
-# __all__ initialized at the end of this module out of necessity 
+# __all__ extended at the end of this module out of necessity 
+__all__ = ["recognized"] 
 
-from ._globals import _RECOGNIZED_ELEMENTS_ 
+from ._globals import _RECOGNIZED_ELEMENTS_ as recognized 
 from ._globals import _VERSION_ERROR_ 
 from .core.dataframe._builtin_dataframes import stable_isotopes 
 from .core.dataframe._builtin_dataframes import atomic_number 
@@ -313,7 +314,7 @@ class element:
 	@symbol.setter 
 	def symbol(self, value): 
 		if isinstance(value, strcomp): 
-			if value.lower() in _RECOGNIZED_ELEMENTS_: 
+			if value.lower() in recognized: 
 				self._symbol = _get_proper_name(value) 
 			else: 
 				raise ValueError("Unrecognized element: %s" % (value)) 
@@ -396,10 +397,10 @@ Got: %s""" % (type(value)))
 		return primordial[self._symbol] 
 
 
-__all__ = [_get_proper_name(i) for i in _RECOGNIZED_ELEMENTS_] 
+__all__.extend([_get_proper_name(i) for i in recognized]) 
 
 
-# Create the element objects for __all__ 
-for i in _RECOGNIZED_ELEMENTS_: 
+# Create the element objects 
+for i in recognized: 
 	exec("%s = element(\"%s\")" % (_get_proper_name(i), i)) 
 

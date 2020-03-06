@@ -34,7 +34,7 @@ extern double *m_sneia_from_tracers(MULTIZONE mz, unsigned short index) {
 	for (i = 0l; i < (*mz.mig).tracer_count; i++) {
 		TRACER *t = mz.mig -> tracers[i]; 
 		SNEIA_YIELD_SPECS sneia = *(
-			mz.zones[(*t).zone_current] -> elements[index] -> sneia_yields
+			mz.zones[(*t).zone_origin] -> elements[index] -> sneia_yields
 		); 
 		/* pull yield information from the zone this particle originated */ 
 		mass[(*t).zone_current] += (
