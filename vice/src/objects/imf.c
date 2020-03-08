@@ -5,6 +5,7 @@
 #include <stdlib.h> 
 #include "../imf.h" 
 #include "objects.h" 
+#include "callback_1arg.h" 
 #include "imf.h" 
 
 
@@ -29,6 +30,7 @@ extern IMF_ *imf_initialize(double m_lower, double m_upper) {
 	imf -> mass_distribution = NULL; 
 	imf -> m_lower = m_lower; 
 	imf -> m_upper = m_upper; 
+	imf -> custom_imf = callback_1arg_initialize(); 
 	return imf; 
 
 } 
@@ -55,6 +57,11 @@ extern void imf_free(IMF_ *imf) {
 		if ((*imf).mass_distribution != NULL) {
 			free(imf -> mass_distribution); 
 			imf -> mass_distribution = NULL; 
+		} else {} 
+
+		if ((*imf).custom_imf != NULL) {
+			callback_1arg_free(imf -> custom_imf); 
+			imf -> custom_imf = NULL; 
 		} else {} 
 
 		free(imf); 

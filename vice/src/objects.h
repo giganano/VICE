@@ -8,6 +8,7 @@ extern "C" {
 
 #include "objects/objects.h" 
 #include "objects/agb.h" 
+#include "objects/callback_1arg.h" 
 #include "objects/ccsne.h" 
 #include "objects/dataset.h" 
 #include "objects/channel.h" 

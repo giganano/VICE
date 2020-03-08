@@ -9,6 +9,13 @@ extern "C" {
 #include "../objects.h" 
 
 /* 
+ * Stellar explodability as a function of mass. This is a function passed 
+ * from the user which is assumed to always return a value between 0 and 1. 
+ */ 
+// typedef double (*CALLBACK_1ARG)(double x, void *user_func); 
+
+#if 0 
+/* 
  * Copy the explodability criteria that the user passed to 
  * yields.ccsne.fractional. 
  * 
@@ -23,6 +30,7 @@ extern "C" {
  */ 
 extern void set_explodability_criteria(double *masses, unsigned int n_masses, 
 	double *explodability); 
+#endif 
 
 /* 
  * Determine the value of the integrated IMF weighted by the mass yield of a 
@@ -42,7 +50,8 @@ extern void set_explodability_criteria(double *masses, unsigned int n_masses,
  * source: ccsne.c 
  */ 
 extern unsigned short IMFintegrated_fractional_yield_numerator(
-	INTEGRAL *intgrl, IMF_ *imf, char *file); 
+	INTEGRAL *intgrl, CALLBACK_1ARG *imf, CALLBACK_1ARG *explodability, 
+	char *file); 
 
 /* 
  * Determine the value of the integrated IMF weighted by stellar mass, up to 
@@ -61,7 +70,7 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
  * source: ccsne.c 
  */ 
 extern unsigned short IMFintegrated_fractional_yield_denominator(
-	INTEGRAL *intgrl, IMF_ *imf); 
+	INTEGRAL *intgrl, CALLBACK_1ARG *imf); 
 
 #ifdef __cplusplus 
 } 

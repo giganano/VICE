@@ -5,6 +5,7 @@
 
 #include <stdlib.h> 
 #include <string.h> 
+#include "../callback.h" 
 #include "../yields.h" 
 #include "../io.h" 
 #include "../imf.h" 
@@ -13,10 +14,10 @@
 #include "ccsne.h" 
 
 /* ---------- static function comment headers not duplicated here ---------- */
+static double interpolate_yield(double m); 
 static double y_cc_numerator(double m); 
 static double y_cc_denominator(double m); 
-static double interpolate_yield(double m); 
-static double get_explodability_fraction(double m); 
+// static double get_explodability_fraction(double m); 
 
 
 /* 
@@ -33,12 +34,14 @@ static double get_explodability_fraction(double m);
  */
 static double **GRID; 
 static unsigned int GRIDSIZE = 0; 
-static unsigned int N_MASSES = 0; 
-static double *MASSES; 
-static double *EXPLODABILITY; 
-static IMF_ *ADOPTED_IMF = NULL; 
+// static unsigned int N_MASSES = 0; 
+// static double *MASSES; 
+// static double *EXPLODABILITY; 
+static CALLBACK_1ARG *IMF = NULL; 
+static CALLBACK_1ARG *EXPLODABILITY = NULL; 
 
 
+#if 0 
 /* 
  * Copy the explodability criteria that the user passed to 
  * yields.ccsne.fractional. 
@@ -143,6 +146,33 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
 	N_MASSES = 0; 
 	return x; 
 
+} 
+#endif 
+
+
+extern unsigned short IMFintegrated_fractional_yield_numerator(
+	INTEGRAL *intgrl, CALLBACK_1ARG *imf, CALLBACK_1ARG *explodability, 
+	char *file) { 
+
+	/* 
+	 * Initialize these variables globally. This is such that the function 
+	 * which execute numerical quadrature can accept only one parameter - the 
+	 * stellar mass. 
+	 */ 
+	GRIDSIZE = line_count(file) - header_length(file); 
+	GRID = cc_yield_grid(file); 
+	IMF = imf; 
+	EXPLODABILITY = explodability; 
+
+	intgrl -> func = &y_cc_numerator; 
+	int x = quad(intgrl); 
+	free(GRID); 
+	intgrl -> func = NULL; 
+	GRIDSIZE = 0; 
+	IMF = NULL; 
+	EXPLODABILITY = NULL; 
+	return x; 
+
 }
 
 
@@ -162,6 +192,7 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
  * 
  * header: ccsne.h 
  */ 
+#if 0 
 extern unsigned short IMFintegrated_fractional_yield_denominator(
 	INTEGRAL *intgrl, IMF_ *imf) {
 	
@@ -173,6 +204,20 @@ extern unsigned short IMFintegrated_fractional_yield_denominator(
 	return x; 
 
 } 
+#endif 
+
+
+extern unsigned short IMFintegrated_fractional_yield_denominator(
+	INTEGRAL *intgrl, CALLBACK_1ARG *imf) { 
+
+	IMF = imf; 
+	intgrl -> func = &y_cc_denominator; 
+	int x = quad(intgrl); 
+	intgrl -> func = NULL; 
+	IMF = NULL; 
+	return x; 
+
+}
 
 
 /* 
@@ -189,16 +234,17 @@ extern unsigned short IMFintegrated_fractional_yield_denominator(
  */ 
 static double interpolate_yield(double m) {
 
-	if (m < CC_MIN_STELLAR_MASS) {
+	if (m < CC_MIN_STELLAR_MASS) { 
 		return 0; 
-	} else {
+	} else { 
 		unsigned int i; 
-		double explosion_fraction = get_explodability_fraction(m); 
+		// double explosion_fraction = get_explodability_fraction(m); 
 		for (i = 0; i < GRIDSIZE; i++) {
 			/* if the mass itself is on the grid, just return that yield */ 
 			if (m == GRID[i][0]) {
-				return explosion_fraction * GRID[i][1]; 
-			} else {
+				// return explosion_fraction * GRID[i][1]; 
+				return callback_1arg_evaluate(*EXPLODABILITY, m) * GRID[i][1]; 
+			} else { 
 				continue; 
 			} 
 		} 
@@ -208,8 +254,10 @@ static double interpolate_yield(double m) {
 		 */
 		for (i = 0; i < GRIDSIZE - 1; i++) {
 			if (GRID[i][0] < m && m < GRID[i + 1][0]) {
-				return explosion_fraction * interpolate(GRID[i][0], 
-					GRID[i + 1][0], GRID[i][1], GRID[i + 1][1], m); 
+				// return explosion_fraction * interpolate(GRID[i][0], 
+				return callback_1arg_evaluate(*EXPLODABILITY, m) * 
+					interpolate(GRID[i][0], 
+						GRID[i + 1][0], GRID[i][1], GRID[i + 1][1], m); 
 			} else {
 				continue; 
 			} 
@@ -220,7 +268,9 @@ static double interpolate_yield(double m) {
 		 * case, python will raise a warning, and we automatically extrapolate 
 		 * yield linearly from the bottom two elements on the grid. 
 		 */ 
-		return explosion_fraction * interpolate(GRID[GRIDSIZE - 2][0], 
+		// return explosion_fraction * interpolate(GRID[GRIDSIZE - 2][0], 
+		return callback_1arg_evaluate(*EXPLODABILITY, m) * interpolate(
+			GRID[GRIDSIZE - 2][0], 
 			GRID[GRIDSIZE - 1][0], GRID[GRIDSIZE - 2][1], 
 			GRID[GRIDSIZE - 1][1], m); 
 	}
@@ -241,7 +291,8 @@ static double interpolate_yield(double m) {
  */ 
 static double y_cc_numerator(double m) { 
 
-	return interpolate_yield(m) * imf_evaluate(*ADOPTED_IMF, m); 
+	// return interpolate_yield(m) * imf_evaluate(*ADOPTED_IMF, m); 
+	return interpolate_yield(m) * callback_1arg_evaluate(*IMF, m); 
 
 } 
 
@@ -259,7 +310,8 @@ static double y_cc_numerator(double m) {
  */ 
 static double y_cc_denominator(double m) {
 
-	return m * imf_evaluate(*ADOPTED_IMF, m); 
+	// return m * imf_evaluate(*ADOPTED_IMF, m); 
+	return m * callback_1arg_evaluate(*IMF, m); 
 
 } 
 

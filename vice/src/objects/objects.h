@@ -11,6 +11,22 @@ extern "C" {
 
 #include <stdio.h> /* for FILE object */ 
 
+/* 
+ * A type alias for a pointer to a function that accepts a double and a void 
+ * pointer as parameters. 
+ * 
+ * x will always be the value that is to be passed to the function, and 
+ * user_func a pointer to the function itself 
+ */ 
+// typedef double (*USER_FUNCTION_1ARG)(double, void *); 
+
+typedef struct callback_1arg { 
+
+	double (*callback)(double, void *); 
+	void *user_func; 
+
+} CALLBACK_1ARG; 
+
 typedef struct asymptotic_giant_branch_star_yield_grid { 
 
 	/* 
@@ -226,6 +242,7 @@ typedef struct initial_mass_function {
 	double m_lower; 
 	double m_upper; 
 	double *mass_distribution; 
+	CALLBACK_1ARG *custom_imf; 
 
 } IMF_; 
 

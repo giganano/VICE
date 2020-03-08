@@ -6,6 +6,7 @@
 #include <string.h> 
 #include <ctype.h> 
 #include <math.h> 
+#include "callback.h" 
 #include "imf.h" 
 #include "utils.h" 
 
@@ -106,7 +107,8 @@ extern double imf_evaluate(IMF_ imf, double m) {
 				 * return imf.mass_distribution[(unsigned long) ((
 				 * 	m - imf.m_lower) / IMF_STEPSIZE)]; 
 				 */ 
-				lower_bound_idx = (unsigned long) ( (m - imf.m_lower) / IMF_STEPSIZE ); 
+				lower_bound_idx = (unsigned long) ( (m - imf.m_lower) / 
+					IMF_STEPSIZE ); 
 				return interpolate( 
 					imf.m_lower + IMF_STEPSIZE * lower_bound_idx, 
 					imf.m_lower + IMF_STEPSIZE * (lower_bound_idx + 1l), 
@@ -114,6 +116,7 @@ extern double imf_evaluate(IMF_ imf, double m) {
 					imf.mass_distribution[lower_bound_idx + 1l], 
 					m 
 				); 
+				// return callback_1arg_evaluate(*imf.custom_imf, m); 
 
 			default: 	/* error handling */ 
 				return -1; 
