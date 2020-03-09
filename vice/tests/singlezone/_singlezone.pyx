@@ -6,6 +6,9 @@ __all__ = [
 ]
 from ..._globals import _DEFAULT_FUNC_ 
 from ...core.dataframe import base as dataframe 
+from ...yields import agb 
+from ...yields import ccsne 
+from ...yields import sneia 
 from .._test_utils import unittest 
 import os 
 from . cimport _singlezone 
@@ -620,19 +623,17 @@ cdef class singlezone_tester:
 	def _setup_elements(self): 
 		""" 
 		Tests the setup_elements function 
-
-
 		""" 
 		try: 
-			super().setup_elements( 
-				[self.dt * i for i in range(int(1 / self.dt) + 1)]
-			) 
+			super().setup_elements() 
 			x = True 
 			for i in range(self._sz[0].n_elements): 
-				if self._sz[0].elements[i][0].ccsne_yields[0].yield_ is NULL: 
+				if (self._sz[0].elements[i][0].ccsne_yields[0].constant_yield 
+					!= ccsne.settings[self.elements[i]]): 
 					x = False 
 				else: pass 
-				if self._sz[0].elements[i][0].sneia_yields[0].yield_ is NULL: 
+				if (self._sz[0].elements[i][0].sneia_yields[0].constant_yield 
+					!= sneia.settings[self.elements[i]]): 
 					x = False 
 				else: pass 
 				if self._sz[0].elements[i][0].agb_grid[0].grid is NULL: 

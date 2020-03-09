@@ -20,9 +20,12 @@ extern unsigned short test_agb_yield_grid_initialize(void) {
 
 	AGB_YIELD_GRID *test = agb_yield_grid_initialize(); 
 	unsigned short result = (test != NULL && 
+		(*test).custom_yield == NULL && 
 		(*test).grid == NULL && 
 		(*test).m == NULL && 
 		(*test).z == NULL && 
+		(*test).n_m == 0ul && 
+		(*test).n_z == 0ul && 
 		(*test).entrainment == 1 
 	); 
 	agb_yield_grid_free(test); 

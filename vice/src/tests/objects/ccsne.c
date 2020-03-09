@@ -21,8 +21,8 @@ extern unsigned short test_ccsne_yield_initialize(void) {
 
 	CCSNE_YIELD_SPECS *test = ccsne_yield_initialize(); 
 	unsigned short result = (test != NULL && 
-		(*test).yield_ == NULL && 
-		(*test).grid != NULL && 
+		(*test).functional_yield == NULL && 
+		(*test).constant_yield == 0 && 
 		(*test).entrainment == 1 
 	); 
 	ccsne_yield_free(test); 

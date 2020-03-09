@@ -19,31 +19,15 @@ extern SNEIA_YIELD_SPECS *sneia_yield_initialize(void) {
 
 	SNEIA_YIELD_SPECS *sneia_yields = (SNEIA_YIELD_SPECS *) malloc (sizeof(
 		SNEIA_YIELD_SPECS)); 
-	sneia_yields -> dtd = (char *) malloc (100 * sizeof(char)); 
+
+	/* some defaults to prevent errors */ 
+	sneia_yields -> functional_yield = NULL; 
+	sneia_yields -> constant_yield = 0; 
 	sneia_yields -> RIa = NULL; 
-
-	sneia_yields -> yield_ = NULL; 
-
-	/* 
-	 * The number of elements on the yield grid between IA_YIELD_GRID_MIN and 
-	 * IA_YIELD_GRID_MAX in steps of IA_YIELD_STEP (inclusve). 
-	 */ 
-	unsigned long num_grid_elements = (long) (
-		(IA_YIELD_GRID_MAX - IA_YIELD_GRID_MIN) / IA_YIELD_STEP 
-	) + 1l; 
-
-	/* Fill the grid starting at IA_YIELD_GRID_MIN in steps of IA_YIELD_STEP */ 
-	unsigned long i; 
-	sneia_yields -> grid = (double *) malloc (num_grid_elements * sizeof(double)); 
-	for (i = 0l; i < num_grid_elements; i++) {
-		sneia_yields -> grid[i] = IA_YIELD_GRID_MIN + i * IA_YIELD_STEP; 
-	} 
-
-	/* defaults to prevent errors */ 
-	sneia_yields -> entrainment = 1;  
+	sneia_yields -> dtd = (char *) malloc (100 * sizeof(char)); 
 	sneia_yields -> tau_ia = 1.5; 
 	sneia_yields -> t_d = 0.15; 
-	sneia_yields -> custom_yield = NULL; 
+	sneia_yields -> entrainment = 1; 
 
 	return sneia_yields; 
 
@@ -57,7 +41,12 @@ extern SNEIA_YIELD_SPECS *sneia_yield_initialize(void) {
  */ 
 extern void sneia_yield_free(SNEIA_YIELD_SPECS *sneia_yields) { 
 
-	if (sneia_yields != NULL) {
+	if (sneia_yields != NULL) { 
+
+		if ((*sneia_yields).functional_yield != NULL) {
+			callback_1arg_free(sneia_yields -> functional_yield); 
+			sneia_yields -> functional_yield = NULL; 
+		} else {} 
 
 		if ((*sneia_yields).RIa != NULL) {
 			free(sneia_yields -> RIa); 
@@ -67,16 +56,6 @@ extern void sneia_yield_free(SNEIA_YIELD_SPECS *sneia_yields) {
 		if ((*sneia_yields).dtd != NULL) {
 			free(sneia_yields -> dtd); 
 			sneia_yields -> dtd = NULL; 
-		} else {} 
-
-		if ((*sneia_yields).yield_ != NULL) {
-			free(sneia_yields -> yield_); 
-			sneia_yields -> yield_ = NULL; 
-		} else {} 
-
-		if ((*sneia_yields).grid != NULL) {
-			free(sneia_yields -> grid); 
-			sneia_yields -> grid = NULL; 
 		} else {} 
 
 		free(sneia_yields); 

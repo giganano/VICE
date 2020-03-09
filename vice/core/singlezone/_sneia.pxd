@@ -7,14 +7,13 @@ from ._callback_1arg cimport CALLBACK_1ARG
 
 cdef extern from "../../src/objects.h": 
 	ctypedef struct SNEIA_YIELD_SPECS: 
-		char *dtd 
-		double *yield_ 
-		double *grid 
+		CALLBACK_1ARG *functional_yield 
+		double constant_yield 
 		double *RIa 
+		char *dtd 
 		double tau_ia 
 		double t_d 
 		double entrainment 
-		CALLBACK_1ARG *custom_yield 
 
 
 cdef extern from "../../src/sneia.h": 

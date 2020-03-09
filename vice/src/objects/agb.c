@@ -20,11 +20,13 @@ extern AGB_YIELD_GRID *agb_yield_grid_initialize(void) {
 	AGB_YIELD_GRID *agb_grid = (AGB_YIELD_GRID *) malloc (sizeof(
 		AGB_YIELD_GRID)); 
 
+	agb_grid -> custom_yield = NULL; 
 	agb_grid -> grid = NULL; 
 	agb_grid -> m = NULL; 
 	agb_grid -> z = NULL; 
+	agb_grid -> n_m = 0ul; 
+	agb_grid -> n_z = 0ul; 
 	agb_grid -> entrainment = 1; 
-	agb_grid -> custom_yield = NULL; 
 
 	return agb_grid; 
 
@@ -39,6 +41,11 @@ extern AGB_YIELD_GRID *agb_yield_grid_initialize(void) {
 extern void agb_yield_grid_free(AGB_YIELD_GRID *agb_grid) { 
 
 	if (agb_grid != NULL) {
+
+		if ((*agb_grid).custom_yield != NULL) { 
+			callback_2arg_free(agb_grid -> custom_yield); 
+			agb_grid -> custom_yield = NULL; 
+		} else {} 
 
 		if ((*agb_grid).grid != NULL) {
 			free(agb_grid -> grid); 

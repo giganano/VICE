@@ -93,11 +93,11 @@ extern double get_cc_yield(ELEMENT e, double Z) {
 	); 
 	#endif 
 
-	printf("Z = %g\n", Z); 
-	printf("custom_yield = %p\n", (void *) (*e.ccsne_yields).custom_yield); 
-	printf("custom_yield(%g) = %g\n", Z, 
-		callback_1arg_evaluate(*(*e.ccsne_yields).custom_yield, Z)); 
-	return callback_1arg_evaluate(*(*e.ccsne_yields).custom_yield, Z); 
+	if ((*e.ccsne_yields).functional_yield != NULL) { 
+		return callback_1arg_evaluate(*(*e.ccsne_yields).functional_yield, Z); 
+	} else { 
+		return (*e.ccsne_yields).constant_yield; 
+	} 
 
 } 
 

@@ -358,19 +358,15 @@ extern double *singlezone_unretained(SINGLEZONE sz) {
 	unsigned short i; 
 	double *unretained = (double *) malloc (sz.n_elements * sizeof(double)); 
 	for (i = 0u; i < sz.n_elements; i++) {
-		printf("i = %d\n", i); 
 		unretained[i] = 0; 
-		printf("a\n"); 
 		unretained[i] += (
 			(1 - (*(*sz.elements[i]).agb_grid).entrainment) * 
 			m_AGB(sz, *sz.elements[i]) / sz.dt
 		); 
-		printf("b\n"); 
 		unretained[i] += (
 			(1 - (*(*sz.elements[i]).ccsne_yields).entrainment) * 
 			mdot_ccsne(sz, *sz.elements[i])
 		);
-		printf("c\n"); 
 		unretained[i] += (
 			(1 - (*(*sz.elements[i]).sneia_yields).entrainment) * 
 			mdot_sneia(sz, *sz.elements[i])

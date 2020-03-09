@@ -27,9 +27,6 @@ else:
 from libc.stdlib cimport malloc, free 
 from libc.stdio cimport printf 
 from .._cutils cimport map_pyfunc_over_array 
-# from .._cutils cimport setup_ccsne_yield 
-# from .._cutils cimport setup_sneia_yield 
-# from .._cutils cimport setup_agb_yield 
 from .._cutils cimport callback_1arg_from_pyfunc 
 from .._cutils cimport callback_2arg_from_pyfunc 
 from .._cutils cimport copy_2Dpylist 
@@ -190,26 +187,19 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	ssp[0].imf[0].m_upper = m_upper 
 	ssp[0].imf[0].m_lower = m_lower 
 
-	# Setup the yields 
-	# e[0].sneia_yields[0].yield_ = copy_pylist(map_sneia_yield(element.lower())) 
-	# e[0].ccsne_yields[0].yield_ = copy_pylist(map_ccsne_yield(element.lower())) 
-
+	# Setup the yields  
 	if callable(ccsne.settings[element]): 
-		ccfunc = ccsne.settings[element] 
+		e[0].ccsne_yields[0].functional_yield = callback_1arg_from_pyfunc(
+			ccsne.settings[element]
+		) 
 	else: 
-		def ccfunc(z): 
-			return ccsne.settings[element] 
-	e[0].ccsne_yields[0].custom_yield = callback_1arg_from_pyfunc(ccfunc) 
-
+		e[0].ccsne_yields[0].constant_yield = ccsne.settings[element] 
 	if callable(sneia.settings[element]): 
-		iafunc = sneia.settings[element] 
+		e[0].sneia_yields[0].functional_yield = callback_1arg_from_pyfunc(
+			sneia.settings[element]
+		) 
 	else: 
-		def iafunc(z): 
-			return sneia.settings[element] 
-	e[0].sneia_yields[0].custom_yield = callback_1arg_from_pyfunc(iafunc) 
-
-	# e[0].ccsne_yields[0].custom_yield = setup_ccsne_yield(element.lower()) 
-	# e[0].sneia_yields[0].custom_yield = setup_sneia_yield(element.lower()) 
+		e[0].sneia_yields[0].constant_yield = sneia.settings[element] 
 
 	# Take into account deprecation of the keyword arg "agb_model" 
 	def builtin_agb_grid(model): 

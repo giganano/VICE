@@ -51,6 +51,8 @@ typedef struct asymptotic_giant_branch_star_yield_grid {
 	 * This struct holds the yield grid from asymptotic giant branch stars 
 	 * for a given element. 
 	 * 
+	 * custom_yield: A callback object for a function of mass and metallicity 
+	 * 		Z that the user constructed in python. 
 	 * grid: The grid itself, indexed by grid[mass_index][z_index] 
 	 * m: The masses on which the grid is sampled 
 	 * z: The metallicities on which the grid is sampled 
@@ -58,13 +60,13 @@ typedef struct asymptotic_giant_branch_star_yield_grid {
 	 * n_z: The number of metallicities on which the grid is sampled 
 	 */ 
 
+	CALLBACK_2ARG *custom_yield; 
 	double **grid; 
 	double *m; 
 	double *z; 
 	unsigned long n_m; 
 	unsigned long n_z; 
 	double entrainment; 
-	CALLBACK_2ARG *custom_yield; 
 
 } AGB_YIELD_GRID; 
 
@@ -75,16 +77,16 @@ typedef struct ccsne_yield_specs {
 	 * This struct contains information on a given elements yields from core 
 	 * collapse supernovae (CCSNe). 
 	 * 
-	 * yield: The IMF-integrated fractional yields themselves 
-	 * grid: The grid of metallicity on which they're sampled. This is defined 
-	 * 		by CC_YIELD_STEP, CC_YIELD_MIN, and CC_YIELD_MAX and is initialized 
-	 *  	automatically in ccsne_yield_initialize. 
+	 * functional_yield: A callback object for a functional yield. Will be 
+	 * 		NULL in cases that the user has not specified a fuction of Z 
+	 * constant_yield: A yield which does not vary with metallicity Z 
+	 * entrainment: The fraction of the nucleosynthetic yield that is 
+	 * 		captured and retained by the interstellar medium 
 	 */ 
 
-	double *yield_; 
-	double *grid; 
+	CALLBACK_1ARG *functional_yield; 
+	double constant_yield; 
 	double entrainment; 
-	CALLBACK_1ARG *custom_yield; 
 
 } CCSNE_YIELD_SPECS; 
 
@@ -95,25 +97,26 @@ typedef struct sneia_yield_specs {
 	 * This struct holds the yield specifications for type Ia supernovae 
 	 * (SNe Ia). 
 	 * 
-	 * yield: The IMF-integrated yields themselves 
-	 * grid: The grid of metallicity on which they're sampled. This is defined 
-	 * 		by IA_YIELD_STEP, IA_YIELD_MIN, and IA_YIELD_MAX and is initialized 
-	 *  	automatically in sneia_yield_initialize. 
+	 * functional_yield: A callback object for a functional yield. Will be 
+	 * 		NULL in cases that the user has not specified a fuction of Z 
+	 * constant_yield: A yield which does not vary with metallicity Z 
 	 * RIa: The normed Ia rate itself 
 	 * dtd: A string denoting a built-in Ia delay-time distribution, if adopted 
 	 * 		by the user 
 	 * tau_ia: The e-folding timescale of SNe Ia, when dtd == "exp".  
 	 * t_d: The minimum delay time on SNe Ia in Gyr. 
+	 * entrainment: The fraction of the nucleosynthetic yield that is 
+	 * 		captured and retained by the interstellar medium 
 	 */ 
 
-	char *dtd; 
-	double *yield_; 
-	double *grid; 
+	CALLBACK_1ARG *functional_yield; 
+	double constant_yield; 
 	double *RIa; 
-	double entrainment; 
+	char *dtd; 
 	double tau_ia; 
 	double t_d; 
-	CALLBACK_1ARG *custom_yield; 
+	double entrainment; 
+
 
 } SNEIA_YIELD_SPECS; 
 

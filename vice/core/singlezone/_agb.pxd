@@ -6,13 +6,13 @@ from ._callback_2arg cimport CALLBACK_2ARG
 
 cdef extern from "../../src/objects.h": 
 	ctypedef struct AGB_YIELD_GRID: 
+		CALLBACK_2ARG *custom_yield 
 		double **grid
 		double *m
 		double *z
 		unsigned long n_m
 		unsigned long n_z 
 		double entrainment 
-		CALLBACK_2ARG *custom_yield 
 
 
 cdef extern from "../../src/agb.h": 
