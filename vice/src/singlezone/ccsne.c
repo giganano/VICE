@@ -5,6 +5,7 @@
 
 #include <stdlib.h> 
 #include "../singlezone.h" 
+#include "../callback.h" 
 #include "../ccsne.h" 
 #include "../utils.h" 
 #include "ccsne.h" 
@@ -55,6 +56,7 @@ extern double mdot_ccsne(SINGLEZONE sz, ELEMENT e) {
  */ 
 extern double get_cc_yield(ELEMENT e, double Z) { 
 
+	#if 0 
 	long lower_bound_idx; 
 	if (Z < CC_YIELD_GRID_MIN) {
 		/* 
@@ -89,6 +91,13 @@ extern double get_cc_yield(ELEMENT e, double Z) {
 		(*e.ccsne_yields).yield_[lower_bound_idx + 1l], 
 		Z
 	); 
+	#endif 
+
+	printf("Z = %g\n", Z); 
+	printf("custom_yield = %p\n", (void *) (*e.ccsne_yields).custom_yield); 
+	printf("custom_yield(%g) = %g\n", Z, 
+		callback_1arg_evaluate(*(*e.ccsne_yields).custom_yield, Z)); 
+	return callback_1arg_evaluate(*(*e.ccsne_yields).custom_yield, Z); 
 
 } 
 

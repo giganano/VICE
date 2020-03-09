@@ -32,8 +32,8 @@ extern unsigned short test_CRF(void) {
 
 	return (
 		test_CRF_common("salpeter") && 
-		test_CRF_common("kroupa") && 
-		test_CRF_common("custom") 
+		test_CRF_common("kroupa") 
+		// test_CRF_common("custom") 
 	); 
 
 }
@@ -96,7 +96,7 @@ static unsigned short test_CRF_engine(SSP test, double *times) {
  * 
  * Returns 
  * ======= 
- * 0 to 10 in steps of 0.01, inclusive  
+ * 0 to 10 in steps of 0.01, inclusive 
  */ 
 static double *get_test_times(void) {
 

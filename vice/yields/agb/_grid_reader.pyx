@@ -196,4 +196,3 @@ def find_yield_file(element, study):
 		return "%syields/agb/%s/%s.dat" % (_DIRECTORY_, study.lower(), 
 			element.lower()) 
 
-

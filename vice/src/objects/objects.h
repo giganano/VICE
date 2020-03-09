@@ -11,21 +11,39 @@ extern "C" {
 
 #include <stdio.h> /* for FILE object */ 
 
-/* 
- * A type alias for a pointer to a function that accepts a double and a void 
- * pointer as parameters. 
- * 
- * x will always be the value that is to be passed to the function, and 
- * user_func a pointer to the function itself 
- */ 
-// typedef double (*USER_FUNCTION_1ARG)(double, void *); 
 
 typedef struct callback_1arg { 
+
+	/* 
+	 * An object whose sole purpose is to call a python function via cython. 
+	 * 
+	 * callback: A function pointer to a cdef double function which will return 
+	 * 		the value returned by the python function itself 
+	 * user_func: A void pointer to the PyObject corresponding to the user's 
+	 * 		function defined in python 
+	 */ 
 
 	double (*callback)(double, void *); 
 	void *user_func; 
 
 } CALLBACK_1ARG; 
+
+
+typedef struct callback_2arg {
+
+	/* 
+	 * An object whose sole purpose is to call a python function via cython. 
+	 * 
+	 * callback: A function pointer to a cdef double function which will return  
+	 * 		the value returned by the python function itself 
+	 * user_func: A void pointer to the PyObject corresponding to the user's 
+	 * 		function defined in python 
+	 */ 
+	double (*callback)(double, double, void *); 
+	void *user_func; 
+
+} CALLBACK_2ARG; 
+
 
 typedef struct asymptotic_giant_branch_star_yield_grid { 
 
@@ -46,8 +64,10 @@ typedef struct asymptotic_giant_branch_star_yield_grid {
 	unsigned long n_m; 
 	unsigned long n_z; 
 	double entrainment; 
+	CALLBACK_2ARG *custom_yield; 
 
 } AGB_YIELD_GRID; 
+
 
 typedef struct ccsne_yield_specs {
 
@@ -64,6 +84,7 @@ typedef struct ccsne_yield_specs {
 	double *yield_; 
 	double *grid; 
 	double entrainment; 
+	CALLBACK_1ARG *custom_yield; 
 
 } CCSNE_YIELD_SPECS; 
 
@@ -92,8 +113,10 @@ typedef struct sneia_yield_specs {
 	double entrainment; 
 	double tau_ia; 
 	double t_d; 
+	CALLBACK_1ARG *custom_yield; 
 
 } SNEIA_YIELD_SPECS; 
+
 
 typedef struct arbitrary_channel {
 
@@ -115,6 +138,7 @@ typedef struct arbitrary_channel {
 	double entrainment; 
 
 } CHANNEL; 
+
 
 typedef struct element { 
 
@@ -145,6 +169,7 @@ typedef struct element {
 	double solar; 
 
 } ELEMENT; 
+
 
 typedef struct interstellar_medium { 
 
@@ -192,6 +217,7 @@ typedef struct interstellar_medium {
 
 } ISM; 
 
+
 typedef struct metallicity_distribution_function {
 
 	/* 
@@ -214,6 +240,7 @@ typedef struct metallicity_distribution_function {
 	unsigned long n_bins; 
 
 } MDF; 
+
 
 typedef struct initial_mass_function {
 
@@ -246,6 +273,7 @@ typedef struct initial_mass_function {
 
 } IMF_; 
 
+
 typedef struct single_stellar_population {
 
 	/* 
@@ -273,6 +301,7 @@ typedef struct single_stellar_population {
 	int continuous; 
 
 } SSP; 
+
 
 typedef struct singlezone { 
 
@@ -318,6 +347,7 @@ typedef struct singlezone {
 
 } SINGLEZONE; 
 
+
 typedef struct tracer {
 
 	/* 
@@ -343,6 +373,7 @@ typedef struct tracer {
 
 } TRACER; 
 
+
 typedef struct migration {
 
 	/* 
@@ -364,6 +395,7 @@ typedef struct migration {
 
 } MIGRATION; 
 
+
 typedef struct multizone { 
 
 	/* 
@@ -383,6 +415,7 @@ typedef struct multizone {
 	unsigned short simple; 
 
 } MULTIZONE; 
+
 
 typedef struct integral { 
 
@@ -415,6 +448,7 @@ typedef struct integral {
 
 } INTEGRAL; 
 
+
 typedef struct fromfile {
 
 	/* 
@@ -436,6 +470,7 @@ typedef struct fromfile {
 
 } FROMFILE; 
 
+
 typedef struct dataset {
 
 	double **data; 
@@ -447,6 +482,7 @@ typedef struct dataset {
 	unsigned long n_points; 
 
 } DATASET; 
+
 
 #ifdef __cplusplus 
 } 

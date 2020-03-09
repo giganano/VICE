@@ -40,6 +40,7 @@ extern CCSNE_YIELD_SPECS *ccsne_yield_initialize(void) {
 	} 
 
 	ccsne_yield -> entrainment = 1; 
+	ccsne_yield -> custom_yield = NULL; 
 
 	return ccsne_yield; 
 

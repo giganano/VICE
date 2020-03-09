@@ -5,6 +5,7 @@
 
 #include <stdlib.h> 
 #include "../singlezone.h" 
+#include "../callback.h" 
 #include "../agb.h" 
 #include "../ssp.h" 
 #include "../utils.h" 
@@ -82,6 +83,15 @@ extern double get_AGB_yield(ELEMENT e, double Z_stars, double turnoff_mass) {
 		 * in agb.h. 
 		 */ 
 		return 0; 
+
+	} else if ((*e.agb_grid).custom_yield != NULL) { 
+
+		/* 
+		 * User-specified AGB star yield as a function of stellar mass and 
+		 * metallicity 
+		 */ 
+		return callback_2arg_evaluate(*(*e.agb_grid).custom_yield, 
+			turnoff_mass, Z_stars); 
 
 	} else { 
 

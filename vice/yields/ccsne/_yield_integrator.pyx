@@ -33,16 +33,14 @@ else:
 
 # C Functions 
 from libc.stdlib cimport free 
+from ...core.ssp._imf cimport imf_object 
 from ...core._cutils cimport copy_pylist 
+from ...core._cutils cimport callback_1arg_from_pyfunc 
 from ._yield_integrator cimport CALLBACK_1ARG 
 from ._yield_integrator cimport callback_1arg_initialize 
 from ._yield_integrator cimport callback_1arg_free 
 from ._yield_integrator cimport INTEGRAL 
 from . cimport _yield_integrator 
-
-
-cdef double callback_1arg(double x, void *f): 
-	return <double> (<object> f)(x) 
 
 
 def integrate(element, study = "LC18", MoverH = 0, rotation = 0, 
@@ -235,91 +233,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		numeric_check(tolerance, "tolerance") 
 		numeric_check(Nmin, "Nmin") 
 		numeric_check(Nmax, "Nmax") 
-
-
-	""" 
-	Mass ranges must be either an empty array-like object or a series of 
-	2-element array-like objects containing numerical values. The explodability 
-	criteria must then have a number between 0 and 1 for each of those mass 
-	ranges. 
-	""" 
-	cdef CALLBACK_1ARG *explodability_cb = callback_1arg_initialize() 
-	explodability_cb[0].callback = &callback_1arg 
-	if explodability is None: 
-		# assume everything explodes 
-		uniform_explodability = lambda m: 1.0 
-		explodability_cb[0].user_func = <void *> uniform_explodability 
-	elif callable(explodability): 
-		if _pyutils.arg_count(explodability) == 1: 
-			# set the user function 
-			if isinstance(explodability(1), numbers.Number): 
-				explodability_cb[0].user_func = <void *> explodability 
-			else: 
-				raise ValueError("""Explodability function must accept a \
-numerical value as its only parameter.""") 
-			
-		else: 
-			raise ValueError("""Explodability function must accept exactly \
-one parameter as a positional argument.""") 
-	else: 
-		raise TypeError("""Explodability must be either a numerical value or a 
-callable object. Got: %s""" % (type(explodability)))  
-
-	cdef CALLBACK_1ARG *imf_cb = callback_1arg_initialize() 
-	imf_cb[0].callback = &callback_1arg 
-	if isinstance(IMF, strcomp): 
-		# Assume a built-in IMF 
-		if IMF.lower() == "kroupa": 
-			imf_cb[0].user_func = <void *> kroupa 
-		elif IMF.lower() == "salpeter": 
-			imf_cb[0].user_func = <void *> salpeter 
-		else: 
-			raise ValueError("Unrecognized IMF: %s" % (IMF)) 
-	elif callable(IMF): 
-		if _pyutils.arg_count(IMF) == 1: 
-			# Set the user's IMF 
-			if isinstance(IMF(1), numbers.Number): 
-				imf_cb[0].user_func = <void *> IMF 
-			else: 
-				raise ValueError("""Custom IMF must accept a numerical value \
-as its only parameter.""") 
-		else: 
-			raise ValueError("""Custom IMF must accept exactly one parameter \
-as a positional argument.""") 
-	else: 
-		raise TypeError("""IMF must be either a string or a callable object. \
-Got: %s""" % (type(IMF))) 
 		
-# 	mass_ranges = _pyutils.copy_array_like_object(mass_ranges) 
-# 	explodability = _pyutils.copy_array_like_object(explodability) 
-# 	if len(explodability) == len(mass_ranges): 
-# 		for i in explodability: 
-# 			if not isinstance(i, numbers.Number): 
-# 				raise ValueError("""Explodability fraction must be between 0 \
-# and 1. Got: %g""" % (i)) 
-# 			else: 
-# 				pass 
-# 		for i in mass_ranges: 
-# 			i = _pyutils.copy_array_like_object(i) 
-# 			if len(i) == 2: 
-# 				for j in i: 
-# 					if not isinstance(j, numbers.Number): 
-# 						raise TypeError("""Stellar mass for explodability \
-# prescription must be a numerical value. Got: %s""" % (type(j))) 
-# 					elif j < 0: 
-# 						raise ValueError("""Stellar mass for explodability \
-# prescription must be a non-negative. Got: %s""" % (type(j))) 
-# 					else: 
-# 						j = float(j) 
-# 			else: 
-# 				raise ValueError("""Stellar explodability mass ranges must be \
-# only 2-element array-like objects.""") 
-# 	else: 
-# 		raise ValueError("""Keyword arg 'explodability' must be of the same \
-# length as the keyword arg 'mass_range'. explodability length: %d; mass_ranges \
-# length: %d""" % (len(explodability), len(mass_ranges))) 
-
-	# The name of the directory holding yield files at this metallicity 
 	if MoverH % 1 == 0: 
 		MoverHstr = "%d" % (MoverH) 
 	else: 
@@ -351,41 +265,27 @@ smaller than maximum number of bins.""")
 		pass 
 
 	""" 
-	Set the explosion criteria in C, after making sure that none of the mass 
-	ranges overlap. 
+	Explodability is either None or a callable function with one parameter. 
 	""" 
-# 	if len(mass_ranges) > 0: 
-# 		_masses = (2 * len(mass_ranges)) * [0.] 
-# 		for i in range(len(mass_ranges)): 
-# 			if 0 <= explodability[i] <= 1:
-# 				for j in range(2): 
-# 					_masses[2 * i + j] = mass_ranges[i][j] 
-# 			else: 
-# 				raise ValueError("""All explosion fractions must be between 0 \
-# and 1. Got: %g""" % (explodability[i]))
-# 		# check for overlap (there's too much information to calculate a yield) 
-# 		if _masses != sorted(_masses): 
-# 			raise ValueError("Explodability mass ranges overlap.") 
-# 		else: 
-# 			pass 
-# 		if _masses[-1] > 25 and study.upper() == "LC18": 
-# 			warnings.warn("""CCSNe progenitors above an initial mass of 25 \
-# Msun did not explode in the %s study, and instead they report only the yields \
-# from the stellar winds. The explodability criteria are thus \
-# overspecified.""" % (_NAMES_[study.upper()]), ScienceWarning) 
-# 		else: 
-# 			pass 
-# 	else: 
-# 		_masses = [m_lower, m_upper] 
-# 		explodability = [1] 
+	cdef CALLBACK_1ARG *explodability_cb 
+	if explodability is None: 
+		# assume everything explodes 
+		def uniform_explodability(m): 
+			return 1.0 
+		# uniform_explodability = lambda m: 1.0 
+		explodability_cb = callback_1arg_from_pyfunc(uniform_explodability)  
+	elif callable(explodability): 
+		explodability_cb = callback_1arg_from_pyfunc(explodability) 
+	else: 
+		raise TypeError("""Explodabiilty must be either a numerical value or a \
+callable object. Got: %s""" % (type(explodability))) 
 
-	# Send the explodability criteria to ccsne.c, the rest is handled there. 
-	# cdef double *c_masses = copy_pylist(_masses) 
-	# cdef double *c_explodability = copy_pylist(explodability) 
-	# _yield_integrator.set_explodability_criteria(c_masses, len(_masses), 
-	# 	c_explodability) 
-	# free(c_masses) 
-	# free(c_explodability) 
+	""" 
+	The IMF is either None or a callable function with one parameter, like the 
+	stellar explodability. However, it must be placed in an IMF_ object, 
+	unlike the stellar explodability prescription. 
+	""" 
+	cdef IMF_ *imf_obj = imf_object(IMF, m_lower, m_upper) 
 
 	"""
 	Science Warnings 
@@ -455,7 +355,6 @@ own discretion by modifying their CCSN yield settings directly.""" % (
 	else: 
 		pass 
 
-	# cdef IMF_ *imf_obj = imf_object(IMF, m_lower, m_upper) 
 
 	# Compute the yield 
 	cdef INTEGRAL *num = _yield_integrator.integral_initialize() 
@@ -467,7 +366,7 @@ own discretion by modifying their CCSN yield settings directly.""" % (
 	num[0].Nmin = <unsigned long> Nmin 
 	try: 
 		x = _yield_integrator.IMFintegrated_fractional_yield_numerator(num, 
-			imf_cb, explodability_cb, filename.encode("latin-1")) 
+			imf_obj, explodability_cb, filename.encode("latin-1")) 
 		if x == 1: 
 			warnings.warn("""Yield-weighted IMF integration did not converge. \
 Estimated fractional error: %.2e""" % (num[0].error), ScienceWarning) 
@@ -491,8 +390,7 @@ Estimated fractional error: %.2e""" % (num[0].error), ScienceWarning)
 	try: 
 		x = _yield_integrator.IMFintegrated_fractional_yield_denominator(den, 
 			# IMF.lower().encode("latin-1")) 
-			# imf_obj) 
-			imf_cb) 
+			imf_obj)  
 		if x == 1: 
 			warnings.warn("""Mass-weighted IMF integration did not converge. \
 Estimated fractional error: %.2e""" % (den[0].error), ScienceWarning) 
@@ -503,8 +401,8 @@ Estimated fractional error: %.2e""" % (den[0].error), ScienceWarning)
 	finally: 
 		denominator = [den[0].result, den[0].error, den[0].iters] 
 		_yield_integrator.integral_free(den) 
-		# _yield_integrator.imf_free(imf_obj) 
-		callback_1arg_free(imf_cb) 
+		_yield_integrator.imf_free(imf_obj) 
+		# callback_1arg_free(imf_cb) 
 
 	y = numerator[0] / denominator[0] 
 	errnum = numerator[1] * numerator[0] 

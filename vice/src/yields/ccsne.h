@@ -50,7 +50,7 @@ extern void set_explodability_criteria(double *masses, unsigned int n_masses,
  * source: ccsne.c 
  */ 
 extern unsigned short IMFintegrated_fractional_yield_numerator(
-	INTEGRAL *intgrl, CALLBACK_1ARG *imf, CALLBACK_1ARG *explodability, 
+	INTEGRAL *intgrl, IMF_ *imf, CALLBACK_1ARG *explodability, 
 	char *file); 
 
 /* 
@@ -70,7 +70,7 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
  * source: ccsne.c 
  */ 
 extern unsigned short IMFintegrated_fractional_yield_denominator(
-	INTEGRAL *intgrl, CALLBACK_1ARG *imf); 
+	INTEGRAL *intgrl, IMF_ *imf); 
 
 #ifdef __cplusplus 
 } 

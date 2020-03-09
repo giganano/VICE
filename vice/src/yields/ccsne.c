@@ -37,7 +37,7 @@ static unsigned int GRIDSIZE = 0;
 // static unsigned int N_MASSES = 0; 
 // static double *MASSES; 
 // static double *EXPLODABILITY; 
-static CALLBACK_1ARG *IMF = NULL; 
+static IMF_ *IMF = NULL; 
 static CALLBACK_1ARG *EXPLODABILITY = NULL; 
 
 
@@ -151,7 +151,7 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
 
 
 extern unsigned short IMFintegrated_fractional_yield_numerator(
-	INTEGRAL *intgrl, CALLBACK_1ARG *imf, CALLBACK_1ARG *explodability, 
+	INTEGRAL *intgrl, IMF_ *imf, CALLBACK_1ARG *explodability, 
 	char *file) { 
 
 	/* 
@@ -208,7 +208,7 @@ extern unsigned short IMFintegrated_fractional_yield_denominator(
 
 
 extern unsigned short IMFintegrated_fractional_yield_denominator(
-	INTEGRAL *intgrl, CALLBACK_1ARG *imf) { 
+	INTEGRAL *intgrl, IMF_ *imf) { 
 
 	IMF = imf; 
 	intgrl -> func = &y_cc_denominator; 
@@ -258,7 +258,7 @@ static double interpolate_yield(double m) {
 				return callback_1arg_evaluate(*EXPLODABILITY, m) * 
 					interpolate(GRID[i][0], 
 						GRID[i + 1][0], GRID[i][1], GRID[i + 1][1], m); 
-			} else {
+			} else { 
 				continue; 
 			} 
 		} 
@@ -292,7 +292,7 @@ static double interpolate_yield(double m) {
 static double y_cc_numerator(double m) { 
 
 	// return interpolate_yield(m) * imf_evaluate(*ADOPTED_IMF, m); 
-	return interpolate_yield(m) * callback_1arg_evaluate(*IMF, m); 
+	return interpolate_yield(m) * imf_evaluate(*IMF, m); 
 
 } 
 
@@ -311,7 +311,7 @@ static double y_cc_numerator(double m) {
 static double y_cc_denominator(double m) {
 
 	// return m * imf_evaluate(*ADOPTED_IMF, m); 
-	return m * callback_1arg_evaluate(*IMF, m); 
+	return m * imf_evaluate(*IMF, m); 
 
 } 
 

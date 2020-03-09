@@ -1,5 +1,9 @@
 # cython: language_level = 3, boundscheck = False
 
+from __future__ import absolute_import 
+from ._callback_2arg cimport CALLBACK_2ARG 
+
+
 cdef extern from "../../src/objects.h": 
 	ctypedef struct AGB_YIELD_GRID: 
 		double **grid
@@ -8,6 +12,8 @@ cdef extern from "../../src/objects.h":
 		unsigned long n_m
 		unsigned long n_z 
 		double entrainment 
+		CALLBACK_2ARG *custom_yield 
+
 
 cdef extern from "../../src/agb.h": 
 	AGB_YIELD_GRID *agb_yield_grid_initialize() 

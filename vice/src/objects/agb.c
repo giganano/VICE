@@ -24,6 +24,7 @@ extern AGB_YIELD_GRID *agb_yield_grid_initialize(void) {
 	agb_grid -> m = NULL; 
 	agb_grid -> z = NULL; 
 	agb_grid -> entrainment = 1; 
+	agb_grid -> custom_yield = NULL; 
 
 	return agb_grid; 
 

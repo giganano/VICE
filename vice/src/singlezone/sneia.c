@@ -4,8 +4,10 @@
  */ 
 
 #include <stdlib.h> 
+#include <stdio.h> 
 #include <math.h> 
 #include "../singlezone.h" 
+#include "../callback.h" 
 #include "../sneia.h" 
 #include "../utils.h" 
 #include "sneia.h" 
@@ -66,6 +68,7 @@ extern double mdot_sneia(SINGLEZONE sz, ELEMENT e) {
  */ 
 extern double get_ia_yield(ELEMENT e, double Z) {
 
+	#if 0 
 	long lower_bound_idx; 
 	if (Z < IA_YIELD_GRID_MIN) { 
 		/* 
@@ -99,6 +102,9 @@ extern double get_ia_yield(ELEMENT e, double Z) {
 		(*e.sneia_yields).yield_[lower_bound_idx + 1l], 
 		Z 
 	); 
+	#endif 
+
+	return callback_1arg_evaluate(*(*e.sneia_yields).custom_yield, Z); 
 
 } 
 

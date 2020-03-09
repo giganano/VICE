@@ -2,6 +2,8 @@
 
 from __future__ import absolute_import 
 from ._element cimport ELEMENT 
+from ._callback_1arg cimport CALLBACK_1ARG 
+
 
 cdef extern from "../../src/objects.h": 
 	ctypedef struct SNEIA_YIELD_SPECS: 
@@ -12,6 +14,8 @@ cdef extern from "../../src/objects.h":
 		double tau_ia 
 		double t_d 
 		double entrainment 
+		CALLBACK_1ARG *custom_yield 
+
 
 cdef extern from "../../src/sneia.h": 
 	cdef double PLAW_DTD_INDEX 

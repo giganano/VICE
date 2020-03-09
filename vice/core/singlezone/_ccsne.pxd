@@ -1,10 +1,16 @@
 # cython: language_level = 3, boundscheck = False 
 
+from __future__ import absolute_import 
+from ._callback_1arg cimport CALLBACK_1ARG 
+
+
 cdef extern from "../../src/ccsne.h": 
 	ctypedef struct CCSNE_YIELD_SPECS: 
 		double *yield_ 
 		double *grid 
 		double entrainment 
+		CALLBACK_1ARG *custom_yield 
+
 
 cdef extern from "../../src/ccsne.h": 
 	double CC_YIELD_STEP 

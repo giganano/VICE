@@ -1,8 +1,9 @@
 # cython: language_level = 3, boundscheck = False
 
 from __future__ import absolute_import 
-__all__ = ["kroupa", "salpeter"] 
-import numbers 
+from ..._globals import _RECOGNIZED_IMFS_ 
+__all__ = list(_RECOGNIZED_IMFS_) 
+import numbers as numbers 
 from . cimport _imf 
 
 

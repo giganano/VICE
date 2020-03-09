@@ -88,7 +88,7 @@ extern double imf_evaluate(IMF_ imf, double m) {
 	if (imf.m_lower <= m && m <= imf.m_upper) { 
 
 		/* check for a built-in IMF */ 
-		unsigned long lower_bound_idx; 
+		// unsigned long lower_bound_idx; 
 		switch(checksum(imf.spec)) { 
 
 			case SALPETER: 
@@ -107,16 +107,16 @@ extern double imf_evaluate(IMF_ imf, double m) {
 				 * return imf.mass_distribution[(unsigned long) ((
 				 * 	m - imf.m_lower) / IMF_STEPSIZE)]; 
 				 */ 
-				lower_bound_idx = (unsigned long) ( (m - imf.m_lower) / 
-					IMF_STEPSIZE ); 
-				return interpolate( 
-					imf.m_lower + IMF_STEPSIZE * lower_bound_idx, 
-					imf.m_lower + IMF_STEPSIZE * (lower_bound_idx + 1l), 
-					imf.mass_distribution[lower_bound_idx], 
-					imf.mass_distribution[lower_bound_idx + 1l], 
-					m 
-				); 
-				// return callback_1arg_evaluate(*imf.custom_imf, m); 
+				// lower_bound_idx = (unsigned long) ( (m - imf.m_lower) / 
+				// 	IMF_STEPSIZE ); 
+				// return interpolate( 
+				// 	imf.m_lower + IMF_STEPSIZE * lower_bound_idx, 
+				// 	imf.m_lower + IMF_STEPSIZE * (lower_bound_idx + 1l), 
+				// 	imf.mass_distribution[lower_bound_idx], 
+				// 	imf.mass_distribution[lower_bound_idx + 1l], 
+				// 	m 
+				// ); 
+				return callback_1arg_evaluate(*imf.custom_imf, m); 
 
 			default: 	/* error handling */ 
 				return -1; 

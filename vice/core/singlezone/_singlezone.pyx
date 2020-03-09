@@ -63,9 +63,11 @@ from . cimport _agb
 from .._cutils cimport set_string 
 from .._cutils cimport copy_pylist 
 from .._cutils cimport setup_imf 
-from .._cutils cimport map_ccsne_yield 
-from .._cutils cimport map_sneia_yield 
-from .._cutils cimport map_agb_yield 
+# from .._cutils cimport setup_ccsne_yield 
+# from .._cutils cimport setup_sneia_yield 
+# from .._cutils cimport setup_agb_yield 
+from .._cutils cimport callback_1arg_from_pyfunc 
+from .._cutils cimport callback_2arg_from_pyfunc 
 from .._cutils cimport copy_2Dpylist 
 from . cimport _element 
 from . cimport _io 
@@ -90,6 +92,25 @@ readability, the setter functions of the C version of the wrapper have brief
 notes on the physical interpretation of each attribute as well as the allowed 
 types and values. 
 """ 
+
+
+# class constant_yield: 
+
+# 	""" 
+# 	A callable object for a constant yield setting. 
+# 	""" 
+
+# 	def __init__(self, yield_): 
+# 		self._yield = yield_ 
+
+# 	def __call__(self, z): 
+# 		return self._yield 
+
+def constant_yield_func_generator(yield_): 
+	def yieldfunc(z): 
+		return yield_ 
+	return yieldfunc 
+
 
 #--------------------------- SINGLEZONE C VERSION ---------------------------# 
 cdef class c_singlezone: 
@@ -1640,34 +1661,92 @@ be lost.\nOutput directory: %s.vice\nOverwrite? (y | n) """ % (self.name))
 				self.entrainment.ccsne[self.elements[i]]) 
 			self._sz[0].elements[i][0].sneia_yields[0].entrainment = (
 				self.entrainment.sneia[self.elements[i]]) 
+
+			if callable(ccsne.settings[self.elements[i]]): 
+				self._sz[0].elements[i][0].ccsne_yields[0].custom_yield = ( 
+					callback_1arg_from_pyfunc(
+						ccsne.settings[self.elements[i]]
+					) 
+				) 
+			else: 
+				self._sz[0].elements[i][0].ccsne_yields[0].custom_yield = ( 
+					callback_1arg_from_pyfunc(
+						constant_yield_func_generator(
+							ccsne.settings[self.elements[i]]
+						) 
+					)
+				) 
+
+			if callable(sneia.settings[self.elements[i]]): 
+				self._sz[0].elements[i][0].sneia_yields[0].custom_yield = ( 
+					callback_1arg_from_pyfunc(
+						sneia.settings[self.elements[i]] 
+					)
+				) 
+			else: 
+				self._sz[0].elements[i][0].sneia_yields[0].custom_yield = (
+					callback_1arg_from_pyfunc( 
+						constant_yield_func_generator(
+							sneia.settings[self.elements[i]]
+						) 
+					) 
+				) 
+
+			# if callable(ccsne.settings[self.elements[i]]): 
+			# 	ccfunc = ccsne.settings[self.elements[i]] 
+			# else: 
+			# 	def ccfunc(z): 
+			# 		return ccsne.settings[self.elements[i]] 
+			# self._sz[0].elements[i][0].ccsne_yields[0].custom_yield = (
+			# 	callback_1arg_from_pyfunc(ccfunc) 
+			# ) 
+
+			# if callable(sneia.settings[self.elements[i]]): 
+			# 	iafunc = sneia.settings[self.elements[i]] 
+			# else: 
+			# 	def iafunc(z): 
+			# 		return sneia.settings[self.elements[i]](z) 
+			# self._sz[0].elements[i][0].sneia_yields[0].custom_yield = (
+			# 	callback_1arg_from_pyfunc(iafunc) 
+			# ) 
+
+			# self._sz[0].elements[i][0].ccsne_yields[0].custom_yield = (
+			# 	setup_ccsne_yield(self.elements[i]) 
+			# ) 
+			# self._sz[0].elements[i][0].sneia_yields[0].custom_yield = (
+			# 	setup_sneia_yield(self.elements[i]) 
+			# ) 
 			
-			self._sz[0].elements[i][0].ccsne_yields[0].yield_ = (
-				copy_pylist(map_ccsne_yield(self.elements[i]))
-			) 
-			self._sz[0].elements[i][0].sneia_yields[0].yield_ = (
-				copy_pylist(map_sneia_yield(self.elements[i]))
-			) 
+			# callback_1arg_from_pyfunc._sz[0].elements[i][0].ccsne_yields[0].yield_ = (
+			# 	copy_pylist(map_ccsne_yield(self.elements[i])) 
+			# ) 
+			# self._sz[0].elements[i][0].sneia_yields[0].yield_ = (
+			# 	copy_pylist(map_sneia_yield(self.elements[i])) 
+			# ) 
 
 			if callable(agb.settings[self.elements[i]]): 
-				masses = [_ssp.main_sequence_turnoff_mass(i, 
-					self.postMS) for i in evaltimes] 
-				metallicities = _pyutils.range_(
-					_agb.AGB_Z_GRID_MIN, 
-					_agb.AGB_Z_GRID_MAX, 
-					_agb.AGB_Z_GRID_STEPSIZE 
+				# masses = [_ssp.main_sequence_turnoff_mass(i, 
+				# 	self.postMS) for i in evaltimes] 
+				# metallicities = _pyutils.range_(
+				# 	_agb.AGB_Z_GRID_MIN, 
+				# 	_agb.AGB_Z_GRID_MAX, 
+				# 	_agb.AGB_Z_GRID_STEPSIZE 
+				# ) 
+				# yield_grid = map_agb_yield(self.elements[i], masses) 
+				# self._sz[0].elements[i][0].agb_grid[0].n_m = len(masses) 
+				# self._sz[0].elements[i][0].agb_grid[0].n_z = len(metallicities)  
+				# self._sz[0].elements[i][0].agb_grid[0].grid = (
+				# 	copy_2Dpylist(yield_grid) 
+				# ) 
+				# self._sz[0].elements[i][0].agb_grid[0].m = (
+				# 	copy_pylist(masses) 
+				# ) 
+				# self._sz[0].elements[i][0].agb_grid[0].z = (
+				# 	copy_pylist(metallicities) 
+				# )
+				self._sz[0].elements[i][0].agb_grid[0].custom_yield = (
+					callback_2arg_from_pyfunc(agb.settings[self.elements[i]]) 
 				) 
-				yield_grid = map_agb_yield(self.elements[i], masses) 
-				self._sz[0].elements[i][0].agb_grid[0].n_m = len(masses) 
-				self._sz[0].elements[i][0].agb_grid[0].n_z = len(metallicities)  
-				self._sz[0].elements[i][0].agb_grid[0].grid = (
-					copy_2Dpylist(yield_grid) 
-				) 
-				self._sz[0].elements[i][0].agb_grid[0].m = (
-					copy_pylist(masses) 
-				) 
-				self._sz[0].elements[i][0].agb_grid[0].z = (
-					copy_pylist(metallicities) 
-				)
 			else: 
 				agbfile = agb._grid_reader.find_yield_file(self.elements[i], 
 					agb.settings[self.elements[i]]) 

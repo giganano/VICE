@@ -1,6 +1,6 @@
 
-#ifndef OBJECTS_CALLBACK_H 
-#define OBJECTS_CALLBACK_H 
+#ifndef OBJECTS_CALLBACK_1ARG_H 
+#define OBJECTS_CALLBACK_1ARG_H 
 
 #ifdef __cplusplus 
 extern "C" { 
@@ -27,5 +27,5 @@ extern void callback_1arg_free(CALLBACK_1ARG *cb1);
 } 
 #endif /* __cplusplus */ 
 
-#endif /* OBJECTS_CALLBACK_H */ 
+#endif /* OBJECTS_CALLBACK_1ARG_H */ 
 

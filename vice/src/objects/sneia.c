@@ -43,6 +43,7 @@ extern SNEIA_YIELD_SPECS *sneia_yield_initialize(void) {
 	sneia_yields -> entrainment = 1;  
 	sneia_yields -> tau_ia = 1.5; 
 	sneia_yields -> t_d = 0.15; 
+	sneia_yields -> custom_yield = NULL; 
 
 	return sneia_yields; 
 

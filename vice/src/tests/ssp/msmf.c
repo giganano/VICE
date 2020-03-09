@@ -31,8 +31,8 @@ extern unsigned short test_MSMF(void) {
 
 	return (
 		test_MSMF_common("kroupa") && 
-		test_MSMF_common("salpeter") && 
-		test_MSMF_common("custom") 
+		test_MSMF_common("salpeter") 
+		// test_MSMF_common("custom") 
 	); 
 
 }

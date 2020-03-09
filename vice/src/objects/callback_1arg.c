@@ -1,5 +1,5 @@
 /* 
- * This file handles memory management for the callback object 
+ * This file handles memory management for the callback_1arg object 
  */ 
 
 #include <stdlib.h> 
