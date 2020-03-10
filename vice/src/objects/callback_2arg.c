@@ -15,6 +15,7 @@
 extern CALLBACK_2ARG *callback_2arg_initialize(void) {
 
 	CALLBACK_2ARG *cb2 = (CALLBACK_2ARG *) malloc (sizeof(CALLBACK_2ARG)); 
+	cb2 -> assumed_constant = 0; 
 	cb2 -> user_func = NULL; 
 	return cb2; 
 

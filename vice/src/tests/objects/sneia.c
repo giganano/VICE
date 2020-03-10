@@ -21,8 +21,7 @@ extern unsigned short test_sneia_yield_initialize(void) {
 
 	SNEIA_YIELD_SPECS *test = sneia_yield_initialize(); 
 	unsigned short result = (test != NULL && 
-		(*test).functional_yield == NULL && 
-		(*test).constant_yield == 0 && 
+		(*test).yield_ != NULL && 
 		(*test).RIa == NULL && 
 		(*test).dtd != NULL && 
 		(*test).tau_ia == 1.5 && 

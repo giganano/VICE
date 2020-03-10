@@ -77,62 +77,53 @@ if __VICE_SETUP__:
 	from ._build_utils import * 
 	_LONG_DESCRIPTION_ = __doc__
 else:
-	try:
-		from .version import version as __version__
-		from .version import release as __release
-	except (ModuleNotFoundError, ImportError): 
+	if "vice" in os.listdir(os.getcwd()): 
 		raise ImportError("""\
 Error importing VICE. VICE is a pre-compiled package and cannot be ran from \
 its source directory, because the compiled objects are not stored here. Please \
 exit the VICE source tree and relaunch your python interpreter from there. \
+""") 
+	else: 
+
+		__all__ = [
+			"__author__", 
+			"__version__", 
+			"modeling", 
+			"elements", 
+			"yields", 
+			"_globals", 
+			"ScienceWarning", 
+			"VisibleDeprecationWarning"
+		]  
+
+		try: 
+			from .version import version as __version__
+			from .version import release as __release
+			if not __release: 
+				warnings.warn("Using un-released version of VICE", UserWarning)
+			from .core import * 
+			from ._build_utils import * 
+			from ._globals import ScienceWarning
+			from ._globals import VisibleDeprecationWarning 
+			from . import modeling 
+			from . import elements 
+			from . import yields 
+		except (ImportError, ModuleNotFoundError): 
+			raise ImportError("""\
+Error importing VICE. If you have attempted an alternate installation method, \
+please visit https://github.com/giganano/VICE.git and follow the preferred \
+installation method. \
+
+Alternatively, if you have installed VICE in a conda environment, the \
+installation process will run, but its compiled extensions will not be placed \
+in the correct directories. If this is the case, please deactivate the conda \
+environment and install VICE globally. VICE is implemented independently of \
+anaconda, and for this reason a conda environment is not necessary. \
+
+If you have followed the preferred installation method outside of a conda \
+environment, then please open an issue at \
+https://github.com/giganano/VICE.git. \
 """)
-
-	if not __release: 
-		warnings.warn("Using un-released version of VICE", UserWarning)
-
-	__all__ = [
-		"__author__", 
-		"__version__", 
-		"modeling", 
-		"elements", 
-		"yields", 
-		"_globals", 
-		"ScienceWarning", 
-		"VisibleDeprecationWarning"
-	]  
-
-	from .core import * 
-	from ._build_utils import * 
-	from ._globals import ScienceWarning 
-	from ._globals import VisibleDeprecationWarning 
-	from . import modeling 
-	from . import elements 
-	from . import yields 
-
-# 	try: 
-# 		from .core import * 
-# 		from ._build_utils import * 
-# 		from ._globals import ScienceWarning
-# 		from ._globals import VisibleDeprecationWarning 
-# 		from . import modeling 
-# 		from . import elements 
-# 		from . import yields 
-# 	except (ImportError, ModuleNotFoundError): 
-# 		raise ImportError("""\
-# Error importing VICE. If you have attempted an alternate installation method, \
-# please visit https://github.com/giganano/VICE.git and follow the preferred \
-# installation method. \
-
-# Alternatively, if you have installed VICE in a conda environment, the \
-# installation process will run, but its compiled extensions will not be placed \
-# in the correct directories. If this is the case, please deactivate the conda \
-# environment and install VICE globally. VICE is implemented independently of \
-# anaconda, and for this reason a conda environment is not necessary. \
-
-# If you have followed the preferred installation method outside of a conda \
-# environment, then please open an issue at \
-# https://github.com/giganano/VICE.git. \
-# """)
 
 	__all__.extend(core.__all__)
 	__all__.extend(_build_utils.__all__)

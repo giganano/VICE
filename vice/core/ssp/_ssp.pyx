@@ -13,6 +13,9 @@ from ...yields import ccsne
 from ...yields import sneia 
 from . import _ssp_utils 
 from .. import _pyutils 
+from ..callback import callback1_nan_inf_positive 
+from ..callback import callback1_nan_inf 
+from ..callback import callback2_nan_inf 
 import math as m 
 import warnings 
 import numbers 
@@ -25,10 +28,9 @@ elif sys.version_info[:2] >= (3, 5):
 else: 
 	_VERSION_ERROR_() 
 from libc.stdlib cimport malloc, free 
-from libc.stdio cimport printf 
 from .._cutils cimport map_pyfunc_over_array 
-from .._cutils cimport callback_1arg_from_pyfunc 
-from .._cutils cimport callback_2arg_from_pyfunc 
+from .._cutils cimport callback_1arg_setup 
+from .._cutils cimport callback_2arg_setup 
 from .._cutils cimport copy_2Dpylist 
 from .._cutils cimport copy_pylist 
 from .._cutils cimport set_string 
@@ -187,19 +189,27 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	ssp[0].imf[0].m_upper = m_upper 
 	ssp[0].imf[0].m_lower = m_lower 
 
-	# Setup the yields  
+	# Setup the yields 
 	if callable(ccsne.settings[element]): 
-		e[0].ccsne_yields[0].functional_yield = callback_1arg_from_pyfunc(
-			ccsne.settings[element]
-		) 
+		callback_cc = callback1_nan_inf(ccsne.settings[element]) 
+		callback_1arg_setup(e[0].ccsne_yields[0].yield_, callback_cc) 
 	else: 
-		e[0].ccsne_yields[0].constant_yield = ccsne.settings[element] 
+		callback_1arg_setup(e[0].ccsne_yields[0].yield_, 
+			ccsne.settings[element]) 
+
 	if callable(sneia.settings[element]): 
-		e[0].sneia_yields[0].functional_yield = callback_1arg_from_pyfunc(
-			sneia.settings[element]
-		) 
+		callback_ia = callback1_nan_inf(sneia.settings[element]) 
+		callback_1arg_setup(e[0].sneia_yields[0].yield_, callback_ia) 
 	else: 
-		e[0].sneia_yields[0].constant_yield = sneia.settings[element] 
+		callback_1arg_setup(e[0].sneia_yields[0].yield_, 
+			sneia.settings[element]) 
+
+	# callback_1arg_setup(e[0].ccsne_yields[0].yield_, 
+	# 	ccsne.settings[element], 
+	# 	callback1_nan_inf) 
+	# callback_1arg_setup(e[0].sneia_yields[0].yield_, sneia.settings[element], 
+	# 	callback1_nan_inf) 
+
 
 	# Take into account deprecation of the keyword arg "agb_model" 
 	def builtin_agb_grid(model): 
@@ -213,24 +223,15 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 			raise IOError("AGB yield file not found. Please re-install VICE.")  
 	if agb_model is None: 
 		# take into account deprecation of the keyword arg 'agb_model' 
-		if callable(agb.settings[element.lower()]): 
-			# masses = [_ssp.main_sequence_turnoff_mass(i, 
-			# 	postMS) for i in _pyutils.range_(0, time + 10 * dt, dt)] 
-			# metallicities = _pyutils.range_(
-			# 	_agb.AGB_Z_GRID_MIN, 
-			# 	_agb.AGB_Z_GRID_MAX, 
-			# 	_agb.AGB_Z_GRID_STEPSIZE 
-			# ) 
-			# yield_grid = map_agb_yield(element.lower(), masses) 
-			# e[0].agb_grid[0].n_m = len(masses) 
-			# e[0].agb_grid[0].n_z = len(metallicities)  
-			# e[0].agb_grid[0].grid = copy_2Dpylist(yield_grid) 
-			# e[0].agb_grid[0].m = copy_pylist(masses) 
-			# e[0].agb_grid[0].z = copy_pylist(metallicities) 
-			# e[0].agb_grid[0].custom_yield = setup_agb_yield(element.lower()) 
-			e[0].agb_grid[0].custom_yield = callback_2arg_from_pyfunc(
-				agb.settings[element]
+		if callable(agb.settings[element]): 
+			callback_agb = callback2_nan_inf(agb.settings[element]) 
+			callback_2arg_setup( 
+				e[0].agb_grid[0].custom_yield, 
+				callback_agb 
 			) 
+			# e[0].agb_grid[0].custom_yield = callback_2arg_from_pyfunc(
+			# 	agb.settings[element]
+			# ) 
 		else: 
 			builtin_agb_grid(agb.settings[element.lower()]) 
 	else: 
@@ -274,7 +275,11 @@ This feature will be removed in a future release of VICE.
 	_sneia.normalize_RIa(e, _sneia.RIA_MAX_EVAL_TIME / dt + 1) 
 
 	# Call the C routines 
-	setup_imf(ssp[0].imf, IMF) 
+	if callable(IMF): 
+		callback_imf = callback1_nan_inf_positive(IMF) 
+		setup_imf(ssp[0].imf, callback_imf)  
+	else: 
+		setup_imf(ssp[0].imf, IMF) 
 	cdef double *evaltimes = binspace(0, time + 10 * dt, 
 		long((time + 10 * dt) / dt)) 
 	cdef double *cresults = _ssp.single_population_enrichment(ssp, e, 

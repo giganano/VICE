@@ -17,13 +17,21 @@ typedef struct callback_1arg {
 	/* 
 	 * An object whose sole purpose is to call a python function via cython. 
 	 * 
-	 * callback: A function pointer to a cdef double function which will return 
-	 * 		the value returned by the python function itself 
+	 * callback: A function pointer to a cdef double function which will 
+	 * 		return the value returned by the python function itself 
+	 * assumed_constant: A value to return in the case that the user has not 
+	 * 		specified a function. 
 	 * user_func: A void pointer to the PyObject corresponding to the user's 
 	 * 		function defined in python 
+	 * 
+	 * Notes 
+	 * ===== 
+	 * The attribute assumed_constant allows a callback function to be adopted 
+	 * for parameters which may be either a real number or a function. 
 	 */ 
 
 	double (*callback)(double, void *); 
+	double assumed_constant; 
 	void *user_func; 
 
 } CALLBACK_1ARG; 
@@ -34,12 +42,21 @@ typedef struct callback_2arg {
 	/* 
 	 * An object whose sole purpose is to call a python function via cython. 
 	 * 
-	 * callback: A function pointer to a cdef double function which will return  
-	 * 		the value returned by the python function itself 
+	 * callback: A function pointer to a cdef double function which will 
+	 * 		return the value returned by the python function itself 
+	 * assumed_constant: A value to return in the case that the user has not 
+	 * 		specified a function. 
 	 * user_func: A void pointer to the PyObject corresponding to the user's 
 	 * 		function defined in python 
+	 * Notes 
+	 * ===== 
+	 * The attribute assumed_constant allows a callback function to be adopted 
+	 * for parameters which may be either a real number or a function. This 
+	 * applies more to CALLBACK_1ARG in this iteration of VICE, but is 
+	 * retained here for consistency. 
 	 */ 
 	double (*callback)(double, double, void *); 
+	double assumed_constant; 
 	void *user_func; 
 
 } CALLBACK_2ARG; 
@@ -77,15 +94,13 @@ typedef struct ccsne_yield_specs {
 	 * This struct contains information on a given elements yields from core 
 	 * collapse supernovae (CCSNe). 
 	 * 
-	 * functional_yield: A callback object for a functional yield. Will be 
-	 * 		NULL in cases that the user has not specified a fuction of Z 
-	 * constant_yield: A yield which does not vary with metallicity Z 
+	 * yield_: A callback object corresponding to the user's yield settings. 
+	 * 		Both functional values and constant values are stored there. 
 	 * entrainment: The fraction of the nucleosynthetic yield that is 
 	 * 		captured and retained by the interstellar medium 
 	 */ 
 
-	CALLBACK_1ARG *functional_yield; 
-	double constant_yield; 
+	CALLBACK_1ARG *yield_; 
 	double entrainment; 
 
 } CCSNE_YIELD_SPECS; 
@@ -97,9 +112,8 @@ typedef struct sneia_yield_specs {
 	 * This struct holds the yield specifications for type Ia supernovae 
 	 * (SNe Ia). 
 	 * 
-	 * functional_yield: A callback object for a functional yield. Will be 
-	 * 		NULL in cases that the user has not specified a fuction of Z 
-	 * constant_yield: A yield which does not vary with metallicity Z 
+	 * yield_: A callback object corresponding to the user's yield settings. 
+	 * 		Both functionals values and constant values are stored there. 
 	 * RIa: The normed Ia rate itself 
 	 * dtd: A string denoting a built-in Ia delay-time distribution, if adopted 
 	 * 		by the user 
@@ -109,8 +123,7 @@ typedef struct sneia_yield_specs {
 	 * 		captured and retained by the interstellar medium 
 	 */ 
 
-	CALLBACK_1ARG *functional_yield; 
-	double constant_yield; 
+	CALLBACK_1ARG *yield_; 
 	double *RIa; 
 	char *dtd; 
 	double tau_ia; 

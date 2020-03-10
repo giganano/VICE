@@ -1,17 +1,10 @@
 # cython: language_level = 3, boundscheck = False
 
+from __future__ import absolute_import 
+from ...core.singlezone._imf cimport IMF_ 
+from ...core.singlezone._callback_1arg cimport CALLBACK_1ARG 
+
 cdef extern from "../../src/objects.h": 
-	ctypedef struct IMF_: 
-		char *spec 
-		double m_lower 
-		double m_upper 
-		double *mass_distribution 
-		CALLBACK_1ARG *custom_imf 
-
-	ctypedef struct CALLBACK_1ARG: 
-		double (*callback)(double, void *) 
-		void *user_func 
-
 	ctypedef struct INTEGRAL: 
 		double (*func)(double) 
 		double a 

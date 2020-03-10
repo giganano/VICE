@@ -104,11 +104,11 @@ extern double get_ia_yield(ELEMENT e, double Z) {
 	); 
 	#endif 
 
-	if ((*e.sneia_yields).functional_yield != NULL) { 
-		return callback_1arg_evaluate(*(*e.sneia_yields).functional_yield, Z); 
-	} else { 
-		return (*e.sneia_yields).constant_yield; 
-	} 
+	// if ((*e.sneia_yields).yield_ != NULL) { 
+	return callback_1arg_evaluate(*(*e.sneia_yields).yield_, Z); 
+	// } else { 
+	// 	return (*e.sneia_yields).constant_yield; 
+	// } 
 
 } 
 

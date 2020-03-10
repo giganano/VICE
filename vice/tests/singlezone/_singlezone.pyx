@@ -628,12 +628,10 @@ cdef class singlezone_tester:
 			super().setup_elements() 
 			x = True 
 			for i in range(self._sz[0].n_elements): 
-				if (self._sz[0].elements[i][0].ccsne_yields[0].constant_yield 
-					!= ccsne.settings[self.elements[i]]): 
+				if self._sz[0].elements[i][0].ccsne_yields[0].yield_ is NULL:  
 					x = False 
 				else: pass 
-				if (self._sz[0].elements[i][0].sneia_yields[0].constant_yield 
-					!= sneia.settings[self.elements[i]]): 
+				if self._sz[0].elements[i][0].sneia_yields[0].yield_ is NULL: 
 					x = False 
 				else: pass 
 				if self._sz[0].elements[i][0].agb_grid[0].grid is NULL: 

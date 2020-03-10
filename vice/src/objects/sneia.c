@@ -21,8 +21,7 @@ extern SNEIA_YIELD_SPECS *sneia_yield_initialize(void) {
 		SNEIA_YIELD_SPECS)); 
 
 	/* some defaults to prevent errors */ 
-	sneia_yields -> functional_yield = NULL; 
-	sneia_yields -> constant_yield = 0; 
+	sneia_yields -> yield_ = callback_1arg_initialize(); 
 	sneia_yields -> RIa = NULL; 
 	sneia_yields -> dtd = (char *) malloc (100 * sizeof(char)); 
 	sneia_yields -> tau_ia = 1.5; 
@@ -43,9 +42,9 @@ extern void sneia_yield_free(SNEIA_YIELD_SPECS *sneia_yields) {
 
 	if (sneia_yields != NULL) { 
 
-		if ((*sneia_yields).functional_yield != NULL) {
-			callback_1arg_free(sneia_yields -> functional_yield); 
-			sneia_yields -> functional_yield = NULL; 
+		if ((*sneia_yields).yield_ != NULL) { 
+			callback_1arg_free(sneia_yields -> yield_); 
+			sneia_yields -> yield_ = NULL; 
 		} else {} 
 
 		if ((*sneia_yields).RIa != NULL) {

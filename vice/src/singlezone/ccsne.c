@@ -93,11 +93,11 @@ extern double get_cc_yield(ELEMENT e, double Z) {
 	); 
 	#endif 
 
-	if ((*e.ccsne_yields).functional_yield != NULL) { 
-		return callback_1arg_evaluate(*(*e.ccsne_yields).functional_yield, Z); 
-	} else { 
-		return (*e.ccsne_yields).constant_yield; 
-	} 
+	// if ((*e.ccsne_yields).yield_ != NULL) { 
+	return callback_1arg_evaluate(*(*e.ccsne_yields).yield_, Z); 
+	// } else { 
+	// 	return (*e.ccsne_yields).constant_yield; 
+	// } 
 
 } 
 

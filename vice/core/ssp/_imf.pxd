@@ -12,27 +12,15 @@ elif sys.version_info[:2] >= (3, 5):
 else: 
 	_VERSION_ERROR_() 
 from .._cutils cimport set_string 
-from .._cutils cimport callback_1arg_from_pyfunc 
+from .._cutils cimport callback_1arg_setup 
+from ..singlezone._imf cimport IMF_ 
+from ..singlezone._callback_1arg cimport CALLBACK_1ARG 
 
 cdef extern from "../../src/imf.h": 
-	ctypedef struct CALLBACK_1ARG: 
-		double (*callback)(double, void *) 
-		void *user_func 
-
-
-	ctypedef struct IMF_: 
-		char *spec 
-		double m_lower 
-		double m_upper 
-		double *mass_distribution 
-		CALLBACK_1ARG *custom_imf 
-
-	IMF_ *imf_initialize(double m_lower, double m_upper)  
-	void imf_free(IMF_ *imf) 
-
 	double salpeter55(double m) 
 	double kroupa01(double m) 
-
+	IMF_ *imf_initialize(double m_lower, double m_upper)  
+	void imf_free(IMF_ *imf) 
 
 cdef extern from "../../src/objects/callback_1arg.h": 
 	CALLBACK_1ARG *callback_1arg_initialize() 
@@ -47,7 +35,8 @@ cdef inline IMF_ *imf_object(user_spec, m_lower, m_upper) except *:
 	========== 
 	user_spec :: str or <function> 
 		The user specification - either a string denoting a built-in IMF or 
-		a function of mass describing a custom IMF. 
+		a function of mass describing a custom IMF. If a <function>, this is 
+		assumed to already be wrapped by one of the callback1 classes. 
 	m_lower :: real number 
 		The lower mass limit on star formation 
 	m_upper :: real number
@@ -71,6 +60,10 @@ cdef inline IMF_ *imf_object(user_spec, m_lower, m_upper) except *:
 	===== 
 	This function does not perform error handling on the mass limits of star 
 	formation. 
+
+	See Also 
+	======== 
+	vice/core/callback.py 
 	""" 
 	cdef IMF_ *imf_obj 
 	if isinstance(user_spec, strcomp): 
@@ -83,7 +76,8 @@ cdef inline IMF_ *imf_object(user_spec, m_lower, m_upper) except *:
 		if _pyutils.arg_count(user_spec) == 1: 
 			imf_obj = imf_initialize(m_lower, m_upper) 
 			set_string(imf_obj[0].spec, "custom") 
-			imf_obj[0].custom_imf = callback_1arg_from_pyfunc(user_spec) 
+			callback_1arg_setup(imf_obj[0].custom_imf, user_spec) 
+			# imf_obj[0].custom_imf = callback_1arg_from_pyfunc(user_spec) 
 		else: 
 			raise TypeError("""Custom IMF must accept exactly one parameter as \
 a positional argument.""") 

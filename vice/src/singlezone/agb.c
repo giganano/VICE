@@ -84,7 +84,7 @@ extern double get_AGB_yield(ELEMENT e, double Z_stars, double turnoff_mass) {
 		 */ 
 		return 0; 
 
-	} else if ((*e.agb_grid).custom_yield != NULL) { 
+	} else if ((*(*e.agb_grid).custom_yield).user_func != NULL) { 
 
 		/* 
 		 * User-specified AGB star yield as a function of stellar mass and 

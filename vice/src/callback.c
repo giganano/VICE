@@ -24,7 +24,7 @@ extern double callback_1arg_evaluate(CALLBACK_1ARG cb1, double x) {
 	if (cb1.user_func != NULL) { 
 		return cb1.callback(x, cb1.user_func); 
 	} else { 
-		return 0; 
+		return cb1.assumed_constant; 
 	} 
 
 } 
@@ -50,7 +50,7 @@ extern double callback_2arg_evaluate(CALLBACK_2ARG cb2, double x, double y) {
 	if (cb2.user_func != NULL) { 
 		return cb2.callback(x, y, cb2.user_func); 
 	} else { 
-		return 0; 
+		return cb2.assumed_constant; 
 	} 
 
 } 

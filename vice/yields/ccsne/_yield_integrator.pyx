@@ -11,6 +11,8 @@ from ..._globals import _RECOGNIZED_IMFS_
 from ..._globals import _VERSION_ERROR_ 
 from ..._globals import ScienceWarning 
 from ...core.dataframe._builtin_dataframes import atomic_number 
+from ...core.callback import callback1_nan_inf_positive 
+from ...core.callback import callback1_nan_inf 
 from ...core.ssp._imf import salpeter 
 from ...core.ssp._imf import kroupa 
 from ...core import _pyutils 
@@ -35,7 +37,7 @@ else:
 from libc.stdlib cimport free 
 from ...core.ssp._imf cimport imf_object 
 from ...core._cutils cimport copy_pylist 
-from ...core._cutils cimport callback_1arg_from_pyfunc 
+from ...core._cutils cimport callback_1arg_setup 
 from ._yield_integrator cimport CALLBACK_1ARG 
 from ._yield_integrator cimport callback_1arg_initialize 
 from ._yield_integrator cimport callback_1arg_free 
@@ -267,15 +269,21 @@ smaller than maximum number of bins.""")
 	""" 
 	Explodability is either None or a callable function with one parameter. 
 	""" 
-	cdef CALLBACK_1ARG *explodability_cb 
+	cdef CALLBACK_1ARG *explodability_cb = callback_1arg_initialize() 
 	if explodability is None: 
 		# assume everything explodes 
-		def uniform_explodability(m): 
+		def uniform(m): 
 			return 1.0 
+		uniform_explodability = callback1_nan_inf(uniform) 
+		# def uniform_explodability(m): 
+		# 	return 1.0 
 		# uniform_explodability = lambda m: 1.0 
-		explodability_cb = callback_1arg_from_pyfunc(uniform_explodability)  
+		# explodability_cb = callback_1arg_from_pyfunc(uniform_explodability)  
+		callback_1arg_setup(explodability_cb, uniform_explodability) 
 	elif callable(explodability): 
-		explodability_cb = callback_1arg_from_pyfunc(explodability) 
+		# explodability_cb = callback_1arg_from_pyfunc(explodability) 
+		exp_cb = callback1_nan_inf(explodability) 
+		callback_1arg_setup(explodability_cb, exp_cb) 
 	else: 
 		raise TypeError("""Explodabiilty must be either a numerical value or a \
 callable object. Got: %s""" % (type(explodability))) 
@@ -285,7 +293,11 @@ callable object. Got: %s""" % (type(explodability)))
 	stellar explodability. However, it must be placed in an IMF_ object, 
 	unlike the stellar explodability prescription. 
 	""" 
-	cdef IMF_ *imf_obj = imf_object(IMF, m_lower, m_upper) 
+	if callable(IMF): 
+		imf_cb = callback1_nan_inf_positive(IMF) 
+	else: 
+		imf_cb = IMF
+	cdef IMF_ *imf_obj = imf_object(imf_cb, m_lower, m_upper) 
 
 	"""
 	Science Warnings 

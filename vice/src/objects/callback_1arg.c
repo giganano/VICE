@@ -15,6 +15,7 @@
 extern CALLBACK_1ARG *callback_1arg_initialize(void) { 
 
 	CALLBACK_1ARG *cb1 = (CALLBACK_1ARG *) malloc (sizeof(CALLBACK_1ARG)); 
+	cb1 -> assumed_constant = 0; 
 	cb1 -> user_func = NULL; 
 	return cb1; 
 

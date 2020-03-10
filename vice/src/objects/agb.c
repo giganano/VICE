@@ -5,6 +5,7 @@
 
 #include <stdlib.h> 
 #include "../agb.h" 
+#include "callback_2arg.h" 
 #include "objects.h" 
 #include "agb.h" 
 
@@ -20,7 +21,7 @@ extern AGB_YIELD_GRID *agb_yield_grid_initialize(void) {
 	AGB_YIELD_GRID *agb_grid = (AGB_YIELD_GRID *) malloc (sizeof(
 		AGB_YIELD_GRID)); 
 
-	agb_grid -> custom_yield = NULL; 
+	agb_grid -> custom_yield = callback_2arg_initialize(); 
 	agb_grid -> grid = NULL; 
 	agb_grid -> m = NULL; 
 	agb_grid -> z = NULL; 

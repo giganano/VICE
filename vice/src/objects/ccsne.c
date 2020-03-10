@@ -22,8 +22,7 @@ extern CCSNE_YIELD_SPECS *ccsne_yield_initialize(void) {
 	CCSNE_YIELD_SPECS *ccsne_yield = (CCSNE_YIELD_SPECS *) malloc (sizeof(
 		CCSNE_YIELD_SPECS)); 
 
-	ccsne_yield -> functional_yield = NULL; 
-	ccsne_yield -> constant_yield = 0; 
+	ccsne_yield -> yield_ = callback_1arg_initialize(); 
 	ccsne_yield -> entrainment = 1; 
 
 	return ccsne_yield; 
@@ -39,9 +38,9 @@ extern void ccsne_yield_free(CCSNE_YIELD_SPECS *ccsne_yield) {
 
 	if (ccsne_yield != NULL) {
 
-		if ((*ccsne_yield).functional_yield != NULL) {
-			callback_1arg_free(ccsne_yield -> functional_yield); 
-			ccsne_yield -> functional_yield = NULL; 
+		if ((*ccsne_yield).yield_ != NULL) { 
+			callback_1arg_free(ccsne_yield -> yield_); 
+			ccsne_yield -> yield_ = NULL; 
 		} else {} 
 
 		free(ccsne_yield); 

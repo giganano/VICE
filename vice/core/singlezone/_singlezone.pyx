@@ -17,6 +17,9 @@ from ..._globals import _DIRECTORY_
 from ..._globals import VisibleDeprecationWarning 
 from ..._globals import ScienceWarning 
 from .entrainment import entrainment 
+from ..callback import callback1_nan_inf_positive 
+from ..callback import callback1_nan_inf 
+from ..callback import callback2_nan_inf 
 from ..dataframe import evolutionary_settings 
 from ..dataframe import atomic_number 
 from ..dataframe import primordial 
@@ -63,8 +66,8 @@ from . cimport _agb
 from .._cutils cimport set_string 
 from .._cutils cimport copy_pylist 
 from .._cutils cimport setup_imf 
-from .._cutils cimport callback_1arg_from_pyfunc 
-from .._cutils cimport callback_2arg_from_pyfunc 
+from .._cutils cimport callback_1arg_setup 
+from .._cutils cimport callback_2arg_setup 
 from .._cutils cimport copy_2Dpylist 
 from . cimport _element 
 from . cimport _io 
@@ -89,24 +92,6 @@ readability, the setter functions of the C version of the wrapper have brief
 notes on the physical interpretation of each attribute as well as the allowed 
 types and values. 
 """ 
-
-
-# class constant_yield: 
-
-# 	""" 
-# 	A callable object for a constant yield setting. 
-# 	""" 
-
-# 	def __init__(self, yield_): 
-# 		self._yield = yield_ 
-
-# 	def __call__(self, z): 
-# 		return self._yield 
-
-def constant_yield_func_generator(yield_): 
-	def yieldfunc(z): 
-		return yield_ 
-	return yieldfunc 
 
 
 #--------------------------- SINGLEZONE C VERSION ---------------------------# 
@@ -194,6 +179,9 @@ cdef class c_singlezone:
 		self.postMS = postMS 
 		self.Z_solar = Z_solar 
 		self.agb_model = agb_model 
+		self._callback_cc = None 
+		self._callback_ia = None 
+		self._callback_agb = None 
 
 	def __dealloc__(self): 
 		_singlezone.singlezone_free(self._sz) 
@@ -1403,6 +1391,11 @@ All elemental yields in the current simulation will be set to the table of \
 			_singlezone.singlezone_cancel(self._sz) 
 			enrichment = 0 
 
+		if isinstance(self._imf, callback1_nan_inf_positive): 
+			self._imf = self._imf.function 
+		else: 
+			pass 
+
 		if enrichment: 
 			raise SystemError("Internal Error") 
 		elif capture: 
@@ -1432,6 +1425,9 @@ All elemental yields in the current simulation will be set to the table of \
 		# Make sure the output times are as they should be 
 		output_times = self.output_times_check(output_times) 
 		self._sz[0].ism[0].mass = self._Mg0 # reset initial gas supply 
+		if callable(self._imf): 
+			self._imf = callback1_nan_inf_positive(self._imf) 
+		else: pass 
 		setup_imf(self._sz[0].ssp[0].imf, self._imf) 
 		self.setup_elements() 
 
@@ -1649,6 +1645,9 @@ be lost.\nOutput directory: %s.vice\nOverwrite? (y | n) """ % (self.name))
 		""" 
 		Setup each element's AGB grid, CCSNe yield grid, and SNe Ia yield 
 		""" 
+		self._callback_cc = self._sz[0].n_elements * [None] 
+		self._callback_ia = self._sz[0].n_elements * [None] 
+		self._callback_agb = self._sz[0].n_elements * [None] 
 		for i in range(self._sz[0].n_elements): 
 			self._sz[0].elements[i][0].solar = solar_z[self.elements[i]] 
 			self._sz[0].elements[i][0].primordial = primordial[self.elements[i]] 
@@ -1659,31 +1658,52 @@ be lost.\nOutput directory: %s.vice\nOverwrite? (y | n) """ % (self.name))
 			self._sz[0].elements[i][0].sneia_yields[0].entrainment = (
 				self.entrainment.sneia[self.elements[i]]) 
 
+
 			if callable(ccsne.settings[self.elements[i]]): 
-				self._sz[0].elements[i][0].ccsne_yields[0].functional_yield = ( 
-					callback_1arg_from_pyfunc(
-						ccsne.settings[self.elements[i]]
-					) 
+				self._callback_cc[i] = callback1_nan_inf(
+					ccsne.settings[self.elements[i]]
+				) 
+				callback_1arg_setup(
+					self._sz[0].elements[i][0].ccsne_yields[0].yield_, 
+					self._callback_cc[i] 
 				) 
 			else: 
-				self._sz[0].elements[i][0].ccsne_yields[0].constant_yield = ( 
-					ccsne.settings[self.elements[i]] 
-				) 
+				callback_1arg_setup(
+					self._sz[0].elements[i][0].ccsne_yields[0].yield_, 
+					ccsne.settings[self.elements[i]]) 
 
 			if callable(sneia.settings[self.elements[i]]): 
-				self._sz[0].elements[i][0].sneia_yields[0].functional_yield = ( 
-					callback_1arg_from_pyfunc(
-						sneia.settings[self.elements[i]] 
-					)
+				self._callback_ia[i] = callback1_nan_inf(
+					sneia.settings[self.elements[i]] 
+				) 
+				callback_1arg_setup(
+					self._sz[0].elements[i][0].sneia_yields[0].yield_, 
+					self._callback_ia[i] 
 				) 
 			else: 
-				self._sz[0].elements[i][0].sneia_yields[0].constant_yield = ( 
+				callback_1arg_setup(
+					self._sz[0].elements[i][0].sneia_yields[0].yield_, 
 					sneia.settings[self.elements[i]] 
 				) 
 
+			# callback_1arg_setup(
+			# 	self._sz[0].elements[i][0].ccsne_yields[0].yield_, 
+			# 	ccsne.settings[self.elements[i]], 
+			# 	callback1_nan_inf 
+			# ) 
+			# callback_1arg_setup( 
+			# 	self._sz[0].elements[i][0].sneia_yields[0].yield_, 
+			# 	sneia.settings[self.elements[i]], 
+			# 	callback1_nan_inf 
+			# ) 
+
 			if callable(agb.settings[self.elements[i]]): 
-				self._sz[0].elements[i][0].agb_grid[0].custom_yield = (
-					callback_2arg_from_pyfunc(agb.settings[self.elements[i]]) 
+				self._callback_agb[i] = callback2_nan_inf(
+					agb.settings[self.elements[i]]
+				) 
+				callback_2arg_setup( 
+					self._sz[0].elements[i][0].agb_grid[0].custom_yield, 
+					self._callback_agb[i] 
 				) 
 			else: 
 				agbfile = agb._grid_reader.find_yield_file(self.elements[i], 

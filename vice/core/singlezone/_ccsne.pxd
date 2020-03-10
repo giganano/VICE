@@ -6,8 +6,7 @@ from ._callback_1arg cimport CALLBACK_1ARG
 
 cdef extern from "../../src/ccsne.h": 
 	ctypedef struct CCSNE_YIELD_SPECS: 
-		CALLBACK_1ARG *functional_yield 
-		double constant_yield 
+		CALLBACK_1ARG *yield_ 
 		double entrainment 
 
 

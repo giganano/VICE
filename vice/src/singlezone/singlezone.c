@@ -215,31 +215,14 @@ extern void singlezone_clean(SINGLEZONE *sz) {
 
 	unsigned int i; 
 	for (i = 0; i < (*sz).n_elements; i++) { 
-		if ((*(*(*sz).elements[i]).ccsne_yields).functional_yield != NULL) { 
-			callback_1arg_free(
-				sz -> elements[i] -> ccsne_yields -> functional_yield 
-			); 
-			sz -> elements[i] -> ccsne_yields -> functional_yield = NULL; 
-		} else {} 
-		if ((*(*(*sz).elements[i]).sneia_yields).functional_yield != NULL) { 
-			callback_1arg_free(
-				sz -> elements[i] -> sneia_yields -> functional_yield 
-			); 
-			sz -> elements[i] -> sneia_yields -> functional_yield = NULL; 
-		} else {} 
-		if ((*(*(*sz).elements[i]).agb_grid).custom_yield != NULL) { 
-			callback_2arg_free(
-				sz -> elements[i] -> agb_grid -> custom_yield 
-			); 
-			sz -> elements[i] -> agb_grid -> custom_yield = NULL; 
-		} else { 
+		if ((*(*(*sz).elements[i]).agb_grid).grid != NULL) { 
 			free(sz -> elements[i] -> agb_grid -> grid); 
 			free(sz -> elements[i] -> agb_grid -> m); 
 			free(sz -> elements[i] -> agb_grid -> z); 
 			sz -> elements[i] -> agb_grid -> grid = NULL; 
 			sz -> elements[i] -> agb_grid -> m = NULL; 
 			sz -> elements[i] -> agb_grid -> z = NULL; 
-		}  
+		} else {} 
 		free(sz -> elements[i] -> Z); 
 		free(sz -> elements[i] -> Zin); 
 		free(sz -> elements[i] -> sneia_yields -> RIa); 
@@ -302,27 +285,9 @@ extern void singlezone_cancel(SINGLEZONE *sz) {
 			free(sz -> elements[i] -> Zin); 
 			sz -> elements[i] -> Zin = NULL; 
 		} else {} 
-		if ((*(*(*sz).elements[i]).ccsne_yields).functional_yield != NULL) { 
-			callback_1arg_free(
-				sz -> elements[i] -> ccsne_yields -> functional_yield 
-			); 
-			sz -> elements[i] -> ccsne_yields -> functional_yield = NULL; 
-		} else {} 
-		if ((*(*(*sz).elements[i]).sneia_yields).functional_yield != NULL) { 
-			callback_1arg_free(
-				sz -> elements[i] -> sneia_yields -> functional_yield 
-			); 
-			sz -> elements[i] -> sneia_yields -> functional_yield = NULL; 
-		} else {} 
 		if ((*(*(*sz).elements[i]).sneia_yields).RIa != NULL) {
 			free(sz -> elements[i] -> sneia_yields -> RIa); 
 			sz -> elements[i] -> sneia_yields -> RIa = NULL; 
-		} else {} 
-		if ((*(*(*sz).elements[i]).agb_grid).custom_yield != NULL) { 
-			callback_2arg_free(
-				sz -> elements[i] -> agb_grid -> custom_yield 
-			); 
-			sz -> elements[i] -> agb_grid -> custom_yield = NULL; 
 		} else {} 
 		if ((*(*(*sz).elements[i]).agb_grid).grid != NULL) {
 			free(sz -> elements[i] -> agb_grid -> grid); 
