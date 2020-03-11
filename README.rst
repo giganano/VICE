@@ -229,8 +229,7 @@ use these scripts as example code if they so choose.
 
 Submit a Bug Report 
 ===================
-To submit a bug report, please open an issue at 
-<https://github.com/giganano/VICE/issues>. 
+To submit a bug report, please open an issue `here`__. 
 
 Authors & Maintainers
 =====================
@@ -319,10 +318,13 @@ under the terms of the associated LICENSE_.
 
 .. _tutorial: https://github.com/giganano/VICE/blob/master/docs/QuickStartTutorial.ipynb
 
-.. _citelink: https://arxiv.org/abs/1911.02598
+.. _citelink: https://ui.adsabs.harvard.edu/abs/2019arXiv191102598J/abstract 
+
+.. _issues: https://github.com/giganano/VICE/issues 
 
 __ userguide_
 __ scidocs_
 __ tutorial_ 
 __ citelink_ 
+__ issues_ 
 __ citelink_ 
