@@ -222,7 +222,7 @@ Example Code: A Simulation of a Galaxy with Known Star Formation History
 Journal-Related Features
 ========================
 We provide here the ``python`` code which produces all of the figures in 
-Johnson & Weinberg (2019). From ``VICE``'s root directory, users can run 
+`Johnson & Weinberg (2019)`__. From ``VICE``'s root directory, users can run 
 ``make jw19plots`` in a terminal, which will automatically run the simulations 
 and produce the figures exactly as they appear in that paper. Users may also 
 use these scripts as example code if they so choose. 
@@ -268,7 +268,7 @@ Ohio State University graduate fellowship.
 Citing
 ======
 Usage of ``VICE`` leading to a publication should cite 
-`Johnson & Weinberg (2019)'__. 
+`Johnson & Weinberg (2019)`__. 
 
 LICENSE
 =======
