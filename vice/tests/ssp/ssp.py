@@ -79,6 +79,6 @@ def trial(label, generator_):
 	Obtain a unittest object for a single_stellar_population trial test 
 	""" 
 	def test_(): 
-		generator_() 
+		return generator_() 
 	return [label, test_] 
 

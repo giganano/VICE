@@ -524,7 +524,7 @@ cdef class singlezone_tester:
 			""" 
 			try: 
 				test_times = [0.1 * i for i in range(11)] 
-				super().prep(test_times) 
+				self.prep(test_times) 
 			except: 
 				return False 
 			return (
@@ -555,7 +555,7 @@ cdef class singlezone_tester:
 				test_times = [
 					0.0, 0.2, 0.1, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0
 				] 
-				return super().output_times_check(test_times) == sorted(test_times) 
+				return self.output_times_check(test_times) == sorted(test_times) 
 			except: 
 				return False 
 		return ["Output times refinement", test] 
@@ -574,7 +574,7 @@ cdef class singlezone_tester:
 			try: 
 				self.name = "test" 
 				try: 
-					super().open_output_dir(True) 
+					self.open_output_dir(True) 
 				except RuntimeError: 
 					return False 
 			except: 
@@ -589,13 +589,14 @@ cdef class singlezone_tester:
 
 	@unittest  
 	def test_setup_elements(self): 
-		cdef ELEMENT **e = <ELEMENT **> self._sz[0].elements 
+		cdef ELEMENT **e 
 		def test(): 
 			""" 
 			Tests the setup_elements function 
 			""" 
 			try: 
-				super().setup_elements() 
+				self.setup_elements() 
+				e = self._sz[0].elements 
 				x = True 
 				for i in range(self._sz[0].n_elements): 
 					if <void *> e[i][0].ccsne_yields[0].yield_ is NULL:  
@@ -626,7 +627,7 @@ cdef class singlezone_tester:
 
 	@unittest 
 	def test_set_ria(self): 
-		cdef ELEMENT **e = self._sz[0].elements
+		cdef ELEMENT **e 
 		def test(): 
 			""" 
 			Tests the set_ria function 
@@ -638,7 +639,8 @@ cdef class singlezone_tester:
 			try: 
 				# This function only works with custom RIa's 
 				self.RIa = lambda t: t**-1.5 
-				super().set_ria() 
+				self.set_ria() 
+				e = self._sz[0].elements 
 				x = True 
 				for i in range(self._sz[0].n_elements): 
 					if <void *> e[i][0].sneia_yields[0].RIa is NULL: 
@@ -675,13 +677,13 @@ cdef class singlezone_tester:
 					self._sz[0].n_elements * [0.001]
 				)) 
 				self.Zin[self.elements[0]] = lambda t: 0.001 * t 
-				super().setup_Zin(1) 
+				self.setup_Zin(1) 
 				x = checker() 
 				self.Zin = lambda t: 0.001 * t 
-				super().setup_Zin(1) 
+				self.setup_Zin(1) 
 				y = checker() 
 				self.Zin = 0 
-				super().setup_Zin(1) 
+				self.setup_Zin(1) 
 				z = checker() 
 			except: 
 				return False 
@@ -701,8 +703,11 @@ cdef class singlezone_tester:
 			""" 
 			try: 
 				self.name = "test" 
+				if os.path.exists("%s.vice" % (self.name)): 
+					os.system("rm -rf %s.vice" % (self.name)) 
+				else: pass 
 				os.system("mkdir %s.vice" % (self.name)) 
-				super().save_yields()   
+				self.save_yields()   
 			except: 
 				return False 
 			x = (
@@ -731,7 +736,7 @@ cdef class singlezone_tester:
 					os.system("rm -rf %s.vice" % (self.name)) 
 				else: pass 
 				os.system("mkdir %s.vice" % (self.name)) 
-				super().save_attributes() 
+				self.save_attributes() 
 			except: 
 				return False 
 			x = os.path.exists("%s.vice/params.config" % (self.name)) 

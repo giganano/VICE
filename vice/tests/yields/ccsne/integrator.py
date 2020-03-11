@@ -96,6 +96,6 @@ def trial(label, generator_):
 	Obtain a unittest object for a singlezone trial test 
 	""" 
 	def test_(): 
-		generator_() 
+		return generator_() 
 	return [label, test_] 
 
