@@ -52,10 +52,10 @@ def test_mirror():
 		""" 
 		Tests the mirror function 
 		""" 
-		# try: 
-		test_ = mirror(_TEST_NAME_) 
-		# except: 
-		# 	return False 
+		try: 
+			test_ = mirror(_TEST_NAME_) 
+		except: 
+			return False 
 		return isinstance(test_, singlezone) 
 	return ["Mirror", test] 
 
@@ -69,10 +69,10 @@ def test_history():
 		""" 
 		Tests the history function 
 		""" 
-		# try: 
-		test_ = history(_TEST_NAME_) 
-		# except: 
-		# 	return False 
+		try: 
+			test_ = history(_TEST_NAME_) 
+		except: 
+			return False 
 		return isinstance(test_, dataframe) 
 	return ["History", test] 
 
@@ -86,10 +86,10 @@ def test_mdf():
 		""" 
 		Tests the mdf function 
 		""" 
-		# try: 
-		test_ = mdf(_TEST_NAME_) 
-		# except: 
-		# 	return False 
+		try: 
+			test_ = mdf(_TEST_NAME_) 
+		except: 
+			return False 
 		return isinstance(test_, dataframe) 
 	return ["MDF", test] 
 
@@ -103,10 +103,10 @@ def test_output():
 		""" 
 		Tests the output class 
 		""" 
-		# try: 
-		test_ = output(_TEST_NAME_) 
-		# except: 
-		# 	return False 
+		try: 
+			test_ = output(_TEST_NAME_) 
+		except: 
+			return False 
 		return (
 			isinstance(test_, output) and 
 			isinstance(test_.elements, tuple) and 

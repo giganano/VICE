@@ -1,5 +1,6 @@
 
 |version| |MIT Licensed| |travis| |issues| |Authors| |userguide| |scidocs| 
+|paper1| 
 
 ``VICE: Versatile Integrator for Chemical Evolution``
 =====================================================
@@ -47,7 +48,7 @@ The following dependencies must be satisfied for ``VICE`` to install properly:
 
 1) ``Cython >= 0.28.0``
 
-2) ``Python 2.7, or >= 3.5``
+2) ``Python >= 3.5``
 
 3) ``Make >= 3.81``
 
@@ -280,7 +281,7 @@ under the terms of the associated LICENSE_.
 	:alt: version
 ..	|MIT Licensed| image:: https://img.shields.io/badge/license-MIT-blue.svg
 	:target: https://raw.githubusercontent.com/giganano/VICE/master/LICENSE
-	:alt: MIT License
+	:alt: MIT License 
 
 ..	|issues| image:: https://img.shields.io/github/issues/giganano/VICE.svg
 	:target: https://github.com/giganano/VICE/issues 
@@ -296,11 +297,15 @@ under the terms of the associated LICENSE_.
 
 ..	|userguide| image:: https://img.shields.io/badge/-User's%20Guide-brightgreen.svg
 	:target: https://github.com/giganano/VICE/blob/master/docs/users_guide.pdf 
-	:alt: userguide
+	:alt: userguide 
 
 ..	|scidocs| image:: https://img.shields.io/badge/-Science%20Documentation-brightgreen.svg
 	:target: https://github.com/giganano/VICE/blob/master/docs/science_documentation.pdf
-	:alt: scidocs
+	:alt: scidocs 
+
+..	|paper1| image:: https://img.shields.io/badge/NASA%20ADS-Johnson%20%26%20Weinberg%20(2020)-red
+	:target: https://ui.adsabs.harvard.edu/abs/2019arXiv191102598J/abstract 
+	:alt: paper1 
 
 
 ..	_authors: https://github.com/giganano/VICE/blob/master/AUTHORS.rst

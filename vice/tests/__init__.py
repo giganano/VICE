@@ -48,7 +48,7 @@ if not __VICE_SETUP__:
 		""" 
 		Runs VICE's comprehensive tests 
 		""" 
-		header = "VICE Comprehensive Tests\n", 
+		header = "VICE Comprehensive Tests\n" 
 		for i in range(len(header) - 1): 
 			header += "=" 
 		print("\033[091m%s\033[00m" % (header)) 
