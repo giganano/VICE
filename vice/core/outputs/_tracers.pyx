@@ -2,22 +2,12 @@
 
 from __future__ import absolute_import 
 from . import _output_utils 
-import pickle 
+from ..pickles import pickled_object 
 import os 
 try: 
 	ModuleNotFoundError 
 except NameError: 
 	ModuleNotFoundError = ImportError 
-try: 
-	"""
-	dill extends the pickle module and allows functional attributes to be 
-	encoded. In later version of python 3, dill.dump must be called instead 
-	of pickle.dump. All cases can be taken care of by overriding the native 
-	pickle module and letting dill masquerade as pickle. 
-	"""
-	import dill as pickle 
-except (ModuleNotFoundError, ImportError): 
-	pass 
 from ..dataframe._tracers cimport tracers as tracers_obj 
 
 
@@ -91,13 +81,9 @@ cdef tracers_obj c_tracers(name):
 	name = _output_utils._get_name(name) 
 	if _output_utils._is_multizone(name): 
 		zone0 = list(filter(lambda x: x.endswith(".vice"), os.listdir(name)))[0] 
-		try: 
-			adopted_solar_z = pickle.load(open("%s/%s/params.config" % (name, 
-				zone0), "rb"))["Z_solar"] 
-		except TypeError: 
-			raise SystemError("""\
-Error reading encoded parameters stored in output. It appears this output \
-was produced in a version of python other than the current.""") 
+		adopted_solar_z = pickled_object.from_pickle(
+			"%s/%s/attributes/Z_solar.obj" % (name, zone0) 
+		) 
 		return tracers_obj(filename = "%s/tracers.out" % (name), 
 			adopted_solar_z = adopted_solar_z
 		) 

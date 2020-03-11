@@ -6,21 +6,11 @@ from a singlezone output.
 
 from __future__ import absolute_import 
 from . import _output_utils 
-import pickle 
+from ..pickles import pickled_object 
 try: 
 	ModuleNotFoundError 
 except NameError: 
 	ModuleNotFoundError = ImportError 
-try: 
-	"""
-	dill extends the pickle module and allows functional attributes to be 
-	encoded. In later version of python 3, dill.dump must be called instead 
-	of pickle.dump. All cases can be taken care of by overriding the native 
-	pickle module and letting dill masquerade as pickle. 
-	"""
-	import dill as pickle 
-except (ModuleNotFoundError, ImportError): 
-	pass 
 from ..dataframe._history cimport history as history_obj 
 from . cimport _history 
 
@@ -129,13 +119,9 @@ cdef history_obj c_history(name):
 	""" 
 	name = _output_utils._get_name(name) 
 	_output_utils._check_singlezone_output(name) 
-	try: 
-		adopted_solar_z = pickle.load(open("%s/params.config" % (name), 
-			"rb"))["Z_solar"] 
-	except TypeError: 
-		raise SystemError("""\
-Error reading encoded parameters stored in output. It appears this output \
-was produced in a version of python other than the current.""") 
+	adopted_solar_z = pickled_object.from_pickle(
+		"%s/attributes/Z_solar.obj" % (name) 
+	) 
 	return history_obj(
 		filename = "%s/history.out" % (name), 
 		adopted_solar_z = adopted_solar_z

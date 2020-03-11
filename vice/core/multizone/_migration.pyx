@@ -240,6 +240,12 @@ not supported. Please modify each element individually.""")
 		""" 
 		return self._rows[0].dimension 
 
+	def tolist(self): 
+		""" 
+		Obtain a copy of the migration matrix as a list 
+		""" 
+		return [i.tolist() for i in self._row] 
+
 
 cdef class mig_matrix_row: 
 
@@ -278,7 +284,7 @@ cdef class mig_matrix_row:
 			# exception to raise, replace type w/IndexError 
 			raise IndexError(key[1]) 
 		else: 
-			# shouldn't happend 
+			# shouldn't happen 
 			raise SystemError("Internal Error") 
 
 	def __setitem__(self, key, value): 
@@ -336,6 +342,12 @@ interpretable as an integer. Got: %g""" % (value))
 		else: 
 			raise TypeError("""Attribute 'dimension' must be an integer. \
 Got: %s""" % (type(value))) 
+
+	def tolist(self): 
+		""" 
+		Obtain this row of the migration matrix as a list 
+		""" 
+		return self._row 
 
 
 

@@ -711,9 +711,9 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			x = (
-				os.path.exists("%s.vice/agb_yields.config" % (self.name)) and 
-				os.path.exists("%s.vice/ccsne_yields.config" % (self.name)) and 
-				os.path.exists("%s.vice/sneia_yields.config" % (self.name))
+				os.path.exists("%s.vice/yields/agb" % (self.name)) and 
+				os.path.exists("%s.vice/yields/ccsne" % (self.name)) and 
+				os.path.exists("%s.vice/yields/sneia" % (self.name))
 			) 
 			os.system("rm -rf %s.vice" % (self.name)) 
 			return x 
@@ -739,7 +739,8 @@ cdef class singlezone_tester:
 				self.save_attributes() 
 			except: 
 				return False 
-			x = os.path.exists("%s.vice/params.config" % (self.name)) 
+			x = (os.path.exists("%s.vice/attributes" % (self.name)) and 
+				len(os.listdir("%s.vice/attributes" % (self.name))) == 28) 
 			os.system("rm -rf %s.vice" % (self.name)) 
 			return x 
 		return ["Save attributes", test] 

@@ -37,7 +37,7 @@ cdef class c_multioutput:
 		))) 
 
 		# setup the tracers attribute as a tracers object 
-		self._tracers = _tracers.c_tracers(self._name) 
+		self._stars = _tracers.c_tracers(self._name) 
 
 	@property 
 	def name(self): 
@@ -61,7 +61,7 @@ cdef class c_multioutput:
 		return self._zones 
 
 	@property 
-	def tracers(self): 
+	def stars(self): 
 		""" 
 		Type :: VICE dataframe 
 
@@ -70,5 +70,5 @@ cdef class c_multioutput:
 		final zone numbers, and the metallicity by mass of each element in the 
 		simulation. 
 		""" 
-		return self._tracers  
+		return self._stars  
 

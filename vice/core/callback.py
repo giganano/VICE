@@ -122,6 +122,20 @@ class callback1:
 	def __call__(self, x): 
 		return self._function(x) 
 
+	def __repr__(self): 
+		""" 
+		Ensures that the name of the function the user defined prints rather 
+		than the name of this class, for clearer error messages. 
+		""" 
+		return self._function.__name__ 
+
+	def __str__(self): 
+		""" 
+		Ensures that the name of the function the user defined prints rather 
+		than the name of this class, for clearer error messages. 
+		""" 
+		return self._function.__name__ 
+
 	@property 
 	def function(self): 
 		""" 
@@ -231,6 +245,20 @@ class callback2:
 	@numerical 
 	def __call__(self, x, y): 
 		return self._function(x, y) 
+
+	def __repr__(self): 
+		""" 
+		Ensures that the name of the function the user defined prints rather 
+		than the name of this class, for clearer error messages. 
+		""" 
+		return self._function.__name__ 
+
+	def __str__(self): 
+		""" 
+		Ensures that the name of the function the user defined prints rather 
+		than the name of this class, for clearer error messages. 
+		""" 
+		return self._function.__name__ 
 
 	@property 
 	def function(self): 

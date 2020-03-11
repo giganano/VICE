@@ -127,6 +127,40 @@ Got: %s""" % (type(n_zones)))
 		""" 
 		return exc_value is None 
 
+	@staticmethod 
+	def from_output(arg): 
+		""" 
+		Obtain a multizone object from an output of one. 
+
+		Parameters 
+		========== 
+		arg :: str or vice.multioutput 
+			Either the path to the output or the output object itself 
+
+		Returns 
+		======= 
+		obj :: vice.multizone 
+			A multizone object with the same parameters as the one which 
+			produced the output. If arg is a plain output object or is a 
+			directory with singlezone output, a singlezone object will be 
+			returned instead. 
+
+		Raises 
+		====== 
+		Exceptions are raised by vice.mirror 
+
+		Notes 
+		===== 
+		This function simply calls vice.mirror, which handles this 
+		functionality for both singlezone and multizone objects. 
+
+		See Also 
+		======== 
+		vice.mirror 
+		""" 
+		from ..mirror import mirror 
+		return mirror(arg) 
+
 	@property 
 	def name(self): 
 		""" 

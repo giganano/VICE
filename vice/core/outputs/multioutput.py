@@ -117,7 +117,7 @@ class multioutput:
 		return self.__c_version.zones 
 
 	@property 
-	def tracers(self): 
+	def stars(self): 
 		""" 
 		Type :: VICE dataframe 
 
@@ -126,5 +126,5 @@ class multioutput:
 		final zone numbers, and the metallicity by mass of each element in the 
 		simulation. 
 		""" 
-		return self.__c_version.tracers  
+		return self.__c_version.stars   
 

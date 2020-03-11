@@ -6,6 +6,6 @@ from ..dataframe._base cimport base
 
 cdef class c_multioutput: 
 	cdef base _zones 
-	cdef fromfile _tracers 
+	cdef fromfile _stars 
 	cdef object _name 
 

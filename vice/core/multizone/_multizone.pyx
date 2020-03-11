@@ -11,10 +11,10 @@ from ..outputs import output
 from ...yields import agb 
 from ...yields import ccsne 
 from ...yields import sneia 
+from ..pickles import jar 
 from .. import _pyutils 
 import warnings 
 import numbers 
-import pickle 
 import sys 
 import os 
 if sys.version_info[:2] == (2, 7): 
@@ -28,16 +28,6 @@ try:
 	ModuleNotFoundError 
 except NameError: 
 	ModuleNotFoundError = ImportError 
-try: 
-	"""
-	dill extends the pickle module and allows functional attributes to be 
-	encoded. In later versions of python 3, dill.dump must be called instead 
-	of pickle.dump. All cases can be taken care of by overriding the native 
-	pickle module and letting dill masquerade as pickle. 
-	""" 
-	import dill as pickle 
-except (ModuleNotFoundError, ImportError): 
-	pass 
 from libc.stdlib cimport malloc 
 from libc.string cimport strlen 
 from ..singlezone cimport _singlezone 
@@ -282,8 +272,8 @@ a boolean. Got: %s""" % (type(value)))
 
 			# just do it #nike 
 			enrichment = _multizone.multizone_evolve(self._mz) 
-			self.save_zone_numbers() 
 			self.save_attributes() 
+			self.save_migration() 
 
 			# save yield settings and attributes 
 			for i in range(self._mz[0].mig[0].n_zones): 
@@ -681,43 +671,37 @@ artifacts.""" % (key), ScienceWarning)
 		else: 
 			pass 
 
-	def save_zone_numbers(self): 
-		""" 
-		Saves a dictionary of zone indeces to zone names once the simulation 
-		has ran for mirroring purposes. 
-		""" 
-		# splitting on '/' removes multizone name from each zone 
-		zone_numbers = dict(zip(
-			list(range(self.n_zones)), 
-			[self.zones[i].name.split('/')[-1] for i in range(self.n_zones)]
-		)) 
-		pickle.dump(
-			zone_numbers, 
-			open("%s.vice/zone_numbers.config" % (self.name), "wb"
-		)) 
-
 	def save_attributes(self): 
 		""" 
-		Saves the multizone parameters to the output file 
+		Saves the multizone parameters to the output directory  
 		""" 
-		params = {
+		attrs = {
 			"name": 			self.name, 
 			"n_zones": 			self.n_zones, 
 			"n_tracers": 		self.n_tracers, 
 			"simple": 			self.simple, 
 			"verbose": 			self.verbose 
 		} 
-		if "dill" in sys.modules: 
-			params["migration.gas"] = self.migration.gas 
-			params["migration.stars"] = self.migration.stars 
-		else: 
-			""" 
-			User doesn't have dill. Switch functional elements of migration 
-			matrices to 0.0 
-			""" 
-			params["migration.gas"] = self.copy_gas_migration() 
-			params["migration.stars"] = None 
-		pickle.dump(params, open("%s.vice/params.config" % (self.name), "wb")) 
+		attrs["zones"] = dict(zip(
+			list(range(self.n_zones)), 
+			[self.zones[i].name.split('/')[-1] for i in range(self.n_zones)] 
+		)) 
+		jar(attrs, name = "%s.vice/attributes" % (self.name)).close() 
+
+	def save_migration(self): 
+		""" 
+		Saves the migration parameters to the output directory 
+		""" 
+		attrs = {"stars": 		self.migration.stars} 
+		jar(attrs, name = "%s.vice/migration" % (self.name)).close() 
+		for i in range(self.n_zones): 
+			attrs = dict(zip(
+				[str(i) for i in range(self.n_zones)], 
+				self.migration.gas[i].tolist() 
+			)) 
+			jar(attrs, 
+				name = "%s.vice/migration/gas%d" % (self.name, i)).close() 
+
 
 	def copy_gas_migration(self): 
 		warn = False 

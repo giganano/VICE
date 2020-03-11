@@ -27,6 +27,7 @@ from ..dataframe import solar_z
 from ..dataframe import sources 
 from ..dataframe import base 
 from ..outputs import output 
+from ..pickles import jar 
 from ...yields import agb 
 from ...yields import ccsne 
 from ...yields import sneia 
@@ -34,7 +35,6 @@ from .. import _pyutils
 import math as m 
 import warnings 
 import numbers 
-import pickle 
 import sys 
 import os 
 if sys.version_info[:2] == (2, 7): 
@@ -48,16 +48,6 @@ try:
 	ModuleNotFoundError 
 except NameError: 
 	ModuleNotFoundError = ImportError 
-try: 
-	"""
-	dill extends the pickle module and allows functional attributes to be 
-	encoded. In later versions of python 3, dill.dump must be called instead 
-	of pickle.dump. All cases can be taken care of by overriding the native 
-	pickle module and letting dill masquerade as pickle. 
-	""" 
-	import dill as pickle 
-except (ModuleNotFoundError, ImportError): 
-	pass 
 
 # C imports 
 from libc.stdlib cimport malloc 
@@ -190,7 +180,7 @@ cdef class c_singlezone:
 		""" 
 		Returns the memory address of the associated SINGLEZONE struct in C. 
 		""" 
-		return _singlezone.singlezone_address(self._sz) 
+		return _singlezone.singlezone_address(self._sz)  
 
 	@property
 	def name(self):  
@@ -1686,17 +1676,6 @@ be lost.\nOutput directory: %s.vice\nOverwrite? (y | n) """ % (self.name))
 					sneia.settings[self.elements[i]] 
 				) 
 
-			# callback_1arg_setup(
-			# 	self._sz[0].elements[i][0].ccsne_yields[0].yield_, 
-			# 	ccsne.settings[self.elements[i]], 
-			# 	callback1_nan_inf 
-			# ) 
-			# callback_1arg_setup( 
-			# 	self._sz[0].elements[i][0].sneia_yields[0].yield_, 
-			# 	sneia.settings[self.elements[i]], 
-			# 	callback1_nan_inf 
-			# ) 
-
 			if callable(agb.settings[self.elements[i]]): 
 				self._callback_agb[i] = callback2_nan_inf(
 					agb.settings[self.elements[i]]
@@ -1817,85 +1796,33 @@ negative value for at least one timestep.""")
 
 	def save_yields(self): 
 		""" 
-		Writes the .config yield files to the output directory. 
+		Saves the yield settings as pickled objects 
 		""" 
-		# Take a snapshot of the current yield settings 
-		ccsne_yields = self._sz[0].n_elements * [None] 
-		sneia_yields = self._sz[0].n_elements * [None] 
-		agb_yields = self._sz[0].n_elements * [None] 
-		for i in range(self._sz[0].n_elements): 
-			ccsne_yields[i] = ccsne.settings[self.elements[i]] 
-			sneia_yields[i] = sneia.settings[self.elements[i]] 
-			agb_yields[i] = agb.settings[self.elements[i]] 
-
-		# Turn them back into dictionaries 
-		ccsne_yields = dict(zip(self.elements, ccsne_yields)) 
-		sneia_yields = dict(zip(self.elements, sneia_yields)) 
-		agb_yields = dict(zip(self.elements, agb_yields)) 
-
-		def forget_functionals(settings, name): 
-			""" 
-			Modifies local copy of functional yield to None in the case that 
-			dill is not installed. 
-
-			Parameters 
-			========== 
-			settings :: dict 
-				The local copy of the current settings 
-			name :: str 
-				The name of the enrichment channel 
-
-			Returns 
-			======= 
-			A (modified, if necessary) copy of the settings 
-
-			Raises 
-			====== 
-			UserWarning :: 
-				::	Dill is not installed and there's a functional yield 
-			""" 
-			encoded = tuple(filter(lambda x: callable(settings[x.lower()]), 
-				self.elements)) 
-			if len(encoded) > 0: 
-				if "dill" not in sys.modules: 
-					msg = """\
-Encoding functional yields from %s along with VICE outputs requires the \
-package dill (installable via pip). Yields for the following elements will \
-not be saved: """ % (name) 
-					for i in encoded: 
-						msg += "%s " % (i) 
-						settings[i.lower()] = None 
-					warnings.warn(msg, UserWarning) 
-				else: 
-					pass 
-			else: 
-				pass 
-			return settings 
-
-		ccsne_yields = forget_functionals(ccsne_yields, "CCSNe") 
-		sneia_yields = forget_functionals(sneia_yields, "SNe Ia") 
-		agb_yields = forget_functionals(agb_yields, "AGB stars") 
-
-		# pickle the dataframes 
-		pickle.dump(ccsne_yields, open("%s.vice/ccsne_yields.config" % (
-			self.name), "wb")) 
-		pickle.dump(sneia_yields, open("%s.vice/sneia_yields.config" % (
-			self.name), "wb")) 
-		pickle.dump(agb_yields, open("%s.vice/agb_yields.config" % (
-			self.name), "wb")) 
+		if os.path.exists("%s.vice/yields" % (self.name)): 
+			os.system("rm -rf %s.vice/yields" % (self.name)) 
+		os.system("mkdir %s.vice/yields" % (self.name)) 
+		ccsne_yields = dict(zip(
+			self.elements, 
+			[ccsne.settings[i] for i in self.elements] 
+		)) 
+		sneia_yields = dict(zip(
+			self.elements, 
+			[sneia.settings[i] for i in self.elements] 
+		)) 
+		agb_yields = dict(zip(
+			self.elements, 
+			[agb.settings[i] for i in self.elements] 
+		)) 
+		jar(ccsne_yields, name = "%s.vice/yields/ccsne" % (self.name)).close() 
+		jar(sneia_yields, name = "%s.vice/yields/sneia" % (self.name)).close() 
+		jar(agb_yields, name = "%s.vice/yields/agb" % (self.name)).close() 
 
 
 	def save_attributes(self): 
 		""" 
-		Saves the .config file to the output directory containing all of the 
-		attributes. 
+		Saves the attributes of this class as pickled objects. 
 		""" 
-
-		"""
-		Passing this dictionary as **kwargs to self.__init__ initializes the 
-		exact same singlezone object. 
-		""" 
-		params = {
+		attrs = { 
 			"agb_model":			self.agb_model,  
 			"bins": 				self.bins, 
 			"delay": 				self.delay, 
@@ -1923,46 +1850,11 @@ not be saved: """ % (name)
 			"tau_star": 			self.tau_star, 
 			"verbose": 				self.verbose, 
 			"Z_solar": 				self.Z_solar, 
-			"Zin": 					self.Zin
+			"Zin": 					self.Zin 
 		} 
- 
-		if "dill" not in sys.modules: 
-			# user doesn't have dill. functional attributes switch to None 
-			functional = [] 
-			for i in params.keys(): 
-				""" 
-				Check for callable functions in evolutionary_settings 
-				attributes 
-				""" 
-				if isinstance(params[i], evolutionary_settings): 
-					# can't pickle cdef objects, so pickle the dictionaries 
-					params[i] = params[i].todict() 
-					for j in params[i].keys(): 
-						if callable(params[i][j]): 
-							params[i][j] = None 
-							functional.append("%s(%s)" % (i, j)) 
-						else: 
-							continue 
-				elif callable(params[i]): 
-					params[i] = None 
-					functional.append(i) 
-				else: 
-					continue 
-
-			if len(functional) > 0: 
-				message = """\
-Saving functional attributes within VICE outputs requires dill (installable \
-via pip). The following functional attributes will not be saved with this \
-output: """ 
-				for i in functional: 
-					message += "%s " % (i) 
-				warnings.warn(message, UserWarning) 
-			else: 
-				pass 
-		else: 
-			pass 
-
-		pickle.dump(params, open("%s.vice/params.config" % (self.name), "wb")) 
+		for i in attrs.keys(): 
+			if isinstance(attrs[i], base): attrs[i] = attrs[i].todict() 
+		jar(attrs, name = "%s.vice/attributes" % (self.name)).close() 
 
 
 	def nsns_warning(self): 

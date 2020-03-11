@@ -64,10 +64,8 @@ def _check_singlezone_output(name):
 	singlezone_output_files = [
 		"history.out", 
 		"mdf.out", 
-		"agb_yields.config", 
-		"ccsne_yields.config", 
-		"sneia_yields.config", 
-		"params.config" 
+		"attributes", 
+		"yields" 
 	]
 	name = _get_name(name) 
 	if not os.path.exists(name): # outputs not even there 
@@ -105,8 +103,14 @@ def _is_multizone(filename):
 		if os.path.isdir(filename): 
 			zones = list(filter(lambda x: x.endswith(".vice"), 
 				os.listdir(filename))) 
+			expected_files = [
+				"attributes", 
+				"migration", 
+				"tracers.out" 
+			]
 			return (len(zones) >= 2 and 
-				"zone_numbers.config" in os.listdir(filename)) 
+				# "zone_numbers.config" in os.listdir(filename)) 
+				all(map(lambda x: x in os.listdir(filename), expected_files))) 
 		else: 
 			return False 
 	else: 
