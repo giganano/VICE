@@ -45,47 +45,47 @@ if not __VICE_SETUP__:
 	from . import _ssp as ssp 
 	from . import _tracer as tracer 
 
-	def test(run = True): 
+	@moduletest 
+	def test(): 
 		""" 
 		Runs all test functions in this module 
 		""" 
-		test = moduletest("VICE object memory management") 
-		test.new(agb.test_agb_grid_constructor()) 
-		test.new(agb.test_agb_grid_destructor()) 
-		test.new(ccsne.test_ccsne_yield_specs_constructor()) 
-		test.new(ccsne.test_ccsne_yield_specs_destructor()) 
-		test.new(channel.test_channel_constructor()) 
-		test.new(channel.test_channel_destructor()) 
-		test.new(dataset.test_dataset_constructor()) 
-		test.new(dataset.test_dataset_destructor()) 
-		test.new(element.test_element_constructor()) 
-		test.new(element.test_element_destructor()) 
-		test.new(fromfile.test_fromfile_constructor()) 
-		test.new(fromfile.test_fromfile_destructor()) 
-		test.new(imf.test_imf_constructor()) 
-		test.new(imf.test_imf_destructor()) 
-		test.new(integral.test_integral_constructor()) 
-		test.new(integral.test_integral_destructor()) 
-		test.new(ism.test_ism_constructor()) 
-		test.new(ism.test_ism_destructor()) 
-		test.new(mdf.test_mdf_constructor()) 
-		test.new(mdf.test_mdf_destructor()) 
-		test.new(migration.test_migration_constructor()) 
-		test.new(migration.test_migration_destructor()) 
-		test.new(multizone.test_multizone_constructor()) 
-		test.new(multizone.test_multizone_destructor()) 
-		test.new(singlezone.test_singlezone_constructor()) 
-		test.new(singlezone.test_singlezone_destructor()) 
-		test.new(sneia.test_sneia_yield_specs_constructor()) 
-		test.new(sneia.test_sneia_yield_specs_destructor()) 
-		test.new(ssp.test_ssp_constructor()) 
-		test.new(ssp.test_ssp_destructor()) 
-		test.new(tracer.test_tracer_constructor()) 
-		test.new(tracer.test_tracer_destructor()) 
-		if run: 
-			test.run(print_results = True) 
-		else: 
-			return test 
+		return ["VICE object memory management", 
+			[ 
+				agb.test_agb_grid_constructor(), 
+				agb.test_agb_grid_destructor(), 
+				ccsne.test_ccsne_yield_specs_constructor(), 
+				ccsne.test_ccsne_yield_specs_destructor(), 
+				channel.test_channel_constructor(), 
+				channel.test_channel_destructor(), 
+				dataset.test_dataset_constructor(), 
+				dataset.test_dataset_destructor(), 
+				element.test_element_constructor(), 
+				element.test_element_destructor(), 
+				fromfile.test_fromfile_constructor(), 
+				fromfile.test_fromfile_destructor(), 
+				imf.test_imf_constructor(), 
+				imf.test_imf_destructor(), 
+				integral.test_integral_constructor(), 
+				integral.test_integral_destructor(), 
+				ism.test_ism_constructor(), 
+				ism.test_ism_destructor(), 
+				mdf.test_mdf_constructor(), 
+				mdf.test_mdf_destructor(), 
+				migration.test_migration_constructor(), 
+				migration.test_migration_destructor(), 
+				multizone.test_multizone_constructor(), 
+				multizone.test_multizone_destructor(), 
+				singlezone.test_singlezone_constructor(), 
+				singlezone.test_singlezone_destructor(), 
+				sneia.test_sneia_yield_specs_constructor(), 
+				sneia.test_sneia_yield_specs_destructor(), 
+				ssp.test_ssp_constructor(), 
+				ssp.test_ssp_destructor(), 
+				tracer.test_tracer_constructor(), 
+				tracer.test_tracer_destructor() 
+			] 
+		] 
 
 else: 
 	pass 

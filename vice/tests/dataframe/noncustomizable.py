@@ -10,44 +10,56 @@ from .._test_utils import moduletest
 from .._test_utils import unittest 
 
 
-def test(run = True): 
+@moduletest 
+def test(): 
 	""" 
 	Run all tests on the noncustomizable derived class 
 	""" 
-	test = moduletest("Noncustomizable derived class") 
-	test.new(unittest("Initialization", test_initialization)) 
-	test.new(unittest("Setitem", test_setitem)) 
-	if run: 
-		test.run() 
-	else: 
-		return test 
+	return ["Noncustomizable derived class", 
+		[ 
+			test_initialization(), 
+			test_setitem() 
+		] 
+	] 
 
 
+@unittest 
 def test_initialization(): 
 	""" 
-	Tests the initialization of the noncustomizable derived class 
+	Initialization unit test 
 	""" 
-	global _TEST_FRAME_ 
-	_TEST_FRAME_ = dict(zip(
-		_RECOGNIZED_ELEMENTS_, 
-		len(_RECOGNIZED_ELEMENTS_) * [1.] 
-	)) 
-	try: 
-		_TEST_FRAME_ = noncustomizable(_TEST_FRAME_, "test") 
-	except: 
-		return False 
-	return isinstance(_TEST_FRAME_, noncustomizable) 
+	def test(): 
+		""" 
+		Tests the initialization of the noncustomizable derived class 
+		""" 
+		global _TEST_FRAME_ 
+		_TEST_FRAME_ = dict(zip(
+			_RECOGNIZED_ELEMENTS_, 
+			len(_RECOGNIZED_ELEMENTS_) * [1.] 
+		)) 
+		try: 
+			_TEST_FRAME_ = noncustomizable(_TEST_FRAME_, "test") 
+		except: 
+			return False 
+		return isinstance(_TEST_FRAME_, noncustomizable) 
+	return ["Initialization", test] 
 
 
+@unittest 
 def test_setitem(): 
 	""" 
-	Test the setitem function, which should always throw a TypeError 
+	__setitem__ unit test 
 	""" 
-	try: 
-		_TEST_FRAME_[_RECOGNIZED_ELEMENTS_[0]] = 0.5 
-	except TypeError: 
-		return True 
-	except: 
+	def test(): 
+		""" 
+		Test the setitem function, which should always throw a TypeError 
+		""" 
+		try: 
+			_TEST_FRAME_[_RECOGNIZED_ELEMENTS_[0]] = 0.5 
+		except TypeError: 
+			return True 
+		except: 
+			return False 
 		return False 
-	return False 
+	return ["Setitem", test] 
 

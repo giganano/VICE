@@ -47,16 +47,25 @@ class generator:
 		return success 
 
 
-def test(run = True): 
+@moduletest 
+def test(): 
 	""" 
 	Run the tests on the AGB yield grid functions 
 	""" 
-	test = moduletest("VICE AGB star yield grid lookup") 
-	test.new(unittest("Cristallo et al. (2011)", 
-		generator(study = "cristallo11"))) 
-	test.new(unittest("Karakas (2010)", generator(study = "karakas10"))) 
-	if run: 
-		test.run() 
-	else: 
-		return test 
+	return ["VICE AGB star yield grid lookup", 
+		[ 
+			trial("Cristallo et al. (2011)", generator(study = "cristallo11")), 
+			trial("Karakas (2010)", generator(study = "karakas10")) 
+		] 
+	] 
+
+
+@unittest 
+def trial(label, generator_): 
+	""" 
+	Obtain a unittest object for a singlezone trial test 
+	""" 
+	def test_(): 
+		generator_() 
+	return [label, test_] 
 

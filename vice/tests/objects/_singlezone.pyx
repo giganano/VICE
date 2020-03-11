@@ -9,17 +9,18 @@ from .._test_utils import unittest
 from . cimport _singlezone 
 
 
+@unittest 
 def test_singlezone_constructor(): 
 	""" 
 	Tests the singlezone constructor function at vice/src/objects/singlezone.h 
 	""" 
-	return unittest("Singlezone constructor", 
-		_singlezone.test_singlezone_initialize) 
+	return ["Singlezone constructor", _singlezone.test_singlezone_initialize] 
 
 
+@unittest 
 def test_singlezone_destructor(): 
 	""" 
 	Tests the singlezone destructor function at vice/src/objects/singlezone.h 
 	""" 
-	return unittest("Singlezone destructor", _singlezone.test_singlezone_free) 
+	return ["Singlezone destructor", _singlezone.test_singlezone_free] 
 

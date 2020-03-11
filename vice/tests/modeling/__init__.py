@@ -13,16 +13,16 @@ if not __VICE_SETUP__:
 	from .._test_utils import moduletest 
 	from . import likelihood 
 
+	@moduletest 
 	def test(run = True): 
 		""" 
 		Run the tests over this module 
 		""" 
-		test = moduletest("VICE modeling features") 
-		test.new(likelihood.test(run = False)) 
-		if run: 
-			test.run(print_results = True) 
-		else: 
-			return test   
+		return ["VICE modeling features", 
+			[ 
+				likelihood.test(run = False) 
+			] 
+		] 
 
 else: 
 	pass 

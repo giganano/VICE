@@ -9,18 +9,18 @@ from .._test_utils import unittest
 from . cimport _ssp 
 
 
+@unittest 
 def test_ssp_constructor(): 
 	""" 
 	Tests the SSP constructor function at vice/src/objects/ssp.h 
 	""" 
-	return unittest("Single stellar population constructor", 
-		_ssp.test_ssp_initialize) 
+	return ["Single stellar population constructor", _ssp.test_ssp_initialize] 
 
 
+@unittest 
 def test_ssp_destructor(): 
 	""" 
 	Tests the SSP destructor function at vice/src/objects/ssp.h 
 	""" 
-	return unittest("Single stellar population destructor", 
-		_ssp.test_ssp_free) 
+	return ["Single stellar population destructor", _ssp.test_ssp_free] 
 

@@ -8,9 +8,10 @@ from .._test_utils import unittest
 from . cimport _ccsne 
 
 
+@unittest 
 def test_ccsn_yield_grid_reader(): 
 	""" 
 	Tests the CCSN yield grid reader at vice/src/io/ccsne.h 
 	""" 
-	return unittest("CCSN yield grid reader", _ccsne.test_cc_yield_grid) 
+	return ["CCSN yield grid reader", _ccsne.test_cc_yield_grid] 
 

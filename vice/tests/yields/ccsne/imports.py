@@ -11,74 +11,103 @@ from ..._test_utils import unittest
 from ....yields import ccsne 
 
 
-def test(run = True): 
+@moduletest 
+def test(): 
 	""" 
 	Test the yield import functions 
 	""" 
-	test = moduletest("VICE CCSN yield import functions") 
-	test.new(unittest("Limongi & Chieffi (2018)", test_LC18_import)) 
-	test.new(unittest("Chieffi & Limongi (2013)", test_CL13_import)) 
-	test.new(unittest("Chieffi & Limongi (2004)", test_CL04_import)) 
-	test.new(unittest("Woosley & Weaver (1995)", test_WW95_import)) 
-	test.new(unittest("Nomoto, Kobayashi & Tominaga (2013)", 
-		test_NKT13_import)) 
-	if run: 
-		test.run() 
-	else: 
-		return test 
+	return ["VICE CCSN yield import functions", 
+		[ 
+			test_LC18_import(), 
+			test_CL13_import(), 
+			test_CL04_import(), 
+			test_WW95_import(), 
+			test_NKT13_import() 
+		] 
+	] 
 
 
+@unittest 
 def test_LC18_import(): 
 	""" 
-	Test the Limongi & Chieffi (2018) import 
+	from vice.yields.ccsne import LC18 unit test 
 	""" 
-	try: 
-		from ....yields.ccsne import LC18 
-	except: 
-		return False 
-	return True 
+	def test(): 
+		""" 
+		Test the Limongi & Chieffi (2018) import 
+		""" 
+		try: 
+			from ....yields.ccsne import LC18 
+		except: 
+			return False 
+		return True 
+	return ["Limongi & Chieffi (2018)", test] 
 
 
+@unittest 
 def test_CL13_import(): 
 	""" 
-	Test the Chieffi & Limongi (2013) import 
+	from vice.yields.ccsne import CL13 unit test 
 	""" 
-	try: 
-		from ....yields.ccsne import CL13 
-	except: 
-		return False 
-	return True 
+	def test(): 
+		""" 
+		Test the Chieffi & Limongi (2013) import 
+		""" 
+		try: 
+			from ....yields.ccsne import CL13 
+		except: 
+			return False 
+		return True 
+	return ["Chieffi & Limongi (2013)", test] 
 
 
+@unittest 
 def test_CL04_import(): 
 	""" 
-	Test the Chieffi & Limongi (2004) import 
+	from vice.yields.ccsne import CL04 unit test 
 	""" 
-	try: 
-		from ....yields.ccsne import CL04 
-	except: 
-		return False 
-	return True 
+	def test(): 
+		""" 
+		Test the Chieffi & Limongi (2004) import 
+		""" 
+		try: 
+			from ....yields.ccsne import CL04 
+		except: 
+			return False 
+		return True 
+	return ["Chieffi & Limongi (2004)", test] 
 
 
+@unittest 
 def test_WW95_import(): 
 	""" 
-	Test the Woosley & Weaver (1995) import 
+	from vice.yields.ccsne import WW95 unit test 
 	""" 
-	try: 
-		from ....yields.ccsne import WW95 
-	except: 
-		return False 
-	return True 
+	def test(): 
+		""" 
+		Test the Woosley & Weaver (1995) import 
+		""" 
+		try: 
+			from ....yields.ccsne import WW95 
+		except: 
+			return False 
+		return True 
+	return ["Woosley & Weaver (1995)", test] 
 
 
+@unittest 
 def test_NKT13_import(): 
 	""" 
-	Test the Nomoto, Kobayashi & Tominaga (2013) import 
+	from vice.yields.ccsne import NKT13 unit test 
 	""" 
-	try: 
-		from ....yields.ccsne import NKT13 
-	except: 
-		return False 
-	return True 
+	def test(): 
+		""" 
+		Test the Nomoto, Kobayashi & Tominaga (2013) import 
+		""" 
+		try: 
+			from ....yields.ccsne import NKT13 
+		except: 
+			return False 
+		return True 
+	return ["Nomoto, Kobayashi & Tominaga (2013)", test] 
 

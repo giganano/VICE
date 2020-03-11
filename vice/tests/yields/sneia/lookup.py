@@ -18,49 +18,61 @@ _MODEL_ = {
 }
 
 
-def test(run = True): 
+@moduletest 
+def test(): 
 	""" 
 	Run all tests in this module 
 	""" 
-	test = moduletest("SN Ia yield lookup functions") 
-	test.new(unittest("Single Ia mass yield", test_single)) 
-	test.new(unittest("IMF-averaged calculator", test_fractional)) 
-	if run: 
-		test.run() 
-	else: 
-		return test 
+	return ["SN Ia yield lookup functions", 
+		[ 
+			test_single(), 
+			test_fractional() 
+		] 
+	] 
 
 
+@unittest 
 def test_single(): 
 	""" 
-	Test the single SN Ia mass yield lookup function 
+	vice.yields.sneia.single unit test 
 	""" 
-	success = True 
-	try: 
-		for i in _RECOGNIZED_ELEMENTS_: 
-			for j in _STUDY_: 
-				for k in _MODEL_[j]: 
-					x = single(i, study = j, model = k) 
-					assert isinstance(x, numbers.Number) 
-					assert x >= 0 
-	except: 
-		success = False 
-	return success 
+	def test(): 
+		""" 
+		Test the single SN Ia mass yield lookup function 
+		""" 
+		success = True 
+		try: 
+			for i in _RECOGNIZED_ELEMENTS_: 
+				for j in _STUDY_: 
+					for k in _MODEL_[j]: 
+						x = single(i, study = j, model = k) 
+						assert isinstance(x, numbers.Number) 
+						assert x >= 0 
+		except: 
+			success = False 
+		return success 
+	return ["Single Ia mass yield", test] 
 
 
+@unittest 
 def test_fractional(): 
 	""" 
-	Test the fractional SN Ia mass yield function 
+	vice.yields.sneia.fractional unit test 
 	""" 
-	success = True 
-	try: 
-		for i in _RECOGNIZED_ELEMENTS_: 
-			for j in _STUDY_: 
-				for k in _MODEL_[j]: 
-					x = fractional(i, study = j, model = k) 
-					assert isinstance(x, numbers.Number) 
-					assert 0 <= x < 1 
-	except: 
-		success = False 
-	return success 
+	def test(): 
+		""" 
+		Test the fractional SN Ia mass yield function 
+		""" 
+		success = True 
+		try: 
+			for i in _RECOGNIZED_ELEMENTS_: 
+				for j in _STUDY_: 
+					for k in _MODEL_[j]: 
+						x = fractional(i, study = j, model = k) 
+						assert isinstance(x, numbers.Number) 
+						assert 0 <= x < 1 
+		except: 
+			success = False 
+		return success 
+	return ["IMF-averaged calculator", test] 
 

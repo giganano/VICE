@@ -7,44 +7,51 @@ from ....yields.ccsne.errors import _RECOGNIZED_STUDIES_
 from ....yields.ccsne.errors import _MOVERH_ 
 from ....yields.ccsne.errors import _ROTATION_ 
 from ....yields.ccsne import table 
+from ..._test_utils import unittest 
 
 
+@unittest 
 def test_table(): 
 	""" 
-	Test the table function at vice/yields/ccsne/grid_reader.py 
+	vice.yields.ccsne.table unit test 
 	""" 
-	try: 
-		for i in _RECOGNIZED_ELEMENTS_: 
-			for j in _RECOGNIZED_STUDIES_: 
-				for k in _MOVERH_[j]: 
-					for l in _ROTATION_[j]: 
-						params = dict(
-							study = j, 
-							MoverH = k, 
-							rotation = l 
-						) 
-						""" 
-						If a LookupError is raised, ensure that its due to 
-						the current study not reporting yields for the 
-						specified element. 
-						""" 
-						try: 
-							assert isinstance(table(i, isotopic = True, 
-								**params), ccsn_yield_table) 
-						except LookupError as exc: 
-							if i not in exc.args[0]: 
-								return False 
-							else: 
-								pass 
-						try: 
-							assert isinstance(table(i, isotopic = False, 
-								**params), ccsn_yield_table) 
-						except LookupError as exc: 
-							if i not in exc.args[0]: 
-								return False 
-							else: 
-								pass
-		return True 
-	except: 
-		return False 
+	def test(): 
+		""" 
+		Test the table function at vice/yields/ccsne/grid_reader.py 
+		""" 
+		try: 
+			for i in _RECOGNIZED_ELEMENTS_: 
+				for j in _RECOGNIZED_STUDIES_: 
+					for k in _MOVERH_[j]: 
+						for l in _ROTATION_[j]: 
+							params = dict(
+								study = j, 
+								MoverH = k, 
+								rotation = l 
+							) 
+							""" 
+							If a LookupError is raised, ensure that its due to 
+							the current study not reporting yields for the 
+							specified element. 
+							""" 
+							try: 
+								assert isinstance(table(i, isotopic = True, 
+									**params), ccsn_yield_table) 
+							except LookupError as exc: 
+								if i not in exc.args[0]: 
+									return False 
+								else: 
+									pass 
+							try: 
+								assert isinstance(table(i, isotopic = False, 
+									**params), ccsn_yield_table) 
+							except LookupError as exc: 
+								if i not in exc.args[0]: 
+									return False 
+								else: 
+									pass
+			return True 
+		except: 
+			return False 
+	return ["Yields table", test] 
 

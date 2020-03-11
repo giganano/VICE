@@ -60,17 +60,25 @@ class generator:
 		return success 
 
 
-def test(run = True): 
+@moduletest 
+def test(): 
 	""" 
 	Run the trial tests of the single_stellar_population function 
 	""" 
-	test = moduletest("VICE single stellar population enrichment trial tests") 
+	trials = [] 
 	for i in _IMF_: 
-		test.new(unittest("IMF = %s" % (str(i)), generator(IMF = i))) 
+		trials.append(trial("IMF = %s" % (str(i)), generator(IMF = i))) 
 	for i in _RIA_: 
-		test.new(unittest("RIa = %s" % (str(i)), generator(RIa = i))) 
-	if run: 
-		test.run() 
-	else: 
-		return test 
+		trials.append(trial("RIa = %s" % (str(i)), generator(RIa = i))) 
+	return ["VICE single stellar population enrichment trial tests", trials] 
+
+
+@unittest 
+def trial(label, generator_): 
+	""" 
+	Obtain a unittest object for a single_stellar_population trial test 
+	""" 
+	def test_(): 
+		generator_() 
+	return [label, test_] 
 

@@ -9,18 +9,18 @@ from .._test_utils import unittest
 from . cimport _dataset 
 
 
+@unittest 
 def test_dataset_constructor(): 
 	""" 
 	Test the dataset constructor function at vice/src/objects/dataset.h 
 	""" 
-	return unittest("Dataset destructor", 
-		_dataset.test_dataset_initialize) 
+	return ["Dataset destructor", _dataset.test_dataset_initialize] 
 
 
+@unittest 
 def test_dataset_destructor(): 
 	""" 
 	Test the dataset destructor function at vice/src/objects/dataset.h 
 	""" 
-	return unittest("Dataset destructor", 
-		_dataset.test_dataset_free) 
+	return ["Dataset destructor", _dataset.test_dataset_free] 
 

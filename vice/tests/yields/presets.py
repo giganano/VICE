@@ -17,21 +17,80 @@ test_preset_import unittest function
 _DUMMY_FILENAME_ = "vice_dummy_preset.py" 
 
 
-def test(run = True): 
+@moduletest
+def test(): 
 	""" 
 	Test all preset functions 
 	""" 
-	test = moduletest("VICE yield preset functions") 
-	test.new(unittest("Save preset", test_save)) 
-	test.new(unittest("Load preset", test_preset_import)) 
-	test.new(unittest("Remove preset", test_remove)) 
-	if run: 
-		spawn_dummy_yield_file() 
-		test.run() 
-		remove_dummy_yield_file() 
-	else: 
-		return test 
+	return ["VICE yield preset functions", 
+		[ 
+			test_save(), 
+			test_preset_import(), 
+			test_remove() 
+		] 
+	] 
 
+
+@unittest 
+def test_save(): 
+	""" 
+	vice.yields.presets.save unit test 
+	""" 
+	def test(): 
+		""" 
+		Test the function which saves the yield file 
+		""" 
+		try: 
+			spawn_dummy_yield_file() 
+			presets.save(_DUMMY_FILENAME_) 
+			remove_dummy_yield_file() 
+		except: 
+			return False 
+		return True 
+	return ["Save preset", test] 
+
+
+@unittest 
+def test_preset_import(): 
+	""" 
+	from vice.yields.presets import ______ unit test 
+	""" 
+	def test(): 
+		""" 
+		Test the import of the preset yield file 
+		""" 
+		try: 
+			from vice.yields.presets import vice_dummy_preset 
+		except: 
+			return False 
+		try: 
+			for i in _RECOGNIZED_ELEMENTS_: 
+				if ccsne.settings[i] != 0.001: return False 
+				if sneia.settings[i] != 0.001: return False 
+			ccsne.settings.restore_defaults() 
+			sneia.settings.restore_defaults() 
+		except: 
+			return False 
+		return True 
+	return ["Load preset", test] 
+
+
+@unittest 
+def test_remove(): 
+	""" 
+	vice.yields.presets.remove unit test 
+	""" 
+	def test(): 
+		""" 
+		Test the function which removes the yield file 
+		""" 
+		try: 
+			presets.remove("vice_dummy_preset.py", force = True) 
+		except: 
+			return False 
+		return "vice_dummy_preset.py" not in os.listdir("%syields/presets/" % (
+			_DIRECTORY_)) 
+	return ["Remove preset", test] 
 
 
 def spawn_dummy_yield_file(filename = _DUMMY_FILENAME_): 
@@ -55,46 +114,4 @@ def remove_dummy_yield_file(filename = _DUMMY_FILENAME_):
 	Remove the dummy yield file 
 	""" 
 	os.system("rm -f %s" % (filename)) 
-
-
-def test_save(): 
-	""" 
-	Test the function which saves the yield file 
-	""" 
-	try: 
-		presets.save(_DUMMY_FILENAME_) 
-	except: 
-		return False 
-	return True 
-
-
-def test_preset_import(): 
-	""" 
-	Test the import of the preset yield file 
-	""" 
-	try: 
-		from vice.yields.presets import vice_dummy_preset 
-	except: 
-		return False 
-	try: 
-		for i in _RECOGNIZED_ELEMENTS_: 
-			if ccsne.settings[i] != 0.001: return False 
-			if sneia.settings[i] != 0.001: return False 
-		ccsne.settings.restore_defaults() 
-		sneia.settings.restore_defaults() 
-	except: 
-		return False 
-	return True 
-
-
-def test_remove(): 
-	""" 
-	Test the function which removes the yield file 
-	""" 
-	try: 
-		presets.remove("vice_dummy_preset.py", force = True) 
-	except: 
-		return False 
-	return "vice_dummy_preset.py" not in os.listdir("%syields/presets/" % (
-		_DIRECTORY_)) 
 

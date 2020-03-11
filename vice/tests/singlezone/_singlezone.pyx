@@ -27,738 +27,715 @@ cdef class singlezone_tester:
 		super().__init__(**{}) 
 
 
+	@unittest 
 	def test_name_setter(self): 
-		return unittest("Name setter", self.name_setter) 
+		def test(): 
+			""" 
+			Tests the name.setter function 
 
-
-	def name_setter(self): 
-		""" 
-		Tests the name.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			self.name = "test" 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.name = "test" 
+			except: 
+				return False 
 			return self.name == "test" 
-		except: 
-			return False 
+		return ["Name setter", test] 
 
 
+	@unittest 
 	def test_func_setter(self): 
-		return unittest("Func setter", self.func_setter) 
+		def test(): 
+			""" 
+			Tests the func.setter function 
 
-
-	def func_setter(self): 
-		""" 
-		Tests the func.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			x = lambda t: 9.1 
-			self.func = x 
-			result = self.func == x 
-			self.func = _DEFAULT_FUNC_ 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				x = lambda t: 9.1 
+				self.func = x 
+				result = self.func == x 
+				self.func = _DEFAULT_FUNC_ 
+			except: 
+				return False 
 			return result 
-		except: 
-			return False 
+		return ["Func setter", test] 
 
 
+	@unittest 
 	def test_mode_setter(self): 
-		return unittest("Mode setter", self.mode_setter) 
+		def test(): 
+			""" 
+			Tests the mode.setter function 
 
-
-	def mode_setter(self): 
-		""" 
-		Tests the mode.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			self.mode = "gas" 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.mode = "gas" 
+			except: 
+				return False 
 			return self.mode == "gas" 
-		except: 
-			return False 
+		return ["Mode setter", test] 
 
 
+	@unittest 
 	def test_verbose_setter(self): 
-		return unittest("Verbosity setter", self.verbose_setter) 
+		def test(): 
+			""" 
+			Tests the verbose.setter function 
 
-
-	def verbose_setter(self): 
-		""" 
-		Tests the verbose.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			self.verbose = True 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.verbose = True 
+			except: 
+				return False 
 			return self.verbose 
-		except: 
-			return False 
+		return ["Verbosity setter", test] 
 
 
+	@unittest 
 	def test_elements_setter(self): 
-		return unittest("Elements setter", self.elements_setter) 
+		def test(): 
+			""" 
+			Tests the elements.setter function 
 
-
-	def elements_setter(self): 
-		""" 
-		Tests the elements.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			self.elements = ["c", "n", "o"] 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.elements = ["c", "n", "o"] 
+			except: 
+				return False 
 			return len(self.elements) == 3 and self.elements == ("c", "n", "o") 
-		except: 
-			return False 
+		return ["Elements setter", test] 
 
 
+	@unittest 
 	def test_imf_setter(self): 
-		return unittest("IMF setter", self.imf_setter) 
+		def test(): 
+			""" 
+			Tests the IMF.setter function 
 
-
-	def imf_setter(self): 
-		""" 
-		Tests the IMF.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			custom = lambda m: m**-2 
-			self.IMF = custom 
-			x = self.IMF == custom 
-			self.IMF = "kroupa" 
-			y = self.IMF == "kroupa" 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				custom = lambda m: m**-2 
+				self.IMF = custom 
+				x = self.IMF == custom 
+				self.IMF = "kroupa" 
+				y = self.IMF == "kroupa" 
+			except: 
+				return False 
 			return x and y 
-		except: 
-			return False 
+		return ["IMF setter", test] 
 
 
+	@unittest 
 	def test_eta_setter(self): 
-		return unittest("Eta setter", self.eta_setter) 
+		def test(): 
+			""" 
+			Tests the eta.setter function 
 
-
-	def eta_setter(self): 
-		""" 
-		Tests the eta.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			custom = lambda t: 0.5 * t 
-			self.eta = custom 
-			x = self.eta == custom 
-			self.eta = 1 
-			y = self.eta == 1 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				custom = lambda t: 0.5 * t 
+				self.eta = custom 
+				x = self.eta == custom 
+				self.eta = 1 
+				y = self.eta == 1 
+			except: 
+				return False 
 			return x and y 
-		except: 
-			return False 
+		return ["Eta setter", test]  
 
 
+	@unittest 
 	def test_enhancement_setter(self): 
-		return unittest("Enhancement setter", self.enhancement_setter) 
+		def test(): 
+			""" 
+			Tests the enhancement.setter function 
 
-
-	def enhancement_setter(self): 
-		""" 
-		Tests the enhancement.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			custom = lambda t: 0.5 * t 
-			self.enhancement = custom 
-			x = self.enhancement == custom 
-			self.enhancement = 1 
-			y = self.enhancement == 1 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				custom = lambda t: 0.5 * t 
+				self.enhancement = custom 
+				x = self.enhancement == custom 
+				self.enhancement = 1 
+				y = self.enhancement == 1 
+			except: 
+				return False 
 			return x and y 
-		except: 
-			return False 
+		return ["Enhancement setter", test] 
 
 
+	@unittest 
 	def test_entrainment(self): 
-		return unittest("Entrainment settings", self.entrainment_settings) 
+		def test(): 
+			""" 
+			Tests the entrainment settings 
+
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				return (isinstance(self.entrainment.ccsne, dataframe) and 
+					isinstance(self.entrainment.sneia, dataframe) and 
+					isinstance(self.entrainment.agb, dataframe)) 
+			except: 
+				return False 
+		return ["Entrainment settings", test] 
 
 
-	def entrainment_settings(self): 
-		""" 
-		Tests the entrainment settings 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			return (isinstance(self.entrainment.ccsne, dataframe) and 
-				isinstance(self.entrainment.sneia, dataframe) and 
-				isinstance(self.entrainment.agb, dataframe)) 
-		except: 
-			return False 
-
-
+	@unittest 
 	def test_zin_setter(self): 
-		return unittest("Inflow metallicity setter", self.zin_setter) 
+		def test(): 
+			""" 
+			Tests the Zin.setter function 
 
-
-	def zin_setter(self): 
-		""" 
-		Tests the Zin.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			custom = lambda t: 0.01 * t 
-			self.Zin = custom 
-			x = self.Zin == custom 
-			self.Zin = dict(zip(self.elements, len(self.elements) * [0.001])) 
-			y = isinstance(self.Zin, dataframe) 
-			self.Zin = 0 
-			z = not self.Zin 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				custom = lambda t: 0.01 * t 
+				self.Zin = custom 
+				x = self.Zin == custom 
+				self.Zin = dict(zip(self.elements, len(self.elements) * [0.001])) 
+				y = isinstance(self.Zin, dataframe) 
+				self.Zin = 0 
+				z = not self.Zin 
+			except: 
+				return False 
 			return x and y and z 
-		except: 
-			return False 
+		return ["Inflow metallicity setter", test] 
 
 
+	@unittest 
 	def test_recycling_setter(self): 
-		return unittest("Recycling setter", self.recycling_setter) 
+		def test(): 
+			""" 
+			Tests the recycling.setter function 
 
-
-	def recycling_setter(self): 
-		""" 
-		Tests the recycling.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			self.recycling = 0.4 
-			x = self.recycling == 0.4 
-			self.recycling = "continuous" 
-			y = self.recycling == "continuous" 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.recycling = 0.4 
+				x = self.recycling == 0.4 
+				self.recycling = "continuous" 
+				y = self.recycling == "continuous" 
+			except: 
+				return False 
 			return x and y 
-		except: 
-			return False 
+		return ["Recycling setter", test] 
 
 
+	@unittest 
 	def test_bins_setter(self): 
-		return unittest("Bins setter", self.bins_setter) 
+		def test(): 
+			""" 
+			Tests the bins.setter function 
+
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.bins = [-3 + 0.01 * i for i in range(401)] 
+			except: 
+				return False 
+			return len(self.bins) == 401 and self.bins == sorted(self.bins) 
+		return ["Bins setter", test] 
 
 
-	def bins_setter(self): 
-		""" 
-		Tests the bins.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			self.bins = [-3 + 0.01 * i for i in range(401)] 
-			return len(self.bins) == 401 
-		except: 
-			return False 
-
-
+	@unittest 
 	def test_delay_setter(self): 
-		return unittest("SN Ia minimum delay setter", self.delay_setter) 
+		def test(): 
+			""" 
+			Tests the delay.setter function 
 
-
-	def delay_setter(self): 
-		""" 
-		Tests the delay.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			self.delay = 0.1 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.delay = 0.1 
+			except: 
+				return False 
 			return self.delay == 0.1 
-		except: 
-			return False 
+		return ["SN Ia minimum delay setter", test] 
 
 
+	@unittest 
 	def test_ria_setter(self): 
-		return unittest("SN Ia rate setter", self.ria_setter) 
+		def test(): 
+			""" 
+			Tests the RIa.setter function 
 
-
-	def ria_setter(self): 
-		""" 
-		Tests the RIa.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			custom = lambda t: t**-1.5 
-			self.RIa = custom 
-			x = self.RIa == custom 
-			self.RIa = "exp" 
-			y = self.RIa == "exp" 
-			self.RIa = "plaw" 
-			z = self.RIa == "plaw" 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				custom = lambda t: t**-1.5 
+				self.RIa = custom 
+				x = self.RIa == custom 
+				self.RIa = "exp" 
+				y = self.RIa == "exp" 
+				self.RIa = "plaw" 
+				z = self.RIa == "plaw" 
+			except: 
+				return False 
 			return x and y and z 
-		except: 
-			return False 
+		return ["SN Ia rate setter", test] 
 
 
+	@unittest 
 	def test_mg0_setter(self): 
-		return unittest("Mg0 setter", self.mg0_setter) 
+		def test(): 
+			""" 
+			Tests the Mg0.setter function 
 
-
-	def mg0_setter(self): 
-		""" 
-		Tests the Mg0.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			self.Mg0 = 0 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.Mg0 = 0 
+			except: 
+				return False 
 			return self.Mg0 == 1e-12 
-		except: 
-			return False 
+		return ["Mg0 setter", test] 
 
 
+	@unittest 
 	def test_smoothing_setter(self): 
-		return unittest("Smoothing time setter", self.smoothing_setter) 
+		def test(): 
+			""" 
+			Tests the smoothing.setter function 
 
-
-	def smoothing_setter(self): 
-		""" 
-		Tests the smoothing.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			self.smoothing = 1 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.smoothing = 1 
+			except: 
+				return False 
 			return self.smoothing == 1 
-		except: 
-			return False 
+		return ["Smoothing time setter", test] 
 
 
+	@unittest 
 	def test_tau_ia_setter(self): 
-		return unittest("SN Ia e-folding timescale setter", self.tau_ia_setter) 
+		def test(): 
+			""" 
+			Tests the tau_ia.setter function 
 
-
-	def tau_ia_setter(self): 
-		""" 
-		Tests the tau_ia.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			self.tau_ia = 1.0 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.tau_ia = 1.0 
+			except: 
+				return False 
 			return self.tau_ia == 1 
-		except: 
-			return False 
+		return ["SN Ia e-folding timescale setter", test] 
 
 
+	@unittest 
 	def test_tau_star_setter(self): 
-		return unittest("SFE timescale setter", self.tau_star_setter) 
+		def test(): 
+			""" 
+			Tests the tau_star.setter function 
 
-
-	def tau_star_setter(self): 
-		""" 
-		Tests the tau_star.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			custom = lambda t: 2 + 0.01 * t 
-			self.tau_star = custom 
-			x = self.tau_star == custom 
-			self.tau_star = 2
-			y = self.tau_star == 2 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				custom = lambda t: 2 + 0.01 * t 
+				self.tau_star = custom 
+				x = self.tau_star == custom 
+				self.tau_star = 2
+				y = self.tau_star == 2 
+			except: 
+				return False 
 			return x and y 
-		except: 
-			return False 
+		return ["SFE timescale setter", test] 
 
 
+	@unittest 
 	def test_dt_setter(self): 
-		return unittest("Timestep setter", self.dt_setter) 
+		def test(): 
+			""" 
+			Tests the dt.setter function 
 
-
-	def dt_setter(self): 
-		""" 
-		Tests the dt.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			self.dt = 0.05 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.dt = 0.05 
+			except: 
+				return False 
 			return self.dt == 0.05 
-		except: 
-			return False 
+		return ["Timestep setter", test] 
 
 
+	@unittest 
 	def test_schmidt_setter(self): 
-		return unittest("Schimdt Law switch", self.schmidt_setter) 
+		def test(): 
+			""" 
+			Tests the schmidt.setter function 
+
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.schmidt = True 
+				return self.schmidt 
+			except: 
+				return False 
+		return ["Schimdt Law switch", test] 
 
 
-	def schmidt_setter(self): 
-		""" 
-		Tests the schmidt.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			self.schmidt = True 
-			return self.schmidt 
-		except: 
-			return False 
-
-
+	@unittest 
 	def test_mgschmidt_setter(self): 
-		return unittest("Schmidt Law normalization setter", 
-			self.mgschmidt_setter) 
+		def test(): 
+			""" 
+			Tests the mgschnidt.setter function 
 
-
-	def mgschmidt_setter(self): 
-		""" 
-		Tests the mgschnidt.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			self.MgSchmidt = 5.e9 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.MgSchmidt = 5.e9 
+			except: 
+				return False 
 			return self.MgSchmidt == 5.e9 
-		except: 
-			return False 
+		return ["Schmidt Law normalization setter", test] 
 
 
+	@unittest 
 	def test_m_upper_setter(self): 
-		return unittest("Upper stellar mass limit setter", self.m_upper_setter) 
+		def test(): 
+			""" 
+			Tests the m_upper.setter function 
 
-
-	def m_upper_setter(self): 
-		""" 
-		Tests the m_upper.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			self.m_upper = 101 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.m_upper = 101 
+			except: 
+				return False 
 			return self.m_upper == 101 
-		except: 
-			return False 
+		return ["Upper stellar mass limit setter", test] 
 
 
+	@unittest 
 	def test_m_lower_setter(self): 
-		return unittest("Lower stellar mass limit setter", self.m_lower_setter) 
+		def test(): 
+			""" 
+			Tests the m_lower.setter function 
 
-
-	def m_lower_setter(self): 
-		""" 
-		Tests the m_lower.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			self.m_lower = 0.1 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.m_lower = 0.1 
+			except: 
+				return False 
 			return self.m_lower == 0.1 
-		except: 
-			return False 
+		return ["Lower stellar mass limit setter", test] 
 
 
+	@unittest 
 	def test_postMS_setter(self): 
-		return unittest("Post main-sequence setter", self.postMS_setter) 
+		def test(): 
+			""" 
+			Tests the postMS.setter function 
 
-
-	def postMS_setter(self): 
-		""" 
-		Tests the postMS.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			self.postMS = 0.15 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.postMS = 0.15 
+			except: 
+				return False 
 			return self.postMS == 0.15 
-		except: 
-			return False 
+		return ["Post main-sequence setter", test] 
 
 
+	@unittest 
 	def test_z_solar_setter(self): 
-		return unittest("Solar metallicity setter", self.z_solar_setter) 
+		def test(): 
+			""" 
+			Tests the Z_solar.setter function 
 
-
-	def z_solar_setter(self): 
-		""" 
-		Tests the Z_solar.setter function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			self.Z_solar = 0.013 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.Z_solar = 0.013 
+			except: 
+				return False 
 			return self.Z_solar == 0.013 
-		except: 
-			return False 
+		return ["Solar metallicity setter", test] 
 
 
+	@unittest 
 	def test_prep(self): 
-		return unittest("Simulation prep", self._prep) 
+		def test(): 
+			""" 
+			Tests the prep function 
 
-
-	def _prep(self): 
-		""" 
-		Tests the prep function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			test_times = [0.1 * i for i in range(11)] 
-			super().prep(test_times) 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				test_times = [0.1 * i for i in range(11)] 
+				super().prep(test_times) 
+			except: 
+				return False 
 			return (
 				self._sz[0].ism[0].mass == self.Mg0 and 
-				self._sz[0].ism[0].eta is not NULL and 
-				self._sz[0].ism[0].enh is not NULL and 
-				self._sz[0].ism[0].tau_star is not NULL and 
-				self._sz[0].ism[0].specified is not NULL 
+				<void *> self._sz[0].ism[0].eta is not NULL and 
+				<void *> self._sz[0].ism[0].enh is not NULL and 
+				<void *> self._sz[0].ism[0].tau_star is not NULL and 
+				<void *> self._sz[0].ism[0].specified is not NULL 
 			) 
-		except: 
-			return False 
+		return ["Simulation prep", test]  
 
 
+	@unittest 
 	def test_output_times_check(self): 
-		return unittest("Output times refinement", self._output_times_check) 
-
-
-	def _output_times_check(self): 
-		""" 
-		Tests the output_times_check function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
+		def test(): 
 			""" 
-			flip two of the times on purpose, ensure they come back in the 
-			right order 
+			Tests the output_times_check function 
+
+			Returns 
+			======= 
+			1 on success, 0 on failure 
 			""" 
-			test_times = [
-				0.0, 0.2, 0.1, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0
-			] 
-			return super().output_times_check(test_times) == sorted(test_times) 
-		except: 
-			return False 
-
-
-	def test_open_output_dir(self): 
-		return unittest("Open output directory", self._open_output_dir) 
-
-
-	def _open_output_dir(self): 
-		""" 
-		Tests the output directory opener 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			self.name = "test" 
 			try: 
-				super().open_output_dir(True) 
-			except RuntimeError: 
+				""" 
+				flip two of the times on purpose, ensure they come back in the 
+				right order 
+				""" 
+				test_times = [
+					0.0, 0.2, 0.1, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0
+				] 
+				return super().output_times_check(test_times) == sorted(test_times) 
+			except: 
+				return False 
+		return ["Output times refinement", test] 
+
+
+	@unittest 
+	def test_open_output_dir(self): 
+		def test(): 
+			""" 
+			Tests the output directory opener 
+
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.name = "test" 
+				try: 
+					super().open_output_dir(True) 
+				except RuntimeError: 
+					return False 
+			except: 
 				return False 
 			if os.path.exists("test.vice"): 
 				os.system("rm -rf test.vice/") 
 				return True 
 			else: 
 				return False 
-		except: 
-			return False 
+		return ["Open output directory", test] 
 
 
+	@unittest  
 	def test_setup_elements(self): 
-		return unittest("Setup elements", self._setup_elements) 
+		cdef ELEMENT **e = <ELEMENT **> self._sz[0].elements 
+		def test(): 
+			""" 
+			Tests the setup_elements function 
+			""" 
+			try: 
+				super().setup_elements() 
+				x = True 
+				for i in range(self._sz[0].n_elements): 
+					if <void *> e[i][0].ccsne_yields[0].yield_ is NULL:  
+						x = False 
+						break 
+					else: pass 
+					if <void *> e[i][0].sneia_yields[0].yield_ is NULL: 
+						x = False 
+						break 
+					else: pass 
+					if <void *> e[i][0].agb_grid[0].grid is NULL: 
+						x = False 
+						break 
+					else: pass 
+					if <void *> e[i][0].agb_grid[0].m is NULL: 
+						x = False 
+						break 
+					else: pass 
+					if <void *> e[i][0].agb_grid[0].z is NULL: 
+						x = False 
+						break 
+					else: pass 
+			except: 
+				return False 
+			return x 
+		return ["Setup elements", test] 
 
 
-	def _setup_elements(self): 
-		""" 
-		Tests the setup_elements function 
-		""" 
-		try: 
-			super().setup_elements() 
-			x = True 
-			for i in range(self._sz[0].n_elements): 
-				if self._sz[0].elements[i][0].ccsne_yields[0].yield_ is NULL:  
-					x = False 
-				else: pass 
-				if self._sz[0].elements[i][0].sneia_yields[0].yield_ is NULL: 
-					x = False 
-				else: pass 
-				if self._sz[0].elements[i][0].agb_grid[0].grid is NULL: 
-					x = False 
-				else: pass 
-				if self._sz[0].elements[i][0].agb_grid[0].m is NULL: 
-					x = False 
-				else: pass 
-				if self._sz[0].elements[i][0].agb_grid[0].z is NULL: 
-					x = False 
-				else: pass 
-				return x 
-		except: 
-			return False 
-
-
+	@unittest 
 	def test_set_ria(self): 
-		return unittest("Setup RIa", self._set_ria) 
+		cdef ELEMENT **e = self._sz[0].elements
+		def test(): 
+			""" 
+			Tests the set_ria function 
 
-
-	def _set_ria(self): 
-		""" 
-		Tests the set_ria function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			# This function only works with custom RIa's 
-			self.RIa = lambda t: t**-1.5 
-			super().set_ria() 
-			x = True 
-			for i in range(self._sz[0].n_elements): 
-				if self._sz[0].elements[i][0].sneia_yields[0].RIa is NULL: 
-					x = False 
-				else: 
-					pass 
-			self.RIa = "plaw" 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				# This function only works with custom RIa's 
+				self.RIa = lambda t: t**-1.5 
+				super().set_ria() 
+				x = True 
+				for i in range(self._sz[0].n_elements): 
+					if <void *> e[i][0].sneia_yields[0].RIa is NULL: 
+						x = False 
+					else: 
+						pass 
+				self.RIa = "plaw" 
+			except: 
+				return False 
 			return x 
-		except: 
-			return False 
+		return ["Setup RIa", test] 
 
 
+	@unittest 
 	def test_setup_Zin(self): 
-		return unittest("Setup Zin", self._setup_Zin) 
+		def test(): 
+			""" 
+			Tests the setup_Zin function 
 
-
-	def _setup_Zin(self): 
-		""" 
-		Tests the setup_Zin function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		def checker(): 
-			x = True 
-			for i in range(self._sz[0].n_elements): 
-				if self._sz[0].elements[i][0].Zin is NULL: x = False 
-			return x 
-		try: 
-			self.Zin = dict(zip(
-				self.elements, 
-				self._sz[0].n_elements * [0.001]
-			)) 
-			self.Zin[self.elements[0]] = lambda t: 0.001 * t 
-			super().setup_Zin(1) 
-			x = checker() 
-			self.Zin = lambda t: 0.001 * t 
-			super().setup_Zin(1) 
-			y = checker() 
-			self.Zin = 0 
-			super().setup_Zin(1) 
-			z = checker() 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			def checker(): 
+				x = True 
+				for i in range(self._sz[0].n_elements): 
+					if <void *> self._sz[0].elements[i][0].Zin is NULL: 
+						x = False 
+					else: pass 
+				return x 
+			try: 
+				self.Zin = dict(zip(
+					self.elements, 
+					self._sz[0].n_elements * [0.001]
+				)) 
+				self.Zin[self.elements[0]] = lambda t: 0.001 * t 
+				super().setup_Zin(1) 
+				x = checker() 
+				self.Zin = lambda t: 0.001 * t 
+				super().setup_Zin(1) 
+				y = checker() 
+				self.Zin = 0 
+				super().setup_Zin(1) 
+				z = checker() 
+			except: 
+				return False 
 			return x and y and z 
-		except: 
-			return False 
+		return ["Setup Zin", test] 
 
 
+	@unittest 
 	def test_save_yields(self): 
-		return unittest("Save yields", self._save_yields) 
+		def test(): 
+			""" 
+			Tests the save_yields function 
 
-
-	def _save_yields(self): 
-		""" 
-		Tests the save_yields function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			self.name = "test" 
-			os.system("mkdir %s.vice" % (self.name)) 
-			super().save_yields() 
-			x = (os.path.exists("%s.vice/agb_yields.config" % (self.name)) and 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.name = "test" 
+				os.system("mkdir %s.vice" % (self.name)) 
+				super().save_yields()   
+			except: 
+				return False 
+			x = (
+				os.path.exists("%s.vice/agb_yields.config" % (self.name)) and 
 				os.path.exists("%s.vice/ccsne_yields.config" % (self.name)) and 
-				os.path.exists("%s.vice/sneia_yields.config" % (self.name)))  
+				os.path.exists("%s.vice/sneia_yields.config" % (self.name))
+			) 
 			os.system("rm -rf %s.vice" % (self.name)) 
 			return x 
-		except: 
-			return False 
+		return ["Save yields", test] 
 
 
+	@unittest 
 	def test_save_attributes(self): 
-		return unittest("Save attributes", self._save_attributes) 
+		def test(): 
+			""" 
+			Tests the save_attributes function 
 
-
-	def _save_attributes(self): 
-		""" 
-		Tests the save_attributes function 
-
-		Returns 
-		======= 
-		1 on success, 0 on failure 
-		""" 
-		try: 
-			self.name = "test" 
-			if os.path.exists("%s.vice" % (self.name)): 
-				os.system("rm -rf %s.vice" % (self.name)) 
-			else: pass 
-			os.system("mkdir %s.vice" % (self.name)) 
-			super().save_attributes() 
+			Returns 
+			======= 
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.name = "test" 
+				if os.path.exists("%s.vice" % (self.name)): 
+					os.system("rm -rf %s.vice" % (self.name)) 
+				else: pass 
+				os.system("mkdir %s.vice" % (self.name)) 
+				super().save_attributes() 
+			except: 
+				return False 
 			x = os.path.exists("%s.vice/params.config" % (self.name)) 
 			os.system("rm -rf %s.vice" % (self.name)) 
 			return x 
-		except: 
-			return False 
+		return ["Save attributes", test] 
 

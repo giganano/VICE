@@ -26,70 +26,95 @@ except (ModuleNotFoundError, ImportError):
 	_OUTTIMES_ = [0.05 * i for i in range(21)] 
 _TEST_NAME_ = "test"
 
-def test(run = True): 
+
+@moduletest 
+def test(): 
 	""" 
 	Tests all functions in this module 
 	""" 
-	test = moduletest("VICE output utilities") 
 	singlezone(name = _TEST_NAME_).run(_OUTTIMES_, overwrite = True) 
-	test.new(unittest("Mirror", test_mirror)) 
-	test.new(unittest("History", test_history)) 
-	test.new(unittest("MDF", test_mdf)) 
-	test.new(unittest("Output object", test_output)) 
-	if run: 
-		test.run() 
-	else: 
-		return test 
+	return ["VICE output utilities", 
+		[ 
+			test_mirror(), 
+			test_history(), 
+			test_mdf(), 
+			test_output() 
+		] 
+	] 
 
 
+@unittest 
 def test_mirror(): 
 	""" 
-	Tests the mirror function 
+	Mirror function unit test 
 	""" 
-	try: 
-		test = mirror(_TEST_NAME_) 
-		return isinstance(test, singlezone) 
-	except: 
-		return False 
+	def test(): 
+		""" 
+		Tests the mirror function 
+		""" 
+		# try: 
+		test_ = mirror(_TEST_NAME_) 
+		# except: 
+		# 	return False 
+		return isinstance(test_, singlezone) 
+	return ["Mirror", test] 
 
 
+@unittest 
 def test_history(): 
 	""" 
-	Tests the history function 
+	History function unit test 
 	""" 
-	try: 
-		test = history(_TEST_NAME_) 
-		return isinstance(test, dataframe) 
-	except: 
-		return False 
+	def test(): 
+		""" 
+		Tests the history function 
+		""" 
+		# try: 
+		test_ = history(_TEST_NAME_) 
+		# except: 
+		# 	return False 
+		return isinstance(test_, dataframe) 
+	return ["History", test] 
 
 
+@unittest 
 def test_mdf(): 
 	""" 
-	Tests the mdf function 
+	MDF function unit test 
 	""" 
-	try: 
-		test = mdf(_TEST_NAME_) 
-		return isinstance(test, dataframe) 
-	except: 
-		return False 
+	def test(): 
+		""" 
+		Tests the mdf function 
+		""" 
+		# try: 
+		test_ = mdf(_TEST_NAME_) 
+		# except: 
+		# 	return False 
+		return isinstance(test_, dataframe) 
+	return ["MDF", test] 
 
 
+@unittest 
 def test_output(): 
 	""" 
-	Tests the output class 
+	output class unit test 
 	""" 
-	try: 
-		test = output(_TEST_NAME_) 
+	def test(): 
+		""" 
+		Tests the output class 
+		""" 
+		# try: 
+		test_ = output(_TEST_NAME_) 
+		# except: 
+		# 	return False 
 		return (
-			isinstance(test, output) and 
-			isinstance(test.elements, tuple) and 
-			isinstance(test.agb_yields, dataframe) and 
-			isinstance(test.ccsne_yields, dataframe) and 
-			isinstance(test.sneia_yields, dataframe) and 
-			isinstance(test.mdf, dataframe) and 
-			isinstance(test.history, dataframe) 
+			isinstance(test_, output) and 
+			isinstance(test_.elements, tuple) and 
+			isinstance(test_.agb_yields, dataframe) and 
+			isinstance(test_.ccsne_yields, dataframe) and 
+			isinstance(test_.sneia_yields, dataframe) and 
+			isinstance(test_.mdf, dataframe) and 
+			isinstance(test_.history, dataframe) 
 		) 
-	except: 
-		return False 
+	return ["Output", test] 
 

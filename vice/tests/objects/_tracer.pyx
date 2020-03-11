@@ -9,18 +9,18 @@ from .._test_utils import unittest
 from . cimport _tracer 
 
 
+@unittest 
 def test_tracer_constructor(): 
 	""" 
 	Tests the tracer constructor function at vice/src/objects/tracer.h 
 	""" 
-	return unittest("Star particle constructor", 
-		_tracer.test_tracer_initialize) 
+	return ["Star particle constructor", _tracer.test_tracer_initialize] 
 
 
+@unittest 
 def test_tracer_destructor(): 
 	""" 
 	Tests the tracer destructor function at vice/src/objects/tracer.h 
 	""" 
-	return unittest("Star particle destructor", 
-		_tracer.test_tracer_free) 
+	return ["Star particle destructor", _tracer.test_tracer_free] 
 

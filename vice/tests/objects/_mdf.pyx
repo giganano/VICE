@@ -9,18 +9,20 @@ from .._test_utils import unittest
 from . cimport _mdf 
 
 
+@unittest 
 def test_mdf_constructor(): 
 	""" 
 	Tests the MDF constructor function at vice/src/objects/mdf.h 
 	""" 
-	return unittest("Stellar metallicity distribution function constructor", 
-		_mdf.test_mdf_initialize) 
+	return ["Stellar metallicity distribution function constructor", 
+		_mdf.test_mdf_initialize] 
 
 
+@unittest 
 def test_mdf_destructor(): 
 	""" 
 	Tests the MDF destructor function at vice/src/objects/mdf.h 
 	""" 
-	return unittest("Stellar metallicity distribution function destructor", 
-		_mdf.test_mdf_free) 
+	return ["Stellar metallicity distribution function destructor", 
+		_mdf.test_mdf_free] 
 

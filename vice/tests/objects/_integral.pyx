@@ -9,16 +9,18 @@ from .._test_utils import unittest
 from . cimport _integral 
 
 
+@unittest 
 def test_integral_constructor(): 
 	""" 
 	Tests the integral constructor function at vice/src/objects/integral.h 
 	""" 
-	return unittest("Integral constructor", _integral.test_integral_initialize) 
+	return ["Integral constructor", _integral.test_integral_initialize] 
 
 
+@unittest 
 def test_integral_destructor(): 
 	""" 
 	Tests the integral destructor function at vice/src/objects/integral.h 
 	""" 
-	return unittest("Integral destructor", _integral.test_integral_free) 
+	return ["Integral destructor", _integral.test_integral_free] 
 

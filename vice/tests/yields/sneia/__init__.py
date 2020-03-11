@@ -11,13 +11,13 @@ if not __VICE_SETUP__:
 	from ..._test_utils import moduletest 
 	from . import lookup 
 
-	def test(run = True): 
-		test = moduletest("SN Ia yield functions") 
-		test.new(lookup.test(run = False)) 
-		if run: 
-			test.run(print_results = True) 
-		else: 
-			return test 
+	@moduletest 
+	def test(): 
+		return ["SN Ia yield functions", 
+			[ 
+				lookup.test(run = False) 
+			] 
+		] 
 
 else: 
 	pass 

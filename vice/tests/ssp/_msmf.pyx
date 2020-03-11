@@ -8,9 +8,10 @@ from .._test_utils import unittest
 from . cimport _msmf 
 
 
+@unittest 
 def test_main_sequence_mass_fraction(): 
 	""" 
 	Tests the main sequence mass fraction function at vice/src/ssp/msmf.h 
 	""" 
-	return unittest("Main sequence mass fraction", _msmf.test_MSMF) 
+	return ["Main sequence mass fraction", _msmf.test_MSMF] 
 

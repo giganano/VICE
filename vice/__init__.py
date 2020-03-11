@@ -11,6 +11,9 @@ Documentation for this package is available in several forms:
 	3) Science documentation, available at: 
 	https://github.com/giganano/VICE/tree/master/docs/science_documentation.pdf
 
+Users may also access the documentation from after installing VICE by running 
+'vice-docs' from the command line. Run 'vice-docs --help' for more information. 
+
 We recommend first-time users visit the git repository to obtain copies of the 
 User's Guide and Science Documentation. Under the docs/ directory, they will 
 also find a QuickStartTutorial.ipynb notebook intended for quick 

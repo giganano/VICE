@@ -8,10 +8,10 @@ from .._test_utils import unittest
 from . cimport _sneia 
 
 
+@unittest 
 def test_ia_yield_lookup(): 
 	""" 
 	Test the SN Ia mass yield lookup function at vice/src/io/sneia.h 
 	""" 
-	return unittest("SN Ia yield lookup", 
-		_sneia.test_single_ia_mass_yield_lookup) 
+	return ["SN Ia yield lookup", _sneia.test_single_ia_mass_yield_lookup] 
 

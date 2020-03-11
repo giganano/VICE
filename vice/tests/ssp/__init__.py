@@ -15,19 +15,19 @@ if not __VICE_SETUP__:
 	from . import _mlr 
 	from . import ssp 
 
-	def test(run = True): 
+	@moduletest 
+	def test(): 
 		""" 
 		Run all test functions in this module 
 		""" 
-		test = moduletest("VICE single stellar population functions") 
-		test.new(_crf.test_cumulative_return_fraction()) 
-		test.new(_msmf.test_main_sequence_mass_fraction()) 
-		test.new(_mlr.test_mass_lifetime_relationship()) 
-		test.new(ssp.test(run = False)) 
-		if run: 
-			test.run(print_results = True) 
-		else: 
-			return test 
+		return ["VICE single stellar population functions", 
+			[ 
+				_crf.test_cumulative_return_fraction(), 
+				_msmf.test_main_sequence_mass_fraction(), 
+				_mlr.test_mass_lifetime_relationship(), 
+				ssp.test(run = False) 
+			] 
+		] 
 
 else: 
 	pass 

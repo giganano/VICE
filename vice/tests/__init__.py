@@ -43,33 +43,30 @@ if not __VICE_SETUP__:
 	from . import _utils as utils 
 	from . import yields 
 
-	def test(run = True): 
+	@moduletest 
+	def test(): 
 		""" 
 		Runs VICE's comprehensive tests 
 		""" 
-		test = moduletest(None) 
-		test.new(singlezone.test(run = False)) 
-		test.new(outputs.test(run = False)) 
-		test.new(utils.test(run = False)) 
-		test.new(imf.test(run = False)) 
-		test.new(dataframe.test(run = False)) 
-		test.new(io.test(run = False)) 
-		test.new(modeling.test(run = False)) 
-		test.new(objects.test(run = False)) 
-		test.new(ssp.test(run = False)) 
-		test.new(stats.test(run = False)) 
-		test.new(yields.test(run = False)) 
-		if run: 
-			header = "VICE Comprehensive Tests\n" 
-			for i in range(len(header) - 1): 
-				header += "="  
-			print("\033[091m%s\033[00m" % (header)) 
-			print("This may take a few minutes.") 
-			yields.presets.spawn_dummy_yield_file() 
-			test.run(print_results = True) 
-			yields.presets.remove_dummy_yield_file() 
-		else: 
-			return test 
+		header = "VICE Comprehensive Tests\n", 
+		for i in range(len(header) - 1): 
+			header += "=" 
+		print("\033[091m%s\033[00m" % (header)) 
+		print("This may take a few minutes.") 
+		return [None, 
+			[ 
+				singlezone.test(run = False), 
+				outputs.test(run = False), 
+				utils.test(run = False), 
+				imf.test(run = False), 
+				dataframe.test(run = False), 
+				io.test(run = False), 
+				modeling.test(run = False), 
+				ssp.test(run = False), 
+				stats.test(run = False), 
+				yields.test(run = False) 
+			] 
+		] 
 
 else: 
 	pass 

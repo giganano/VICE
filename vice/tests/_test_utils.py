@@ -8,6 +8,7 @@ __all__ = [
 	"unittest" 
 ] 
 from .._globals import _VERSION_ERROR_ 
+import functools 
 import sys 
 if sys.version_info[:2] == (2, 7): 
 	strcomp = basestring 
@@ -22,7 +23,41 @@ _PASSED_MESSAGE_ = "\033[92mPassed\033[00m"
 _FAILED_MESSAGE_ = "\033[91mFailed\033[00m" 
 
 
-class moduletest(object): 
+def moduletest(function): 
+	""" 
+	A decorator which will construct a moduletest automatically from a 
+	description and a list of unittest objects 
+	""" 
+	@functools.wraps(function) 
+	def wrapper(run = True): 
+		description, unittests = function() 
+		test = _moduletest(description) 
+		for i in unittests: 
+			test.new(i) 
+		if run: 
+			test.run(print_results = True)  
+		else: 
+			return test 
+	return wrapper 
+
+
+def unittest(function): 
+	""" 
+	A decorator which will construct a unittest automatically from a 
+	description and a function which runs the test 
+	""" 
+	@functools.wraps(function) 
+	def wrapper(*args): 
+		""" 
+		Some unittests are for objects, and will require a call to self as the 
+		first argument 
+		""" 
+		description, testfunc = function(*args) 
+		return _unittest(description, testfunc) 
+	return wrapper 
+
+
+class _moduletest(object): 
 
 	""" 
 	A class designed to hold the information associated with a module test 
@@ -67,9 +102,10 @@ class moduletest(object):
 		""" 
 		Add a unit test to the module test. 
 		""" 
-		if isinstance(obj, unittest) or isinstance(obj, moduletest): 
+		if isinstance(obj, _unittest) or isinstance(obj, _moduletest): 
 			self._unittests.append(obj) 
 		else: 
+			print(obj) 
 			raise TypeError("Object must be of type unittest. Got: %s" % (
 				type(obj))) 
 
@@ -87,7 +123,7 @@ class moduletest(object):
 		else: 
 			pass 
 		for i in self._unittests: 
-			if isinstance(i, unittest): 
+			if isinstance(i, _unittest): 
 				if i.run(): 
 					print("\t%s :: %s" % (i.name, _PASSED_MESSAGE_)) 
 					passed += 1 
@@ -109,7 +145,7 @@ class moduletest(object):
 		return [passed, failed] 
 
 
-class unittest(object): 
+class _unittest(object): 
 
 	""" 
 	A class designed to hold the information associated with a unit test and 

@@ -2,6 +2,7 @@
 
 from __future__ import absolute_import 
 from ...core.singlezone._singlezone cimport SINGLEZONE, c_singlezone 
+from ...core.singlezone._element cimport ELEMENT 
 
 cdef extern from "../../src/tests/singlezone/singlezone.h": 
 	unsigned short test_singlezone_address(SINGLEZONE *test) 

@@ -14,132 +14,87 @@ import numbers
 
 
 """ 
-A decorator which wraps the __call__ function of the callback1 object and 
-all subclasses to suppress TypeErrors by not allowing non-numerical values 
-to be returned. 
+Notes 
+===== 
+The callback1 and callback2 are object are implemented separately from one 
+another. This is motivated by the fact that there is a C library expecting a 
+very specific number of functions for each attribute. To mirror this level 
+of strictness, the number of arguments the callback1 and callback2 objects 
+accept is defined explicitly. This has the positive side effect of user's 
+being notified via a TypeError that their functions do not accept the correct 
+number of arguments prior to simulation as opposed to seeing a long string of 
+suppression messages. 
 """ 
-def numerical_1arg(function): 
+
+
+def numerical(function): 
+	""" 
+	A decorator which wraps the __call__ function of the callback objects and 
+	all subclasses to suppress TypeErrors by not allowing non-numerical values 
+	to be returned. 
+	""" 
 	@functools.wraps(function) 
-	def wrapper(obj, x): 
-		y = function(obj, x) 
+	def wrapper(*args): 
+		y = function(*args) 
 		if isinstance(y, numbers.Number): 
 			return float(y) 
 		else: 
 			warnings.warn("""\
 Function %s evaluated to non-numerical value at %s. Suppressing TypeError by \
 returning 0. Checking simulation output for numerical consistency is \
-advised.""" % (str(function), str(x)), ScienceWarning) 
+advised.""" % (str(function), str(args[1:])), ScienceWarning) 
 			return 0 
 	return wrapper 
 
 
-""" 
-A decorator which wraps the __call__ function of the callback2 object and 
-all subclasses to suppress TypeErrors by not allowing non-numerical values 
-to be returned. 
-""" 
-def numerical_2arg(function): 
+def no_nan(function): 
+	""" 
+	A decorator which wrapps the __call__ function of the callback objecs to 
+	suppress ArithmeticErrors by not allowing NaN from user functions. 
+	""" 
 	@functools.wraps(function) 
-	def wrapper(obj, x, y): 
-		z = function(obj, x, y) 
-		if isinstance(z, numbers.Number): 
-			return float(z) 
-		else: 
-			warnings.warn("""\
-Function %s evaluated to non-numerical value at %s. Suppressing TypeError by \
-return 0. Checking simulation output for numerical consistency is \
-advised.""" % (str(function), str(x)), ScienceWarning) 
-			return 0 
-	return wrapper 
-
-
-""" 
-A decorator which wraps the __call__ function of the callback1 object to 
-suppress ArithmeticErrors by not allowing NaN from user functions 
-""" 
-def no_nan_1arg(function): 
-	@functools.wraps(function) 
-	def wrapper(obj, x): 
-		y = function(obj, x) 
+	def wrapper(*args): 
+		y = function(*args) 
 		if m.isnan(y): 
 			warnings.warn("""\
 Function %s evaluated to NaN at %s. Suppressing ArithmeticError by returning \
 0. Checking simulation output for numerical consistency is advised.""" % (
-				str(function), str(x)), ScienceWarning) 
+				str(function), str(args[:1])), ScienceWarning) 
 			return 0 
 		else: 
 			return y 
 	return wrapper 
 
 
-""" 
-A decorator which wraps the __call__ function of the callback2 object to 
-suppress ArithmeticErrors by not allowing NaNs from user functions. 
-""" 
-def no_nan_2arg(function): 
+def no_inf(function): 
+	""" 
+	A decorator which wraps the __call__ function of the callback objects to 
+	suppress ArithmeticErrors by not allowing inf to be returned from user 
+	functions. 
+	""" 
 	@functools.wraps(function) 
-	def wrapper(obj, x, y): 
-		z = function(obj, x, y) 
-		if m.isnan(z): 
-			warnings.warn("""\
-Function %s evaluated to NaN at %s. Suppressing ArithmeticError by returning \
-0. Checking simulation output for numerical consistency is advised.""" % (
-				str(function), str(x)), ScienceWarning) 
-			return 0 
-		else: 
-			return z 
-	return wrapper 
-
-
-""" 
-A decorator which subsequently wraps the numerical_1arg decorator on the 
-callback1 __call__ function. This ensures that infinite values are not 
-allowed. 
-""" 
-def no_inf_1arg(function): 
-	@functools.wraps(function) 
-	def wrapper(obj, x): 
-		y = function(obj, x) 
+	def wrapper(*args): 
+		y = function(*args) 
 		if m.isinf(y): 
 			warnings.warn("""\
 Function %s evaluated to inf at %s. Suppressing ArithmeticError by returning \
 0. Checking simulation output for numerical consistency is advised.""" % (
-				str(function), str(x)), ScienceWarning) 
+				str(function), str(args[1:])), ScienceWarning) 
 			return 0 
 		else: 
 			return y 
 	return wrapper 
 
 
-""" 
-A decorator which subsequently wraps the numerical_2arg decorator on the 
-callback2 __call__ function. This ensures that infinite values are not 
-allowed. 
-""" 
-def no_inf_2arg(function): 
+def positive(function): 
+	""" 
+	A decorator which wraps the __call__ function of the callback objects to 
+	suppress ArithmeticErrors by not allowing non-positive numbers to be 
+	returned from user functions. 
+	""" 
 	@functools.wraps(function) 
-	def wrapper(obj, x, y): 
-		z = function(obj, x, y) 
-		if m.isinf(z): 
-			warnings.warn("""\
-Function %s evaluated to inf at %s. Suppressing ArithmeticError by returning \
-0. Checking simulation output for numerical consistency is advised.""" % (
-				str(function), str(x)), ScienceWarning) 
-			return 0 
-		else: 
-			return z 
-	return wrapper 
-
-
-""" 
-A decorator which subsequently wraps the numerical_1arg decorator on the 
-callback1 __call__ function. This ensures that the returned value is 
-positive definite. 
-""" 
-def positive_1arg(function): 
-	@functools.wraps(function) 
-	def wrapper(obj, x): 
-		y = function(obj, x) 
+	def wrapper(*args): 
+		y = function(*args) 
 		if y <= 0: 
 			warnings.warn("""\
 Function %s evaluated to non-positive value at %s. Suppressing ArithmeticError \
@@ -148,26 +103,6 @@ advised.""" % (str(function), str(x)), ScienceWarning)
 			return 1e-12 
 		else: 
 			return y 
-	return wrapper 
-
-
-""" 
-A decorator which subsequently wraps the numerical_2arg decorator on the 
-callback2 __call__ function. This ensures that infinite values are not 
-allowed. 
-""" 
-def positive_2arg(function): 
-	@functools.wraps(function) 
-	def wrapper(obj, x, y): 
-		z = function(obj, x, y) 
-		if z <= 0: 
-			warnings.warn("""\
-Function %s evaluted to non-positive value at %s. Suppressing ArithmeticError \
-by return 1e-12. Checking simulation output for numerical consistency is \
-advised.""" % (str(function), str(x)), ScienceWarning) 
-			return 1e-12 
-		else: 
-			return z 
 	return wrapper 
 
 
@@ -183,7 +118,7 @@ class callback1:
 	def __init__(self, function): 
 		self.function = function 
 
-	@numerical_1arg 
+	@numerical 
 	def __call__(self, x): 
 		return self._function(x) 
 
@@ -220,8 +155,8 @@ class callback1_nan(callback1):
 	def __init__(self, function): 
 		super().__init__(function) 
 
-	@no_nan_1arg 
-	@numerical_1arg 
+	@no_nan 
+	@numerical 
 	def __call__(self, x): 
 		return self._function(x) 
 
@@ -237,9 +172,9 @@ class callback1_nan_inf(callback1):
 	def __init__(self, function): 
 		super().__init__(function) 
 
-	@no_inf_1arg 
-	@no_nan_1arg 
-	@numerical_1arg 
+	@no_inf 
+	@no_nan 
+	@numerical 
 	def __call__(self, x): 
 		return self._function(x) 
 
@@ -255,9 +190,9 @@ class callback1_nan_positive(callback1):
 	def __init__(self, function): 
 		super().__init__(function) 
 
-	@positive_1arg 
-	@no_nan_1arg 
-	@numerical_1arg 
+	@positive 
+	@no_nan 
+	@numerical 
 	def __call__(self, x): 
 		return self._function(x) 
 
@@ -273,10 +208,10 @@ class callback1_nan_inf_positive(callback1):
 	def __init__(self, function): 
 		super().__init__(function) 
 
-	@positive_1arg 
-	@no_inf_1arg 
-	@no_nan_1arg 
-	@numerical_1arg 
+	@positive 
+	@no_inf 
+	@no_nan 
+	@numerical 
 	def __call__(self, x): 
 		return self._function(x) 
 
@@ -293,7 +228,7 @@ class callback2:
 	def __init__(self, function): 
 		self.function = function 
 
-	@numerical_2arg 
+	@numerical 
 	def __call__(self, x, y): 
 		return self._function(x, y) 
 
@@ -330,8 +265,8 @@ class callback2_nan(callback2):
 	def __init__(self, function): 
 		super().__init__(function) 
 
-	@no_nan_2arg 
-	@numerical_2arg 
+	@no_nan 
+	@numerical 
 	def __call__(self, x, y): 
 		return self._function(x, y) 
 
@@ -347,9 +282,9 @@ class callback2_nan_inf(callback2):
 	def __init__(self, function): 
 		super().__init__(function) 
 
-	@no_inf_2arg 
-	@no_nan_2arg 
-	@numerical_2arg 
+	@no_inf 
+	@no_nan 
+	@numerical 
 	def __call__(self, x, y): 
 		return self._function(x, y) 
 
@@ -365,10 +300,10 @@ class callback2_nan_inf_positive(callback2):
 	def __init__(self, function): 
 		super().__init__(function) 
 
-	@positive_2arg 
-	@no_inf_2arg 
-	@no_nan_2arg 
-	@numerical_2arg 
+	@positive 
+	@no_inf 
+	@no_nan 
+	@numerical 
 	def __call__(self, x, y): 
 		return self._function(x, y) 
 
@@ -384,9 +319,9 @@ class callback2_nan_positive(callback2):
 	def __init__(self, function): 
 		super().__init__(function) 
 
-	@positive_2arg 
-	@no_nan_2arg 
-	@numerical_2arg 
+	@positive 
+	@no_nan 
+	@numerical 
 	def __call__(self, x, y): 
 		return self._function(x, y) 
 

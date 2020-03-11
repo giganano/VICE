@@ -20,16 +20,16 @@ if not __VICE_SETUP__:
 	from . import _sneia as sneia 
 	from . import _utils as utils 
 
-	def test(run = True): 
-		test = moduletest("VICE File I/O Functions") 
-		test.new(agb.test_agb_grid_import()) 
-		test.new(ccsne.test_ccsn_yield_grid_reader()) 
-		test.new(sneia.test_ia_yield_lookup()) 
-		test.new(utils.test(run = False)) 
-		if run: 
-			test.run(print_results = True) 
-		else: 
-			return test 
+	@moduletest 
+	def test(): 
+		return ["VICE File I/O Functions", 
+			[ 
+				agb.test_agb_grid_import(), 
+				ccsne.test_ccsn_yield_grid_reader(), 
+				sneia.test_ia_yield_lookup(), 
+				utils.test(run = False) 
+			] 
+		] 
 
 else: 
 	pass 

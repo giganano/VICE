@@ -19,11 +19,11 @@ if not __VICE_SETUP__:
 		while answer.lower() not in ["yes", "y", "no", "n"]: 
 			answer = input("Please enter either 'y' or 'n': ") 
 		if answer.lower() in ["yes", "y"]: 
-			test(run = True) 
+			test() 
 		else: 
 			pass 
 	else: 
-		test(run = True) 
+		test() 
 
 else: 
 	pass 

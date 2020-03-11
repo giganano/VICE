@@ -18,22 +18,20 @@ if not __VICE_SETUP__:
 	from . import presets 
 	from . import _integral as integral 
 
-	def test(run = True): 
+	@moduletest 
+	def test(): 
 		""" 
 		Run all test functions in this module 
 		""" 
-		test = moduletest("VICE yield calculation functions") 
-		test.new(agb.test(run = False)) 
-		test.new(ccsne.test(run = False)) 
-		test.new(sneia.test(run = False)) 
-		test.new(integral.test(run = False)) 
-		test.new(presets.test(run = False)) 
-		if run:	
-			presets.spawn_dummy_yield_file() 
-			test.run(print_results = True) 
-			presets.remove_dummy_yield_file() 
-		else: 
-			return test 
+		return ["VICE yield calculation functions", 
+			[ 
+				agb.test(run = False), 
+				ccsne.test(run = False), 
+				sneia.test(run = False), 
+				integral.test(run = False), 
+				presets.test(run = False) 
+			] 
+		] 
 
 else: 
 	pass 

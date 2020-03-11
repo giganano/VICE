@@ -9,17 +9,18 @@ from .._test_utils import unittest
 from . cimport _ism 
 
 
+@unittest 
 def test_ism_constructor(): 
 	""" 
 	Tests the ISM constructor function at vice/src/objects/ism.h 
 	""" 
-	return unittest("Interstellar medium constructor", 
-		_ism.test_ism_initialize) 
+	return ["Interstellar medium constructor", _ism.test_ism_initialize] 
 
 
+@unittest 
 def test_ism_destructor(): 
 	""" 
 	Tests the ISM destructor function at vice/src/objects/ism.h 
 	""" 
-	return unittest("Interstellar medium destructor", _ism.test_ism_free) 
+	return ["Interstellar medium destructor", _ism.test_ism_free] 
 

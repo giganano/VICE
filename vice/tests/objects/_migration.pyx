@@ -9,18 +9,19 @@ from .._test_utils import unittest
 from . cimport _migration 
 
 
+@unittest 
 def test_migration_constructor(): 
 	""" 
 	Tests the migration constructor function at vice/src/objects/migration.h 
 	""" 
-	return unittest("Stellar migration constructor", 
-		_migration.test_migration_initialize) 
+	return ["Stellar migration constructor", 
+		_migration.test_migration_initialize] 
 
 
+@unittest 
 def test_migration_destructor(): 
 	""" 
 	Tests the migration destructor functioon at vice/src/objects/migration.h 
 	""" 
-	return unittest("Stellar migration destructor", 
-		_migration.test_migration_free) 
+	return ["Stellar migration destructor", _migration.test_migration_free] 
 

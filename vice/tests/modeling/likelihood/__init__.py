@@ -14,20 +14,20 @@ if not __VICE_SETUP__:
 	from ..._test_utils import moduletest 
 	from . import _linalg as linalg 
 	
-	def test(run = True): 
+	@moduletest 
+	def test(): 
 		""" 
 		Runs all test functions in this module 
 		""" 
-		test = moduletest("VICE linear algebra functions") 
-		test.new(linalg.test_matrix_addition()) 
-		test.new(linalg.test_matrix_subtraction()) 
-		test.new(linalg.test_matrix_transposition()) 
-		test.new(linalg.test_matrix_determinant()) 
-		test.new(linalg.test_matrix_inversion()) 
-		if run: 
-			test.run(print_results = True) 
-		else: 
-			return test 
+		return ["VICE linear algebra functions", 
+			[ 
+				linalg.test_matrix_addition(), 
+				linalg.test_matrix_subtraction(), 
+				linalg.test_matrix_transposition(), 
+				linalg.test_matrix_determinant(), 
+				linalg.test_matrix_inversion() 
+			] 
+		] 
 
 else: 
 	pass 

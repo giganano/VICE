@@ -7,10 +7,12 @@ __all__ = [
 from .._test_utils import unittest 
 from . cimport _crf 
 
+
+@unittest 
 def test_cumulative_return_fraction(): 
 	""" 
 	Test the cumulative return fraction function 
 	""" 
-	return unittest("Cumulative return fraction", _crf.test_CRF) 
+	return ["Cumulative return fraction", _crf.test_CRF] 
 
 

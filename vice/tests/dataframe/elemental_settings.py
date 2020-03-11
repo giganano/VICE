@@ -11,57 +11,75 @@ from .._test_utils import moduletest
 from .._test_utils import unittest 
 
 
-def test(run = True): 
+@moduletest 
+def test(): 
 	""" 
 	Tests the elemental_settings derived class of the VICE dataframe 
 	""" 
-	test = moduletest("Elemental settings derived class") 
-	test.new(unittest("Initialization", test_initialization)) 
-	test.new(unittest("Getitem", test_getitem)) 
-	test.new(unittest("Remove", test_remove)) 
-	if run: 
-		test.run() 
-	else: 
-		return test 
+	return ["Elemental settings derived class", 
+		[ 
+			test_initialization(), 
+			test_getitem(), 
+			test_remove() 
+		] 
+	] 
 
 
+@unittest 
 def test_initialization(): 
 	""" 
-	Tests the initialization of the elemental_settings derived class 
+	Initialization unit test 
 	""" 
-	global _TEST_FRAME_ 
-	_TEST_FRAME_ = dict(zip(
-		_RECOGNIZED_ELEMENTS_, 
-		len(_RECOGNIZED_ELEMENTS_) * [list(range(10))] 
-	)) 
-	try: 
-		_TEST_FRAME_ = elemental_settings(_TEST_FRAME_) 
-	except: 
-		return False 
-	return isinstance(_TEST_FRAME_, elemental_settings) 
+	def test(): 
+		""" 
+		Tests the initialization of the elemental_settings derived class 
+		""" 
+		global _TEST_FRAME_ 
+		_TEST_FRAME_ = dict(zip(
+			_RECOGNIZED_ELEMENTS_, 
+			len(_RECOGNIZED_ELEMENTS_) * [list(range(10))] 
+		)) 
+		try: 
+			_TEST_FRAME_ = elemental_settings(_TEST_FRAME_) 
+		except: 
+			return False 
+		return isinstance(_TEST_FRAME_, elemental_settings) 
+	return ["Initialization", test] 
 
 
+@unittest 
 def test_getitem(): 
 	""" 
-	Tests the getitem function 
+	__getitem__ unit test 
 	""" 
-	try: 
-		for i in _RECOGNIZED_ELEMENTS_: 
-			assert _TEST_FRAME_[i] == list(range(10)) 
-	except: 
-		return False 
-	return True 
+	def test(): 
+		""" 
+		Tests the getitem function 
+		""" 
+		try: 
+			for i in _RECOGNIZED_ELEMENTS_: 
+				assert _TEST_FRAME_[i] == list(range(10)) 
+		except: 
+			return False 
+		return True 
+	return ["Getitem", test] 
 
 
+@unittest 
 def test_remove(): 
 	""" 
-	Tests the remove function, which should always throw a TypeError 
+	Remove function unit test 
 	""" 
-	try: 
-		_TEST_FRAME_.remove(_RECOGNIZED_ELEMENTS_[0]) 
-	except TypeError: 
-		return True 
-	except: 
+	def test(): 
+		""" 
+		Tests the remove function, which should always throw a TypeError 
+		""" 
+		try: 
+			_TEST_FRAME_.remove(_RECOGNIZED_ELEMENTS_[0]) 
+		except TypeError: 
+			return True 
+		except: 
+			return False 
 		return False 
-	return False 
+	return ["Remove", test] 
 

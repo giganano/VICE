@@ -8,11 +8,11 @@ from .._test_utils import unittest
 from . cimport _mlr 
 
 
+@unittest 
 def test_mass_lifetime_relationship(): 
 	""" 
 	Tests the mass lifetime relationship function implemented at 
 	vice/src/ssp/mlr.h 
 	""" 
-	return unittest("Mass-lifetime relationship", 
-		_mlr.test_main_sequence_turnoff_mass) 
+	return ["Mass-lifetime relationship", _mlr.test_main_sequence_turnoff_mass] 
 

@@ -65,8 +65,12 @@ class generator:
 		return success 
 
 
-def test(run = True): 
-	test = moduletest("VICE IMF-averaged CCSN yield calculator") 
+@moduletest 
+def test(): 
+	""" 
+	Test the yield integration functions 
+	""" 
+	trials = [] 
 	for i in _STUDY_: 
 		for j in _MOVERH_[i]: 
 			for k in _ROTATION_[i]: 
@@ -78,13 +82,20 @@ def test(run = True):
 						IMF = l, 
 						m_upper = _UPPER_[i] 
 					) 
-					test.new(unittest(
-						"%s :: [M/H] = %g :: vrot = %g km/s :: %s" % (
+					trials.append(trial(
+						"%s :: [M/H] = %g :: vrot = %g km/s :: IMF = %s" % (
 							_NAMES_[i], j, k, l), 
-						generator(**params) 
-					))  
-	if run: 
-		test.run() 
-	else: 
-		return test 
+						generator(**params)
+					)) 
+	return ["VICE IMF-averaged CCSN yield calculator", trials] 
+
+
+@unittest 
+def trial(label, generator_): 
+	""" 
+	Obtain a unittest object for a singlezone trial test 
+	""" 
+	def test_(): 
+		generator_() 
+	return [label, test_] 
 

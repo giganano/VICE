@@ -58,32 +58,39 @@ class generator:
 		return True 
 
 
-def test(run = True): 
+@moduletest 
+def test(): 
 	""" 
 	Run the trial tests of the singlezone object 
 	""" 
-	test = moduletest("VICE singlezone trial tests") 
+	trials = [] 
 	for i in _MODES_: 
-		test.new(unittest("mode: %s" % (str(i)), generator(mode = i))) 
+		trials.append(trial("mode: %s" % (str(i)), generator(mode = i))) 
 	for i in _IMF_: 
-		test.new(unittest("IMF: %s" % (str(i)), generator(IMF = i))) 
+		trials.append(trial("IMF: %s" % (str(i)), generator(IMF = i))) 
 	for i in _ETA_: 
-		test.new(unittest("eta: %s" % (str(i)), generator(eta = i))) 
+		trials.append(trial("eta: %s" % (str(i)), generator(eta = i))) 
 	for i in _ZIN_: 
-		test.new(unittest("Zin: %s" % (str(i)), generator(Zin = i))) 
+		trials.append(trial("Zin: %s" % (str(i)), generator(Zin = i))) 
 	for i in _RECYCLING_: 
-		test.new(unittest("recycling: %s" % (str(i)), 
+		trials.append(trial("recycling: %s" % (str(i)), 
 			generator(recycling = i))) 
 	for i in _RIA_: 
-		test.new(unittest("RIa: %s" % (str(i)), generator(RIa = i))) 
+		trials.append(trial("RIa: %s" % (str(i)), generator(RIa = i))) 
 	for i in _TAU_STAR_: 
-		test.new(unittest("SFE timescale: %s" % (str(i)), 
+		trials.append(trial("SFE timescale: %s" % (str(i)), 
 			generator(tau_star = i))) 
 	for i in _SCHMIDT_: 
-		test.new(unittest("Schmidt: %s" % (str(i)), generator(schmidt = i))) 
-	if run: 
-		test.run() 
-	else: 
-		return test 
+		trials.append(trial("Schmidt: %s" % (str(i)), generator(schmidt = i))) 
+	return ["VICE singlezone trial tests", trials] 
 
+
+@unittest 
+def trial(label, generator_): 
+	""" 
+	Obtain a unittest object for a singlezone trial test 
+	""" 
+	def test_(): 
+		generator_() 
+	return [label, test_] 
 

@@ -17,19 +17,19 @@ if not __VICE_SETUP__:
 	from . import saved_yields 
 	from . import builtins_ 
 
-	def test(run = True): 
-		test = moduletest("VICE dataframe") 
-		test.new(base.test(run = False)) 
-		test.new(elemental_settings.test(run = False)) 
-		test.new(entrainment.test(run = False)) 
-		test.new(evolutionary_settings.test(run = False)) 
-		test.new(noncustomizable.test(run = False)) 
-		test.new(saved_yields.test(run = False)) 
-		test.new(builtins_.test(run = False)) 
-		if run: 
-			test.run(print_results = True)  
-		else: 
-			return test 
+	@moduletest 
+	def test(): 
+		return ["VICE dataframe", 
+			[ 
+				base.test(run = False), 
+				elemental_settings.test(run = False), 
+				entrainment.test(run = False), 
+				evolutionary_settings.test(run = False), 
+				noncustomizable.test(run = False), 
+				saved_yields.test(run = False), 
+				builtins_.test(run = False) 
+			] 
+		] 
 
 else: 
 	pass 
