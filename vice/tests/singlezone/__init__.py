@@ -48,8 +48,7 @@ if not __VICE_SETUP__:
 				st.test_setup_elements(), 
 				st.test_set_ria(), 
 				st.test_setup_Zin(), 
-				st.test_save_yields(), 
-				st.test_save_attributes(), 
+				st.test_pickle(), 
 				singlezone.test(run = False) 
 			] 
 		] 

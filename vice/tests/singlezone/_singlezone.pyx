@@ -692,56 +692,38 @@ cdef class singlezone_tester:
 
 
 	@unittest 
-	def test_save_yields(self): 
+	def test_pickle(self): 
 		def test(): 
 			""" 
-			Tests the save_yields function 
+			Tests the pickle function 
 
 			Returns 
 			======= 
 			1 on success, 0 on failure 
 			""" 
+			self.name = "test" 
+			if os.path.exists("%s.vice" % (self.name)): 
+				os.system("rm -rf %s.vice" % (self.name)) 
+			else: pass 
+			os.system("mkdir %s.vice" % (self.name)) 
 			try: 
-				self.name = "test" 
-				if os.path.exists("%s.vice" % (self.name)): 
-					os.system("rm -rf %s.vice" % (self.name)) 
-				else: pass 
-				os.system("mkdir %s.vice" % (self.name)) 
-				self.save_yields()   
+				self.pickle() 
 			except: 
 				return False 
 			x = (
 				os.path.exists("%s.vice/yields/agb" % (self.name)) and 
 				os.path.exists("%s.vice/yields/ccsne" % (self.name)) and 
-				os.path.exists("%s.vice/yields/sneia" % (self.name))
+				os.path.exists("%s.vice/yields/sneia" % (self.name)) and 
+				os.path.exists("%s.vice/attributes" % (self.name)) and 
+				len(os.listdir("%s.vice/yields/agb" % (self.name))) == len(
+					self.elements) and 
+				len(os.listdir("%s.vice/yields/ccsne" % (self.name))) == len(
+					self.elements) and 
+				len(os.listdir("%s.vice/yields/sneia" % (self.name))) == len(
+					self.elements) and 
+				len(os.listdir("%s.vice/attributes" % (self.name))) == 28 
 			) 
 			os.system("rm -rf %s.vice" % (self.name)) 
 			return x 
-		return ["Save yields", test] 
-
-
-	@unittest 
-	def test_save_attributes(self): 
-		def test(): 
-			""" 
-			Tests the save_attributes function 
-
-			Returns 
-			======= 
-			1 on success, 0 on failure 
-			""" 
-			try: 
-				self.name = "test" 
-				if os.path.exists("%s.vice" % (self.name)): 
-					os.system("rm -rf %s.vice" % (self.name)) 
-				else: pass 
-				os.system("mkdir %s.vice" % (self.name)) 
-				self.save_attributes() 
-			except: 
-				return False 
-			x = (os.path.exists("%s.vice/attributes" % (self.name)) and 
-				len(os.listdir("%s.vice/attributes" % (self.name))) == 28) 
-			os.system("rm -rf %s.vice" % (self.name)) 
-			return x 
-		return ["Save attributes", test] 
+		return ["Pickle", test] 
 
