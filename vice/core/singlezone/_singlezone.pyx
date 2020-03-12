@@ -44,10 +44,6 @@ elif sys.version_info[:2] >= (3, 5):
 	strcomp = str 
 else: 
 	_VERSION_ERROR_() 
-try: 
-	ModuleNotFoundError 
-except NameError: 
-	ModuleNotFoundError = ImportError 
 
 # C imports 
 from libc.stdlib cimport malloc 
@@ -1374,8 +1370,7 @@ All elemental yields in the current simulation will be set to the table of \
 			enrichment = _singlezone.singlezone_evolve(self._sz) 
 
 			# save yield settings and attributes 
-			self.save_yields() 
-			self.save_attributes() 
+			self.pickle() 
 
 		else: 
 			_singlezone.singlezone_cancel(self._sz) 
@@ -1794,69 +1789,6 @@ negative value for at least one timestep.""")
 			raise SystemError("Internal Error") 
 
 
-	def save_yields(self): 
-		""" 
-		Saves the yield settings as pickled objects 
-		""" 
-		if os.path.exists("%s.vice/yields" % (self.name)): 
-			os.system("rm -rf %s.vice/yields" % (self.name)) 
-		os.system("mkdir %s.vice/yields" % (self.name)) 
-		ccsne_yields = dict(zip(
-			self.elements, 
-			[ccsne.settings[i] for i in self.elements] 
-		)) 
-		sneia_yields = dict(zip(
-			self.elements, 
-			[sneia.settings[i] for i in self.elements] 
-		)) 
-		agb_yields = dict(zip(
-			self.elements, 
-			[agb.settings[i] for i in self.elements] 
-		)) 
-		jar(ccsne_yields, name = "%s.vice/yields/ccsne" % (self.name)).close() 
-		jar(sneia_yields, name = "%s.vice/yields/sneia" % (self.name)).close() 
-		jar(agb_yields, name = "%s.vice/yields/agb" % (self.name)).close() 
-
-
-	def save_attributes(self): 
-		""" 
-		Saves the attributes of this class as pickled objects. 
-		""" 
-		attrs = { 
-			"agb_model":			self.agb_model,  
-			"bins": 				self.bins, 
-			"delay": 				self.delay, 
-			"dt": 					self.dt, 
-			"RIa": 					self.RIa, 
-			"elements": 			self.elements, 
-			"enhancement": 			self.enhancement, 
-			"entrainment.agb": 		self.entrainment.agb.todict(), 
-			"entrainment.ccsne": 	self.entrainment.ccsne.todict(), 
-			"entrainment.sneia": 	self.entrainment.sneia.todict(), 
-			"eta": 					self.eta, 
-			"func": 				self.func, 
-			"IMF": 					self.IMF, 
-			"m_lower": 				self.m_lower, 
-			"m_upper": 				self.m_upper, 
-			"Mg0":					self.Mg0, 
-			"MgSchmidt": 			self.MgSchmidt, 
-			"mode": 				self.mode, 
-			"name": 				self.name, 
-			"recycling": 			self.recycling, 
-			"schmidt": 				self.schmidt, 
-			"schmidt_index": 		self.schmidt_index, 
-			"smoothing": 			self.smoothing, 
-			"tau_ia": 				self.tau_ia, 
-			"tau_star": 			self.tau_star, 
-			"verbose": 				self.verbose, 
-			"Z_solar": 				self.Z_solar, 
-			"Zin": 					self.Zin 
-		} 
-		for i in attrs.keys(): 
-			if isinstance(attrs[i], base): attrs[i] = attrs[i].todict() 
-		jar(attrs, name = "%s.vice/attributes" % (self.name)).close() 
-
-
 	def nsns_warning(self): 
 		""" 
 		Determines which, if any, or the tracked elements are enriched via the 
@@ -1902,4 +1834,77 @@ arbitrary normalization."""
 			warnings.warn(message, ScienceWarning) 
 		else: 
 			pass 
+
+	def pickle(self): 
+		""" 
+		Saves the current nucleosynthetic yield settings and the attributes 
+		of this class in a series of pickles. 
+
+		Notes 
+		===== 
+		While this function serves as the writer, the reader is the 
+		vice.singlezone.from_output class method, implemented in python. 
+		Any changes to this function should be reflected there. 
+
+		See Also 
+		======== 
+		vice.core.pickles 
+		""" 
+
+		# Save a copy of each channel's current yield setting 
+		if os.path.exists("%s.vice/yields" % (self.name)): 
+			os.system("rm -rf %s.vice/yields" % (self.name)) 
+		os.system("mkdir %s.vice/yields" % (self.name)) 
+		ccsne_yields = dict(zip(
+			self.elements, 
+			[ccsne.settings[i] for i in self.elements] 
+		)) 
+		sneia_yields = dict(zip(
+			self.elements, 
+			[sneia.settings[i] for i in self.elements] 
+		)) 
+		agb_yields = dict(zip(
+			self.elements, 
+			[agb.settings[i] for i in self.elements] 
+		)) 
+
+		# Save them in their own jars 
+		jar(ccsne_yields, name = "%s.vice/yields/ccsne" % (self.name)).close() 
+		jar(sneia_yields, name = "%s.vice/yields/sneia" % (self.name)).close() 
+		jar(agb_yields, name = "%s.vice/yields/agb" % (self.name)).close() 
+
+		# The attributes, in their own jar 
+		attrs = { 
+			"agb_model":			self.agb_model,  
+			"bins": 				self.bins, 
+			"delay": 				self.delay, 
+			"dt": 					self.dt, 
+			"RIa": 					self.RIa, 
+			"elements": 			self.elements, 
+			"enhancement": 			self.enhancement, 
+			"entrainment.agb": 		self.entrainment.agb.todict(), 
+			"entrainment.ccsne": 	self.entrainment.ccsne.todict(), 
+			"entrainment.sneia": 	self.entrainment.sneia.todict(), 
+			"eta": 					self.eta, 
+			"func": 				self.func, 
+			"IMF": 					self.IMF, 
+			"m_lower": 				self.m_lower, 
+			"m_upper": 				self.m_upper, 
+			"Mg0":					self.Mg0, 
+			"MgSchmidt": 			self.MgSchmidt, 
+			"mode": 				self.mode, 
+			"name": 				self.name, 
+			"recycling": 			self.recycling, 
+			"schmidt": 				self.schmidt, 
+			"schmidt_index": 		self.schmidt_index, 
+			"smoothing": 			self.smoothing, 
+			"tau_ia": 				self.tau_ia, 
+			"tau_star": 			self.tau_star, 
+			"verbose": 				self.verbose, 
+			"Z_solar": 				self.Z_solar, 
+			"Zin": 					self.Zin 
+		} 
+		for i in attrs.keys(): 
+			if isinstance(attrs[i], base): attrs[i] = attrs[i].todict() 
+		jar(attrs, name = "%s.vice/attributes" % (self.name)).close() 
 

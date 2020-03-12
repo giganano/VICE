@@ -1,6 +1,22 @@
 
 from __future__ import absolute_import 
+from ..._globals import _VERSION_ERROR_ 
 from ._singlezone import c_singlezone 
+from ..outputs._output_utils import _check_singlezone_output 
+from ..outputs._output_utils import _is_multizone 
+from ..outputs._output_utils import _get_name 
+from ..outputs import multioutput 
+from ..outputs import output 
+from .. import pickles 
+import warnings 
+import sys 
+if sys.version_info[:2] == (2, 7): 
+	strcomp = basestring 
+elif sys.version_info[:2] >= (3, 5): 
+	strcomp = str 
+else: 
+	_VERSION_ERROR_() 
+
 
 """ 
 NOTES 
@@ -258,39 +274,111 @@ class singlezone:
 		""" 
 		return self.__c_version.prep(output_times) 
 
-	@staticmethod 
-	def from_output(arg): 
+	@classmethod 
+	def from_output(cls, arg): 
 		""" 
-		Obtain a singlezone object from an output of one. 
+		Obtain an instance of the vice.singlezone class given either the path 
+		to an output or an output itself. 
+
+		Signature: vice.singlezone.from_output(arg) 
 
 		Parameters 
 		========== 
 		arg :: str or vice.output 
-			Either the path to the output or the output object itself 
+			The full or relative path to the output directory. Alternatively, 
+			an output object. 
 
 		Returns 
 		======= 
-		obj :: vice.singlezone 
+		sz :: vice.singlezone 
 			A singlezone object with the same parameters as the one which 
-			produced the output. If arg is a multioutput object or is a 
-			directory with multizone output, a multizone object will be 
-			returned instead. 
+			produced the output. 
 
 		Raises 
 		====== 
-		Exceptions are raised by vice.mirror 
+		TypeError :: 
+			::	arg is neither an output object nor a string 
+		IOError :: 
+			::	output is not found, or is missing files 
 
 		Notes 
 		===== 
-		This function simply calls vice.mirror, which handles this 
-		functionality for both singlezone and multizone objects. 
+		If arg corresponds to either a multizone output or a multioutput object, 
+		and multizone object is returned. 
 
 		See Also 
 		======== 
 		vice.mirror 
+
+		Added: 1.1.0 
 		""" 
-		from ..mirror import mirror 
-		return mirror(arg) 
+
+		""" 
+		Developer's Notes 
+		================= 
+		While this function serves as the reader, the writer is the 
+		vice.core.singlezone._singlezone.c_singlezone.pickle function, 
+		implemented in cython. Any changes to this function should be reflected 
+		there. 
+		""" 
+		if isinstance(arg, output): 
+			# recursion to the algorithm which does it from the path 
+			return cls.from_output(arg.name) 
+		elif isinstance(arg, multioutput): 
+			""" 
+			Return the corresponding multizone object 
+			These import statements are here to prevent ImportErrors caused by 
+			nested recursive imports. 
+			""" 
+			from ..multizone import multizone 
+			return multizone.from_output(arg) 
+		if isinstance(arg, strcomp): 
+			# make sure the output looks okay 
+			dirname = _get_name(arg) 
+			if _is_multizone(dirname): 
+				from ..multizone import multizone 
+				return multizone.from_output(dirname) 
+			_check_singlezone_output(dirname) 
+		else: 
+			raise TypeError("""Must be either a string or an output object. \
+Got: %s""" % (type(arg)))  
+
+		attrs = pickles.jar.open("%s/attributes" % (dirname)) 
+		copy = {} # copy the attributes one by one, checking for lost values 
+		for i in attrs.keys(): 
+			if i.startswith("entrainment") or i == "agb_model": 
+				"""
+				take care of these two at the end -> agb_model is None by 
+				default due to deprecation, so don't raise a misleading 
+				UserWarning. 
+				""" 
+				continue 
+			elif attrs[i] is None: 
+				warnings.warn("""\
+Attribute not encoded with output: %s. Assuming default value, which may not \
+reflect the value of this attribute at the time the simulation was \
+ran.""" % (i), UserWarning) 
+			elif isinstance(attrs[i], dict): 
+				# check for None values in dataframe attributes 
+				attr_copy = {} 
+				for j in attrs[i].keys(): 
+					if attrs[i][j] is None: 
+						warnings.warn("""\
+Attribute not encoded with output: %s["%s"]. Assuming default value, which \
+may not reflect the value of this attribute at the time the simulation was \
+ran.""" % (i, j), UserWarning) 
+					else: 
+						attr_copy[j] = attrs[i][j] 
+				copy[i] = attr_copy 
+			else: 
+				copy[i] = attrs[i] 
+		copy["agb_model"] = attrs["agb_model"] 
+		sz = cls(**copy) 
+		for i in sz.elements: 
+			sz.entrainment.agb[i] = attrs["entrainment.agb"][i] 
+			sz.entrainment.ccsne[i] = attrs["entrainment.ccsne"][i] 
+			sz.entrainment.sneia[i] = attrs["entrainment.sneia"][i] 
+		return sz 
 
 	@property 
 	def name(self): 
@@ -1083,6 +1171,13 @@ class singlezone:
 		nucleosynthetic yields from asymptotic giant branch stars to adopt 
 		in the simulation. 
 
+		Deprecation Notes 
+		================= 
+		This feature is deprecated in versions >= 1.2.0. In this and subsequent 
+		builds, vice.yields.agb.settings is a dataframe whose fields must be 
+		modified in the same way as CCSN and SN Ia yields. The default value of 
+		this attribute is None in these versions. 
+
 		Recognized Keywords and their Associated Studies 
 		------------------------------------------------ 
 		cristallo11:		Cristallo et al. (2011), ApJS, 197, 17
@@ -1094,13 +1189,6 @@ class singlezone:
 		tracked by the simulation are heavier than nickel, a LookupError will 
 		be raised. The Karakas (2010) study did not report yields for elements 
 		heavier than nickel. 
-
-		Deprecation Notes 
-		================= 
-		This feature has been deprecated on the development branch following 
-		the release of version 1.0.0. In this build, vice.yields.agb.settings 
-		is a dataframe whose fields must be modified in the same way as 
-		CCSN and SN Ia yields. Default value for this field switched to None. 
 
 		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
 		======== 

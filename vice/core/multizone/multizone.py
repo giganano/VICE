@@ -1,7 +1,22 @@
 
 from __future__ import absolute_import 
+from ..._globals import _VERSION_ERROR_ 
 from ._multizone import c_multizone 
+from ..outputs._output_utils import _check_singlezone_output 
+from ..outputs._output_utils import _is_multizone 
+from ..outputs._output_utils import _get_name 
+from ..outputs import multioutput 
+from ..outputs import output 
+from .. import pickles 
+import warnings 
 import numbers 
+import sys 
+if sys.version_info[:2] == (2, 7): 
+	strcomp = basestring 
+elif sys.version_info[:2] >= (3, 5): 
+	strcomp = str 
+else: 
+	_VERSION_ERROR_() 
 
 """ 
 NOTES 
@@ -127,39 +142,107 @@ Got: %s""" % (type(n_zones)))
 		""" 
 		return exc_value is None 
 
-	@staticmethod 
-	def from_output(arg): 
+	@classmethod  
+	def from_output(cls, arg): 
 		""" 
-		Obtain a multizone object from an output of one. 
+		Obtain an instance of the vice.multizone class given either the path 
+		to an output or a multioutput itself. 
+
+		Signature: vice.multizone.from_output(arg) 
 
 		Parameters 
 		========== 
 		arg :: str or vice.multioutput 
-			Either the path to the output or the output object itself 
+			The full or relative path to the multioutput directory. 
+			Alternatively, the multioutput object. 
 
 		Returns 
 		======= 
-		obj :: vice.multizone 
+		mz :: vice.multizone 
 			A multizone object with the same parameters as the one which 
-			produced the output. If arg is a plain output object or is a 
-			directory with singlezone output, a singlezone object will be 
-			returned instead. 
+			produced the multioutput. 
 
 		Raises 
 		====== 
-		Exceptions are raised by vice.mirror 
+		TypeError :: 
+			::	arg is neither a multioutput object nor a string 
+		IOError :: 
+			::	output is not found, or is missing files 
 
 		Notes 
 		===== 
-		This function simply calls vice.mirror, which handles this 
-		functionality for both singlezone and multizone objects. 
+		If arg corresponds to either a singlezone output or an output object, 
+		a singlezone object is returned. 
 
 		See Also 
 		======== 
 		vice.mirror 
+
+		Added: 1.1.0 
 		""" 
-		from ..mirror import mirror 
-		return mirror(arg) 
+
+		""" 
+		Developer's Notes 
+		================= 
+		While this function serves as the reader, the writer is the 
+		vice.core.multizone._multizone.c_multizone.pickle function, 
+		implemented in cython. Any changes to this function should be reflected 
+		there. 
+		""" 
+		if isinstance(arg, multioutput): 
+			# recursion to the algorithm which does it from the path 
+			return cls.from_output(arg.name) 
+		elif isinstance(arg, output): 
+			""" 
+			Return the corresponding singlezone object. 
+			These import statements are here to prevent ImportErrors caused by 
+			nested recursive imports. 
+			""" 
+			from ..singlezone import singlezone 
+			return singlezone.from_output(arg) 
+		elif isinstance(arg, strcomp): 
+			dirname = _get_name(arg) 
+			if not _is_multizone(dirname): 
+				from ..singlezone import singlezone 
+				return singlezone.from_output(dirname) 
+		else: 
+			raise TypeError("""Must be either a string or an output object. \
+Got: %s""" % (type(arg))) 
+
+		from ..singlezone import singlezone 
+		attrs = pickles.jar.open("%s/attributes" % (dirname)) 
+		mz = cls(n_zones = attrs["n_zones"]) 
+		mz.name = attrs["name"] 
+		mz.n_tracers = attrs["n_tracers"] 
+		mz.simple = attrs["simple"] 
+		mz.verbose = attrs["verbose"] 
+		for i in range(mz.n_zones): 
+			mz.zones[i] = singlezone.from_output("%s/%s.vice" % (dirname, 
+				attrs["zones"][i])) 
+			mz.zones[i].name = attrs["zones"][i] 
+		
+		stars = pickles.jar.open("%s/migration" % (dirname))["stars"] 
+		if stars is None: 
+			warnings.warn("""\
+Attribute not encoded with output: migration.stars. Assuming default value, \
+which may not reflect the value of this attribute at the time the simulation \
+was ran.""", UserWarning) 
+		else: 
+			mz.migration.stars = stars 
+
+		for i in range(mz.n_zones): 
+			attrs = pickles.jar.open("%s/migration/gas%d" % (dirname, i)) 
+			for j in range(mz.n_zones): 
+				if attrs[str(j)] is None: 
+					warnings.warn("""\
+Attribute not encoded with output: migration.gas[%d][%d]. Assuming default \
+value, which may not reflect the value of this attribute at the time the \
+simulation was ran.""" % (i, j), UserWarning) 
+				else: 
+					mz.migration.gas[i][j] = attrs[str(j)]  
+
+		return mz 
+
 
 	@property 
 	def name(self): 

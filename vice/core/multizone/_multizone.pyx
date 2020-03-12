@@ -24,10 +24,6 @@ elif sys.version_info[:2] >= (3, 5):
 	strcomp = str 
 else: 
 	_VERSION_ERROR_() 
-try: 
-	ModuleNotFoundError 
-except NameError: 
-	ModuleNotFoundError = ImportError 
 from libc.stdlib cimport malloc 
 from libc.string cimport strlen 
 from ..singlezone cimport _singlezone 
@@ -272,13 +268,11 @@ a boolean. Got: %s""" % (type(value)))
 
 			# just do it #nike 
 			enrichment = _multizone.multizone_evolve(self._mz) 
-			self.save_attributes() 
-			self.save_migration() 
+			self.pickle() 
 
 			# save yield settings and attributes 
 			for i in range(self._mz[0].mig[0].n_zones): 
-				self._zones[i]._singlezone__c_version.save_yields() 
-				self._zones[i]._singlezone__c_version.save_attributes() 
+				self._zones[i]._singlezone__c_version.pickle() 
 		else: 
 			_multizone.multizone_cancel(self._mz) 
 			enrichment = 0 
@@ -671,10 +665,24 @@ artifacts.""" % (key), ScienceWarning)
 		else: 
 			pass 
 
-	def save_attributes(self): 
+	def pickle(self): 
 		""" 
-		Saves the multizone parameters to the output directory  
+		Saves the parameters of this object in a series of pickles. A 
+		copy of the nucleosynthetic yields is not necessary, as they are 
+		saved by the singlezone object anyway. 
+
+		Notes 
+		===== 
+		While this function serves as the writer, the reader is the 
+		vice.multizone.from_output class method, implemented in python. 
+		Any changes to this function should be reflected there. 
+
+		See Also 
+		======== 
+		vice.core.pickles 
 		""" 
+
+		# First put the parameters in a jar 
 		attrs = {
 			"name": 			self.name, 
 			"n_zones": 			self.n_zones, 
@@ -688,12 +696,9 @@ artifacts.""" % (key), ScienceWarning)
 		)) 
 		jar(attrs, name = "%s.vice/attributes" % (self.name)).close() 
 
-	def save_migration(self): 
-		""" 
-		Saves the migration parameters to the output directory 
-		""" 
-		attrs = {"stars": 		self.migration.stars} 
-		jar(attrs, name = "%s.vice/migration" % (self.name)).close() 
+		# Save the migration parameters to a series of jars 
+		jar({"stars": self.migration.stars}, 
+			name = "%s.vice/migration" % (self.name)).close() 
 		for i in range(self.n_zones): 
 			attrs = dict(zip(
 				[str(i) for i in range(self.n_zones)], 
@@ -701,27 +706,4 @@ artifacts.""" % (key), ScienceWarning)
 			)) 
 			jar(attrs, 
 				name = "%s.vice/migration/gas%d" % (self.name, i)).close() 
-
-
-	def copy_gas_migration(self): 
-		warn = False 
-		gas = _migration.mig_matrix(self.n_zones) 
-		for i in range(self.n_zones): 
-			for j in range(self.n_zones): 
-				if callable(self.migration.gas[i][j]): 
-					warn = True 
-					gas[i][j] = 0.0 
-				else: 
-					gas[i][j] = self.migration.gas[i][j] 
-		if warn: 
-			warnings.warn("""\
-Saving functional attributes within VICE outputs requires dill (installable \
-via pip). The functional elements of the gas migration matrix will not be \
-saved with this output""", ScienceWarning) 
-		else: 
-			pass 
-
-		return gas  
-
-
 
