@@ -20,7 +20,8 @@ else:
 	_VERSION_ERROR_() 
 from libc.stdlib cimport malloc, free 
 from libc.string cimport strlen, strcmp 
-from .._cutils cimport set_string, copy_pylist
+from .._cutils cimport set_string 
+from .._cutils cimport copy_pylist 
 from . cimport _fromfile 
 
 

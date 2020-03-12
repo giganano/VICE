@@ -2,4 +2,6 @@
 .PHONY: clean 
 
 clean: 
-	rm -f *.c 
+	@ echo Cleaning vice/tests/yields/ 
+	@ rm -f *.c 
+	@ rm -rf __pycache__ 

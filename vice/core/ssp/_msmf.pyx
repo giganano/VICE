@@ -18,8 +18,9 @@ else:
 	_VERSION_ERROR_() 
 from .._cutils cimport setup_imf 
 from .._cutils cimport set_string 
-from ..singlezone._ssp cimport SSP 
-from ..singlezone cimport _ssp 
+from ..objects._ssp cimport SSP 
+from . cimport _ssp 
+
 
 def main_sequence_mass_fraction(age, IMF = "kroupa", m_upper = 100, 
 	m_lower = 0.08): 	

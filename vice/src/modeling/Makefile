@@ -4,12 +4,20 @@ CFLAGS = -fPIC -Wsign-conversion -Wsign-compare
 SOURCES = $(wildcard *.c) 
 OBJECTS = $(SOURCES:.c=.o) 
 
-all: $(OBJECTS) likelihood 
-.PHONY: clean likelihood 
+all: print_message $(OBJECTS) likelihood 
+.PHONY: print_message clean likelihood 
+
+print_message: 
+	@ echo Compiling vice/src/modeling/ 
 
 likelihood: 
-	$(MAKE) -C likelihood/ 
+	@ $(MAKE) -C likelihood/ 
+
+%.o: %.c *.h 
+	@ $(CC) $(CFLAGS) -c $< -o $@ 
 
 clean: 
-	$(MAKE) -C likelihood/ clean 
-	rm -f *.o 
+	@ echo Cleaning vice/src/modeling/ 
+	@ $(MAKE) -C likelihood/ clean 
+	@ rm -f *.o 
+	@ rm -rf __pycache__ 

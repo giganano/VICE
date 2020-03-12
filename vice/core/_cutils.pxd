@@ -20,13 +20,11 @@ else:
 	_VERSION_ERROR_() 
 
 from libc.stdlib cimport malloc, free 
-from .singlezone._imf cimport IMF_ 
-from .singlezone._agb cimport AGB_YIELD_GRID 
-from .singlezone._callback_1arg cimport CALLBACK_1ARG 
-from .singlezone._callback_2arg cimport CALLBACK_2ARG 
-from .singlezone cimport _agb 
-from .singlezone cimport _ccsne 
-from .singlezone cimport _sneia 
+from .objects._imf cimport IMF_ 
+from .objects._agb cimport AGB_YIELD_GRID 
+from .objects._callback_1arg cimport CALLBACK_1ARG 
+from .objects._callback_2arg cimport CALLBACK_2ARG 
+
 
 cdef extern from "../src/utils.h": 
 	double *binspace(double start, double stop, long N) 

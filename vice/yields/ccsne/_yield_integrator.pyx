@@ -35,13 +35,15 @@ else:
 
 # C Functions 
 from libc.stdlib cimport free 
-from ...core.ssp._imf cimport imf_object 
+from ...core.objects._imf cimport imf_object 
+from ...core.objects._callback_1arg cimport CALLBACK_1ARG 
+from ...core.objects._callback_1arg cimport callback_1arg_initialize 
+from ...core.objects._callback_1arg cimport callback_1arg_free 
+from ...core.objects._integral cimport INTEGRAL 
+from ...core.objects cimport _integral 
+from ...core.objects cimport _imf 
 from ...core._cutils cimport copy_pylist 
 from ...core._cutils cimport callback_1arg_setup 
-from ._yield_integrator cimport CALLBACK_1ARG 
-from ._yield_integrator cimport callback_1arg_initialize 
-from ._yield_integrator cimport callback_1arg_free 
-from ._yield_integrator cimport INTEGRAL 
 from . cimport _yield_integrator 
 
 
@@ -369,7 +371,7 @@ own discretion by modifying their CCSN yield settings directly.""" % (
 
 
 	# Compute the yield 
-	cdef INTEGRAL *num = _yield_integrator.integral_initialize() 
+	cdef INTEGRAL *num = _integral.integral_initialize() 
 	num[0].a = m_lower 
 	num[0].b = m_upper 
 	num[0].tolerance = tolerance 
@@ -388,11 +390,11 @@ Estimated fractional error: %.2e""" % (num[0].error), ScienceWarning)
 			pass 
 	finally: 
 		numerator = [num[0].result, num[0].error, num[0].iters] 
-		_yield_integrator.integral_free(num) 
+		_integral.integral_free(num) 
 		callback_1arg_free(explodability_cb) 
 
 
-	cdef INTEGRAL *den = _yield_integrator.integral_initialize() 
+	cdef INTEGRAL *den = _integral.integral_initialize() 
 	den[0].a = m_lower 
 	den[0].b = m_upper 
 	den[0].tolerance = tolerance 
@@ -412,8 +414,8 @@ Estimated fractional error: %.2e""" % (den[0].error), ScienceWarning)
 			pass 
 	finally: 
 		denominator = [den[0].result, den[0].error, den[0].iters] 
-		_yield_integrator.integral_free(den) 
-		_yield_integrator.imf_free(imf_obj) 
+		_integral.integral_free(den) 
+		_imf.imf_free(imf_obj) 
 		# callback_1arg_free(imf_cb) 
 
 	y = numerator[0] / denominator[0] 

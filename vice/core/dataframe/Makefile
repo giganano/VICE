@@ -2,7 +2,9 @@
 .PHONY: clean 
 
 clean: 
-	rm -f *.c 
-	rm -f *.so 
+	@ echo Cleaning vice/core/dataframe/ 
+	@ rm -f *.c 
+	@ rm -f *.so 
+	@ rm -rf __pycache__ 
 
 

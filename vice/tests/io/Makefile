@@ -2,4 +2,7 @@
 .PHONY: clean 
 
 clean: 
-	rm -f *.c 
+	@ echo Cleaning vice/tests/io/ 
+	@ rm -f *.c 
+	@ rm -rf __pycache__ 
+

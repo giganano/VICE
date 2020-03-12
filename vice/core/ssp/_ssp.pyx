@@ -36,13 +36,12 @@ from .._cutils cimport copy_pylist
 from .._cutils cimport set_string 
 from .._cutils cimport setup_imf 
 from .._cutils cimport binspace 
-from ..singlezone._element cimport ELEMENT 
-from ..singlezone._ssp cimport SSP 
-from ..singlezone cimport _agb 
-from ..singlezone cimport _element 
-from ..singlezone cimport _io 
-from ..singlezone cimport _sneia 
-from ..singlezone cimport _ssp 
+from ..objects._element cimport ELEMENT 
+from ..objects._ssp cimport SSP 
+from ..objects cimport _element 
+from ..objects cimport _sneia 
+from ..objects cimport _agb 
+from . cimport _ssp 
 
 def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10, 
 	dt = 0.01, m_upper = 100, m_lower = 0.08, postMS = 0.1, IMF = "kroupa", 
@@ -215,7 +214,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	def builtin_agb_grid(model): 
 		agbfile = find_agb_yield_file(element, model) 
 		if os.path.exists(agbfile): 
-			if _io.import_agb_grid(e, agbfile.encode("latin-1")): 
+			if _agb.import_agb_grid(e, agbfile.encode("latin-1")): 
 				raise IOError("Failed to read AGB yield file.") 
 			else: 
 				pass 

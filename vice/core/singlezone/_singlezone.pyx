@@ -48,18 +48,17 @@ else:
 # C imports 
 from libc.stdlib cimport malloc 
 from libc.string cimport strlen 
-from . cimport _agb 
 from .._cutils cimport set_string 
 from .._cutils cimport copy_pylist 
 from .._cutils cimport setup_imf 
 from .._cutils cimport callback_1arg_setup 
 from .._cutils cimport callback_2arg_setup 
 from .._cutils cimport copy_2Dpylist 
-from . cimport _element 
-from . cimport _io 
+from ..objects cimport _element 
+from ..objects cimport _singlezone 
+from ..objects cimport _sneia 
+from ..objects cimport _agb 
 from . cimport _singlezone 
-from . cimport _sneia 
-from . cimport _ssp 
 
 _RECOGNIZED_MODES_ = tuple(["ifr", "sfr", "gas"]) 
 _RECOGNIZED_DTDS_ = tuple(["exp", "plaw"]) 
@@ -1682,7 +1681,7 @@ be lost.\nOutput directory: %s.vice\nOverwrite? (y | n) """ % (self.name))
 			else: 
 				agbfile = agb._grid_reader.find_yield_file(self.elements[i], 
 					agb.settings[self.elements[i]]) 
-				_io.import_agb_grid(self._sz[0].elements[i], 
+				_agb.import_agb_grid(self._sz[0].elements[i], 
 					agbfile.encode("latin-1")) 
 
 

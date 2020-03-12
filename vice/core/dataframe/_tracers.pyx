@@ -15,7 +15,6 @@ from libc.stdlib cimport malloc, free
 from libc.string cimport strlen 
 from .._cutils cimport set_string 
 from . cimport _tracers 
-from . cimport _fromfile 
 from . cimport _base 
 
 
@@ -89,7 +88,6 @@ cdef class tracers(history):
 		element = key.split('(')[1][:-1].lower() 
 		copy = <char *> malloc ((len(element) + 1) * sizeof(char)) 
 		set_string(copy, element.lower()) 
-		# item = _fromfile.fromfile_column(self._ff, copy) 
 		item = _tracers.tracers_Z_element(self._ff, copy) 
 		free(copy) 
 		if item is not NULL: 

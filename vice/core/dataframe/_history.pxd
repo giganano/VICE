@@ -1,7 +1,8 @@
 # cython: language_level = 3, boundscheck = False 
 
 from __future__ import absolute_import 
-from ._fromfile cimport FROMFILE, fromfile
+from ..objects._fromfile cimport FROMFILE 
+from ._fromfile cimport fromfile
 
 
 cdef extern from "../../src/dataframe/history.h": 

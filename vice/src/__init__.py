@@ -23,7 +23,9 @@ if __VICE_SETUP__:
 				if "tests" in root: 
 					continue 
 				elif i.endswith(".c"): 
-					extensions.append("%s/%s" % (root, i)) 
+					extensions.append(
+						("%s/%s" % (root, i)).replace(os.getcwd(), ".")
+					) 
 				else: pass 
 		return extensions 
 

@@ -14,12 +14,9 @@ cdef extern from "../../src/objects.h":
 
 
 cdef extern from "../../src/imf.h": 
-	IMF_ *imf_initialize() 
+	IMF_ *imf_initialize(double m_lower, double m_upper)  
 	void imf_free(IMF_ *imf) 
-	unsigned short imf_set_mass_distribution(IMF_ *imf, double *arr) 
-	unsigned long n_mass_bins(IMF_ *imf) 
-	unsigned long imf_evaluate(IMF_ imf, double m) 
-	double salpeter55(double m) 
-	double kroupa01(double m) 
 
+
+cdef IMF_ *imf_object(user_spec, m_lower, m_upper) except *
 

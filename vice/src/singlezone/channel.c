@@ -5,6 +5,7 @@
 
 #include <stdlib.h> 
 #include "../singlezone.h" 
+#include "../callback.h" 
 #include "../channel.h" 
 #include "../utils.h" 
 #include "channel.h" 
@@ -33,8 +34,8 @@ extern double mdot(SINGLEZONE sz, ELEMENT e) {
 	for (i = 0lu; i < e.n_channels; i++) {
 		unsigned long j; 
 		for (j = 0l; j < sz.timestep; j++) {
-			mdot_ += (*e.channels[i]).entrainment * (
-				get_yield((*e.channels[i]), scale_metallicity(sz, j)) * 
+			/* Entrainment to be handled in vice/src/singlezone/element.c */ 
+			mdot_ += (get_yield((*e.channels[i]), scale_metallicity(sz, j)) * 
 				(*sz.ism).star_formation_history[j] * 
 				(*e.channels[i]).rate[sz.timestep - j] 
 			); 
@@ -61,44 +62,9 @@ extern double mdot(SINGLEZONE sz, ELEMENT e) {
  * 
  * header: channel.h 
  */ 
-extern double get_yield(CHANNEL ch, double Z) {
+extern double get_yield(CHANNEL ch, double Z) { 
 
-	unsigned long lower_bound_idx; 
-	if (Z < CHANNEL_YIELD_GRID_MIN) {
-		/* 
-		 * Metallicity below the channel yield grid. Unless the user changes 
-		 * the CHANNEL_YIELD_GRID_MIN in channel.h to something other than 
-		 * zero, this would be unphysical. Included as a failsafe for users 
-		 * modifying VICE. Interpolate off bottom two elements of yield grid. 
-		 */ 
-		lower_bound_idx = 0lu; 
-	} else if (CHANNEL_YIELD_GRID_MIN <= Z && Z <= CHANNEL_YIELD_GRID_MAX) {
-		/* 
-		 * Metallicity on the grid. This will always be true for simulations 
-		 * even remotely realistic without modified grid parameters. 
-		 * Interpolate off neighboring elements of yield grid. 
-		 */ 
-		lower_bound_idx = (unsigned long) (Z / CHANNEL_YIELD_GRID_STEP); 
-	} else {
-		/* 
-		 * Metallicity above the grid. Without modified grid parameters, this 
-		 * is unrealistically high, but included as a failsafe against 
-		 * segmentation faults. Interpolate off top two elements of yield 
-		 * grid. 
-		 */ 
-		lower_bound_idx = (unsigned long) (
-			(CHANNEL_YIELD_GRID_MAX - CHANNEL_YIELD_GRID_MIN) / 
-			CHANNEL_YIELD_GRID_STEP 
-		) - 1l; 
-	} 
-
-	return interpolate(
-		lower_bound_idx * CHANNEL_YIELD_GRID_STEP, 
-		lower_bound_idx * CHANNEL_YIELD_GRID_STEP + CHANNEL_YIELD_GRID_STEP, 
-		ch.yield_[lower_bound_idx], 
-		ch.yield_[lower_bound_idx + 1l], 
-		Z 
-	); 
+	return callback_1arg_evaluate(*ch.yield_, Z); 
 
 } 
 

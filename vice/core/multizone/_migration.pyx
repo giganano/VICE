@@ -4,6 +4,7 @@ from __future__ import absolute_import
 from ..._globals import _DEFAULT_TRACER_MIGRATION_ 
 from .. import _pyutils 
 import numbers 
+from ..objects cimport _migration 
 from . cimport _migration 
 
 

@@ -2,5 +2,7 @@
 .PHONY: clean 
 
 clean: 
-	$(MAKE) -C singlechain/ clean 
+	@ echo Cleaning vice/modeling/ 
+	@ $(MAKE) -C singlechain/ clean 
+	@ rm -rf __pycache__ 
 

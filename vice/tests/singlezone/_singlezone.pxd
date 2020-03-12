@@ -1,8 +1,10 @@
 # cython: language_level = 3, boundscheck = False 
 
 from __future__ import absolute_import 
-from ...core.singlezone._singlezone cimport SINGLEZONE, c_singlezone 
-from ...core.singlezone._element cimport ELEMENT 
+from ...core.singlezone._singlezone cimport c_singlezone 
+from ...core.objects._singlezone cimport SINGLEZONE 
+from ...core.objects._element cimport ELEMENT 
+
 
 cdef extern from "../../src/tests/singlezone/singlezone.h": 
 	unsigned short test_singlezone_address(SINGLEZONE *test) 
@@ -12,3 +14,4 @@ cdef extern from "../../src/tests/singlezone/singlezone.h":
 
 cdef class singlezone_tester(c_singlezone): 
 	pass 
+

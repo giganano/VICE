@@ -212,7 +212,7 @@ def setup_package():
 		packages = find_packages(), 
 		package_data = find_package_data(), 
 		scripts = ["bin/%s" % (i) for i in os.listdir("./bin/")], 
-		ext_modules = cythonize(find_extensions()) 
+		ext_modules = cythonize(find_extensions()), 
 	)
 
 	try: 

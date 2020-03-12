@@ -2,6 +2,8 @@
 .PHONY: clean 
 
 clean: 
-	rm -f *.c 
-	rm -f *.so 
+	@ echo Cleaning vice/tests/modeling/likelihood/ 
+	@ rm -f *.c 
+	@ rm -f *.so 
+	@ rm -rf __pycache__ 
 

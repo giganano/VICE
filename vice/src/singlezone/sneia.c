@@ -44,7 +44,7 @@ extern double mdot_sneia(SINGLEZONE sz, ELEMENT e) {
 			(*e.sneia_yields).RIa[sz.timestep - i] 
 		); 
 	} 
-	// return (*e.sneia_yields).entrainment * mdotia; 
+	/* Entrainment is handled in vice/src/singlezone/element.c */ 
 	return mdotia; 
 
 } 
@@ -66,49 +66,9 @@ extern double mdot_sneia(SINGLEZONE sz, ELEMENT e) {
  * 
  * header: sneia.h  
  */ 
-extern double get_ia_yield(ELEMENT e, double Z) {
+extern double get_ia_yield(ELEMENT e, double Z) { 
 
-	#if 0 
-	long lower_bound_idx; 
-	if (Z < IA_YIELD_GRID_MIN) { 
-		/* 
-		 * Metallicity below the yield grid. Unless the user changes the 
-		 * IA_YIELD_GRID_MIN in sneia.h to something other than zero, this 
-		 * would be unphysical. Included as a failsafe for users modifying 
-		 * VICE. Interpolate off bottom two elements of yield grid. 
-		 */ 
-		lower_bound_idx = 0l; 
-	} else if (IA_YIELD_GRID_MIN <= Z && Z <= IA_YIELD_GRID_MAX) { 
-		/* 
-		 * Metallicity on the grid. This will always be true for simulations 
-		 * even remotely realistic without modified grid parameters. 
-		 * Interpolate off neighboring elements of yield grid. 
-		 */ 
-		lower_bound_idx = (long) (Z / IA_YIELD_STEP); 
-	} else {
-		/* 
-		 * Metallicity above the grid. Without modified grid parameters, this 
-		 * is unrealistically high, but included as a failsafe against 
-		 * segmentation faults. Interpolate off top two elements of yield grid. 
-		 */ 
-		lower_bound_idx = (long) ((IA_YIELD_GRID_MAX - IA_YIELD_GRID_MIN) / 
-			IA_YIELD_STEP) - 1l; 
-	}
-
-	return interpolate(
-		lower_bound_idx * IA_YIELD_STEP, 
-		lower_bound_idx * IA_YIELD_STEP + IA_YIELD_STEP, 
-		(*e.sneia_yields).yield_[lower_bound_idx], 
-		(*e.sneia_yields).yield_[lower_bound_idx + 1l], 
-		Z 
-	); 
-	#endif 
-
-	// if ((*e.sneia_yields).yield_ != NULL) { 
 	return callback_1arg_evaluate(*(*e.sneia_yields).yield_, Z); 
-	// } else { 
-	// 	return (*e.sneia_yields).constant_yield; 
-	// } 
 
 } 
 

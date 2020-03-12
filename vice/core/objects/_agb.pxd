@@ -2,6 +2,7 @@
 
 from __future__ import absolute_import 
 from ._callback_2arg cimport CALLBACK_2ARG 
+from ._element cimport ELEMENT 
 
 
 cdef extern from "../../src/objects.h": 
@@ -18,7 +19,8 @@ cdef extern from "../../src/objects.h":
 cdef extern from "../../src/agb.h": 
 	AGB_YIELD_GRID *agb_yield_grid_initialize() 
 	void agb_yield_grid_free(AGB_YIELD_GRID *agb_grid) 
-	double AGB_Z_GRID_STEPSIZE 
-	double AGB_Z_GRID_MIN 
-	double AGB_Z_GRID_MAX 	
+
+
+cdef extern from "../../src/io.h": 
+	unsigned short import_agb_grid(ELEMENT *e, char *file) 
 

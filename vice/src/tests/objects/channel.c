@@ -21,7 +21,6 @@ extern unsigned short test_channel_initialize(void) {
 	CHANNEL *test = channel_initialize(); 
 	unsigned short result = (test != NULL && 
 		(*test).yield_ == NULL && 
-		(*test).grid != NULL && 
 		(*test).rate == NULL && 
 		(*test).entrainment == 1
 	); 

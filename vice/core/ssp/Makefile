@@ -2,6 +2,7 @@
 .PHONY: clean 
 
 clean: 
-	rm -f *.c 
-	rm -f *.so 
+	@ echo Cleaning vice/core/ssp/ 
+	@ rm -f *.c 
+	@ rm -f *.so 
 

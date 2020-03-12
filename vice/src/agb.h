@@ -16,18 +16,6 @@ extern "C" {
 #define MIN_AGB_MASS 0 
 #endif /* MIN_AGB_MASS */ 
 
-#ifndef AGB_Z_GRID_STEPSIZE 
-#define AGB_Z_GRID_STEPSIZE 1e-3 
-#endif /* AGB_Z_GRID_STEPSIZE */ 
-
-#ifndef AGB_Z_GRID_MIN 
-#define AGB_Z_GRID_MIN 0 
-#endif /* AGB_Z_GRID_MIN */ 
-
-#ifndef AGB_Z_GRID_MAX 
-#define AGB_Z_GRID_MAX 0.5 
-#endif /* AGB_Z_GRID_MAX */ 
-
 #include "objects.h" 
 #include "singlezone/agb.h" 
 #include "multizone/agb.h" 

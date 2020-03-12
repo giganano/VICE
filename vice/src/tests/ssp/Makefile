@@ -4,8 +4,16 @@ CFLAGS = -fPIC -Wsign-conversion -Wsign-compare
 SOURCES = $(wildcard *.c) 
 OBJECTS = $(SOURCES:.c=.o) 
 
-all: $(OBJECTS) 
-.PHONY: clean 
+all: print_message $(OBJECTS) 
+.PHONY: print_message clean 
+
+print_message: 
+	@ echo Compiling vice/src/tests/ssp/ 
+
+%.o: %.c *.h 
+	@ $(CC) $(CFLAGS) -c $< -o $@ 
 
 clean: 
-	rm -f *.o 
+	@ echo Cleaning vice/src/tests/ssp/ 
+	@ rm -f *.o 
+	@ rm -rf __pycache__ 

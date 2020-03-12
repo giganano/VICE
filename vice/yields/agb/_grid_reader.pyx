@@ -21,11 +21,10 @@ else:
 
 # C imports 
 from libc.stdlib cimport malloc, free 
-from ...core.singlezone._agb cimport AGB_YIELD_GRID 
-from ...core.singlezone._element cimport ELEMENT 
-from ...core.singlezone cimport _agb 
-from ...core.singlezone cimport _element 
-from ...core.singlezone cimport _io 
+from ...core.objects._agb cimport AGB_YIELD_GRID 
+from ...core.objects._element cimport ELEMENT 
+from ...core.objects cimport _element 
+from ...core.objects cimport _agb 
 
 _RECOGNIZED_STUDIES_ = tuple(["cristallo11", "karakas10"]) 
 
@@ -134,7 +133,7 @@ heavier than nickel (atomic number 28).""" % (studies["karakas10"]))
 		pass 
 
 	cdef ELEMENT *e = _element.element_initialize() 
-	if _io.import_agb_grid(e, filename.encode("latin-1")): 
+	if _agb.import_agb_grid(e, filename.encode("latin-1")): 
 		_element.element_free(e) 
 		raise SystemError("Internal Error: couldn't read yield file.")  
 	else: 

@@ -2,4 +2,6 @@
 .PHONY: clean 
 
 clean: 
-	rm -f *.c 
+	@ echo Cleaning vice/tests/singlezone/ 
+	@ rm -f *.c 
+	@ rm -rf __pycache__ 

@@ -140,16 +140,14 @@ typedef struct arbitrary_channel {
 	 * This struct holds the information and yield specifications for 
 	 * arbitrary channels of enrichment. 
 	 * 
-	 * yield_: The IMF-integrated yields themselves, as a function of 
-	 * 		metallicity 
+	 * yield_: A callback object corresponding the user's yield settings. 
 	 * grid: The grid of metallicities on which the yields themselves are 
 	 * 		sampled. 
 	 * rate: The delay-time distribution of the channel: its rate following the 
 	 * 		formation of a simple stellar population. 
 	 */ 
 
-	double *yield_; 
-	double *grid; 
+	CALLBACK_1ARG *yield_; 
 	double *rate; 
 	double entrainment; 
 

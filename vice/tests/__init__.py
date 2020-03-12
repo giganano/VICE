@@ -23,6 +23,7 @@ if not __VICE_SETUP__:
 		"modeling", 
 		"objects", 
 		"outputs", 
+		"pickles", 
 		"singlezone", 
 		"ssp", 
 		"stats", 
@@ -37,6 +38,7 @@ if not __VICE_SETUP__:
 	from . import modeling 
 	from . import objects 
 	from . import outputs 
+	from . import pickles 
 	from . import singlezone 
 	from . import ssp 
 	from . import _stats as stats 
@@ -55,15 +57,16 @@ if not __VICE_SETUP__:
 		print("This may take a few minutes.") 
 		return [None, 
 			[ 
-				singlezone.test(run = False), 
-				outputs.test(run = False), 
-				utils.test(run = False), 
-				imf.test(run = False), 
 				dataframe.test(run = False), 
+				imf.test(run = False), 
 				io.test(run = False), 
 				modeling.test(run = False), 
+				outputs.test(run = False), 
+				pickles.test(run = False), 
+				singlezone.test(run = False), 
 				ssp.test(run = False), 
 				stats.test(run = False), 
+				utils.test(run = False), 
 				yields.test(run = False) 
 			] 
 		] 
