@@ -2,4 +2,5 @@
 
 cdef extern from "../../src/tests/ssp/crf.h": 
 	unsigned short test_CRF() 
+	unsigned short test_setup_CRF() 
 

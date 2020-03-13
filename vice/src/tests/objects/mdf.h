@@ -30,6 +30,13 @@ extern unsigned short test_mdf_initialize(void);
  */ 
 extern unsigned short test_mdf_free(void); 
 
+/* 
+ * Obtain a pointer to a test instance of the MDF object
+ * 
+ * source: mdf.c 
+ */ 
+extern MDF *mdf_test_instance(void); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

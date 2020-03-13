@@ -50,3 +50,23 @@ extern unsigned short test_mdf_free(void) {
 
 }
 
+
+/* 
+ * Obtain a pointer to a test instance of the MDF object
+ * 
+ * header: mdf.h 
+ */ 
+extern MDF *mdf_test_instance(void) { 
+
+	MDF *test = mdf_initialize(); 
+	unsigned short i; 
+	test -> n_bins = 400ul; 
+	test -> bins = (double *) malloc (((*test).n_bins + 1u) * sizeof(double)); 
+	for (i = 0u; i <= (*test).n_bins; i++) {
+		test -> bins[i] = -3 + 0.01 * i; 
+	} 
+
+	return test; 
+
+}
+

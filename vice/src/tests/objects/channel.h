@@ -30,6 +30,13 @@ extern unsigned short test_channel_initialize(void);
  */ 
 extern unsigned short test_channel_free(void); 
 
+/* 
+ * Obtain a pointer to a test instance of the CHANNEL object. 
+ * 
+ * source: channel.c 
+ */ 
+extern CHANNEL *channel_test_instance(void); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

@@ -30,6 +30,13 @@ extern unsigned short test_ccsne_yield_initialize(void);
  */ 
 extern unsigned short test_ccsne_yield_free(void); 
 
+/* 
+ * Obtain a pointer to a test instance of the CCSNE_YIELD_SPECS object 
+ * 
+ * source: ccsne.c 
+ */ 
+extern CCSNE_YIELD_SPECS *ccsne_yield_test_instance(void); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

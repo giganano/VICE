@@ -7,6 +7,15 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include "../../objects.h" 
+#include "../../singlezone.h" 
+
+#ifndef TEST_SINGLEZONE_N_STEPS 
+#define TEST_SINGLEZONE_N_STEPS 1 
+#endif /* TEST_SINGLEZONE_N_STEPS */ 
+
+#ifndef TEST_SINGLEZONE_TIMESTEP_SIZE 
+#define TEST_SINGLEZONE_TIMESTEP_SIZE 0.01 
+#endif /* TEST_SINGLEZONE_TIMESTEP */ 
 
 /* 
  * Test the function which constructs a singlezone object 
@@ -29,6 +38,13 @@ extern unsigned short test_singlezone_initialize(void);
  * source: singlezone.c 
  */ 
 extern unsigned short test_singlezone_free(void); 
+
+/* 
+ * Obtain a pointer to a test instance of the SINGLEZONE object. 
+ * 
+ * source: singlezone.c 
+ */ 
+extern SINGLEZONE *singlezone_test_instance(void); 
 
 #ifdef __cplusplus 
 } 

@@ -17,6 +17,7 @@ if not __VICE_SETUP__:
 
 	__all__ = [ 
 		"test", 
+		"callback", 
 		"dataframe", 
 		"imf", 
 		"io", 
@@ -32,6 +33,7 @@ if not __VICE_SETUP__:
 	] 
 
 	from ._test_utils import moduletest 
+	from . import _callback as callback 
 	from . import dataframe 
 	from . import _imf as imf 
 	from . import io 
@@ -57,6 +59,7 @@ if not __VICE_SETUP__:
 		print("This may take a few minutes.") 
 		return [None, 
 			[ 
+				callback.test(run = False), 
 				dataframe.test(run = False), 
 				imf.test(run = False), 
 				io.test(run = False), 

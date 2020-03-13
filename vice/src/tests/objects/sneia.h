@@ -30,6 +30,13 @@ extern unsigned short test_sneia_yield_initialize(void);
  */ 
 extern unsigned short test_sneia_yield_free(void); 
 
+/* 
+ * Obtain a pointer to a test instance of the SNEIA_YIELD_SPECS object 
+ * 
+ * source: sneia.c 
+ */ 
+extern SNEIA_YIELD_SPECS *sneia_yield_test_instance(void); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

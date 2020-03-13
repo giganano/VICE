@@ -6,14 +6,17 @@
 
 #include <stdlib.h> 
 #include <string.h> 
+#include <math.h> 
 #include "../../ssp.h" 
 #include "../imf.h" 
+#include "../objects.h" 
 #include "crf.h" 
 
 /* ---------- static function comment headers not duplicated here ---------- */ 
 static unsigned short test_CRF_common(char imf[]); 
 static unsigned short test_CRF_engine(SSP test, double *times); 
 static double *get_test_times(void); 
+static double test_imf(double mass, void *dummy); 
 
 /* The number of times to call CRF for a given IMF */ 
 static unsigned short TEST_N_TIMES = 1001u; 
@@ -32,11 +35,43 @@ extern unsigned short test_CRF(void) {
 
 	return (
 		test_CRF_common("salpeter") && 
-		test_CRF_common("kroupa") 
-		// test_CRF_common("custom") 
+		test_CRF_common("kroupa") && 
+		test_CRF_common("custom") 
 	); 
 
 }
+
+
+/* 
+ * Test the setup_CRF function at vice/src/ssp/crf.h 
+ * 
+ * Returns 
+ * ======= 
+ * 1 on success, 0 on failure 
+ * 
+ * header: crf.h 
+ */ 
+extern unsigned short test_setup_CRF(void) {
+
+	SINGLEZONE *test = singlezone_test_instance(); 
+	if (setup_CRF(test)) { 
+		singlezone_free(test); 
+		return 0u; 
+	} else { 
+		unsigned short i, result = 1u; 
+		for (i = 1u; i < (*test).n_outputs; i++) { 
+			if ((*(*test).ssp).crf[i] <= 0 || 
+				(*(*test).ssp).crf[i] >= 1 || 
+				(*(*test).ssp).crf[i] < (*(*test).ssp).crf[i - 1]) {
+				result = 0u; 
+				break; 
+			} else {} 
+		} 
+		singlezone_free(test); 
+		return result; 
+	} 
+
+} 
 
 
 /* 
@@ -56,7 +91,9 @@ static unsigned short test_CRF_common(char imf[]) {
 	strcpy(test -> imf -> spec, imf); 
 	if (!strcmp(imf, "custom")) { 
 		/* use the test case at vice/src/tests/imf.h */ 
-		set_test_custom_mass_distribution(test -> imf); 
+		// set_test_custom_mass_distribution(test -> imf); 
+		test -> imf -> custom_imf -> callback = &test_imf; 
+		test -> imf -> custom_imf -> user_func = test; 
 	} else {} 
 	double *times = get_test_times(); 
 	unsigned short result = test_CRF_engine(*test, times); 
@@ -106,6 +143,16 @@ static double *get_test_times(void) {
 		times[i] = 0.01 * i; 
 	} 
 	return times; 
+
+} 
+
+
+/* 
+ * A test IMF to point a custom IMF callback object to 
+ */ 
+static double test_imf(double mass, void *dummy) {
+
+	return pow(mass, -2); 
 
 }
 

@@ -4,6 +4,7 @@
 
 #include <stdlib.h> 
 #include "../../objects.h" 
+#include "callback_1arg.h" 
 #include "channel.h" 
 
 
@@ -20,7 +21,7 @@ extern unsigned short test_channel_initialize(void) {
 
 	CHANNEL *test = channel_initialize(); 
 	unsigned short result = (test != NULL && 
-		(*test).yield_ == NULL && 
+		(*test).yield_ != NULL && 
 		(*test).rate == NULL && 
 		(*test).entrainment == 1
 	); 
@@ -47,6 +48,22 @@ extern unsigned short test_channel_free(void) {
 	channel_free(test); 
 	void *final_address = (void *) test; 
 	return initial_address == final_address; 
+
+} 
+
+
+/* 
+ * Obtain a pointer to a test instance of the CHANNEL object. 
+ * 
+ * header: channel.h 
+ */ 
+extern CHANNEL *channel_test_instance(void) { 
+
+	CHANNEL *test = channel_initialize(); 
+	callback_1arg_free(test -> yield_); 
+	test -> yield_ = callback_1arg_test_instance(); 
+	test -> yield_ -> assumed_constant = 0.01; 
+	return test; 
 
 }
 

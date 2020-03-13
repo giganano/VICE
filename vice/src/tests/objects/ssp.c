@@ -5,6 +5,7 @@
 #include <stdlib.h> 
 #include "../../objects.h" 
 #include "ssp.h" 
+#include "imf.h" 
 
 
 /*
@@ -47,6 +48,25 @@ extern unsigned short test_ssp_free(void) {
 	ssp_free(test); 
 	void *final_address = (void *) test; 
 	return initial_address == final_address; 
+
+}
+
+
+/* 
+ * Obtain a pointer to a test instance of the SSP object. 
+ * 
+ * header: ssp.h 
+ */ 
+extern SSP *ssp_test_instance(void) { 
+
+	SSP *test = ssp_initialize(); 
+
+	imf_free(test -> imf); 
+	test -> imf = imf_test_instance(); 
+	test -> postMS = 0.1; 
+	test -> R0 = 0.2; 
+	test -> continuous = 0; 
+	return test; 
 
 }
 

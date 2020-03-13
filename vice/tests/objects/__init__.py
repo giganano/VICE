@@ -10,6 +10,8 @@ if not __VICE_SETUP__:
 	__all__ = [ 
 		"test", 
 		"agb", 
+		"callback_1arg", 
+		"callback_2arg", 
 		"ccsne", 
 		"channel", 
 		"dataset", 
@@ -29,6 +31,8 @@ if not __VICE_SETUP__:
 
 	from .._test_utils import moduletest 
 	from . import _agb as agb 
+	from . import _callback_1arg as callback_1arg 
+	from . import _callback_2arg as callback_2arg 
 	from . import _ccsne as ccsne 
 	from . import _channel as channel 
 	from . import _dataset as dataset 
@@ -54,6 +58,10 @@ if not __VICE_SETUP__:
 			[ 
 				agb.test_agb_grid_constructor(), 
 				agb.test_agb_grid_destructor(), 
+				callback_1arg.test_callback_1arg_constructor(), 
+				callback_1arg.test_callback_1arg_destructor(), 
+				callback_2arg.test_callback_2arg_constructor(), 
+				callback_2arg.test_callback_2arg_destructor(), 
 				ccsne.test_ccsne_yield_specs_constructor(), 
 				ccsne.test_ccsne_yield_specs_destructor(), 
 				channel.test_channel_constructor(), 

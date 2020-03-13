@@ -30,6 +30,14 @@ extern unsigned short test_agb_yield_grid_initialize(void);
  */ 
 extern unsigned short test_agb_yield_grid_free(void); 
 
+/* 
+ * Obtain a pointer to test instance of the AGB_YIELD_GRID object 
+ * 
+ * 
+ * source: agb.c 
+ */ 
+extern AGB_YIELD_GRID *agb_yield_grid_test_instance(void); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

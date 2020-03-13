@@ -19,6 +19,17 @@ extern "C" {
  */ 
 extern unsigned short test_MSMF(void); 
 
+/* 
+ * Test the setup_MSMF function at vice/src/ssp/msmf.h 
+ * 
+ * Returns 
+ * ======= 
+ * 1 on success, 0 on failure 
+ * 
+ * source: msmf.c 
+ */ 
+extern unsigned short test_setup_MSMF(void); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

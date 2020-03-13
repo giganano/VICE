@@ -30,6 +30,13 @@ extern unsigned short test_ssp_initialize(void);
  */ 
 extern unsigned short test_ssp_free(void); 
 
+/* 
+ * Obtain a pointer to a test instance of the SSP object. 
+ * 
+ * source: ssp.c 
+ */ 
+extern SSP *ssp_test_instance(void); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

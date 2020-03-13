@@ -30,6 +30,13 @@ extern unsigned short test_element_initialize(void);
  */ 
 extern unsigned short test_element_free(void); 
 
+/* 
+ * Obtain a pointer to a test instance of the ELEMENT object. 
+ * 
+ * source: element.c 
+ */ 
+extern ELEMENT *element_test_instance(void); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

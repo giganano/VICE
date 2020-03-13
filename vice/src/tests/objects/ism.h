@@ -30,6 +30,13 @@ extern unsigned short test_ism_initialize(void);
  */ 
 extern unsigned short test_ism_free(void); 
 
+/* 
+ * Obtain a pointer to a test instance of the ISM object 
+ * 
+ * source: ism.c 
+ */ 
+extern ISM *ism_test_instance(void); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

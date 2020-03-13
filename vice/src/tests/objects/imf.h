@@ -38,6 +38,13 @@ extern unsigned short test_imf_initialize(void);
  */ 
 extern unsigned short test_imf_free(void); 
 
+/* 
+ * Obtain a pointer to a test instance of the IMF_ object 
+ * 
+ * source: imf.c 
+ */ 
+extern IMF_ *imf_test_instance(void); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

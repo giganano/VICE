@@ -78,7 +78,7 @@ extern unsigned short setup_CRF(SINGLEZONE *sz) {
 		 * denominator will be -1 in the case of an unrecognized IMF; return 
 		 * 1 on failure 
 		 */ 
-		return 1; 
+		return 1u; 
 	} else { 
 		/* 
 		 * By design, the singlezone object fills arrays of time-varying 
@@ -92,7 +92,7 @@ extern unsigned short setup_CRF(SINGLEZONE *sz) {
 			sz -> ssp -> crf[i] = CRFnumerator_Kalirai08(
 				(*(*sz).ssp), i * (*sz).dt) / denominator; 
 		} 
-		return 0; 
+		return 0u; 
 
 	}
 

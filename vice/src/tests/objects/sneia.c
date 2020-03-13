@@ -4,7 +4,12 @@
  */ 
 
 #include <stdlib.h> 
+#include <string.h> 
+#include <math.h> 
 #include "../../objects.h" 
+#include "../../sneia.h" 
+#include "callback_1arg.h" 
+#include "singlezone.h" 
 #include "sneia.h" 
 
 
@@ -51,6 +56,35 @@ extern unsigned short test_sneia_yield_free(void) {
 	sneia_yield_free(test); 
 	void *final_address = (void *) test; 
 	return initial_address == final_address; 
+
+} 
+
+
+/* 
+ * Obtain a pointer to a test instance of the SNEIA_YIELD_SPECS object 
+ * 
+ * header: sneia.h 
+ */ 
+extern SNEIA_YIELD_SPECS *sneia_yield_test_instance(void) { 
+
+	SNEIA_YIELD_SPECS *test = sneia_yield_initialize(); 
+
+	callback_1arg_free(test -> yield_); 
+	test -> yield_ = callback_1arg_test_instance(); 
+	test -> yield_ -> assumed_constant = 0.01; 
+	strcpy(test -> dtd, "custom"); 
+
+	unsigned long i, n = RIA_MAX_EVAL_TIME / TEST_SINGLEZONE_TIMESTEP_SIZE; 
+	test -> RIa = (double *) malloc (n * sizeof(double)); 
+	for (i = 0ul; i < n; i++) {
+		if (i * TEST_SINGLEZONE_TIMESTEP_SIZE < 0.1) {
+			test -> RIa[i] = 0; 
+		} else {
+			test -> RIa[i] = pow(i * TEST_SINGLEZONE_TIMESTEP_SIZE, -1); 
+		} 
+	} 
+
+	return test; 
 
 }
 
