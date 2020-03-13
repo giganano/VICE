@@ -291,15 +291,15 @@ under the terms of the associated LICENSE_.
 	:target: https://travis-ci.com/giganano/VICE 
 	:alt: travis 
 
-..	|authors| image:: https://img.shields.io/badge/-Authors-brightgreen.svg
+..	|authors| image:: https://img.shields.io/badge/-Authors-blue.svg
 	:target: https://github.com/giganano/VICE/blob/master/AUTHORS.rst
 	:alt: authors 
 
-..	|userguide| image:: https://img.shields.io/badge/-User's%20Guide-brightgreen.svg
+..	|userguide| image:: https://img.shields.io/badge/-User's%20Guide-blue.svg
 	:target: https://github.com/giganano/VICE/blob/master/docs/users_guide.pdf 
 	:alt: userguide 
 
-..	|scidocs| image:: https://img.shields.io/badge/-Science%20Documentation-brightgreen.svg
+..	|scidocs| image:: https://img.shields.io/badge/-Science%20Documentation-blue.svg
 	:target: https://github.com/giganano/VICE/blob/master/docs/science_documentation.pdf
 	:alt: scidocs 
 
