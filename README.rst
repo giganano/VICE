@@ -95,12 +95,8 @@ commands:
 	$ cd VICE
 	$ make 
 	$ python setup.py install [--user]
-	$ [python2 setup.py install [--user]]
-	$ [python3 setup.py install [--user]]
+	$ make tests 
 	$ make clean 
-	$ make tests
-	$ [make tests2] 
-	$ [make tests3]
 
 Optional elements of the installation process are bound in brackets. The 
 option ``--user`` should be invoked when users wish to install to their 
