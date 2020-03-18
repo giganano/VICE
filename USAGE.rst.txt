@@ -31,7 +31,10 @@ __ tutorial_
 
 Example Code
 ============
-Example code is provided here under ``examples``. 
+Example code is provided `here`__ in VICE's source tree under ``examples``. 
+
+__ examples_ 
+.. _example: https://github.com/astrobeard/VICEdev/tree/master/examples
 
 
 Accessing Documentation 
