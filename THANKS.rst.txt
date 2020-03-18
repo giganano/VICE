@@ -1,13 +1,13 @@
 
+Acknowledgements
+++++++++++++++++
+
 |authors| 
 
 ..	|authors| image:: https://img.shields.io/badge/-Authors-blue.svg
 	:target: https://github.com/giganano/VICE/blob/master/AUTHORS.rst
 	:alt: authors 
 
-
-Acknowledgements
-++++++++++++++++
 J.W.J. is grateful to D.H.W. and Jennifer A. Johnson at The Ohio State 
 University for continual guidance in galactic chemical evolution modeling. 
 J.W.J. also acknowledges the valuable discussion on the implementation of the 

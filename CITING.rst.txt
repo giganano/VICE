@@ -1,13 +1,13 @@
 
+Citing VICE 
++++++++++++
+
 |paper1| 
 
 ..	|paper1| image:: https://img.shields.io/badge/NASA%20ADS-Johnson%20%26%20Weinberg%20(2020)-red
 	:target: https://ui.adsabs.harvard.edu/abs/2019arXiv191102598J/abstract 
 	:alt: paper1 
 
-
-Cite VICE 
-+++++++++
 Usage of VICE leading to a publication should cite 
 `Johnson & Weinberg (2020)`__. If you're using ``BibTeX``, add the following 
 to your ``.bib`` file: 

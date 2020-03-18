@@ -5,17 +5,21 @@ VICE Example Code
 First time users of VICE should first go through the `Quick Start Tutorial`__ 
 to familiarize themselves with how to use VICE's basic features. 
 
+__ tutorial_ 
+.. _tutorial: https://github.com/giganano/VICE/blob/master/docs/QuickStartTutorial.ipynb
+
+In addition to that, we provide here scripts which are intended as examples to 
+help users further familiarize themselves with using VICE. 
+
+Johnson & Weinberg (2020) Starbursts Paper Code 
+===============================================
+
 |paper1| 
 
 ..	|paper1| image:: https://img.shields.io/badge/NASA%20ADS-Johnson%20%26%20Weinberg%20(2020)-red
 	:target: https://ui.adsabs.harvard.edu/abs/2019arXiv191102598J/abstract 
 	:alt: paper1 
 
-__ tutorial_ 
-.. _tutorial: https://github.com/giganano/VICE/blob/master/docs/QuickStartTutorial.ipynb
-
-Johnson & Weinberg (2020) Starbursts Paper Code 
-===============================================
 Included in VICE's source tree is the `code`__ which runs the simulations and 
 produces all of the figures in `Johnson & Weinberg (2020)`__. While not 
 located in this directory, users are welcome to use it as examples of how to 
