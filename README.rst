@@ -76,9 +76,9 @@ Links
 =====
 
 - `Install VICE`__ 
-	- `Dependencies`__ 
-	- `Installation`__ 
-	- `Troubleshoot Your Build`__ 
+- `Dependencies`__ 
+- `Installation`__ 
+- `Troubleshoot Your Build`__ 
 - `Usage`__ 
 	- `Tutorial`__ 
 	- `Example Code`__ 
@@ -125,7 +125,7 @@ Journal Related Features
 ========================
 We provide `here`__ the Python_ code which runs the simulations and produces 
 the figures in `Johnson & Weinberg (2020)`__. After running ``make starburst`` 
-in this directory, the figures will be located starbursts_.  
+in this directory, the figures will be located here under starbursts_.  
 
 __ starbursts_ 
 __ jw20_ 
