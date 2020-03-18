@@ -39,11 +39,11 @@ before_install:
 
 install: 
   - make CC=$COMPILER 
-  - python setup.py install 
-  - make clean 
+  - python setup.py build -j 4 install --quiet  
 
 script: 
   - make tests 
+  - make clean 
 
 branches: 
   only: 

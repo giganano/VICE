@@ -209,7 +209,7 @@ def setup_package():
 		url = base_url, 
 		description = "Galactic Chemical Evolution Integrator", 
 		long_description = vice._LONG_DESCRIPTION_, 
-		classifiers = CLASSIFIERS, 
+		classifiers = CLASSIFIERS.split('\n'), 
 		license = "MIT", 
 		platforms = ["Linux", "Mac OS X", "Unix"], 
 		keywords = ["galaxies", "simulations", "abundances"], 
@@ -218,6 +218,7 @@ def setup_package():
 		package_data = find_package_data(), 
 		scripts = ["bin/%s" % (i) for i in os.listdir("./bin/")], 
 		ext_modules = cythonize(find_extensions()), 
+		verbose = "-q" not in sys.argv and "--quiet" not in sys.argv 
 	)
 
 	try: 
