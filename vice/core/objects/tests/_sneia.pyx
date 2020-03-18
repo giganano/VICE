@@ -5,7 +5,7 @@ __all__ = [
 	"test_sneia_yield_specs_constructor", 
 	"test_sneia_yield_specs_destructor" 
 ] 
-from ....tests._test_utils import unittest 
+from ....testing import unittest 
 from . cimport _sneia 
 
 

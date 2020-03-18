@@ -5,7 +5,7 @@ __all__ = [
 	"test_agb_grid_constructor", 
 	"test_agb_grid_destructor" 
 ] 
-from ....tests._test_utils import unittest 
+from ....testing import unittest 
 from . cimport _agb 
 
 

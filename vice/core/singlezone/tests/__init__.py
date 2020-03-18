@@ -8,14 +8,14 @@ except NameError:
 if not __VICE_SETUP__: 
 
 	__all__ = ["test", "trials"] 
-	from ....tests._test_utils import moduletest 
+	from ....testing import moduletest 
 	from ._singlezone import singlezone_tester 
 	from . import singlezone 
 
 	@moduletest 
 	def test(): 
 		st = singlezone_tester() 
-		return ["VICE singlezone object", 
+		return ["vice.core.singlezone", 
 			[ 
 				st.test_name_setter(), 
 				st.test_func_setter(), 

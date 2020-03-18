@@ -8,8 +8,8 @@ __all__ = [
 ]
 from ...._globals import _RECOGNIZED_ELEMENTS_ 
 from .._yield_integrator import integrate as fractional 
-from ....tests._test_utils import moduletest 
-from ....tests._test_utils import unittest 
+from ....testing import moduletest 
+from ....testing import unittest 
 import warnings 
 warnings.filterwarnings("ignore") 
 import math 

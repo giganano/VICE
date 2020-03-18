@@ -29,7 +29,7 @@ if not __VICE_SETUP__:
 		"test" 
 	] 
 
-	from ...tests._test_utils import moduletest 
+	from ...testing import moduletest 
 	from ._agb_yield_settings import agb_yield_settings 
 	from ._base import base 
 	from ._elemental_settings import elemental_settings 

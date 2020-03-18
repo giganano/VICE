@@ -6,8 +6,8 @@ __all__ = [
 	"test_gaussian_sampler", 
 	"test_conversion_to_pdf" 
 ] 
-from ._test_utils import moduletest 
-from ._test_utils import unittest 
+from ..testing import moduletest 
+from ..testing import unittest 
 from . cimport _stats 
 
 

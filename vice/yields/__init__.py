@@ -18,7 +18,7 @@ except NameError:
 if not __VICE_SETUP__: 
 
 	__all__ = ["agb", "ccsne", "sneia", "presets", "test"] 
-	from ..tests._test_utils import moduletest 
+	from ..testing import moduletest 
 	from . import agb 
 	from . import ccsne 
 	from . import sneia 

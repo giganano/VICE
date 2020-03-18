@@ -2,7 +2,7 @@
 from __future__ import absolute_import 
 __all__ = ["test_atomic_number"] 
 from ....._globals import _RECOGNIZED_ELEMENTS_ 
-from .....tests._test_utils import unittest 
+from .....testing import unittest 
 from ..atomic_number import atomic_number 
 import numbers 
 
@@ -23,5 +23,5 @@ def test_atomic_number():
 		except: 
 			return False 
 		return True 
-	return ["Atomic number", test] 
+	return ["vice.core.dataframe._builtin_datafarmes.atomic_number", test] 
 

@@ -14,3 +14,4 @@ clean:
 	@ $(MAKE) -C yields/ clean 
 	@ $(MAKE) -C src/ clean 
 	@ $(MAKE) -C tests/ clean 
+	@ $(MAKE) -C testing/ clean 

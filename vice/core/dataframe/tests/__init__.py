@@ -8,7 +8,7 @@ except NameError:
 if not __VICE_SETUP__: 
 
 	__all__ = ["test"] 
-	from ....tests._test_utils import moduletest 
+	from ....testing import moduletest 
 	from . import base 
 	from . import elemental_settings 
 	from . import entrainment 
@@ -21,7 +21,7 @@ if not __VICE_SETUP__:
 		""" 
 		Run the tests on this module 
 		""" 
-		return ["VICE dataframe", 
+		return ["vice.core.dataframe.tests", 
 			[ 
 				base.test(run = False), 
 				elemental_settings.test(run = False), 

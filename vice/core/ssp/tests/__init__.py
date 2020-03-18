@@ -12,7 +12,7 @@ if not __VICE_SETUP__:
 		"mlr", 
 		"test" 
 	] 
-	from ....tests._test_utils import moduletest 
+	from ....testing import moduletest 
 	from . import _crf as crf 
 	from . import _msmf as msmf 
 	from . import _mlr as mlr 
@@ -24,7 +24,7 @@ if not __VICE_SETUP__:
 		""" 
 		Run all test functions in this module 
 		""" 
-		return ["VICE single stellar population functions", 
+		return ["vice.core.ssp", 
 			[ 
 				crf.test_cumulative_return_fraction(), 
 				crf.test_setup_cumulative_return_fraction(), 

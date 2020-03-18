@@ -8,8 +8,8 @@ __all__ = [
 	"test_file_dimension_finder", 
 	"test_line_counter"  
 ] 
-from ....tests._test_utils import moduletest 
-from ....tests._test_utils import unittest 
+from ....testing import moduletest 
+from ....testing import unittest 
 from . cimport _utils 
 
 
@@ -18,7 +18,7 @@ def test():
 	""" 
 	Test all files in this module 
 	""" 
-	return ["VICE File I/O Utility Functions", 
+	return ["vice.src.io.utils", 
 		[ 
 			test_square_ascii_reader(), 
 			test_header_length_finder(), 

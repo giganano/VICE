@@ -11,7 +11,7 @@ if not __VICE_SETUP__:
 		"test", 
 		"linalg" 
 	] 
-	from ....tests._test_utils import moduletest 
+	from ....testing import moduletest 
 	from . import _linalg as linalg 
 	
 	@moduletest 
@@ -19,13 +19,9 @@ if not __VICE_SETUP__:
 		""" 
 		Runs all test functions in this module 
 		""" 
-		return ["VICE linear algebra functions", 
+		return ["vice.modeling.likelihood.tests", 
 			[ 
-				linalg.test_matrix_addition(), 
-				linalg.test_matrix_subtraction(), 
-				linalg.test_matrix_transposition(), 
-				linalg.test_matrix_determinant(), 
-				linalg.test_matrix_inversion() 
+				linalg.test(run = False) 
 			] 
 		] 
 

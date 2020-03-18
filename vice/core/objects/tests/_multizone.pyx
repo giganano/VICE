@@ -5,7 +5,7 @@ __all__ = [
 	"test_multizone_constructor", 
 	"test_multizone_destructor" 
 ] 
-from ....tests._test_utils import unittest 
+from ....testing import unittest 
 from . cimport _multizone 
 
 

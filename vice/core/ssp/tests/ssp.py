@@ -12,8 +12,8 @@ from ...._globals import _RECOGNIZED_ELEMENTS_
 from ...dataframe._builtin_dataframes import atomic_number 
 from .._ssp import single_stellar_population 
 from ....yields import agb 
-from ....tests._test_utils import moduletest 
-from ....tests._test_utils import unittest 
+from ....testing import moduletest 
+from ....testing import unittest 
 
 
 """ 
@@ -67,10 +67,14 @@ def test():
 	""" 
 	trials = [] 
 	for i in _IMF_: 
-		trials.append(trial("IMF = %s" % (str(i)), generator(IMF = i))) 
+		trials.append(trial(
+			"vice.core.single_stellar_population [IMF :: %s]" % (str(i)), 
+			generator(IMF = i))) 
 	for i in _RIA_: 
-		trials.append(trial("RIa = %s" % (str(i)), generator(RIa = i))) 
-	return ["VICE single stellar population enrichment trial tests", trials] 
+		trials.append(trial(
+			"vice.core.single_stellar_population [RIa :: %s]" % (str(i)), 
+			generator(RIa = i))) 
+	return ["vice.core.single_stellar_population trial tests", trials] 
 
 
 @unittest 

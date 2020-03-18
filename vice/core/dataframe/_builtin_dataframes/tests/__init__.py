@@ -8,7 +8,7 @@ except NameError:
 if not __VICE_SETUP__: 
 
 	__all__ = ["test"] 
-	from .....tests._test_utils import moduletest 
+	from .....testing import moduletest 
 	from .atomic_number import test_atomic_number 
 	from .primordial import test_primordial 
 	from .solar_z import test_solar_z 
@@ -19,7 +19,7 @@ if not __VICE_SETUP__:
 		""" 
 		Run the tests on this module 
 		""" 
-		return ["Built-in Dataframes", 
+		return ["vice.core.dataframe._builtin_dataframes.tests", 
 			[ 
 				test_atomic_number(), 
 				test_primordial(), 

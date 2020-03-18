@@ -5,7 +5,7 @@ __all__ = [
 	"singlezone_tester" 
 ] 
 from ...._globals import _DEFAULT_FUNC_ 
-from ....tests._test_utils import unittest 
+from ....testing import unittest 
 from ...dataframe import base as dataframe 
 from ....yields import agb 
 from ....yields import ccsne 
@@ -42,7 +42,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return self.name == "test" 
-		return ["Name setter", test] 
+		return ["vice.core.singlezone.name.setter", test] 
 
 
 	@unittest 
@@ -63,7 +63,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return result 
-		return ["Func setter", test] 
+		return ["vice.core.singlezone.func.setter", test] 
 
 
 	@unittest 
@@ -81,7 +81,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return self.mode == "gas" 
-		return ["Mode setter", test] 
+		return ["vice.core.singlezone.mode.setter", test] 
 
 
 	@unittest 
@@ -99,7 +99,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return self.verbose 
-		return ["Verbosity setter", test] 
+		return ["vice.core.singlezone.verbosity.setter", test] 
 
 
 	@unittest 
@@ -117,7 +117,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return len(self.elements) == 3 and self.elements == ("c", "n", "o") 
-		return ["Elements setter", test] 
+		return ["vice.core.singlezone.elements.setter", test] 
 
 
 	@unittest 
@@ -139,7 +139,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return x and y 
-		return ["IMF setter", test] 
+		return ["vice.core.singlezone.IMF.setter", test] 
 
 
 	@unittest 
@@ -161,7 +161,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return x and y 
-		return ["Eta setter", test]  
+		return ["vice.core.singlezone.eta.setter", test]  
 
 
 	@unittest 
@@ -183,7 +183,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return x and y 
-		return ["Enhancement setter", test] 
+		return ["vice.core.singlezone.enhancement.setter", test] 
 
 
 	@unittest 
@@ -202,7 +202,7 @@ cdef class singlezone_tester:
 					isinstance(self.entrainment.agb, dataframe)) 
 			except: 
 				return False 
-		return ["Entrainment settings", test] 
+		return ["vice.core.singlezone.entrainment", test] 
 
 
 	@unittest 
@@ -226,7 +226,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return x and y and z 
-		return ["Inflow metallicity setter", test] 
+		return ["vice.core.singlezone.Zin.setter", test] 
 
 
 	@unittest 
@@ -247,7 +247,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return x and y 
-		return ["Recycling setter", test] 
+		return ["vice.core.singlezone.recycling.setter", test] 
 
 
 	@unittest 
@@ -265,7 +265,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return len(self.bins) == 401 and self.bins == sorted(self.bins) 
-		return ["Bins setter", test] 
+		return ["vice.core.singlezone.bins.setter", test] 
 
 
 	@unittest 
@@ -283,7 +283,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return self.delay == 0.1 
-		return ["SN Ia minimum delay setter", test] 
+		return ["vice.core.singlezone.delay.setter", test] 
 
 
 	@unittest 
@@ -307,7 +307,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return x and y and z 
-		return ["SN Ia rate setter", test] 
+		return ["vice.core.singlezone.RIa.setter", test] 
 
 
 	@unittest 
@@ -325,7 +325,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return self.Mg0 == 1e-12 
-		return ["Mg0 setter", test] 
+		return ["vice.core.singlezone.Mg0.setter", test] 
 
 
 	@unittest 
@@ -343,7 +343,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return self.smoothing == 1 
-		return ["Smoothing time setter", test] 
+		return ["vice.core.singlezone.smoothing.setter", test] 
 
 
 	@unittest 
@@ -361,7 +361,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return self.tau_ia == 1 
-		return ["SN Ia e-folding timescale setter", test] 
+		return ["vice.core.singlezone.tau_ia.setter", test] 
 
 
 	@unittest 
@@ -383,7 +383,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return x and y 
-		return ["SFE timescale setter", test] 
+		return ["vice.core.singlezone.tau_star.setter", test] 
 
 
 	@unittest 
@@ -401,7 +401,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return self.dt == 0.05 
-		return ["Timestep setter", test] 
+		return ["vice.core.singlezone.dt.setter", test] 
 
 
 	@unittest 
@@ -419,7 +419,7 @@ cdef class singlezone_tester:
 				return self.schmidt 
 			except: 
 				return False 
-		return ["Schimdt Law switch", test] 
+		return ["vice.core.singlezone.schmidt.setter", test] 
 
 
 	@unittest 
@@ -437,7 +437,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return self.MgSchmidt == 5.e9 
-		return ["Schmidt Law normalization setter", test] 
+		return ["vice.core.singlezone.MgSchmidt.setter", test] 
 
 
 	@unittest 
@@ -455,7 +455,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return self.m_upper == 101 
-		return ["Upper stellar mass limit setter", test] 
+		return ["vice.core.singlezone.m_upper.setter", test] 
 
 
 	@unittest 
@@ -473,7 +473,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return self.m_lower == 0.1 
-		return ["Lower stellar mass limit setter", test] 
+		return ["vice.core.singlezone.m_lower.setter", test] 
 
 
 	@unittest 
@@ -491,7 +491,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return self.postMS == 0.15 
-		return ["Post main-sequence setter", test] 
+		return ["vice.core.singlezone.postMS.setter", test] 
 
 
 	@unittest 
@@ -509,7 +509,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return self.Z_solar == 0.013 
-		return ["Solar metallicity setter", test] 
+		return ["vice.core.singlezone.Z_solar.setter", test] 
 
 
 	@unittest 
@@ -534,7 +534,7 @@ cdef class singlezone_tester:
 				<void *> self._sz[0].ism[0].tau_star is not NULL and 
 				<void *> self._sz[0].ism[0].specified is not NULL 
 			) 
-		return ["Simulation prep", test]  
+		return ["vice.core.singlezone.prep", test]  
 
 
 	@unittest 
@@ -558,7 +558,7 @@ cdef class singlezone_tester:
 				return self.output_times_check(test_times) == sorted(test_times) 
 			except: 
 				return False 
-		return ["Output times refinement", test] 
+		return ["vice.core.singlezone.output_times_check", test] 
 
 
 	@unittest 
@@ -584,7 +584,7 @@ cdef class singlezone_tester:
 				return True 
 			else: 
 				return False 
-		return ["Open output directory", test] 
+		return ["vice.core.singlezone.open_output_dir", test] 
 
 
 	@unittest  
@@ -622,7 +622,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return x 
-		return ["Setup elements", test] 
+		return ["vice.core.singlezone.setup_elements", test] 
 
 
 	@unittest 
@@ -651,7 +651,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return x 
-		return ["Setup RIa", test] 
+		return ["vice.core.singlezone.setup_ria", test] 
 
 
 	@unittest 
@@ -688,7 +688,7 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			return x and y and z 
-		return ["Setup Zin", test] 
+		return ["vice.core.singlezone.setup_zin", test] 
 
 
 	@unittest 
@@ -725,5 +725,5 @@ cdef class singlezone_tester:
 			) 
 			os.system("rm -rf %s.vice" % (self.name)) 
 			return x 
-		return ["Pickle", test] 
+		return ["vice.core.singlezone.pickle", test] 
 

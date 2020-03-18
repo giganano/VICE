@@ -12,7 +12,7 @@ if not __VICE_SETUP__:
 		"parameter", 
 		"test" 
 	] 
-	from ..tests._test_utils import moduletest 
+	from ..testing import moduletest 
 	from .singlechain import singlechain 
 	from .singlechain import parameter 
 	from . import likelihood 

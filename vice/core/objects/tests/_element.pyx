@@ -5,7 +5,7 @@ __all__ = [
 	"test_element_constructor", 
 	"test_element_destructor" 
 ] 
-from ....tests._test_utils import unittest 
+from ....testing import unittest 
 from . cimport _element 
 
 

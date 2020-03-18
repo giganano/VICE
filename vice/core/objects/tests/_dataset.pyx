@@ -5,7 +5,7 @@ __all__ = [
 	"test_dataset_constructor", 
 	"test_dataset_destructor" 
 ] 
-from ....tests._test_utils import unittest 
+from ....testing import unittest 
 from . cimport _dataset 
 
 

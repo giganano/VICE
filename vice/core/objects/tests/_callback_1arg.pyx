@@ -5,7 +5,7 @@ __all__ = [
 	"test_callback_1arg_constructor", 
 	"test_callback_1arg_destructor" 
 ] 
-from ....tests._test_utils import unittest 
+from ....testing import unittest 
 from . cimport _callback_1arg 
 
 

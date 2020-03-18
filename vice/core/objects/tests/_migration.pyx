@@ -5,7 +5,7 @@ __all__ = [
 	"test_migration_constructor", 
 	"test_migration_destructor" 
 ] 
-from ....tests._test_utils import unittest 
+from ....testing import unittest 
 from . cimport _migration 
 
 

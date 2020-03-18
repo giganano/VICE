@@ -8,29 +8,17 @@ except NameError:
 if not __VICE_SETUP__: 
 
 	__all__ = ["test"] 
-	from ...tests._test_utils import moduletest 
-	from ..dataframe import test as dataframe 
-	from ..io import test as io 
-	from ..objects import test as objects 
-	from ..outputs import test as outputs 
-	from ..singlezone import test as singlezone 
-	from ..ssp import test as ssp 
-	from .pickles import test as pickles 
+	from ...testing import moduletest 
+	from . import pickles
 
 	@moduletest 
 	def test(): 
 		""" 
 		Run the tests on this module 
 		""" 
-		return ["vice.core", 
+		return ["vice.core.tests", 
 			[
-				dataframe(run = False), 
-				io(run = False), 
-				objects(run = False), 
-				outputs(run = False), 
-				pickles(run = False), 
-				singlezone(run = False), 
-				ssp(run = False) 
+				pickles.test(run = False) 
 			] 
 		] 
 

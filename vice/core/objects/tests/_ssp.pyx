@@ -5,7 +5,7 @@ __all__ = [
 	"test_ssp_constructor", 
 	"test_ssp_destructor" 
 ] 
-from ....tests._test_utils import unittest 
+from ....testing import unittest 
 from . cimport _ssp 
 
 

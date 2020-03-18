@@ -5,16 +5,16 @@ __all__ = [
 	"test_cumulative_return_fraction", 
 	"test_setup_cumulative_return_fraction" 
 ] 
-from ....tests._test_utils import unittest 
+from ....testing import unittest 
 from . cimport _crf 
 
 
 @unittest 
 def test_cumulative_return_fraction(): 
 	""" 
-	Test the cumulative return fraction function 
+	Test the cumulative return fraction function at vice/src/ssp/crf.h 
 	""" 
-	return ["Cumulative return fraction", _crf.test_CRF] 
+	return ["vice.src.ssp.crf.CRF", _crf.test_CRF] 
 
 
 @unittest 
@@ -23,5 +23,5 @@ def test_setup_cumulative_return_fraction():
 	Test the cumulative return fraction setup for singlezone simulation at 
 	vice/src/ssp/crf.h 
 	""" 
-	return ["Setup singlezone cumulative return fraction", _crf.test_setup_CRF] 
+	return ["vice.src.ssp.crf.setup_CRF", _crf.test_setup_CRF] 
 

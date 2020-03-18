@@ -5,7 +5,7 @@ __all__ = [
 	"test_main_sequence_mass_fraction", 
 	"test_setup_main_sequence_mass_fraction" 
 ] 
-from ....tests._test_utils import unittest 
+from ....testing import unittest 
 from . cimport _msmf 
 
 
@@ -14,7 +14,7 @@ def test_main_sequence_mass_fraction():
 	""" 
 	Test the main sequence mass fraction function at vice/src/ssp/msmf.h 
 	""" 
-	return ["Main sequence mass fraction", _msmf.test_MSMF] 
+	return ["vice.src.ssp.msmf.MSMF", _msmf.test_MSMF] 
 
 
 @unittest 
@@ -23,6 +23,5 @@ def test_setup_main_sequence_mass_fraction():
 	Test the main sequence mass fraction setup for singlezone simulation at 
 	vice/src/ssp/msmf.h 
 	""" 
-	return ["Setup singlezone main sequence mass fraction", 
-		_msmf.test_setup_MSMF] 
+	return ["vice.src.ssp.msmf.setup_MSMF", _msmf.test_setup_MSMF] 
 

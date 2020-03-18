@@ -6,8 +6,8 @@ from __future__ import absolute_import
 __all__ = ["test"] 
 from ...._globals import _RECOGNIZED_ELEMENTS_ 
 from .._evolutionary_settings import evolutionary_settings 
-from ....tests._test_utils import moduletest 
-from ....tests._test_utils import unittest 
+from ....testing import moduletest 
+from ....testing import unittest 
 
 
 @moduletest 
@@ -15,7 +15,7 @@ def test():
 	""" 
 	Run all tests on the evolutionary_settings derived class 
 	""" 
-	return ["Evolutionary settings derived class", 
+	return ["vice.core.dataframe.evolutionary_settings", 
 		[ 
 			test_initialization(), 
 			test_setitem() 
@@ -42,7 +42,7 @@ def test_initialization():
 		except: 
 			return False 
 		return isinstance(_TEST_FRAME_, evolutionary_settings) 
-	return ["Initialization", test] 
+	return ["vice.core.dataframe.evolutionary_settings.__init__", test] 
 
 
 @unittest 
@@ -74,7 +74,7 @@ def test_setitem():
 			_RECOGNIZED_ELEMENTS_, 
 			len(_RECOGNIZED_ELEMENTS_) * [dummy] 
 		)), "test")  
-	return ["Setitem", test] 
+	return ["vice.core.dataframe.evolutioanry_settings.__setitem__", test] 
 
 
 def dummy(t): 

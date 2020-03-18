@@ -5,7 +5,7 @@ __all__ = [
 	"test_imf_constructor", 
 	"test_imf_destructor" 
 ] 
-from ....tests._test_utils import unittest 
+from ....testing import unittest 
 from . cimport _imf 
 
 

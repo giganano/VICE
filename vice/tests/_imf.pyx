@@ -9,8 +9,8 @@ __all__ = [
 	"test_builtin_salpeter", 
 	"test_builtin_kroupa"  
 ] 
-from ._test_utils import moduletest 
-from ._test_utils import unittest 
+from ..testing import moduletest 
+from ..testing import unittest 
 from . cimport _imf 
 
 

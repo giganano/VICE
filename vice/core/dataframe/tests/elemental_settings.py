@@ -5,8 +5,8 @@ Test the elemental_settings derived class
 from __future__ import absolute_import 
 __all__ = ["test"] 
 from ...._globals import _RECOGNIZED_ELEMENTS_ 
-from ....tests._test_utils import moduletest 
-from ....tests._test_utils import unittest 
+from ....testing import moduletest 
+from ....testing import unittest 
 from .._elemental_settings import elemental_settings 
 from .._base import base 
 
@@ -16,7 +16,7 @@ def test():
 	""" 
 	Tests the elemental_settings derived class of the VICE dataframe 
 	""" 
-	return ["Elemental settings derived class", 
+	return ["vice.core.dataframe.elemental_settings", 
 		[ 
 			test_initialization(), 
 			test_getitem(), 
@@ -44,7 +44,7 @@ def test_initialization():
 		except: 
 			return False 
 		return isinstance(_TEST_FRAME_, elemental_settings) 
-	return ["Initialization", test] 
+	return ["vice.core.dataframe.elemental_settings.__init__", test] 
 
 
 @unittest 
@@ -62,7 +62,7 @@ def test_getitem():
 		except: 
 			return False 
 		return True 
-	return ["Getitem", test] 
+	return ["vice.core.dataframe.elemental_settings.__getitem__", test] 
 
 
 @unittest 
@@ -81,5 +81,5 @@ def test_remove():
 		except: 
 			return False 
 		return False 
-	return ["Remove", test] 
+	return ["vice.core.dataframe.elemental_settings.remove", test] 
 

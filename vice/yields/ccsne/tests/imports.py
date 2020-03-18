@@ -6,8 +6,8 @@ from __future__ import absolute_import
 __all__ = [
 	"test" 
 ] 
-from ....tests._test_utils import moduletest 
-from ....tests._test_utils import unittest 
+from ....testing import moduletest 
+from ....testing import unittest 
 
 
 @moduletest 
@@ -15,7 +15,7 @@ def test():
 	""" 
 	Test the yield import functions 
 	""" 
-	return ["VICE CCSN yield import functions", 
+	return ["vice.yields.ccsne.import", 
 		[ 
 			test_LC18_import(), 
 			test_CL13_import(), 

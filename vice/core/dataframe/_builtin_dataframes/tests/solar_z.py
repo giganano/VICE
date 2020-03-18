@@ -2,7 +2,7 @@
 from __future__ import absolute_import 
 __all__ = ["test_solar_z"] 
 from ....._globals import _RECOGNIZED_ELEMENTS_ 
-from .....tests._test_utils import unittest 
+from .....testing import unittest 
 from ..solar_z import solar_z 
 import numbers 
 
@@ -23,5 +23,5 @@ def test_solar_z():
 		except: 
 			return False 
 		return True 
-	return ["Solar Z", test] 
+	return ["vice.core.dataframe._builtin_dataframes.solar_z", test] 
 

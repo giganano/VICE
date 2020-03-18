@@ -8,8 +8,8 @@ __all__ = [
 	"test_midpoint", 
 	"test_simpson" 
 ] 
-from ...tests._test_utils import moduletest 
-from ...tests._test_utils import unittest 
+from ...testing import moduletest 
+from ...testing import unittest 
 from . cimport _integral 
 
 

@@ -8,7 +8,7 @@ except NameError:
 if not __VICE_SETUP__: 
 
 	__all__ = ["test"] 
-	from ....tests._test_utils import moduletest 
+	from ....testing import moduletest 
 	from . import _agb 
 	from . import _ccsne 
 	from . import _sneia 
@@ -19,7 +19,7 @@ if not __VICE_SETUP__:
 		""" 
 		Run the tests on this module 
 		""" 
-		return ["vice.src.io", 
+		return ["vice.core.io.tests", 
 			[ 
 				_agb.test(run = False), 
 				_ccsne.test(run = False), 

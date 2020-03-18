@@ -5,8 +5,8 @@ Test the VICE dataframe base class
 from __future__ import absolute_import 
 __all__ = ["test"] 
 from .._base import base 
-from ....tests._test_utils import moduletest 
-from ....tests._test_utils import unittest 
+from ....testing import moduletest 
+from ....testing import unittest 
 
 
 @moduletest 
@@ -14,7 +14,7 @@ def test():
 	""" 
 	Run all tests of the VICE dataframe base class 
 	""" 
-	return ["Base class", 
+	return ["vice.core.dataframe.base", 
 		[
 			test_initialization(), 
 			test_keys(), 
@@ -47,7 +47,7 @@ def test_initialization():
 		except: 
 			return False 
 		return isinstance(_TEST_FRAME_, base) 
-	return ["Initialization", test] 
+	return ["vice.core.dataframe.base.__init__", test] 
 	
 
 @unittest 
@@ -63,7 +63,7 @@ def test_keys():
 			return _TEST_FRAME_.keys() == [str(i) for i in range(10)] 
 		except: 
 			return False 
-	return ["Keys", test] 
+	return ["vice.core.dataframe.base.keys", test] 
 
 
 @unittest 
@@ -82,7 +82,7 @@ def test_todict():
 			)) 
 		except: 
 			return False 
-	return ["Todict", test] 
+	return ["vice.core.dataframe.base.todict", test] 
 
 
 @unittest 
@@ -105,7 +105,7 @@ def test_getitem():
 		except: 
 			return False 
 		return True 
-	return ["Getitem", test] 
+	return ["vice.core.dataframe.base.__getitem__", test] 
 
 
 @unittest 
@@ -124,7 +124,7 @@ def test_call():
 		except: 
 			return False 
 		return True 
-	return ["Call", test] 
+	return ["vice.core.dataframe.base.__call__", test] 
 
 
 @unittest 
@@ -143,7 +143,7 @@ def test_setitem():
 		except: 
 			return False 
 		return True 
-	return ["Setitem", test] 
+	return ["vice.core.dataframe.__setitem__", test] 
 
 
 @unittest 
@@ -160,7 +160,7 @@ def test_remove():
 		except: 
 			return False 
 		return "foo" not in _TEST_FRAME_.keys() 
-	return ["Remove", test] 
+	return ["vice.core.dataframe.base.remove", test] 
 
 
 @unittest 
@@ -190,5 +190,5 @@ def test_filter():
 		except: 
 			return False 
 		return True 
-	return ["Filter", test] 
+	return ["vice.core.dataframe.base.filter", test] 
 

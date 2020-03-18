@@ -6,8 +6,8 @@ from __future__ import absolute_import
 __all__ = ["test"] 
 from ...._globals import _RECOGNIZED_ELEMENTS_ 
 from .._noncustomizable import noncustomizable 
-from ....tests._test_utils import moduletest 
-from ....tests._test_utils import unittest 
+from ....testing import moduletest 
+from ....testing import unittest 
 
 
 @moduletest 
@@ -15,7 +15,7 @@ def test():
 	""" 
 	Run all tests on the noncustomizable derived class 
 	""" 
-	return ["Noncustomizable derived class", 
+	return ["vice.core.dataframe.noncustomizable", 
 		[ 
 			test_initialization(), 
 			test_setitem() 
@@ -42,7 +42,7 @@ def test_initialization():
 		except: 
 			return False 
 		return isinstance(_TEST_FRAME_, noncustomizable) 
-	return ["Initialization", test] 
+	return ["vice.core.dataframe.noncustomizable.__init__", test] 
 
 
 @unittest 
@@ -61,5 +61,5 @@ def test_setitem():
 		except: 
 			return False 
 		return False 
-	return ["Setitem", test] 
+	return ["vice.core.dataframe.noncustomizable.__setitem__", test] 
 

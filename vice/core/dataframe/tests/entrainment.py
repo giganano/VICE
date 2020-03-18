@@ -6,8 +6,8 @@ from __future__ import absolute_import
 __all__ = ["test"] 
 from ...._globals import _RECOGNIZED_ELEMENTS_ 
 from .._entrainment import channel_entrainment 
-from ....tests._test_utils import moduletest 
-from ....tests._test_utils import unittest 
+from ....testing import moduletest 
+from ....testing import unittest 
 
 
 @moduletest 
@@ -15,7 +15,7 @@ def test(run = True):
 	""" 
 	Run all tests on the channel_entrainment derived class 
 	""" 
-	return ["Entrainment settings derived class", 
+	return ["vice.core.dataframe.channel_entrainment", 
 		[ 
 			test_initialization(), 
 			test_setitem() 
@@ -42,7 +42,7 @@ def test_initialization():
 		except: 
 			return False 
 		return isinstance(_TEST_FRAME_, channel_entrainment) 
-	return ["Initialization", test] 
+	return ["vice.core.dataframe.channel_entrainment.__init__", test] 
 
 
 @unittest 
@@ -63,5 +63,5 @@ def test_setitem():
 			_RECOGNIZED_ELEMENTS_, 
 			len(_RECOGNIZED_ELEMENTS_) * [0.5] 
 		))) 
-	return ["Setitem", test] 
+	return ["vice.core.dataframe.channel_entrainment.__setitem__", test] 
 

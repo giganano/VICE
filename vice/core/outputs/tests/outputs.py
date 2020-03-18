@@ -7,8 +7,8 @@ __all__ = [
 	"test_mdf", 
 	"test_output" 
 ] 
-from ....tests._test_utils import moduletest 
-from ....tests._test_utils import unittest 
+from ....testing import moduletest 
+from ....testing import unittest 
 from ...singlezone import singlezone 
 from ...dataframe import base as dataframe 
 from ...outputs import output 
@@ -33,7 +33,7 @@ def test():
 	Run the tests on this module 
 	""" 
 	singlezone.singlezone(name = _TEST_NAME_).run(_OUTTIMES_, overwrite = True) 
-	return ["vice.core.outputs", 
+	return ["vice.core.outputs.tests", 
 		[ 
 			test_mirror(), 
 			test_history(), 
@@ -56,8 +56,8 @@ def test_mirror():
 			test_ = mirror(_TEST_NAME_) 
 		except: 
 			return False 
-		return isinstance(test_, singlezone) 
-	return ["vice.mirror", test] 
+		return isinstance(test_, singlezone.singlezone) 
+	return ["vice.core.mirror", test] 
 
 
 @unittest 

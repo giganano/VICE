@@ -7,8 +7,8 @@ from __future__ import absolute_import
 __all__ = [
 	"test" 
 ]
-from ....tests._test_utils import moduletest 
-from ....tests._test_utils import unittest 
+from ....testing import moduletest 
+from ....testing import unittest 
 from ..singlezone import singlezone 
 import math 
 try: 
@@ -65,24 +65,30 @@ def test():
 	""" 
 	trials = [] 
 	for i in _MODES_: 
-		trials.append(trial("mode: %s" % (str(i)), generator(mode = i))) 
+		trials.append(trial("vice.core.singlezone [mode :: %s]" % (str(i)), 
+			generator(mode = i))) 
 	for i in _IMF_: 
-		trials.append(trial("IMF: %s" % (str(i)), generator(IMF = i))) 
+		trials.append(trial("vice.core.singlezone [IMF :: %s]" % (str(i)), 
+			generator(IMF = i))) 
 	for i in _ETA_: 
-		trials.append(trial("eta: %s" % (str(i)), generator(eta = i))) 
+		trials.append(trial("vice.core.singlezone [eta :: %s]" % (str(i)), 
+			generator(eta = i))) 
 	for i in _ZIN_: 
-		trials.append(trial("Zin: %s" % (str(i)), generator(Zin = i))) 
+		trials.append(trial("vice.core.singlezone [Zin :: %s]" % (str(i)), 
+			generator(Zin = i))) 
 	for i in _RECYCLING_: 
-		trials.append(trial("recycling: %s" % (str(i)), 
+		trials.append(trial("vice.core.singlezone [recycling :: %s]" % (str(i)), 
 			generator(recycling = i))) 
 	for i in _RIA_: 
-		trials.append(trial("RIa: %s" % (str(i)), generator(RIa = i))) 
+		trials.append(trial("vice.core.singlezone [RIa :: %s]" % (str(i)), 
+			generator(RIa = i))) 
 	for i in _TAU_STAR_: 
-		trials.append(trial("SFE timescale: %s" % (str(i)), 
+		trials.append(trial("vice.core.singlezone [tau_star :: %s]" % (str(i)), 
 			generator(tau_star = i))) 
 	for i in _SCHMIDT_: 
-		trials.append(trial("Schmidt: %s" % (str(i)), generator(schmidt = i))) 
-	return ["VICE singlezone trial tests", trials] 
+		trials.append(trial("vice.core.singlezone [schmidt :: %s]" % (str(i)), 
+			generator(schmidt = i))) 
+	return ["vice.core.singlezone trial tests", trials] 
 
 
 @unittest 

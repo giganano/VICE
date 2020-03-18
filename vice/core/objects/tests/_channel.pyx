@@ -5,7 +5,7 @@ __all__ = [
 	"test_channel_constructor", 
 	"test_channel_destructor" 
 ] 
-from ....tests._test_utils import unittest 
+from ....testing import unittest 
 from . cimport _channel 
 
 

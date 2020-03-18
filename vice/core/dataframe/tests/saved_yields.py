@@ -6,8 +6,8 @@ from __future__ import absolute_import
 __all__ = ["test"] 
 from ...._globals import _RECOGNIZED_ELEMENTS_ 
 from .._saved_yields import saved_yields 
-from ....tests._test_utils import moduletest 
-from ....tests._test_utils import unittest 
+from ....testing import moduletest 
+from ....testing import unittest 
 
 
 @moduletest 
@@ -15,7 +15,7 @@ def test(run = True):
 	""" 
 	Run all tests on the saved_yields dataframe 
 	""" 
-	return ["Saved yields derived class", 
+	return ["vice.core.dataframe.saved_yields", 
 		[ 
 			test_initialization() 
 		] 
@@ -43,5 +43,5 @@ def test_initialization():
 		except: 
 			return False 
 		return isinstance(_TEST_FRAME_, saved_yields) 
-	return ["Initialization", test] 
+	return ["vice.core.dataframe.saved_yields.__init__", test] 
 

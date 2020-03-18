@@ -2,8 +2,8 @@
 
 from __future__ import absolute_import 
 __all__ = ["test"] 
-from ._test_utils import moduletest 
-from ._test_utils import unittest 
+from ..testing import moduletest 
+from ..testing import unittest 
 from . cimport _callback 
 
 

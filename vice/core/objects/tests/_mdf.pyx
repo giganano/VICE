@@ -5,7 +5,7 @@ __all__ = [
 	"test_mdf_constructor", 
 	"test_mdf_destructor" 
 ] 
-from ....tests._test_utils import unittest 
+from ....testing import unittest 
 from . cimport _mdf 
 
 

@@ -6,10 +6,9 @@ except NameError:
 	__VICE_SETUP__ = False 
 
 if not __VICE_SETUP__: 
-	
-	__all__ = ["test"] 
-	from .tests import test 
+
+	__all__ = ["moduletest", "unittest"] 
+	from .decorators import * 
 
 else: 
 	pass 
-

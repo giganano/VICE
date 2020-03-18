@@ -8,8 +8,8 @@ except NameError:
 if not __VICE_SETUP__: 
 
 	__all__ = ["test"] 
-	from ....tests._test_utils import moduletest 
-	from ....tests._test_utils import unittest 
+	from ....testing import moduletest 
+	from ....testing import unittest 
 	from . import grid_reader 
 	from . import integrator 
 	from . import imports 

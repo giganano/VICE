@@ -2,7 +2,7 @@
 from __future__ import absolute_import 
 __all__ = ["test_primordial"] 
 from ....._globals import _RECOGNIZED_ELEMENTS_ 
-from .....tests._test_utils import unittest 
+from .....testing import unittest 
 from ..primordial import primordial 
 import numbers 
 
@@ -26,5 +26,5 @@ def test_primordial():
 		except: 
 			return False 
 		return True 
-	return ["Primordial Z", test] 
+	return ["vice.core.dataframe._builtin_dataframes.primordial", test] 
 

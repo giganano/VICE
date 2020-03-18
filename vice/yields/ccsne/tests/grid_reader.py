@@ -3,7 +3,7 @@ from __future__ import absolute_import
 __all__ = ["test_table"] 
 from ....core.dataframe._ccsn_yield_table import ccsn_yield_table 
 from ...._globals import _RECOGNIZED_ELEMENTS_ 
-from ....tests._test_utils import unittest 
+from ....testing import unittest 
 from ..errors import _RECOGNIZED_STUDIES_ 
 from ..errors import _MOVERH_ 
 from ..errors import _ROTATION_ 

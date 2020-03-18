@@ -29,7 +29,7 @@ if not __VICE_SETUP__:
 		"tracer" 
 	] 
 
-	from ....tests._test_utils import moduletest 
+	from ....testing import moduletest 
 	from . import _agb as agb 
 	from . import _callback_1arg as callback_1arg 
 	from . import _callback_2arg as callback_2arg 
@@ -54,7 +54,7 @@ if not __VICE_SETUP__:
 		""" 
 		Runs all test functions in this module 
 		""" 
-		return ["VICE object memory management", 
+		return ["vice.core.objects.tests", 
 			[ 
 				agb.test_agb_grid_constructor(), 
 				agb.test_agb_grid_destructor(), 

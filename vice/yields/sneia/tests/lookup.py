@@ -1,7 +1,7 @@
 
 from __future__ import absolute_import 
 from ...._globals import _RECOGNIZED_ELEMENTS_ 
-from ....tests._test_utils import unittest 
+from ....testing import unittest 
 from .._yield_lookup import integrated_yield as fractional 
 from .._yield_lookup import single_detonation as single 
 import numbers 

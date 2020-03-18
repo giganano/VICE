@@ -4,8 +4,8 @@ from __future__ import absolute_import
 __all__ = [
 	"test_ccsn_yield_grid_reader" 
 ] 
-from ....tests._test_utils import moduletest 
-from ....tests._test_utils import unittest 
+from ....testing import moduletest 
+from ....testing import unittest 
 from . cimport _ccsne 
 
 

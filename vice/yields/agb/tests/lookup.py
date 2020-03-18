@@ -8,8 +8,8 @@ __all__ = [
 ] 
 from ....core.dataframe._builtin_dataframes import atomic_number 
 from ...._globals import _RECOGNIZED_ELEMENTS_ 
-from ....tests._test_utils import moduletest 
-from ....tests._test_utils import unittest 
+from ....testing import moduletest 
+from ....testing import unittest 
 from .._grid_reader import yield_grid as grid 
 import numbers 
 

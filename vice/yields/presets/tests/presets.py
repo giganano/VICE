@@ -3,7 +3,7 @@ from __future__ import absolute_import
 __all__ = ["test"] 
 from ...._globals import _RECOGNIZED_ELEMENTS_ 
 from ...._globals import _DIRECTORY_ 
-from ....tests._test_utils import unittest 
+from ....testing import unittest 
 from ... import ccsne 
 from ... import sneia 
 from .._presets import remove 

@@ -3,7 +3,7 @@ from __future__ import absolute_import
 __all__ = ["test_sources"]
 from ....._globals import _RECOGNIZED_ELEMENTS_ 
 from ....._globals import _VERSION_ERROR_ 
-from .....tests._test_utils import unittest 
+from .....testing import unittest 
 from ..sources import sources 
 import sys 
 if sys.version_info[:2] == (2, 7): 
@@ -30,5 +30,5 @@ def test_sources():
 		except: 
 			return False 
 		return True 
-	return ["Sources", test] 
+	return ["vice.core.dataframe._builtin_dataframes.sources", test] 
 

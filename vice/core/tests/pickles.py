@@ -5,8 +5,8 @@ vice/core/pickles.py
 
 from __future__ import absolute_import 
 __all__ = ["test"] 
-from ...tests._test_utils import moduletest 
-from ...tests._test_utils import unittest 
+from ...testing import moduletest 
+from ...testing import unittest 
 from ..pickles import pickled_object 
 from ..pickles import jar 
 import pickle 
@@ -74,7 +74,7 @@ class jar_tester(jar):
 			os.system("rm -rf %s" % (self._name)) 
 			return x 
 
-		return ["Close jar", test] 
+		return ["vice.core.pickles.jar.close", test] 
 
 
 	@unittest 
@@ -107,7 +107,7 @@ class jar_tester(jar):
 
 			return True 
 
-		return ["Open jar", test] 
+		return ["vice.core.pickles.jar.open", test] 
 
 
 class pickled_object_tester(pickled_object): 
@@ -167,7 +167,7 @@ class pickled_object_tester(pickled_object):
 
 			return True 
 
-		return ["Save", test] 
+		return ["vice.core.pickles.pickled_object.save", test] 
 
 
 	@unittest 
@@ -206,5 +206,5 @@ class pickled_object_tester(pickled_object):
 
 			return True 
 
-		return ["Load", test] 
+		return ["vice.core.pickles.pickled_object.from_pickle", test] 
 

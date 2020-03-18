@@ -16,23 +16,17 @@ except NameError:
 if not __VICE_SETUP__: 
 
 	__all__ = [ 
-		"test", 
 		"callback", 
-		"dataframe", 
 		"imf", 
-		"io", 
-		"modeling", 
-		"objects", 
-		"outputs", 
-		"pickles", 
-		"singlezone", 
-		"ssp", 
 		"stats", 
 		"utils", 
-		"yields" 
+		"core", 
+		"modeling", 
+		"yields", 
+		"test" 
 	] 
 
-	from ._test_utils import moduletest 
+	from ..testing import moduletest 
 	from . import _callback as callback 
 	from . import _imf as imf 
 	from . import _stats as stats 

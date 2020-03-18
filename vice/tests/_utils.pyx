@@ -17,8 +17,8 @@ __all__ = [
 	"test_string_copier", 
 	"test_maximum" 
 ] 
-from ._test_utils import moduletest 
-from ._test_utils import unittest 
+from ..testing import moduletest 
+from ..testing import unittest 
 from . cimport _utils 
 
 

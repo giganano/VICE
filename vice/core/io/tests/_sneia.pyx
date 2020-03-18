@@ -5,8 +5,8 @@ __all__ = [
 	"test", 
 	"test_ia_yield_lookup" 
 ] 
-from ....tests._test_utils import moduletest 
-from ....tests._test_utils import unittest 
+from ....testing import moduletest 
+from ....testing import unittest 
 from . cimport _sneia 
 
 
