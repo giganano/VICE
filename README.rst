@@ -75,19 +75,19 @@ RAM per simulated element, respectively, and are thus not memory-limited.
 Links
 =====
 
-- `Install VICE`__ 
-- `Dependencies`__ 
-- `Installation`__ 
-- `Troubleshoot Your Build`__ 
-- `Usage`__ 
+* `Install VICE`__ 
+	- `Dependencies`__ 
+	- `Installation`__ 
+	- `Troubleshoot Your Build`__ 
+* `Usage`__ 
 	- `Tutorial`__ 
 	- `Example Code`__ 
 	- `Accessing Documentation`__ 
 	- `From the Command Line`__ 
-- `Submit a Bug Report`__ 
-- `Cite VICE`__ 
-- `Acknowledgements`__ 
-- `License`__ 
+* `Submit a Bug Report`__ 
+* `Cite VICE`__ 
+* `Acknowledgements`__ 
+* `License`__ 
 
 __ install_ 
 __ dependencies_ 
