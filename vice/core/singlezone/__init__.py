@@ -10,7 +10,8 @@ except NameError:
 	__VICE_SETUP__ = False 
 
 if not __VICE_SETUP__: 
-	__all__ = ["singlezone"] 
+	__all__ = ["singlezone", "test"] 
 	from .singlezone import singlezone 
+	from .tests import test 
 else: 
 	pass 

@@ -127,5 +127,5 @@ The vice.mirror function is deprecated in versions >= 1.1.0 and will be \
 removed in a future relase of VICE. Users should instead call either \
 vice.singlezone.from_output or vice.multizone.from_output to achieve the same \
 functionality.""", VisibleDeprecationWarning) 
-	return singlezone.from_output(arg) 
+	return singlezone.singlezone.from_output(arg) 
 

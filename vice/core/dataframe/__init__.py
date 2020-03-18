@@ -25,9 +25,11 @@ if not __VICE_SETUP__:
 		"saved_yield", 
 		"tracers", 
 		"yield_settings", 
-		"channel_entrainment" 
+		"channel_entrainment", 
+		"test" 
 	] 
 
+	from ...testing import moduletest 
 	from ._agb_yield_settings import agb_yield_settings 
 	from ._base import base 
 	from ._elemental_settings import elemental_settings 
@@ -40,7 +42,20 @@ if not __VICE_SETUP__:
 	from ._yield_settings import yield_settings 
 	from ._entrainment import channel_entrainment 
 	from ._builtin_dataframes import * 
+	from . import tests 
 	__all__.extend(_builtin_dataframes.__all__) 
+
+	@moduletest 
+	def test(): 
+		""" 
+		Run the tests on this module 
+		""" 
+		return ["vice.core.dataframe", 
+			[
+				tests.test(run = False), 
+				_builtin_dataframes.test(run = False) 
+			] 
+		] 
 
 else: 
 	pass 

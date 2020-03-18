@@ -32,8 +32,9 @@ except NameError:
 	__VICE_SETUP__ = False 
 
 if not __VICE_SETUP__: 
-	__all__ = [] 
+	__all__ = ["test"] 
 	from ._presets import * 
+	from .tests import test 
 	__all__.extend(_presets.__all__) 
 else: 
 	pass 

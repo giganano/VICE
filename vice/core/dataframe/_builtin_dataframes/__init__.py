@@ -34,13 +34,15 @@ if not __VICE_SETUP__:
 		"atomic_number", 
 		"primordial", 
 		"solar_z", 
-		"sources"
+		"sources", 
+		"test" 
 	] 
-	from ._atomic_number import atomic_number 
-	from ._primordial import primordial 
-	from ._solar_z import solar_z 
-	from ._sources import sources 
-	from ._stable_isotopes import stable_isotopes 
+	from .atomic_number import atomic_number 
+	from .primordial import primordial 
+	from .solar_z import solar_z 
+	from .sources import sources 
+	from .stable_isotopes import stable_isotopes 
+	from .tests import test 
 else: 
 	pass 
 

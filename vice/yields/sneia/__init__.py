@@ -36,12 +36,13 @@ except NameError:
 	__VICE_SETUP__ = False 
 
 if not __VICE_SETUP__: 
-	__all__ = ["single", "fractional", "settings"] 
+	__all__ = ["single", "fractional", "settings", "test"] 
 	__all__ = [str(i) for i in __all__] 	# appease python 2 strings 
 
 	from ._yield_lookup import single_detonation as single 
 	from ._yield_lookup import integrated_yield as fractional 
 	from ...core.dataframe import yield_settings 
+	from .tests import test 
 
 	settings = yield_settings({ 
 		"he": 	0, 
