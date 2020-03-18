@@ -2,9 +2,10 @@
 .PHONY: tutorial clean
 
 tutorial: 
-	jupyter notebook QuickStartTutorial.ipynb
+	@ jupyter notebook QuickStartTutorial.ipynb
 
 clean:
-	rm -r */
+	@ echo Cleaning docs/ 
+	@ rm -rf *.vice/
 	
 

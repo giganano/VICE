@@ -1,0 +1,70 @@
+
+Using VICE 
+++++++++++
+
+|userguide| |scidocs| 
+
+If users find VICE useful, we kindly request that they star this repository. 
+This also helps us keep track of an approximate number of users. 
+
+..	|userguide| image:: https://img.shields.io/badge/-User's%20Guide-blue.svg
+	:target: https://github.com/giganano/VICE/blob/master/docs/users_guide.pdf 
+	:alt: userguide 
+
+..	|scidocs| image:: https://img.shields.io/badge/-Science%20Documentation-blue.svg
+	:target: https://github.com/giganano/VICE/blob/master/docs/science_documentation.pdf
+	:alt: scidocs 
+
+.. Contents:: 
+
+
+Tutorial 
+========
+Under ``examples`` in VICE's source direcotry is the `Quick Start Tutorial`__, 
+a notebook intended to provide first-time users with a primar on how to use 
+all of VICE's features. After installation, users can launch the tutorial 
+immediately via ``make tutorial``. 
+
+__ tutorial_ 
+.. _tutorial: https://github.com/giganano/VICE/blob/master/docs/QuickStartTutorial.ipynb
+
+
+Example Code
+============
+Example code is provided here under ``examples``. 
+
+
+Accessing Documentation 
+=======================
+All of VICE's documentation is stored here under ``docs``. Both the 
+`User's Guide`__ and `Science Documentation`__ will download automatically 
+with VICE's source code. After installation, they can be accessed via the 
+``vice-docs`` command-line entry. For further instructions, run 
+``vice-docs --help`` in a terminal from any directory (with the exception of 
+VICE's source directory). 
+
+If this feature does not work after installing VICE, troubleshooting can be 
+found `here`__. 
+
+__ userguide_ 
+__ scidocs_ 
+__ troubleshooting_ 
+.. _userguide: https://github.com/giganano/VICE/blob/master/docs/users_guide.pdf 
+.. _scidocs: https://github.com/giganano/VICE/blob/master/docs/science_documentation.pdf
+.. _troubleshooting: https://github.com/astrobeard/VICEdev/blob/master/INSTALL.rst.txt#vice-isn-t-running-from-the-command-line
+
+
+From the Command Line 
+=====================
+VICE allows simple simulations to be ran directly from the command line. 
+For instructions on how to use this functionality, run ``vice --help`` in a 
+terminal from any directory (with the exception of VICE's source directory). 
+
+If this feature does not work after installing VICE, troubleshooting can be 
+found `here`__. 
+
+**Note**: VICE's functionality is severely limited when ran from the command 
+line in comparison to its full python capabilities. 
+
+__ troubleshooting_
+
