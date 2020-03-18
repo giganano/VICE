@@ -34,18 +34,12 @@ if not __VICE_SETUP__:
 
 	from ._test_utils import moduletest 
 	from . import _callback as callback 
-	from . import dataframe 
 	from . import _imf as imf 
-	from . import io 
-	from . import modeling 
-	from . import objects 
-	from . import outputs 
-	from . import pickles 
-	from . import singlezone 
-	from . import ssp 
 	from . import _stats as stats 
 	from . import _utils as utils 
-	from . import yields 
+	from .. import core 
+	from .. import modeling 
+	from .. import yields 
 
 	@moduletest 
 	def test(): 
@@ -60,14 +54,9 @@ if not __VICE_SETUP__:
 		return [None, 
 			[ 
 				callback.test(run = False), 
-				dataframe.test(run = False), 
+				core.test(run = False), 
 				imf.test(run = False), 
-				io.test(run = False), 
 				modeling.test(run = False), 
-				outputs.test(run = False), 
-				pickles.test(run = False), 
-				singlezone.test(run = False), 
-				ssp.test(run = False), 
 				stats.test(run = False), 
 				utils.test(run = False), 
 				yields.test(run = False) 

@@ -10,18 +10,21 @@ if not __VICE_SETUP__:
 		"dataframe", 
 		"singlezone", 
 		"multizone", 
-		"mirror"
-	]    
+		"mirror", 
+		"test" 
+	] 
 	from .ssp import * 
 	from .dataframe._builtin_dataframes import * 
 	__all__.extend(dataframe._builtin_dataframes.__all__) 
 	from .dataframe import base as dataframe 
+	from . import objects 
 	from .singlezone import singlezone 
 	from .multizone import multizone 
 	from .outputs import * 
 	from .mirror import mirror 
 	__all__.extend(ssp.__all__) 
 	__all__.extend(outputs.__all__) 
+	from .tests import test 
 
 else: 
 	pass 

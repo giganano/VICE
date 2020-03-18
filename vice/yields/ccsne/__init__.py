@@ -37,12 +37,13 @@ except NameError:
 	__VICE_SETUP__ = False 
 
 if not __VICE_SETUP__: 
-	__all__ = ["fractional", "settings", "table"]  
+	__all__ = ["fractional", "settings", "table", "test"]  
 	__all__ = [str(i) for i in __all__] 	# appease python 2 strings 
 
 	from ._yield_integrator import integrate as fractional 
 	from .grid_reader import table 
 	from ...core.dataframe import yield_settings 
+	from .tests import test 
 
 	settings = yield_settings({ 
 		"he": 	0.0616, 

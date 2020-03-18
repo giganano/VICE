@@ -25,9 +25,9 @@ from . cimport _utils
 @moduletest 
 def test(): 
 	""" 
-	Tests all of VICE's utility functions at vice/src/utils.h 
+	Run the tests on this module 
 	""" 
-	return ["VICE utility functions", 
+	return ["vice.src.utils", 
 		[ 
 			test_choose_operation(), 
 			test_absolute_value(), 
@@ -51,7 +51,7 @@ def test_choose_operation():
 	""" 
 	Tests the choose operation at vice/src/utils.h 
 	""" 
-	return ["Choose operation", _utils.test_choose] 
+	return ["vice.src.utils.choose", _utils.test_choose] 
 
 
 @unittest 
@@ -59,7 +59,7 @@ def test_absolute_value():
 	""" 
 	Tests the absolute value function at vice/src/utils.h 
 	""" 
-	return ["Absolute value", _utils.test_absval] 
+	return ["vice.src.utils.absval", _utils.test_absval] 
 
 
 @unittest 
@@ -67,7 +67,7 @@ def test_sign_function():
 	""" 
 	Tests the sign function at vice/src/utils.h 
 	""" 
-	return ["Sign function", _utils.test_sign] 
+	return ["vice.src.utils.sign", _utils.test_sign] 
 
 
 @unittest 
@@ -75,7 +75,7 @@ def test_hash_codes():
 	""" 
 	Tests the hash-code function at vice/src/utils.h 
 	""" 
-	return ["Simple hash", _utils.test_simple_hash] 
+	return ["vice.src.utils.simple_hash", _utils.test_simple_hash] 
 
 
 @unittest 
@@ -83,7 +83,7 @@ def test_pseudorandom_generator():
 	""" 
 	Tests the pseudorandom number generator at vice/src/utils.h 
 	""" 
-	return ["Pseudorandom number generator", _utils.test_rand_range] 
+	return ["vice.src.utils.rand_range", _utils.test_rand_range] 
 
 
 @unittest 
@@ -91,7 +91,7 @@ def test_1D_interpolation():
 	""" 
 	Tests the 1D interpolation function at vice/src/utils.h 
 	""" 
-	return ["1-dimensional interpolation", _utils.test_interpolate] 
+	return ["vice.src.utils.interpolate", _utils.test_interpolate] 
 
 
 @unittest 
@@ -99,7 +99,7 @@ def test_2D_interpolation():
 	""" 
 	Tests the 2D interpolation function at vice/src/utils.h 
 	""" 
-	return ["2-dimensional interpolation", _utils.test_interpolate2D] 
+	return ["vice.src.utils.interpolate2D", _utils.test_interpolate2D] 
 
 
 @unittest 
@@ -107,7 +107,7 @@ def test_bin_number_finder():
 	""" 
 	Tests the bin number finder at vice/src/utils.h 
 	""" 
-	return ["Bin number finder", _utils.test_get_bin_number] 
+	return ["vice.src.utils.get_bin_number", _utils.test_get_bin_number] 
 
 
 @unittest 
@@ -115,7 +115,7 @@ def test_binspace_generator():
 	""" 
 	Tests the binspace generator at vice/src/utils.h 
 	""" 
-	return ["Binspace generator", _utils.test_binspace] 
+	return ["vice.src.utils.binspace", _utils.test_binspace] 
 
 
 @unittest 
@@ -123,7 +123,7 @@ def test_bin_center_calculator():
 	""" 
 	Tests the bin-center calculator at vice/src/utils.h 
 	""" 
-	return ["Bin centers", _utils.test_bin_centers] 
+	return ["vice.src.utils.bin_centers", _utils.test_bin_centers] 
 
 
 @unittest 
@@ -131,7 +131,7 @@ def test_summation():
 	""" 
 	Tests the sum function at vice/src/utils.h 
 	""" 
-	return ["Summation", _utils.test_sum] 
+	return ["vice.src.utils.sum", _utils.test_sum] 
 
 
 @unittest 
@@ -139,7 +139,7 @@ def test_string_copier():
 	""" 
 	Tests the char pointer from PyString function at vice/src/utils.h 
 	""" 
-	return ["Python to C string pipeline", _utils.test_set_char_p_value] 
+	return ["vice.src.utils.set_char_p_value", _utils.test_set_char_p_value] 
 
 
 @unittest 
@@ -147,5 +147,5 @@ def test_maximum():
 	""" 
 	Tests the max function at vice/src/utils.h 
 	""" 
-	return ["Maximum", _utils.test_max] 
+	return ["vice.src.utils.max", _utils.test_max] 
 

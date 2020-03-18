@@ -28,7 +28,7 @@ tutorial:
 
 clean: 
 	@ echo Cleaning VICE source tree 
-	@ $(MAKE) -C vice/ clean 
 	@ rm -rf build
 	@ rm -rf *.egg-info 
 	@ rm -rf dist
+	@ $(MAKE) -C vice/ clean 

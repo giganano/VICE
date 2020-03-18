@@ -5,4 +5,5 @@ clean:
 	@ echo Cleaning vice/core/ssp/ 
 	@ rm -f *.c 
 	@ rm -f *.so 
+	@ $(MAKE) -C tests/ clean 
 

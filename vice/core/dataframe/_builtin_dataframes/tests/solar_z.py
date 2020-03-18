@@ -1,0 +1,27 @@
+
+from __future__ import absolute_import 
+__all__ = ["test_solar_z"] 
+from ....._globals import _RECOGNIZED_ELEMENTS_ 
+from .....tests._test_utils import unittest 
+from ..solar_z import solar_z 
+import numbers 
+
+
+@unittest 
+def test_solar_z(): 
+	""" 
+	Solar_z built-in dataframe unit test 
+	""" 
+	def test(): 
+		""" 
+		Test the solar_z dataframe 
+		""" 
+		try: 
+			for i in _RECOGNIZED_ELEMENTS_: 
+				assert isinstance(solar_z[i], numbers.Number) 
+				assert 0 < solar_z[i] < 1 
+		except: 
+			return False 
+		return True 
+	return ["Solar Z", test] 
+

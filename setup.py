@@ -67,8 +67,11 @@ def find_extensions(path = '.'):
 			ext = i.split('=')[1] 
 			src = "./%s.pyx" % (ext.replace('.', '/')) 
 			if os.path.exists(src): 
-				src_files = [src] + vice.find_c_extensions() 
-				if "tests" in src: src_files += vice.find_test_extensions() 
+				# src_files = [src] + vice.find_c_extensions() 
+				# if "tests" in src: src_files += vice.find_test_extensions() 
+				src_files = [src] + vice.find_c_extensions(
+					tests = "tests" in src
+				)
 				extensions.append(Extension(
 					# The name of the extension 
 					ext, 
@@ -85,9 +88,11 @@ def find_extensions(path = '.'):
 		for root, dirs, files in os.walk(path): 
 			for i in files: 
 				if i.endswith(".pyx"): 
-					src_files = ["%s/%s" % (root[2:], 
-						i)] + vice.find_c_extensions() 
-					if "tests" in root: src_files += vice.find_test_extensions() 
+					# src_files = ["%s/%s" % (root[2:], 
+					# 	i)] + vice.find_c_extensions() 
+					# if "tests" in root: src_files += vice.find_test_extensions() 
+					src_files = ["%s/%s" % (root[2:], i)] 
+					src_files += vice.find_c_extensions(tests = "tests" in root) 
 					extensions.append(Extension( 
 						# The name of the extension 
 						"%s.%s" % (root[2:].replace('/', '.'), i.split('.')[0]), 

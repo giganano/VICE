@@ -33,6 +33,7 @@ elif sys.version_info[:2] >= (3, 5):
 else: 
 	_VERSION_ERROR_() 
 
+
 def numeric_check(pylist, errtype, errmsg): 
 	"""
 	Raises an exception if any elements of a python array-like object are 
@@ -57,6 +58,7 @@ def numeric_check(pylist, errtype, errmsg):
 		raise errtype(errmsg) 
 	else: 
 		pass 
+
 
 def inf_nan_check(pylist, errtype, errmsg): 
 	""" 
@@ -86,6 +88,7 @@ def inf_nan_check(pylist, errtype, errmsg):
 		raise errtype(errmsg) 
 	else: 
 		pass 
+
 
 def copy_array_like_object(pyobj): 
 	"""
@@ -121,6 +124,7 @@ def copy_array_like_object(pyobj):
 			type(pyobj)))
 
 	return copy 
+
 
 def range_(start, stop, dx): 
 	"""
@@ -159,6 +163,7 @@ def range_(start, stop, dx):
 			arr[i] = start + i * dx 
 		return arr 
 
+
 def args(func, errmsg): 
 	"""
 	Raises a TypeError if the function accepts any more than one positional 
@@ -184,6 +189,7 @@ def args(func, errmsg):
 	else: 
 		raise TypeError("Must be a callable python function. Got: %s" % (
 			type(func))) 
+
 
 def arg_count(func): 
 	""" 
@@ -214,6 +220,7 @@ def arg_count(func):
 	else: 
 		raise TypeError("Must be a callable object. Got: %s" % (type(func))) 
 
+
 def is_ascii(pystr): 
 	""" 
 	Returns true if all characters in a string are ascii. 
@@ -227,5 +234,4 @@ def is_ascii(pystr):
 		return all([ord(c) < 128 for c in pystr]) 
 	else: 
 		raise TypeError("Must be of type str. Got: %s" % (type(pystr))) 
-
 

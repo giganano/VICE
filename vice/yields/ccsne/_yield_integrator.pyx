@@ -15,7 +15,6 @@ from ...core.callback import callback1_nan_inf_positive
 from ...core.callback import callback1_nan_inf 
 from ...core.ssp._imf import salpeter 
 from ...core.ssp._imf import kroupa 
-from ...core import _pyutils 
 from .errors import _NAMES_ 
 from .errors import _RECOGNIZED_METHODS_ 
 from .errors import _RECOGNIZED_STUDIES_ 

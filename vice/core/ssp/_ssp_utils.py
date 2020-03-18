@@ -11,7 +11,7 @@ from ...yields.agb._grid_reader import find_yield_file as find_agb_yield_file
 from ...yields import agb 
 from ...yields import ccsne 
 from ...yields import sneia 
-from ..dataframe._builtin_dataframes._atomic_number import atomic_number 
+from ..dataframe._builtin_dataframes.atomic_number import atomic_number 
 from .. import _pyutils 
 import numbers 
 import sys 

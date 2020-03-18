@@ -7,9 +7,7 @@
 #include <math.h> 
 #include "../callback.h" 
 #include "../objects.h" 
-#include "objects/callback_1arg.h" 
-#include "objects/callback_2arg.h" 
-
+#include "../objects/tests.h" 
 
 /* 
  * Test the callback_1arg_evaluate function 
