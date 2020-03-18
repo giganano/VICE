@@ -74,8 +74,8 @@ is designed to run independently of them.
 
 Installation 
 ============
-First download the source code using a terminal and change into the root 
-directory: 
+First download the source code using a terminal and change directories into 
+the source tree: 
 
 :: 
 
