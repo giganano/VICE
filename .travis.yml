@@ -39,7 +39,7 @@ before_install:
 
 install: 
   - make CC=$COMPILER 
-  - python setup.py build -j 4 install --quiet  
+  - python setup.py install --quiet  
 
 script: 
   - make tests 
