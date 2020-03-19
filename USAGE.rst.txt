@@ -1,4 +1,11 @@
 
+.. footer:: `Back to Overview`__ | `Installation Instructions`__ 
+
+__ readme_ 
+__ usage_ 
+.. _readme: https://github.com/astrobeard/VICEdev 
+.. _usage: https://github.com/astrobeard/VICEdev/blob/master/INSTALL.rst.txt
+
 Using VICE 
 ++++++++++
 

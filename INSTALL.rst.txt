@@ -1,4 +1,11 @@
 
+.. footer:: `Back to Overview`__ | `Usage Instructions`__ 
+
+__ readme_ 
+__ usage_ 
+.. _readme: https://github.com/astrobeard/VICEdev 
+.. _usage: https://github.com/astrobeard/VICEdev/blob/master/USAGE.rst.txt
+
 Installing VICE 
 +++++++++++++++
 
@@ -8,7 +15,6 @@ started, usage guidelines can be found `here`__.
 
 __ `Installation`_ 
 __ usage_ 
-.. _usage: https://github.com/astrobeard/VICEdev/blob/master/USAGE.rst.txt
 
 .. Contents:: 
 
@@ -149,7 +155,7 @@ Things to Avoid
 
 2. Parallel Installations 
 	Users installing VICE to multiple versions of python should not run the 
-	setup.py file in separate terminal simultaneously; this will cause one of 
+	setup.py file in separate terminals simultaneously; this will cause one of 
 	the builds to fail. Likewise, users should not run the tests for multiple 
 	versions of python simultaneously; it's likely this will caues a 
 	``segmentation fault``. 
