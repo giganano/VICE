@@ -4,8 +4,14 @@ Using VICE
 
 |userguide| |scidocs| 
 
-If users find VICE useful, we kindly request that they star this repository. 
+If you have not yet installed VICE, installation instructions can be found 
+`here`__. 
+
+If you find VICE useful, we kindly request that you star this repository. 
 This also helps us keep track of an approximate number of users. 
+
+__ installation_ 
+.. _installation: https://github.com/astrobeard/VICEdev/blob/master/INSTALL.rst.txt
 
 ..	|userguide| image:: https://img.shields.io/badge/-User's%20Guide-blue.svg
 	:target: https://github.com/giganano/VICE/blob/master/docs/users_guide.pdf 
@@ -34,7 +40,7 @@ Example Code
 Example code is provided `here`__ in VICE's source tree under ``examples``. 
 
 __ examples_ 
-.. _example: https://github.com/astrobeard/VICEdev/tree/master/examples
+.. _examples: https://github.com/astrobeard/VICEdev/tree/master/examples
 
 
 Accessing Documentation 
@@ -67,7 +73,7 @@ If this feature does not work after installing VICE, troubleshooting can be
 found `here`__. 
 
 **Note**: VICE's functionality is severely limited when ran from the command 
-line in comparison to its full python capabilities. 
+line in comparison to its full Python_ capabilities. 
 
 __ troubleshooting_
-
+.. _Python: https://www.python.org/ 

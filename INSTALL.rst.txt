@@ -3,9 +3,12 @@ Installing VICE
 +++++++++++++++
 
 At present, VICE is not installable via ``pip``. Instructions can be found 
-`here`__. 
+`here`__. If you have already installed VICE and are looking for help getting 
+started, usage guidelines can be found `here`__. 
 
 __ `Installation`_ 
+__ usage_ 
+.. _usage: https://github.com/astrobeard/VICEdev/blob/master/USAGE.rst.txt
 
 .. Contents:: 
 
@@ -115,13 +118,19 @@ Alternatively, the tests can be ran from Python_:
 Please note that users installing VICE to multiple versions of Python_ will 
 likely have to run ``make clean`` between runs of the setup.py file. 
 
+If you have issues installing or running VICE, please see the section on 
+`Troubleshooting Your Build`_. If your installation was successful and you 
+would like help getting started, usage guidelines can be found `here`__. 
+
+__ usage_ 
+
 
 Things to Avoid 
 ---------------
 
 .. _condanote: 
 
-1. conda Environtments
+1. conda Environments
 	VICE should **never** be installed from within a conda environment. In 
 	this case, the installation process will run without errors, but the 
 	compiled extensions will not be placed in the correct directory, 
