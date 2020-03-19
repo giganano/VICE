@@ -34,6 +34,9 @@ COLORS = ["red", "gold", "green", "blue", "purple"]
 N = [5, 10, 15, 20, 25] 
 
 def setup_subplot(): 
+	""" 
+	Setup a matplotlib subplot to plot on 
+	""" 
 	plt.clf() 
 	fig = plt.figure(figsize = (10, 10)) 
 	ax = fig.add_subplot(111, facecolor = "white") 
@@ -45,6 +48,14 @@ def setup_subplot():
 	return ax 
 
 def draw(name, ax, color, nelem): 
+	""" 
+	Plot execution time vs timestep size for a given number of elements 
+
+	name :: the name of the output file 
+	ax :: the subplot to plot on 
+	color :: the color to plot in 
+	nelem :: the number of elements in the simulation 
+	""" 
 	output = np.genfromtxt(name) 
 	x = [i[0] for i in output] 
 	y = [i[1] for i in output] 
@@ -55,6 +66,11 @@ def draw(name, ax, color, nelem):
 		c = mpl.colors.get_named_colors_mapping()[color], linestyle = ':') 
 
 def legend(ax): 
+	""" 
+	Put the legend on the axis 
+
+	ax :: the subplot 
+	""" 
 	lines = len(OUTPUTS) * [None] 
 	for i in range(len(lines)): 
 		lines[i] = ax.plot([0.001, 0.01], [1, 2], 
@@ -74,6 +90,9 @@ def legend(ax):
 	dummy.remove() 
 
 def best_fit(nelem): 
+	""" 
+	Obtain the expected fit for a given number of elements 
+	""" 
 	return lambda t: 4.2 * nelem * (1.e-3 / t)**2 
 
 if __name__ == "__main__": 
@@ -89,6 +108,7 @@ if __name__ == "__main__":
 	ax.yaxis.set_major_formatter(fsf("%g")) 
 	plt.tight_layout() 
 	plt.savefig("timer.pdf") 
+	plt.savefig("timer.png") 
 	plt.clf() 
 
 

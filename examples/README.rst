@@ -6,10 +6,16 @@ First time users of VICE should first go through the `Quick Start Tutorial`__
 to familiarize themselves with how to use VICE's basic features. 
 
 __ tutorial_ 
-.. _tutorial: https://github.com/giganano/VICE/blob/master/docs/QuickStartTutorial.ipynb
+.. _tutorial: https://github.com/astrobeard/VICEdev/blob/master/examples/QuickStartTutorial.ipynb
 
-In addition to that, we provide here scripts which are intended as examples to 
-help users further familiarize themselves with using VICE. 
+Here we also provide example scripts to help users further familiarize 
+themselves with VICE. 
+
+1. `A Simple Example`__: Run a simple onezone model and plot the results 
+2. **yields.py**: Modify nucleosynthetic yield settings 
+3. **yield_import.py**: Import nucleosynthetic yield settings from another file 
+
+__ example_ 
 
 Johnson & Weinberg (2020) Starbursts Paper Code 
 ===============================================
@@ -30,6 +36,8 @@ __ starbursts_
 __ jw20_ 
 .. _starbursts: https://github.com/giganano/VICE/tree/master/starbursts 
 .. _jw20: https://ui.adsabs.harvard.edu/abs/2019arXiv191102598J/abstract 
+
+.. _example: 
 
 A Simple Example: A Simulation of a Galaxy with Known Star Formation History 
 ============================================================================

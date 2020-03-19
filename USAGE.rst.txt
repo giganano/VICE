@@ -39,7 +39,7 @@ all of VICE's features. After installation, users can launch the tutorial
 immediately via ``make tutorial``. 
 
 __ tutorial_ 
-.. _tutorial: https://github.com/giganano/VICE/blob/master/docs/QuickStartTutorial.ipynb
+.. _tutorial: https://github.com/astrobeard/VICEdev/blob/master/docs/QuickStartTutorial.ipynb
 
 
 Example Code

@@ -65,7 +65,7 @@ features.
 .. _dill: https://pypi.org/project/dill/ 
 .. _matplotlib: https://pypi.org/project/matplotlib/ 
 .. _numpy: https://pypi.org/project/numpy/ 
-.. _tutorial: https://github.com/giganano/VICE/blob/master/docs/QuickStartTutorial.ipynb 
+.. _tutorial: https://github.com/astrobeard/VICEdev/blob/master/docs/QuickStartTutorial.ipynb 
 
 
 A Note on Implementation 
@@ -107,6 +107,8 @@ privileges should perform a local installation. This can be achieved with the
 
 	$ python setup.py build -j 4 install --user 
 
+Please note that users installing VICE to multiple versions of Python_ will 
+likely have to run ``make clean`` between runs of the setup.py file. 
 Following the installation, to run the tests and clean the source tree: 
 
 :: 
@@ -114,15 +116,14 @@ Following the installation, to run the tests and clean the source tree:
 	$ make tests 
 	$ make clean 
 
-Alternatively, the tests can be ran from Python_: 
+Please note that ``make tests`` runs VICE's tests in the user's default version 
+of Python_. To force the tests to run in Python_ 3, run ``make tests3``. 
+Alternatively, the tests can be ran from within Python_ itself: 
 
 .. code:: python 
 
 	import vice 
 	vice.test() 
-
-Please note that users installing VICE to multiple versions of Python_ will 
-likely have to run ``make clean`` between runs of the setup.py file. 
 
 If you have issues installing or running VICE, please see the section on 
 `Troubleshooting Your Build`_. If your installation was successful and you 
@@ -247,5 +248,28 @@ If this does not fix the issue, please open an issue `here`__.
 
 .. _pathvariables: https://unix.stackexchange.com/questions/26047/how-to-correctly-add-a-path-to-path
 __ pathvariables_ 
+__ issues_ 
+
+
+Compiler Failure 
+----------------
+This is usually an indication that the build should not be ran on multiple 
+cores. First run ``make clean``, and subsequently ``make``. Then replace your 
+previous command to run the setup.py file with: 
+
+:: 
+
+	$ python setup.py build install [--user] [--quiet] 
+
+If you were not installing VICE on multiple cores to begin with, try 
+installing without the ``build`` directive: 
+
+:: 
+
+	$ python setup.py install [--user] [--quiet] 
+
+If neither of these recommendations fixed your problem, please open an 
+issue `here`__. 
+
 __ issues_ 
 

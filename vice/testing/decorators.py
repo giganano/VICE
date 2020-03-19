@@ -21,7 +21,7 @@ def moduletest(function):
 		for i in unittests: 
 			test.new(i) 
 		if run: 
-			test.run(print_results = True)  
+			test.run(print_results = True) 
 		else: 
 			return test 
 	return wrapper 

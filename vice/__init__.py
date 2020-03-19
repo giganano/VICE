@@ -118,15 +118,9 @@ Error importing VICE. If you have attempted an alternate installation method, \
 please visit https://github.com/giganano/VICE.git and follow the preferred \
 installation method. \
 
-Alternatively, if you have installed VICE in a conda environment, the \
-installation process will run, but its compiled extensions will not be placed \
-in the correct directories. If this is the case, please deactivate the conda \
-environment and install VICE globally. VICE is implemented independently of \
-anaconda, and for this reason a conda environment is not necessary. \
-
-If you have followed the preferred installation method outside of a conda \
-environment, then please open an issue at \
-https://github.com/giganano/VICE.git. \
+To troubleshoot your build, see VICE's source code repository at \
+https://github.com/giganano/VICE.git and click on "Troubleshoot Your Build" \
+under "Install VICE." \
 """)
 
 	__all__.extend(core.__all__)

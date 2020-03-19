@@ -15,3 +15,4 @@ clean:
 	@ rm -f *.log 
 	@ rm -f *.out 
 	@ rm -f *.pdf 
+	@ $(MAKE) -C gen/ clean 
