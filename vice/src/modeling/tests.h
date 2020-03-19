@@ -6,6 +6,8 @@
 extern "C" { 
 #endif /* __cplusplus */ 
 
+#include "likelihood/tests.h" 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 
