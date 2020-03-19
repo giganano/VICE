@@ -2,7 +2,7 @@
 VICE Example Code 
 +++++++++++++++++
 
-First time users of VICE should first go through the `Quick Start Tutorial`__ 
+First time users of VICE should first go through the `quick start tutorial`__ 
 to familiarize themselves with how to use VICE's basic features. 
 
 __ tutorial_ 
@@ -14,6 +14,7 @@ themselves with VICE.
 1. `A Simple Example`__: Run a simple onezone model and plot the results 
 2. **yields.py**: Modify nucleosynthetic yield settings 
 3. **yield_import.py**: Import nucleosynthetic yield settings from another file 
+4. **generate_functions.py**: Generate functions for use in simulations 
 
 __ example_ 
 

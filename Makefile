@@ -24,7 +24,7 @@ starburst:
 
 tutorial: 
 	@ echo Launching tutorial 
-	@ $(MAKE) -C docs/ tutorial
+	@ $(MAKE) -C examples/ tutorial
 
 clean: 
 	@ echo Cleaning VICE source tree 

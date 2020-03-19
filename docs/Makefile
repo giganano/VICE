@@ -1,8 +1,5 @@
  	
-.PHONY: tutorial clean
-
-tutorial: 
-	@ jupyter notebook QuickStartTutorial.ipynb
+.PHONY: clean
 
 clean:
 	@ echo Cleaning docs/ 

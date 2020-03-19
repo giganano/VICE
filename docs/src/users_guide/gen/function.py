@@ -9,8 +9,8 @@ if sys.version_info[:2] == (2, 7):
 elif sys.version_info[:2] >= (3, 5): 
 	strcomp = str 
 else: 
-	raise RuntimeError("Version never supported by VICE: %d.%d.%d" % (
-		sys.version_info.major, sys.version_info.minor, sys.version_info.micro))  
+	raise RuntimeError("Version never supported by VICE: %d.%d.%d" % ( 
+		sys.version_info.major, sys.version_info.minor, sys.version_info.micro)) 
 
 
 class function: 

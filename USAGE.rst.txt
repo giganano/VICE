@@ -33,7 +33,7 @@ __ installation_
 
 Tutorial 
 ========
-Under ``examples`` in VICE's source direcotry is the `Quick Start Tutorial`__, 
+Under ``examples`` in VICE's source direcotry is the `quick start tutorial`__, 
 a notebook intended to provide first-time users with a primar on how to use 
 all of VICE's features. After installation, users can launch the tutorial 
 immediately via ``make tutorial``. 
@@ -44,9 +44,8 @@ __ tutorial_
 
 Example Code
 ============
-Example code is provided `here`__ in VICE's source tree under ``examples``. 
+We provide example scripts in VICE's source tree under examples_. 
 
-__ examples_ 
 .. _examples: https://github.com/astrobeard/VICEdev/tree/master/examples
 
 
