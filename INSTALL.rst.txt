@@ -134,7 +134,7 @@ Things to Avoid
 	implemented entirely independently of Anaconda_, and for this reason, it 
 	does not make sense to install VICE in a conda environment anyway. 
 
-	__ `A Note on Implementation`_  
+	__ `A Note on Implementation`_ 
 
 .. _parallelnote: 
 
