@@ -1,18 +1,11 @@
 
-COMPILER = pdflatex 
+all: pkgcontents   
+.PHONY: pkgcontents clean 
 
-all: users_guide.pdf 
-.PHONY: clean 
-
-%.pdf: %.tex 
-	@ echo Compiling $< 
-	@ $(COMPILER) $< 
-	@ $(COMPILER) $< 
+pkgcontents: 
+	@ $(MAKE) -C pkgcontents 
 
 clean: 
 	@ echo Cleaning docs/src/users_guide/ 
-	@ rm -f *.aux 
-	@ rm -f *.log 
-	@ rm -f *.out 
-	@ rm -f *.pdf 
-	@ $(MAKE) -C gen/ clean 
+	@ rm -rf __pycache__ 
+	@ $(MAKE) -C pkgcontents/ clean 

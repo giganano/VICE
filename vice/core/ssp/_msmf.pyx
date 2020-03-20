@@ -24,72 +24,85 @@ from . cimport _ssp
 
 def main_sequence_mass_fraction(age, IMF = "kroupa", m_upper = 100, 
 	m_lower = 0.08): 	
-	"""
-	Determine the main sequence mass fraction for a single stellar population 
+	""" 
+	Calculate the main sequence mass fraction for a single stellar population 
 	at a given age. This quantity represents the fraction of the stellar 
 	population's mass that is still in the form of stars on the main sequence. 
-	See section 2.3 of VICE's science documentation at 
-	https://github.com/giganano/VICE/tree/master/docs for further details. 
 
-	Signature: vice.main_sequence_mass_fraction(age, 
-		IMF = "kroupa", 
-		m_upper = 100, 
-		m_lower = 0.08)
+	**Signature**: vice.main_sequence_mass_fraction(age, IMF = "kroupa", 
+	m_upper = 100, m_lower = 0.08) 
 
 	Parameters 
-	========== 
-	age :: real number 
-		The age of the stellar population in Gyr 
-	IMF :: string [case-insensitive] or <function> [default :: "kroupa"]
-		The stellar initial mass function (IMF) to assume. Strings denote 
-		built-in IMFs, which must be either "kroupa" (1) or "salpeter" (2). 
-		Functions must accept only one numerical parameter and will be 
-		interpreted as a custom, arbitrary stellar IMF. 
-	m_upper :: real number [default :: 100] 
-		The upper mass limit on star formation in solar masses 
-	m_lower :: real number [default :: 0.08] 
-		The lower mass limit on star formation in solar masses 
+	----------
+	age : real number 
+		The age of the stellar population in Gyr. 
+	IMF : string [case-insensitive] or <function> [default : "kroupa"] 
+		The assumed stellar initial mass function (IMF). Strings denote 
+		built-in IMFs. Functions must accept only one numerical parameter and 
+		will be interpreted as a custom, arbitrary stellar IMF. 
+
+		Recognized built-in IMFs: 
+
+		- Kroupa [1]_ 
+		- Salpeter [2]_ 
+
+		.. note:: 
+			Functions do not need to be normalized. VICE will take care of 
+			this automatically. 
+
+	m_upper : real number [default : 100] 
+		The upper mass limit on star formation in solar masses. 
+	m_lower : real number [default : 0.08] 
+		The lower mass limit on star formation in solar masses. 
 
 	Returns 
-	======= 
-	msmf :: real number 
+	-------
+	msmf : real number 
 		The value of the main sequence mass fraction for a stellar population 
 		at the specified age under the specified parameters. 
 
-	Raises 
-	====== 
-	TypeError :: 
-		:: age is not a real number 
-		:: IMF is not of type str or <function> 
-		:: m_upper is not a real number 
-		:: m_lower is not a real number 
-		:: postMS is not a real number 
-	ValueError :: 
-		:: age < 0 
-		:: built-in IMF is not recognized 
-		:: m_upper <= 0 
-		:: m_lower <= 0 
-		:: m_lower >= m_upper 
-
 	Notes 
-	===== 
-	VICE operates under the approximation that stars have a mass-luminosity 
-	relationship of M ~ L^4.5, leading to a mass-lifetime relation that is 
-	also a power law of t ~ M/L ~ M^-3.5. 
+	-----
+	.. note:: 
+		VICE operates under the approximation that stars have a mass-luminosity 
+		relationship given by: 
 
-	Example 
-	======= 
-	>>> vice.main_sequence_mass_fraction(1) 
-	0.5815004968281556
-	>>> vice.main_sequence_mass_fraction(2) 
-	0.5445877675278488
-	>>> vice.main_sequence_mass_fraction(3) 
-	0.5219564300200146
+		.. math:: L \sim M^{4.5} 
+
+		leading to a mass-lifetime relation that is also a power-law, given by: 
+
+		.. math:: \\tau \sim M/L \sim M^{-3.5} 
+
+	Raises 
+	------
+	* TypeError 
+		- age is not a real number 
+		- IMF is not of type str or <function> 
+		- m_upper is not a real number 
+		- m_lower is not a real number 
+		- postMS is not a real number 
+	* ValueError 
+		- age < 0 
+		- built-in IMF is not recognized 
+		- m_upper <= 0 
+		- m_lower <= 0 
+		- m_lower >= m_upper 
+
+	Example Code 
+	------------
+	.. code:: python 
+
+		>>> vice.main_sequence_mass_fraction(1) 
+		0.5815004968281556
+		>>> vice.main_sequence_mass_fraction(2) 
+		0.5445877675278488
+		>>> vice.main_sequence_mass_fraction(3) 
+		0.5219564300200146
 
 	References 
-	========== 
-	(1) Kroupa (2001), MNRAS, 231, 322 
-	(2) Salpeter (1955), ApJ, 121, 161 
+	---------- 
+	.. [1] Kroupa (2001), MNRAS, 231, 322 
+	.. [2] Salpeter (1955), ApJ, 121, 161 
 	"""
 	# Type and value checks first 
 	if not isinstance(age, numbers.Number): 

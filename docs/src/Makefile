@@ -1,21 +1,31 @@
+# Minimal makefile for Sphinx documentation
+#
 
-all: users_guide science_documentation 
-.PHONY: users_guide science_documentation rh_2panel timer clean 
+# You can set these variables from the command line, and also
+# from the environment for the first two.
+SPHINXOPTS    ?=
+SPHINXBUILD   ?= sphinx-build
+SOURCEDIR     = .
+BUILDDIR      = _build
 
-users_guide: 
-	@ $(MAKE) -C users_guide 
+# Put it first so that "make" without argument is like "make help".
+help:
+	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-science_documentation: 
-	@ $(MAKE) -C science_documentation 
+all: userguide html 
+.PHONY: help Makefile userguide srcclean 
 
-rh_2panel: 
-	@ $(MAKE) -C rh_2panel 
+# Catch-all target: route all unknown targets to Sphinx using the new
+# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
+%: Makefile
+	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-timer: 
-	@ $(MAKE) -C timer 
+userguide: 
+	@ $(MAKE) -C users_guide/ 
 
-clean: 
+srcclean: 
 	@ echo Cleaning docs/src/ 
 	@ $(MAKE) -C users_guide/ clean 
-	@ $(MAKE) -C science_documentation/ clean 
+	@ $(MAKE) clean 
+
 

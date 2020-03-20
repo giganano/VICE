@@ -9,58 +9,85 @@ from . cimport _imf
 
 def kroupa(mass): 
 	""" 
-	The Kroupa (2001) stellar initial mass function (IMF). 
+	The (unnormalized) Kroupa (2001) [1]_ stellar initial mass function (IMF). 
+
+	**Signature**: vice.imf.kroupa(mass) 
 
 	Parameters 
-	========== 
-	mass :: real number 
-		The stellar mass in Msun 
+	----------
+	mass : real number 
+		The stellar mass in solar masses. 
 
 	Returns 
-	======= 
-	dndm :: real number 
+	-------
+	dndm : real number 
 		The unnormalized value of the Kroupa IMF at that stellar mass, 
-		defined as dN/dm 
+		defined as dN/dm. 
 
 	Raises 
-	====== 
-	TypeError :: 
-		::	mass is not a real number 
-	ValueError :: 	
-		::	mass is non-positive 
+	------
+	* TypeError 
+		- mass is not a real number 
+	* ValueError 
+		- mass is non-positive 
+
+	Example Code 
+	------------
+	.. code:: python 
+
+		>>> vice.imf.kroupa(1) 
+		0.04 
+		>>> vice.imf.kroupa(0.5) 
+		0.1969831061351866
+		>>> vice.imf.kroupa(2) 
+		0.008122523963562356
 
 	References 
-	========== 
-	Kroupa (2001), MNRAS, 322, 231 
+	----------
+	.. [1] Kroupa (2001), MNRAS, 322, 231 
 	""" 
 	return _common(mass, _imf.kroupa01) 
 
 
 def salpeter(mass): 
 	""" 
-	The Salpeter (1955) stellar initial mass function (IMF). 
+	The (unnormalized) Salpeter (1955) [1]_ stellar initial mass function 
+	(IMF). 
+
+	**Signature**: vice.imf.salpeter(mass) 
 
 	Parameters 
-	========== 
-	mass :: real number 
-		The stellar mass in Msun 
+	----------
+	mass : real number 
+		The stellar mass in solar masses. 
 
 	Returns 
-	======= 
-	dndm :: real number 
+	------- 
+	dndm : real number 
 		The unnormalized value of the Salpeter IMF at that stellar mass, 
-		define as dN/dm 
+		devined as dN/dm. 
 
 	Raises 
-	====== 
-	TypeError :: 
-		::	mass is not a real number 
-	ValueError :: 	
-		::	mass is non-positive 
+	------ 
+	* TypeError 
+		- mass is not a real number 
+	* ValueError 
+		- mass is non-positive 
+
+	Example Code 
+	------------
+	.. code:: python 
+
+		>>> vice.imf.salpeter(1) 
+		1.0 
+		>>> vice.imf.salpeter(0.5) 
+		5.098242509277049 
+		>>> vice.imf.salpeter(2) 
+		0.19614602447418766 
 
 	References 
-	========== 
-	Salpeter (1955), ApJ, 121, 161 
+	---------- 
+	.. [1] Salpeter (1955), ApJ, 121, 161 
 	""" 
 	return _common(mass, _imf.salpeter55) 
 

@@ -51,117 +51,133 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	of given mass and metallicity. This does not take into account galactic 
 	evolution - whether or not it is depleted from inflows or ejected in winds 
 	is not considered. Only the mass of the given element produced by the star 
-	cluster is determined. See section 2.4 of VICE's science documentation at 
-	https://github.com/giganano/VICE/tree/master/docs for further details. 
+	cluster is calculated. 
 
-	Signature: vice.single_stellar_population(
-		element, 
-		mstar = 1.0e+06, 
-		Z = 0.014, 
-		time = 10, 
-		dt = 0.01, 
-		m_upper = 100, 
-		m_lower = 0.08, 
-		postMS = 0.1, 
-		IMF = "kroupa", 
-		RIa = "plaw", 
-		delay = 0.15, 
-		agb_model = None 
-	)
+	**Signature**: vice.single_stellar_population(element, mstar = 1.0e+06, 
+	Z = 0.014, time = 10, dt = 0.01, m_upper = 100, m_lower = 0.08, 
+	postMS = 0.1, IMF = "kroupa", RIa = "plaw", delay = 0.15) 
 
 	Parameters 
-	========== 
-	element :: str [case-insensitive] 
-		The symbol of the element to simulate the enrichment for 
-	mstar :: real number [default :: 1.0e+06] 
+	----------
+	element : str [case-insensitive] 
+		The symbol of the element to simulate the enrichment for. 
+	mstar : real number [default : 1.0e+06] 
 		The birth mass of the star cluster in solar masses. 
-	Z :: real number [default :: 0.014] 
+	Z : real number [default : 0.014] 
 		The metallicity by mass of the stars in the cluster. 
-		(i.e. Z = mass of metals / total mass) 
-	time :: real number [default :: 10] 
+	time : real number [default : 10] 
 		The amount of time in Gyr to run the simulation for 
-	dt :: real number [default :: 0.01]
+	dt : real number [default : 0.01] 
 		The size of each timestep in Gyr 
-	m_upper :: real number [default :: 100] 
+	m_upper : real number [default : 100] 
 		The upper mass limit on star formation in solar masses. 
-	m_lower :: real number [default :: 0.08] 
+	m_lower : real number [default : 0.08] 
 		The lower mass limit on star formation in solar masses. 
-	postMS :: real number [default :: 0.1] 
+	postMS : real number [default : 0.1] 
 		The ratio of a star's post main sequence lifetime to its main sequence 
-		lifetime 
-	IMF :: str [case-insensitive] or <function> [default :: "kroupa"]
+		lifetime. 
+	IMF : str [case-insensitive] or <function> [default : "kroupa"] 
 		The stellar initial mass function (IMF) to assume. Strings denote 
-		built-in IMFs, which must be either "kroupa" (1) or "salpeter" (2). 
-		Functions must accept only one numerical parameter and will be 
-		interpreted as a custom, arbitrary stellar IMF. 
-	RIa :: str [case-insensitive] or <function> [default :: "plaw"] 
-		The delay-time distribution for type Ia supernovae to adopt. VICE will 
-		automatically normalize any function that is passed. Alternatively, 
-		VICE has built-in distributions: "plaw" (power-law, \\propto t^-1.1) 
-		and "exp" (exponential, \\propto e^(-t/1.5 Gyr)). 
-	delay :: real number [default :: 0.15] 
+		built-in IMFs. Functions must accept only one numerical parameter and 
+		will be interpreted as a custom, arbitrary stellar IMF. 
+
+		Recognized built-in IMFs: 
+
+		- Kroupa [1]_ 
+		- Salpeter [2]_ 
+
+		.. note:: 
+			Functions do not need to be normalized. VICE will take care of this 
+			automatically. 
+
+	RIa : string [case-insensitive] or <function> [default : "plaw"] 
+		The delay-time distribution for type Ia supernovae to adopt. Strings 
+		denote built-in distributions. Functions must accept only one numerical 
+		parameter and will be interpreted as a custom, arbitrary delay-time 
+		distribution. 
+
+		Recognized built-in distributions: 
+
+		- "plaw": :math:`R_\text{Ia} \sim t^{-1.1}` 
+		- "exp": :math:`R_\text{Ia} \sim e^{-t/\text{1.5 Gyr}}` 
+
+		.. note:: 
+			Functions do not need to return 0 at times smaller than the SN Ia 
+			minimum delay time. 
+
+		.. note:: 
+			Functions do not need to be normalized. VICE will take care of this 
+			automatically. 
+	delay : real number [default : 0.15] 
 		The minimum delay time following the formation of a single stellar 
 		population before the onset of type Ia supernovae in Gyr. 
-	agb_model :: str [case-insensitive] [default :: None] [DEPRECATED] 
+	agb_model : string [case-insensitive] or None [default : None] 
+		**[DEPRECATED]** 
+		
 		A keyword denoting which table of nucleosynthetic yields from AGB stars 
 		to adopt. 
-		Recognized Keywords and their Associated Studies 
-		------------------------------------------------
-		"cristallo11" :: Cristallo et al. (2011), ApJS, 197, 17 
-		"karakas10" :: Karakas (2010), MNRAS, 403, 1413 
+
+		Recognized Keyword: 
+
+		- "cristallo11" [3]_ 
+		- "karakas10" [4]_ 
+
+		.. deprecated:: 1.2 
+			Users should instead modify their AGB star yield settings through 
+			``vice.yields.agb.settings``. Users may specify either a built-in 
+			study or a function of stellar mass and metallicity. 
 
 	Returns 
-	=======
-	mass :: list 
-		The net mass of the element in solar masses produced by the star 
-		cluster at each timestep. 
-	times :: list 
+	-------
+	mass : list 
+		The net mass of the element in solar mass produced by the star cluster 
+		at each timestep. 
+	times : list 
 		The times in Gyr corresponding to each mass yield. 
 
 	Raises 
-	====== 
-	TypeError :: 
-		::	RIa is not of type str or <function> 
-		::	IMF is not of type str or <function> 
-	ValueError :: 
-		::	The element is not built into VICE. 
-		::	mstar < 0 
-		::	Z < 0 
-		::	time < 0 or time > 15 [VICE does not simulate enrichment on 
-			timescales longer than the age of the universe] 
-		::	dt < 0 
-		:: 	m_upper < 0 
-		::	m_lower < 0 
-		::	m_lower > m_upper 
-		:: 	postMS < 0 or > 1 
-		::	built-in IMF is not recognized 
-		::	delay < 0 
-		::	agb_model is not built into VICE 
-	LookupError :: 
-		::	agb_model == "karakas10" and the atomic number of the element is 
+	------
+	* ValueError 
+		- The element is not built into VICE. 
+		- mstar < 0 
+		- Z < 0 
+		- time < 0 or time > 15 [VICE does not simulate enrichment on 
+			timescales significantly longer than the age of the universe] 
+		- dt < 0 
+			m_upper < 0 
+		- m_lower < 0 
+		- m_lower > m_upper 
+		- postMS < 0 or > 1 
+		- built-in IMF is not recognized 
+		- delay < 0 
+		- agb_model is not built into VICE 
+	* LookupError 
+		- agb_model == "karakas10" and the atomic number of the element is 
 			larger than 29. The Karakas (2010), MNRAS, 403, 1413 study did not 
 			report yields for elements heavier than nickel. 
-	ArithmeticError :: 
-		::	A functional RIa evaluated to a negative value, inf, or NaN at any 
+	* ArithmeticError 
+		- A functional RIa evaluated to a negative value, inf, or NaN at any 
 			given timestep. 
-	IOError :: [Only occurs if VICE's file structure has been tampered with] 
-		::	The AGB yield file is not found. 
+	* IOError [Only occurs if VICE's file structure has been tampered with] 
+		- The AGB yield file is not found. 
 
-	Example 
-	======= 
-	>>> mass, times = vice.single_stellar_population("sr", Z = 0.008) 
-	>>> mass[-1] 
-	    0.04808964406448721
-	>>> mass, times = vice.single_stellar_population("fe") 
-	>>> mass[-1] 
-	    2679.816051685778
+	Example Code 
+	------------
+	.. code:: python 
+
+		>>> mass, times = vice.single_stellar_population("sr", Z = 0.008) 
+		>>> mass[-1] 
+		    0.04808964406448721
+		>>> mass, times = vice.single_stellar_population("fe") 
+		>>> mass[-1] 
+		    2679.816051685778
 
 	References 
-	========== 
-	Cristallo et al. (2011), ApJS, 197, 17
-	(1) Kroupa (2001), MNRAS, 322, 231 
-	Karakas (2010), MNRAS, 403, 1413
-	(2) Salpeter (1955) ApJ, 121, 161 
+	----------
+	.. [1] Kroupa (2001), MNRAS, 231, 322 
+	.. [2] Salpeter (1955), ApJ, 121, 161 
+	.. [3] Cristallo et al. (2011), ApJS, 197, 17 
+	.. [4] Karakas (2010), MNRAS, 403, 1413 
 	"""
 	# Type and value checks first 
 	kwargs = {
