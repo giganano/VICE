@@ -4,7 +4,7 @@ VICE: Versatile Integrator for Chemical Evolution
 =================================================
 | **Version 1.1.0** 
 | James W. Johnson 
-|	Lead Author 
+|	Primary Author 
 | 	Email: giganano9@gmail.com 
 | 	*The Ohio State University Department of Astronomy* 
 | 	*140 W. 18th Ave., Columbus, OH, 43204* 

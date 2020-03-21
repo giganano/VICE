@@ -1,10 +1,13 @@
 
 all: src
 
-.PHONY: src tests tests2 tests3 starburst tutorial clean 
+.PHONY: src docs tests tests2 tests3 starburst tutorial clean 
 
 src: 
 	@ $(MAKE) -C vice/src/ 
+
+docs: 
+	@ $(MAKE) -C docs/ 
 
 tests:
 	@ echo Running VICE tests 

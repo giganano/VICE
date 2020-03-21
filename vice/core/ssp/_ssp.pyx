@@ -98,8 +98,8 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 
 		Recognized built-in distributions: 
 
-		- "plaw": :math:`R_\text{Ia} \sim t^{-1.1}` 
-		- "exp": :math:`R_\text{Ia} \sim e^{-t/\text{1.5 Gyr}}` 
+		- "plaw": :math:`R_\\text{Ia} \sim t^{-1.1}` 
+		- "exp": :math:`R_\\text{Ia} \sim e^{-t/\\text{1.5 Gyr}}` 
 
 		.. note:: 
 			Functions do not need to return 0 at times smaller than the SN Ia 
@@ -144,7 +144,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 		- time < 0 or time > 15 [VICE does not simulate enrichment on 
 			timescales significantly longer than the age of the universe] 
 		- dt < 0 
-			m_upper < 0 
+		- m_upper < 0 
 		- m_lower < 0 
 		- m_lower > m_upper 
 		- postMS < 0 or > 1 

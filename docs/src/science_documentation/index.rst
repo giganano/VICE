@@ -28,11 +28,12 @@ The logarithmic abundance measurement [X/H] is defined by:
 
 and logarithmic abundance ratios [X/Y]: 
 
-.. math:: [X/Y] \equiv \log_{10}\left(\frac{Z_x}{Z_x^\odot}\right) - 
-	\log{10}\left(\frac{Z_y}{Z_y^\odot}\right) 
+.. math:: [X/Y] = [X/H] - [Y/H] = 
+	\log_{10}\left(\frac{Z_x}{Z_x^\odot}\right) - 
+	\log_{10}\left(\frac{Z_y}{Z_y^\odot}\right) 
 
-Here and hereafter the symbol :math:`\odot` refers always to the sun, and 
-:math:`\tau` to a timescale. 
+Here and hereafter the symbols :math:`\odot` and :math:`\tau` refer to the sun 
+and a timescale, respectively. 
 
 .. toctree:: 
 	:maxdepth: 5 
