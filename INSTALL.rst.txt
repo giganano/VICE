@@ -183,6 +183,16 @@ To change the number of cores used to compile VICE:
 
 	$ python setup.py build -j <number of cores> install 
 
+If you have modified VICE's source code and are reinstalling your modified 
+version, there's no need to rebuild the entire package. Any number of 
+extensions can be specified with the ``ext`` directive. For example, the 
+following will rebuild the singlezone object, whose extension is 
+``vice.core.singlezone._singlezone``: 
+
+:: 
+
+	$ python setup.py build install ext=vice.core.singlezone._singlezone 
+
 
 Troubleshooting Your Build 
 ==========================

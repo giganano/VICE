@@ -42,8 +42,6 @@ def kroupa(mass):
 		>>> vice.imf.kroupa(2) 
 		0.008122523963562356
 
-	References 
-	----------
 	.. [1] Kroupa (2001), MNRAS, 322, 231 
 	""" 
 	return _common(mass, _imf.kroupa01) 
@@ -85,8 +83,6 @@ def salpeter(mass):
 		>>> vice.imf.salpeter(2) 
 		0.19614602447418766 
 
-	References 
-	---------- 
 	.. [1] Salpeter (1955), ApJ, 121, 161 
 	""" 
 	return _common(mass, _imf.salpeter55) 

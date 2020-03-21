@@ -110,9 +110,6 @@ def cumulative_return_fraction(age, IMF = "kroupa", m_upper = 100,
 		>>> vice.cumulative_return_fraction(3) 
 		0.394760119115021 
 
-
-	References 
-	----------
 	.. [1] Kroupa (2001), MNRAS, 231, 322 
 	.. [2] Salpeter (1955), ApJ, 121, 161 
 	.. [3] Kalirai et al. (2008), ApJ, 676, 594 

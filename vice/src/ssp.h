@@ -21,17 +21,26 @@ extern "C" {
 #define SSP_TOLERANCE 1e-3 
 #endif /* SSP_TOLERANCE */ 
 
-/* Hash-code for simpson's rule */ 
+/* 
+ * Hash-code for simpson's rule 
+ * User modification strongly discouraged 
+ */ 
 #ifndef SSP_METHOD 
 #define SSP_METHOD 777 
 #endif /* SSP_METHOD */ 
 
-/* Minimum number of bins in quadrature */ 
+/* 
+ * Minimum number of bins in quadrature 
+ * User modification strongly discouraged 
+ */ 
 #ifndef SSP_NMIN 
 #define SSP_NMIN 64l 
 #endif /* SSP_NMIN */ 
 
-/* Maximum number of bins in quadrature */ 
+/* 
+ * Maximum number of bins in quadrature 
+ * User modification strongly discouraged 
+ */ 
 #ifndef SSP_NMAX 
 #define SSP_NMAX 2e8 
 #endif /* SSP_NMAX */ 

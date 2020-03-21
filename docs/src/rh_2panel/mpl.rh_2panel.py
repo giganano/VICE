@@ -33,25 +33,24 @@ mpl.rcParams["xtick.minor.visible"] = True
 mpl.rcParams["ytick.minor.visible"] = True
 
 
-def setup_axes(): 
+def setup_axis(which = "r"): 
 	""" 
-	Sets up a 1x2 subplot figure 
+	Sets up a subplot with the correct label 
 	""" 
 	plt.clf() 
-	fig = plt.figure(figsize = (14, 7)) 
-	ax1 = fig.add_subplot(121, facecolor = "white") 
-	ax2 = fig.add_subplot(122, facecolor = "white") 
-	ax1.set_ylabel("r") 
-	ax2.set_ylabel("h") 
+	fig = plt.figure(figsize = (5, 5))  
+	ax1 = fig.add_subplot(111, facecolor = "white") 
+	ax1.set_ylabel("%s(t)" % (which.lower()))  
 	ax1.set_xlabel("Time [Gyr]") 
-	ax2.set_xlabel("Time [Gyr]") 
 	ax1.set_xlim([-1, 11]) 
-	ax2.set_xlim([-1, 11]) 
-	ax1.set_ylim([0.0, 0.5]) 
-	ax2.set_ylim([0.4, 1.0]) 
+	if which.lower() == "r": 
+		ax1.set_ylim([0.0, 0.5]) 
+	elif which.lower() == "h": 
+		ax1.set_ylim([0.4, 1.0]) 
+	else: 
+		raise ValueError("Must be either r or h. Got: %s" % (which)) 
 	ax1.xaxis.set_ticks([0, 2, 4, 6, 8, 10]) 
-	ax2.xaxis.set_ticks([0, 2, 4, 6, 8, 10]) 
-	return [ax1, ax2] 
+	return ax1 
 
 
 def plot_r(ax, IMF, color): 
@@ -80,13 +79,13 @@ def plot_h(ax, IMF, color):
 	ax.plot(times, 
 		[vice.main_sequence_mass_fraction(i, IMF = IMF) for i in times], 
 		c = mpl.colors.get_named_colors_mapping()[color]) 
-	ax.plot(ax.get_xlim(), 
-		2 * [vice.main_sequence_mass_fraction(10 * 8**-3.5, IMF = IMF)], 
-		c = mpl.colors.get_named_colors_mapping()[color],  
-		linestyle = ':') 
+	# ax.plot(ax.get_xlim(), 
+	# 	2 * [vice.main_sequence_mass_fraction(10 * 8**-3.5, IMF = IMF)], 
+	# 	c = mpl.colors.get_named_colors_mapping()[color],  
+	# 	linestyle = ':') 
 
 
-def legend(ax, IMFs, colors): 
+def legend(ax, IMFs, colors, loc = 4): 
 	""" 
 	Produce the legend 
 
@@ -98,21 +97,28 @@ def legend(ax, IMFs, colors):
 	for i in range(len(lines)): 
 		lines[i] = ax.plot([1, 2], [1, 2], label = IMFs[i], 
 			c = mpl.colors.get_named_colors_mapping()["white"])[0] 
-	leg = ax.legend(loc = 4, ncol = 1, frameon = False, 
-		bbox_to_anchor = (0.98, 0.02), handlelength = 0) 
+	leg = ax.legend(loc = loc, ncol = 1, frameon = False, 
+		handlelength = 0) 
 	for i in range(len(lines)): 
 		lines[i].remove() 
 		leg.get_texts()[i].set_color(colors[i]) 
 
 
 if __name__ == "__main__": 
-	ax1, ax2 = setup_axes() 
+	ax1 = setup_axis(which = "r")  
 	plot_r(ax1, "Salpeter", "blue") 
 	plot_r(ax1, "Kroupa", "crimson") 
+	legend(ax1, ["Kroupa", "Salpeter"], ["crimson", "blue"], loc = 4) 
+	plt.tight_layout() 
+	plt.savefig("r.pdf") 
+	plt.savefig("r.png") 
+	plt.clf() 
+
+	ax2 = setup_axis(which = "h") 
 	plot_h(ax2, "Salpeter", "blue") 
 	plot_h(ax2, "Kroupa", "crimson") 
-	legend(ax1, ["Kroupa", "Salpeter"], ["crimson", "blue"]) 
+	legend(ax2, ["Kroupa", "Salpeter"], ["crimson", "blue"], loc = 1)  
 	plt.tight_layout() 
-	plt.savefig("rh2panel.pdf") 
-	plt.savefig("rh2panel.png") 
+	plt.savefig("h.pdf") 
+	plt.savefig("h.png") 
 	plt.clf() 

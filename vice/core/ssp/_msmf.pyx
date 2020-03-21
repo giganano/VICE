@@ -99,8 +99,6 @@ def main_sequence_mass_fraction(age, IMF = "kroupa", m_upper = 100,
 		>>> vice.main_sequence_mass_fraction(3) 
 		0.5219564300200146
 
-	References 
-	---------- 
 	.. [1] Kroupa (2001), MNRAS, 231, 322 
 	.. [2] Salpeter (1955), ApJ, 121, 161 
 	"""

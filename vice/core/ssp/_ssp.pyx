@@ -172,8 +172,6 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 		>>> mass[-1] 
 		    2679.816051685778
 
-	References 
-	----------
 	.. [1] Kroupa (2001), MNRAS, 231, 322 
 	.. [2] Salpeter (1955), ApJ, 121, 161 
 	.. [3] Cristallo et al. (2011), ApJS, 197, 17 
