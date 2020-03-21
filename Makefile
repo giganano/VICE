@@ -35,5 +35,3 @@ clean:
 	@ rm -rf *.egg-info 
 	@ rm -rf dist
 	@ $(MAKE) -C vice/ clean 
-	@ $(MAKE) -C docs/ clean 
-	@ $(MAKE) -C examples/ clean 
