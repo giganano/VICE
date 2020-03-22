@@ -46,7 +46,7 @@ from . cimport _ssp
 def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10, 
 	dt = 0.01, m_upper = 100, m_lower = 0.08, postMS = 0.1, IMF = "kroupa", 
 	RIa = "plaw", delay = 0.15, agb_model = None): 
-	"""
+	r"""
 	Simulate the nucleosynthesis of a given element from a single star cluster 
 	of given mass and metallicity. This does not take into account galactic 
 	evolution - whether or not it is depleted from inflows or ejected in winds 
@@ -59,7 +59,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 
 	Parameters 
 	----------
-	element : str [case-insensitive] 
+	element : ``str`` [case-insensitive] 
 		The symbol of the element to simulate the enrichment for. 
 	mstar : real number [default : 1.0e+06] 
 		The birth mass of the star cluster in solar masses. 
@@ -76,7 +76,9 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	postMS : real number [default : 0.1] 
 		The ratio of a star's post main sequence lifetime to its main sequence 
 		lifetime. 
-	IMF : str [case-insensitive] or <function> [default : "kroupa"] 
+
+		.. versionadded:: 1.2.0 
+	IMF : ``str`` [case-insensitive] or ``<function>`` [default : "kroupa"] 
 		The stellar initial mass function (IMF) to assume. Strings denote 
 		built-in IMFs. Functions must accept only one numerical parameter and 
 		will be interpreted as a custom, arbitrary stellar IMF. 
@@ -90,7 +92,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 			Functions do not need to be normalized. VICE will take care of this 
 			automatically. 
 
-	RIa : string [case-insensitive] or <function> [default : "plaw"] 
+	RIa : ``str`` [case-insensitive] or ``<function>`` [default : "plaw"] 
 		The delay-time distribution for type Ia supernovae to adopt. Strings 
 		denote built-in distributions. Functions must accept only one numerical 
 		parameter and will be interpreted as a custom, arbitrary delay-time 
@@ -98,8 +100,8 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 
 		Recognized built-in distributions: 
 
-		- "plaw": :math:`R_\\text{Ia} \sim t^{-1.1}` 
-		- "exp": :math:`R_\\text{Ia} \sim e^{-t/\\text{1.5 Gyr}}` 
+		- "plaw": :math:`R_\text{Ia} \sim t^{-1.1}` 
+		- "exp": :math:`R_\text{Ia} \sim e^{-t/\text{1.5 Gyr}}` 
 
 		.. note:: 
 			Functions do not need to return 0 at times smaller than the SN Ia 
@@ -117,12 +119,12 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 		A keyword denoting which table of nucleosynthetic yields from AGB stars 
 		to adopt. 
 
-		Recognized Keyword: 
+		Recognized Keywords: 
 
 		- "cristallo11" [3]_ 
 		- "karakas10" [4]_ 
 
-		.. deprecated:: 1.2 
+		.. deprecated:: 1.2.0 
 			Users should instead modify their AGB star yield settings through 
 			``vice.yields.agb.settings``. Users may specify either a built-in 
 			study or a function of stellar mass and metallicity. 

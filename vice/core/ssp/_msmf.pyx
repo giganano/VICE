@@ -24,7 +24,7 @@ from . cimport _ssp
 
 def main_sequence_mass_fraction(age, IMF = "kroupa", m_upper = 100, 
 	m_lower = 0.08): 	
-	""" 
+	r""" 
 	Calculate the main sequence mass fraction for a single stellar population 
 	at a given age. This quantity represents the fraction of the stellar 
 	population's mass that is still in the form of stars on the main sequence. 
@@ -36,7 +36,7 @@ def main_sequence_mass_fraction(age, IMF = "kroupa", m_upper = 100,
 	----------
 	age : real number 
 		The age of the stellar population in Gyr. 
-	IMF : string [case-insensitive] or <function> [default : "kroupa"] 
+	IMF : ``str`` [case-insensitive] or ``<function>`` [default : "kroupa"] 
 		The assumed stellar initial mass function (IMF). Strings denote 
 		built-in IMFs. Functions must accept only one numerical parameter and 
 		will be interpreted as a custom, arbitrary stellar IMF. 
@@ -71,13 +71,13 @@ def main_sequence_mass_fraction(age, IMF = "kroupa", m_upper = 100,
 
 		leading to a mass-lifetime relation that is also a power-law, given by: 
 
-		.. math:: \\tau \sim M/L \sim M^{-3.5} 
+		.. math:: \tau \sim M/L \sim M^{-3.5} 
 
 	Raises 
 	------
 	* TypeError 
 		- age is not a real number 
-		- IMF is not of type str or <function> 
+		- IMF is neither a string nor a function 
 		- m_upper is not a real number 
 		- m_lower is not a real number 
 		- postMS is not a real number 

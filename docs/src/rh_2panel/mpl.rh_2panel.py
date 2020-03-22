@@ -41,7 +41,7 @@ def setup_axis(which = "r"):
 	fig = plt.figure(figsize = (5, 5))  
 	ax1 = fig.add_subplot(111, facecolor = "white") 
 	ax1.set_ylabel("%s(t)" % (which.lower()))  
-	ax1.set_xlabel("Time [Gyr]") 
+	ax1.set_xlabel("Age [Gyr]") 
 	ax1.set_xlim([-1, 11]) 
 	if which.lower() == "r": 
 		ax1.set_ylim([0.0, 0.5]) 

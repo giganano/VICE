@@ -30,7 +30,7 @@ __ install_
 
 
 .. toctree:: 
-	:maxdepth: 2 
+	:maxdepth: 3 
 
 	users_guide/index 
 

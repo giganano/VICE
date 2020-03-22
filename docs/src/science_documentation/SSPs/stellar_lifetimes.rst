@@ -32,20 +32,18 @@ the lifetime by a factor :math:`1 + p_\text{MS}`:
 
 .. math:: \tau_\text{total} = (1 + p_\text{MS})\tau_\odot m^{-\alpha} 
 
-where :math:`p_\text{MS}` 
-is an adopted lifetime ratio of the post main sequence to main sequence 
-lifetimes. 
+where :math:`p_\text{MS}` is an adopted lifetime ratio of the post main 
+sequence to main sequence phases of stellar evolution. 
 
 By interpreting :math:`\tau_\text{total}` as lookback time, we can solve for 
-the mass in dying stars: 
+the mass of remnant producing stars under this model. 
 
 .. math:: m_\text{postMS} = \left(\frac{t}{(1 + p_\text{MS})\tau_\odot}
 	\right)^{-1/\alpha} 
 
-where this would become the *main sequence turnoff mass* in the case that 
-:math:`p_\text{MS}` = 0. This equation allows the solution of both the main 
-sequence turnoff mass and the mass of stars at the end of their post main 
-sequence lifetimes by whether or not :math:`p_\text{MS}` = 0. 
+This equation allows the solution of both the *main sequence turnoff mass* and 
+the mass of stars at the end of their post main sequence lifetimes by whether 
+or not :math:`p_\text{MS}` = 0. 
 
 Relevant source code: 
 

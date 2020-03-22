@@ -13,6 +13,29 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
+try: 
+	ModuleNotFoundError 
+except NameError: 
+	ModuleNotFoundError = ImportError 
+try: 
+	import sphinx 
+except (ModuleNotFoundError, ImportError): 
+	raise RuntimeError("""Sphinx >= 2.0.0 is required to compile VICE's \
+documentation.""") 
+version_info_from_string = lambda s: tuple([int(i) for i in s.split('.')]) 
+if version_info_from_string(sphinx.__version__)[:2] < (2, 0): 
+	raise RuntimeError("Must have Sphinx version >= 2.0.0. Current: %s" % (
+		sphinx.__version__)) 
+else: pass 
+import warnings 
+warnings.filterwarnings("ignore") 
+try: 
+	import vice 
+except (ModuleNotFoundError, ImportError): 
+	raise RuntimeError("""VICE not found. VICE must be installed before the \
+documentation can be compiled.""") 
+
+
 
 
 # -- Project information -----------------------------------------------------
