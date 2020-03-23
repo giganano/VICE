@@ -59,12 +59,13 @@ features.
 	similar without having to plot it themselves. This is included purely for 
 	convenience, and is not intended to produce publication-quality figures. 
 
-3. numpy_ 
-	VICE's tutorial_ makes use of numpy_'s ``linspace`` function. 
+3. NumPy_ 
+	VICE's tutorial_ and example code often make use of NumPy_, but the user 
+	does not need NumPy_ to use VICE. 
 
 .. _dill: https://pypi.org/project/dill/ 
 .. _matplotlib: https://pypi.org/project/matplotlib/ 
-.. _numpy: https://pypi.org/project/numpy/ 
+.. _NumPy: https://pypi.org/project/numpy/ 
 .. _tutorial: https://github.com/astrobeard/VICEdev/blob/master/docs/QuickStartTutorial.ipynb 
 
 

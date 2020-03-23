@@ -593,7 +593,7 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def verbose(self): 
-		""" 
+		r""" 
 		Type : ``bool`` 
 
 		Default : ``False`` 
@@ -614,7 +614,7 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def elements(self): 
-		"""
+		r"""
 		Type : tuple [elements of type str [case-insensitive]] 
 
 		Default : ("fe", "sr", "o") 
@@ -782,32 +782,41 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def enhancement(self): 
-		"""
-		Type :: real number or <function> 
-		Default :: 1.0 
+		r"""
+		Type : real number or ``<function>`` 
 
-		The ratio of the outflow to ISM metallicities. This can also be a 
-		callable function of time in Gyr. 
+		Default : 1.0 
 
-		Notes
-		===== 
-		This multiplicative factor will apply to all elements tracked by the 
-		simulation. 
+		The ratio of the outflow to ISM metallicities. Real numbers will be 
+		taken as constant. Functions must accept time in Gyr as the only 
+		parameter. This will apply to all elements tracked by the simulation. 
 
-		If type <function> 
-		------------------ 
-		Encoding this functional attribute into VICE outputs requires the 
-		package dill, an extension to pickle in the python standard library. 
-		Without this, the outputs will not have memory of this parameter. 
-		It is recommended that VICE users install dill if they have not 
-		already so that they can make use of this feature; this can be done 
-		via 'pip install dill'. 
+		.. note:: 
 
-		See Also 
-		========
-		Sections 3.2 and 4.1 of science documentation 
-		Attribute eta 
-		Attribute smoothing 
+			Saving this functional attribute with VICE outputs requires the 
+			package dill_, and extension to pickle in the Python_ standard 
+			library. It is recommended that VICE user's install dill_ 
+			>= 0.2.0. 
+
+			.. _dill: https://pypi.org/project/dill/ 
+			.. _Python: https://docs.python.org/library/ 
+
+		.. seealso:: 
+
+			``vice.singlezone.eta`` 
+			``vice.singlezone.smooting`` 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.enhancement = 3 
+		>>> def f(t): 
+			if t <= 1: 
+				return 5 
+			else: 
+				return 1 
+		>>> sz.enhancement = f 
 		"""
 		return self.__c_version.enhancement 
 
@@ -817,69 +826,97 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def entrainment(self): 
-		""" 
-		Type :: <entrainment object> 
-		Default :: all elements from all enrichment channels fully entrained. 
+		r""" 
+		Type : ``<entrainment object>`` 
 
-		The values stored in this dataframe denote the mass fraction of each 
-		element from each enrichment channel which is retained by the 
-		interstellar medium, the remainder of which is added directly to 
-		outflows. 
+		Default : all elements from all enrichment channels assigned a value 
+		of 1. 
+
+		Each element from each enrichment channel assigned a value of 1. These 
+		values denote the mass fraction of nucleosynthetic yields that are 
+		retained by the interstellar medium, the remainder of which is added 
+		directly to outflows. This must always be numerical values between 0 
+		and 1. 
 
 		Attributes 
-		========== 
-		agb :: VICE dataframe 
+		----------
+		agb : ``dataframe`` 
 			The entrainment fraction of each element from AGB stars 
-		ccsne :: VICE dataframe 
+		ccsne : ``dataframe`` 
 			The entrainment fraction of each element from CCSNe 
-		sneia :: VICE dataframe 
-			The entrainment fraction of each element from SNe Ia 
+		sneia : ``dataframe`` 
+			The entrainment fraction of each element fron SNe Ia 
+
+		.. seealso:: ``vice.dataframe`` 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> sz = vice.singlezone(name = "example") 
+		>>> # set the entrainment of CCSN ejecta to 80 percent 
+		>>> for i in sz.elements: 
+			sz.entrainment.ccsne[i] = 0.8 
+		>>> # set the entrainment of SN Ia ejecta to 90 percent 
+		>>> for i in sz.elements: 
+			sz.entrainment.sneia[i] = 0.9 
 		""" 
 		return self.__c_version.entrainment 
 
 	@property 
 	def Zin(self): 
-		"""
-		Type :: real number, <function>, or vice.dataframe 
-		Default :: 0.0 
+		r"""
+		Type : real number, ``<function>``, or ``dataframe`` 
 
-		The metallicity of gas inflow. If this is a number or function, it 
-		will apply to all elements tracked by the simulation. A python 
-		dictionary or VICE dataframe can also be passed, allowing real numbers 
-		and functions to be assigned to each individual element. 
+		Default : 0.0 
 
-		Notes 
-		===== 
-		The easiest way to switch this attribute to a dataframe is by passing 
-		an empty python dictionary (i.e. '{}'). 
+		The metallicity of gas inflow. Numbers and functions apply to all 
+		elements tracked by the simulation. Functions must accept time in Gyr 
+		as the only parameter. A dictionary or a ``dataframe`` can also be 
+		passed, allowing real numbers and functions to be assigned on an 
+		element-by-element basis. 
 
-		If type <function> 
-		------------------ 
-		Encoding this functional attribute into VICE outputs requires the 
-		package dill, an extension to pickle in the python standard library. 
-		Without this, the outputs will not have memory of this parameter. 
-		It is recommended that VICE users install dill if they have not 
-		already so that they can make use of this feature; this can be done 
-		via 'pip install dill'. 
+		.. tip:: 
 
-		Example 
-		======= 
+			The easiest way to switch this attribute to a dataframe is by 
+			passing an empty python dictionary ``{}``. 
+
+		.. note:: 
+
+			Dictionaries will be automatically converted into a ``dataframe``. 
+
+		.. note:: 
+
+			Saving functional attributes with VICE outputs requires the 
+			package dill_, and extension to pickle in the Python_ standard 
+			library. It is recommended that VICE user's install dill_ 
+			>= 0.2.0. 
+
+			.. _dill: https://pypi.org/project/dill/ 
+			.. _Python: https://docs.python.org/library/ 
+
+		Example Code 
+		------------
+		>>> import vice 
 		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.Zin = 0.001 
+		>>> def f(t): 
+			return 0.001 * (t / 5) 
+		>>> sz.Zin = lambda t: 0.001 * (t / 5) 
 		>>> sz.Zin = {} 
-		>>> sz.Zin
-		    vice.dataframe{
-		        sr -------------> 0.0 
-		        fe -------------> 0.0 
-		        o --------------> 0.0 
-		    }
-		>>> sz.Zin["fe"] = vice.solar_z["fe"] 
-		>>> sz.Zin["o"] = lambda t: vice.solar_z["o"] * (t / 10.0) 
-		>>> sz.Zin
-		    vice.dataframe{
-		        sr -------------> 0.0 
-		        fe -------------> 0.00129 
-		        o --------------> <function <lambda> at 0x115591aa0> 
-		    }
+		>>> sz.Zin 
+		vice.dataframe{
+			sr -------------> 0.0 
+			fe -------------> 0.0 
+			o --------------> 0.0 
+		} 
+		>>> sz.Zin["o"] = 0.001 
+		>>> sz.Zin["fe"] = lambda t: 1.0e-04 * (t / 5) 
+		>>> sz.Zin 
+		vice.dataframe{
+			sr -------------> 0.0 
+			fe -------------> <function main.<__lambda__>(t)>  
+			o --------------> 0.001 
+		} 
 		"""
 		return self.__c_version.Zin 
 
@@ -889,48 +926,46 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def recycling(self): 
-		"""
-		Type :: real number or str [case-insensitive] 
-		Default :: "continuous" 
+		r"""
+		Type : real number or ``str`` [case-insensitive] 
 
-		The cumulative return fraction r. This is the mass fraction of a 
-		single stellar population returned to the ISM as gas at the birth 
-		metallicity of the stars. 
+		Default : "continuous" 
 
-		If this attribute is a string, it must be "continuous" 
-		[case-insensitive]. In this case VICE will treat recycling from each 
-		episode of star formation individually via a treatment of the stellar 
-		initial mass function and the remnant mass model of Kalirai et al. 
-		(2008). 
+		The :ref:`cumulative return fraction <crf>` :math:`r(t)`. This is the 
+		mass fraction of a single stellar population returned to the 
+		interstellar medium as gas at the birth metallicity of the stars. 
 
-		If this attribute is a real number, it must be a value between 0 and 
-		1. VICE will implement instantaneous recycling in this case, and this 
-		parameter will represent the fraction of a single stellar population's 
-		mass that is returned instantaneously the ISM. 
+		The only allowed string is "continuous" [case-insensitive]. In this 
+		case VICE will implement time-dependent recycling from each episode 
+		of star formation via a treatment of the stellar initial mass 
+		function and the initial-final remnant mass model of Kalirai at al. 
+		(2008) [1]_. 
 
-		Notes 
-		===== 
-		It is recommended that user's adopt r = 0.4 (0.2) if they desire 
-		instantaneous recycling with a Kroupa (1) (Salpeter (2)) IMF, based 
-		on the analytical model of Weinberg, Andrews & Freudenburg (2017). 
+		Numbers must be between 0 and 1 (inclusive), and will be interpreted 
+		as the instantaneous recycling fraction: the fraction of a stellar 
+		population's mass that is returned to the interstellar medium 
+		immediately following its formation. 
 
-		See Also 	[https://github.com/giganano/VICE/tree/master/docs]
-		======== 
-		Section 3.3 of science documentation 
+		.. note:: 
 
-		Example 
-		======= 
-		>>> sz = vice.singlezone(name = "example") 
+			In the case of instantaneous recycling, it is recommened that users 
+			adopt r = 0.4 with the Kroupa [2]_ IMF and r = 0.2 with the 
+			Salpeter [3]_ IMF based on the findings of Weinberg, Andrews & 
+			Freudenburg (2017) [4]_. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> sz = vice.singlezone(name = "example", IMF = "kroupa") 
 		>>> sz.recycling = 0.4 
-		>>> sz.imf = "salpeter" 
+		>>> sz.IMF = "salpeter" 
 		>>> sz.recycling = 0.2 
+		>>> sz.recycling = "continuous" 
 
-		References 
-		========== 
-		Kalirai et al (2008), ApJ, 676, 594 
-		(1) Kroupa (2001), MNRAS, 322, 231 
-		(2) Salpeter (1955), ApJ, 131, 161 
-		Weinberg, Andrews & Freudenburg (2017), ApJ, 837, 183 
+		.. [1] Kalirai et al. (2008), ApJ, 676, 594 
+		.. [2] Kroupa (2001), MNRAS, 231, 322 
+		.. [3] Salpeter (1955), ApJ, 131, 161 
+		.. [4] Weinberg, Andrews & Freudenburg (2017), ApJ, 837, 183 
 		""" 
 		return self.__c_version.recycling 
 
@@ -940,23 +975,31 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def bins(self): 
-		"""
-		Type :: array-like [elements are real numbers] 
-		Default :: [-3, -2.95, -2.9, ... , 0.9, 0.95, 1.0] 
+		r""" 
+		Type : array-like [elements must be real numbers] 
+
+		Default : [-3, -2.95, -2.9, ... , 0.9, 0.95, 1.0] 
 
 		The bins in each [X/H] abundance and [X/Y] abundance ratio to sort the 
 		normalized stellar metallicity distribution function into. By default, 
-		VICE sorts everything into 0.05-dex width bins between [X/H] and 
-		[X/Y] = -3 and +1. 
+		VICE sorts everything into 0.05-dex bins between [X/H] and [X/Y] = 
+		-3 and +1. 
 
-		Notes 
-		===== 
-		This attribute is compatible with the NumPy array and Pandas 
-		DataFrame, but is not dependent on either package. 
+		.. note:: 
 
-		See Also 	[https://github.com/giganano/VICE/tree/master/docs] 
-		======== 
-		Section 6 of science documentation 
+			The metallicity distributions reported by VICE are normalized to 
+			probability distribution functions (i.e. the integral over all 
+			bins is equal to 1). 
+
+		Example Code 
+		------------
+		>>> import numpy as np 
+		>>> import vice 
+		>>> sz = vice.singlezone(name = "example") 
+		>>> # 400 bins between 0 and 1 
+		>>> sz.bins = np.linspace(-3, 1, 401) 
+		>>> # 800 bins between -2 and +2 
+		>>> sz.bins = np.linspace(-2, 2, 801) 
 		"""
 		return self.__c_version.bins 
 
@@ -966,22 +1009,18 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def delay(self): 
-		"""
-		Type :: real number 
-		Default :: 0.15 
+		r"""
+		Type : real number 
 
-		The minimum delay time in Gyr for the onset of type Ia supernovae 
-		associated with a single stellar population. The default parameter 
-		is adopted from Weinberg, Andrews & Freudenburg (2017).  
+		Default : 0.15 
 
-		See Also 	[https://github.com/giganano/VICE/tree/master/docs]
-		======== 
-		Attribute ria 
-		Section 4.3 of science documentation 
+		The minimum delay time in Gyr before the onset of type Ia supernovae 
+		associated with a single stellar population. Default value is adopted 
+		from Weinberg, Andrews & Freudenburg (2017) [1]_. 
 
-		References 
-		========== 
-		Weinberg, Andrews & Freudenburg (2017), ApJ, 837, 183 
+		.. seealso:: ``vice.singlezone.RIa`` 
+
+		.. [1] Weinberg, Andrews & Freudenburg (2017), ApJ, 837, 183 
 		""" 
 		return self.__c_version.delay 
 
@@ -991,38 +1030,49 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def RIa(self): 
-		"""
-		Type :: <function> or str [case-insensitive] 
-		Default :: "plaw" 
+		r"""
+		Type : ``<function>`` or ``str`` [case-insensitive] 
 
-		The delay-time distribution (DTD) for type Ia supernovae to adopt. If 
-		type str, VICE will use built-in DTDs: 
-			"exp"
-			----- 
-			RIa ~ e^-t  [e-folding timescale set by attribute tau_ia] 
+		Default : "plaw" 
 
-			"plaw"
-			------
-			RIa ~ t^-1.1 
+		The delay-time distribution (DTD) for typa Ia supernovae to adopt. If 
+		type ``str``, VICE will use a built-in DTD: 
 
-		Alternatively, the user may pass their own function of time in Gyr, 
-		and the normalization of the custom DTD will be taken care of 
-		automatically. 
+		- "exp" : :math:`R_\text{Ia} \sim e^{-t}` 
+		- "plaw" : :math:`R_\text{Ia} \sim t^{-1.1}` 
 
-		If type <function> 
-		------------------ 
-		Encoding this functional attribute into VICE outputs requires the 
-		package dill, an extension to pickle in the python standard library. 
-		Without this, the outputs will not have memory of this parameter. 
-		It is recommended that VICE users install dill if they have not 
-		already so that they can make use of this feature; this can be done 
-		via 'pip install dill'. 
+		When using the exponential DTD, the e-folding timescale is set by the 
+		attribute ``tau_ia``. 
 
-		See also [https://github.com/giganano/VICE/tree/master/docs] 
-		======== 
-		Section 4.3 of science documentation 
-		Note on functional attributes and numerical delta functions in user's 
-			guide 
+		Functions must accept time in Gyr as the only parameter. 
+
+		.. tip:: 
+
+			A custom DTD does not need to be normalized by the user. VICE will 
+			take care of this automatically. 
+
+		.. note:: 
+
+			Saving functional attributes with VICE outputs requires the 
+			package dill_, and extension to pickle in the Python_ standard 
+			library. It is recommended that VICE user's install dill_ 
+			>= 0.2.0. 
+
+			.. _dill: https://pypi.org/project/dill/ 
+			.. _Python: https://docs.python.org/library/ 
+
+		Example Code 
+		------------
+		>>> import math as m 
+		>>> import vice 
+		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.RIa = "exp" 
+		>>> def f(t): 
+			if t < 0.2: 
+				return 1 
+			else: 
+				return m.exp(-(t - 0.2) / 1.4) 
+		>>> sz.RIa = f 
 		"""
 		return self.__c_version.RIa 
 
@@ -1032,19 +1082,27 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def Mg0(self): 
-		"""
-		Type :: real number 
-		Default :: 6.0e+09 
+		r"""
+		Type : real number 
 
-		The mass of the ISM gas at time t = 0 in solar masses. 
+		Default : 6.0e+09 
 
-		Notes 
-		===== 
-		This parameter only matters when the simulation is in infall mode 
-		(i.e. mode = "ifr"). In gas mode, func(0) specifies the initial gas 
-		supply, and in star formation mode, it is func(0) * tau_star(0) 
-		(modulo the prefactors imposed by gas-dependent star formation 
-		efficiency, if applicable). 
+		The mass of the ISM gas at time = 0 in :math:`M_\odot`. 
+
+		.. note:: 
+
+			This parameter only matters when the simulation is ran in infall 
+			mode (i.e. ``mode`` == "ifr"). In gas mode, ``func(0)`` specifies 
+			the initla gas supply, and in star formation mode, it is 
+			``func(0) * tau_star(0)`` (modulo the prefactors imposed by 
+			gas-dependent star formation efficiency, if applicable). 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.Mg0 = 5.0e+09 
+		>>> sz.Mg0 = 0. 
 		"""
 		return self.__c_version.Mg0 
 
@@ -1054,29 +1112,40 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def smoothing(self): 
-		"""
-		Type :: real number 
-		Default :: 0.0 
+		r"""
+		Type : real number 
 
-		The smoothing time in Gyr to adopt. This is the timescale on which the 
-		star formation rate is time-averaged before determining the outflow 
-		rate via the mass loading parameter (attribute eta). For an outflow 
-		rate (OFR) and star formation rate (SFR) with smoothing time s: 
+		Default : 0.0 
 
-		OFR = eta * <SFR>_s
+		The outflow smoothing in Gyr (Johnson & Weinberg 2020 [1]_). This is 
+		the timescale on which the star formation rate is time-averaged 
+		before determining the outflow rate via the mass loading factor 
+		(attribute ``eta``). For an outflow rate :math:`\dot{M}_\text{out}` 
+		and a star formation rate :math:`\dot{M}_*` with a smoothing time 
+		:math:`\tau_\text{s}`: 
 
-		The traditional relationship of OFR = eta * SFR is recovered when the 
+		.. math:: \dot{M}_\text{out} = 
+			\eta(t) \langle\dot{M}_*\rangle_{\tau_\text{s}} 
+
+		The traditional relationship of 
+		:math:`\dot{M}_\text{out} = \eta \dot{M}_*` is recovered when the 
 		user specifies a smoothing time that is smaller than the timestep 
-		size.  
+		size. 
 
-		Notes 
-		===== 
-		While this parameter time-averages the star formation rate, it does 
-		NOT time-average the mass-loading parameter. 
+		.. note:: 
 
-		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
-		======== 
-		Section 3.2 of science documentation 
+			While this parameter time-averages the star formation rate, it 
+			does NOT time-average the mass-loading factor. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.smoothing = 0.0 
+		>>> sz.smoothing = 0.5 
+		>>> sz.smoothing = 1.0 
+
+		.. [1] Johnson & Weinberg (2020), arxiv:1911.02598
 		""" 
 		return self.__c_version.smoothing 
 
@@ -1086,21 +1155,28 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def tau_ia(self): 
-		"""
-		Type :: real number 
-		Default :: 1.5 
+		r"""
+		Type : real number 
+
+		Default : 1.5 
 
 		The e-folding timescale in Gyr of an exponentially decaying delay-time 
-		distribution for type Ia supernovae. 
+		distribution in type Ia supernovae. 
 
-		Notes 
-		===== 
-		Because this is an e-folding timescale, it only matters when the 
-		attribute ria = "exp". 
+		.. note:: 
 
-		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
-		======== 
-		Section 4.3 of science documentation 
+			Because this is an e-folding timescale, it only matter when the 
+			attribute ``RIa`` == "exp". 
+
+		.. seealso:: ``vice.singlezone.RIa`` 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> sz = vice.singlezone(name = "example", RIa = "exp") 
+		>>> sz.tau_ia = 1.0 
+		>>> sz.tau_ia = 1.5 
+		>>> sz.tau_ia = 2.0 
 		"""
 		return self.__c_version.tau_ia 
 
@@ -1110,36 +1186,68 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def tau_star(self): 
-		"""
-		Type :: real number or <function> 
-		Default :: 2.0 
+		r"""
+		Type : real number or ``<function>`` 
 
-		The star formation rate per unit gas supply in Gyr (Mgas / SFR). In 
-		observational journal articles, this is sometimes referred to as the 
-		"depletion time". This parameter is how the gas supply and star 
-		formation rate are determined off of one another at each timestep. 
+		Default : 2.0 
 
-		Notes 
-		===== 
-		When attribute schmidt = True, this is interpreted as the prefactor 
-		on gas-dependent star formation efficiency. 
+		The star formation rate per unit gas supply in Gyr, defined by 
 
-		This parameter can be set to infinity to forcibly shut off star 
-		formation. However, this is allowed only in infall and gas modes 
-		(i.e. attribute 'mode' = "ifr" or "gas"). 
+		.. math:: \tau_* \equiv M_\text{g}/\dot{M}_* 
 
-		If type <function> 
-		------------------ 
-		Encoding this functional attribute into VICE outputs requires the 
-		package dill, an extension to pickle in the python standard library. 
-		Without this, the outputs will not have memory of this parameter. 
-		It is recommended that VICE users install dill if they have not 
-		already so that they can make use of this feature; this can be done 
-		via 'pip install dill'. 
+		where :math:`M_\text{g}` is the ISM gas mass and :math:`\dot{M}_*` is 
+		the star formation rate. Numbers will be interpreted as a constant 
+		value. Functions must accept time in Gyr as the only parameter. 
 
-		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
-		======== 
-		Section 3.1 of science documentation 
+		.. tip:: 
+
+			In infall and gas modes, this parameter can be set to infinity to 
+			forcibly shut off star formation. 
+
+		.. note:: 
+
+			When the attribute ``schmidt == True``, this is interpreted as the 
+			prefactor on gas-dependent star formation efficiency: 
+
+			.. math:: \tau_*^{-1} = \tau_{*,\text{specified}}^{-1}
+				\left(
+				\frac{M_\text{g}}{M_\text{g,Schmidt}} 
+				\right)^{\alpha} 
+
+			where :math:`\alpha` is the power-law index on gas-dependent 
+			star formation efficiency, set by the attribute ``schmidt_index``, 
+			and :math:`\tau_{*,\text{specified}}` is the value of this 
+			attribute. 
+
+		.. note:: 
+
+			Saving functional attributes with VICE outputs requires the 
+			package dill_, and extension to pickle in the Python_ standard 
+			library. It is recommended that VICE user's install dill_ 
+			>= 0.2.0. 
+
+			.. _dill: https://pypi.org/project/dill/ 
+			.. _Python: https://docs.python.org/library/ 
+
+		.. note:: 
+
+			In the interstellar medium and star formation literature, this 
+			parameter is often referred to as the depletion timescale. In this 
+			documentation and in much of the galactic chemical evolution 
+			literature, it is usually referred to as the "star formation 
+			efficiency timescale." 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.tau_star = 1 
+		>>> def f(t): 
+			if 5 <= t <= 6: 
+				return 1 
+			else: 
+				return 2 
+		>>> sz.tau_star = f 
 		""" 
 		return self.__c_version.tau_star 
 
@@ -1149,16 +1257,26 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def dt(self): 
-		"""
-		Type :: real number 
-		Default :: 0.01 
+		r"""
+		Type : real number 
 
-		The timestep size in Gyr to use in the integration.
+		Default : 0.01 
 
-		Notes 
-		===== 
-		For fine timesteps with a given ending time in the simulation, this 
-		affects the total integration time with a dt^-2 dependence. 
+		The timestep size in Gyr to use in the integration. 
+
+		.. note:: 
+
+			For fine timestepping, this affects the total integration time 
+			with a :math:`dt^{-2}` dependence. For coarse timestepping, the 
+			integration time is approximately constant, due to it being 
+			dominated not by timestepping but by write-out. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.dt = 0.02 
+		>>> sz.dt = 0.005 
 		""" 
 		return self.__c_version.dt 
 
@@ -1168,27 +1286,49 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def schmidt(self): 
-		"""
-		Type :: bool 
-		Default :: False 
+		r"""
+		Type : bool 
 
-		A boolean describing whether or not to use an implementation of 
-		gas-dependent star formation efficiency (i.e. the Kennicutt-Schmidt 
-		Law: Schmidt 1959; 1963; Kennicutt 1998). At each timestep, the 
-		attributes tau_star, MgSchmidt, and schmidt_index determine the 
-		star formation efficiency at that timestep via: 
+		Default : False 
 
-		SFE = tau_star(t)^-1 (Mgas / MgSchmidt)^schmidt_index 
+		If true, the simulation will adopt a gas-dependent :math:`\tau_*`. At 
+		each timestep, the star formation efficiency timescale is determined 
+		via: 
 
-		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
-		======== 
-		Section 3.1 of science documentation 
+		.. math:: \tau_*(t) = \tau_{*,\text{specified}}(t) 
+			\left(
+			\frac{M_g}{M_{g,\text{Schmidt}}} 
+			\right)^{-\alpha} 
 
-		References 
-		========== 
-		Kennicutt (1998), ApJ, 498, 541 
-		Schmidt (1959), ApJ, 129, 243 
-		Schmidt (1963), ApJ, 137, 758 
+		where :math:`\tau_{*,\text{specified}}(t)` is the value of the attribute 
+		``tau_star``, :math:`M_g` is the mass of the interstellar medium, 
+		:math:`M_{g,\text{Schmidt}}` the normalization thereof (attribute 
+		``MgSchmidt``), and :math:`\alpha` the power-law index set by the 
+		attribute ``schmidt_index``. 
+
+		This is an application of the Kennicutt-Schmidt star formation law 
+		to the single-zone approximation (Kennicutt 1998 [1]_; Schmidt 1959 
+		[2]_, 1963 [3]_). 
+
+		If False, this parameter does not impact the star formation efficiency 
+		that the user has specified. 
+
+		.. seealso:: 
+
+			- ``vice.singlezone.tau_star`` 
+			- ``vice.singlezone.schmidt_index`` 
+			- ``vice.singlezone.MgSchmidt`` 
+
+		Example Code 
+		------------
+		>>> import vice
+		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.schmidt = True 
+		>>> sz.schmidt = False 
+
+		.. [1] Kennicutt (1998), ApJ, 498, 541 
+		.. [2] Schmidt (1959), ApJ, 129, 243 
+		.. [3] Schmidt (1963), ApJ, 137, 758 
 		""" 
 		return self.__c_version.schmidt 
 
@@ -1198,23 +1338,36 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def MgSchmidt(self): 
-		"""
-		Type :: real number 
-		Default :: 6.0e+09 
+		r"""
+		Type : real number 
 
-		The normalization of the gas supply when star formation efficiency is 
-		dependent on the gas supply. 
+		Default : 6.0e+09 
 
-		Notes 
-		===== 
-		In practice, this quantity should be comparable to a typical gas 
-		supply of the simulated galaxy so that the actual star formation 
-		efficiency at a given timestep is near the user-specified value. 
+		The normalization of the gas supply in :math:`M_\odot` when star 
+		formation efficiency is dependent on the gas supply: 
 
-		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
-		======== 
-		Section 3.1 of science documentation 
-		Attribute schmidt 
+		.. math:: \tau_* \sim 
+			\left(\frac{M_g}{M_{g,\text{Schmidt}}}\right)^{-\alpha} 
+
+		where :math:`\alpha` is specified by the attribute ``schmidt_index``. 
+
+		.. tip:: 
+
+			In practice, this quantity should be comparable to a typical gas 
+			supply of the simulated zone so that the actual star formation 
+			efficiency at a given timestep is near the user-specified value. 
+
+		.. seealso:: 
+
+			- ``vice.singlezone.tau_star`` 
+			- ``vice.singlezone.schmidt`` 
+			- ``vice.singlezone.schmidt_index`` 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.MgSchmidt = 5.0e+09 
 		""" 
 		return self.__c_version.MgSchmidt 
 
@@ -1224,16 +1377,34 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def schmidt_index(self): 
-		"""
-		Type :: real number 
-		Default :: 0.5 
+		r"""
+		Type : real number 
 
-		The power-law index on gas-dependent star formation efficiency.
+		Default : 0.5 
 
-		See also 	[https://github.com/giganano/VICE/tree/master/docs]
-		======== 
-		Section 3.1 of science documentation
-		Attribute schmidt 
+		The power-law index on gas-dependent star formation efficiency, if 
+		applicable: 
+
+		.. math:: \tau_*^{-1} \sim M_g^{\alpha} 
+
+		.. note:: 
+
+			This number should be 1 less than the power law index which 
+			describes the scaling of star formation with the surface density 
+			of gas. 
+
+		.. seealso:: 
+
+			- ``vice.singlezone.tau_star`` 
+			- ``vice.singlezone.schmidt`` 
+			- ``vice.singlezone.schmidt_index`` 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.schmidt_index = 0.5 
+		>>> sz.schmidt_index = 0.4 
 		"""
 		return self.__c_version.schmidt_index 
 
@@ -1243,11 +1414,18 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def m_upper(self): 
-		"""
-		Type :: real number 
-		Default :: 100 
+		r"""
+		Type : real number 
 
-		The upper mass limit on star formation in solar masses. 
+		Default : 100 
+
+		The upper mass limit on star formation in :math:`M_\odot`. 
+
+		Example Code 
+		------------
+		>>> import vice
+		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.m_upper = 120 
 		"""
 		return self.__c_version.m_upper 
 
@@ -1257,11 +1435,18 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def m_lower(self): 
-		"""
-		Type :: real number 
-		Default :: 0.08 
+		r"""
+		Type : real number 
+
+		Default : 0.08 
 
 		The lower mass limit on star formation in solar masses. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.m_lower = 0.1 
 		"""
 		return self.__c_version.m_lower 
 
@@ -1271,12 +1456,21 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def postMS(self): 
-		""" 
-		Type :: real number 
-		Default :: 0.1 
+		r""" 
+		Type : real number 
+
+		Default : 0.1 
+
+		.. versionadded:: 1.2.0 
 
 		The ratio of a star's post main sequence lifetime to its main sequence 
 		lifetime. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.postMS = 0.12 
 		""" 
 		return self.__c_version.postMS 
 
@@ -1286,21 +1480,39 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def Z_solar(self): 
-		"""
-		Type :: real number 
-		Default :: 0.014 (Asplund et al. 2009) 
+		r"""
+		Type : real number 
 
-		The metallicity by mass of the sun. This is used in calibrating the 
-		total metallicity of the ISM, which is necessary when there are only a 
-		few elements tracked by the simulation. 
+		Default : 0.014 
 
-		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
-		======== 
-		Section 5.4 of science documentation 
+		The metallicity by mass of the sun :math:`M_Z/M_\odot`. This is used in 
+		calibrating the total metallicity of the ISM, which is necessary when 
+		there are only a few elements tracked by the simulation with 
+		metallicity dependent yields. This scaling is implemented as follows: 
 
-		References 
-		========== 
-		Asplund et al. (2009), ARA&A, 47, 481 
+		.. math:: Z_\text{ISM} = Z_\odot \left[\sum_i Z_i\right] 
+			\left[\sum_i Z_i^\odot\right]^{-1} 
+
+		where the summation is taken over the elements tracked by the 
+		simulation.  
+
+		.. note:: 
+
+			The default value is the metallicity calculated by Asplund et al. 
+			(2009) [1]_. VICE adopts the Asplund et al. (2009) measurements 
+			on their element-by-element basis in calculating [X/H] and 
+			[X/Y] in simulations; it is thus recommended that users adopt 
+			these measurements as well so that the adopted solar composition 
+			is self-consistent. This however has no qualitative impact on the 
+			behavior of the simulation. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.Z_solar = 0.014 
+
+		.. [1] Asplund et al. (2009), ARA&A, 47, 481 
 		""" 
 		return self.__c_version.Z_solar 
 
@@ -1310,38 +1522,44 @@ ran.""" % (i, j), UserWarning)
 
 	@property 
 	def agb_model(self): 
-		"""
-		[DEPRECATED] 
+		r"""
+		**[DEPRECATED]** 
 
-		Type :: str [case-insensitive] 
-		Default :: None
+		Type : ``str`` [case-insensitive] 
+
+		Default : None 
+
+		.. deprecated:: 1.2.0 
+			Users should instead use the ``vice.yields.agb.settings`` 
+			``dataframe`` to declare their yields. These allow the same 
+			keywords as this attribute as well as user-constructed functions 
+			of stellar mass and metallicity. 
 
 		A keyword denoting which stellar mass-metallicity grid of fractional 
-		nucleosynthetic yields from asymptotic giant branch stars to adopt 
-		in the simulation. 
+		nucleosynthetic yields from asymptotic giant branch (AGB) stars to 
+		adopt. 
 
-		Deprecation Notes 
-		================= 
-		This feature is deprecated in versions >= 1.2.0. In this and subsequent 
-		builds, vice.yields.agb.settings is a dataframe whose fields must be 
-		modified in the same way as CCSN and SN Ia yields. The default value of 
-		this attribute is None in these versions. 
+		Recognized Keywords: 
 
-		Recognized Keywords and their Associated Studies 
-		------------------------------------------------ 
-		cristallo11:		Cristallo et al. (2011), ApJS, 197, 17
-		karakas10:			Karakas (2010), MNRAS, 403, 1413
+		- "cristallo11" [1]_ 
+		- "karakas10" [2]_ 
 
-		Notes 
-		===== 
-		If the Karakas (2010) set of yields are adopted and any elements 
-		tracked by the simulation are heavier than nickel, a LookupError will 
-		be raised. The Karakas (2010) study did not report yields for elements 
-		heavier than nickel. 
+		.. note:: 
 
-		See also 	[https://github.com/giganano/VICE/tree/master/docs] 
-		======== 
-		Sections 4.4 and 5.3 of science documentation 
+			If the Karakas (2010) set of yields are adopted and any elements 
+			tracked by the simulation are heavier than nickel, a LookupError 
+			will be raised. The Karakas (2010) study did not report yields for 
+			elements heavier than nickel. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> sz = vice.singlezone(name = "example", elements = ["c", "n", "o"]) 
+		>>> sz.agb_model = "karakas10" 
+		>>> sz.agb_model = "cristallo11" 
+
+		.. [1] Cristallo et al. (2011), ApJS, 197, 17 
+		.. [2] Karakas (2010), MNRAS, 403, 1413 
 		""" 
 		return self.__c_version.agb_model 
 
@@ -1350,77 +1568,82 @@ ran.""" % (i, j), UserWarning)
 		self.__c_version.agb_model = value 
 
 	def run(self, output_times, capture = False, overwrite = False): 
-		"""
-		Run's the built-in timestep integration routines over the parameters 
-		built into the attributes of this class. Whether or not the user sets 
-		capture = True, the output files will be produced and can be read into 
-		an output object at any time. 
+		r"""
+		Run the simulation. 
 
-		Signature: vice.singlezone.run(output_times, capture = False, 
-			overwrite = False) 
+		**Signature**: vice.singlezone.run(output_times, capture = False, 
+		overwrite = False) 
 
 		Parameters 
-		========== 
-		output_times :: array-like [elements are real numbers] 
+		----------
+		output_times : array-like [elements are real numbers] 
 			The times in Gyr at which VICE should record output from the 
-			simulation. These need not be sorted in any way; VICE will take 
-			care of that automatically. 
-		capture :: bool [default :: False] 
-			A boolean describing whether or not to return an output object 
-			from the results of the simulation. 
-		overwrite :: bool [default :: False] 
-			A boolean describing whether or not to force overwrite any 
-			existing files under the same name as this simulation's output 
-			files. 
+			simulation. These need not be sorted from least to greatest. 
+		capture : ``bool`` [default : False] 
+			If True, an output object containing the results of the simulation 
+			will be returned. 
+		overwrite : ``bool`` [default : False] 
+			If True, will force overwrite any files with the same name as the 
+			simulation output files. 
 
 		Returns 
-		======= 
-		out :: output [only returned if capture = True] 
+		-------
+		out : ``output`` [only returned if ``capture`` == True] 
 			An output object produced from this simulation's output. 
 
 		Raises 
-		====== 
-		TypeError :: 
-			::	Any functional attribute evaluates to a non-numerical value 
-				at any timestep 
-		ValueError :: 
-			::	Any element of output_times is negative 
-			:: 	An inflow metallicity evaluates to a negative value 
-		ArithmeticError :: 
-			::	An inflow metallicity evaluates to NaN or inf 
-			::	Any functional attribute evaluates to NaN or inf at any 
-				timestep 
-		UserWarning :: 
-			::	Any yield settings or class attributes are callable 
-				functions and the user does not have dill installed 
-		ScienceWarning :: 
-			::	Any element tracked by the simulation is enriched in 
-				significant part by the r-process 
-			::	Any element tracked by the simulation has a weakly constrained 
-				solar abundance measurement 
+		------
+		* TypeError 
+			- Any functional attribute evaluates to a non-numerical value. 
+		* ValueError 
+			- Any element of output_times is negative. 
+			- An inflow metallicity evaluates to a negative value. 
+		* ArithmeticError 
+			- Any functional attribute evaluates to NaN or inf. 
+		* UserWarning 
+			- Any yield settings or class attributes are callable and the 
+				user does not have dill_ installed. 
+		* ScienceWarning 
+			- Any element tracked by the simulation is enriched in signifcant 
+				part by r-process nucleosynthesis. 
+			- Any element tracked by the simulation has a weakly constrained 
+				solar abundance measurement. 
 
-		Notes
-		=====
-		Encoding functional attributes into VICE outputs requires the 
-		package dill, an extension to pickle in the python standard library. 
-		Without this, the outputs will not have memory of any functional 
-		attributes stored in this class. It is recommended that VICE users 
-		install dill if they have not already so that they can make use of 
-		this feature; this can be done via 'pip install dill'. 
+		Notes 
+		-----
+		.. note:: 
 
-		When overwrite = False, and there are files under the same name as the 
-		output produced, this acts as a halting function. VICE will wait for 
-		the user's approval to overwrite existing files in this case. If 
-		user's are running multiple simulations and need their integrations 
-		not to stall, they must specify overwrite = True. 
+			Calling this function only causes VICE to produce the output files. 
+			The ``output`` class handles the reading and storing of the 
+			simulation results. 
 
-		Example 
-		======= 
+		.. note:: 
+
+			Saving functional attributes with VICE outputs requires the 
+			package dill_, and extension to pickle in the Python_ standard 
+			library. It is recommended that VICE user's install dill_ 
+			>= 0.2.0. 
+
+			.. _dill: https://pypi.org/project/dill/ 
+			.. _Python: https://docs.python.org/library/ 
+
+		.. note:: 
+
+			When ``overwrite`` == False, and there are files under the same 
+			name as the output produced, this acts as a halting function. VICE 
+			will wait for the user's approval to overwrite existing files in 
+			this case. If user's are running multiple simulations and need 
+			their integrations not to stall, they must specify 
+			``overwrite`` = True. 
+
+		Example Code 
+		------------
 		>>> import numpy as np 
+		>>> import vice 
 		>>> sz = vice.singlezone(name = "example") 
 		>>> outtimes = np.linspace(0, 10, 1001) 
 		>>> sz.run(outtimes) 
-		"""
+		""" 
 		return self.__c_version.run(output_times, capture = capture, 
 			overwrite = overwrite) 
 
