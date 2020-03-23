@@ -35,6 +35,10 @@ and logarithmic abundance ratios [X/Y]:
 Here and hereafter the symbols :math:`\odot` and :math:`\tau` refer to the sun 
 and a timescale, respectively. 
 
+The term "zone models" refers to both singlezone and multizone models in the 
+general sense. 
+
+
 .. toctree:: 
 	:maxdepth: 5 
 	:numbered:
@@ -42,4 +46,5 @@ and a timescale, respectively.
 	background 
 	implementation 
 	SSPs/index 
+	enrichment/index 
 
