@@ -25,7 +25,7 @@ of their progenitor stars. This implies a linear relationship between the
 rate of production of some element :math:`x` from CCSNe and the star formation 
 rate: 
 
-.. math:: \dot{M}_x^\text{CC} = y_x^\text{CC}(Z)\dot{M}_* 
+.. math:: \dot{M}_x^\text{CC} = y_x^\text{CC}(Z)\dot{M}_\star 
 
 where :math:`y_x^\text{CC}` is the *IMF-averaged fractional net yield* of 
 the element :math:`x` from CCSNe at a metallicity :math:`Z`: the fraction of 

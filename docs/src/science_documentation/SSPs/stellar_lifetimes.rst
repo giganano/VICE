@@ -1,4 +1,6 @@
 
+.. _mlr: 
+
 Stellar Lifetimes 
 -----------------
 In VICE we adopt the following functional form for the lifetime of a star on 
@@ -37,6 +39,8 @@ sequence to main sequence phases of stellar evolution.
 
 By interpreting :math:`\tau_\text{total}` as lookback time, we can solve for 
 the mass of remnant producing stars under this model. 
+
+.. _mlr_m_postMS: 
 
 .. math:: m_\text{postMS} = \left(\frac{t}{(1 + p_\text{MS})\tau_\odot}
 	\right)^{-1/\alpha} 
