@@ -6,7 +6,7 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-/* minimum mass of a star for a CCSN in VICE */ 
+/* minimum mass of a star for a CCSN in solar masses */ 
 #ifndef CC_MIN_STELLAR_MASS 
 #define CC_MIN_STELLAR_MASS 8 
 #endif /* CC_MIN_STELLAR_MASS */ 

@@ -107,5 +107,5 @@ Relevant source code:
 
 .. [1] Kalirai et al. (2008), ApJ, 676, 594 
 .. [2] Weinberg, Andrews & Freudenburg (2017), ApJ, 837, 183 
-.. [3] Kroupa (2001) MNRAS, 322, 231 
+.. [3] Kroupa (2001), MNRAS, 322, 231 
 .. [4] Salpeter (1955), ApJ, 121, 161 
