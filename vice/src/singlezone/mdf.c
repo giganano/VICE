@@ -150,10 +150,24 @@ extern void update_MDF(SINGLEZONE *sz) {
  */ 
 extern void normalize_MDF(SINGLEZONE *sz) {
 
+	/* 
+	 * The simulation has determined the counts in each bin up to this point, 
+	 * so need to divide by d[X/H] and d[X/Y] in order to normalize the PDF. 
+	 * 
+	 * This isn't necessary when using uniform bins, but the more general case 
+	 * is taken into account here. 
+	 */ 
+
 	unsigned short i, n_ratios = choose((*sz).n_elements, 2); 
 
 	/* --------------------- for each tracked element --------------------- */ 
 	for (i = 0u; i < (*sz).n_elements; i++) {
+		unsigned long j; 
+		for (j = 0ul; j < (*(*sz).mdf).n_bins; j++) {
+			sz -> mdf -> abundance_distributions[i][j] /= (
+				(*(*sz).mdf).bins[j + 1] - (*(*sz).mdf).bins[j] 
+			); 
+		}
 		double *new = convert_to_PDF((*(*sz).mdf).abundance_distributions[i], 
 			(*(*sz).mdf).bins, (*(*sz).mdf).n_bins); 
 		free(sz -> mdf -> abundance_distributions[i]); 
@@ -162,6 +176,12 @@ extern void normalize_MDF(SINGLEZONE *sz) {
 
 	/* --------------------- for each abundance ratio --------------------- */ 
 	for (i = 0u; i < n_ratios; i++) { 
+		unsigned long j; 
+		for (j = 0ul; j < (*(*sz).mdf).n_bins; j++) {
+			sz -> mdf -> ratio_distributions[i][j] /= (
+				(*(*sz).mdf).bins[j + 1] - (*(*sz).mdf).bins[j] 
+			); 
+		}
 		double *new = convert_to_PDF((*(*sz).mdf).ratio_distributions[i], 
 			(*(*sz).mdf).bins, (*(*sz).mdf).n_bins); 
 		free(sz -> mdf -> ratio_distributions[i]); 
