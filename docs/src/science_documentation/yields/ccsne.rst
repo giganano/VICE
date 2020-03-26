@@ -7,7 +7,7 @@ represents the total yield from all CCSNe associated with a single stellar
 population. Letting :math:`m_x` denote the net mass of some element :math:`x` 
 present in the CCSN ejecta, the yield at a given metallicity is defined by: 
 
-.. math:: y_x^\text{CC} = \frac{
+.. math:: y_x^\text{CC} \equiv \frac{
 	\int_{l_\text{CC}}^u E(m) m_x \frac{dN}{dm} dm 
 	}{
 	\int_l^u m \frac{dN}{dm} dm 

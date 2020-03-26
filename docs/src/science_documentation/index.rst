@@ -48,4 +48,6 @@ general sense.
 	SSPs/index 
 	enrichment/index 
 	yields/index 
+	z_calibration 
+	stellar_mdfs 
 

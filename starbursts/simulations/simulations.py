@@ -410,11 +410,11 @@ def run_kirby2010_comparisons():
 
 if __name__ == "__main__": 
 	reset_yields() 
-	# run_burstless_model() 
-	# run_gas_driven_models() 
-	# run_efficiency_driven_models() 
-	# run_alternate_sr_yield_models() 
-	# run_oscillatory_models() 
-	# run_slow_burst_models() 
+	run_burstless_model() 
+	run_gas_driven_models() 
+	run_efficiency_driven_models() 
+	run_alternate_sr_yield_models() 
+	run_oscillatory_models() 
+	run_slow_burst_models() 
 	run_kirby2010_comparisons() 
 

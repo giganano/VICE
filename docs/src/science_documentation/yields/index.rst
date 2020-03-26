@@ -31,3 +31,11 @@ intended for use in VICE.
 .. _yields_ccsne: 
 
 .. include:: ccsne.rst 
+
+.. _yields_sneia: 
+
+.. include:: sneia.rst 
+
+.. _yields_agb: 
+
+.. include:: agb.rst 
