@@ -85,9 +85,6 @@ html_static_path = ['_static']
 # }
 
 latex_elements = {
-# 	"preamble": r"""\
-# \renewcommand\frac[2]{\frac{displaystyle #1}{displaystye #2}} 
-# """ 
-# "atendofbody": r"\hyperref{\sphinxtableofcontents}" 
+	"tableofcontents": 	r"\tableofcontents" 
 }
 

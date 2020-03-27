@@ -25,3 +25,4 @@ of enrichment from asymptotic giant branch stars.
 	stellar_lifetimes 
 	crf 
 	msmf 
+	enrichment 

@@ -88,7 +88,9 @@ stars are assumed to form at the metallicity of the ISM,
 .. math:: \dot{M}_x^\text{r} = 
 	\int_0^t \dot{M}_\star(t') Z_{x,\text{ISM}}(t') \dot{r}(t - t') dt 
 
-This is approximated numerically as 
+where :math:`r(\tau)` is the :ref:`cumulative return fraction <crf>` from a 
+single stellar population of age :math:`\tau`. This is approximated 
+numerically as 
 
 .. math:: \dot{M}_x^\text{r} \approx 
 	\sum_i \dot{M}_\star(i\Delta t) Z_{x,\text{ISM}}(i\Delta t) 

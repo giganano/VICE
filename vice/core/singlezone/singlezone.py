@@ -61,7 +61,7 @@ class singlezone:
 		rate, "sfr" for star formation rate, or "gas" for the mass of gas. 
 	verbose : ``bool`` [default : False] 
 		Whether or not to print to the console as the simulation runs. 
-	elements : tuple [default : ("fe", "sr", "o")] 
+	elements : ``tuple`` [default : ("fe", "sr", "o")] 
 		A tuple of strings holding the symbols of the elements to be 
 		simulated. 
 	IMF : ``str`` [case-insensitive] or ``<function>`` [default : "kroupa"] 

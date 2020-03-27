@@ -22,15 +22,14 @@ __ install_
 .. _install: https://github.com/astrobeard/VICEdev/blob/master/INSTALL.rst.txt#installation
 
 
-.. toctree::
-	:maxdepth: 5 
+.. toctree:: 
+	:maxdepth: 5
 
 	science_documentation/index 
 
-
-
 .. toctree:: 
-	:maxdepth: 3 
+	:maxdepth: 8 
+	:titlesonly: 
 
 	users_guide/index 
 

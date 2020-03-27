@@ -1,63 +1,27 @@
 """
-VICE: Versatile Integrator for Chemical Evolution
-=================================================
-A software built for numerical integration of single-zone chemical evolution 
-models. 
+VICE: Versatile Integrator for Chemical Evolution 
 
-Documentation for this package is available in several forms: 
-	1) In the docstrings of the objects and functions 
-	2) A user's guide, available at: 
-	https://github.com/giganano/VICE/tree/master/docs/users_guide.pdf 
-	3) Science documentation, available at: 
-	https://github.com/giganano/VICE/tree/master/docs/science_documentation.pdf
+Provides
+--------
+	- A dataframe object meant for case-insensitive lookup 
+	- Simulations of galactic chemical evolution models 
+	- Simulations of nucleosynthesis from single stellar populations 
+	- Built-in yield tables from nucleosynthesis studies 
 
-Users may also access the documentation from after installing VICE by running 
-'vice-docs' from the command line. Run 'vice-docs --help' for more information. 
+How to Access the Documentation: 
+--------------------------------
+Documentation is available in several forms: 
+	1. Docstrings embedded within the code 
+	2. On PyPI 
+	3. In PDF format 
+	4. Tutorials and example scripts, available in the git repository 
 
-We recommend first-time users visit the git repository to obtain copies of the 
-User's Guide and Science Documentation. Under the docs/ directory, they will 
-also find a QuickStartTutorial.ipynb notebook intended for quick 
-familiarization with the structure of VICE. 
-
-It is also recommended that VICE users install the package dill, an extension 
-of the python standard library package pickle. This enables VICE to encode 
-functional attributes with its output, and can be achieved via pip. 
-
-In all docstrings, examples of code are represented by three > signs:
-
-	>>> a = 5
-	>>> a += 10
-
-
-Included Features
-=================
-::	A dataframe object meant for case-insensitive lookup. 
-::	Simulations of galactic chemical enrichment under the single-zone 
-	approximation with support for user-specified parameters, many of which 
-	can be functions of time.  
-::	Simulations of enrichment from single stellar populations 
-::	Built-in yield tables from two recent studies of nucleosynthetic yields 
-	from asymptotic giant branch stars. 
-::	Calculations of IMF-integrated nucleosynthetic yields from both core 
-	collapse and type Ia supernovae. 
-:: 	User-specified yields from core-collapse supernovae, which may be callable 
-	functions of metallicity. 
-::	User-specified yields from type Ia supernovae. 
-::	A command-line entry allowing users to run simulations of simple 
-	evoluationary histories directly from a linux terminal. 
-::	A custom warning class (ScienceWarning) separating warnings about 
-	scientific accuracy and precision from those purely related to code. 
-
-LICENSE 
-======= 
-VICE is open-source software released under the MIT license. See LICENSE for 
-further details and copyright information. 
-
-Citing
-====== 
-If usage of this software leads to a publication, please cite Johnson & 
-Weinberg (2019), arXiv:1911.02598. 
-""" 
+The ``vice-docs`` command line entry will open VICE's documentation 
+automatically. By default, this will open the user's web browser to the online 
+documentation. Offline documentation can be accessed via the PDF by running 
+``vice-docs --pdf``. Run ``vice-docs --help`` in a terminal for more 
+information. 
+"""
 
 from __future__ import absolute_import
 import warnings 

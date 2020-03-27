@@ -1,4 +1,18 @@
 # cython: language_level = 3, boundscheck = False
+""" 
+Built-in routines for stellar initial mass functions (IMFs) 
+
+Contains 
+--------
+Kroupa : <function> 
+	The Kroupa (2001) IMF [1]_. 
+Salpeter : <function> 
+	The Salpeter (1955) IMF [2]_. 
+
+.. [1] Kroupa (2001), MNRAS, 322, 231 
+
+.. [2] Salpeter (1955), ApJ, 121, 161 
+""" 
 
 from __future__ import absolute_import 
 from ..._globals import _RECOGNIZED_IMFS_ 

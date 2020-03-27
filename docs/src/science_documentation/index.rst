@@ -46,6 +46,7 @@ general sense.
 	background 
 	implementation 
 	SSPs/index 
+	gas/index 
 	enrichment/index 
 	yields/index 
 	z_calibration 
