@@ -19,9 +19,10 @@ if not __VICE_SETUP__:
 	from .multizone import multizone 
 	from .outputs import * 
 	from .ssp import * 
+	from .dataframe import * 
 	from .dataframe._builtin_dataframes import * 
+	__all__.extend(dataframe.__all__) 
 	__all__.extend(dataframe._builtin_dataframes.__all__) 
-	from .dataframe import base as dataframe 
 	__all__.extend(outputs.__all__) 
 	__all__.extend(ssp.__all__) 
 

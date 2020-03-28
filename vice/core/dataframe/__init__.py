@@ -1,9 +1,32 @@
-""" 
+r""" 
 The VICE dataframe 
 ================== 
-This package implements the VICE dataframe and all of its subclasses. Users 
-should not create their own instances of VICE dataframe subclasses, but should 
-feel free to use the base class however they choose. 
+Provides a means of storing and accessing data with both case-insensitive 
+strings and integers, allowing both indexing and calling. 
+
+Derived Classes: 
+	- agb_yield_settings 
+	- builtin_elemental_data 
+	- ccsn_yield_table 
+	- elemental_settings 
+	- channel_entrainment 
+	- evolutionary_settings 
+	- fromfile 
+	- history 
+	- noncustomizable 
+	- saved_yields 
+	- tracers 
+	- yield_settings 
+
+Built-in Instances: 
+	- atomic_number 
+	- primordial 
+	- solar_z 
+	- sources 
+	- stable_isotopes 
+
+.. note:: All built-in instances are of the derived class 
+	``builtin_elemental_data``. 
 """ 
 
 from __future__ import absolute_import 
@@ -22,7 +45,7 @@ if not __VICE_SETUP__:
 		"fromfile", 
 		"history", 
 		"noncustomizable", 
-		"saved_yield", 
+		"saved_yields", 
 		"tracers", 
 		"yield_settings", 
 		"channel_entrainment", 
@@ -47,7 +70,7 @@ if not __VICE_SETUP__:
 
 	@moduletest 
 	def test(): 
-		""" 
+		r""" 
 		Run the tests on this module 
 		""" 
 		return ["vice.core.dataframe", 

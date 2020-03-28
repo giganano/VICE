@@ -28,54 +28,52 @@ from ...core.objects cimport _agb
 
 _RECOGNIZED_STUDIES_ = tuple(["cristallo11", "karakas10"]) 
 
+
 #-------------------------- AGB_YIELD_GRID FUNCTION --------------------------# 
 def yield_grid(element, study = "cristallo11"):
-	"""
-	Obtain the stellar mass-metallicity grid of fractional nucleosynthetic 
-	yields from asymptotic giant branch (AGB) stars. VICE includes yields 
-	from Cristallo et al. (2011), ApJS, 197, 17 and Karakas (2010), MNRAS, 403, 
-	1413, allowing users the choice of which to adopt in their simulations. 
+	r"""
+	Obtain the stellar mass-metallicity grid of fractional net yields from 
+	asymptotic giant branch stars published in a nucleosynthesis study. 
 
-	Signature: vice.yields.agb.grid(element, study = "cristallo11") 
+	**Signature**: vice.yields.agb.grid(element, study = "cristallo11") 
 
-	Parameters
-	==========
-	element :: str [case-insensitive] 
+	Parameters 
+	----------
+	element : ``str`` [case-insensitive] 
 		The symbol of the element to obtain the yield grid for. 
-	study :: str [case-insensitive] [default :: "cristallo11"]
-		A keyword denoting which AGB yield study to pull the yield table from. 
-		Keywords and their Associated Studies: 
-		--------------------------------------
-		"cristallo11" :: Cristallo et al. (2011), ApJS, 197, 17 
-		"karakas10" :: Karakas (2010), MNRAS, 403, 1413 
+	study : ``str`` [case-insensitive] [default : "cristallo11"] 
+		A keyword denoting which study to pull the yield table from. 
 
-	Returns
-	=======
-	grid :: tuple (2-D)
-		The yield grid itself; elements are tuples of fractional 
-		nucleosynthetic yields at constant stellar mass, but varying 
-		metallicity. It should be indexed with the rule: 
-		arr[mass_index][z_index]
-	masses :: tuple 
-		The masses in terms of the sun that the yield grid is sampled on. 
-	z :: tuple 
-		The metallicities by mass Z on that the yield grid is sampled on. 
+		Recognized Keywords: 
 
-	Raises
-	====== 
-	ValueError :: 
-		::	The study or the element are not built into VICE 
-	LookupError :: 
-		:: 	study == "karakas10" and the atomic number of the element is 
-			greater than or equal to 29. The Karakas (2010), MNRAS, 403, 1413 
-			study did not report yields from AGB stars for elements heavier 
-			than nickel. 
-	IOError :: [Occurs only if VICE's file structure has been tampered with] 
-		:: 	The parameters passed to this function are allowed but the data 
+			- "cristallo11": Cristallo et al. (2011) [1]_ 
+			- "karakas10": Karakas (2010) [2]_ 
+
+	Returns 
+	-------
+	grid : ``tuple`` (2-D) 
+		A tuple of tuples containing the yield grid. The first axis is the 
+		stellar mass, and second is the metallicity 
+	masses : ``tuple`` 
+		The masses in units of :math:`M_\odot` that the yield grid is sampled 
+		on. 
+	z : ``tuple`` 
+		The metallicities by mass :math:`Z` that the yield grid is sample on. 
+
+	Raises 
+	------
+	* ValueError 
+		- The study or the element are not built into VICE 
+	* LookupError 
+		- ``study == "karakas10"`` and the atomic number of the element is 
+			:math:`\geq` 29. The Karakas (2010) study did not report yields 
+			for elements heavier the nickel. 
+	* IOError [Occur's only if VICE's file structure has been altered] 
+		- The parameters passed to this function are allowed but the data 
 			file is not found. 
 
-	Example
-	=======
+	Example Code 
+	------------
 	>>> y, m, z = vice.agb_yield_grid("sr") 
 	>>> m 
 	    (1.3, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0) 
@@ -85,11 +83,9 @@ def yield_grid(element, study = "cristallo11"):
 	>>> y[0][2] 
 	    2.32254e-09
 
-	References 
-	========== 
-	Cristallo et al. (2011), ApJS, 197, 17 
-	Karakas (2010), MNRAS, 403, 1413 
-	""" 
+	.. [1] Cristallo et al. (2011), ApJS, 197, 17 
+	.. [2] Karakas (2010), MNRAS, 403, 1413 
+	"""
 	# Type checking  
 	if not isinstance(element, strcomp): 
 		raise TypeError("First argument must be of type string. Got: %s" % (

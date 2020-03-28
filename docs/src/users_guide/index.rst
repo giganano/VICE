@@ -4,7 +4,7 @@ User's Guide
 
 .. toctree:: 
 	:titlesonly: 
-	:maxdepth: 3 
+	:maxdepth: 5
 
 	command_line 
 	pkgcontents/index 

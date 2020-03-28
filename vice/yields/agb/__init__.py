@@ -1,26 +1,22 @@
-"""
-Asymptotic Giant Branch Star Nucleosynthetic Yield Tools 
-======================================================== 
-Here users may modify their yield settings from AGB stars, which VICE will 
-adopt in their simulations. VICE also provides built-in tables allowing users 
-to easy analyze data from previous studies of AGB star nucleosynthesis as well 
-as import them directly into their settings. Adopting this setting, VICE 
-will adopt a scheme in which the yields are linearly interpolated on a 
-2-dimensional table of stellar masses and metallicities reported by the 
-study. 
+r"""
+Asymptotic Giant Branch (AGB) Star Nucleosynthetic Yield Tools 
 
-Included Features 
-================= 
-grid :: <function> 
-	Return the stellar mass-metallicity grid of fractional nucleosynethetic 
-	yields for a given element and study to the user. 
-settings :: VICE dataframe 
-	Stores the user's current settings for these yields. 
+Analyze built-in yield tables and modify yield settings for use in simulations. 
+This package provides tables from the following nucleosynthetic yield studies: 
 
-References 
-========== 
-Cristallo (2011), ApJS, 197, 17 
-Karakas (2010), MNRAS, 403, 1413 
+	- Cristallo et al. (2011) [1]_ 
+	- Karakas (2010) [2]_ 
+
+Contents 
+--------
+grid : <function> 
+	Return the stellar mass-metallicity grid of fractional nucleosynthetic 
+	yields for given element and study 
+settings : ``dataframe`` 
+	Stores current settings for these yields 
+
+.. [1] Cristallo et al. (2011), ApJS, 197, 17 
+.. [2] Karakas (2010), MNRAS, 403, 1413 
 """
 
 from __future__ import absolute_import

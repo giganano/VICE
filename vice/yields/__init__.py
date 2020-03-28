@@ -1,12 +1,21 @@
-"""
+r"""
 Nucleosynthetic Yield Tools 
-=========================== 
-Each module stores built-in yield tables and user-presets for different 
-enrichment channels. 
+===========================
+Each sub-package stores built-in yield tables and user-presets for each 
+element from each enrichment channel. 
 
-agb :: asymptotic giant branch stars 
-ccsne :: core collapse supernovae 
-sneia :: type Ia supernovae 
+Contains 
+--------
+agb : <package> 
+	Yields from asymptotic giant branch stars 
+ccsne : <package> 
+	Yields from core collapse supernovae 
+sneia : <package> 
+	Yields from type Ia supernovae 
+presets : <package> 
+	Yield settings presets 
+test : <function> 
+	Run the tests on this package 
 """
 
 from __future__ import absolute_import 
@@ -29,6 +38,8 @@ if not __VICE_SETUP__:
 	def test(): 
 		""" 
 		Run the tests on this module 
+
+		**Signature**: vice.yields.test() 
 		""" 
 		return ["vice.yields", 
 			[

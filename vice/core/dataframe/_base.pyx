@@ -23,105 +23,84 @@ from . cimport _base
 #------------------------- VICE DATAFRAME BASE CLASS -------------------------#
 cdef class base: 
 
-	"""
-                                 The VICE Dataframe 
-	==========================================================================
-	Provides a means of storing data indexed by strings in a case-insensitive 
-	manner. VICE includes several instances of this class at the global level, 
-	some of which have features specific to their instance. Users may call 
-	these dataframes as a function using parentheses rather than square 
-	brackets and it will return the same thing. If a dataframe stores 
-	array-like attributes, it may also be indexed via an integer to pull that 
-	element from each field. 
+	r""" 
+	The VICE Dataframe: base class 
 
-	Signature: vice.dataframe.__init__(frame) 
+	Provides a means of storing and accessing data with both case-insensitive 
+	strings and integers, allowing both indexing and calling. 
 
-	Functions
-	=========
-	keys		
-	todict 
+	**Signature**: vice.dataframe(frame) 
 
-	Yield Setting Dataframes 
-	======================== 
-	The following dataframes store the user's settings for nucleosynthetic 
-	yields from core collapse and type Ia supernovae. In the case of 
-	core collapse supernovae yields, the user may specify a function 
-	accepting one numerical parameter, which will be interpreted as the 
-	metallicity by mass Z of the stellar population. 
+	.. note:: This class can also be accessed with the signature 
+		``vice.core.dataframe.base(frame)`` 
 
-	yields.ccsne.settings :: Yield settings from core collapse supernovae 
-	yields.sneia.settings :: Yield settings from type Ia supernovae 
+	Parameters 
+	----------
+	frame : ``dict`` 
+		A python dictionary to construct the dataframe from. Keys must all 
+		be of type ``str``. 
 
-	Functions Associated with these Dataframes 
-	------------------------------------------ 
-	factory_defaults :: Revert to VICE's original defaults 
-	restore_defaults :: Revert to user's specified defaults 
-	save_defaults :: Save current settings as defaults 
+	Raises 
+	------ 
+	* TypeError 
+		- frame has a key that is not of type ``str`` 
 
-	Other Built-in dataframes 
-	========================= 
-	VICE provides the following dataframes. 
+	Functions 
+	---------
+	- keys 
+	- todict 
+	- remove 
+	- filter 
 
-	atomic_number
-	------------- 
-	Stores the number of protons in the nucleus of each of VICE's recognized 
-	elements. By design, this dataframe does not support item assignment 
+	Indexing 
+	--------
+	This object will store any type of data, but can be indexed by integers 
+	when all values are array-like. It will automatically pass integers to 
+	each stored value and return a new dataframe with the same keys. 
 
-	primordial 
-	---------- 
-	Stores the abundance by mass of each element in the primordial universe 
-	following big bang nucleosynthesis. In the current version, this value is 
-	only nonzero for helium. 
+	Indexing this object via strings is case-insensitive. 
 
-	solar_z 
-	-------  
-	Stores the abundance by mass of elements in the sun. By nature, this 
-	dataframe does not support user customization. Solar abundances are 
-	derived from Asplund et al. (2009) and have been converted to a mass 
-	fraction via: 
+	Calling 
+	-------
+	This object can be called with the same effect as indexing. 
 
-		Z_x,sun = (mu_x)(X_sun)10^((X/H) - 12) 
-
-	where mu_x is the mean molecular weight of the element in amu, X_sun is 
-	the solar hydrogen abundance by mass, and (X/H) = log10(Nx/NH) + 12, 
-	which is what Asplund et al. (2009) reports. These calculations adopt 
-	X_sun = 0.73 as the solar hydrogen abundances, also from Asplund et al. 
-	(2009). 
-
-	sources 
-	-------  
-	Stores strings denoting what astronomers generally believe to be the 
-	dominant enrichment channels for each element. These are included purely 
-	for convenience, and are adopted from Johnson (2019). This dataframe does 
-	not support user customization.
-
-		Enrichment Channels 
-		------------------- 
-		"CCSNE" :: core collapse supernovae 
-		"SNEIA" :: type Ia supernovae 
-		"AGB" :: asymptotic giant branch stars 
-		"NSNS" :: binary neutron star mergers / r-process 
-
-	References 
-	========== 
-	Asplund et al. (2009), ARA&A, 47, 481 
-	Johnson (2019), Science, 6426, 474 
-	"""
+	Example Code 
+	------------
+	>>> import vice 
+	>>> example = vice.dataframe({
+		"a": [1, 2, 3], 
+		"b": [4, 5, 6], 
+		"c": [7, 8, 9]}) 
+	>>> example["A"] 
+	[1, 2, 3] 
+	>>> example("a") 
+	[1, 2, 3] 
+	>>> example[0] 
+	vice.dataframe{
+		a --------------> 1
+		b --------------> 4
+		c --------------> 7
+	}
+	>>> example.keys() 
+	['a', 'b', 'c'] 
+	>>> example.todict() 
+	{'a': [1, 2, 3], 'b': [4, 5, 6], 'c': [7, 8, 9]} 
+	>>> example.filter("c", "<", 9) 
+	vice.dataframe{
+		a --------------> [1, 2]
+		b --------------> [4, 5]
+		c --------------> [7, 8]
+	} 
+	""" 
 
 	# cdef object _frame 
 
 	def __init__(self, frame): 
-		""" 
-		Parameters 
-		========== 
-		frame :: dict 
-			A python dictionary to construct the dataframe from 
-		""" 
 		if isinstance(frame, dict): 
 			if all(map(lambda x: isinstance(x, strcomp), frame.keys())): 
 				keys = tuple([i.lower() for i in frame.keys()]) 
-				fields = tuple([frame[i] for i in frame.keys()]) 
-				self._frame = dict(zip(keys, fields)) 
+				values = tuple([frame[i] for i in frame.keys()]) 
+				self._frame = dict(zip(keys, values)) 
 			else: 
 				raise TypeError("All keys must be of type str.") 
 		else: 
@@ -166,20 +145,26 @@ Got: %s""" % (type(key)))
 		""" 
 		if key % 1 == 0: 
 			# index by int only works when all fields are array-like 
-			try: 
-				lengths = [len(self._frame[i]) for i in self.keys()] 
-			except TypeError: 
-				raise IndexError("""This dataframe cannot be indexed by a key \
-of type int, because not all fields are array-like.""") 
+			if all(map(lambda x: hasattr(self._frame[x], "__getitem__"), 
+				self.keys())): 
+				try: 
+					x = [self._frame[i][int(key)] for i in self.keys()] 
+					return base(dict(zip(
+						self.keys(), 
+						x 
+					))) 
+				except IndexError: 
+					raise IndexError("Index out of bounds: %d" % (int(key))) 
+				except Exception as exc:  
+					msg = """\
+The following exception occurred when indexing dataframe with key: %d 
 
-			# This if condition allows -key to pass if -key == min(lengths) 
-			if abs(key) <= min(lengths) and key != min(lengths): 
-				return base(dict(zip(self.keys(), 
-					[self._frame[i][int(key)] for i in self.keys()]
-				))) 
+%s""" % (int(key), exc.args[0]) 
+					exc.args = (msg,) 
+					raise 
 			else: 
-				raise IndexError("Index out of bounds: %d" % (int(key))) 
-
+				raise IndexError("""Cannot index with key of type int: not \
+all values array-like.""") 
 		else: 
 			raise IndexError("""Index must be interpreted as an integer. \
 Got: %s""" % (type(key))) 
@@ -310,7 +295,8 @@ Got: %s""" % (type(key)))
 
 	def filter(self, key, relation, value): 
 		""" 
-		Obtain a copy of the dataframe whose elements satisfy a filter 
+		Obtain a copy of the dataframe whose elements satisfy a filter. Only 
+		applies to dataframes whose values are all array-like. 
 
 		Signature: vice.dataframe.filter(key, relation, value) 
 
@@ -346,6 +332,10 @@ Got: %s""" % (type(key)))
 				if isinstance(value, numbers.Number): 
 					idx = self.keys().index(key.lower()) 
 					qtys = [self.__getitem__(i) for i in self.keys()] 
+					if any(map(lambda x: not hasattr(x, "__getitem__"), qtys)): 
+						raise TypeError("""Filter function not allowed: not \
+all values array-like.""") 
+					else: pass 
 					copy = len(qtys[0]) * [None] 
 					for i in range(len(copy)): 
 						copy[i] = [row[i] for row in qtys] 
@@ -379,3 +369,90 @@ Got: %s""" % (type(key)))
 			raise KeyError("Key must be of type str for sieve. Got: %s" % (
 				type(key))) 
 
+
+
+### 
+"""
+                             The VICE Dataframe 
+==========================================================================
+Provides a means of storing data indexed by strings in a case-insensitive 
+manner. VICE includes several instances of this class at the global level, 
+some of which have features specific to their instance. Users may call 
+these dataframes as a function using parentheses rather than square 
+brackets and it will return the same thing. If a dataframe stores 
+array-like attributes, it may also be indexed via an integer to pull that 
+element from each field. 
+
+Signature: vice.dataframe.__init__(frame) 
+
+Functions
+=========
+keys		
+todict 
+
+Yield Setting Dataframes 
+======================== 
+The following dataframes store the user's settings for nucleosynthetic 
+yields from core collapse and type Ia supernovae. In the case of 
+core collapse supernovae yields, the user may specify a function 
+accepting one numerical parameter, which will be interpreted as the 
+metallicity by mass Z of the stellar population. 
+
+yields.ccsne.settings :: Yield settings from core collapse supernovae 
+yields.sneia.settings :: Yield settings from type Ia supernovae 
+
+Functions Associated with these Dataframes 
+------------------------------------------ 
+factory_defaults :: Revert to VICE's original defaults 
+restore_defaults :: Revert to user's specified defaults 
+save_defaults :: Save current settings as defaults 
+
+Other Built-in dataframes 
+========================= 
+VICE provides the following dataframes. 
+
+atomic_number
+------------- 
+Stores the number of protons in the nucleus of each of VICE's recognized 
+elements. By design, this dataframe does not support item assignment 
+
+primordial 
+---------- 
+Stores the abundance by mass of each element in the primordial universe 
+following big bang nucleosynthesis. In the current version, this value is 
+only nonzero for helium. 
+
+solar_z 
+-------  
+Stores the abundance by mass of elements in the sun. By nature, this 
+dataframe does not support user customization. Solar abundances are 
+derived from Asplund et al. (2009) and have been converted to a mass 
+fraction via: 
+
+	Z_x,sun = (mu_x)(X_sun)10^((X/H) - 12) 
+
+where mu_x is the mean molecular weight of the element in amu, X_sun is 
+the solar hydrogen abundance by mass, and (X/H) = log10(Nx/NH) + 12, 
+which is what Asplund et al. (2009) reports. These calculations adopt 
+X_sun = 0.73 as the solar hydrogen abundances, also from Asplund et al. 
+(2009). 
+
+sources 
+-------  
+Stores strings denoting what astronomers generally believe to be the 
+dominant enrichment channels for each element. These are included purely 
+for convenience, and are adopted from Johnson (2019). This dataframe does 
+not support user customization.
+
+	Enrichment Channels 
+	------------------- 
+	"CCSNE" :: core collapse supernovae 
+	"SNEIA" :: type Ia supernovae 
+	"AGB" :: asymptotic giant branch stars 
+	"NSNS" :: binary neutron star mergers / r-process 
+
+References 
+========== 
+Asplund et al. (2009), ARA&A, 47, 481 
+Johnson (2019), Science, 6426, 474 
+"""

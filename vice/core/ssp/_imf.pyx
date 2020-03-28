@@ -1,6 +1,6 @@
 # cython: language_level = 3, boundscheck = False
-""" 
-Built-in routines for stellar initial mass functions (IMFs) 
+r""" 
+Built-in functional forms of popular stellar initial mass functions (IMFs). 
 
 Contains 
 --------

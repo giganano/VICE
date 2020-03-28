@@ -1,16 +1,17 @@
-"""
+r"""
 VICE: Versatile Integrator for Chemical Evolution 
 
 Provides
 --------
-	- A dataframe object meant for case-insensitive lookup 
-	- Simulations of galactic chemical evolution models 
-	- Simulations of nucleosynthesis from single stellar populations 
-	- Built-in yield tables from nucleosynthesis studies 
+- A dataframe object meant for case-insensitive lookup 
+- Simulations of galactic chemical evolution models 
+- Simulations of nucleosynthesis from single stellar populations 
+- Built-in yield tables from nucleosynthesis studies 
 
 How to Access the Documentation: 
 --------------------------------
 Documentation is available in several forms: 
+
 	1. Docstrings embedded within the code 
 	2. On PyPI 
 	3. In PDF format 
@@ -69,6 +70,7 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 			if not __release: 
 				warnings.warn("Using un-released version of VICE", UserWarning)
 			from .core import * 
+			from .core.dataframe import base as dataframe 
 			from ._build_utils import * 
 			from ._globals import ScienceWarning
 			from ._globals import VisibleDeprecationWarning 
@@ -89,17 +91,4 @@ under "Install VICE." \
 
 	__all__.extend(core.__all__)
 	__all__.extend(_build_utils.__all__)
-
-	"""
-	Remove locally imported variables that aren't needed, but leave the user 
-	the ability to call vice.warnings to get only VICE to keep quiet and let 
-	the rest of python raise warnings. 
-	"""
-	del core
-	del _build_utils
-	del version
-	del __release
-	del absolute_import
-	del sys
-	del os
 

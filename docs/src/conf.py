@@ -85,6 +85,6 @@ html_static_path = ['_static']
 # }
 
 latex_elements = {
-	"tableofcontents": 	r"\tableofcontents" 
+	# "tableofcontents": 	r"\tableofcontents" 
 }
 

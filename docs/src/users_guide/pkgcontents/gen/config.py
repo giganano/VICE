@@ -6,6 +6,7 @@ their docstrings.
 import warnings 
 warnings.filterwarnings("ignore") 
 import vice 
+from vice.core.dataframe import base 
 
 
 _CONFIG_ = {
@@ -16,28 +17,61 @@ _CONFIG_ = {
 			vice.cumulative_return_fraction, 
 			vice.main_sequence_mass_fraction, 
 			vice.single_stellar_population, 
+			vice.core.dataframe, 
+			vice.yields, 
 			vice.imf, 
 			vice.singlezone 
 		]  
 	}, 
 	vice.cumulative_return_fraction: {
 		"filename": 	"vice.cumulative_return_fraction.rst", 
-		"header": 		"vice.cumulative_return_fraction", 
+		"header": 		"Cumulative Return Fractions", 
 		"subs": 		[] 
 	}, 
 	vice.main_sequence_mass_fraction: {
 		"filename": 	"vice.main_sequence_mass_fraction.rst", 
-		"header": 		"vice.main_sequence_mass_fraction", 
+		"header": 		"Main Sequence Mass Fractions", 
 		"subs": 		[] 
 	}, 
 	vice.single_stellar_population: {
 		"filename": 	"vice.single_stellar_populaiton.rst", 
-		"header": 		"vice.single_stellar_population", 
+		"header": 		"Single Stellar Populations", 
+		"subs": 		[] 
+	}, 
+	vice.core.dataframe: {
+		"filename": 	"vice.core.dataframe.rst", 
+		"header": 		"", 
+		"subs": 		[
+			vice.core.dataframe.base 
+		] 
+	}, 
+	vice.core.dataframe.base: {
+		"filename":		"vice.core.dataframe.base.rst", 
+		"header": 		"Base Class", 
+		"subs": 		[] 
+	}, 
+	vice.yields: {
+		"filename": 	"vice.yields.rst", 
+		"header": 		"", 
+		"subs": 		[
+			vice.yields.agb 
+		]  
+	}, 
+	vice.yields.agb: {
+		"filename": 	"vice.yields.agb.rst", 
+		"header": 		"vice.yields.agb", 
+		"subs": 		[
+			vice.yields.agb.grid 
+		]  
+	}, 
+	vice.yields.agb.grid: {
+		"filename": 	"vice.yields.agb.grid.rst", 
+		"header": 		"vice.yields.agb.grid", 
 		"subs": 		[] 
 	}, 
 	vice.imf: {
 		"filename": 	"vice.imf.rst", 
-		"header": 		"vice.imf", 
+		"header": 		"Stellar Initial Mass Functions", 
 		"subs": 		[
 			vice.imf.kroupa, 
 			vice.imf.salpeter 
@@ -55,10 +89,10 @@ _CONFIG_ = {
 	}, 
 	vice.singlezone: {
 		"filename": 	"vice.singlezone.rst", 
-		"header": 		"vice.singlezone", 
+		"header": 		"The Singlezone Object", 
 		"subs": 		[
-			vice.singlezone.from_output, 
 			vice.singlezone.run, 
+			vice.singlezone.from_output, 
 			vice.singlezone.name, 
 			vice.singlezone.func, 
 			vice.singlezone.mode, 
@@ -67,6 +101,7 @@ _CONFIG_ = {
 			vice.singlezone.IMF, 
 			vice.singlezone.eta, 
 			vice.singlezone.enhancement, 
+			vice.singlezone.entrainment, 
 			vice.singlezone.Zin, 
 			vice.singlezone.recycling, 
 			vice.singlezone.bins, 
@@ -135,6 +170,11 @@ _CONFIG_ = {
 	vice.singlezone.enhancement: {
 		"filename": 	"vice.singlezone.enhancement.rst", 
 		"header": 		"vice.singlezone.enhancement", 
+		"subs": 		[] 
+	}, 
+	vice.singlezone.entrainment: {
+		"filename": 	"vice.singlezone.entrainment.rst", 
+		"header": 		"vice.singlezone.entrainment", 
 		"subs": 		[] 
 	}, 
 	vice.singlezone.Zin: {
