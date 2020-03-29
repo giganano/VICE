@@ -6,6 +6,13 @@ their docstrings.
 import warnings 
 warnings.filterwarnings("ignore") 
 import vice 
+from vice.yields.ccsne import LC18 
+from vice.yields.ccsne import NKT13 
+from vice.yields.ccsne import CL13 
+from vice.yields.ccsne import CL04 
+from vice.yields.ccsne import WW95 
+from vice.yields.agb import cristallo11 
+from vice.yields.agb import karakas10 
 
 
 _CONFIG_ = {
@@ -37,13 +44,6 @@ _CONFIG_ = {
 		"header": 		"vice.single_stellar_population", 
 		"subs": 		[] 
 	}, 
-	# vice.core.dataframe: {
-	# 	"filename": 	"vice.core.dataframe.rst", 
-	# 	"header": 		"", 
-	# 	"subs": 		[
-	# 		vice.core.dataframe.base 
-	# 	] 
-	# }, 
 	vice.dataframe: {
 		"filename":		"vice.core.dataframe.base.rst", 
 		"header": 		"vice.dataframe", 
@@ -87,7 +87,9 @@ _CONFIG_ = {
 		"header": 		"vice.yields.agb", 
 		"subs": 		[
 			vice.yields.agb.grid, 
-			vice.core.dataframe.agb_yield_settings 
+			vice.core.dataframe.agb_yield_settings, 
+			vice.yields.agb.cristallo11, 
+			vice.yields.agb.karakas10 
 		]  
 	}, 
 	vice.yields.agb.grid: {
@@ -100,9 +102,87 @@ _CONFIG_ = {
 		"header": 		"vice.yields.agb.settings", 
 		"subs": 		[] 
 	}, 
+	vice.yields.agb.cristallo11: {
+		"filename": 	"vice.yields.agb.cristallo11.rst", 
+		"header": 		"vice.yields.agb.cristallo11", 
+		"subs": 		[] 
+	}, 
+	vice.yields.agb.karakas10: {
+		"filename": 	"vice.yields.agb.karakas10.rst", 
+		"header": 		"vice.yields.agb.karakas10", 
+		"subs": 		[] 
+	}, 
 	vice.yields.ccsne: {
 		"filename": 	"vice.yields.ccsne.rst", 
 		"header": 		"vice.yields.ccsne", 
+		"subs": 		[
+			vice.yields.ccsne.fractional, 
+			vice.yields.ccsne.table, 
+			vice.yields.ccsne.WW95, 
+			vice.yields.ccsne.CL04, 
+			vice.yields.ccsne.CL13, 
+			vice.yields.ccsne.NKT13, 
+			vice.yields.ccsne.LC18 
+		]  
+	}, 
+	vice.yields.ccsne.fractional: {
+		"filename": 	"vice.yields.ccsne.fractional.rst", 
+		"header": 		"vice.yields.ccsne.fractional", 
+		"subs": 		[] 
+	}, 
+	vice.yields.ccsne.table: {
+		"filename": 	"vice.yields.ccsne.table.rst", 
+		"header": 		"vice.yields.ccsne.table", 
+		"subs": 		[] 
+	}, 
+	vice.yields.ccsne.WW95: {
+		"filename": 	"vice.yields.ccsne.WW95.rst", 
+		"header": 		"vice.yields.ccsne.WW95", 
+		"subs":			[vice.yields.ccsne.WW95.set_params] 
+	}, 
+	vice.yields.ccsne.WW95.set_params: {
+		"filename": 	"vice.yields.ccsne.WW95.set_params.rst", 
+		"header": 		"vice.yields.ccsne.WW95.set_params", 
+		"subs": 		[] 
+	}, 
+	vice.yields.ccsne.CL04: {
+		"filename": 	"vice.yields.ccsne.CL04.rst", 
+		"header": 		"vice.yields.ccsne.CL04", 
+		"subs": 		[vice.yields.ccsne.CL04.set_params]  
+	}, 
+	vice.yields.ccsne.CL04.set_params: {
+		"filename": 	"vice.yields.ccsne.CL04.set_params.rst", 
+		"header": 		"vice.yields.ccsne.CL04.set_params", 
+		"subs": 		[] 
+	}, 
+	vice.yields.ccsne.NKT13: {
+		"filename": 	"vice.yields.ccsne.NKT13.rst", 
+		"header": 		"vice.yields.ccsne.NKT13", 
+		"subs": 		[vice.yields.ccsne.NKT13.set_params] 
+	}, 
+	vice.yields.ccsne.NKT13.set_params: {
+		"filename": 	"vice.yields.ccsne.NKT13.set_params.rst", 
+		"header": 		"vice.yields.ccsne.NKT13.set_params", 
+		"subs": 		[] 
+	}, 
+	vice.yields.ccsne.CL13: {
+		"filename": 	"vice.yields.ccsne.CL13.rst", 
+		"header": 		"vice.yields.ccsne.CL13", 
+		"subs": 		[vice.yields.ccsne.CL13.set_params]  
+	}, 
+	vice.yields.ccsne.CL13.set_params: {
+		"filename": 	"vice.yields.ccsne.CL13.set_params.rst", 
+		"header": 		"vice.yields.ccsne.CL13.set_params", 
+		"subs": 		[] 
+	}, 
+	vice.yields.ccsne.LC18: {
+		"filename": 	"vice.yields.ccsne.LC18.rst", 
+		"header": 		"vice.yields.ccsne.LC18", 
+		"subs": 		[vice.yields.ccsne.LC18.set_params] 
+	}, 
+	vice.yields.ccsne.LC18.set_params: {
+		"filename": 	"vice.yields.ccsne.LC18.set_params.rst", 
+		"header": 		"vice.yields.ccsne.LC18.set_params", 
 		"subs": 		[] 
 	}, 
 	vice.imf: {

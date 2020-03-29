@@ -22,7 +22,7 @@ from . cimport _agb_yield_settings
 #------------------------ AGB YIELD SETTINGS SUBCLASS ------------------------# 
 cdef class agb_yield_settings(yield_settings): 
 
-	""" 
+	r""" 
 	The VICE dataframe: derived class (inherits from yield_settings) 
 
 	Stores the current nucleosynthetic yield settings for asymptotic giant 

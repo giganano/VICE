@@ -1,6 +1,6 @@
 r"""
 Nucleosynthetic Yield Tools 
-===========================
+
 Each sub-package stores built-in yield tables and user-presets for each 
 element from each enrichment channel. 
 
@@ -38,7 +38,7 @@ if not __VICE_SETUP__:
 
 	@moduletest 
 	def test(): 
-		""" 
+		r""" 
 		Run the tests on this module 
 
 		**Signature**: vice.yields.test() 

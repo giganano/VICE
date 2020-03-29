@@ -14,11 +14,11 @@ from ...core.dataframe._builtin_dataframes import atomic_number
 from ...core.callback import callback1_nan_inf_positive 
 from ...core.callback import callback1_nan_inf 
 from ...core import _pyutils 
-from .errors import _NAMES_ 
-from .errors import _RECOGNIZED_METHODS_ 
-from .errors import _RECOGNIZED_STUDIES_ 
-from .errors import numeric_check 
-from .errors import string_check 
+from ._errors import _NAMES_ 
+from ._errors import _RECOGNIZED_METHODS_ 
+from ._errors import _RECOGNIZED_STUDIES_ 
+from ._errors import numeric_check 
+from ._errors import string_check 
 import math as m 
 import warnings 
 import numbers 
@@ -46,179 +46,181 @@ from . cimport _yield_integrator
 
 
 def integrate(element, study = "LC18", MoverH = 0, rotation = 0, 
-	explodability = None, IMF = "kroupa", method = "simpson", 
-	m_lower = 0.08, m_upper = 100, tolerance = 1e-3, Nmin = 64, Nmax = 2e8): 
-	"""
-	Calculates an IMF-integrated fractional nucleosynthetic yield of a given 
-	element from core-collapse supernovae. VICE has built-in functions which 
-	implement Gaussian quadrature to evaluate these integrals numerically. 
-	See section 5.2 of VICE's science documentation at 
-	http://github.com/giganano/VICE/tree/master/docs for further details. 
+	explodability = None, IMF = "kroupa", method = "simpson", m_lower = 0.08, 
+	m_upper = 100, tolerance = 1e-3, Nmin = 64, Nmax = 2e8): 
+	
+	r""" 
+	Calculate an IMF-integrated fractional net nucleosynthetic yield of a 
+	given element from core-collapse supernovae. 
 
-	Signature: vice.yields.ccsne.fractional(
-		element, 
-		study = "LC18", 
-		MoverH = 0, 
-		rotation = 0, 
-		IMF = "kroupa", 
-		method = "simpson", 
-		m_lower = 0.08, 
-		m_upper = 100, 
-		tolerance = 1.0e-03, 
-		Nmin = 64, 
-		Nmax = 2.0e+08
-	)
+	**Signature**: vice.yields.ccsne.fractional(element, study = "LC18", 
+	MoverH = 0, rotation = 0, explodability = None, IMF = "kroupa", 
+	method = "simpson", m_lower = 0.08, m_upper = 100, tolerance = 1.0e-03, 
+	Nmin = 64, Nmax = 2.0e+08) 
 
-	Parameters
-	========== 
-	element :: str [case-insensitive] 
+	Parameters 
+	----------
+	element : ``str`` [case-insensitive] 
 		The symbol of the element to calculate the IMF-integrated fractional 
 		yield for. 
-	study :: str [case-insensitive] [default :: "LC18"]
-		A keyword denoting which study to adopt the yield from 
-		Keywords and their Associated Studies
-		-------------------------------------
-		"LC18"	:: Limongi & Chieffi (2018), ApJS, 237, 13
-		"CL13"	:: Chieffi & Limongi (2013), ApJ, 764, 21 
-		"NKT13"	:: Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457
-		"CL04"	:: Chieffi & Limongi (2004), ApJ, 608, 405 
-		"WW95"	:: Woosley & Weaver (1995) ApJ, 101, 181 
-	MoverH :: real number [default :: 0] 
+	study : ``str`` [case-insensitive] [default : "LC18"] 
+		A keyword denoting which study to adopt the yields from 
+
+		Keywords and their Associated Studies: 
+
+			- "LC18": Limongi & Chieffi (2018) [1]_ 
+			- "CL13": Chieffi & Limongi (2013) [2]_ 
+			- "NKT13": Nomoto, Kobayashi & Tominaga (2013) [3]_ 
+			- "CL04": Chieffi & Limongi (2004) [4]_ 
+			- "WW95": Woosley & Weaver (1995) [5]_ 
+
+	MoverH : real number [default : 0] 
 		The total metallicity [M/H] of the exploding stars. There are only a 
-		handful of metallicities recognized by each study, and VICE will 
-		raise a LookupError if this value is not one of them. 
-		Keywords and their Associated Metallicities
-		-------------------------------------------
-		"LC18"	:: [M/H] = -3, -2, -1, 0 
-		"CL13"	:: [M/H] = 0 
-		"NKT13"	:: [M/H] = -inf, -1.15, -0.54, -0.24, 0.15, 0.55 
-		"CL04"	:: [M/H] = -inf, -4, -2, -1, -0.37, 0.15 
-		"WW95"	:: [M/H] = -inf, -4, -2, -1, 0
-	rotation :: real number [default :: 0] 
+		handful of metallicities recognized by each study. 
+
+		Keywords and their Associated Metallicities: 
+
+			- "LC18": [M/H] = -3, -2, -1, 0 
+			- "CL13": [M/H] = 0 
+			- "NKT13": [M/H] = -inf, -1.15, -0.54, -0.24, 0.15, 0.55 
+			- "CL04": [M/H] = -inf, -4, -2, -1, -0.37, 0.15 
+			- "WW95": [M/H] = -inf, -4, -2, -1, 0 
+
+	rotation : real number [default : 0] 
 		The rotational velocity of the exploding stars in km/s. There are only 
-		a handful of rotational velocities recognized by each study, and 
-		VICE will raise a LookupError if this value is not one of them. 
-		Keywords and their Associated Rotational Velocities
-		---------------------------------------------------
-		"LC18"	:: v = 0, 150, 300 
-		"CL13"	:: v = 0, 300 
-		"NKT13"	:: v = 0
-		"CL04"	:: v = 0 
-		"WW95"	:: v = 0 
-	explodability :: <function> or None 
+		a handful of rotational velocities recognized by each study. 
+
+		Keywords and their Associated Rotational Velocities: 
+
+			- "LC18": v = 0, 150, 300 
+			- "CL13": v = 0, 300 
+			- "NKT13": v = 0 
+			- "CL04": v = 0 
+			- "WW95": v = 0 
+
+	explodability: <function> or ``None`` [default : ``None``] 
 		Stellar explodability as a function of mass. This function is expected 
-		to take stellar mass as the only numerical parameter, and to return a 
-		number between 0 and 1 denoting the fraction of stars at that mass 
-		which explode as a CCSN. 
-	IMF :: string [case-insensitive] or <function> [default :: "kroupa"]
+		to take stellar mass in :math:`M_\odot` as the only numberical 
+		parameter, and to return a number between 0 and 1 denoting the 
+		fraction of stars at that mass which explode as a CCSN. 
+	IMF : ``str`` [case-insensitive] or <function> [default : "kroupa"] 
 		The stellar initial mass function (IMF) to assume. Strings denote 
-		built-in IMFs, which must be either "kroupa" (1) or "salpeter" (2). 
-		Functions must accept only one numerical parameter and will be 
-		interpreted as a custom, arbitrary stellar IMF. 
-	method :: str [case-insensitive] [default :: "simpson"] 
-		The method of quadrature. The numerical rules implemented here are of 
-		the forms outlined in chapter 4 of Numerical Recipes (Press, Teukolsky, 
-		Vetterling & Flannery). 
-		Recognized Methods
-		------------------ 
-		"simpson"  
-		"trapezoid" 
-		"midpoint" 
-		"euler" 
-	m_lower :: real number [default :: 0.08] 
-		The lower mass limit on star formation in solar masses. 
-	m_upper :: real number [default :: 100] 
-		The upper mass limit on star formation in solar masses. 
-	tolerance :: real number [default :: 0.001] 
-		The numerical tolerance. The subroutines implementing Gaussian 
-		quadrature in VICE will not return a result until the fractional 
-		change between two successive integrations is smaller than this value. 
-	Nmin :: real number [default :: 64] 
+		built-in IMFs, which must be either "Kroupa" [6]_ or "Salpeter" [7]_. 
+		Functions must accept stellar mass in :math:`M_\odot` as the only 
+		numerical paraneter and will be interpreted as a custom, arbitrary 
+		stellar IMF. 
+	method : ``str`` [case-insensitive] [default : "simpson"] 
+		The method of quadrature. 
+
+		Recognized Methods: 
+
+			- "simpson" 
+			- "trapezoid" 
+			- "midpoint" 
+			- "euler" 
+
+		.. note:: These methods of quadrature are implemented according to 
+			Chapter 4 of Press, Teukolsky, Vetterling & Flannery (2007) [8]_. 
+
+	m_lower : real number [default : 0.08] 
+		The lower mass limit on star formation in :math:`M_\odot`. 
+	m_upper : real number [default : 100] 
+		The upper mass limit on star formation in :math:`M_\odot`. 
+	tolerance : real number [default : 0.001] 
+		The numerical tolerance. VICE will not return a result until the 
+		fractional change between two successive integrations is smaller than 
+		this value. 
+	Nmin : real number [default : 64] 
 		The minimum number of bins in quadrature. 
-	Nmax :: real number [default :: 2e+08] 
+	Nmax : real number [default : 2.0e+08] 
 		The maximum number of bins in quadrature. Included as a failsafe 
-		against solutions that don't converge numerically. 
+		against solutions that din't converge numerically. 
 
 	Returns 
-	======= 
-	yield :: real number 
-		The numerically determined solution. 
-	error :: real number 
-		The estimated fractional numerical error. 
+	-------
+	y : real number 
+		The numerically calculated yield. 
+	error : real number 
+		The estimated numerical error. 
 
-	Raises
-	======
-	ValueError :: 
-		:: 	The element is not built into VICE 
-		:: 	The study is not built into VICE 
-		:: 	The tolerance is not between 0 and 1 
-		:: 	m_lower > m_upper 
-		::	Explodability settings does not accept exactly 1 positional 
-			argument 
-		::	Custom IMF does not accept exactly 1 positional argument 
-		::	Built-in IMF is not recognized 
-		:: 	The method of quadrature is not built into VICE 
-		:: 	Nmin > Nmax 
-		::	Stellar mass in mass_ranges is negative 
-		:: 	Any combination of elements of mass_ranges overlap 
-	LookupError :: 
-		:: 	The study did not report yields at the specified metallicity 
-		:: 	The study did not report yields at the specified rotational
-			velocity 
-	ScienceWarning :: 
-		:: 	m_upper is larger than the largest mass on the grid reported by the 
+	Raises 
+	------
+	* ValueError 
+		- The element is not built into VICE 
+		- The study is not built into VICE 
+		- The tolerance is not between 0 and 1 
+		- m_lower > m_upper 
+		- Explodability settings does not accept exactly 1 position argument 
+		- Custom IMF does not accept exactly 1 positional argument 
+		- Built-in IMF is not recognized 
+		- The method of quadrature is not built into VICE 
+		- Nmin > Nmax 
+	* LookupError 
+		- The study did not report yields at the specified metallicity 
+		- The study did not report yields at the specified rotational velocity 
+	* ScienceWarning 
+		- m_upper is larger than the largest mass on the grid reported by the 
 			specified study. VICE extrapolates to high masses in this case. 
-		:: 	study is either "CL04" or "CL13" and the atomic number of the 
+		- study is either "CL04" or "CL13" and the atomic number of the 
 			element is between 24 and 28 (inclusive). VICE warns against 
 			adopting these yields for iron peak elements. 
-		:: 	Numerical quadrature did not converge within the maximum number 
+		- Numerical quadrature did not converge within the maximum number 
 			of allowed quadrature bins to within the specified tolerance. 
-		:: 	Explodability criteria above 25 Msun specified in combination with 
-			the Limongi & Chieffi (2018) study. 
+		- Explodability criteria specified in combination with the Limongi & 
+			Chieffi (2018) study. 
 
-	Notes
-	=====
-	This function evaluates the solution to the following equation under the 
-	assumption that all stars above 8 solar masses and below the upper mass 
-	limit on star formation explode as a core-collapse supernova. 
+	Notes 
+	-----
+	This function evaluates the solution to the following equation. 
 
-	y_x^CC = \\frac{
-		\\int_8^u M_x\\frac{dN}{dM}dM
-	}{
-		\\int_l^u M\\frac{dN}{dM}dM
-	}
+	.. math:: y_x^\text{CC} \frac{
+		\int_8^u E(m)m_x \frac{dN}{dm} dm 
+		}{
+		\int_l^u m_x \frac{dN}{dm} dm 
+		}
 
-	where M_x is the mass of the element x produced in the super of a star 
-	with initial mass M, and dN/dM is the stellar IMF. 
+	where :math:`E(m)` is the stellar explodability for progenitors of iitial 
+	mass :math:`m`, :math:`m_x` is the mass of the element :math:`x` present 
+	in the ejecta, and :math:`dN/dm` is the assumed stellar IMF. 
 
-	Explodability criteria will be overspecified when calculating yields from 
-	the Limongi & Chieffi (2018) study, in which stars above 25 Msun do not 
-	explode. The yields they report at these masses are that which comes from 
-	the wind. 
+	.. note:: Explodability criteria will be overspecified when calculating 
+		yields from the Limongi & Chieffi (2018) study, in which stars above 
+		25 :math:`M_\odot` were not forced to explode. The yields they report 
+		at these masses are only that ejected in the wind. 
 
-	Example
-	=======
+	Example Code 
+	------------
 	>>> y, err = vice.yields.ccsne.fractional("o")
 	>>> y
-	    0.005643252355030168
+		0.004859197708207693
 	>>> err 
-	    4.137197161389483e-06
+		5.07267151987336e-06
 	>>> y, err = vice.yields.ccsne.fractional("mg", study = "CL13") 
 	>>> y 
-	    0.000496663271667762 
-	# Stars from 12-15, 20-30, and 40-100 Msun explode 10%% of the time. 
+		0.0009939371276697314
+	>>> def expl(m): 
+		if 12 <= m <= 15: 
+			return 0.1 
+		elif 20 <= m <= 30: 
+			return 0.1 
+		elif m >= 40: 
+			return 0.1 
+		else: 
+			return 1 
 	>>> y, err = vice.yields.ccsne.fractional("mg", study = "CL13", 
-		mass_ranges = [[12, 15], [20, 30], [40, 100]], 
-		explodability = [0.1, 0.1, 0.1]) 
-	>>> y 
+		explodability = expl) 
+	>>> y  
 		0.00039911211487501523 
 
-	References
-	==========
-	(1) Kroupa (2001), MNRAS, 322, 231 
-	Press, Teukolsky, Vetterling & Flannery, Numerical Recipes, (2007), 
+	.. [1] Limongi & Chieffi (2018), ApJS, 237, 13 
+	.. [2] Chieffi & Limongi (2013), ApJ, 764, 21 
+	.. [3] Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457 
+	.. [4] Chieffi & Limongi (2004), ApJ, 608, 405 
+	.. [5] Woosley & Weaver (1995), ApJ, 101, 181 
+	.. [6] Kroupa (2001), MNRAS, 231, 322 
+	.. [7] Salpeter (1955), ApJ, 121, 161 
+	.. [8] Press, Teukolsky, Vetterling & Flannery (2007), Numerical Recipes, 
 		Cambridge University Press 
-	(2) Salpeter (1955), ApJ, 121, 161 
 	""" 
 
 	# Type checking errors 
@@ -275,13 +277,8 @@ smaller than maximum number of bins.""")
 		def uniform(m): 
 			return 1.0 
 		uniform_explodability = callback1_nan_inf(uniform) 
-		# def uniform_explodability(m): 
-		# 	return 1.0 
-		# uniform_explodability = lambda m: 1.0 
-		# explodability_cb = callback_1arg_from_pyfunc(uniform_explodability)  
 		callback_1arg_setup(explodability_cb, uniform_explodability) 
 	elif callable(explodability): 
-		# explodability_cb = callback_1arg_from_pyfunc(explodability) 
 		exp_cb = callback1_nan_inf(explodability) 
 		callback_1arg_setup(explodability_cb, exp_cb) 
 	else: 

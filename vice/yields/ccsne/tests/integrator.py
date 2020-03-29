@@ -11,7 +11,6 @@ from .._yield_integrator import integrate as fractional
 from ....testing import moduletest 
 from ....testing import unittest 
 import warnings 
-warnings.filterwarnings("ignore") 
 import math 
 
 

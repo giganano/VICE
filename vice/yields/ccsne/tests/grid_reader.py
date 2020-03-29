@@ -4,9 +4,9 @@ __all__ = ["test_table"]
 from ....core.dataframe._ccsn_yield_table import ccsn_yield_table 
 from ...._globals import _RECOGNIZED_ELEMENTS_ 
 from ....testing import unittest 
-from ..errors import _RECOGNIZED_STUDIES_ 
-from ..errors import _MOVERH_ 
-from ..errors import _ROTATION_ 
+from .._errors import _RECOGNIZED_STUDIES_ 
+from .._errors import _MOVERH_ 
+from .._errors import _ROTATION_ 
 from ..grid_reader import table 
 
 

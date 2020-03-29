@@ -1,33 +1,41 @@
-"""
-Core Collapse Supernovae Nucleosynthetic Yield Tools 
-==================================================== 
-Here users can both calculate IMF-integrated nucleosynthetic yields from core 
-collapse supernovae as well as modify their yield settings, which VICE will 
-adopt in their simulations. VICE has built-in tables allowing users to 
-calculate IMF-integrated yields from the results of supernovae simulations ran 
-by four different studies, which can also be directly imported as the yield 
-settings. 
+r"""
+Core Collapse Supernovae (CCSNe) Nucleosynthetic Yield Tools 
 
-Included Features 
-================ 
-fractional :: <function> 
-	Calculates IMF-integrated yields of a given element.  
-settings :: VICE dataframe 
-	Stores the user's current settings for these yields. 
+Calculate IMF-averaged yields and modify yield settings for use in 
+simulations. This package provides tables from the following nucleosynthetic 
+yield studies: 
 
-Built-in Yield Tables Available for Import
-========================================== 
-CL04 :: Chieffi & Limongi (2004) 
-CL13 :: Chieffi & Limongi (2013) 
-LC18 :: Limongi & Chieffi (2018) 
-WW95 :: Woosley & Weaver (1995) 
+	- Limongi & Chieffi (2018) [1]_ 
+	- Chieffi & Limongi (2013) [2]_ 
+	- Nomoto, Kobayashi & Tominaga (2013), ARA&A [3]_ 
+	- Chieffi & Limongi (2004) [4]_ 
+	- Woosley & Weaver (1995) [5]_ 
 
-References 
-========== 
-Chieffi & Limongi (2004), ApJ, 608, 405 
-Chieffi & Limongi (2013), ApJ, 764, 21 
-Limongi & Chieffi (2018), ApJS, 237, 13
-Woosley & Weaver (1995), ApJ, 101, 181 
+Contents 
+--------
+fractional : <function> 
+	Calculate an IMF-averaged yield for a given element. 
+table : <function> 
+	Obtain the table of mass yields and progenitor masses for a given element 
+	from a given study. 
+settings : ``dataframe`` 
+	Stores current settings for these yields. 
+LC18 : yield preset 
+	Sets yields according to the Limongi & Chieffi (2018) study. 
+CL13 : yield preset 
+	Sets yields according to the Chieffi & Limongi (2013) study. 
+NKT13 : yield preset 
+	Sets yields according to the Nomoto, Kobayashi & Tominaga (2013) study. 
+CL04 : yield preset 
+	Sets yields according to the Chieffi & Limongi (2004) study. 
+WW95 : yield preset 
+	Sets yields according to the Woosley & Weaver (1995) study. 
+
+.. [1] Limongi & Chieffi (2018), ApJS, 237, 13 
+.. [2] Chieffi & Limongi (2013), ApJ, 764, 21 
+.. [3] Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457 
+.. [4] Chieffi & Limongi (2004), ApJ, 608, 405 
+.. [5] Woosley & Weaver (1995), ApJ, 101, 181 
 """
 
 from __future__ import absolute_import 

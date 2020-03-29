@@ -52,7 +52,7 @@ cdef class base:
 
 	Allowed Data Types 
 	------------------
-	Any 
+	- All 
 
 	Functions 
 	---------
@@ -116,12 +116,14 @@ cdef class base:
 			raise TypeError("""Can only initialize dataframe from type dict. \
 Got: %s""" % (type(frame))) 
 
+
 	def __call__(self, key): 
 		""" 
-		Return the same thing as __getitem__ ---> this allows users to call 
-		the dataframe and achieve the same effect. 
+		Return the same thing as __getitem__. 
 		""" 
 		return self.__getitem__(key) 
+
+
 
 	def __getitem__(self, key): 
 		""" 
@@ -139,6 +141,7 @@ Got: %s""" % (type(frame)))
 			raise IndexError("""Only integers and strings are valid indeces. \
 Got: %s""" % (type(key))) 
 
+
 	def __subget__str(self, key): 
 		""" 
 		Performs the __getitem__ operation when the key is a string. 
@@ -147,6 +150,7 @@ Got: %s""" % (type(key)))
 			return self._frame[key.lower()] 
 		else: 
 			raise KeyError("Unrecognized dataframe key: %s" % (key)) 
+
 
 	def __subget__number(self, key): 
 		""" 
@@ -178,6 +182,7 @@ all values array-like.""")
 			raise IndexError("""Index must be interpreted as an integer. \
 Got: %s""" % (type(key))) 
 
+
 	def __setitem__(self, key, value): 
 		""" 
 		__setitem__ only allowed given a string. 
@@ -187,6 +192,7 @@ Got: %s""" % (type(key)))
 		else: 
 			raise TypeError("""Item assignment must be done via type str. \
 Got: %s""" % (type(key))) 
+
 
 	def __repr__(self): 
 		"""
@@ -221,12 +227,14 @@ Got: %s""" % (type(key)))
 		rep += '}'
 		return rep 
 
+
 	def __str__(self): 
 		""" 
 		Returns self.__repr__() 
 		""" 
 		return self.__repr__() 
 			
+
 	def __eq__(self, other): 
 		""" 
 		Returns True if the dataframes have the same contents. In the case of 
@@ -245,11 +253,13 @@ Got: %s""" % (type(key)))
 		else:
 			return False 
 
+
 	def __ne__(self, other): 
 		""" 
 		Returns not self.__eq__(other) 
 		""" 
 		return not self.__eq__(other) 
+
 
 	def __enter__(self): 
 		""" 
@@ -257,84 +267,200 @@ Got: %s""" % (type(key)))
 		""" 
 		return self 
 
+
 	def __exit__(self, exc_type, exc_value, exc_tb): 
 		""" 
 		Raises all exceptions inside with statements 
 		""" 
 		return exc_value is None 
 
-	def keys(self): 
-		"""
-		Signature: vice.dataframe.keys() 
 
-		Returns the dataframe keys in their lower-case format 
+	def keys(self): 
+		r"""
+		Returns the keys to the dataframe in their lower-case format 
+
+		**Signature**: x.keys() 
+
+		Parameters 
+		----------
+		x : ``dataframe`` 
+			An instance of this class 
+
+		Returns 
+		-------
+		keys : ``list`` 
+			A list of lower-case strings which can be used to access the 
+			values stored in this dataframe. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.dataframe({
+			"a": [1, 2, 3], 
+			"b": [4, 5, 6], 
+			"c": [7, 8, 9]}) 
+		>>> example 
+		vice.dataframe{
+			a --------------> [1, 2, 3]
+			b --------------> [4, 5, 6]
+			c --------------> [7, 8, 9]
+		} 
+		>>> example.keys() 
+		['a', 'b', 'c'] 
 		""" 
 		return [i.lower() for i in self._frame.keys()] 
 
-	def todict(self): 
-		"""
-		Signature: vice.dataframe.todict() 
 
-		Returns the dataframe as a standard python dictionary. Note however 
-		that python dictionaries are case-sensitive, and are thus less 
-		versatile than this object. 
+	def todict(self): 
+		r"""
+		Returns the dataframe as a standard python dictionary 
+
+		**Signature**: x.todict() 
+
+		Parameters 
+		----------
+		x : ``dataframe`` 
+			An instance of this class 
+
+		Returns 
+		-------
+		copy : ``dict`` 
+			A dictionary copy of the dataframe. 
+
+		.. note:: Python dictionaries are case-sensitive, and are thus less 
+			flexible than this class. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.dataframe({
+			"a": [1, 2, 3], 
+			"b": [4, 5, 6], 
+			"c": [7, 8, 9]}) 
+		>>> example 
+		vice.dataframe{
+			a --------------> [1, 2, 3]
+			b --------------> [4, 5, 6]
+			c --------------> [7, 8, 9]
+		} 
+		>>> example.todict() 
+		{'a': [1, 2, 3], 'b': [4, 5, 6], 'c': [7, 8, 9]} 
 		""" 
 		return self._frame 
 
+
 	def remove(self, key): 
-		""" 
+		r""" 
 		Remove an element of the dataframe 
 
-		Signature: vice.dataframe.remove(key) 
+		**Signature**: x.remove(key) 
 
 		Parameters 
-		========== 
-		key :: str [case-insensitive] 
-			The dataframe key to remove 
+		----------
+		x : ``dataframe`` 
+			An instance of this class 
+		key : ``str`` [case-insensitive] 
+			The key to remove from the dataframe 
 
 		Raises 
-		====== 
-		KeyError :: 
-			::	Invalid dataframe key 
+		------
+		* KeyError 
+			- Key is not in the dataframe 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.dataframe({
+			"a": [1, 2, 3], 
+			"b": [4, 5, 6], 
+			"c": [7, 8, 9]}) 
+		>>> example 
+		vice.dataframe{
+			a --------------> [1, 2, 3]
+			b --------------> [4, 5, 6]
+			c --------------> [7, 8, 9]
+		} 
+		>>> example.remove("a") 
+		vice.dataframe{
+			b --------------> [4, 5, 6] 
+			c --------------> [7, 8, 9] 
+		} 
+		>>> example.remove("b") 
+		vice.dataframe{
+			a --------------> [1, 2, 3] 
+			c --------------> [7, 8, 9] 
+		} 
+		>>> example.remove("c") 
+		vice.dataframe{ 
+			a --------------> [1, 2, 3] 
+			b --------------> [4, 5, 6] 
+		} 
 		""" 
 		if key.lower() in self._frame.keys(): 
 			del self._frame[key.lower()] 
 		else: 
 			raise KeyError("Unrecognized dataframe key: %s" % (key)) 
 
+
 	def filter(self, key, relation, value): 
-		""" 
+		r""" 
 		Obtain a copy of the dataframe whose elements satisfy a filter. Only 
 		applies to dataframes whose values are all array-like. 
 
-		Signature: vice.dataframe.filter(key, relation, value) 
+		**Signature**: x.filter(key, relation, value) 
 
 		Parameters 
-		========== 
-		key :: str [case-insensitive] 
-			The dataframe key to train the filter on 
-		relation :: str 
-			Either '<', '<=', '=', '==', '>=', or '>', denoting the relation to 
-			train the filter on 
-		value :: real number 
-			The value to compare to in filtering 
+		----------
+		x : ``dataframe`` 
+			An instance of this class 
+		key : ``str`` [case-insensitive] 
+			The dataframe key to filter based on 
+		relation : ``str`` 
+			Either '<', '<=', '=', '==', '>=', or '>', denoting the relation 
+			to filter based on. 
+		value : real number 
+			The value to filter based on. 
 
 		Returns 
-		======= 
-		filtered :: dataframe 
+		-------
+		filtered : ``dataframe`` 
 			A dataframe whose elements are only those which satisfy the 
-			specified filter. This will always be an instance of the base class, 
-			even if this function is called from an instance of a derived class. 
+			specified filter. This will always be an instance of the base 
+			class, even if the function called with an instance of a derived 
+			class. 
 
 		Raises 
-		====== 
-		KeyError :: 
-			::	Invalid dataframe key 
-			::	key is not a string 
-		ValueError :: 
-			::	Invalid relation 
-		TypeError :: 
-			::	Value is a not a real number 
+		------
+		* KeyError 
+			- Key is not in the dataframe 
+		* ValueError 
+			- Invalid relation 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.dataframe({
+			"a": [1, 2, 3], 
+			"b": [4, 5, 6], 
+			"c": [7, 8, 9]}) 
+		>>> example 
+		vice.dataframe{
+			a --------------> [1, 2, 3]
+			b --------------> [4, 5, 6]
+			c --------------> [7, 8, 9]
+		} 
+		>>> example.filter("a", "=", 2) 
+		vice.dataframe{
+			a --------------> [2] 
+			b --------------> [5] 
+			c --------------> [8] 
+		} 
+		>>> example.filter("c", "<=", 8) 
+		vice.dataframe{
+			a --------------> [1, 2] 
+			b --------------> [4, 5] 
+			c --------------> [7, 8] 
+		}
 		""" 
 		if isinstance(key, strcomp): 
 			if key.lower() in self.keys(): 
@@ -375,7 +501,7 @@ all values array-like.""")
 			else: 
 				raise KeyError("Invalid dataframe key: %s" % (key)) 
 		else: 
-			raise KeyError("Key must be of type str for sieve. Got: %s" % (
+			raise KeyError("Key must be of type str for filter. Got: %s" % (
 				type(key))) 
 
 

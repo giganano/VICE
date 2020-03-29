@@ -28,7 +28,6 @@ References
 __all__ = ["_DEFAULT_FUNC_", "_DEFAULT_BINS_", "_RECOGNIZED_ELEMENTS_", 
 	"_RECOGNIZED_IMFS_"] 
 
-import warnings
 import os
 
 
@@ -103,7 +102,7 @@ def _VERSION_ERROR_():
 	raise RuntimeError(message)	
 
 
-class ScienceWarning(UserWarning): 
+class ScienceWarning(Warning): 
 	"""
 	A custom warning class designed to treat as a distinct set of warnings 
 	those related to the scientific accuracy or precision of values returned 
@@ -123,7 +122,7 @@ class ScienceWarning(UserWarning):
 	pass 
 
 
-class VisibleDeprecationWarning(UserWarning): 
+class VisibleDeprecationWarning(Warning): 
 	""" 
 	A deprecation warning which - contrary to the python default deprecation 
 	warning - is visible by default. Features which raise this warning are 

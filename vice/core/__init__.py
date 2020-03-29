@@ -14,6 +14,7 @@ if not __VICE_SETUP__:
 		"test" 
 	] 
 
+	import warnings 
 	from .singlezone import singlezone 
 	from .mirror import mirror 
 	from .multizone import multizone 

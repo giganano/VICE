@@ -1,83 +1,93 @@
-"""
-Chieffi & Limongi (2014), ApJ, 608, 405 Nucleosynthetic Yield Tools 
-=================================================================== 
-Importing this module will automatically set all yield settings 
-from core collapse supernovae to the IMF-integrated yields as 
-determined from the simulations ran by Chieffi & Limongi (2004) at 
-Z = 0.02 ([M/H] = 0.15 if the solar abundance is Z = 0.014; Asplund 
-et al. 2009). In doing so, it will default to an upper mass limit on star 
-formation of 35 Msun. This is done to minimize numerical artifacts; this is 
-the highest mass on the Chieffi & Limongi (2004) grid. 
+r"""
+Chieffi & Limongi (2014), ApJ, 608, 405 core collapse supernova (CCSN) yields 
 
-VICE achieves this by calling yields.ccsne.fractional for every 
-element built into the software and storing the returned value in 
-yields.ccsne.settings.  
+**Signature**: from vice.yields.ccsne import CL04 
 
-set_params :: Update the parameters with which the yields are calculated 
+Importing this module will automatically set the CCSN yield settings for all 
+elements to the IMF-averaged yields calculated with the Chieffi & Limongi 
+(2004) yield table for [M/H] = 0.15 stars. This will adopt an upper mass limit 
+of 35 :math:`M_\odot`. 
 
-Notes 
-===== 
-By importing this module, the user does not sacrifice the flexibility of 
-VICE's user specified yields. The fields of vice.yields.ccsne.settings can 
-still be modified in whatever manner the user sees fit. 
+.. tip:: By importing this module, the user does not sacrifice the ability to 
+	specify their yield settings directly. 
 
-This module is not imported with the simple 'import vice' statement. 
+.. note:: [M/H] = 0.15 corresponds to Z = 0.02 if the solar abundance is 
+	Z = 0.014 (Asplund et al. 2009) [1]_. 
 
-Example 
-======= 
->>> from vice.yields.ccsne import CL04 
->>> CL04.set_params(lower = 0.3, upper = 40, IMF = "salpeter") 
+.. note:: This module is not imported with a simple "import vice" statement. 
 
-References 
-========== 
-Asplund et al. (2009), ARA&A, 47, 481 
-"""
+Contents 
+--------
+set_params : <function> 
+	Update the parameters with which the yields are calculated. 
+
+.. [1] Asplund et al. (2009), ARA&A, 47, 481 
+""" 
 
 from __future__ import absolute_import 
-from .. import settings as __settings 
-from .. import fractional as __fractional 
-from ...._globals import _RECOGNIZED_ELEMENTS_ 
+try: 
+	__VICE_SETUP__ 
+except NameError: 
+	__VICE_SETUP__ = False 
 
-for i in range(len(_RECOGNIZED_ELEMENTS_)): 
-	__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(_RECOGNIZED_ELEMENTS_[i], 
-		study = "CL04", MoverH = 0.15, m_upper = 35)[0] 
-del i 
-del absolute_import 
+if not __VICE_SETUP__: 
 
-def set_params(**kwargs): 
-	"""
-	Update the parameters with which the yields are calculated from the 
-	Chieffi & Limongi (2004) data. 
+	__all__ = ["set_params"] 
+	from ...._globals import _RECOGNIZED_ELEMENTS_ 
+	from .. import fractional as __fractional 
+	from .. import settings as __settings 
 
-	Parameters 
-	========== 
-	kwargs :: varying types 
-		Keyword arguments to pass to yields.ccsne.fractional 
+	for i in range(len(_RECOGNIZED_ELEMENTS_)): 
+		__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(
+			_RECOGNIZED_ELEMENTS_[i], 
+			study = "CL04", 
+			MoverH = 0.15, 
+			m_upper = 35
+		)[0] 
 
-	Raises 
-	====== 
-	TypeError :: 
-		::	The user has specified a keyword argument "study" 
-	Other exceptions are raised by yields.ccsne.fractional 
 
-	Example 
-	======= 
-	>>> from vice.yields.ccsne import CL04 
-	>>> CL04.set_params(lower = 0.3, upper = 40, IMF = "salpeter") 
+	def set_params(**kwargs): 
+		r""" 
+		Update the parameter with which the yields are calculated from the 
+		Chieffi & limongi (2004) [1]_ data. 
 
-	References 
-	========== 
-	Chieffi & Limongi (2004), ApJ, 608, 405 
-	"""
-	if "study" in kwargs.keys(): 
-		raise TypeError("set_params got an unexpected keyword argument: 'study'") 
-	else: 
-		if "MoverH" not in kwargs.keys(): 
-			kwargs["MoverH"] = 0.15 
-		else:
-			pass 
-		for i in range(len(_RECOGNIZED_ELEMENTS_)): 
-			__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(
-				_RECOGNIZED_ELEMENTS_[i], study = "CL04", **kwargs)[0] 
-		del i 
+		**Signature**: vice.yields.ccsne.CL04.set_params(\*\*kwargs) 
+
+		Parameters 
+		----------
+		kwargs : varying types 
+			Keyword arguments to pass to vice.yields.ccsne.fractional. 
+
+		Raises 
+		------
+		* TypeError 
+			 - Received a keyword argument "study". This will always be "CL04" 
+				 when called from this module. 
+
+		Other exceptions are raised by vice.yields.ccsne.fractional. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> from vice.yields.ccsne import CL04 
+		>>> CL04.set_params(lower = 0.3, upper = 40, IMF = "salpeter") 
+
+		.. seealso:: vice.yields.ccsne.fractional 
+
+		.. [1] Chieffi & Limongi (2004), ApJ, 608, 405 
+		""" 
+		if "study" in kwargs.keys(): 
+			raise TypeError("Got an unexpected keyword argument: 'study'") 
+		else: 
+			if "MoverH" not in kwargs.keys(): 
+				# fractional will default to 0, override this 
+				kwargs["MoverH"] = 0.15 
+			else: 
+				pass 
+			for i in range(len(_RECOGNIZED_ELEMENTS_)): 
+				__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(
+					_RECOGNIZED_ELEMENTS_[i], study = "CL04", **kwargs)[0] 
+
+else: 
+	pass 
 

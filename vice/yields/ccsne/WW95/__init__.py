@@ -1,79 +1,74 @@
-"""
-Woosley & Weaver (1995), ApJ, 101, 181 Nucleosynthetic Yield Tools 
-================================================================== 
-Importing this module will automatically set all yield settings 
-from core collapse supernovae to the IMF-integrated yields as 
-determined from the simulations ran by Woosley & Weaver (1995) at 
-solar metallicity. In doing so, it will default to an upper mass limit on star 
-formation of 40 Msun. This is done to minimize numerical artifacts; this is 
-the highest mass on the Woosley & Weaver (1995) grid. 
+r"""
+Woosley & Weaver (1995), ApJ, 101, 181 core collapse supernova (CCSN) yields 
 
-VICE achieves this by calling yields.ccsne.fractional for every 
-element built into the software and storing the returned value in 
-yields.ccsne.settings.  
+**Signature**: from vice.yields.ccsne import WW95 
 
-set_params :: Update the parameters with which the yields are calculated.  
+Importing this module will automatically set the CCSN yield settings for all 
+elements to the IMF-averaged yields calculated with the Woosley & Weaver 
+(1995) yield table for [M/H] = 0 stars. This will adopt an upper mass limit 
+of 40 :math:`M_\odot`. 
 
-Notes 
-===== 
-By importing this module, the user does not sacrifice the flexibility of 
-VICE's user-specified yields. After importing this module, the fields of 
-vice.yields.ccsne.settings can still be modified in whatever manner the 
-user sees fit. 
+.. tip:: By importing this module, the user does not sacrifice the ability to 
+	specify their yield settings directly. 
 
-This module is not import with the simple 'import vice' statement. 
+.. note:: This module is not imported with a simple "import vice" statement. 
 
-Example 
-======= 
->>> from vice.yields.ccsne import WW95 
->>> WW95.set_params(lower = 0.3, upper = 40, IMF = "salpeter") 
+Contents 
+--------
+set_params : <function> 
+	Update the parameters with which the yields are calculated. 
 """
 
 from __future__ import absolute_import 
-from .. import settings as __settings
-from .. import fractional as __fractional
-from ...._globals import _RECOGNIZED_ELEMENTS_ 
+try: 
+	__VICE_SETUP__ 
+except NameError: 
+	__VICE_SETUP__ = False 
 
-for i in _RECOGNIZED_ELEMENTS_: 
-	__settings[i] = __fractional(i, study = "WW95", m_upper = 40)[0] 
-del i 
-del absolute_import 
+if not __VICE_SETUP__: 
 
-def set_params(**kwargs): 
-	"""
-	Update the parameters with which the yields are calculated from the 
-	Woosley & Weaver (1995) data. 
+	__all__ = ["set_params"] 
+	from ...._globals import _RECOGNIZED_ELEMENTS_ 
+	from .. import fractional as __fractional 
+	from .. import settings as __settings 
 
-	Parameters 
-	========== 
-	kwargs :: varying types 
-		Keyword arguments to pass to yields.ccsne.fractional 
+	for i in _RECOGNIZED_ELEMENTS_: 
+		__settings[i] = __fractional(i, study = "WW95", m_upper = 40)[0] 
 
-	Raises 
-	====== 
-	TypeError :: 
-		::	The user has specified a keyword argument "study". 
-	Other exceptions are raised by yields.ccsne.fractional  
+	def set_params(**kwargs): 
+		r"""
+		Update the parameters with which the yields are calculated from the 
+		Woosley & Weaver (1995) [1]_ data. 
 
-	See Also 
-	======== 
-	yields.ccsne.fractional docstring 
+		Parameters 
+		----------
+		kwargs : varying types 
+			Keyword arguments to pass to vice.yields.ccsne.fractional. 
 
-	Example 
-	======= 
-	>>> from vice.yields.ccsne import WW95 
-	>>> WW95.set_params(lower = 0.3, upper = 40, IMF = "salpeter") 
+		Raises 
+		------
+		* TypeError 
+			- Received a keyword argument "study". This will always be "WW95" 
+				when called from this module. 
 
-	References 
-	========== 
-	Woosley & Weaver (1995), ApJ, 101, 181 
-	"""
-	if "study" in kwargs.keys(): 
-		raise TypeError("set_params got an unexpected keyword argument: 'study'") 
-	else:
-		for i in _RECOGNIZED_ELEMENTS_: 
-			__settings[i] = __fractional(i, study = "WW95", **kwargs)[0] 
-		del i 
+		Other exceptions are raised by vice.yields.ccsne.fractional. 
 
+		Example Code 
+		------------
+		>>> import vice 
+		>>> from vice.yields.ccsne import WW95 
+		>>> WW95.set_params(lower = 0.3, upper = 45, IMF = "salpeter") 
 
+		.. seealso:: vice.yields.ccsne.fractional 
+
+		.. [1] Woosley & Weaver (1995), ApJ, 101, 181 
+		"""
+		if "study" in kwargs.keys(): 
+			raise TypeError("Got an unexpected keyword argument: 'study'") 
+		else:
+			for i in _RECOGNIZED_ELEMENTS_: 
+				__settings[i] = __fractional(i, study = "WW95", **kwargs)[0] 
+
+else: 
+	pass 
 

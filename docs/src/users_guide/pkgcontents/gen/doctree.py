@@ -35,7 +35,7 @@ class doctree:
 			rep += ".. toctree::\n" 
 			rep += "\t:titlesonly:\n"
 			# rep += "\t:caption: Quick Links\n" 
-			rep += "\t:maxdepth: 3\n\n" 
+			rep += "\t:maxdepth: 5\n\n" 
 			for i in self.subs: 
 				rep += "\t%s\n" % (i.filename[:-4]) # remove .rst extension  
 		return rep 
