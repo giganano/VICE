@@ -45,6 +45,15 @@ cdef class base:
 	* TypeError 
 		- frame has a key that is not of type ``str`` 
 
+	Allowed Keys 
+	------------
+	- ``str`` [case-insensitive] : names to assign to the quantities (or lists 
+		thereof) stored in this dataframe. 
+
+	Allowed Data Types 
+	------------------
+	Any 
+
 	Functions 
 	---------
 	- keys 

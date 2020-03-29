@@ -23,54 +23,68 @@ from . cimport _agb_yield_settings
 cdef class agb_yield_settings(yield_settings): 
 
 	""" 
-	A subclass of the yield_settings subclass which allows either functions 
-	that accept TWO (rather than one) numerical values or a string denoting a 
-	particular study. 
+	The VICE dataframe: derived class (inherits from yield_settings) 
 
-	There is only one instance of this class within VICE - the user's 
-	AGB star yield settings at vice.yields.agb.settings. These dataframes 
-	should NOT be directly assigned by the user; that is, only their existing 
-	fields should be modified. 
+	Stores the current nucleosynthetic yield settings for asymptotic giant 
+	branch (AGB) stars. 
 
-	vice.yields.agb.settings 
-	======================== 
-	Fractional yields from AGB stars as a function of stellar mass and total 
-	metallicity Z. 
+	Allowed Keys 
+	------------
+	- ``str`` [case-insensitive] : symbols of elements on the periodic table. 
 
-	See docstring of VICE dataframe base class for more information. 
+	Allowed Data Types 
+	------------------
+	- ``str`` [case-insensitive] : keywords 
+		Denote a built-in table of net yields published in a nucleosynthesis 
+		study. 
+
+		Recognized Keywords: 
+
+			- "cristallo11": Cristallo et al. (2011) [1]_ 
+			- "karakas10": Karakas (2010) [2]_ 
+
+	- <function> : Mathematical function describing the yield. 
+		Must accept the stellar mass in :math:`M_\odot` and the metallicity by 
+		mass :math:`Z` as parameters, in that order. 
+
+	Built-in Instances 
+	------------------
+	- vice.yields.agb.settings 
+		The user's current nucleosynthetic yield settings for AGB stars. 
+
+	Functions 
+	---------
+	- keys 
+	- todict 
+	- restore_defaults 
+	- factory_settings 
+	- save_defaults 
+
+	**Signature**: vice.core.dataframe.agb_yield_settings(frame, name, 
+	allow_funcs, config_field) 
+
+	.. warning:: Users should avoid creating new instances of derived classes 
+		of the VICE dataframe. 
+
+	Parameters 
+	----------
+	frame : ``dict`` 
+		A dictionary from which to construct the dataframe 
+	name : ``str`` 
+		String denoting a description of the values stored in this dataframe 
+	allow_funcs : ``bool`` 
+		If True, functional attributes will be allowed. 
+	config_field : ``str`` 
+		The name of the ".config" file that is stored in VICE's install 
+		directory whenever the user saves new default yield settings. 
+
+	.. [1] Cristallo et al. (2011), ApJS, 197, 17 
+	.. [2] Karakas (2010), MNRAS, 403, 1413 
 	""" 
 
 	def __init__(self, frame, name, allow_funcs, config_field): 
-		"""
-		Parameters 
-		========== 
-		frame :: dict 
-			A python dictionary to construct the dataframe from 
-		""" 
-		#=====================================================================#
-		"""
-		(The above docstring is entered purely to keep the visible __init__ 
-		docstring consistent across subclasses and instances of the VICE 
-		dataframe. Below is the actual docstring for this function.)
-
-		Parameters
-		==========
-		frame :: dict 
-			A python dictionary to construct the dataframe from 
-		name :: str 
-			A string denoting the name of the objects stored as fields in 
-			this dataframe (i.e. core-collapse yield settings.) 
-		allow_funcs :: bool 
-			A boolean describing whether or not functional attribute are allowed 
-		config_field :: str 
-			The name of the '.config' file that is stored whenever the user 
-			saves new default yield settings. 
-		""" 
-		msg = "Custom instances of this dataframe are not allowed." 
-		assert config_field == "agb", msg  
-		assert allow_funcs, msg 
-		assert name == "AGB yield", msg 
 		super().__init__(frame, name, allow_funcs, config_field) 
+
 
 	def __setitem__(self, key, value): 
 		# These import statements cause import errors when in the preamble 

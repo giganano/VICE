@@ -65,3 +65,13 @@ cdef class elemental_settings(base):
 		# Allowing this could let user's break their own singlezone objects 
 		raise TypeError("This dataframe does not support item deletion.") 
 
+
+	def filter(self, key, relation, value): 
+		""" 
+		Not supported by this derived class of the VICE dataframe -> will 
+		throw a TypeError when called. 
+
+		.. seealso:: vice.dataframe.filter 
+		""" 
+		raise TypeError("This dataframe does not support the filter function.") 
+

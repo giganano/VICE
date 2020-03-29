@@ -48,6 +48,12 @@ _CONFIG_ = {
 	vice.core.dataframe.base: {
 		"filename":		"vice.core.dataframe.base.rst", 
 		"header": 		"Base Class", 
+		"subs": 		[
+		]  
+	}, 
+	vice.core.dataframe.agb_yield_settings: {
+		"filename": 	"vice.core.dataframe.agb_yield_settings.rst", 
+		"header": 		"vice.core.dataframe.agb_yield_settings", 
 		"subs": 		[] 
 	}, 
 	vice.yields: {
@@ -61,12 +67,18 @@ _CONFIG_ = {
 		"filename": 	"vice.yields.agb.rst", 
 		"header": 		"vice.yields.agb", 
 		"subs": 		[
-			vice.yields.agb.grid 
+			vice.yields.agb.grid, 
+			vice.core.dataframe.agb_yield_settings 
 		]  
 	}, 
 	vice.yields.agb.grid: {
 		"filename": 	"vice.yields.agb.grid.rst", 
 		"header": 		"vice.yields.agb.grid", 
+		"subs": 		[] 
+	}, 
+	vice.core.dataframe.agb_yield_settings: {
+		"filename": 	"vice.yields.agb.settings.rst", 
+		"header": 		"vice.yields.agb.settings", 
 		"subs": 		[] 
 	}, 
 	vice.imf: {

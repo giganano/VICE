@@ -4,6 +4,8 @@ Nucleosynthetic Yield Tools
 Each sub-package stores built-in yield tables and user-presets for each 
 element from each enrichment channel. 
 
+**Signature**: vice.yields 
+
 Contains 
 --------
 agb : <package> 
