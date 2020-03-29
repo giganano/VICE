@@ -6,7 +6,6 @@ their docstrings.
 import warnings 
 warnings.filterwarnings("ignore") 
 import vice 
-from vice.core.dataframe import base 
 
 
 _CONFIG_ = {
@@ -17,7 +16,7 @@ _CONFIG_ = {
 			vice.cumulative_return_fraction, 
 			vice.main_sequence_mass_fraction, 
 			vice.single_stellar_population, 
-			vice.core.dataframe, 
+			vice.dataframe, 
 			vice.yields, 
 			vice.imf, 
 			vice.singlezone 
@@ -25,42 +24,62 @@ _CONFIG_ = {
 	}, 
 	vice.cumulative_return_fraction: {
 		"filename": 	"vice.cumulative_return_fraction.rst", 
-		"header": 		"Cumulative Return Fractions", 
+		"header": 		"vice.cumulative_return_fraction", 
 		"subs": 		[] 
 	}, 
 	vice.main_sequence_mass_fraction: {
 		"filename": 	"vice.main_sequence_mass_fraction.rst", 
-		"header": 		"Main Sequence Mass Fractions", 
+		"header": 		"vice.main_sequence_mass_fraction", 
 		"subs": 		[] 
 	}, 
 	vice.single_stellar_population: {
 		"filename": 	"vice.single_stellar_populaiton.rst", 
-		"header": 		"Single Stellar Populations", 
+		"header": 		"vice.single_stellar_population", 
 		"subs": 		[] 
 	}, 
-	vice.core.dataframe: {
-		"filename": 	"vice.core.dataframe.rst", 
-		"header": 		"", 
-		"subs": 		[
-			vice.core.dataframe.base 
-		] 
-	}, 
-	vice.core.dataframe.base: {
+	# vice.core.dataframe: {
+	# 	"filename": 	"vice.core.dataframe.rst", 
+	# 	"header": 		"", 
+	# 	"subs": 		[
+	# 		vice.core.dataframe.base 
+	# 	] 
+	# }, 
+	vice.dataframe: {
 		"filename":		"vice.core.dataframe.base.rst", 
-		"header": 		"Base Class", 
+		"header": 		"vice.dataframe", 
 		"subs": 		[
+			vice.dataframe.keys, 
+			vice.dataframe.todict, 
+			vice.dataframe.remove, 
+			vice.dataframe.filter 
 		]  
 	}, 
-	vice.core.dataframe.agb_yield_settings: {
-		"filename": 	"vice.core.dataframe.agb_yield_settings.rst", 
-		"header": 		"vice.core.dataframe.agb_yield_settings", 
+	vice.dataframe.keys: {
+		"filename": 	"vice.core.dataframe.base.keys.rst", 
+		"header": 		"vice.dataframe.keys", 
+		"subs": 		[] 
+	}, 
+	vice.dataframe.todict: {
+		"filename": 	"vice.core.dataframe.base.todict.rst", 
+		"header": 		"vice.dataframe.todict", 
+		"subs": 		[] 
+	}, 
+	vice.dataframe.remove: {
+		"filename": 	"vice.core.dataframe.base.remove.rst", 
+		"header": 		"vice.dataframe.remove", 
+		"subs": 		[] 
+	}, 
+	vice.dataframe.filter: {
+		"filename": 	"vice.core.dataframe.base.filter.rst", 
+		"header": 		"vice.dataframe.filter", 
 		"subs": 		[] 
 	}, 
 	vice.yields: {
 		"filename": 	"vice.yields.rst", 
-		"header": 		"", 
+		"header": 		"vice.yields", 
 		"subs": 		[
-			vice.yields.agb 
+			vice.yields.agb, 
+			vice.yields.ccsne 
 		]  
 	}, 
 	vice.yields.agb: {
@@ -81,9 +100,14 @@ _CONFIG_ = {
 		"header": 		"vice.yields.agb.settings", 
 		"subs": 		[] 
 	}, 
+	vice.yields.ccsne: {
+		"filename": 	"vice.yields.ccsne.rst", 
+		"header": 		"vice.yields.ccsne", 
+		"subs": 		[] 
+	}, 
 	vice.imf: {
 		"filename": 	"vice.imf.rst", 
-		"header": 		"Stellar Initial Mass Functions", 
+		"header": 		"vice.imf", 
 		"subs": 		[
 			vice.imf.kroupa, 
 			vice.imf.salpeter 
@@ -101,7 +125,7 @@ _CONFIG_ = {
 	}, 
 	vice.singlezone: {
 		"filename": 	"vice.singlezone.rst", 
-		"header": 		"The Singlezone Object", 
+		"header": 		"vice.singlezone", 
 		"subs": 		[
 			vice.singlezone.run, 
 			vice.singlezone.from_output, 
