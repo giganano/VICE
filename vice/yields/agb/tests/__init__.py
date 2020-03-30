@@ -10,6 +10,7 @@ if not __VICE_SETUP__:
 	__all__ = ["test"] 
 	from ....testing import moduletest 
 	from . import lookup 
+	from . import imports 
 
 	@moduletest 
 	def test(): 
@@ -18,7 +19,8 @@ if not __VICE_SETUP__:
 		""" 
 		return ["vice.yields.agb", 
 			[ 
-				lookup.test(run = False) 
+				lookup.test(run = False), 
+				imports.test(run = False) 
 			] 
 		] 
 

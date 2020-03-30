@@ -16,6 +16,30 @@ else:
 
 class doctree: 
 
+	r""" 
+	A tree object whose nodes are modules within a python object, and whose 
+	branches are the contents of those modules. Requires the _CONFIG_ 
+	dictionary in config.py. 
+
+	Parameters 
+	----------
+	obj : <object> 
+		The object to create the doctree for 
+
+	Attributes 
+	----------
+	filename : ``str`` 
+		The name of the output file to put the documentation in. 
+	header : ``str`` 
+		The string to put at the top of the documentation file. 
+	subs : ``list`` 
+		A list of the objects that are a part of ``obj``. 
+
+	Functions 
+	---------
+	save : Save the documentation for ``obj`` and all ``subs`` in rst files. 
+	""" 
+
 	def __init__(self, obj): 
 		self.obj = obj 
 		self.filename = _CONFIG_[self._obj]["filename"] 
@@ -30,11 +54,9 @@ class doctree:
 		rep += textwrap.dedent(self._obj.__doc__) 
 		if len(self.subs): 
 			rep += "\n\n" 
-			# rep += "**Quick Links**:\n\n" 
 			rep += "\n\n"
 			rep += ".. toctree::\n" 
 			rep += "\t:titlesonly:\n"
-			# rep += "\t:caption: Quick Links\n" 
 			rep += "\t:maxdepth: 5\n\n" 
 			for i in self.subs: 
 				rep += "\t%s\n" % (i.filename[:-4]) # remove .rst extension  

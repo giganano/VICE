@@ -22,6 +22,54 @@ automatically. By default, this will open the user's web browser to the online
 documentation. Offline documentation can be accessed via the PDF by running 
 ``vice-docs --pdf``. Run ``vice-docs --help`` in a terminal for more 
 information. 
+
+Contents 
+--------
+singlezone : ``type``
+	Simulate a single-zone galactic chemical evolution model 
+multizone : ``type`` 
+	Simulate a multi-zone galactic chemical evolution model 
+output : ``type`` 
+	Read and store output from single- and multi-zone simulations. 
+single_stellar_population : <function> 
+	Simulate enrichment from a single conatal star cluster 
+cumulative_return_fraction : <function> 
+	Calculate the cumulative return fraction of a star cluster of known age 
+main_sequence_mass_fraction : <function> 
+	Calculate the main sequence mass fraction of a star cluster of known age 
+imf : <module> 
+	Built-in funcitonal forms of popular stellar initial mass functions. 
+yields : <module> 
+	Calculate and declare nucleosynthetic yields for use in simulations 
+dataframe : ``type`` 
+	An extension to the Python type ``dict`` to allow case-insensitivity. 
+history : <function> 
+	Reads in time-evolution of interstellar medium from singlezone simulation. 
+mdf : <function> 
+	Reads in stellar metallicity distribution from singlezone simulation. 
+stars : <function> 
+	Reads in all star particles from a multizone simulation. 
+
+Built-In Dataframes 
+-------------------
+- atomic_number : The atomic number of each element 
+- primordial : The abundance of each element following big bang nucleosynthesis. 
+- solar_z : The abundance of each element in the sun. 
+- sources : The primary astrophysical production channels of each element. 
+
+Other Features 
+--------------
+elements : <module> 
+	Contains ``element`` objects with each element's relevant information. 
+VisibleDeprecationWarning : ``Warning`` 
+	A ``DeprecationWarning`` which is visible by default. 
+ScienceWarning : ``Warning`` 
+	A ``Warning`` class which concerns scientific accuracy and precision. 
+	(visible by default) 
+test : ``function`` 
+	Run VICE's unit tests 
+__version__ : ``str`` 
+	The current version number string 
 """
 
 from __future__ import absolute_import

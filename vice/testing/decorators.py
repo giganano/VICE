@@ -7,6 +7,7 @@ __all__ = ["moduletest", "unittest"]
 from .moduletest import _moduletest 
 from .unittest import _unittest 
 import functools 
+import inspect 
 
 
 def moduletest(function): 
@@ -16,7 +17,12 @@ def moduletest(function):
 	""" 
 	@functools.wraps(function) 
 	def wrapper(run = True): 
-		description, unittests = function() 
+		try: 
+			description, unittests = function() 
+		except TypeError: 
+			print(inspect.getfile(function)) 
+			print(function) 
+			raise 
 		test = _moduletest(description) 
 		for i in unittests: 
 			test.new(i) 

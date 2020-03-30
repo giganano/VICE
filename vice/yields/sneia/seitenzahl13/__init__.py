@@ -28,14 +28,11 @@ except NameError:
 
 if not __VICE_SETUP__: 
 
-	__all__ = ["set_params"] 
+	__all__ = ["set_params", "test"]  
 	from ...._globals import _RECOGNIZED_ELEMENTS_ 
 	from .. import fractional as __fractional 
 	from .. import settings as __settings 
-
-	for i in _RECOGNIZED_ELEMENTS_: 
-		__settings[i] = __fractional(i, study = "Seitenzahl13") 
-
+	from .tests import test 
 
 	def set_params(**kwargs): 
 		r"""
@@ -73,6 +70,8 @@ if not __VICE_SETUP__:
 			for i in _RECOGNIZED_ELEMENTS_: 
 				__settings[i] = __fractional(i, study = "seitenzahl13", 
 					**kwargs) 
+
+	set_params() 
 
 else: 
 	pass 

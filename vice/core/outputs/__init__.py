@@ -11,14 +11,14 @@ if not __VICE_SETUP__:
 		"mdf", 
 		"output", 
 		"multioutput", 
-		"tracers", 
+		"stars", 
 		"test" 
 	] 
 	from ._history import history 
 	from ._mdf import mdf 
 	from .output import output 
 	from .multioutput import multioutput 
-	from ._tracers import tracers 
+	from ._tracers import tracers as stars 
 	from .tests import test 
 else: 
 	pass 

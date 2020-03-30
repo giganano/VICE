@@ -27,14 +27,11 @@ except NameError:
 
 if not __VICE_SETUP__: 
 
-	__all__ = ["set_params"] 
+	__all__ = ["set_params", "test"]  
 	from ...._globals import _RECOGNIZED_ELEMENTS_ 
 	from .. import fractional as __fractional 
 	from .. import settings as __settings 
-
-	for i in _RECOGNIZED_ELEMENTS_: 
-		__settings[i] = __fractional(i, study = "iwamoto99", model = "W70")  
-
+	from .tests import test 
 
 	def set_params(**kwargs): 
 		r"""
@@ -65,12 +62,14 @@ if not __VICE_SETUP__:
 		.. [1] Iwamoto et al. (1999), ApJ, 124, 439 
 		"""
 		if "study" in kwargs.keys(): 
-			raise TypeError("Got an unexpected keyword argument 'study'") 
+			raise TypeError("Got an unexpected keyword argument 'study'.") 
 		else: 
 			# Override the default, which is for Seitenzahl et al. (2013) yields 
 			if "model" not in kwargs.keys(): kwargs["model"] = "W70" 
 			for i in _RECOGNIZED_ELEMENTS_: 
 				__settings[i] = __fractional(i, study = "iwamoto99", **kwargs) 
+
+	set_params(model = "W70") 
 
 else: 
 	pass 

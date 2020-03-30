@@ -123,7 +123,5 @@ extern double onH(SINGLEZONE sz, ELEMENT e) {
 		return -INFINITY; 
 	} 
 
-	// return log10( (e.mass / (*sz.ism).mass) / e.solar ); 
-
 }
 

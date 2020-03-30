@@ -16,16 +16,35 @@ if not __VICE_SETUP__:
 
 	@moduletest 
 	def test(): 
+		r""" 
+		Run unit tests on this module 
 		""" 
-		Run all tests on CCSN nucleosynthetic yield features 
-		""" 
-		return ["vice.yields.ccsne", 
-			[ 
-				grid_reader.test_table(), 
-				imports.test(run = False), 
-				integrator.test(run = False) 
-			] 
+		tests = [
+			grid_reader.test_table(), 
+			imports.test(run = False) 
 		] 
+		try: 
+			from .. import LC18 
+			tests.append(LC18.test(run = False)) 
+		except: pass 
+		try: 
+			from .. import CL13 
+			tests.append(CL13.test(run = False)) 
+		except: pass 
+		try: 
+			from .. import CL04 
+			tests.append(CL04.test(run = False)) 
+		except: pass 
+		try: 
+			from .. import WW95 
+			tests.append(WW95.test(run = False)) 
+		except: pass 
+		try: 
+			from .. import NKT13 
+			tests.append(NKT13.test(run = False)) 
+		except: pass 
+		tests.append(integrator.test(run = False)) 
+		return ["vice.yields.ccsne", tests] 
 
 else: 
 	pass 

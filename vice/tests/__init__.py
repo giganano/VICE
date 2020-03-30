@@ -34,14 +34,18 @@ if not __VICE_SETUP__:
 	from .. import core 
 	from .. import modeling 
 	from .. import yields 
+	import warnings 
 	import sys 
 	import os 
 	if sys.version_info[:2] == (2, 7): input = raw_input 
 
 	@moduletest 
 	def test(): 
-		""" 
-		Runs VICE's comprehensive tests 
+		r""" 
+		Runs VICE's unit tests 
+
+		.. note:: Calling this function will cause warning message to get 
+			suppressed. 
 		""" 
 		if "test.vice" in os.listdir(os.getcwd()): 
 			answer = input("""\
@@ -51,26 +55,27 @@ This program will overwrite the VICE output at %s/test.vice. Proceed? \
 				answer = input("Please enter either 'y' or 'n': ") 
 			if answer.lower() in ["yes", "y"]: 
 				os.system("rm -rf %s/test.vice" % (os.getcwd())) 
-				return test() 
 			else: 
 				raise RuntimeError("Cancelling tests, ignore this error.") 
-		else: 
-			header = "VICE Comprehensive Tests\n" 
-			for i in range(len(header) - 1): 
-				header += "=" 
-			print("\033[091m%s\033[00m" % (header)) 
-			print("This may take a few minutes.") 
-			return [None, 
-				[ 
-					callback.test(run = False), 
-					core.test(run = False), 
-					imf.test(run = False), 
-					modeling.test(run = False), 
-					stats.test(run = False), 
-					utils.test(run = False), 
-					yields.test(run = False) 
-				] 
+		else: pass 
+		
+		header = "VICE Comprehensive Tests\n" 
+		for i in range(len(header) - 1): 
+			header += "=" 
+		print("\033[091m%s\033[00m" % (header)) 
+		print("This may take a few minutes.") 
+		warnings.filterwarnings("ignore") 
+		return ["", 
+			[ 
+				callback.test(run = False), 
+				core.test(run = False), 
+				imf.test(run = False), 
+				modeling.test(run = False), 
+				stats.test(run = False), 
+				utils.test(run = False), 
+				yields.test(run = False) 
 			] 
+		] 
 
 else: 
 	pass 

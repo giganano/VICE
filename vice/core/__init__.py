@@ -1,3 +1,13 @@
+r""" 
+VICE Core
+=========
+Provides all galactic chemical evolution simulations and dataframe features
+
+.. warning:: The contents of this module are imported directly to vice.*. For 
+	example, the ``singlezone`` class should be accessed via ``vice.singlezone`` 
+	rather than ``vice.core.singlezone``. Accessing the VICE core directly is 
+	discouraged. 
+""" 
 
 from __future__ import absolute_import 
 try: 
@@ -22,7 +32,6 @@ if not __VICE_SETUP__:
 	from .ssp import * 
 	from .dataframe import * 
 	from .dataframe._builtin_dataframes import * 
-	__all__.extend(dataframe.__all__) 
 	__all__.extend(dataframe._builtin_dataframes.__all__) 
 	__all__.extend(outputs.__all__) 
 	__all__.extend(ssp.__all__) 

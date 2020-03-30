@@ -27,16 +27,11 @@ except NameError:
 
 if not __VICE_SETUP__: 
 
-	__all__ = ["set_params"] 
+	__all__ = ["set_params", "test"]  
 	from ...._globals import _RECOGNIZED_ELEMENTS_ 
 	from .. import fractional as __fractional 
 	from .. import settings as __settings 
-
-	for i in range(len(_RECOGNIZED_ELEMENTS_)): 
-		__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(
-			_RECOGNIZED_ELEMENTS_[i], 
-			study = "CL13"
-		)[0] 
+	from .tests import test 
 
 
 	def set_params(**kwargs): 
@@ -63,7 +58,7 @@ if not __VICE_SETUP__:
 		------------
 		>>> import vice 
 		>>> from vice.yields.ccsne import CL13 
-		>>> CL13.set_params(lower = 0.3, upper = 40, IMF = "salpeter") 
+		>>> CL13.set_params(m_lower = 0.3, m_upper = 40, IMF = "salpeter") 
 
 		.. seealso:: vice.yields.ccsne.fractional 
 
@@ -75,6 +70,8 @@ if not __VICE_SETUP__:
 			for i in range(len(_RECOGNIZED_ELEMENTS_)): 
 				__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(
 					_RECOGNIZED_ELEMENTS_[i], study = "CL13", **kwargs)[0] 
+
+	set_params() 
 
 else: 
 	pass 

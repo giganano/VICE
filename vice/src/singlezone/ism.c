@@ -62,7 +62,6 @@ extern unsigned short setup_gas_evolution(SINGLEZONE *sz) {
 
 	/* Run the sanity checks to impose the lower bound */ 
 	update_gas_evolution_sanitycheck(sz); 
-	// enforce_sfr_floor(sz); 
 
 	/* Allocate memory for the star formation history at each timestep */ 
 	sz -> ism -> star_formation_history = (double *) malloc (
@@ -300,6 +299,15 @@ extern double get_outflow_rate(SINGLEZONE sz) {
 		 * 
 		 * outflow_rate = eta * smoothed star formation rate + unretained 
 		 */ 
+
+		/* 
+		 * Notes 
+		 * =====
+		 * The following lines more than doubled the integration time for a 
+		 * dt = 0.01, 10 Gyr simulation. unretained material potentially not 
+		 * worth tracking for the overall outflow rate 
+		 */ 
+		#if 0 
 		double *unretained = singlezone_unretained(sz); 
 		double ofr = (
 			(*sz.ism).eta[sz.timestep] * (*sz.ism).star_formation_rate + 
@@ -307,7 +315,9 @@ extern double get_outflow_rate(SINGLEZONE sz) {
 		); 
 		free(unretained); 
 		return ofr; 
-		// return (*sz.ism).eta[sz.timestep] * (*sz.ism).star_formation_rate; 
+		#endif 
+		return (*sz.ism).eta[sz.timestep] * (*sz.ism).star_formation_rate; 
+
 	} else {
 		/* The number of timesteps to smooth over */ 
 		unsigned long i, n = (unsigned long) ((*sz.ism).smoothing_time / 
@@ -329,11 +339,22 @@ extern double get_outflow_rate(SINGLEZONE sz) {
 			} 
 			mean_sfr /= n + 1l; 
 		} 
+		/* 
+		 * Notes 
+		 * =====
+		 * The following lines more than doubled the integration time for a 
+		 * dt = 0.01, 10 Gyr simulation. unretained material potentially not 
+		 * worth tracking for the overall outflow rate. 
+		 */ 
+		#if 0 
 		double ofr = (*sz.ism).eta[sz.timestep] * mean_sfr; 
 		double *unretained = singlezone_unretained(sz); 
 		ofr += sum(unretained, sz.n_elements); 
 		free(unretained); 
 		return ofr; 
+		#endif 
+
+		return (*sz.ism).eta[sz.timestep] * mean_sfr; 
 	}
 
 } 
@@ -359,6 +380,7 @@ extern double *singlezone_unretained(SINGLEZONE sz) {
 	double *unretained = (double *) malloc (sz.n_elements * sizeof(double)); 
 	for (i = 0u; i < sz.n_elements; i++) {
 		unretained[i] = 0; 
+
 		unretained[i] += (
 			(1 - (*(*sz.elements[i]).agb_grid).entrainment) * 
 			m_AGB(sz, *sz.elements[i]) / sz.dt

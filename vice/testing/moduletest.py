@@ -4,12 +4,9 @@ This file implements the moduletest object
 
 from __future__ import absolute_import 
 __all__ = ["_moduletest"] 
-from .._globals import VisibleDeprecationWarning 
-from .._globals import ScienceWarning 
 from .unittest import _PASSED_MESSAGE_ 
 from .unittest import _FAILED_MESSAGE_ 
 from .unittest import _unittest 
-import warnings 
 
 
 class _moduletest: 
@@ -38,8 +35,6 @@ class _moduletest:
 	def name(self, value): 
 		if isinstance(value, str): 
 			self._name = value 
-		elif value is None: 
-			self._name = None 
 		else: 
 			raise TypeError("Attribute 'name' must be of type str. Got: %s" % (
 				type(value))) 
@@ -64,18 +59,12 @@ class _moduletest:
 				type(obj))) 
 
 	def run(self, print_results = False): 
-		""" 
+		r""" 
 		Run the module tests 
 		""" 
 		passed = 0 
 		failed = 0 
-		warnings.filterwarnings("ignore", category = VisibleDeprecationWarning) 
-		warnings.filterwarnings("ignore", category = ScienceWarning) 
 		if self.name is not None: 
-			# header = "Module Test: %s\n" % (self.name) 
-			# for i in range(len(header) - 1): 
-			# 	header += "=" 
-			# print("\n\033[96m%s\033[00m" % (header)) 
 			print("\033[96m%s\033[00m" % (self.name)) 
 		else: 
 			pass 
@@ -99,7 +88,5 @@ class _moduletest:
 				print("\033[91m%d tests failed.\033[00m\n" % (failed)) 
 		else: 
 			pass 
-		warnings.filterwarnings("default", category = VisibleDeprecationWarning) 
-		warnings.filterwarnings("default", category = ScienceWarning) 
 		return [passed, failed] 
 

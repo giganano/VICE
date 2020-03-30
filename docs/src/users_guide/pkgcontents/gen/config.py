@@ -17,6 +17,10 @@ from vice.yields.sneia import seitenzahl13
 from vice.yields.agb import cristallo11 
 from vice.yields.agb import karakas10 
 
+r""" 
+Each element of the _CONFIG_ dictionary should map an object in VICE to a 
+filename, a header, and subs. VICE itself is the root of the doctree. 	
+""" 
 
 _CONFIG_ = {
 	vice: {

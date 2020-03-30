@@ -10,18 +10,27 @@ if not __VICE_SETUP__:
 	__all__ = ["test"] 
 	from ....testing import moduletest 
 	from . import lookup 
+	from . import imports 
 
 	@moduletest 
 	def test(): 
 		""" 
 		Run the tests on this module 
 		""" 
-		return ["vice.yields.sneia", 
-			[ 
-				lookup.test_single(), 
-				lookup.test_fractional() 
-			] 
+		tests = [
+			lookup.test_single(), 
+			lookup.test_fractional(), 
+			imports.test(run = False)
 		] 
+		try: 
+			from .. import iwamoto99 
+			tests.append(iwamoto99.test(run = False)) 
+		except: pass 
+		try: 
+			from .. import seitenzahl13 
+			tests.append(seitenzahl13.test(run = False)) 
+		except: pass 
+		return ["vice.yields.sneia", tests] 
 
 else: 
 	pass 
