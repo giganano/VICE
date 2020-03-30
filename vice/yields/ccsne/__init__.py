@@ -1,9 +1,8 @@
 r"""
 Core Collapse Supernovae (CCSNe) Nucleosynthetic Yield Tools 
 
-Calculate IMF-averaged yields and modify yield settings for use in 
-simulations. This package provides tables from the following nucleosynthetic 
-yield studies: 
+Calculate IMF-averaged yields and modify yield settings for use in simulations. 
+This package provides tables from the following nucleosynthetic yield studies: 
 
 	- Limongi & Chieffi (2018) [1]_ 
 	- Chieffi & Limongi (2013) [2]_ 

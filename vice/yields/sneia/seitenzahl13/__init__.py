@@ -1,75 +1,78 @@
-"""
-Seitenzahl et al. (2013), MNRAS, 429, 1156 Nucleosynthetic Yield Tools 
-====================================================================== 
-Importing this module will automatically set all yield settings from 
-type Ia supernovae to the IMF-integrated yields as determined from 
-the simulations ran by Seitenzahl et al. (2013). It will default to 
-the N1 explosion model. 
+r"""
+Seitenzahl et al. (2013), MNRAS, 429, 1156 typa Ia supernova (SN Ia) yields 
 
-VICE achieves this by calling yields.sneia.fractional for every 
-element built into the software and storing the returned value in 
-yields.sneia.settings. 
+**Signature**: from vice.yields.sneia import seitenzahl13 
 
-set_params :: Update the parameters with which the yields are calculated. 
+Importing this module will automatically set the SN Ia yield settings for all 
+elements to the IMF-averaged yields calculated with the Seitenzahl et al. 
+(2013) yield table under the N1 explosion model. This study is for delayed 
+detonation explosion models of Chandrasekhar mass progenitors 
+(1.4 :math:`M_\odot`). 
 
-Notes 
-===== 
-By importing this module, the user does not sacrifice the flexibility of 
-VICE's user-specified yields. After importing this module, the fields of 
-vice.yields.sneia.settings can still be modified in whatever manner the 
-user sees fit. 
+.. tip:: By importing this module, the user does not sacrifice the ability to 
+	specify their yield settings directly. 
 
-This module is not imported with the simple 'import vice' statement. 
+.. note:: This module is not imported with a simple "import vice" statement. 
 
-Example 
-======= 
->>> from vice.yields.sneia import seitenzahl13 
->>> seitenzahl13.set_params(n = 1.5e-03) 
+Contents 
+--------
+set_params : <function> 
+	Update the parameters with which the yields are calculated. 
 """
 
-from .. import settings as __settings 
-from .. import fractional as __fractional 
-from ...._globals import _RECOGNIZED_ELEMENTS_ 
+from __future__ import absolute_import 
+try: 
+	__VICE_SETUP__ 
+except NameError: 
+	__VICE_SETUP__ = False 
 
-for i in range(len(_RECOGNIZED_ELEMENTS_)): 
-	__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(_RECOGNIZED_ELEMENTS_[i], 
-		study = "seitenzahl13", model = "N1") 
-del i 
+if not __VICE_SETUP__: 
 
-def set_params(**kwargs): 
-	"""
-	Update the parameters with which the yields are calculated from the 
-	Seitenzahl et al. (2013) data. 
+	__all__ = ["set_params"] 
+	from ...._globals import _RECOGNIZED_ELEMENTS_ 
+	from .. import fractional as __fractional 
+	from .. import settings as __settings 
 
-	Parameters 
-	========== 
-	Kwargs :: varying types 
-		Keyword arguments to pass to yields.sneia.fractional.  
+	for i in _RECOGNIZED_ELEMENTS_: 
+		__settings[i] = __fractional(i, study = "Seitenzahl13") 
 
-	Raises 
-	====== 
-	TypeError :: 	
-		::	The user has specified a keyword argument "study". 
-	Other exceptions are raised by yields.sneia.fractional.  
 
-	See also 
-	======== 
-	yields.sneia.fractional docstring 
+	def set_params(**kwargs): 
+		r"""
+		Update the parameters with which the yields are calculated from the 
+		Seitenzahl et al. (2013) [1]_ data. 
 
-	Example 
-	======= 
-	>>> from vice.yields.sneia import seitenzahl13 
-	>>> seitenzahl13.set_params(n = 1.5e-03) 
+		Parameters 
+		---------- 
+		kwargs : varying types 
+			Keyword arguments to pass to vice.yields.sneia.fractional.  
 
-	References 
-	========== 
-	Seitenzahl et al. (2013), ApJ, 124, 439 
-	"""
-	if "study" in kwargs.keys(): 
-		raise TypeError("set_params got an unexpected keyword argument 'study'") 
-	else: 
-		for i in range(len(_RECOGNIZED_ELEMENTS_)): 
-			__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(
-				_RECOGNIZED_ELEMENTS_[i], study = "seitenzahl13", **kwargs) 
-		del i 
+		Raises 
+		------
+		* TypeError 
+			- Received a keyword argument "study". This will always be 
+				"seitenzahl13" when called from this module. 
 
+		Other exceptions are raised by vice.yields.sneia.fractional.  
+
+		.. seealso:: vice.yields.sneia.fractional 
+
+		Example Code 
+		------------
+		>>> from vice.yields.sneia import seitenzahl13 
+		>>> seitenzahl13.set_params(n = 1.5e-03) 
+
+		.. seealso:: vice.yields.sneia.fractional 
+			vice.yields.sneia.single 
+
+		.. [1] Seitenzahl et al. (2013), ApJ, 124, 439 
+		"""
+		if "study" in kwargs.keys(): 
+			raise TypeError("Got an unexpected keyword argument 'study'") 
+		else: 
+			for i in _RECOGNIZED_ELEMENTS_: 
+				__settings[i] = __fractional(i, study = "seitenzahl13", 
+					**kwargs) 
+
+else: 
+	pass 

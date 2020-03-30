@@ -6,11 +6,14 @@ their docstrings.
 import warnings 
 warnings.filterwarnings("ignore") 
 import vice 
+from vice.yields.presets import JW20 
 from vice.yields.ccsne import LC18 
 from vice.yields.ccsne import NKT13 
 from vice.yields.ccsne import CL13 
 from vice.yields.ccsne import CL04 
 from vice.yields.ccsne import WW95 
+from vice.yields.sneia import iwamoto99 
+from vice.yields.sneia import seitenzahl13 
 from vice.yields.agb import cristallo11 
 from vice.yields.agb import karakas10 
 
@@ -79,7 +82,9 @@ _CONFIG_ = {
 		"header": 		"vice.yields", 
 		"subs": 		[
 			vice.yields.agb, 
-			vice.yields.ccsne 
+			vice.yields.ccsne, 
+			vice.yields.sneia, 
+			vice.yields.presets 
 		]  
 	}, 
 	vice.yields.agb: {
@@ -183,6 +188,83 @@ _CONFIG_ = {
 	vice.yields.ccsne.LC18.set_params: {
 		"filename": 	"vice.yields.ccsne.LC18.set_params.rst", 
 		"header": 		"vice.yields.ccsne.LC18.set_params", 
+		"subs": 		[] 
+	}, 
+	vice.yields.sneia: {
+		"filename": 	"vice.yields.sneia.rst", 
+		"header": 		"vice.yields.sneia", 
+		"subs": 		[
+			vice.yields.sneia.single, 
+			vice.yields.sneia.fractional, 
+			vice.yields.sneia.iwamoto99, 
+			vice.yields.sneia.seitenzahl13 
+		]  
+	}, 
+	vice.yields.sneia.single: {
+		"filename": 	"vice.yields.sneia.single.rst", 
+		"header": 		"vice.yields.sneia.single", 
+		"subs": 		[] 
+	}, 
+	vice.yields.sneia.fractional: {
+		"filename": 	"vice.yields.sneia.fractional.rst", 
+		"header": 		"vice.yields.sneia.fractional", 
+		"subs": 		[] 
+	}, 
+	vice.yields.sneia.iwamoto99: {
+		"filename": 	"vice.yields.sneia.iwamoto99.rst", 
+		"header": 		"vice.yields.sneia.iwamoto99", 
+		"subs": 		[vice.yields.sneia.iwamoto99.set_params]  
+	}, 
+	vice.yields.sneia.iwamoto99.set_params: { 
+		"filename": 	"vice.yields.sneia.iwamoto99.set_params.rst", 
+		"header": 		"vice.yields.sneia.iwamoto99.set_params", 
+		"subs": 		[] 
+	}, 
+	vice.yields.sneia.seitenzahl13: {
+		"filename": 	"vice.yields.sneia.seitenzahl13.rst", 
+		"header": 		"vice.yields.sneia.seitenzahl13", 
+		"subs": 		[vice.yields.sneia.seitenzahl13.set_params]  
+	}, 
+	vice.yields.sneia.seitenzahl13.set_params: {
+		"filename": 	"vice.yields.sneia.seitenzahl13.set_params.rst", 
+		"header": 		"vice.yields.sneia.seitenzahl13.set_params", 
+		"subs": 		[] 
+	}, 
+	vice.yields.presets: {
+		"filename": 	"vice.yields.presets.rst", 
+		"header": 		"vice.yields.presets", 
+		"subs": 		[
+			vice.yields.presets.save, 
+			vice.yields.presets.remove, 
+			vice.yields.presets.JW20 
+		] 
+	}, 
+	vice.yields.presets.save: {
+		"filename": 	"vice.yields.presets.save.rst", 
+		"header": 		"vice.yields.presets.save", 
+		"subs": 		[] 
+	}, 
+	vice.yields.presets.remove: {
+		"filename": 	"vice.yields.presets.remove.rst", 
+		"header": 		"vice.yields.presets.remove", 
+		"subs": 		[] 
+	}, 
+	vice.yields.presets.JW20: {
+		"filename": 	"vice.yields.presets.JW20.rst", 
+		"header": 		"vice.yields.presets.JW20", 
+		"subs": 		[ 
+			vice.yields.presets.JW20.alt_cc_sr_linear, 
+			vice.yields.presets.JW20.alt_cc_sr_limitexp 
+		] 
+	}, 
+	vice.yields.presets.JW20.alt_cc_sr_linear: {
+		"filename": 	"vice.yields.presets.JW20.alt_cc_sr_linear.rst", 
+		"header": 		"vice.yields.presets.JW20.alt_cc_sr_linear", 
+		"subs": 		[] 
+	}, 
+	vice.yields.presets.JW20.alt_cc_sr_limitexp: {
+		"filename": 	"vice.yields.presets.JW20.alt_cc_sr_limitexp.rst", 
+		"header": 		"vice.yields.presets.JW20.alt_cc_sr_limitexp", 
 		"subs": 		[] 
 	}, 
 	vice.imf: {

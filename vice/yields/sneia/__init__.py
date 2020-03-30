@@ -1,32 +1,28 @@
-"""
-Type Ia Supernovae Nucleosynthetic Yield Tools 
-============================================== 
-Here user's can calculate nucleosynthetic yields from type Ia supernoave (both 
-single detonation and IMF-integrated) as well as modify their yield settings, 
-which VICE will adopt in their simulations. VICE has built-in tables allowing 
-users to calculate IMF-integrated yields from the results of supernovae 
-simulations ran by two different studies, which can also be directly imported 
-as the yield settings. 
+r"""
+Type Ia Supernovae (SNe Ia) Nucleosynthetic Yield Tools 
 
-Included Features
-=================
-fractional :: <function> 
-	Calculate an IMF-integrated yield of a given element. 
-settings :: VICE dataframe 
-	Stores the user's current settings for these yields. 
-single :: <function> 
-	Look up the mass yield of a given element from a single type Ia 
-	supernova from a given study. 
+Calculate IMF-averaged yields and modify yield settings for use in simulations. 
+This package provides tables from the following nucleosynthetic yield studies: 
 
-Built-in Yield Tables Available for Import 
-========================================== 
-iwamoto99 :: Iwamoto et al. (1999) 
-seitenzahl13 :: Seitenzahl et al. (2013) 
+	- Seitenzahl et al. (2013) [1]_ 
+	- Iwamoto et al. (1999) [2]_ 
 
-References 
-========== 
-Seitenzahl et al. (2013), MNRAS, 429, 1156 
-Iwamoto et al. (1999), ApJ, 124, 439 
+Contents 
+--------
+fractional : <function> 
+	Calculate an IMF-averaged yield for a given element. 
+single : <function> 
+	Look up the mass yield of a given element from a single type Ia supernova 
+	from a specified study. 
+settings : dataframe 
+	Stores current settings for these yields. 
+seitenzahl13 : yield preset 
+	Sets the yields according to the Seitenzahl et al. (2013) study. 
+iwamoto99 : yield preset 
+	Sets the yields according to the Iwamoto et al. (1999) study. 
+
+.. [1] Seitenzahl et al. (2013), MNRAS, 429, 1156 
+.. [2] Iwamoto et al. (1999), ApJ, 124, 439 
 """
 
 from __future__ import absolute_import

@@ -37,14 +37,9 @@ if not __VICE_SETUP__:
 	from .. import fractional as __fractional 
 	from .. import settings as __settings 
 
-	for i in range(len(_RECOGNIZED_ELEMENTS_)): 
-		__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(
-			_RECOGNIZED_ELEMENTS_[i], 
-			study = "CL04", 
-			MoverH = 0.15, 
-			m_upper = 35
-		)[0] 
-
+	for i in _RECOGNIZED_ELEMENTS_: 
+		__settings[i] = __fractional(i, study = "CL04", MoverH = 0.15, 
+			m_upper = 35)[0] 
 
 	def set_params(**kwargs): 
 		r""" 
@@ -84,9 +79,8 @@ if not __VICE_SETUP__:
 				kwargs["MoverH"] = 0.15 
 			else: 
 				pass 
-			for i in range(len(_RECOGNIZED_ELEMENTS_)): 
-				__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(
-					_RECOGNIZED_ELEMENTS_[i], study = "CL04", **kwargs)[0] 
+			for i in _RECOGNIZED_ELEMENTS_: 
+				__settings[i] = __fractional(i, study = "CL04", **kwargs)[0] 
 
 else: 
 	pass 

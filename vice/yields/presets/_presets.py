@@ -3,8 +3,8 @@ from __future__ import absolute_import
 
 __all__ = ["save", "remove"]  
 
-from ..._globals import _DIRECTORY_ 
 from ..._globals import _VERSION_ERROR_ 
+from ..._globals import _DIRECTORY_ 
 import sys 
 import os 
 if sys.version_info[:2] == (2, 7): 
@@ -20,45 +20,53 @@ except NameError:
 	ModuleNotFoundError = ImportError 
 
 
-
 def save(filename): 
-	""" 
+
+	r""" 
 	Save a permanent copy of yields stored in a given file for loading back 
 	into VICE at any time via an import statement. 
 
 	Parameters 
-	========== 
-	filename :: str 
+	----------
+	filename : ``str`` 
 		The full or relative path to the script containing the yields to be 
 		saved. The name of this file will become the name of the preset to 
-		place in import statements as in the example below. 
+		use in import statements. 
 
 	Raises 
-	====== 
-	RuntimeError :: 
-		::	An exception occurs in attempting to import the file 
-	IOError :: 
-		::	The file does not exist 
-	TypeError :: 
-		::	filename is not of type str 
+	------
+	* RuntimeError 
+		- An exception occurs in attempting to import the file 
+	* IOError 
+		- The file does not exist 
+	* TypeError 
+		- filename is not of type str 
 
-	Example 
-	======= 
-	>>> with open("example.py", 'r') as f: 
-	>>>     print(f.read()) 
+	Example Code 
+	------------
+	The following in a file named "example.py": 
 
-	# example VICE preset yield file 
-	import vice 
-	vice.yields.ccsne.settings["o"] = 0.015 
-	vice.yields.ccsne.settings["fe"] = 0.0012 
-	vice.yields.sneia.settings["o"] = 0.0 
-	vice.yields.sneia.settings["fe"] = 0.0017 
-	
-	>>> vice.yields.presets.install("example.py")  
+	.. code:: python 
+
+		import vice 
+		vice.yields.ccsne.settings['o'] = 0.015 
+		vice.yields.ccsne.settings['fe'] = 0.0012 
+		vice.yields.sneia.settings['o'] = 0.0 
+		vice.yields.sneia.settings['fe'] = 0.0017 
+
+	And the following in the same directory as that file: 
+
+	>>> import vice 
+	>>> vice.yields.presets.save("example.py") 
+
+	This will enable the following from any directory: 
+
+	>>> import vice 
 	>>> from vice.yields.presets import example 
-	>>> vice.yields.ccsne.settings["o"] 
+	>>> vice.yields.ccsne.settings['o'] 
 	0.015 
 	""" 
+
 	if isinstance(filename, strcomp): 
 		if filename.split('/')[-1] in ["__init__.py", "_presets.py"]: 
 			# Don't allow changing these files -> will break the module 
@@ -90,38 +98,42 @@ Error message: %s""" % (str(exc)))
 
 
 def remove(name, force = False): 
-	""" 
-	Delete a copy of saved yield presets. 
+
+	r""" 
+	Delete a copy of yield presets previously saved by a call to 
+	vice.yields.presets.save. 
 
 	Parameters 
-	========== 
-	name :: str 
-		The name of the preset 
-	force :: bool [default :: False] 
-		If true, will not stop for user confirmation before removing the yield 
-		file once it's found. 
+	----------
+	name : ``str`` 
+		The name of the preset. 
+	force : ``bool`` [default : ``False``] 
+		If ``True``, will not stop for user confirmation before removing the 
+		yield file once it's found. 
 
 	Raises 
-	====== 
-	RuntimeError :: 
-		::	The preset module is not found 
-		::	Another exception occurs in attempting to remove the yield file. 
-	IOError :: 
-		::	The file does not exist 
-	TypeError :: 
-		:: 	name is not of type str 
+	------
+	* RuntimeError 
+		- The preset module is not found 
+		- Another exception occurs in attempting to remove the yield file. 
+	* IOError 
+		- The file does not exist 
 
 	Example Code 
-	============ 
-	>>> vice.yields.presets.uninstall("example") 
+	------------
+	>>> import vice 
+	>>> vice.yields.presets.remove("example") 
 	>>> from vice.yields.presets import example 
 	Traceback (most recent call last): 
 		File "<stdin>", line 1, in <module>
-	ImportError: cannot import name 'test' from 'vice.yields.presets'
-	(/anaconda3/lib/python3.7/site-packages/vice/yields/presets/__init__.py)
+	ImportError: cannot import name 'example' from 'vice.yields.presets'
+	(/anaconda3/lib/python3.7/site-packages/vice/yields/presets/__init__.py) 
+
+	.. seealso:: vice.yields.presets.save 
 	""" 
+
 	if isinstance(name, strcomp): 
-		forbidden_names = ["__init__.py", "_presets.py", "__pycache__"]  
+		forbidden_names = ["__init__.py", "_presets.py"] 
 		if name in forbidden_names: 
 			""" 
 			A little smoke and mirrors to not allow the user to break this 
@@ -129,6 +141,9 @@ def remove(name, force = False):
 			""" 
 			raise RuntimeError("Preset yield module not found: %s" % (
 				name)) 
+		elif name == "JW20.py": 
+			raise RuntimeError("""Cannot remove Johnson & Weinberg (2020) \
+preset.""") 
 		else: 
 			""" 
 			Simply change into the presets directory, look for the file, 
@@ -172,6 +187,6 @@ installed presets: " % (name)
 					errmsg += "\n\t\t%s" % (i) 
 				raise ModuleNotFoundError(errmsg) 
 	else: 
-		raise TypeError("Argument must be of tyep str. Got: %s" % (
+		raise TypeError("Argument must be of type str. Got: %s" % (
 			type(name))) 
 
