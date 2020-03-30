@@ -5,8 +5,8 @@ cumulative_return_fraction, and main_sequence_mass_fraction functions.
 
 from __future__ import absolute_import 
 from ..._globals import _RECOGNIZED_ELEMENTS_ 
-from ..._globals import _RECOGNIZED_RIAS_ 
 from ..._globals import _VERSION_ERROR_ 
+from ..singlezone._singlezone import _RECOGNIZED_DTDS_ 
 from ...yields.agb._grid_reader import find_yield_file as find_agb_yield_file 
 from ...yields import agb 
 from ...yields import ccsne 
@@ -89,9 +89,9 @@ def _ssp_type_checks(element, mstar = 1e6, Z = 0.014, time = 10,
 	else:
 		pass 
 	if isinstance(RIa, strcomp): 
-		if RIa.lower() not in _RECOGNIZED_RIAS_: 
+		if RIa.lower() not in _RECOGNIZED_DTDS_: 
 			raise ValueError("""Unrecognized RIa: %s. Recognized values: \
-%s""" % (RIa, _RECOGNIZED_RIAS_)) 
+%s""" % (RIa, _RECOGNIZED_DTDS_)) 
 		else: 
 			pass 
 	elif callable(RIa): 

@@ -29,8 +29,20 @@ _CONFIG_ = {
 			vice.dataframe, 
 			vice.yields, 
 			vice.imf, 
-			vice.singlezone 
+			vice.singlezone, 
+			vice.ScienceWarning, 
+			vice.VisibleDeprecationWarning 
 		]  
+	}, 
+	vice.ScienceWarning: {
+		"filename": 	"vice.ScienceWarning.rst", 
+		"header": 		"vice.ScienceWarning", 
+		"subs": 		[] 
+	}, 
+	vice.VisibleDeprecationWarning: {
+		"filename": 	"vice.VisibleDeprecationWarning.rst", 
+		"header": 		"vice.VisibleDeprecationWarning", 
+		"subs": 		[] 
 	}, 
 	vice.cumulative_return_fraction: {
 		"filename": 	"vice.cumulative_return_fraction.rst", 

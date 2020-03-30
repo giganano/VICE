@@ -6,7 +6,7 @@ Limongi & Chieffi (2018), ApJS, 237, 13 core collapse supernova (CCSN) yields
 Importing this module will automatically set the CCSN yield settings for all 
 elements to the IMF-averaged yields calculated with the Limongi & Chieffi 
 (2018) yield table for [M/H] = 0 stars. This will adopt an upper mass limit of 
-100 :math:`M_\ododt`. 
+100 :math:`M_\odot`. 
 
 .. tip:: By importing this module, the user does not sacrifice the ability to 
 	specify their yield settings directly. 

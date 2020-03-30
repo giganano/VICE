@@ -62,7 +62,7 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 			"_globals", 
 			"ScienceWarning", 
 			"VisibleDeprecationWarning"
-		]  
+		] 
 
 		try: 
 			from .version import version as __version__

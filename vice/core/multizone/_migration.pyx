@@ -1,7 +1,7 @@
 # cython: language_level = 3, boundscheck = False 
 
 from __future__ import absolute_import 
-from ..._globals import _DEFAULT_TRACER_MIGRATION_ 
+from ..._globals import _DEFAULT_STELLAR_MIGRATION_ 
 from .. import _pyutils 
 import numbers 
 from ..objects cimport _migration 
@@ -32,7 +32,7 @@ cdef class mig_specs:
 		""" 
 		# type checking in multizone object 
 		assert isinstance(n, int), "Must be of type int. Got: %s" % (type(n)) 
-		self.stars = _DEFAULT_TRACER_MIGRATION_ 
+		self.stars = _DEFAULT_STELLAR_MIGRATION_ 
 		self._gas = mig_matrix(n) 
 
 	def __repr__(self): 
