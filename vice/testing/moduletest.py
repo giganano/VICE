@@ -4,6 +4,7 @@ This file implements the moduletest object
 
 from __future__ import absolute_import 
 __all__ = ["_moduletest"] 
+from .._globals import VisibleDeprecationWarning 
 from .._globals import ScienceWarning 
 from .unittest import _PASSED_MESSAGE_ 
 from .unittest import _FAILED_MESSAGE_ 
@@ -68,6 +69,7 @@ class _moduletest:
 		""" 
 		passed = 0 
 		failed = 0 
+		warnings.filterwarnings("ignore", category = VisibleDeprecationWarning) 
 		warnings.filterwarnings("ignore", category = ScienceWarning) 
 		if self.name is not None: 
 			# header = "Module Test: %s\n" % (self.name) 
@@ -97,6 +99,7 @@ class _moduletest:
 				print("\033[91m%d tests failed.\033[00m\n" % (failed)) 
 		else: 
 			pass 
+		warnings.filterwarnings("default", category = VisibleDeprecationWarning) 
 		warnings.filterwarnings("default", category = ScienceWarning) 
 		return [passed, failed] 
 
