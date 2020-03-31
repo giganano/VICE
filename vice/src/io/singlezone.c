@@ -5,10 +5,11 @@
 #include <stdlib.h> 
 #include <string.h> 
 #include <stdio.h> 
-#include "../io.h" 
 #include "../singlezone.h" 
+#include "../utils.h" 
 #include "../ism.h" 
 #include "../ssp.h" 
+#include "../io.h" 
 #include "singlezone.h" 
 
 /* 
@@ -248,7 +249,8 @@ extern void write_zone_history(SINGLEZONE sz, double mstar,
 	fprintf(sz.history_writer, "%e\t", mstar); 
 	fprintf(sz.history_writer, "%e\t", (*sz.ism).star_formation_rate / 1e9); 
 	fprintf(sz.history_writer, "%e\t", (*sz.ism).infall_rate / 1e9); 
-	fprintf(sz.history_writer, "%e\t", get_outflow_rate(sz) / 1e9); 
+	fprintf(sz.history_writer, "%e\t", 
+		(get_outflow_rate(sz) + sum(unretained, sz.n_elements)) / 1e9); 
 	fprintf(sz.history_writer, "%e\t", (*sz.ism).eta[sz.timestep]); 
 	if ((*sz.ssp).continuous) { 
 		/* effective recycling factor in case of continuous recycling */ 
@@ -266,9 +268,12 @@ extern void write_zone_history(SINGLEZONE sz, double mstar,
 	for (i = 0; i < sz.n_elements; i++) { 
 		/* outflow metallicity = enhancement factor x ISM metallicity */ 
 		fprintf(sz.history_writer, "%e\t", 
+			((*sz.ism).enh[sz.timestep] * (*sz.elements[i]).Z[sz.timestep] * 
+				get_outflow_rate(sz) + unretained[i]) / 
+			(get_outflow_rate(sz) + sum(unretained, sz.n_elements))); 
 			// (*sz.ism).enh[sz.timestep] * (*sz.elements[i]).Z[sz.timestep]); 
-			(*sz.ism).enh[sz.timestep] * (*sz.elements[i]).Z[sz.timestep] + 
-			unretained[i] / get_outflow_rate(sz)); 
+			// (*sz.ism).enh[sz.timestep] * (*sz.elements[i]).Z[sz.timestep] + 
+			// unretained[i] / get_outflow_rate(sz)); 
 	} 
 	for (i = 0; i < sz.n_elements; i++) {
 		/* total ISM mass of each element */ 

@@ -21,6 +21,7 @@ cdef extern from "../../src/objects.h":
 		double *Z 
 		double *Zin 
 		double primordial 
+		double unretained 
 		double mass 
 		double solar 
 

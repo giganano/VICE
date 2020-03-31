@@ -106,13 +106,20 @@ extern void primordial_inflow(SINGLEZONE *sz);
  * ======= 
  * The mass outflow rate in Msun/Gyr 
  * 
+ * Notes 
+ * =====
+ * This function does not take into account entrainment of nucleosynthetic 
+ * products. This only determines the value of \eta<\dot{M}_\star>_\tau_s, the 
+ * mass outflow rate from the ISM. Outflow metallicities are recalcualted in 
+ * write_zone_history in src/io/singlezone.c. 
+ * 
  * source: ism.c 
  */ 
 extern double get_outflow_rate(SINGLEZONE sz); 
 
 /* 
- * Determines the outflow rate of each element in a singlezone simulation due 
- * solely to entrainment. 
+ * Determines the mass outflow rate of each element in a singlezone simulation 
+ * due solely to entrainment. 
  * 
  * Parameters 
  * ========== 
@@ -120,7 +127,8 @@ extern double get_outflow_rate(SINGLEZONE sz);
  * 
  * Returns 
  * ======= 
- * mass: An array containing each element's outflowing mass in Msun / Gyr 
+ * mass: The mass added to the outflow at the current timestep in Msun divided 
+ * by the timestep size in Gyr. 
  * 
  * source: ism.c 
  */ 

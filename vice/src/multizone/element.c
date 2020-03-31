@@ -36,11 +36,11 @@ extern void update_elements(MULTIZONE *mz) {
 			 * metal-rich infall 
 			 */ 
 
-			// e -> mass += mdot_ccsne(*sz, *e) * (*sz).dt; 
-			e -> mass += (
-				(*(*e).ccsne_yields).entrainment * mdot_ccsne(*sz, *e) * 
-				(*sz).dt
-			); 
+			e -> unretained = 0; 
+			double m_cc = mdot_ccsne(*sz, *e) * (*sz).dt; 
+			e -> mass += (*(*e).ccsne_yields).entrainment * m_cc; 
+			e -> unretained += (1 - (*(*e).ccsne_yields).entrainment) * m_cc; 
+
 			e -> mass -= (
 				(*(*sz).ism).star_formation_rate * (*sz).dt * 
 				(*e).mass / (*(*sz).ism).mass
@@ -60,30 +60,6 @@ extern void update_elements(MULTIZONE *mz) {
 				(*(*sz).ism).infall_rate * (*sz).dt * (*e).Zin[(*sz).timestep]
 			); 
 
-			#if 0 
-			mz -> zones[i] -> elements[j] -> mass += (
-				mdot_ccsne((*(*mz).zones[i]), *(*(*mz).zones[i]).elements[j]) * 
-				(*(*mz).zones[i]).dt 
-			); 
-			mz -> zones[i] -> elements[j] -> mass -= (
-				(*(*(*mz).zones[i]).ism).star_formation_rate * 
-				(*(*mz).zones[i]).dt * 
-				(*(*(*mz).zones[i]).elements[j]).mass / 
-				(*(*(*mz).zones[i]).ism).mass 
-			); 
-			mz -> zones[i] -> elements[j] -> mass -= (
-				(*(*(*mz).zones[i]).ism).enh[(*(*mz).zones[i]).timestep] * 
-				get_outflow_rate(*(*mz).zones[i]) * 
-				(*(*mz).zones[i]).dt * 
-				(*(*(*mz).zones[i]).elements[j]).mass / 
-				(*(*(*mz).zones[i]).ism).mass 
-			); 
-			mz -> zones[i] -> elements[j] -> mass += (
-				(*(*(*mz).zones[i]).ism).infall_rate * 
-				(*(*mz).zones[i]).dt * 
-				(*(*(*mz).zones[i]).elements[j]).Zin[(*(*mz).zones[i]).timestep]
-			); 
-			#endif 
 		} 
 	} 
 
@@ -94,27 +70,24 @@ extern void update_elements(MULTIZONE *mz) {
 	 * Enrichment from SNe Ia 
 	 * Re-enrichment from recycling 
 	 */ 
-	// agb_from_tracers(mz); 
-	// sneia_from_tracers(mz); 
 	for (i = 0u; i < (*(*mz).zones[0]).n_elements; i++) { 
 
 		/* AGB stars taking into account entrainment in the current zone */ 
 		double *agb = m_AGB_from_tracers(*mz, i); 
 		for (j = 0u; j < (*(*mz).mig).n_zones; j++) {
-			mz -> zones[j] -> elements[i] -> mass += (
-				(*(*(*(*mz).zones[j]).elements[i]).agb_grid).entrainment * 
-				agb[j]
-			); 
+			ELEMENT *e = mz -> zones[j] -> elements[i]; 
+			e -> mass += (*(*e).agb_grid).entrainment * agb[j]; 
+			e -> unretained += (1 - (*(*e).agb_grid).entrainment) * agb[j]; 
 		} 
 		free(agb); 
 
 		/* SNe Ia taking into account entrainment in the current zone. */ 
 		double *sneia = m_sneia_from_tracers(*mz, i); 
 		for (j = 0u; j < (*(*mz).mig).n_zones; j++) {
-			mz -> zones[j] -> elements[i] -> mass += (
-				(*(*(*(*mz).zones[j]).elements[i]).sneia_yields).entrainment * 
-				sneia[j] 
-			); 
+			ELEMENT *e = mz -> zones[j] -> elements[i]; 
+			e -> mass += (*(*e).sneia_yields).entrainment * sneia[j]; 
+			e -> unretained += (1 - 
+				(*(*e).sneia_yields).entrainment) * sneia[j]; 
 		}
 		free(sneia); 
 

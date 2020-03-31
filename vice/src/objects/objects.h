@@ -166,6 +166,9 @@ typedef struct element {
 	 * symbol: The symbol of the element from the periodic table (lower-case) 
 	 * Z: The metallicity by mass of this element at all previous timesteps 
 	 * Zin: The metallicity by mass of the infall rate at all timesteps 
+	 * primordial: The primordial abundance by mass due to big bang 
+	 * 		nucleosynthesis 
+	 * unretained: Unretained mass in the outflow at the current timestep. 
 	 * mass: The total mass in Msun of the element in the ISM 
 	 * solar: The abundance by mass of this element in the sun 
 	 */ 
@@ -179,6 +182,7 @@ typedef struct element {
 	double *Z; 
 	double *Zin; 
 	double primordial; 
+	double unretained; 
 	double mass; 
 	double solar; 
 

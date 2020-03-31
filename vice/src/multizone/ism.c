@@ -128,11 +128,15 @@ extern double **multizone_unretained(MULTIZONE mz) {
 	for (i = 0u; i < (*mz.mig).n_zones; i++) {
 		unretained[i] = (double *) malloc ((*mz.zones[0]).n_elements * sizeof(
 			double)); 
-		for (j = 0u; j < (*mz.zones[0]).n_elements; j++) {
-			unretained[i][j] = 0; 
+		for (j = 0u; j < (*mz.zones[i]).n_elements; j++) {
+			unretained[i][j] = (
+				*(*mz.zones[i]).elements[j]).unretained / (*mz.zones[i]).dt; 
 		} 
 	} 
 
+	return unretained; 
+
+	#if 0 
 	for (i = 0u; i < (*mz.zones[0]).n_elements; i++) {
 		double *agb = m_AGB_from_tracers(mz, i); 
 		double *sneia = m_sneia_from_tracers(mz, i); 
@@ -151,7 +155,7 @@ extern double **multizone_unretained(MULTIZONE mz) {
 			); 
 		} 
 	} 
-	return unretained; 
+	#endif 
 
 }
 

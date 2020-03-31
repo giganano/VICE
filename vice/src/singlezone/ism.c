@@ -115,7 +115,6 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
 					mass_recycled(*sz, NULL)) / (*sz).dt + 
 				(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz)
 			); 
-			// enforce_sfr_floor(sz); 
 			break; 
 
 		case IFR: 
@@ -127,7 +126,6 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
 				*sz).timestep + 1l]; 
 			sz -> ism -> star_formation_rate = ((*(*sz).ism).mass / 
 				get_SFE_timescale(*sz)); 
-			// enforce_sfr_floor(sz); 
 			break; 
 
 		case SFR: 
@@ -277,8 +275,7 @@ extern void primordial_inflow(SINGLEZONE *sz) {
 
 
 /* 
- * Determine the ISM mass outflow rate in a singlezone simulation taking 
- * into account the unretained metals. 
+ * Determine the ISM mass outflow rate in a singlezone simulation. 
  * 
  * Parameters 
  * ========== 
@@ -287,6 +284,13 @@ extern void primordial_inflow(SINGLEZONE *sz) {
  * Returns 
  * ======= 
  * The mass outflow rate in Msun/Gyr 
+ * 
+ * Notes 
+ * =====
+ * This function does not take into account entrainment of nucleosynthetic 
+ * products. This only determines the value of \eta<\dot{M}_\star>_\tau_s, the 
+ * mass outflow rate from the ISM. Outflow metallicities and the *total* mass 
+ * outflow rate are calculated in write_zone_history in src/io/singlezone.c. 
  * 
  * header: ism.h 
  */ 
@@ -299,23 +303,6 @@ extern double get_outflow_rate(SINGLEZONE sz) {
 		 * 
 		 * outflow_rate = eta * smoothed star formation rate + unretained 
 		 */ 
-
-		/* 
-		 * Notes 
-		 * =====
-		 * The following lines more than doubled the integration time for a 
-		 * dt = 0.01, 10 Gyr simulation. unretained material potentially not 
-		 * worth tracking for the overall outflow rate 
-		 */ 
-		#if 0 
-		double *unretained = singlezone_unretained(sz); 
-		double ofr = (
-			(*sz.ism).eta[sz.timestep] * (*sz.ism).star_formation_rate + 
-			sum(unretained, sz.n_elements) 
-		); 
-		free(unretained); 
-		return ofr; 
-		#endif 
 		return (*sz.ism).eta[sz.timestep] * (*sz.ism).star_formation_rate; 
 
 	} else {
@@ -324,7 +311,8 @@ extern double get_outflow_rate(SINGLEZONE sz) {
 			sz.dt); 
 		double mean_sfr = 0; 
 		if (n > sz.timestep) {
-			/* If the simulation hasn't reached this many timesteps yet. 
+			/* 
+			 * If the simulation hasn't reached this many timesteps yet. 
 			 * 
 			 * In either case, simply add up the previous star formation rates 
 			 * and divide by the number of timesteps. 
@@ -339,20 +327,6 @@ extern double get_outflow_rate(SINGLEZONE sz) {
 			} 
 			mean_sfr /= n + 1l; 
 		} 
-		/* 
-		 * Notes 
-		 * =====
-		 * The following lines more than doubled the integration time for a 
-		 * dt = 0.01, 10 Gyr simulation. unretained material potentially not 
-		 * worth tracking for the overall outflow rate. 
-		 */ 
-		#if 0 
-		double ofr = (*sz.ism).eta[sz.timestep] * mean_sfr; 
-		double *unretained = singlezone_unretained(sz); 
-		ofr += sum(unretained, sz.n_elements); 
-		free(unretained); 
-		return ofr; 
-		#endif 
 
 		return (*sz.ism).eta[sz.timestep] * mean_sfr; 
 	}
@@ -370,7 +344,8 @@ extern double get_outflow_rate(SINGLEZONE sz) {
  * 
  * Returns 
  * ======= 
- * mass: An array containing each element's outflowing mass in Msun / Gyr 
+ * mass: The mass added to the outflow at the current timestep in Msun divided 
+ * by the timestep size in Gyr. 
  * 
  * header: ism.h 
  */ 
@@ -379,20 +354,7 @@ extern double *singlezone_unretained(SINGLEZONE sz) {
 	unsigned short i; 
 	double *unretained = (double *) malloc (sz.n_elements * sizeof(double)); 
 	for (i = 0u; i < sz.n_elements; i++) {
-		unretained[i] = 0; 
-
-		unretained[i] += (
-			(1 - (*(*sz.elements[i]).agb_grid).entrainment) * 
-			m_AGB(sz, *sz.elements[i]) / sz.dt
-		); 
-		unretained[i] += (
-			(1 - (*(*sz.elements[i]).ccsne_yields).entrainment) * 
-			mdot_ccsne(sz, *sz.elements[i])
-		);
-		unretained[i] += (
-			(1 - (*(*sz.elements[i]).sneia_yields).entrainment) * 
-			mdot_sneia(sz, *sz.elements[i])
-		); 
+		unretained[i] = (*sz.elements[i]).unretained / sz.dt; 
 	} 
 	return unretained; 
 

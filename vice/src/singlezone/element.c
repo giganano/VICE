@@ -56,9 +56,29 @@ extern unsigned short malloc_Z(ELEMENT *e, unsigned long n_timesteps) {
  */ 
 extern void update_element_mass(SINGLEZONE sz, ELEMENT *e) {
 
-	e -> mass += (*(*e).ccsne_yields).entrainment * mdot_ccsne(sz, *e) * sz.dt; 
-	e -> mass += (*(*e).sneia_yields).entrainment * mdot_sneia(sz, *e) * sz.dt; 
-	e -> mass += (*(*e).agb_grid).entrainment * m_AGB(sz, *e); 
+	/* 
+	 * Pull the amount of mass produced by each enrichment channel, then add 
+	 * the retained part to the ISM mass and the unretained part to the 
+	 * instantaneous mass outflow. 
+	 */ 
+
+	double m_cc = mdot_ccsne(sz, *e) * sz.dt; 
+	double m_ia = mdot_sneia(sz, *e) * sz.dt; 
+	double m_agb = m_AGB(sz, *e); 
+
+	e -> mass += (*(*e).ccsne_yields).entrainment * m_cc; 
+	e -> mass += (*(*e).sneia_yields).entrainment * m_ia; 
+	e -> mass += (*(*e).agb_grid).entrainment * m_agb; 
+
+	e -> unretained = 0; 
+	e -> unretained += (1 - (*(*e).ccsne_yields).entrainment) * m_cc; 
+	e -> unretained += (1 - (*(*e).sneia_yields).entrainment) * m_ia; 
+	e -> unretained += (1 - (*(*e).agb_grid).entrainment) * m_agb; 
+
+	
+	/* 
+	 * Take care of subsequent terms in the enrichment equation. 
+	 */ 
 	e -> mass += mass_recycled(sz, e); 
 	e -> mass -= ((*sz.ism).star_formation_rate * sz.dt * 
 		(*e).mass / (*sz.ism).mass); 
