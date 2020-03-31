@@ -183,6 +183,8 @@ def test_filter():
 					assert all(map(lambda x: x == j, test[i])) 
 					test = _TEST_FRAME_.filter(i, "==", j) 
 					assert all(map(lambda x: x == j, test[i])) 
+					test = _TEST_FRAME_.filter(i, '!=', j) 
+					assert all(map(lambda x: x != j, test[i])) 
 					test = _TEST_FRAME_.filter(i, ">=", j) 
 					assert all(map(lambda x: x >= j, test[i])) 
 					test = _TEST_FRAME_.filter(i, ">", j) 

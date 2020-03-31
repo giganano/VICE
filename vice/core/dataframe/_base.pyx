@@ -416,8 +416,8 @@ Got: %s""" % (type(key)))
 		key : ``str`` [case-insensitive] 
 			The dataframe key to filter based on 
 		relation : ``str`` 
-			Either '<', '<=', '=', '==', '>=', or '>', denoting the relation 
-			to filter based on. 
+			Either '<', '<=', '=', '==', '!=', '>=', or '>', denoting the 
+			relation to filter based on. 
 		value : real number 
 			The value to filter based on. 
 
@@ -481,6 +481,8 @@ all values array-like.""")
 						fltrd = list(filter(lambda x: x[idx] <= value, copy)) 
 					elif relation == '=' or relation == '==': 
 						fltrd = list(filter(lambda x: x[idx] == value, copy)) 
+					elif relation == '!=': 
+						fltrd = list(filter(lambda x: x[idx] != value, copy)) 
 					elif relation == '>=': 
 						fltrd = list(filter(lambda x: x[idx] >= value, copy)) 
 					elif relation == '>': 
