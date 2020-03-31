@@ -124,7 +124,6 @@ Got: %s""" % (type(frame)))
 		return self.__getitem__(key) 
 
 
-
 	def __getitem__(self, key): 
 		""" 
 		If type str, index the dataframe on key.lower(). This allows 
@@ -140,6 +139,10 @@ Got: %s""" % (type(frame)))
 		else: 
 			raise IndexError("""Only integers and strings are valid indeces. \
 Got: %s""" % (type(key))) 
+
+
+	def __hash__(self): 
+		return id(self) 
 
 
 	def __subget__str(self, key): 

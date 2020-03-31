@@ -514,7 +514,7 @@ ran.""" % (i, j), UserWarning)
 		.. note:: 
 
 			Saving this functional attribute with VICE outputs requires the 
-			package dill_, and extension to pickle in the Python_ standard 
+			package dill_, an extension to ``pickle`` in the Python_ standard 
 			library. It is recommended that VICE user's install dill_ 
 			>= 0.2.0. 
 
@@ -755,7 +755,7 @@ ran.""" % (i, j), UserWarning)
 		.. note:: 
 
 			Saving this functional attribute with VICE outputs requires the 
-			package dill_, and extension to pickle in the Python_ standard 
+			package dill_, an extension to ``pickle`` in the Python_ standard 
 			library. It is recommended that VICE user's install dill_ 
 			>= 0.2.0. 
 
@@ -794,7 +794,7 @@ ran.""" % (i, j), UserWarning)
 		.. note:: 
 
 			Saving this functional attribute with VICE outputs requires the 
-			package dill_, and extension to pickle in the Python_ standard 
+			package dill_, an extension to ``pickle`` in the Python_ standard 
 			library. It is recommended that VICE user's install dill_ 
 			>= 0.2.0. 
 
@@ -887,7 +887,7 @@ ran.""" % (i, j), UserWarning)
 		.. note:: 
 
 			Saving functional attributes with VICE outputs requires the 
-			package dill_, and extension to pickle in the Python_ standard 
+			package dill_, an extension to ``pickle`` in the Python_ standard 
 			library. It is recommended that VICE user's install dill_ 
 			>= 0.2.0. 
 
@@ -1054,7 +1054,7 @@ ran.""" % (i, j), UserWarning)
 		.. note:: 
 
 			Saving functional attributes with VICE outputs requires the 
-			package dill_, and extension to pickle in the Python_ standard 
+			package dill_, an extension to ``pickle`` in the Python_ standard 
 			library. It is recommended that VICE user's install dill_ 
 			>= 0.2.0. 
 
@@ -1222,7 +1222,7 @@ ran.""" % (i, j), UserWarning)
 		.. note:: 
 
 			Saving functional attributes with VICE outputs requires the 
-			package dill_, and extension to pickle in the Python_ standard 
+			package dill_, an extension to ``pickle`` in the Python_ standard 
 			library. It is recommended that VICE user's install dill_ 
 			>= 0.2.0. 
 
@@ -1620,7 +1620,7 @@ ran.""" % (i, j), UserWarning)
 		.. note:: 
 
 			Saving functional attributes with VICE outputs requires the 
-			package dill_, and extension to pickle in the Python_ standard 
+			package dill_, an extension to ``pickle`` in the Python_ standard 
 			library. It is recommended that VICE user's install dill_ 
 			>= 0.2.0. 
 

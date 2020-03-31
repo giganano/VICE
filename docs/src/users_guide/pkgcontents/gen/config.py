@@ -108,7 +108,7 @@ _CONFIG_ = {
 		"header": 		"vice.yields.agb", 
 		"subs": 		[
 			vice.yields.agb.grid, 
-			vice.core.dataframe.agb_yield_settings, 
+			vice.yields.agb.settings, 
 			vice.yields.agb.cristallo11, 
 			vice.yields.agb.karakas10 
 		]  
@@ -118,9 +118,40 @@ _CONFIG_ = {
 		"header": 		"vice.yields.agb.grid", 
 		"subs": 		[] 
 	}, 
-	vice.core.dataframe.agb_yield_settings: {
+	vice.yields.agb.settings: {
 		"filename": 	"vice.yields.agb.settings.rst", 
 		"header": 		"vice.yields.agb.settings", 
+		"subs": 		[
+			vice.yields.agb.settings.keys, 
+			vice.yields.agb.settings.todict, 
+			vice.yields.agb.settings.restore_defaults, 
+			vice.yields.agb.settings.factory_settings, 
+			vice.yields.agb.settings.save_defaults 
+		]  
+	}, 
+	vice.yields.agb.settings.keys: {
+		"filename": 	"vice.yields.agb.settings.keys.rst", 
+		"header": 		"vice.yields.agb.settings.keys", 
+		"subs": 		[] 
+	}, 
+	vice.yields.agb.settings.todict: {
+		"filename": 	"vice.yields.agb.settings.todict.rst", 
+		"header": 		"vice.yields.agb.settings.todict", 
+		"subs": 		[] 
+	}, 
+	vice.yields.agb.settings.restore_defaults: {
+		"filename": 	"vice.yields.agb.settings.restore_defaults.rst", 
+		"header": 		"vice.yields.agb.settings.restore_defaults", 
+		"subs": 		[] 
+	}, 
+	vice.yields.agb.settings.factory_settings: {
+		"filename": 	"vice.yields.agb.settings.factory_settings.rst", 
+		"header": 		"vice.yields.agb.settings.factory_settings", 
+		"subs": 		[] 
+	}, 
+	vice.yields.agb.settings.save_defaults: {
+		"filename": 	"vice.yields.agb.settings.save_defaults.rst", 
+		"header": 		"vice.yields.agb.settings.save_defaults", 
 		"subs": 		[] 
 	}, 
 	vice.yields.agb.cristallo11: {
@@ -139,6 +170,7 @@ _CONFIG_ = {
 		"subs": 		[
 			vice.yields.ccsne.fractional, 
 			vice.yields.ccsne.table, 
+			vice.yields.ccsne.settings, 
 			vice.yields.ccsne.WW95, 
 			vice.yields.ccsne.CL04, 
 			vice.yields.ccsne.CL13, 
@@ -154,6 +186,42 @@ _CONFIG_ = {
 	vice.yields.ccsne.table: {
 		"filename": 	"vice.yields.ccsne.table.rst", 
 		"header": 		"vice.yields.ccsne.table", 
+		"subs": 		[] 
+	}, 
+	vice.yields.ccsne.settings: {
+		"filename": 	"vice.yields.ccsne.settings.rst", 
+		"header": 		"vice.yields.ccsne.settings", 
+		"subs": 		[
+			vice.yields.ccsne.settings.keys, 
+			vice.yields.ccsne.settings.todict, 
+			vice.yields.ccsne.settings.restore_defaults, 
+			vice.yields.ccsne.settings.factory_settings, 
+			vice.yields.ccsne.settings.save_defaults
+		] 
+	}, 
+	vice.yields.ccsne.settings.keys: {
+		"filename": 	"vice.yields.ccsne.settings.keys.rst", 
+		"header": 		"vice.yields.ccsne.settings.keys", 
+		"subs": 		[] 
+	}, 
+	vice.yields.ccsne.settings.todict: {
+		"filename": 	"vice.yields.ccsne.settings.todict.rst", 
+		"header": 		"vice.yields.ccsne.settings.todict", 
+		"subs": 		[] 
+	}, 
+	vice.yields.ccsne.settings.restore_defaults: {
+		"filename": 	"vice.yields.ccsne.settings.restore_defaults.rst", 
+		"header": 		"vice.yields.ccsne.settings.restore_defaults", 
+		"subs": 		[] 
+	}, 
+	vice.yields.ccsne.settings.factory_settings: {
+		"filename": 	"vice.yields.ccsne.settings.factory_settings.rst", 
+		"header": 		"vice.yields.ccsne.settings.factory_settings", 
+		"subs": 		[] 
+	}, 
+	vice.yields.ccsne.settings.save_defaults: {
+		"filename": 	"vice.yields.ccsne.settings.save_defaults.rst", 
+		"header": 		"vice.yields.ccsne.settings.save_defaults", 
 		"subs": 		[] 
 	}, 
 	vice.yields.ccsne.WW95: {
@@ -212,6 +280,7 @@ _CONFIG_ = {
 		"subs": 		[
 			vice.yields.sneia.single, 
 			vice.yields.sneia.fractional, 
+			vice.yields.sneia.settings, 
 			vice.yields.sneia.iwamoto99, 
 			vice.yields.sneia.seitenzahl13 
 		]  
@@ -224,6 +293,42 @@ _CONFIG_ = {
 	vice.yields.sneia.fractional: {
 		"filename": 	"vice.yields.sneia.fractional.rst", 
 		"header": 		"vice.yields.sneia.fractional", 
+		"subs": 		[] 
+	}, 
+	vice.yields.sneia.settings: {
+		"filename": 	"vice.yields.sneia.settings.rst", 
+		"header": 		"vice.yields.sneia.settings", 
+		"subs": 		[
+			vice.yields.sneia.settings.keys, 
+			vice.yields.sneia.settings.todict, 
+			vice.yields.sneia.settings.restore_defaults, 
+			vice.yields.sneia.settings.factory_settings, 
+			vice.yields.sneia.settings.save_defaults 
+		]  
+	}, 
+	vice.yields.sneia.settings.keys: {
+		"filename": 	"vice.yields.sneia.settings.keys.rst", 
+		"header" :		"vice.yields.sneia.settings.keys", 
+		"subs": 		[] 
+	}, 
+	vice.yields.sneia.settings.todict: {
+		"filename": 	"vice.yields.sneia.settings.todict.rst", 
+		"header": 		"vice.yields.sneia.settings.todict", 
+		"subs": 		[] 
+	}, 
+	vice.yields.sneia.settings.restore_defaults: {
+		"filename": 	"vice.yields.sneia.settings.restore_defaults.rst", 
+		"header": 		"vice.yields.sneia.settings.restore_defaults", 
+		"subs": 		[] 
+	}, 
+	vice.yields.sneia.settings.factory_settings: {
+		"filename": 	"vice.yields.sneia.settings.factory_settings.rst", 
+		"header": 		"vice.yields.sneia.settings.factory_settings", 
+		"subs": 		[] 
+	}, 
+	vice.yields.sneia.settings.save_defaults: {
+		"filename": 	"vice.yields.sneia.settings.save_defaults.rst", 
+		"header": 		"vice.yields.sneia.settings.save_defaults", 
 		"subs": 		[] 
 	}, 
 	vice.yields.sneia.iwamoto99: {

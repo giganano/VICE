@@ -40,24 +40,65 @@ from . cimport _yield_settings
 #------------------------- YIELD DATAFRAME SUBCLASS -------------------------#
 cdef class yield_settings(elemental_settings): 
 
-	""" 
-	A subclass of the VICE dataframe which only allows keys that are the 
-	symbols of elements built into VICE [case-insensitive]. Instances of this 
-	class contain the user's settings for nucleosynthetic yields from various 
-	astrophysical channels. These dataframes should NOT be directly assigned 
-	by the user; that is, only their existing fields should be modified. 
+	r""" 
+	The VICE dataframe: derived class (inherits from elemental_settings) 
 
-	vice.yields.ccsne.settings 
-	========================== 
-	IMF-integrated yields of elements from core collapse supernovae. Settings 
-	may be either numerical values or functions of time. 
+	Stores the current nucleosynthetic yield settings for different enrichment 
+	channels. 
 
-	vice.yields.sneia.settings 
-	========================== 
-	IMF-integrated yields of elements from type Ia supernovae. Settings may be 
-	numerical values only. 
+	Allowed Keys 
+	------------
+	- ``str`` [case-insensitive] : symbols of elements on the periodic table. 
 
-	See docstring of VICE dataframe base class for more information. 
+	Allowed Data Types 
+	------------------
+	- real number : denote a constant, metallicity-independent yield. 
+	- <function> : Mathematical function describing the yield. 
+		Must accept the metallicity by mass :math:`Z` as the only parameter. 
+
+	Built-in Instances 
+	------------------
+	- vice.yields.ccsne.settings 
+		The user's current nucleosynthetic yield settings for core collapse 
+			supernovae. 
+	- vice.yields.sneia.settings 
+		The user's current nucleosynthetic yield settings for type Ia 
+			supernovae. 
+
+	Functions 
+	---------
+	- keys 
+	- todict 
+	- restore_default 
+	- factor_settings 
+	- save_defaults 
+
+	Example Code 
+	------------
+	>>> from vice.yields.ccsne import settings as example 
+	>>> example["fe"] = 0.001 
+	>>> example["FE"] = 0.0012 
+	>>> def f(z): 
+		return 0.005 + 0.002 * (z / 0.014) 
+	>>> example["Fe"] = f 
+
+	**Signature**: vice.core.dataframe.yield_settings(frame, name, 
+	allow_funcs, config_field) 
+
+	.. warning:: Users should avoid creating new instances of derived classes 
+		of the VICE dataframe. 
+
+	Parameters 
+	----------
+	frame : ``dict`` 
+		A dictionary from which to construct the dataframe. 
+	name : ``str`` 
+		String denoting a description of the values stored in this dataframe. 
+	allow_funcs : ``bool``
+		If True, functional attributes will be allowed. 
+	config_field : ``str`` 
+		The name of the ".config" file that is stored in VICE's install 
+		directory whenever the user saved new default yield settings. 
 	""" 
 
 	# cdef object __defaults 
@@ -65,31 +106,6 @@ cdef class yield_settings(elemental_settings):
 	# cdef object _config_field 
 
 	def __init__(self, frame, name, allow_funcs, config_field): 
-		"""
-		Parameters 
-		========== 
-		frame :: dict 
-			A python dictionary to construct the dataframe from 
-		""" 
-		#=====================================================================#
-		"""
-		(The above docstring is entered purely to keep the visible __init__ 
-		docstring consistent across subclasses and instances of the VICE 
-		dataframe. Below is the actual docstring for this function.)
-
-		Parameters
-		==========
-		frame :: dict 
-			A python dictionary to construct the dataframe from 
-		name :: str 
-			A string denoting the name of the objects stored as fields in 
-			this dataframe (i.e. core-collapse yield settings.) 
-		allow_funcs :: bool 
-			A boolean describing whether or not functional attribute are allowed 
-		config_field :: str 
-			The name of the '.config' file that is stored whenever the user 
-			saves new default yield settings. 
-		"""
 		if "settings.config" in os.listdir("%syields/%s" % (_DIRECTORY_, 
 			config_field)): 
 			# load settings based on saved yields 
@@ -142,8 +158,25 @@ Got: %s""" % (self._name, type(value)))
 				type(key))) 
 
 	def restore_defaults(self): 
-		"""
+		r"""
 		Restores the dataframe to its default parameters. 
+
+		**Signature**: x.restore_defaults() 
+
+		Parameters 
+		----------
+		x : ``yield_settings``
+			An instance of this class. 
+
+		Example Code 
+		------------
+		>>> from vice.yields.ccsne import settings as example 
+		>>> example["fe"] 
+		0.000246
+		>>> example["fe"] = 0.001 
+		>>> example.restore_defaults() 
+		>>> example["fe"] 
+		0.000246
 		"""	
 		if "settings.config" in os.listdir("%syields/%s" % (_DIRECTORY_, 
 			self._config_field)): 
@@ -154,19 +187,58 @@ Got: %s""" % (self._name, type(value)))
 			self._frame = dict(self.__defaults) 
 
 	def factory_settings(self): 
-		"""
-		Restores the dataframe to its factory defaults. If user's wish to 
-		revert their presets as well, simply call save_defaults() immediately 
-		after. 
+		r"""
+		Restores the dataframe to its factory defaults. 
+
+		**Signature**: x.factory_settings() 
+
+		.. tip:: To revert your nucleosynthetic yield settings back to the 
+			production defaults *permanently*, simply call ``x.save_defaults()`` 
+			immediately following this function. 
+
+		Parameters 
+		----------
+		x : ``yield_settings`` 
+			An instance of this class 
+
+		Example Code 
+		------------
+		>>> from vice.yields.ccsne import settings as example 
+		>>> example["fe"] 
+		0.001 # <--- previously saved preset 
+		>>> example.factory_settings() 
+		0.000246 
 		""" 
 		self._frame = dict(self.__defaults) 
 
 	def save_defaults(self): 
-		"""
+		r"""
 		Saves the current dataframe settings as the default values. 
 
-		Saving functional attributes requires dill, which is installable via 
-		'pip install dill'. 
+		**Signature**: x.save_defaults() 
+
+		Parameters 
+		----------
+		x : ``yield_settings`` 
+			An instance of this class. 
+
+		.. note:: Saving functional yields requires the package dill_, an 
+			extension to ``pickle`` in the python standard library. It is 
+			recommended that VICE users install dill_ >= 0.2.0. 
+
+			.. _dill: https://pypi.org/project/dill/ 
+
+		Example Code 
+		------------
+		>>> from vice.yields.ccsne import settings as example 
+		>>> example["fe"] = 0.001 
+		>>> example.save_defaults() 
+		
+		After re-launching the python interpreter: 
+
+		>>> from vice.yields.ccsne import settings as example 
+		>>> example["fe"] 
+		0.001 
 		""" 
 		if "dill" in sys.modules: 
 			""" 

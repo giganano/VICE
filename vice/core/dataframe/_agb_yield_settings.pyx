@@ -50,7 +50,8 @@ cdef class agb_yield_settings(yield_settings):
 	Built-in Instances 
 	------------------
 	- vice.yields.agb.settings 
-		The user's current nucleosynthetic yield settings for AGB stars. 
+		The user's current nucleosynthetic yield settings for asymptotic giant 
+			branch stars. 
 
 	Functions 
 	---------
@@ -59,6 +60,15 @@ cdef class agb_yield_settings(yield_settings):
 	- restore_defaults 
 	- factory_settings 
 	- save_defaults 
+
+	Example Code 
+	------------
+	>>> import math 
+	>>> from vice.yields.agb import settings as example 
+	>>> example["c"] = "karakas10" 
+	>>> def f(m, z): 
+		return 1e-3 * m * math.exp(-m / 2) * (z / 0.014) 
+	>>> example["C"] = f 
 
 	**Signature**: vice.core.dataframe.agb_yield_settings(frame, name, 
 	allow_funcs, config_field) 
@@ -69,9 +79,9 @@ cdef class agb_yield_settings(yield_settings):
 	Parameters 
 	----------
 	frame : ``dict`` 
-		A dictionary from which to construct the dataframe 
+		A dictionary from which to construct the dataframe. 
 	name : ``str`` 
-		String denoting a description of the values stored in this dataframe 
+		String denoting a description of the values stored in this dataframe. 
 	allow_funcs : ``bool`` 
 		If True, functional attributes will be allowed. 
 	config_field : ``str`` 
