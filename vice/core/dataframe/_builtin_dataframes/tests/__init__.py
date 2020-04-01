@@ -13,6 +13,7 @@ if not __VICE_SETUP__:
 	from .primordial import test_primordial 
 	from .solar_z import test_solar_z 
 	from .sources import test_sources 
+	from .stable_isotopes import test_stable_isotopes 
 
 	@moduletest 
 	def test(): 
@@ -24,7 +25,8 @@ if not __VICE_SETUP__:
 				test_atomic_number(), 
 				test_primordial(), 
 				test_solar_z(), 
-				test_sources() 
+				test_sources(), 
+				test_stable_isotopes() 
 			] 
 		] 
 

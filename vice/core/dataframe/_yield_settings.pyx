@@ -56,6 +56,11 @@ cdef class yield_settings(elemental_settings):
 	- <function> : Mathematical function describing the yield. 
 		Must accept the metallicity by mass :math:`Z` as the only parameter. 
 
+		.. note:: Functions of metallicity for yields of delayed enrichment 
+			channels (e.g. type Ia supernovae) can significantly increase the 
+			required integration time in simulations, especially for fine 
+			timestepping. 
+
 	Built-in Instances 
 	------------------
 	- vice.yields.ccsne.settings 
@@ -69,8 +74,8 @@ cdef class yield_settings(elemental_settings):
 	---------
 	- keys 
 	- todict 
-	- restore_default 
-	- factor_settings 
+	- restore_defaults 
+	- factory_settings 
 	- save_defaults 
 
 	Example Code 

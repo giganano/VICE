@@ -56,6 +56,7 @@ Built-In Dataframes
 - primordial : The abundance of each element following big bang nucleosynthesis. 
 - solar_z : The abundance of each element in the sun. 
 - sources : The primary astrophysical production channels of each element. 
+- stable_isotopes : Lists of each elements' stable isotopes. 
 
 Other Features 
 --------------
@@ -63,6 +64,8 @@ elements : <module>
 	Contains ``element`` objects with each element's relevant information. 
 VisibleDeprecationWarning : ``Warning`` 
 	A ``DeprecationWarning`` which is visible by default. 
+VisibleRuntimeWarning : ``Warning`` 
+	A ``RuntimeWarning`` which is visible by default. 
 ScienceWarning : ``Warning`` 
 	A ``Warning`` class which concerns scientific accuracy and precision. 
 	(visible by default) 
@@ -121,6 +124,7 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 			from .core.dataframe import base as dataframe 
 			from ._build_utils import * 
 			from ._globals import ScienceWarning
+			from ._globals import VisibleRuntimeWarning 
 			from ._globals import VisibleDeprecationWarning 
 			from . import modeling 
 			from . import elements 

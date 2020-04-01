@@ -20,13 +20,17 @@ _RECOGNIZED_IMFS_ : ``tuple``
 ScienceWarning : ``Warning`` 
 	A ``Warning`` class for warnings related to the scientific accuracy or 
 	precision of values returned from a given function. 
+VisibleRuntimeWarning : ``Warning`` 
+	A ``Warning`` class for warnings related to integration time, which is 
+	visible by default. 
 VisibleDeprecationWarning : ``Warning`` 
 	Features which raise this ``Warning`` are deprecated will be removed in a 
 	future release of VICE. 
 """
 
 __all__ = ["_DEFAULT_FUNC_", "_DEFAULT_BINS_", "_RECOGNIZED_ELEMENTS_", 
-	"_RECOGNIZED_IMFS_", "ScienceWarning", "VisibleDeprecationWarning"]  
+	"_RECOGNIZED_IMFS_", "ScienceWarning", "VisibleRuntimeWarning", 
+	"VisibleDeprecationWarning"]  
 
 import sys 
 import os
@@ -138,8 +142,8 @@ Only python version 2.7 and >= 3.5 are supported by VICE""")
 
 
 class ScienceWarning(Warning): 
-	"""
-	A warning class designed to treat as a distinct set of warnings those 
+	r"""
+	A ``Warning`` class designed to treat as a distinct set of warnings those 
 	related to the scientific accuracy or precision of values returned from 
 	a given function. 
 
@@ -160,11 +164,35 @@ class ScienceWarning(Warning):
 	pass 
 
 
-class VisibleDeprecationWarning(Warning): 
+class VisibleRuntimeWarning(Warning): 
+	r"""
+	A ``RuntimeWarning`` which - contrary to the python default 
+	``RuntimeWarning`` - is visible by default. Features which raise this 
+	warning may take considerably longer to finish than otherwise. 
+
+	**Signature**: vice.VisibleRuntimeWarning 
+
+	Although it is not recommended, this class of warnings can be silenced via: 
+
+		>>> warnings.filterwarnings("ignore", 
+			category = vice.VisibleRuntimeWarning) 
+
+	Alternatively, to silence all errors within VICE: 
+
+		>>> vice.warnings.filterwarnings("ignore") 
+
+	To silence all warnings globally: 
+
+		>>> warnings.filterwarnings("ignore") 
 	""" 
-	A deprecation warning which - contrary to the python default deprecation 
-	warning - is visible by default. Features which raise this warning are 
-	deprecated and will be removed in a future release of VICE. 
+	pass 
+
+
+class VisibleDeprecationWarning(Warning): 
+	r""" 
+	A ``DeprecationWarning`` which - contrary to the python default 
+	``DeprecationWarning`` - is visible by default. Features which raise this 
+	warning are deprecated and will be removed in a future release of VICE. 
 
 	**Signature**: vice.VisibleDeprecationWarning 
 

@@ -15,6 +15,7 @@ from ..._globals import _DEFAULT_FUNC_
 from ..._globals import _DEFAULT_BINS_ 
 from ..._globals import _DIRECTORY_ 
 from ..._globals import VisibleDeprecationWarning 
+from ..._globals import VisibleRuntimeWarning 
 from ..._globals import ScienceWarning 
 from .entrainment import entrainment 
 from ..callback import callback1_nan_inf_positive 
@@ -1664,6 +1665,9 @@ be lost.\nOutput directory: %s.vice\nOverwrite? (y | n) """ % (self.name))
 					self._sz[0].elements[i][0].sneia_yields[0].yield_, 
 					self._callback_ia[i] 
 				) 
+				warnings.warn("""Functions of metallicity for type Ia \
+supernova yields may significantly increase the required integration time, \
+especially for fine timestepping.""", VisibleRuntimeWarning) 
 			else: 
 				callback_1arg_setup(
 					self._sz[0].elements[i][0].sneia_yields[0].yield_, 
@@ -1678,6 +1682,10 @@ be lost.\nOutput directory: %s.vice\nOverwrite? (y | n) """ % (self.name))
 					self._sz[0].elements[i][0].agb_grid[0].custom_yield, 
 					self._callback_agb[i] 
 				) 
+				warnings.warn("""Functions of stellar mass and metallicity \
+for asymptotic giant branch star yields may significantly increase the \
+required integration time, especially for fine \
+timestepping.""", VisibleRuntimeWarning) 
 			else: 
 				agbfile = agb._grid_reader.find_yield_file(self.elements[i], 
 					agb.settings[self.elements[i]]) 

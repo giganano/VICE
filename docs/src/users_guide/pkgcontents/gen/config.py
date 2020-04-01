@@ -35,12 +35,18 @@ _CONFIG_ = {
 			vice.imf, 
 			vice.singlezone, 
 			vice.ScienceWarning, 
+			vice.VisibleRuntimeWarning, 
 			vice.VisibleDeprecationWarning 
 		]  
 	}, 
 	vice.ScienceWarning: {
 		"filename": 	"vice.ScienceWarning.rst", 
 		"header": 		"vice.ScienceWarning", 
+		"subs": 		[] 
+	}, 
+	vice.VisibleRuntimeWarning: {
+		"filename": 	"vice.VisibleRuntimeWarning.rst", 
+		"header": 		"vice.VisibleRuntimeWarning", 
 		"subs": 		[] 
 	}, 
 	vice.VisibleDeprecationWarning: {

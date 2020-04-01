@@ -47,6 +47,10 @@ cdef class agb_yield_settings(yield_settings):
 		Must accept the stellar mass in :math:`M_\odot` and the metallicity by 
 		mass :math:`Z` as parameters, in that order. 
 
+		.. note:: Functions of mass and metallicity to describe these yields 
+			can significantly increase the required integration time in 
+			simulations, especially for fine timestepping. 
+
 	Built-in Instances 
 	------------------
 	- vice.yields.agb.settings 
