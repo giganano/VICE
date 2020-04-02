@@ -558,15 +558,15 @@ ran.""" % (i, j), UserWarning)
 
 		The interpretation of the attribute ``func``. 
 
-		* mode = "ifr" : The value returned from the attribute ``func`` 
+		* 	mode = "ifr" : The value returned from the attribute ``func`` 
 			represents the rate of gas infall into the interstellar medium in 
 			:math:`M_\odot\ yr^{-1}`. 
 
-		* mode = "sfr" : The value returned from the attribute ``func`` 
+		* 	mode = "sfr" : The value returned from the attribute ``func`` 
 			represents the star formation rate of the galaxy in 
 			:math:`M_\odot\ yr^{-1}`. 
 
-		* mode = "gas" : The value returned from the attribute ``func`` 
+		* 	mode = "gas" : The value returned from the attribute ``func`` 
 			represents the mass of the ISM gas in :math:`M_\odot`. 
 
 		.. note:: 
@@ -1594,19 +1594,19 @@ ran.""" % (i, j), UserWarning)
 		Raises 
 		------
 		* TypeError 
-			- Any functional attribute evaluates to a non-numerical value. 
+			- 	Any functional attribute evaluates to a non-numerical value. 
 		* ValueError 
-			- Any element of output_times is negative. 
-			- An inflow metallicity evaluates to a negative value. 
+			- 	Any element of output_times is negative. 
+			- 	An inflow metallicity evaluates to a negative value. 
 		* ArithmeticError 
-			- Any functional attribute evaluates to NaN or inf. 
+			- 	Any functional attribute evaluates to NaN or inf. 
 		* UserWarning 
-			- Any yield settings or class attributes are callable and the 
+			- 	Any yield settings or class attributes are callable and the 
 				user does not have dill_ installed. 
 		* ScienceWarning 
-			- Any element tracked by the simulation is enriched in signifcant 
+			- 	Any element tracked by the simulation is enriched in signifcant 
 				part by r-process nucleosynthesis. 
-			- Any element tracked by the simulation has a weakly constrained 
+			- 	Any element tracked by the simulation has a weakly constrained 
 				solar abundance measurement. 
 
 		Notes 

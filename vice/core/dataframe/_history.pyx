@@ -25,19 +25,174 @@ from . cimport _history
 #----------------------------- HISTORY SUBCLASS -----------------------------# 
 cdef class history(fromfile): 
 
-	""" 
-	A subclass of the VICE dataframe which holds data from a square data file 
-	containing numerical values. This particular subclass allows the user to 
-	call __getitem__ with '[m/h]' and 'z' to calculate the total (scaled) 
-	metallicity of the interstellar medium at each output time automatically. 
+	r""" 
+	The VICE dataframe: derived class (inherits from fromfile) 
 
-	See Also 
-	======== 
-	VICE dataframe base class  
+	Provides a means of storing and accessing the time-evolution of the 
+	interstellar medium from the output of a singlezone object. History 
+	objects can be created from VICE outputs by calling vice.history. 
 
-	Section 5.4 of VICE's science documentation (available at 
-	https://github.com/giganano/VICE/blob/master/docs/) for information on 
-	the scaled metallicity of the interstellar medium. 
+	Allowed Data Types 
+	------------------
+	* Keys 
+		- ``str`` [case-insensitive] : the physical quantity. 
+			A name given to the physical quantity to take from or store with 
+			the output. 
+
+			.. note:: VICE automatically assigns keys to quantities in the 
+				output which cannot be overridden. A list of them can be 
+				found here under `Indexing`_. 
+
+	* Values 
+		- array-like 
+			Must have the same length as the values of the dataframe obtained from 
+			the output file. 
+
+	Indexing 
+	--------
+	- ``int`` : A given line-number of output. 
+		Returns a dataframe with the same keys, but whose values are taken 
+		only from the specified line of output. 
+	- ``str`` [case-insensitive] : labels of the lists of quantities stored. 
+		The following are assigned automatically by VICE when reading in an 
+		output file and will not be re-assigned: 
+
+		Recognized keys: 
+
+			- 	'time' : Time in Gyr from the start of the simulation. 
+			- 	'lookback' : Lookback time in Gyr from the end of the 
+				simulation. 
+			- 	'mgas' : The mass of the interstellar medium in :math:`M_\odot` 
+			- 	'sfr' : Star formation rate in :math:`M_\odot \text{yr}^{-1}` 
+			- 	'ifr' : Infall rate in :math:`M_\odot \text{yr}^{-1}` 
+			- 	'ofr' : Outflow rate in :math:`M_\odot \text{yr}^{-1}` 
+			- 	'eta_0' : The user-specified value of the mass-loading 
+				parameter :math:`\eta`, independent of the smoothing timescale 
+				:math:`\tau_\star` employed in the simulation. 
+			- 	'r_eff' :	The effective recycling parameter 
+				:math:`\dot{M}_\text{r}/\dot{M}_\star`. 
+			- 	'z_in(x)' : The inflow metallicity by mass :math:`Z` of the 
+				element :math:`x`. 
+			- 	'z_out(x)' : The outflow metallicity by mass :math:`Z` of the 
+				element :math:`x`. 
+			- 	'mass(x)' : The mass of the element :math:`x` in the 
+				interstellar medium. 
+			- 	'z(x)' : The metallicity by mass :math:`Z` of the element 
+				:math:`x` in the interstellar medium. 
+			- 	'[x/h]' : The logarithmic abundance relative to the sun of the 
+				element :math:`x`, given by :math:`\log_{10}(Z_x/Z_{x,\odot})`. 
+			- 	'[y/h]' : The logarithmic abundance ratio relative to the sun 
+				between the elements :math:`y` and :math:`x`, given by 
+				:math:`\log_{10}(Z_y/Z_{y,\odot}) - \log_{10}(Z_x/Z_{x,\odot})`. 
+			- 	'z' : The scaled total metallicity by mass :math:`Z`. 
+			- 	'[m/h]' : The scalled logarithmic metallicity relative to the 
+				sun, given by :math:`\log_{10}(Z/Z_\odot)`. 
+
+		.. note:: The scaled total metallicity by mass is defined by: 
+
+			.. math:: Z = Z_\odot \frac{\sum_i Z_i}{\sum_i Z_{i,\odot}} 
+
+			where :math:`Z_\odot` is the metallicity of the sun adopted in the 
+			simulation, and :math:`Z_i` is the abundance by mass of the i'th 
+			element. This scaling is employed so that an accurate estimation of 
+			the total metallicity can be obtained without every element's 
+			abundance information. 
+
+		.. note:: The scaled logarithmic metallicity is defined from the scaled 
+			total metallcity by mass according to: 
+
+			.. math:: [M/H] = \log_{10}\left(\frac{Z}{Z_\odot}\right) 
+
+	Functions 
+	---------
+	- keys 
+	- todict 
+	- filter 
+
+	Example Code 
+	------------
+	>>> example = vice.history("example") 
+	>>> example.keys() 
+	['time',
+	 'mgas',
+	 'mstar',
+	 'sfr',
+	 'ifr',
+	 'ofr',
+	 'eta_0',
+	 'r_eff',
+	 'z_in(fe)',
+	 'z_in(sr)',
+	 'z_in(o)',
+	 'z_out(fe)',
+	 'z_out(sr)',
+	 'z_out(o)',
+	 'mass(fe)',
+	 'mass(sr)',
+	 'mass(o)',
+	 'z(fe)',
+	 'z(sr)',
+	 'z(o)',
+	 '[fe/h]',
+	 '[sr/h]',
+	 '[o/h]',
+	 '[sr/fe]',
+	 '[o/fe]',
+	 '[o/sr]',
+	 'z',
+	 '[m/h]',
+	 'lookback']
+	>>> example[100]
+	vice.dataframe{
+		time -----------> 1.0
+		mgas -----------> 5795119000.0
+		mstar ----------> 2001106000.0
+		sfr ------------> 2.897559
+		ifr ------------> 9.1
+		ofr ------------> 7.243899
+		eta_0 ----------> 2.5
+		r_eff ----------> 0.3534769
+		z_in(fe) -------> 0.0
+		z_in(sr) -------> 0.0
+		z_in(o) --------> 0.0
+		z_out(fe) ------> 0.0002769056
+		z_out(sr) ------> 3.700754e-09
+		z_out(o) -------> 0.001404602
+		mass(fe) -------> 1604701.0
+		mass(sr) -------> 21.44631
+		mass(o) --------> 8139837.0
+		z(fe) ----------> 0.0002769056166059748
+		z(sr) ----------> 3.700754031107903e-09
+		z(o) -----------> 0.0014046022178319376
+		[fe/h] ---------> -0.6682579454664828
+		[sr/h] ---------> -1.1074881208001155
+		[o/h] ----------> -0.6098426789720387
+		[sr/fe] --------> -0.43923017533363273
+		[o/fe] ---------> 0.05841526649444406
+		[o/sr] ---------> 0.4976454418280768
+		z --------------> 0.0033582028978416337
+		[m/h] ----------> -0.6200211036287412
+		lookback -------> 9.0
+	}
+	>>> print ("[O/Fe] at end of simulation: %.2e" % (example["[o/fe]"][-1])) 
+		[O/Fe] at end of simulation: -3.12e-01 
+
+	**Signature**: vice.core.dataframe.history(filename = None, 
+	adopted_solar_z = None, labels = None) 
+
+	.. warning:: Users should avoid creating new instances of derived classes 
+		of the VICE dataframe. To obtain a history object from a VICE output, 
+		simply call vice.history. 
+
+	Parameters 
+	----------
+	filename : ``str`` [default : None] 
+		The name of the ascii file containing the history output. 
+	adopted_solar_z : real number [default : None] 
+		The metallicity by mass of the sun :math:`M_\odot` adopted in the 
+		simulation. 
+	labels : ``list`` of string [default : None] 
+		The strings to assign the column labels. 
 	""" 
 
 	# cdef char **_elements 

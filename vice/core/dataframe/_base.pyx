@@ -31,9 +31,6 @@ cdef class base:
 
 	**Signature**: vice.dataframe(frame) 
 
-	.. note:: This class can also be accessed with the signature 
-		``vice.core.dataframe.base(frame)`` 
-
 	Parameters 
 	----------
 	frame : ``dict`` 
@@ -45,14 +42,27 @@ cdef class base:
 	* TypeError 
 		- frame has a key that is not of type ``str`` 
 
-	Allowed Keys 
-	------------
-	- ``str`` [case-insensitive] : names to assign to the quantities (or lists 
-		thereof) stored in this dataframe. 
-
 	Allowed Data Types 
 	------------------
-	- All 
+	* Keys 
+		- 	``str`` [case-insensitive] : column label 
+			A label given to the stored quantity (or list/array thereof). 
+
+	* Values 
+		- All 
+
+	Indexing 
+	--------
+	- 	``str`` [case-insensitive] : column label 
+		A label given to the quantities stored. 
+	- 	``int`` : index for values which are array-like. 
+		If all values stored by the dataframe are array-like, the i'th value 
+		of all of them can be obtained by indexing the dataframe with ``i``. 
+
+	Calling 
+	-------
+	The VICE dataframe and all subclasses can be called rather than indexed 
+	to achieve the same result. 
 
 	Functions 
 	---------
@@ -60,18 +70,6 @@ cdef class base:
 	- todict 
 	- remove 
 	- filter 
-
-	Indexing 
-	--------
-	This object will store any type of data, but can be indexed by integers 
-	when all values are array-like. It will automatically pass integers to 
-	each stored value and return a new dataframe with the same keys. 
-
-	Indexing this object via strings is case-insensitive. 
-
-	Calling 
-	-------
-	This object can be called with the same effect as indexing. 
 
 	Example Code 
 	------------

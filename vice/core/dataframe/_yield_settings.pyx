@@ -46,29 +46,29 @@ cdef class yield_settings(elemental_settings):
 	Stores the current nucleosynthetic yield settings for different enrichment 
 	channels. 
 
-	Allowed Keys 
-	------------
-	- ``str`` [case-insensitive] : symbols of elements on the periodic table. 
-
 	Allowed Data Types 
 	------------------
-	- real number : denote a constant, metallicity-independent yield. 
-	- <function> : Mathematical function describing the yield. 
-		Must accept the metallicity by mass :math:`Z` as the only parameter. 
+	* Keys 
+		-	``str`` [case-insensitive] : elemental symbols 
+			The symbols of the elements as they appear on the periodic table. 
 
-		.. note:: Functions of metallicity for yields of delayed enrichment 
-			channels (e.g. type Ia supernovae) can significantly increase the 
-			required integration time in simulations, especially for fine 
-			timestepping. 
+	* Values 
+		- 	real number : denote a constant, metallicity-independent yield. 
 
-	Built-in Instances 
-	------------------
-	- vice.yields.ccsne.settings 
-		The user's current nucleosynthetic yield settings for core collapse 
-			supernovae. 
-	- vice.yields.sneia.settings 
-		The user's current nucleosynthetic yield settings for type Ia 
-			supernovae. 
+		- 	<function> : Mathematical function describing the yield. 
+			Must accept the metallicity by mass :math:`Z` as the only 
+			parameter. 
+
+			.. note:: Functions of metallicity for yields of delayed 
+				enrichment channels (e.g. type Ia supernovae) can 
+				significantly increase the required integration time in 
+				simulations, especially for fine timestepping. 
+
+	Indexing 
+	--------
+	-	``str`` [case-insensitive] : elemental symbols 
+		Must be indexed by the symbol of an element recognized by VICE as it 
+		appears on the periodic table. 
 
 	Functions 
 	---------
@@ -77,6 +77,15 @@ cdef class yield_settings(elemental_settings):
 	- restore_defaults 
 	- factory_settings 
 	- save_defaults 
+
+	Built-in Instances 
+	------------------
+	- 	vice.yields.ccsne.settings 
+		The user's current nucleosynthetic yield settings for core collapse 
+		supernovae. 
+	- 	vice.yields.sneia.settings 
+		The user's current nucleosynthetic yield settings for type Ia 
+		supernovae. 
 
 	Example Code 
 	------------

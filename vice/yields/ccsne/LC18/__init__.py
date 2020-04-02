@@ -11,7 +11,7 @@ elements to the IMF-averaged yields calculated with the Limongi & Chieffi
 .. tip:: By importing this module, the user does not sacrifice the ability to 
 	specify their yield settings directly. 
 
-.. note:: This module is not imported with a simple "import vice" statement. 
+.. note:: This module is not imported with a simple ``import vice`` statement. 
 
 Contents 
 --------
@@ -48,7 +48,7 @@ if not __VICE_SETUP__:
 		Raises 
 		------
 		* TypeError 
-			- Received a keyword argument "study". This will always be "LC18" 
+			- 	Received a keyword argument "study". This will always be "LC18" 
 				when called from this module. 
 
 		Other exceptions are raised by vice.yields.ccsne.fractional. 

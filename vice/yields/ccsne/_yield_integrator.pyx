@@ -146,27 +146,28 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	Raises 
 	------
 	* ValueError 
-		- The element is not built into VICE 
-		- The study is not built into VICE 
-		- The tolerance is not between 0 and 1 
-		- m_lower > m_upper 
-		- Explodability settings does not accept exactly 1 position argument 
-		- Custom IMF does not accept exactly 1 positional argument 
-		- Built-in IMF is not recognized 
-		- The method of quadrature is not built into VICE 
-		- Nmin > Nmax 
+		- 	The element is not built into VICE 
+		- 	The study is not built into VICE 
+		- 	The tolerance is not between 0 and 1 
+		- 	m_lower > m_upper 
+		- 	Explodability settings does not accept exactly 1 position argument 
+		- 	Custom IMF does not accept exactly 1 positional argument 
+		- 	Built-in IMF is not recognized 
+		- 	The method of quadrature is not built into VICE 
+		- 	Nmin > Nmax 
 	* LookupError 
-		- The study did not report yields at the specified metallicity 
-		- The study did not report yields at the specified rotational velocity 
+		- 	The study did not report yields at the specified metallicity 
+		- 	The study did not report yields at the specified rotational 
+			velocity. 
 	* ScienceWarning 
-		- m_upper is larger than the largest mass on the grid reported by the 
+		- 	m_upper is larger than the largest mass on the grid reported by the 
 			specified study. VICE extrapolates to high masses in this case. 
-		- study is either "CL04" or "CL13" and the atomic number of the 
+		- 	study is either "CL04" or "CL13" and the atomic number of the 
 			element is between 24 and 28 (inclusive). VICE warns against 
 			adopting these yields for iron peak elements. 
-		- Numerical quadrature did not converge within the maximum number 
+		- 	Numerical quadrature did not converge within the maximum number 
 			of allowed quadrature bins to within the specified tolerance. 
-		- Explodability criteria specified in combination with the Limongi & 
+		- 	Explodability criteria specified in combination with the Limongi & 
 			Chieffi (2018) study. 
 
 	Notes 

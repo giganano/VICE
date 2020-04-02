@@ -85,14 +85,15 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, isotopic = False):
 	Raises 
 	------
 	* ValueError 
-		- The element is not built into VICE 
-		- The study is not built into VICE 
+		- 	The element is not built into VICE 
+		- 	The study is not built into VICE 
 	* LookupError 
-		- The study did not report yields for the requested element 
-		- The study did not report yields at the specified metallicity 
-		- The study did not report yields at the specified rotational velocity 
+		- 	The study did not report yields for the requested element 
+		- 	The study did not report yields at the specified metallicity 
+		- 	The study did not report yields at the specified rotational 
+			velocity. 
 	* ScienceWarning 
-		- Study is either "CL04" or "CL13" and the atomic number of the 
+		- 	Study is either "CL04" or "CL13" and the atomic number of the 
 			element is between 24 and 28 (inclusive). VICE warns against 
 			adopting these yields for iron peak elements. 
 

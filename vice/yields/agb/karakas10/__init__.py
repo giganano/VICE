@@ -6,6 +6,8 @@ Karakas (2010), MNRAS, 403, 1413 Asymptotic Giant Branch (AGB) star yields.
 Importing this module will set the AGB star yield setting for all elements up 
 to nickel to "karakas10". 
 
+.. note:: This module is not imported with a simple ``import vice`` statement. 
+
 Raises 
 ------
 * ScienceWarning 

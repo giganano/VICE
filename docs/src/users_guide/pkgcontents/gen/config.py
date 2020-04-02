@@ -34,6 +34,7 @@ _CONFIG_ = {
 			vice.yields, 
 			vice.imf, 
 			vice.singlezone, 
+			vice.history, 
 			vice.ScienceWarning, 
 			vice.VisibleRuntimeWarning, 
 			vice.VisibleDeprecationWarning 
@@ -76,7 +77,8 @@ _CONFIG_ = {
 			vice.dataframe.keys, 
 			vice.dataframe.todict, 
 			vice.dataframe.remove, 
-			vice.dataframe.filter 
+			vice.dataframe.filter, 
+			vice.core.dataframe.history 
 		]  
 	}, 
 	vice.dataframe.keys: {
@@ -97,6 +99,11 @@ _CONFIG_ = {
 	vice.dataframe.filter: {
 		"filename": 	"vice.core.dataframe.base.filter.rst", 
 		"header": 		"vice.dataframe.filter", 
+		"subs": 		[] 
+	}, 
+	vice.core.dataframe.history: {
+		"filename": 	"vice.core.dataframe.history.rst", 
+		"header": 		"vice.core.dataframe.history", 
 		"subs": 		[] 
 	}, 
 	vice.yields: {
@@ -590,6 +597,11 @@ _CONFIG_ = {
 	vice.singlezone.agb_model: {
 		"filename": 	"vice.singlezone.agb_model.rst", 
 		"header": 		"vice.singlezone.agb_model", 
+		"subs": 		[] 
+	}, 
+	vice.history: {
+		"filename": 	"vice.history.rst", 
+		"header": 		"vice.history", 
 		"subs": 		[] 
 	}
 }

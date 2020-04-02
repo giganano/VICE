@@ -28,34 +28,35 @@ cdef class agb_yield_settings(yield_settings):
 	Stores the current nucleosynthetic yield settings for asymptotic giant 
 	branch (AGB) stars. 
 
-	Allowed Keys 
-	------------
-	- ``str`` [case-insensitive] : symbols of elements on the periodic table. 
-
 	Allowed Data Types 
 	------------------
-	- ``str`` [case-insensitive] : keywords 
-		Denote a built-in table of net yields published in a nucleosynthesis 
-		study. 
+	* Keys 
+		- 	``str`` [case-insensitive] : elemental symbols 
+			The symbols of the elements as they appear on the periodic table. 
 
-		Recognized Keywords: 
+	* Values 
+		- 	``str`` [case-insensitive] : keywords 
+			Denote a built-in table of net yields published in a 
+			nucleosynthesis study. 
 
-			- "cristallo11": Cristallo et al. (2011) [1]_ 
-			- "karakas10": Karakas (2010) [2]_ 
+			Recognized Keywords: 
 
-	- <function> : Mathematical function describing the yield. 
-		Must accept the stellar mass in :math:`M_\odot` and the metallicity by 
-		mass :math:`Z` as parameters, in that order. 
+				- "cristallo11": Cristallo et al. (2011) [1]_ 
+				- "karakas10": Karakas (2010) [2]_ 
 
-		.. note:: Functions of mass and metallicity to describe these yields 
-			can significantly increase the required integration time in 
-			simulations, especially for fine timestepping. 
+		- 	<function> : Mathematical function describing the yield. 
+			Must accept the stellar mass in :math:`M_\odot` and the 
+			metallicity by mass :math:`Z` as parameters, in that order. 
 
-	Built-in Instances 
-	------------------
-	- vice.yields.agb.settings 
-		The user's current nucleosynthetic yield settings for asymptotic giant 
-			branch stars. 
+			.. note:: Functions of mass and metallicity to describe these 
+				yields can significantly increase the required integration 
+				time in simulations, especially for fine timestepping. 
+
+	Indexing 
+	--------
+	- 	``str`` [case-insensitive] : elemental symbols 
+		Must be indexed by the symbol of an element recognized by VICE as it 
+		appears on the periodic table. 
 
 	Functions 
 	---------
@@ -64,6 +65,12 @@ cdef class agb_yield_settings(yield_settings):
 	- restore_defaults 
 	- factory_settings 
 	- save_defaults 
+
+	Built-in Instances 
+	------------------
+	- 	vice.yields.agb.settings 
+		The user's current nucleosynthetic yield settings for asymptotic giant 
+		branch stars. 
 
 	Example Code 
 	------------

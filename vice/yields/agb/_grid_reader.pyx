@@ -63,13 +63,13 @@ def yield_grid(element, study = "cristallo11"):
 	Raises 
 	------
 	* ValueError 
-		- The study or the element are not built into VICE 
+		- 	The study or the element are not built into VICE 
 	* LookupError 
-		- ``study == "karakas10"`` and the atomic number of the element is 
+		- 	``study == "karakas10"`` and the atomic number of the element is 
 			:math:`\geq` 29. The Karakas (2010) study did not report yields 
 			for elements heavier the nickel. 
 	* IOError [Occur's only if VICE's file structure has been altered] 
-		- The parameters passed to this function are allowed but the data 
+		- 	The parameters passed to this function are allowed but the data 
 			file is not found. 
 
 	Example Code 

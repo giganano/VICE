@@ -6,6 +6,8 @@ yields.
 
 Importing this module will set the AGB star yield settings for all elements 
 to "cristallo11". 
+
+.. note:: This module is not imported with a simple ``import vice`` statement. 
 """ 
 
 from __future__ import absolute_import 

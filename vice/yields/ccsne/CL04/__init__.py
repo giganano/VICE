@@ -14,7 +14,7 @@ of 35 :math:`M_\odot`.
 .. note:: [M/H] = 0.15 corresponds to Z = 0.02 if the solar abundance is 
 	Z = 0.014 (Asplund et al. 2009) [1]_. 
 
-.. note:: This module is not imported with a simple "import vice" statement. 
+.. note:: This module is not imported with a simple ``import vice`` statement. 
 
 Contents 
 --------
@@ -53,8 +53,8 @@ if not __VICE_SETUP__:
 		Raises 
 		------
 		* TypeError 
-			 - Received a keyword argument "study". This will always be "CL04" 
-				 when called from this module. 
+			 - 	Received a keyword argument "study". This will always be "CL04" 
+				when called from this module. 
 
 		Other exceptions are raised by vice.yields.ccsne.fractional. 
 

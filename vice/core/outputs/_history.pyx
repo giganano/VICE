@@ -16,95 +16,86 @@ from . cimport _history
 
 
 def history(name): 
-	"""
-	Read in the part of a simulation's output that records the time-evolution 
-	of the ISM metallicity. 
+	r""" 
+	Obtain a ``history`` object from a VICE output containing the 
+	time-evolution of the interstellar medium and its relevant abundance 
+	information. 
 
-	Signature: vice.history(name) 
+	**Signature**: vice.history(name) 
 
-	Parameters
-	==========
-	name :: str 
-		The name of the output to read the history from, with or without the 
-		'.vice' extension. 
+	Parameters 
+	----------
+	name : ``str`` 
+		The full or relative path to the output directory. The '.vice' 
+		extension is not required. 
 
 	Returns 
-	======= 
-	hist :: VICE dataframe 
-		A VICE history object (a subclass of the VICE dataframe), which 
-		contains the time in Gyr, gas and stellar masses in solar masses, star 
-		formation and infall rates in Msun/yr, inflow and outflow 
-		metallicities for each element, gas-phase mass and metallicities of 
-		each element, and every [X/Y] combination of abundance ratios for each 
-		output timestep. 
+	-------
+	hist : ``history`` [VICE ``dataframe`` derived class] 
+		A subclass of the VICE dataframe designed to store the output and to 
+		calculate relevant quantities automatically upon indexing. 
 
 	Raises 
-	====== 
-	IOError :: [Only occurs if the output has been tampered with]  
-		:: The output file is not found. 
-		:: The output file is not formatted correctly. 
-		:: Other VICE output files are missing from the output 
+	------ 
+	* IOError [Only occurs if the output has been altered] 
+		- Output directory not found 
+		- Output files not formatted correctly. 
+		- Other VICE output files are missing from the output 
 
-	Notes 
-	===== 
-	For an output under a given name, the history file is stored under 
-	name.vice/history.out, and it is a simple ascii text file with a comment 
-	header detailing each column. By storing the output in this manner, users 
-	may analyze the results of VICE simulations in languages other than 
-	python. 
+	.. seealso:: vice.core.dataframe.history 
 
-	In addition to the abundance and dynamical evolution information, history 
-	objects will also record the effective recycling parameter and the 
-	specified mass loading parameter at all times. These ar ethe actual 
-	recycling rate divided by the star formation rate and the instantaneous 
-	mass loading parameter \\eta that the user has specified regardless of the 
-	smoothing time, respectively. 
-
-	In addition to the keys present in history dataframes, users may also 
-	index them with 'z' and '[m/h]' [case-insensitive]. This will determine 
-	the total metallicity by mass as well as the logarithmic abundance 
-	relative to solar. Both are scaled in the following manner: 
-
-	Z = Z_solar * (\\sum_i Z_i / \\sum_i Z_i^solar) 
-
-	This is the scaling of the total metallicity that is encoded into VICE's 
-	timestep integrator, which prevents the simulation from behaving as if it 
-	has a systematically low metallicity when enrichment is tracked for only 
-	a small number of elements. See section 5.4 of VICE's science documentation 
-	at https://github.com/giganano/VICE/tree/master/docs for further details. 
-
-	Example 
-	=======
-	>>> history = vice.history("example") 
-	>>> hist.keys() 
-	    [“z(fe)”,
-	    “mass(fe)”,
-	    “[o/fe]”,
-	    “z_in(sr)”,
-	    “z_in(fe)”,
-	    “z(sr)”,
-	    “[sr/fe]”,
-	    “z_out(o)”,
-	    “mgas”,
-	    “mass(sr)”,
-	    “z_out(sr)”,
-	    “time”,
-	    “sfr”,
-	    “z_out(fe)”,
-	    “eta_0”,
-	    “[o/sr]”,
-	    “z(o)”,
-	    “[o/h]”,
-	    “ifr”,
-	    “z_in(o)”,
-	    “ofr”,
-	    “[sr/h]”,
-	    “[fe/h]”,
-	    “r_eff”,
-	    “mass(o)”,
-	    “mstar”]
-	>>> print ("[O/Fe] at end of simulation: %.2e" % (hist["[o/fe]"][-1])) 
-	    [O/Fe] at end of simulation: -3.12e-01 
+	Example Code 
+	------------
+	>>> import numpy as np 
+	>>> import vice 
+	>>> vice.singlezone(name = "example").run(np.linspace(0, 10, 1001)) 
+	>>> example = vice.history("example") 
+	>>> example["time"][:10]
+	[0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09] 
+	>>> example["[o/fe]"][:10] 
+	>>> 
+	[-0.30581989611140603,
+	 -0.3059028126227887,
+	 -0.3059856206579771,
+	 -0.3060683202832149,
+	 -0.30615091156463625,
+	 -0.30623330628476564,
+	 -0.30631559283107557,
+	 -0.3063978595147838,
+	 -0.30647984166504416,
+	 -0.3065618040838354]
+	>>> example[100] 
+	vice.dataframe{
+		time -----------> 1.0
+		mgas -----------> 5795119000.0
+		mstar ----------> 2001106000.0
+		sfr ------------> 2.897559
+		ifr ------------> 9.1
+		ofr ------------> 7.243899
+		eta_0 ----------> 2.5
+		r_eff ----------> 0.3534769
+		z_in(fe) -------> 0.0
+		z_in(sr) -------> 0.0
+		z_in(o) --------> 0.0
+		z_out(fe) ------> 0.0002769056
+		z_out(sr) ------> 3.700754e-09
+		z_out(o) -------> 0.001404602
+		mass(fe) -------> 1604701.0
+		mass(sr) -------> 21.44631
+		mass(o) --------> 8139837.0
+		z(fe) ----------> 0.0002769056166059748
+		z(sr) ----------> 3.700754031107903e-09
+		z(o) -----------> 0.0014046022178319376
+		[fe/h] ---------> -0.6682579454664828
+		[sr/h] ---------> -1.1074881208001155
+		[o/h] ----------> -0.6098426789720387
+		[sr/fe] --------> -0.43923017533363273
+		[o/fe] ---------> 0.05841526649444406
+		[o/sr] ---------> 0.4976454418280768
+		z --------------> 0.0033582028978416337
+		[m/h] ----------> -0.6200211036287412
+		lookback -------> 9.0
+	}
 	""" 
 	return c_history(name) 
 

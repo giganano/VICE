@@ -12,7 +12,7 @@ detonation explosion models of Chandrasekhar mass progenitors
 .. tip:: By importing this module, the user does not sacrifice the ability to 
 	specify their yield settings directly. 
 
-.. note:: This module is not imported with a simple "import vice" statement. 
+.. note:: This module is not imported with a simple ``import vice`` statement. 
 
 Contents 
 --------
@@ -47,7 +47,7 @@ if not __VICE_SETUP__:
 		Raises 
 		------
 		* TypeError 
-			- Received a keyword argument "study". This will always be 
+			- 	Received a keyword argument "study". This will always be 
 				"seitenzahl13" when called from this module. 
 
 		Other exceptions are raised by vice.yields.sneia.fractional.  

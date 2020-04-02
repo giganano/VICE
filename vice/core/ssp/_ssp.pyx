@@ -140,28 +140,28 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	Raises 
 	------
 	* ValueError 
-		- The element is not built into VICE. 
-		- mstar < 0 
-		- Z < 0 
-		- time < 0 or time > 15 [VICE does not simulate enrichment on 
+		- 	The element is not built into VICE. 
+		- 	mstar < 0 
+		- 	Z < 0 
+		- 	time < 0 or time > 15 [VICE does not simulate enrichment on 
 			timescales significantly longer than the age of the universe] 
-		- dt < 0 
-		- m_upper < 0 
-		- m_lower < 0 
-		- m_lower > m_upper 
-		- postMS < 0 or > 1 
-		- built-in IMF is not recognized 
-		- delay < 0 
-		- agb_model is not built into VICE 
+		- 	dt < 0 
+		- 	m_upper < 0 
+		- 	m_lower < 0 
+		- 	m_lower > m_upper 
+		- 	postMS < 0 or > 1 
+		- 	built-in IMF is not recognized 
+		- 	delay < 0 
+		- 	agb_model is not built into VICE 
 	* LookupError 
-		- agb_model == "karakas10" and the atomic number of the element is 
+		- 	agb_model == "karakas10" and the atomic number of the element is 
 			larger than 29. The Karakas (2010), MNRAS, 403, 1413 study did not 
 			report yields for elements heavier than nickel. 
 	* ArithmeticError 
-		- A functional RIa evaluated to a negative value, inf, or NaN at any 
+		- 	A functional RIa evaluated to a negative value, inf, or NaN at any 
 			given timestep. 
 	* IOError [Only occurs if VICE's file structure has been tampered with] 
-		- The AGB yield file is not found. 
+		- 	The AGB yield file is not found. 
 
 	Example Code 
 	------------

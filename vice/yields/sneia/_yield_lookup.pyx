@@ -50,9 +50,10 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 
 		Keywords and their Associated Models: 
 
-			- "seitenzahl13": N1, N3, N5, N10, N40, N100H N100, N100L, N150, 
-				N200, N300C 
-			- "iwamoto99": W7, W70, WDD1, WDD2, WDD3, CDD1, CDD2 
+			- 	"seitenzahl13" : N1, N3, N5, N10, N20, N40, N100H, N100, 
+				N100L, N150, N200, N300C, N1600, N1600C, N100_Z0.5, N100_Z0.1, 
+				N100_Z0.01 
+			- 	"iwamoto99" : W7, W70, WDD1, WDD2, WDD3, CDD1, CDD2 
 
 	Returns 
 	-------
@@ -63,13 +64,13 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 	Raises 
 	------
 	* ValueError 
-		- The element is not built into VICE 
-		- The study is not built into VICE 
+		- 	The element is not built into VICE 
+		- 	The study is not built into VICE 
 	* LookupError 
-		- The study is recognized, but the model is not recognized for that 
-			particular study 
+		- 	The study is recognized, but the model is not recognized for that 
+			particular study. 
 	* IOError [Occurs only if VICE's file structure has been tampered with] 
-		- The data file is not found. 
+		- 	The data file is not found. 
 
 	Example Code 
 	------------
@@ -109,9 +110,10 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 
 	# Models from their study keywords 
 	recognized_models = {
-		"seitenzahl13": 		["N1", "N3", "N5", "N10", "N40", "N100H", 
-								"N100", "N100L", "N150", "N200", "N300C", 
-								"N1600", "N100_Z0.5", "N100_Z0.1", "N100_Z0.01"], 
+		"seitenzahl13": 		["N1", "N3", "N5", "N10", "N20", "N40", 
+								"N100H", "N100", "N100L", "N150", "N200", 
+								"N300C", "N1600", "N1600C", "N100_Z0.5", 
+								"N100_Z0.1", "N100_Z0.01"], 
 		"iwamoto99": 			["W7", "W70", "WDD1", "WDD2", "WDD3", "CDD1", 
 								"CDD2"] 
 	}
@@ -169,9 +171,10 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 
 		Keywords and their Associated Models: 
 
-			- "seitenzahl13" :: N1, N3, N5, N10, N40, N100H, N100, N100L, N150, 
-				N200, N300C 
-			- "iwamoto99" :: W7, W70, WDD1, WDD2, WDD3, CDD1, CDD2 
+			- 	"seitenzahl13" : N1, N3, N5, N10, N20, N40, N100H, N100, 
+				N100L, N150, N200, N300C, N1600, N1600C, N100_Z0.5, N100_Z0.1, 
+				N100_Z0.01 
+			- 	"iwamoto99" : W7, W70, WDD1, WDD2, WDD3, CDD1, CDD2 
 
 	n : real number [default : 2.2e-03] 
 		The average number of type Ia supernovae produced per unit stellar 
@@ -191,13 +194,13 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 	Raises 
 	------
 	* ValueError 
-		- The element is not built into VICE. 
-		- The study is not built into VICE. 
-		- n < 0  
+		- 	The element is not built into VICE. 
+		- 	The study is not built into VICE. 
+		- 	n < 0  
 	* LookupError 
-		- The model is not recognized for the given study. 
+		- 	The model is not recognized for the given study. 
 	* IOError [Occurs only if VICE's file structure has been tampered with] 
-		- The parameters passed to this function are allowed but the data 
+		- 	The parameters passed to this function are allowed but the data 
 			file is not found. 
 
 	Notes 
