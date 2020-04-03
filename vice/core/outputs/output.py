@@ -2,6 +2,7 @@
 from __future__ import absolute_import 
 from ._output import c_output 
 from . import _output_utils 
+import zipfile 
 import os 
 
 class output: 
@@ -396,4 +397,78 @@ class output:
 		>>> out.show("[o/fe]-[fe/h]") 
 		""" 
 		self.__c_version.show(key, xlim = xlim, ylim = ylim) 
+
+
+	@staticmethod 
+	def zip(name): 
+		r""" 
+		Compress a VICE output into a zipfile. 
+
+		**Signature**: vice.output.zip(name) 
+
+		Parameters 
+		----------
+		name : ``str`` 
+			The full or relative path to an output. The '.vice' extension is 
+			not required. 
+
+		Raises 
+		------
+		* IOError 
+			- Output is not found 
+			- Directory could not be interpreted as a VICE output. 
+
+		Example Code 
+		------------
+		>>> import numpy as np 
+		>>> import vice 
+		>>> vice.singlezone(name = "example").run(np.linspace(0, 10, 1001)) 
+		>>> vice.output.zip("example") 
+		""" 
+		name = _output_utils._get_name(name) 
+		if os.path.exists(name): 
+			try: 
+				test = output(name) 
+			except: 
+				raise IOError("Could not read VICE output: %s" % (name)) 
+			zipf = zipfile.ZipFile("%s.zip" % (name), 'w', 
+				zipfile.ZIP_DEFLATED) 
+			for root, dirs, files in os.walk(name): 
+				for file in files: 
+					zipf.write(os.path.join(root, file)) 
+			zipf.close() 
+		else: 
+			raise IOError("Output not found: %s" % (name)) 
+
+
+	@staticmethod 
+	def unzip(name): 
+		r""" 
+		Decompress a VICE output from a zipfile. 
+
+		**Signature**: vice.output.unzip(name) 
+
+		Parameters 
+		----------
+		name : ``str`` 
+			The full or relative path to a compressed VICE output file. 
+			The '.vice.zip' extension is not required. 
+
+		Raises 
+		------
+		* IOError
+			- Zipped file is not found. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> vice.output.unzip("example.vice.zip") 
+		>>> out = vice.output("example") 
+		""" 
+		if not name.endswith(".vice.zip"): name += ".vice.zip" 
+		if os.path.exists(name): 
+			with zipfile.ZipFile(name, 'r') as zipf: 
+				zipf.extractall('.') 
+		else: 
+			raise IOError("Zipped file not found: %s" % (name)) 
 
