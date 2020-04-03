@@ -46,6 +46,9 @@ cdef class yield_settings(elemental_settings):
 	Stores the current nucleosynthetic yield settings for different enrichment 
 	channels. 
 
+	.. note:: Modifying yield settings through these dataframes is equivalent 
+		to going through the vice.elements module. 
+
 	Allowed Data Types 
 	------------------
 	* Keys 

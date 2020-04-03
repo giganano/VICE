@@ -28,6 +28,7 @@ if not __VICE_SETUP__:
 
 	from ..testing import moduletest 
 	from . import _callback as callback 
+	from . import elements 
 	from . import _imf as imf 
 	from . import _stats as stats 
 	from . import _utils as utils 
@@ -69,6 +70,7 @@ This program will overwrite the VICE output at %s/test.vice. Proceed? \
 			[ 
 				callback.test(run = False), 
 				core.test(run = False), 
+				elements.test(run = False), 
 				imf.test(run = False), 
 				modeling.test(run = False), 
 				stats.test(run = False), 

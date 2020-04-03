@@ -28,6 +28,9 @@ cdef class agb_yield_settings(yield_settings):
 	Stores the current nucleosynthetic yield settings for asymptotic giant 
 	branch (AGB) stars. 
 
+	.. note:: Modifying yield settings through these dataframes is equivalent 
+		to going through the vice.elements module. 
+
 	Allowed Data Types 
 	------------------
 	* Keys 

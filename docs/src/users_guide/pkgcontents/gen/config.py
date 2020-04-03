@@ -38,6 +38,7 @@ _CONFIG_ = {
 			vice.single_stellar_population, 
 			vice.dataframe, 
 			vice.yields, 
+			vice.elements, 
 			vice.imf, 
 			vice.singlezone, 
 			vice.history, 
@@ -448,6 +449,92 @@ _CONFIG_ = {
 		"header": 		"vice.yields.presets.JW20.alt_cc_sr_limitexp", 
 		"subs": 		[] 
 	}, 
+	vice.elements: {
+		"filename": 	"vice.elements.rst", 
+		"header": 		"vice.elements", 
+		"subs": 		[
+			vice.elements.element, 
+			vice.elements.yields 
+		] 
+	}, 
+	vice.elements.element: {
+		"filename": 	"vice.elements.element.rst", 
+		"header": 		"vice.elements.element", 
+		"subs": 		[
+			vice.elements.element.symbol, 
+			vice.elements.element.name, 
+			vice.elements.element.yields, 
+			vice.elements.element.atomic_number, 
+			vice.elements.element.primordial, 
+			vice.elements.element.solar_z, 
+			vice.elements.element.sources, 
+			vice.elements.element.stable_isotopes 
+		]  
+	}, 
+	vice.elements.element.symbol: {
+		"filename": 	"vice.elements.element.symbol.rst", 
+		"header": 		"vice.elements.element.symbol", 
+		"subs": 		[] 
+	}, 
+	vice.elements.element.name: {
+		"filename": 	"vice.elements.element.name.rst", 
+		"header": 		"vice.elements.element.name", 
+		"subs": 		[] 
+	}, 
+	vice.elements.element.yields: {
+		"filename": 	"vice.elements.element.yields.rst", 
+		"header": 		"vice.elements.element.yields", 
+		"subs": 		[] 
+	}, 
+	vice.elements.element.atomic_number: {
+		"filename": 	"vice.elements.element.atomic_number.rst", 
+		"header": 		"vice.elements.element.atmoic_number", 
+		"subs": 		[] 
+	}, 
+	vice.elements.element.primordial: {
+		"filename": 	"vice.elements.element.primordial.rst", 
+		"header": 		"vice.elements.element.primordial", 
+		"subs": 		[] 
+	}, 
+	vice.elements.element.solar_z: {
+		"filename": 	"vice.elements.element.solar_z.rst", 
+		"header": 		"vice.elements.element.solar_z", 
+		"subs": 		[] 
+	}, 
+	vice.elements.element.sources: {
+		"filename": 	"vice.elements.element.sources.rst", 
+		"header": 		"vice.elements.element.sources", 
+		"subs": 		[] 
+	}, 
+	vice.elements.element.stable_isotopes: {
+		"filename": 	"vice.elements.element.stable_isotopes.rst", 
+		"header": 		"vice.elements.element.stable_isotopes", 
+		"subs": 		[] 
+	}, 
+	vice.elements.yields: {
+		"filename": 	"vice.elements.yields.rst", 
+		"header": 		"vice.elements.yields", 
+		"subs": 		[
+			vice.elements.yields.agb, 
+			vice.elements.yields.ccsne, 
+			vice.elements.yields.sneia 
+		]  
+	}, 
+	vice.elements.yields.agb: {
+		"filename": 	"vice.elements.yields.agb.rst", 
+		"header": 		"vice.elements.yield.agb", 
+		"subs": 		[] 
+	}, 
+	vice.elements.yields.ccsne: {
+		"filename": 	"vice.elements.yields.ccsne.rst", 
+		"header": 		"vice.elements.yields.ccsne", 
+		"subs": 		[] 
+	}, 
+	vice.elements.yields.sneia: {
+		"filename": 	"vice.elements.yields.sneia.rst", 
+		"header": 		"vice.elements.yields.sneia", 
+		"subs": 		[] 
+	}, 
 	vice.imf: {
 		"filename": 	"vice.imf.rst", 
 		"header": 		"vice.imf", 
@@ -686,7 +773,9 @@ _CONFIG_ = {
 			vice.output.agb_yields, 
 			vice.output.ccsne_yields, 
 			vice.output.sneia_yields, 
-			vice.output.show 
+			vice.output.show, 
+			vice.output.zip, 
+			vice.output.unzip 
 		]  
 	}, 
 	vice.output.name: {
@@ -727,6 +816,16 @@ _CONFIG_ = {
 	vice.output.show: {
 		"filename": 	"vice.output.show.rst", 
 		"header": 		"vice.output.show", 
+		"subs": 		[] 
+	}, 
+	vice.output.zip: {
+		"filename": 	"vice.output.zip.rst", 
+		"header": 		"vice.output.zip", 
+		"subs": 		[] 
+	}, 
+	vice.output.unzip: {
+		"filename": 	"vice.output.unzip.rst", 
+		"header": 		"vice.output.unzip", 
 		"subs": 		[] 
 	}, 
 	vice.stars: {

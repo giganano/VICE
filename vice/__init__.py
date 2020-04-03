@@ -34,7 +34,12 @@ main_sequence_mass_fraction : <function>
 imf : <module> 
 	Built-in funcitonal forms of popular stellar initial mass functions. 
 yields : <module> 
-	Calculate and declare nucleosynthetic yields for use in simulations 
+	Calculate, access, and declare nucleosynthetic yield settings for use in 
+	simulations. 
+elements : <module> 
+	Access, and declare nucleosynthetic yield settings for use in simulations. 
+	Access other relevant information for each element such as the solar 
+	abundance or atomic number. 
 dataframe : ``type`` 
 	An extension to the Python type ``dict`` to allow case-insensitivity. 
 history : <function> 
@@ -54,8 +59,6 @@ Built-In Dataframes
 
 Other Features 
 --------------
-elements : <module> 
-	Contains ``element`` objects with each element's relevant information. 
 VisibleDeprecationWarning : ``Warning`` 
 	A ``DeprecationWarning`` which is visible by default. 
 VisibleRuntimeWarning : ``Warning`` 
