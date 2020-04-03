@@ -70,6 +70,14 @@ extern unsigned short multizone_evolve(MULTIZONE *mz) {
 	} else {
 		multizone_evolve_full(mz); 
 	} 
+
+	/* 
+	 * Before writing out the tracer particle information, chop off the ones 
+	 * that were formed in the previous timestep. These stars formed one 
+	 * timestep after the user's specified ending time, and will mess up 
+	 * age calculations from the output. 
+	 */ 
+	mz -> mig -> tracer_count -= (*(*mz).mig).n_tracers * (*(*mz).mig).n_zones; 
 	if ((*mz).verbose) printf("Computing distribution functions....\n"); 
 	tracers_MDF(mz); 
 	write_multizone_mdf(*mz); 

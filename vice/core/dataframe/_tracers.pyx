@@ -20,21 +20,132 @@ from . cimport _base
 
 cdef class tracers(history): 
 
-	""" 
-	A subclass of the VICE dataframe which holds data from a square data file 
-	containing numerical values. This particular subclass allows users to call 
-	__getitem__ with '[m/h]', 'z', and 'age' to calculate the total (scaled) 
-	metallicity of stars in multizone simulations automatically. 
+	r"""
+	The VICE dataframe: derived class (inherits from history) 
 
-	See docstring of VICE dataframe base class for more information. 
+	Provides a means of storing and accessing the star particles formed in a 
+	multizone simulation. Tracers objects can be created from VICE outputs 
+	by calling vice.stars. 
 
-	See Also 
-	======== 
-	VICE dataframe base class 
+	Allowed Data Types 
+	------------------
+	* Keys 
+		- ``str`` [case-insensitive] : the physical quantity 
+			A name given to the physical quantity to take from or store with 
+			the output. 
 
-	Section 5.4 of VICE's science documentation (available at 
-	https://github.com/giganano/VICE/blob/master/docs/) for information on 
-	the scaled metallicity of the interstellar medium and stars. 
+			.. note:: VICE automatically assigns keys to quantities in the 
+				output which cannot be overridden. A list of them can be 
+				found here under `Indexing`_. 
+
+	* Values 
+		- array-like 
+			Must have the same length as the values of the dataframe obtained 
+			from the output file. 
+
+	Indexing 
+	--------
+	- ``int`` : A given line-number of output. 
+		Returns a dataframe with the same keys, but whose values are taken 
+		only from the specified line of output. 
+	- ``str`` [case-insensitive] : labels of the lists of quantities stored. 
+		The following are assigned automatically by VICE when reading in an 
+		output file and will not be re-assigned: 
+
+			- 	'formation_time' : Time in Gyr from the start of the 
+				simulation when a star particle formed. 
+			- 	'zone_origin' : The zone number the star formed in. 
+			- 	'zone_final' : The zone number of the star at the end of the 
+				simulation. 
+			- 	'mass' : The mass of the star particle in :math:`M_\odot`. 
+			- 	'z(x)' : The metallicity by mass :math:`Z` of the element 
+				:math:`x` in that star particle. 
+			- 	'[x/h]' : The logarithmic abundance relative to the sun of the 
+				element :math:`x`, given by :math:`\log_{10}(Z_x/Z_{x,\odot})`. 
+			- 	'[y/x]' : The logarithmic abundance ratio relative to the sun 
+				between the elements :math:`y` and :math:`x`, given by 
+				:math:`\log_{10}(Z_y/Z_{y,\odot}) - \log_{10}(Z_x/Z_{x,\odot})`. 
+			- 	'z' : The scaled toatl metallicity by mass :math:`Z`. 
+			- 	'[m/h]' : The scaled logarithmic metallicity relative to the 
+				sun, given by :math:`\log_{10}(Z/Z_\odot)`. 
+
+		.. note:: The scaled total metallicity by mass is defined by: 
+
+			.. math:: Z = Z_\odot \frac{\sum_i Z_i}{\sum_i Z_{i,\odot}} 
+
+			where :math:`Z_\odot` is the metallicity of the sun adopted in the 
+			simulation, and :math:`Z_i` is the abundance by mass of the i'th 
+			element. This scaling is employed so that an accurate estimation 
+			of the total metallicity can be obtained without every element's 
+			abundance information. 
+
+		.. note:: The scaled logarithmic metallicity is defined from the 
+			scaled total metallicity by mass according to: 
+
+			.. math:: [M/H] = \log_{10}\left(\frac{Z}{Z_\odot}\right) 
+
+	Functions 
+	---------
+	- keys 
+	- todict 
+	- filter 
+
+	Example Code 
+	------------
+	>>> example = vice.stars("example") 
+	>>> example.keys() 
+		['formation_time',
+		 'zone_origin',
+		 'zone_final',
+		 'mass',
+		 'z(fe)',
+		 'z(sr)',
+		 'z(o)',
+		 '[fe/h]',
+		 '[sr/h]',
+		 '[o/h]',
+		 '[sr/fe]',
+		 '[o/fe]',
+		 '[o/sr]',
+		 'z',
+		 '[m/h]',
+		 'age'] 
+	>>> example[100] 
+		vice.dataframe{
+			formation_time -> 0.1
+			zone_origin ----> 0.0
+			zone_final -----> 0.0
+			mass -----------> 29695920.0
+			z(fe) ----------> 1.128362e-05
+			z(sr) ----------> 6.203682e-10
+			z(o) -----------> 0.0002587532
+			[fe/h] ---------> -2.058141258363775
+			[sr/h] ---------> -1.8831288138453521
+			[o/h] ----------> -1.3445102993763647
+			[sr/fe] --------> 0.17501244451842268
+			[o/fe] ---------> 0.7136309589874101
+			[o/sr] ---------> 0.5386185144689875
+			z --------------> 0.0005393007991864363
+			[m/h] ----------> -1.4142969718113587
+			age ------------> 9.9 
+		}
+
+	**Signature**: vice.core.dataframe.tracers(filename = None, 
+	adopted_solar_z = None, labels = None) 
+
+	.. warning:: Users should avoid creating new instances of derived classes 
+		of the VICE dataframe. To obtain a tracers object from a VICE output, 
+		simply call vice.stars. 
+
+	Parameters 
+	----------
+	filename : ``str`` [default : None] 
+		The name of the ascii file containing the tracers output. 
+	adopted_solar_z : real number [default : None] 
+		The metallicity by mass of the sun :math:`Z_\odot` adopted in the 
+		simulation. 
+	labels : ``list`` of strings [default : None] 
+		The strings to assign the column labels. 
 	""" 
 
 	def __init__(self, filename = None, adopted_solar_z = None, 
@@ -180,10 +291,37 @@ cdef class tracers(history):
 			return _base.base(dict(zip(self.keys(), x))) 
 
 	def keys(self): 
-		""" 
-		Signature: vice.dataframe.keys() 
+		r"""
+		Returns the keys to the dataframe in their lower-case format 
 
-		Returns the dataframe keys in their lower-case format 
+		**Signature**: x.keys() 
+
+		Parameters 
+		----------
+		x : ``dataframe`` 
+			An instance of this class 
+
+		Returns 
+		-------
+		keys : ``list`` 
+			A list of lower-case strings which can be used to access the 
+			values stored in this dataframe. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.dataframe({
+			"a": [1, 2, 3], 
+			"b": [4, 5, 6], 
+			"c": [7, 8, 9]}) 
+		>>> example 
+		vice.dataframe{
+			a --------------> [1, 2, 3]
+			b --------------> [4, 5, 6]
+			c --------------> [7, 8, 9]
+		} 
+		>>> example.keys() 
+		['a', 'b', 'c'] 
 		""" 
 		labels = self._ff[0].n_cols * [None] 
 		for i in range(self._ff[0].n_cols): 
@@ -196,6 +334,7 @@ cdef class tracers(history):
 			for j in range(i): 
 				labels.append("[%s/%s]" % (elements[i], elements[j])) 
 		labels.append("z") 
+		labels.append("[m/h]") 
 		labels.append("age") 
 		return labels 
 

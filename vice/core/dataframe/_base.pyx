@@ -53,9 +53,9 @@ cdef class base:
 
 	Indexing 
 	--------
-	- 	``str`` [case-insensitive] : column label 
+	- ``str`` [case-insensitive] : column label 
 		A label given to the quantities stored. 
-	- 	``int`` : index for values which are array-like. 
+	- ``int`` : index for values which are array-like. 
 		If all values stored by the dataframe are array-like, the i'th value 
 		of all of them can be obtained by indexing the dataframe with ``i``. 
 

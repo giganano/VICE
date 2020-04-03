@@ -165,14 +165,12 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 
 	Example Code 
 	------------
-	.. code:: python 
-
-		>>> mass, times = vice.single_stellar_population("sr", Z = 0.008) 
-		>>> mass[-1] 
-		    0.04808964406448721
-		>>> mass, times = vice.single_stellar_population("fe") 
-		>>> mass[-1] 
-		    2679.816051685778
+	>>> mass, times = vice.single_stellar_population("sr", Z = 0.008) 
+	>>> mass[-1] 
+		0.04808964406448721
+	>>> mass, times = vice.single_stellar_population("fe") 
+	>>> mass[-1] 
+		2679.816051685778
 
 	.. [1] Kroupa (2001), MNRAS, 231, 322 
 	.. [2] Salpeter (1955), ApJ, 121, 161 

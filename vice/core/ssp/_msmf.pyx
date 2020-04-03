@@ -90,13 +90,11 @@ def main_sequence_mass_fraction(age, IMF = "kroupa", m_upper = 100,
 
 	Example Code 
 	------------
-	.. code:: python 
-
-		>>> vice.main_sequence_mass_fraction(1) 
+	>>> vice.main_sequence_mass_fraction(1) 
 		0.5815004968281556
-		>>> vice.main_sequence_mass_fraction(2) 
+	>>> vice.main_sequence_mass_fraction(2) 
 		0.5445877675278488
-		>>> vice.main_sequence_mass_fraction(3) 
+	>>> vice.main_sequence_mass_fraction(3) 
 		0.5219564300200146
 
 	.. [1] Kroupa (2001), MNRAS, 231, 322 

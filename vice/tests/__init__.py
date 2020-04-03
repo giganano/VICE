@@ -44,7 +44,7 @@ if not __VICE_SETUP__:
 		r""" 
 		Runs VICE's unit tests 
 
-		.. note:: Calling this function will cause warning message to get 
+		.. note:: Calling this function will cause warning messages to get 
 			suppressed. 
 		""" 
 		if "test.vice" in os.listdir(os.getcwd()): 

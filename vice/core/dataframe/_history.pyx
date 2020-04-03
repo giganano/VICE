@@ -50,14 +50,12 @@ cdef class history(fromfile):
 
 	Indexing 
 	--------
-	- 	``int`` : A given line-number of output. 
+	- ``int`` : A given line-number of output. 
 		Returns a dataframe with the same keys, but whose values are taken 
 		only from the specified line of output. 
-	- 	``str`` [case-insensitive] : labels of the lists of quantities stored. 
+	- ``str`` [case-insensitive] : labels of the lists of quantities stored. 
 		The following are assigned automatically by VICE when reading in an 
 		output file and will not be re-assigned: 
-
-		Recognized keys: 
 
 			- 	'time' : Time in Gyr from the start of the simulation. 
 			- 	'lookback' : Lookback time in Gyr from the end of the 
@@ -81,7 +79,7 @@ cdef class history(fromfile):
 				:math:`x` in the interstellar medium. 
 			- 	'[x/h]' : The logarithmic abundance relative to the sun of the 
 				element :math:`x`, given by :math:`\log_{10}(Z_x/Z_{x,\odot})`. 
-			- 	'[y/h]' : The logarithmic abundance ratio relative to the sun 
+			- 	'[y/x]' : The logarithmic abundance ratio relative to the sun 
 				between the elements :math:`y` and :math:`x`, given by 
 				:math:`\log_{10}(Z_y/Z_{y,\odot}) - \log_{10}(Z_x/Z_{x,\odot})`. 
 			- 	'z' : The scaled total metallicity by mass :math:`Z`. 
@@ -94,12 +92,12 @@ cdef class history(fromfile):
 
 			where :math:`Z_\odot` is the metallicity of the sun adopted in the 
 			simulation, and :math:`Z_i` is the abundance by mass of the i'th 
-			element. This scaling is employed so that an accurate estimation of 
-			the total metallicity can be obtained without every element's 
+			element. This scaling is employed so that an accurate estimation 
+			of the total metallicity can be obtained without every element's 
 			abundance information. 
 
-		.. note:: The scaled logarithmic metallicity is defined from the scaled 
-			total metallcity by mass according to: 
+		.. note:: The scaled logarithmic metallicity is defined from the 
+			scaled total metallcity by mass according to: 
 
 			.. math:: [M/H] = \log_{10}\left(\frac{Z}{Z_\odot}\right) 
 

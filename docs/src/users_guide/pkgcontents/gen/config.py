@@ -43,6 +43,8 @@ _CONFIG_ = {
 			vice.history, 
 			vice.mdf, 
 			vice.output, 
+			vice.stars, 
+			vice.mirror, 
 			vice.ScienceWarning, 
 			vice.VisibleRuntimeWarning, 
 			vice.VisibleDeprecationWarning 
@@ -112,7 +114,8 @@ _CONFIG_ = {
 			vice.dataframe.remove, 
 			vice.dataframe.filter, 
 			vice.core.dataframe.fromfile, 
-			vice.core.dataframe.history 
+			vice.core.dataframe.history, 
+			vice.core.dataframe.tracers, 
 		]  
 	}, 
 	vice.dataframe.keys: {
@@ -143,6 +146,11 @@ _CONFIG_ = {
 	vice.core.dataframe.fromfile: {
 		"filename": 	"vice.core.dataframe.fromfile.rst", 
 		"header": 		"vice.core.dataframe.fromfile", 
+		"subs": 		[] 
+	}, 
+	vice.core.dataframe.tracers: {
+		"filename": 	"vice.core.dataframe.tracers.rst", 
+		"header": 		"vice.core.dataframe.tracers", 
 		"subs": 		[] 
 	}, 
 	vice.yields: {
@@ -720,7 +728,17 @@ _CONFIG_ = {
 		"filename": 	"vice.output.show.rst", 
 		"header": 		"vice.output.show", 
 		"subs": 		[] 
-	} 
+	}, 
+	vice.stars: {
+		"filename": 	"vice.stars.rst", 
+		"header": 		"vice.stars", 
+		"subs": 		[] 
+	}, 
+	vice.mirror: {
+		"filename": 	"vice.mirror.rst", 
+		"header": 		"vice.mirror", 
+		"subs": 		[] 
+	}
 
 }
 
