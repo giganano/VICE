@@ -10,22 +10,23 @@ from ..dataframe._entrainment import channel_entrainment
 
 class entrainment: 
 
-	""" 
+	r""" 
 	An object containing the entrainment settings for all enrichment channels 
 	in a given zone. 
 
 	Attributes 
-	========== 
-	agb :: dataframe 
+	----------
+	agb : ``dataframe`` 
 		The entrainment fraction of each element from AGB stars 
-	ccsne :: dataframe 
+	ccsne : ``dataframe`` 
 		The entrainment fraction of each element from CCSNe 
-	sneia :: dataframe 
+	sneia : ``dataframe`` 
 		The entrainment fraction of each element from SNe Ia 
 
 	These values represent the fraction of nucleosynthetic yields that are 
 	retained in the interstellar medium in simulation. The remainder is added 
-	directly to outflows. 
+	directly to outflows. By default, all elements for all enrichment channels 
+	are assigned a value of 1. 
 	""" 
 
 	def __init__(self): 
@@ -73,34 +74,58 @@ class entrainment:
 
 	@property 
 	def agb(self): 
-		""" 
-		Type :: dataframe 
-		Default :: All recognized elements with a value of 1.0 
+		r""" 
+		Type : ``dataframe`` 
+
+		Default : All elements map to a value of 1.0 
 
 		The entrainment fraction of each element from asymptotic giant branch 
-		stars 
+		stars. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.entrainment.agb['c'] = 0.9 
+		>>> sz.entrainment.agb['n'] = 0.95 
 		""" 
 		return self._agb 
 
 
 	@property 
 	def ccsne(self): 
-		""" 
-		Type :: dataframe 
-		Default :: All recognized elements with a value of 1.0 
+		r""" 
+		Type : ``dataframe`` 
 
-		The entrainment fraction of each element from core collapse supernovae 
+		Default : All recognized elements map to a value of 1.0 
+
+		The entrainment fraction of each element from core collapse supernovae. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.entrainment.ccsne['o'] = 0.8 
+		>>> sz.entrainment.ccsne['mg'] = 0.85 
 		""" 
 		return self._ccsne 
 
 
 	@property 
 	def sneia(self): 
-		""" 
-		Type :: dataframe 
-		Default :: All recognized elements with a value of 1.0 
+		r""" 
+		Type : ``dataframe`` 
 
-		The entrainment fraction of each element from type Ia supernovae 
+		Default : All recognized elements map to a value of 1.0 
+
+		The entrainment fraction of each element from type Ia supernovae. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.entrainment.sneia['fe'] = 0.7 
+		>>> sz.entrainment.sneia['ni'] = 0.75 
 		""" 
 		return self._sneia 
 

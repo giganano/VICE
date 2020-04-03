@@ -45,15 +45,15 @@ cdef class history(fromfile):
 
 	* Values 
 		- array-like 
-			Must have the same length as the values of the dataframe obtained from 
-			the output file. 
+			Must have the same length as the values of the dataframe obtained 
+			from the output file. 
 
 	Indexing 
 	--------
-	- ``int`` : A given line-number of output. 
+	- 	``int`` : A given line-number of output. 
 		Returns a dataframe with the same keys, but whose values are taken 
 		only from the specified line of output. 
-	- ``str`` [case-insensitive] : labels of the lists of quantities stored. 
+	- 	``str`` [case-insensitive] : labels of the lists of quantities stored. 
 		The following are assigned automatically by VICE when reading in an 
 		output file and will not be re-assigned: 
 
@@ -113,69 +113,67 @@ cdef class history(fromfile):
 	------------
 	>>> example = vice.history("example") 
 	>>> example.keys() 
-	['time',
-	 'mgas',
-	 'mstar',
-	 'sfr',
-	 'ifr',
-	 'ofr',
-	 'eta_0',
-	 'r_eff',
-	 'z_in(fe)',
-	 'z_in(sr)',
-	 'z_in(o)',
-	 'z_out(fe)',
-	 'z_out(sr)',
-	 'z_out(o)',
-	 'mass(fe)',
-	 'mass(sr)',
-	 'mass(o)',
-	 'z(fe)',
-	 'z(sr)',
-	 'z(o)',
-	 '[fe/h]',
-	 '[sr/h]',
-	 '[o/h]',
-	 '[sr/fe]',
-	 '[o/fe]',
-	 '[o/sr]',
-	 'z',
-	 '[m/h]',
-	 'lookback']
+		['time',
+		 'mgas',
+		 'mstar',
+		 'sfr',
+		 'ifr',
+		 'ofr',
+		 'eta_0',
+		 'r_eff',
+		 'z_in(fe)',
+		 'z_in(sr)',
+		 'z_in(o)',
+		 'z_out(fe)',
+		 'z_out(sr)',
+		 'z_out(o)',
+		 'mass(fe)',
+		 'mass(sr)',
+		 'mass(o)',
+		 'z(fe)',
+		 'z(sr)',
+		 'z(o)',
+		 '[fe/h]',
+		 '[sr/h]',
+		 '[o/h]',
+		 '[sr/fe]',
+		 '[o/fe]',
+		 '[o/sr]',
+		 'z',
+		 '[m/h]',
+		 'lookback']
 	>>> example[100]
-	vice.dataframe{
-		time -----------> 1.0
-		mgas -----------> 5795119000.0
-		mstar ----------> 2001106000.0
-		sfr ------------> 2.897559
-		ifr ------------> 9.1
-		ofr ------------> 7.243899
-		eta_0 ----------> 2.5
-		r_eff ----------> 0.3534769
-		z_in(fe) -------> 0.0
-		z_in(sr) -------> 0.0
-		z_in(o) --------> 0.0
-		z_out(fe) ------> 0.0002769056
-		z_out(sr) ------> 3.700754e-09
-		z_out(o) -------> 0.001404602
-		mass(fe) -------> 1604701.0
-		mass(sr) -------> 21.44631
-		mass(o) --------> 8139837.0
-		z(fe) ----------> 0.0002769056166059748
-		z(sr) ----------> 3.700754031107903e-09
-		z(o) -----------> 0.0014046022178319376
-		[fe/h] ---------> -0.6682579454664828
-		[sr/h] ---------> -1.1074881208001155
-		[o/h] ----------> -0.6098426789720387
-		[sr/fe] --------> -0.43923017533363273
-		[o/fe] ---------> 0.05841526649444406
-		[o/sr] ---------> 0.4976454418280768
-		z --------------> 0.0033582028978416337
-		[m/h] ----------> -0.6200211036287412
-		lookback -------> 9.0
-	}
-	>>> print ("[O/Fe] at end of simulation: %.2e" % (example["[o/fe]"][-1])) 
-		[O/Fe] at end of simulation: -3.12e-01 
+		vice.dataframe{
+			time -----------> 1.0
+			mgas -----------> 5795119000.0
+			mstar ----------> 2001106000.0
+			sfr ------------> 2.897559
+			ifr ------------> 9.1
+			ofr ------------> 7.243899
+			eta_0 ----------> 2.5
+			r_eff ----------> 0.3534769
+			z_in(fe) -------> 0.0
+			z_in(sr) -------> 0.0
+			z_in(o) --------> 0.0
+			z_out(fe) ------> 0.0002769056
+			z_out(sr) ------> 3.700754e-09
+			z_out(o) -------> 0.001404602
+			mass(fe) -------> 1604701.0
+			mass(sr) -------> 21.44631
+			mass(o) --------> 8139837.0
+			z(fe) ----------> 0.0002769056166059748
+			z(sr) ----------> 3.700754031107903e-09
+			z(o) -----------> 0.0014046022178319376
+			[fe/h] ---------> -0.6682579454664828
+			[sr/h] ---------> -1.1074881208001155
+			[o/h] ----------> -0.6098426789720387
+			[sr/fe] --------> -0.43923017533363273
+			[o/fe] ---------> 0.05841526649444406
+			[o/sr] ---------> 0.4976454418280768
+			z --------------> 0.0033582028978416337
+			[m/h] ----------> -0.6200211036287412
+			lookback -------> 9.0
+		}
 
 	**Signature**: vice.core.dataframe.history(filename = None, 
 	adopted_solar_z = None, labels = None) 
@@ -189,9 +187,9 @@ cdef class history(fromfile):
 	filename : ``str`` [default : None] 
 		The name of the ascii file containing the history output. 
 	adopted_solar_z : real number [default : None] 
-		The metallicity by mass of the sun :math:`M_\odot` adopted in the 
+		The metallicity by mass of the sun :math:`Z_\odot` adopted in the 
 		simulation. 
-	labels : ``list`` of string [default : None] 
+	labels : ``list`` of strings [default : None] 
 		The strings to assign the column labels. 
 	""" 
 
@@ -382,10 +380,37 @@ cdef class history(fromfile):
 			raise SystemError("Internal Error") 
 
 	def keys(self): 
-		"""
-		Signature: vice.dataframe.keys() 
+		r"""
+		Returns the keys to the dataframe in their lower-case format 
 
-		Returns the dataframe keys in their lower-case format 
+		**Signature**: x.keys() 
+
+		Parameters 
+		----------
+		x : ``dataframe`` 
+			An instance of this class 
+
+		Returns 
+		-------
+		keys : ``list`` 
+			A list of lower-case strings which can be used to access the 
+			values stored in this dataframe. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.dataframe({
+			"a": [1, 2, 3], 
+			"b": [4, 5, 6], 
+			"c": [7, 8, 9]}) 
+		>>> example 
+		vice.dataframe{
+			a --------------> [1, 2, 3]
+			b --------------> [4, 5, 6]
+			c --------------> [7, 8, 9]
+		} 
+		>>> example.keys() 
+		['a', 'b', 'c'] 
 		""" 
 		keys = super().keys() 
 		elements = self._load_elements() 

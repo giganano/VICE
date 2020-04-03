@@ -16,6 +16,7 @@ from vice.yields.sneia import iwamoto99
 from vice.yields.sneia import seitenzahl13 
 from vice.yields.agb import cristallo11 
 from vice.yields.agb import karakas10 
+from vice.core.singlezone.entrainment import entrainment 
 
 r""" 
 Each element of the _CONFIG_ dictionary should map an object in VICE to a 
@@ -27,6 +28,11 @@ _CONFIG_ = {
 		"filename": 	"index.rst", 
 		"header": 		"Package Contents", 
 		"subs": 		[
+			vice.atomic_number, 
+			vice.primordial, 
+			vice.solar_z, 
+			vice.sources, 
+			vice.stable_isotopes, 
 			vice.cumulative_return_fraction, 
 			vice.main_sequence_mass_fraction, 
 			vice.single_stellar_population, 
@@ -35,6 +41,8 @@ _CONFIG_ = {
 			vice.imf, 
 			vice.singlezone, 
 			vice.history, 
+			vice.mdf, 
+			vice.output, 
 			vice.ScienceWarning, 
 			vice.VisibleRuntimeWarning, 
 			vice.VisibleDeprecationWarning 
@@ -53,6 +61,31 @@ _CONFIG_ = {
 	vice.VisibleDeprecationWarning: {
 		"filename": 	"vice.VisibleDeprecationWarning.rst", 
 		"header": 		"vice.VisibleDeprecationWarning", 
+		"subs": 		[] 
+	}, 
+	vice.atomic_number: {
+		"filename": 	"vice.atomic_number.rst", 
+		"header": 		"vice.atomic_number", 
+		"subs": 		[] 
+	}, 
+	vice.primordial: {
+		"filename": 	"vice.primordial.rst", 
+		"header": 		"vice.primordial", 
+		"subs": 		[] 
+	}, 
+	vice.solar_z: {
+		"filename": 	"vice.solar_z.rst", 
+		"header": 		"vice.solar_z", 
+		"subs": 		[] 
+	}, 
+	vice.sources: {
+		"filename": 	"vice.sources.rst", 
+		"header": 		"vice.sources", 
+		"subs": 		[] 
+	}, 
+	vice.stable_isotopes: {
+		"filename": 	"vice.stable_isotopes.rst", 
+		"header": 		"vice.stable_isotopes", 
 		"subs": 		[] 
 	}, 
 	vice.cumulative_return_fraction: {
@@ -78,6 +111,7 @@ _CONFIG_ = {
 			vice.dataframe.todict, 
 			vice.dataframe.remove, 
 			vice.dataframe.filter, 
+			vice.core.dataframe.fromfile, 
 			vice.core.dataframe.history 
 		]  
 	}, 
@@ -104,6 +138,11 @@ _CONFIG_ = {
 	vice.core.dataframe.history: {
 		"filename": 	"vice.core.dataframe.history.rst", 
 		"header": 		"vice.core.dataframe.history", 
+		"subs": 		[] 
+	}, 
+	vice.core.dataframe.fromfile: {
+		"filename": 	"vice.core.dataframe.fromfile.rst", 
+		"header": 		"vice.core.dataframe.fromfile", 
 		"subs": 		[] 
 	}, 
 	vice.yields: {
@@ -507,6 +546,25 @@ _CONFIG_ = {
 	vice.singlezone.entrainment: {
 		"filename": 	"vice.singlezone.entrainment.rst", 
 		"header": 		"vice.singlezone.entrainment", 
+		"subs": 		[
+			entrainment.agb, 
+			entrainment.ccsne, 
+			entrainment.sneia 
+		]  
+	}, 
+	entrainment.agb: {
+		"filename": 	"vice.singlezone.entrainment.agb.rst", 
+		"header": 		"vice.singlezone.entrainment.agb", 
+		"subs": 		[] 
+	}, 
+	entrainment.ccsne: {
+		"filename": 	"vice.singlezone.entrainment.ccsne.rst", 
+		"header": 		"vice.singlezone.entrainment.ccsne", 
+		"subs": 		[] 
+	}, 
+	entrainment.sneia: {
+		"filename": 	"vice.singlezone.entrainment.sneia.rst", 
+		"header": 		"vice.singlezone.entrainment.sneia", 
 		"subs": 		[] 
 	}, 
 	vice.singlezone.Zin: {
@@ -603,6 +661,66 @@ _CONFIG_ = {
 		"filename": 	"vice.history.rst", 
 		"header": 		"vice.history", 
 		"subs": 		[] 
-	}
+	}, 
+	vice.mdf: {
+		"filename": 	"vice.mdf.rst", 
+		"header": 		"vice.mdf", 
+		"subs": 		[] 
+	}, 
+	vice.output: {
+		"filename": 	"vice.output.rst", 
+		"header": 		"vice.output", 
+		"subs": 		[
+			vice.output.name, 
+			vice.output.elements, 
+			vice.output.history, 
+			vice.output.mdf, 
+			vice.output.agb_yields, 
+			vice.output.ccsne_yields, 
+			vice.output.sneia_yields, 
+			vice.output.show 
+		]  
+	}, 
+	vice.output.name: {
+		"filename": 	"vice.output.name.rst", 
+		"header": 		"vice.output.name", 
+		"subs": 		[] 
+	}, 
+	vice.output.elements: {
+		"filename": 	"vice.output.elements.rst", 
+		"header": 		"vice.output.elements", 
+		"subs": 		[] 
+	}, 
+	vice.output.history: {
+		"filename": 	"vice.output.history.rst", 
+		"header": 		"vice.output.history", 
+		"subs": 		[] 
+	}, 
+	vice.output.mdf: {
+		"filename": 	"vice.output.mdf.rst", 
+		"header": 		"vice.output.mdf", 
+		"subs": 		[] 
+	}, 
+	vice.output.agb_yields: {
+		"filename": 	"vice.output.agb_yields.rst", 
+		"header": 		"vice.output.agb_yields", 
+		"subs": 		[] 
+	}, 
+	vice.output.ccsne_yields: {
+		"filename": 	"vice.output.ccsne_yields.rst", 
+		"header": 		"vice.output.ccsne_yields", 
+		"subs": 		[] 
+	}, 
+	vice.output.sneia_yields: {
+		"filename": 	"vice.output.sneia_yields.rst", 
+		"header": 		"vice.output.sneia_yields", 
+		"subs": 		[] 
+	}, 
+	vice.output.show: {
+		"filename": 	"vice.output.show.rst", 
+		"header": 		"vice.output.show", 
+		"subs": 		[] 
+	} 
+
 }
 

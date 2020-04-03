@@ -31,11 +31,11 @@ cdef class agb_yield_settings(yield_settings):
 	Allowed Data Types 
 	------------------
 	* Keys 
-		- 	``str`` [case-insensitive] : elemental symbols 
+		- ``str`` [case-insensitive] : elemental symbols 
 			The symbols of the elements as they appear on the periodic table. 
 
 	* Values 
-		- 	``str`` [case-insensitive] : keywords 
+		- ``str`` [case-insensitive] : keywords 
 			Denote a built-in table of net yields published in a 
 			nucleosynthesis study. 
 
@@ -44,7 +44,7 @@ cdef class agb_yield_settings(yield_settings):
 				- "cristallo11": Cristallo et al. (2011) [1]_ 
 				- "karakas10": Karakas (2010) [2]_ 
 
-		- 	<function> : Mathematical function describing the yield. 
+		- <function> : Mathematical function describing the yield. 
 			Must accept the stellar mass in :math:`M_\odot` and the 
 			metallicity by mass :math:`Z` as parameters, in that order. 
 
@@ -54,7 +54,7 @@ cdef class agb_yield_settings(yield_settings):
 
 	Indexing 
 	--------
-	- 	``str`` [case-insensitive] : elemental symbols 
+	- ``str`` [case-insensitive] : elemental symbols 
 		Must be indexed by the symbol of an element recognized by VICE as it 
 		appears on the periodic table. 
 
@@ -66,9 +66,9 @@ cdef class agb_yield_settings(yield_settings):
 	- factory_settings 
 	- save_defaults 
 
-	Built-in Instances 
+	Built-In Instances 
 	------------------
-	- 	vice.yields.agb.settings 
+	- vice.yields.agb.settings 
 		The user's current nucleosynthetic yield settings for asymptotic giant 
 		branch stars. 
 

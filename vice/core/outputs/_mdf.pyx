@@ -10,70 +10,73 @@ from ..dataframe._fromfile cimport fromfile as fromfile_obj
 
 
 def mdf(name): 
-	"""
-	Read in the normalized stellar metallicity distribution functions at the 
-	final timestep of the simulation. 
+	r""" 
+	Obtain a ``fromfile`` object from a VICE output containing the metallicity 
+	distribution function of stars. 
 
-	Signature: vice.mdf(name) 
+	**Signature**: vice.mdf(name) 
 
 	Parameters 
-	========== 
-	name :: str 
-		The name of the simulation to read output from, with or without the 
-		'.vice' extension. 
+	----------
+	name : ``str`` 
+		The full or relative path to the output directory. The '.vice' 
+		extension is not required. 
 
 	Returns 
-	=======
-	zdist :: VICE dataframe 
-		A VICE dataframe containing the bin edges and the values of the 
-		normalized stellar metallicity distribution in each [X/H] abundance 
-		and [X/Y] abundance ratio. 
+	-------
+	mdf : ``fromfile`` [VICE ``dataframe`` derived class] 
+		A subclass of the VICE dataframe designed to handle simulation output. 
 
 	Raises 
-	====== 
-	IOError :: [Occurs only if the output has been tampered with] 
-		:: The output file is not found. 
-		:: The output file is not formatted correctly. 
-		:: Other VICE output files are missing from the output. 
+	------
+	* IOError [Only occurs if the output has been altered] 
+		- The output file is not found. 
+		- The output file is not formatted correctly. 
+		- Other VICE output files are missing from the output. 
 
 	Notes 
-	===== 
-	For an output under a given name, this file will be stored under 
-	name.vice/mdf.out, and it is a simple ascii text file with a comment header 
-	detailing each column. By storing the output in this manner, user's may 
-	analyze the results of VICE simulations in languages other than python. 
+	-----
+	VICE normalizes metallicity distribution functions to a probability 
+	density, meaning that the area under the distribution is always equal to 
+	one. The value of the distribution in some bin times that bin's width 
+	denotes the fraction of stars with metallicities in that bin. 
 
-	VICE normalizes stellar metallicity distribution functions such that the 
-	area under the user-specified binspace is equal to 1. Because of this, they 
-	should be interpreted as probability densities. See section 6 of VICE's 
-	science documentation at https://github.com/giganano/VICE/tree/master/docs 
-	for further details. 
+	.. note:: For abundances [X/H] and abundance ratios [X/Y] that in the 
+		simulation never achieve a value in the user-specified binspace, the 
+		distribution will be ``NaN`` in all bins. 
 
-	If any [X/H] abundances or [X/Y] abundance ratios determined by VICE never 
-	pass within the user's specified binspace, then the associated MDF will be 
-	NaN at all values. 
+	.. note:: For an output under a given name, the metallicity distribution 
+		function is stored in an ascii text file under name.vice/mdf.out. This 
+		allows users to open these files without VICE if necessary. 
 
-	Because the user-specified bins that the stellar MDF is sorted into may 
-	not be symmetric, if the simulation tracks the abundance ratios of stars in 
-	[X/Y], the returned dataframe will not determine the distribution in the 
-	inverse abundance ratio [Y/X] automatically. 
+	.. seealso:: vice.core.dataframe.fromfile 
 
-	Example 
-	======= 
-	>>> zdist = vice.mdf("example") 
-	>>> zdist.keys() 
-	    [“dn/d[sr/h],”,
-	    “dn/d[sr/fe],”
-	    “bin_edge_left,”
-	    “dn/d[o/h],”
-	    “dn/d[o/fe],”
-	    “dn/d[fe/h],”
-	    “bin_edge_right,”
-	    “dn/d[o/sr]”]	
-	>>> print("dN/d[O/Fe] in the 65th bin: %.2e" % (zdist["dn/d[o/fe]"][65])) 
-	    dN/d[O/Fe] in the 65th bin: 1.41e-01 
-	>>> [zdist[65]["bin_edge_left"], zdist[65]["bin_edge_right"]] 
-	    [2.50e-01, 3.00e-01] 
+	Example Code 
+	------------
+	>>> import vice 
+	>>> example = vice.mdf("example") 
+	>>> example.keys() 
+		[“dn/d[sr/h],”,
+		“dn/d[sr/fe],” 
+		“bin_edge_left,” 
+		“dn/d[o/h],” 
+		“dn/d[o/fe],” 
+		“dn/d[fe/h],” 
+		“bin_edge_right,” 
+		“dn/d[o/sr]”] 
+	>>> example["bin_edge_left"][:10] 
+		[-3.0, -2.95, -2.9, -2.85, -2.8, -2.75, -2.7, -2.65, -2.6, -2.55] 
+	>>> example[60] 
+		vice.dataframe{
+			bin_edge_left --> 0.0
+			bin_edge_right -> 0.05
+			dn/d[fe/h] -----> 0.0
+			dn/d[sr/h] -----> 0.0
+			dn/d[o/h] ------> 0.0
+			dn/d[sr/fe] ----> 0.06001488
+			dn/d[o/fe] -----> 0.4337209
+			dn/d[o/sr] -----> 0.0
+		} 
 	""" 
 	return c_mdf(name) 
 

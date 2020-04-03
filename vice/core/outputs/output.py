@@ -6,64 +6,110 @@ import os
 
 class output: 
 
-	"""
-	Reads in the output from the singlezone class and allows the user to access 
-	it easily via VICE dataframes. The results are read in automatically. 
+	r""" 
+	Reads in the output from VICE simulations and allows the user to access it 
+	easily via VICE dataframes. 
 
-	Signature: vice.output.__init__(name)
+	**Signature**: vice.output(name) 
+
+	Parameters 
+	----------
+	name : ``str`` 
+		The full or relative path to the output directory. The '.vice' 
+		extension is not required. 
+
+	.. note:: If ``name`` corresponds to output from the ``multizone`` class, 
+		a ``multioutput`` object is created instead. 
 
 	Attributes 
-	==========
-	name :: str 
-		The name of the .vice directory containing the output of a singlezone 
-		object. 
-	elements :: tuple 
+	----------
+	name : ``str`` 
+		The name of the .vice directory containing the simulation output. 
+	elements : ``tuple`` 
 		The symbols of the elements whose enrichment was tracked by the 
-		simulation. 
-	history :: VICE dataframe 
-		The abundances at all output times as well as the time-evolution of 
-		the galaxy, such as the star formation rate, gas mass, and star 
-		formation efficiency. 
-	mdf :: VICE dataframe 
-		The normalized stellar metallicity distribution function at the final 
-		timestep of the simulation. 
-	ccsne_yields :: VICE dataframe 
-		The yield settings from core-collapse supernovae at the time the 
-		simulation was ran. 
-	sneia_yields :: VICE dataframe 
-		The yield settings from type Ia supernovae at the time the simulation 
-		was ran. 
+		simulation, as they appear on the periodic table. 
+	history : ``dataframe`` 
+		The dataframe read in via vice.history. 
+	mdf : ``dataframe`` 
+		The dataframe read in via vice.mdf. 
+	agb_yield : ``dataframe`` 
+		The asymptotic giant branch star yields employed in the simulation. 
+	ccsne_yields : ``dataframe`` 
+		The core-collapse supernova yields employed in the simulation. 
+	sneia_yields : ``dataframe`` 
+		The type Ia supernova yields employed in the simulation. 
+
+	.. note:: Reinstancing functional yields and simulation parameters 
+		requires dill_, an extension to ``pickle`` in the python standard 
+		library. It is recommand that VICE users install dill_ >= 0.2.0. 
+
+		.. _dill: https://pypi.org/project/dill/ 
+
+	.. tip:: VICE outputs are stored in directories with a '.vice' extension 
+		following the name of the simulation. This allows users to run 
+		<command> \*.vice in a terminal to run commands on all VICE outputs 
+		in a given directory. 
 
 	Functions 
-	=========
-	show :: 		Show a plot of a given quantity stored in the output 
+	---------
+	- show (requires matplotlib_ >= 2.0.0) 
 
-	Notes 
-	===== 
-	Reinstancing functional attributes from VICE outputs requires the package 
-	dill, an extension to pickle in the python standard library. It is 
-	recommended that VICE users install dill if they have not already so that 
-	they can make use of this feature; this can be done via 'pip install dill'. 
+	.. _matplotlib: https://matplotlib.org/ 
 
-	VICE outputs are stored in directories with a '.vice' extension following 
-	the name of the simulation assigned to the singlezone object that produced 
-	it. Because the history and mdf outputs are stored in pure ascii text, this 
-	allows users to open them in languages other than python while retaining 
-	the ability to run <command> *.vice in a linux terminal to run operations 
-	on all VICE outputs in a given directory. 
+	.. seealso:: vice.history 
+		vice.mdf 
+		vice.multioutput 
 
-	See also 
-	======== 
-	vice.multioutput 
-	vice.history 
-	vice.mdf 
+	Example Code 
+	------------
+	>>> import vice 
+	>>> out = vice.output("example") 
+	>>> out.history[100] 
+		vice.dataframe{
+			time -----------> 1.0
+			mgas -----------> 5795119000.0
+			mstar ----------> 2001106000.0
+			sfr ------------> 2.897559
+			ifr ------------> 9.1
+			ofr ------------> 7.243899
+			eta_0 ----------> 2.5
+			r_eff ----------> 0.3534769
+			z_in(fe) -------> 0.0
+			z_in(sr) -------> 0.0
+			z_in(o) --------> 0.0
+			z_out(fe) ------> 0.0002769056
+			z_out(sr) ------> 3.700754e-09
+			z_out(o) -------> 0.001404602
+			mass(fe) -------> 1604701.0
+			mass(sr) -------> 21.44631
+			mass(o) --------> 8139837.0
+			z(fe) ----------> 0.0002769056166059748
+			z(sr) ----------> 3.700754031107903e-09
+			z(o) -----------> 0.0014046022178319376
+			[fe/h] ---------> -0.6682579454664828
+			[sr/h] ---------> -1.1074881208001155
+			[o/h] ----------> -0.6098426789720387
+			[sr/fe] --------> -0.43923017533363273
+			[o/fe] ---------> 0.05841526649444406
+			[o/sr] ---------> 0.4976454418280768
+			z --------------> 0.0033582028978416337
+			[m/h] ----------> -0.6200211036287412
+			lookback -------> 9.0
+		}
+	>>> out.mdf[60] 
+		vice.dataframe{
+			bin_edge_left --> 0.0
+			bin_edge_right -> 0.05
+			dn/d[fe/h] -----> 0.0
+			dn/d[sr/h] -----> 0.0
+			dn/d[o/h] ------> 0.0
+			dn/d[sr/fe] ----> 0.06001488
+			dn/d[o/fe] -----> 0.4337209
+			dn/d[o/sr] -----> 0.0
+		}
 	""" 
 
 	def __new__(cls, name): 
-		""" 
-		__new__ is overridden such that in the event of a multizone output, a 
-		multioutput object is returned. 
-		""" 
 		name = _output_utils._get_name(name) 
 		if _output_utils._is_multizone(name): 
 			from .multioutput import multioutput 
@@ -72,18 +118,6 @@ class output:
 			return super(output, cls).__new__(cls) 
 
 	def __init__(self, name): 
-		""" 
-		Parameters 
-		========== 
-		name :: str 
-			The full or relative path to the output directory, with or without 
-			the ".vice" extension. 
-
-		Notes 
-		===== 
-		If the name of the output corresponds to that of a multizone object, 
-		a multioutput object is returned instead of an output object. 
-		""" 
 		self.__c_version = c_output(name) 
 
 	def __repr__(self): 
@@ -127,137 +161,239 @@ class output:
 
 	@property 
 	def name(self): 
-		"""
-		Type :: str 
+		r""" 
+		Type : ``str`` 
 
-		The name of the ".vice" directory containing the output of a 
-		singlezone object. The ".vice" extension need not be specified with 
-		the name. 
-		"""
+		The name of the simulation; this corresponds to the name of the '.vice' 
+		directory containing the output. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.output("example") 
+		>>> example.name 
+			'example' 
+		""" 
 		return self.__c_version.name 
 
 	@property
 	def elements(self):
-		""" 
-		Type :: tuple 
+		r""" 
+		Type : ``tuple`` of strings 
 
-		The symbols for the elements whose enrichment was modeled to produce 
-		the output file. 
-		"""
+		The symbols of the elements whose enrichment was modeled to produce 
+		the output file, as they appear on the periodic table. 
+
+		Example Code 
+		------------
+		>>> import vice
+		>>> example = vice.output("example") 
+		>>> example.elements 
+			('fe', 'sr', 'o') 
+		""" 
 		return self.__c_version.elements 
 
 	@property
 	def history(self):
-		"""
-		Type :: dataframe 
+		r""" 
+		Type : ``dataframe`` 
 
-		The dataframe read in via vice.history(name). 
+		The dataframe read in via vice.history with the same name as this 
+		output. 
 
-		See Also
-		======== 
-		Function vice.history
-		"""
+		.. seealso:: vice.history 
+
+		Example Code 
+		------------
+		>>> import vice
+		>>> example = vice.output("example") 
+		>>> example.history["time"][100] 
+			1.0 
+		>>> example.history 
+			vice.dataframe{
+				time -----------> 1.0
+				mgas -----------> 5795119000.0
+				mstar ----------> 2001106000.0
+				sfr ------------> 2.897559
+				ifr ------------> 9.1
+				ofr ------------> 7.243899
+				eta_0 ----------> 2.5
+				r_eff ----------> 0.3534769
+				z_in(fe) -------> 0.0
+				z_in(sr) -------> 0.0
+				z_in(o) --------> 0.0
+				z_out(fe) ------> 0.0002769056
+				z_out(sr) ------> 3.700754e-09
+				z_out(o) -------> 0.001404602
+				mass(fe) -------> 1604701.0
+				mass(sr) -------> 21.44631
+				mass(o) --------> 8139837.0
+				z(fe) ----------> 0.0002769056166059748
+				z(sr) ----------> 3.700754031107903e-09
+				z(o) -----------> 0.0014046022178319376
+				[fe/h] ---------> -0.6682579454664828
+				[sr/h] ---------> -1.1074881208001155
+				[o/h] ----------> -0.6098426789720387
+				[sr/fe] --------> -0.43923017533363273
+				[o/fe] ---------> 0.05841526649444406
+				[o/sr] ---------> 0.4976454418280768
+				z --------------> 0.0033582028978416337
+				[m/h] ----------> -0.6200211036287412
+				lookback -------> 9.0
+			}
+		""" 
 		return self.__c_version.history 
 
 	@property
 	def mdf(self):
-		"""
-		Type :: dataframe 
+		r""" 
+		Type : ``dataframe`` 
 
-		The dataframe read in via vice.mdf(name). 
+		The dataframe read in via vice.mdf with the same name as this output. 
 
-		See Also 
-		======== 
-		Function vice.mdf 
-		"""
+		.. seealso:: vice.mdf 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.output("example") 
+		>>> example.mdf["bin_edge_left"][:10] 
+			[-3.0, -2.95, -2.9, -2.85, -2.8, -2.75, -2.7, -2.65, -2.6, -2.55] 
+		>>> example.mdf[60]
+			vice.dataframe{
+				bin_edge_left --> 0.0
+				bin_edge_right -> 0.05
+				dn/d[fe/h] -----> 0.0
+				dn/d[sr/h] -----> 0.0
+				dn/d[o/h] ------> 0.0
+				dn/d[sr/fe] ----> 0.06001488
+				dn/d[o/fe] -----> 0.4337209
+				dn/d[o/sr] -----> 0.0
+			}
+		""" 
 		return self.__c_version.mdf 
 
 	@property 
 	def agb_yields(self): 
-		""" 
-		Type :: dataframe 
+		r""" 
+		Type : ``dataframe`` 
 
-		A dataframe encoding the settings for nucleosynthetic yields from 
-		asymptotic giant branch stars at the time the simulation was ran. 
+		The asymptotic giant branch star yields employed in the simulation. 
 
-		See Also 
-		======== 
-		vice.yields.agb.settings 
+		.. note:: This dataframe is not be customizable. 
+
+		.. seealso:: vice.yields.agb.settings 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.output("example") 
+		>>> example.agb_yields 
+			vice.dataframe{
+				fe -------------> cristallo11
+				o --------------> cristallo11
+				sr -------------> cristallo11
+			} 
 		""" 
 		return self.__c_version.agb_yields 
 
 	@property
 	def ccsne_yields(self): 
-		"""
-		Type :: dataframe 
+		r""" 
+		Type : ``dataframe`` 
 
-		A dataframe encoding the settings for nucleosynthetic yields from 
-		core collapse supernovae at the time the simulation was ran. 
+		The core-collapse supernova yields employed in the simulation. 
 
-		See Also 
-		======== 
-		vice.yields.ccsne.settings 
-		"""
+		.. note:: This dataframe will not be customizable 
+
+		.. seealso:: vice.yields.ccsne.settings 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.output("example") 
+		>>> example.ccsne_yields 
+			vice.dataframe{
+				fe -------------> 0.000246
+				o --------------> 0.00564
+				sr -------------> 1.34e-08
+			}
+		""" 
 		return self.__c_version.ccsne_yields 
 
 	@property
 	def sneia_yields(self): 
-		"""
-		Type :: dataframe 
+		r""" 
+		Type : ``dataframe`` 
 
-		A dataframe encoding the settings for nucleosynthetic yields from 
-		type Ia supernovae at the time the simulation was ran. 
+		The type Ia supernova yields employed in the simulation. 
 
-		See Also 
-		======== 
-		vice.yields.sneia.settings 
-		"""
+		.. note:: This dataframe will not be customizable. 
+
+		.. seealso:: vice.yields.sneia.settings 
+
+		Example Code 
+		------------
+		>>> import vice
+		>>> example = vice.output("example") 
+		>>> example.sneia_yields 
+			vice.dataframe{
+				fe -------------> 0.00258
+				o --------------> 5.79e-05
+				sr -------------> 0
+			}
+		""" 
 		return self.__c_version.sneia_yields 
 
 	def show(self, key, xlim = None, ylim = None): 
-		""" 
+		r""" 
 		Show a plot of the given quantity referenced by a keyword argument. 
 
-		Signature: vice.output.show(key) 
+		**Signature**: x.show(key, xlim = None, ylim = None) 
 
 		Parameters 
-		========== 
-		key :: str [case-insensitive] 
+		----------
+		x : ``output`` 
+			An instance of this class. 
+		key : ``str`` [case-insensitive] 
 			The keyword argument. If this is a quantity stored in the history 
-			attribute, it will be plotted against time by default. Conversely, 
-			if it is stored in the mdf attribute, it will show the 
-			corresponding stellar metallicity distribution function. 
+			attribute, it will be plotted against time by defult. Conversely, 
+			if it is stored in the mdf attribute, the corresponding stellar 
+			metallicity distribution function will be plotted. 
 
-			Users can also specify an argument of the format key1-key2 where 
-			key1 and key2 are elements of the history output. It will then 
-			plot key1 against key2 and show it to the user. 
-		xlim :: array-like object containing two real numbers 
-			The x-limits to impose on the shown plot 
-		ylim :: array-like object containing two real numbers 
-			The y-limits to impose on the shown plot 
+			Users can also specify an argument of the format "key1-key2" 
+			where key1 and key2 are elements of the history output. This will 
+			then plot key1 against key2. 
+		xlim : array-like (contains real numbers) 
+			The x-limits to impose on the shown plot. 
+		ylim : array-like (contains real numbers) 
+			The y-limits to impose on the shown plot. 
 
 		Raises 
-		====== 
-		KeyError :: 
-			::	Key is not found in either history or mdf attributes 
-		ImportError/ModuleNotFoundError :: 
-			::	matplotlib version >= 2 is not found in the user's system. 
-				(The ModuleNotFoundError is raised in python version >= 3.6.) 
-		All other errors are raised by matplotlib.pyplot.show
+		------
+		* KeyError 
+			-	Key is not found in either history or mdf attributes 
+		* ModuleNotFoundError 
+			- 	Matplotlib version >= 2 is not found in the user's system. 
+
+				.. note:: In python 3.5.x, this will be an ``ImportError``. 
+
+		Other errors may be raised by matplotlib.pyplot.show. 
 
 		Notes 
-		===== 
-		This function is NOT intended to generate publication quality plots for 
-		users. It is included purely as a convenience function for users to be 
-		able to read in and immediately inspect the results of their 
-		simulations in a plot with only a few lines of code. 
+		-----
+		This function is **NOT** intended to generate publication quality 
+		plots for users. It is included purely as a convenience function to 
+		allow visualization and inspection of simulation output immediately 
+		with only one line of code. 
 
-		Example 
-		======= 
+		Example Code 
+		------------
+		>>> import vice 
 		>>> out = vice.output("example") 
 		>>> out.show("dn/d[o/fe]") 
 		>>> out.show("sfr") 
 		>>> out.show("[o/fe]-[fe/h]") 
-		"""	
+		""" 
 		self.__c_version.show(key, xlim = xlim, ylim = ylim) 
 

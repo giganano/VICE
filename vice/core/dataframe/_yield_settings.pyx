@@ -49,13 +49,13 @@ cdef class yield_settings(elemental_settings):
 	Allowed Data Types 
 	------------------
 	* Keys 
-		-	``str`` [case-insensitive] : elemental symbols 
+		- ``str`` [case-insensitive] : elemental symbols 
 			The symbols of the elements as they appear on the periodic table. 
 
 	* Values 
-		- 	real number : denote a constant, metallicity-independent yield. 
+		- real number : denote a constant, metallicity-independent yield. 
 
-		- 	<function> : Mathematical function describing the yield. 
+		- <function> : Mathematical function describing the yield. 
 			Must accept the metallicity by mass :math:`Z` as the only 
 			parameter. 
 
@@ -66,7 +66,7 @@ cdef class yield_settings(elemental_settings):
 
 	Indexing 
 	--------
-	-	``str`` [case-insensitive] : elemental symbols 
+	- ``str`` [case-insensitive] : elemental symbols 
 		Must be indexed by the symbol of an element recognized by VICE as it 
 		appears on the periodic table. 
 
@@ -78,12 +78,12 @@ cdef class yield_settings(elemental_settings):
 	- factory_settings 
 	- save_defaults 
 
-	Built-in Instances 
+	Built-In Instances 
 	------------------
-	- 	vice.yields.ccsne.settings 
+	- vice.yields.ccsne.settings 
 		The user's current nucleosynthetic yield settings for core collapse 
 		supernovae. 
-	- 	vice.yields.sneia.settings 
+	- vice.yields.sneia.settings 
 		The user's current nucleosynthetic yield settings for type Ia 
 		supernovae. 
 

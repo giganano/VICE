@@ -28,11 +28,94 @@ from . cimport _fromfile
 #----------------------------- FROMFILE SUBCLASS -----------------------------# 
 cdef class fromfile(base): 
 
-	""" 
-	A subclass of the VICE dataframe which holds data from a square data file 
-	containing numerical values. 
+	r""" 
+	The VICE dataframe: derived class (inherits from base) 
 
-	See docstring of VICE dataframe base class for more information. 
+	Provides a means of storing and accessing generic simulation output. 
+	Fromfile objects are created by various functions which read in simulation 
+	output (e.g. vice.mdf). 
+
+	Allowed Data Types 
+	------------------
+	* Keys 
+		- ``str`` [case-insensitive] : the physical quantity 
+			A name given to the physical quantity to take from or store with 
+			the output. 
+
+			.. note:: VICE automatically assigns keys to quantities in the 
+				output which cannot be overridden. 
+
+	* Values 
+		- array-like 
+			Must have the same length as the values of the dataframe obtained 
+			from the output file. 
+
+	Indexing 
+	--------
+	-	``int`` : A given line-number of the output. 
+		Returns a dataframe with the same keys, but whose values are taken 
+		only from the specified line of output. 
+	- 	``str`` [case-insensitive] : labels of the lists of quantities stored. 
+
+		For MDF objects, the following are assigned automatically by VICE when 
+		reading in the output and will not be re-assigned: 
+
+			- 	'bin_edge_left' : Lower bin edges of the distribution 
+			- 	'bin_edge_right' : Upper bin edges of the distribution 
+			- 	'dn/d[x/h]' : The value of the probability distribution 
+				function of stars in their [X/H] logarithmic abundance. 
+			-	'dn/d[x/y]' : The value of the probability distribution 
+				function of stars in their [X/Y] logarithmic abundance ratio. 
+
+	Functions 
+	---------
+	- keys 
+	- todict 
+	- filter 
+
+	Example Code 
+	------------
+	>>> import vice 
+	>>> example = vice.mdf("example") 
+	>>> example.keys() 
+		['bin_edge_left',
+		 'bin_edge_right',
+		 'dn/d[fe/h]',
+		 'dn/d[sr/h]',
+		 'dn/d[o/h]',
+		 'dn/d[sr/fe]',
+		 'dn/d[o/fe]',
+		 'dn/d[o/sr]'] 
+	>>> example["bin_edge_left"][:10]
+		[-3.0, -2.95, -2.9, -2.85, -2.8, -2.75, -2.7, -2.65, -2.6, -2.55]
+	>>> example[60]
+		vice.dataframe{
+			bin_edge_left --> 0.0
+			bin_edge_right -> 0.05
+			dn/d[fe/h] -----> 0.0
+			dn/d[sr/h] -----> 0.0
+			dn/d[o/h] ------> 0.0
+			dn/d[sr/fe] ----> 0.06001488
+			dn/d[o/fe] -----> 0.4337209
+			dn/d[o/sr] -----> 0.0
+		}
+
+	**Signature**: vice.core.dataframe.fromfile(filename = None, 
+	adopted_solar_z = None, labels = None) 
+
+	.. warning:: Users should avoid creating new instances of derived classes 
+		of the VICE dataframe. Fromfile objects are created by various 
+		functions which read in simulation output (e.g. vice.mdf). 
+
+	Parameters 
+	----------
+	filename : ``str`` [default : None] 
+		The name of the ascii file containing the output. 
+	adopted_solar_z : real number [default : None] 
+		The metallicity by mass of the sun :math:`Z_\odot` adopted in the 
+		simulation. 
+	list : ``list`` of strings [default : None] 
+		The strings to assign the column labels. 
 	""" 
 	# cdef FROMFILE *_ff 
 
@@ -191,10 +274,37 @@ Got: %s""" % (type(key)))
 		return tuple([self._ff[0].n_rows, self._ff[0].n_cols]) 
 		
 	def keys(self): 
-		"""
-		Signature: vice.dataframe.keys() 
+		r"""
+		Returns the keys to the dataframe in their lower-case format 
 
-		Returns the dataframe keys in their lower-case format 
+		**Signature**: x.keys() 
+
+		Parameters 
+		----------
+		x : ``dataframe`` 
+			An instance of this class 
+
+		Returns 
+		-------
+		keys : ``list`` 
+			A list of lower-case strings which can be used to access the 
+			values stored in this dataframe. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.dataframe({
+			"a": [1, 2, 3], 
+			"b": [4, 5, 6], 
+			"c": [7, 8, 9]}) 
+		>>> example 
+		vice.dataframe{
+			a --------------> [1, 2, 3]
+			b --------------> [4, 5, 6]
+			c --------------> [7, 8, 9]
+		} 
+		>>> example.keys() 
+		['a', 'b', 'c'] 
 		""" 
 		labels = self._ff[0].n_cols * [None] 
 		for i in range(self._ff[0].n_cols): 
@@ -203,12 +313,39 @@ Got: %s""" % (type(key)))
 		return labels 
 
 	def todict(self): 
-		"""
-		Signature: vice.dataframe.todict() 
+		r"""
+		Returns the dataframe as a standard python dictionary 
 
-		Returns the dataframe as a standard python dictionary. Note however 
-		that python dictionaries are case-sensitive, and are thus less 
-		versatile than this object. 
+		**Signature**: x.todict() 
+
+		Parameters 
+		----------
+		x : ``dataframe`` 
+			An instance of this class 
+
+		Returns 
+		-------
+		copy : ``dict`` 
+			A dictionary copy of the dataframe. 
+
+		.. note:: Python dictionaries are case-sensitive, and are thus less 
+			flexible than this class. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.dataframe({
+			"a": [1, 2, 3], 
+			"b": [4, 5, 6], 
+			"c": [7, 8, 9]}) 
+		>>> example 
+		vice.dataframe{
+			a --------------> [1, 2, 3]
+			b --------------> [4, 5, 6]
+			c --------------> [7, 8, 9]
+		} 
+		>>> example.todict() 
+		{'a': [1, 2, 3], 'b': [4, 5, 6], 'c': [7, 8, 9]} 
 		""" 
 		return dict(zip(self.keys(), 
 			[self.__getitem__(i) for i in self.keys()])) 

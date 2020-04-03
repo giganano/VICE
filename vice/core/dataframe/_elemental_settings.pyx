@@ -68,8 +68,8 @@ cdef class elemental_settings(base):
 
 	def filter(self, key, relation, value): 
 		""" 
-		Not supported by this derived class of the VICE dataframe -> will 
-		throw a TypeError when called. 
+		This function throws a TypeError whenever called. This derived class 
+		of the VICE dataframe does not support filtering. 
 
 		.. seealso:: vice.dataframe.filter 
 		""" 

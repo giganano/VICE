@@ -8,7 +8,7 @@ from .._builtin_elemental_data import builtin_elemental_data
 
 # --------------------- PRIMORDIAL ABUNDANCES DATAFRAME --------------------- # 
 primordial = builtin_elemental_data({
-	"he": 		0.248, 
+	"he": 		0.24672, 
 	"c":		0, 
 	"n":		0, 
 	"o":		0, 

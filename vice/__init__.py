@@ -17,12 +17,6 @@ Documentation is available in several forms:
 	3. In PDF format 
 	4. Tutorials and example scripts, available in the git repository 
 
-The ``vice-docs`` command line entry will open VICE's documentation 
-automatically. By default, this will open the user's web browser to the online 
-documentation. Offline documentation can be accessed via the PDF by running 
-``vice-docs --pdf``. Run ``vice-docs --help`` in a terminal for more 
-information. 
-
 Contents 
 --------
 singlezone : ``type``
