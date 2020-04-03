@@ -7,7 +7,10 @@ from distutils.core import setup, Extension
 import sys 
 import os 
 if sys.version_info[:2] < (3, 5): 
-	raise RuntimeError("VICE requires python version >= 3.5") 
+	raise RuntimeError("""Installing VICE from source requires python >= 3.5. \
+Current version: %d.%d.%d.""" % (sys.version_info.major, 
+		sys.version_info.minor, sys.version_info.micro)) 
+else: pass  
 
 # partial import 
 import builtins 
@@ -45,11 +48,12 @@ Topic :: Scientific/Engineering :: Astronomy
 Topic :: Scientific/Engineering :: Physics
 """
 
-MAJOR 			= 1
+# Version info 
+MAJOR 			= 1 
 MINOR 			= 1 
-MICRO 			= 0
-ISRELEASED		= False  
-VERSION 		= "%d.%d.%d" % (MAJOR, MINOR, MICRO)
+MICRO 			= 0 
+ISRELEASED		= False 
+VERSION 		= "%d.%d.%d" % (MAJOR, MINOR, MICRO) 
 
 
 def find_extensions(path = '.'): 
@@ -151,20 +155,25 @@ def find_package_data():
 	return data 
 
 
-def write_version_info(filename = "vice/version.py"): 
+def write_version_info(filename = "vice/version_breakdown.py"): 
 	"""
 	Writes the version info to filename
 	"""
 	cnt = """
 # This file is generated from vice setup.py %(version)s
 
-version = '%(version)s'
-release = %(isreleased)s
+MAJOR = %(major)d 
+MINOR = %(minor)d 
+MICRO = %(micro)d 
+RELEASED = %(isreleased)s
 """
 	with open(filename, 'w') as f: 
 		try:
 			f.write(cnt % {
 					"version": 		VERSION, 
+					"major": 		MAJOR, 
+					"minor": 		MINOR, 
+					"micro": 		MICRO, 
 					"isreleased": 	str(ISRELEASED)
 				})
 		finally: 
@@ -228,7 +237,7 @@ def setup_package():
 		set_path_variable() 
 	finally: 
 		del sys.path[0]
-		os.system("rm -f vice/version.py")
+		os.system("rm -f vice/version_breakdown.py")
 		os.chdir(old_path)
 	return 
 

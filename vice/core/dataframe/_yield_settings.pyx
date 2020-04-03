@@ -5,7 +5,7 @@ elemental_settings object. Instances of this object store the user's
 nucleosynthetic yields from core-collapse and type Ia supernove. 
 """ 
 
-from ...version import version as _VERSION_ 
+from __future__ import absolute_import 
 from ..._globals import _DIRECTORY_ 
 from ..._globals import _RECOGNIZED_ELEMENTS_ 
 from ..._globals import _VERSION_ERROR_ 

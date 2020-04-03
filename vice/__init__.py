@@ -57,28 +57,25 @@ Built-In Dataframes
 - sources : The primary astrophysical production channels of each element. 
 - stable_isotopes : Lists of each elements' stable isotopes. 
 
-Other Features 
---------------
-VisibleDeprecationWarning : ``Warning`` 
-	A ``DeprecationWarning`` which is visible by default. 
-VisibleRuntimeWarning : ``Warning`` 
-	A ``RuntimeWarning`` which is visible by default. 
-ScienceWarning : ``Warning`` 
-	A ``Warning`` class which concerns scientific accuracy and precision. 
-	(visible by default) 
-test : ``function`` 
-	Run VICE's unit tests 
-__version__ : ``str`` 
-	The current version number string 
+Utilities
+---------
+- VisibleDeprecationWarning : A DeprecationWarning that is visible by default. 
+- VisibleRuntimeWarning : A RuntimeWarning that is visible by default. 
+- ScienceWarning : A Warning concerning scientific accuracy and precision. 
+- test : Runs VICE's unit tests. 
+- version : VICE's version breakdown. 
+- __version__ : The version string. 
 """
 
 from __future__ import absolute_import
 import warnings 
 import sys
 import os
-
-__author__ = "James W. Johnson <giganano9@gmail.com>"
-
+if sys.version_info[:2] < (3, 5): 
+	raise RuntimeError("""This version of VICE requires python >= 3.5. \
+Current version: %d.%d.%d.""" % (sys.version_info.major, 
+	sys.version_info.minor, sys.version_info.micro)) 
+else: pass 
 try: 
 	__VICE_SETUP__ 
 except NameError:
@@ -101,6 +98,7 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 """) 
 	else: 
 
+		__author__ = "James W. Johnson <giganano9@gmail.com>" 
 		__all__ = [
 			"__author__", 
 			"__version__", 
@@ -109,13 +107,14 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 			"yields", 
 			"_globals", 
 			"ScienceWarning", 
+			"VisibleRuntimeWarning", 
 			"VisibleDeprecationWarning"
 		] 
 
 		try: 
-			from .version import version as __version__
-			from .version import release as __release
-			if not __release: 
+			from .version import version 
+			__version__ = str(version) 
+			if not version.released: 
 				warnings.warn("Using un-released version of VICE", UserWarning)
 			from .core import * 
 			from .core.dataframe import base as dataframe 

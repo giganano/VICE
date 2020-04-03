@@ -7,7 +7,7 @@ found in the vice/src/ directory within the root tree.
 
 # Python imports 
 from __future__ import absolute_import 
-from ...version import version as _VERSION_ 
+from ...version import version 
 from ..._globals import _RECOGNIZED_ELEMENTS_ 
 from ..._globals import _RECOGNIZED_IMFS_ 
 from ..._globals import _VERSION_ERROR_ 
@@ -1226,7 +1226,7 @@ Setting AGB star yield model globally in a singlezone object is deprecated in \
 this version of VICE (%s). Instead, modify the yield settings for each \
 element individually at vice.yields.agb.settings. Functions of stellar mass \
 in solar masses and metallicity by mass (respectively) are also supported. 
-""" % (_VERSION_) 
+""" % (version) 
 			
 			# Change the settings if possible, if not just move on w/simulation  
 			if isinstance(value, strcomp): 

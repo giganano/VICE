@@ -28,6 +28,7 @@ _CONFIG_ = {
 		"filename": 	"index.rst", 
 		"header": 		"Package Contents", 
 		"subs": 		[
+			vice.version, 
 			vice.atomic_number, 
 			vice.primordial, 
 			vice.solar_z, 
@@ -48,8 +49,13 @@ _CONFIG_ = {
 			vice.mirror, 
 			vice.ScienceWarning, 
 			vice.VisibleRuntimeWarning, 
-			vice.VisibleDeprecationWarning 
+			vice.VisibleDeprecationWarning, 
 		]  
+	}, 
+	vice.version: {
+		"filename": 	"vice.version.rst", 
+		"header": 		"vice.version", 
+		"subs": 		[]  
 	}, 
 	vice.ScienceWarning: {
 		"filename": 	"vice.ScienceWarning.rst", 

@@ -9,7 +9,6 @@ of which is added directly to outflows.
 
 # Python imports 
 from __future__ import absolute_import 
-from ...version import version as _VERSION_ 
 from ..._globals import _RECOGNIZED_ELEMENTS_ 
 from ..._globals import _VERSION_ERROR_ 
 from ..._globals import _DIRECTORY_ 

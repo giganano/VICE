@@ -4,7 +4,7 @@ This file implements the single_stellar_population function.
 """ 
 
 from __future__ import absolute_import 
-from ...version import version as _VERSION_ 
+from ...version import version 
 from ..._globals import _RECOGNIZED_IMFS_ 
 from ..._globals import _VERSION_ERROR_ 
 from ...yields.agb._grid_reader import find_yield_file as find_agb_yield_file 
@@ -258,7 +258,7 @@ Elemental yields in the current simulation will be set to the table of %s \
 with linear interpolation between masses and metallicities on the grid. 
 
 This feature will be removed in a future release of VICE. 
-""" % (_VERSION_, _ssp_utils._AGB_STUDIES_[agb_model])  
+""" % (version, _ssp_utils._AGB_STUDIES_[agb_model])  
 		warnings.warn(msg, DeprecationWarning) 
 		builtin_agb_grid(agb_model) 
 		
