@@ -7,4 +7,5 @@ tutorial:
 
 clean: 
 	@ echo Cleaning examples/ 
+	@ rm -rf __pycache__ 
 	@ rm -rf *.vice/ 

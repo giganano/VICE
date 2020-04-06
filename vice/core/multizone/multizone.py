@@ -35,44 +35,84 @@ types and values.
 
 class multizone(object): 
 
-	""" 
-	Runs simulations of chemical enrichment under the multi-zone approximation 
-	for user-specified parameters. 
+	r""" 
+	An object designed to run simulations of chemical enrichment under the 
+	multi-zone approximation for user-specified parameters. At its core, this 
+	is an array of ``singlezone`` objects. 
 
-	Signature vice.multizone.__init__(name = "multizonemodel", 
-		n_zones = 10, 
-		n_tracers = 1, 
-		verbose = False) 
+	**Signature**: vice.multizone(name = "multizonemodel", n_zones = 10, 
+	n_stars = 1, simple = False, verbose = False) 
+
+	Parameters 
+	----------
+	name : ``str`` [default : "multizonemodel"] 
+		The attribute ``name``, initialized via keyword argument. See below. 
+	n_zones : ``int`` [default : 10] 
+		The attribute ``n_zones``, initialized via keyword argument. See below. 
+	n_stars : ``int`` [default : 1] 
+		The attribute ``n_stars``, initialized via keyword argument. See below. 
+	simple : ``bool`` [default : False] 
+		The attribute ``simple``, initialized via keyword argument. See below. 
+	verbose : ``bool`` [default : False] 
+		The attribute ``verbose``, initialized via keyword argument. See below. 
 
 	Attributes 
-	========== 
-	name :: str [default :: "multizonemodel"] 
-		The name of the simulation 
-	n_zones :: int [default :: 10] 
-		The number of zones in the simulation 
-	n_tracers :: int [default :: 1] 
-		The number of tracer particles per zone per timestep 
-	verbose :: bool [default :: False] 
-		Whether or not to print the time to the console as the simulation runs 
-	migration :: object [default :: zeroes] 
-		The migration matrices specifying how gas and stellar tracer particles 
-		should be moved between zones at each timestep. 
+	----------
+	name : ``str`` [default : "multizonemodel"] 
+		The name of the simulation. Output will be stored in a directory under 
+		this name. 
+	zones : ``zone_array`` [default : always ``singlezone`` objects] 
+		An array-like object of ``singlezone`` objects, detailing the 
+		evolutionary parameters of each zone. 
+	migration : ``mig_specs`` [default : no migration] 
+		The migration specifications for both gas and stars. 
+	n_zones : ``int`` [default : 10] 
+		The number of zones in the model. 
+		
+		.. note:: This cannot be changed after creation of the object. 
+
+		.. note:: If this is equal to 1, a ``singlezone`` object is created 
+			with the default parameters. 
+
+	n_stars : ``int`` [default : 1] 
+		The number of star particles per zone per timestep. 
+	simple : ``bool`` [default : False] 
+		If True, the positions of stars at intermediate times will be ignored. 
+		That is, mixing is taken into account at only the final timestep. 
+	verbose : ``bool`` [default : False] 
+		Whether or not to print to the console as the simulation runs. 
 
 	Functions 
-	========= 
-	run :: 
+	---------
+	run : [instancemethod] 
 		Run the simulation 
+	from_output : [classmethod] 
+		Obtain a ``multizone`` object with the parameters of one that produced 
+		an output. 
 
-	See also 	[https://github.com/giganano/VICE/tree/master/docs] 
-	======== 
-	VICE's science documentation 
+	Example Code 
+	------------
+	>>> import vice 
+	>>> mz = vice.multizone(n_zones = 3) 
+	>>> mz
+		vice.multizone{
+			name -----------> multizonemodel
+			n_zones --------> 3
+			n_stars --------> 1
+			verbose --------> False
+			simple ---------> False
+			zones ----------> ['zone0', 'zone1', 'zone2']
+			migration ------> Stars: <function _DEFAULT_STELLAR_MIGRATION_ at 0x10e2150e0>
+							  ISM:     MigrationMatrix{
+				Zone 0 Likelihood{[0.0, 0.0, 0.0]}
+				Zone 1 Likelihood{[0.0, 0.0, 0.0]}
+				Zone 2 Likelihood{[0.0, 0.0, 0.0]}
+			}
+		}
 	""" 
 
 	def __new__(cls, n_zones = 10, **kwargs): 
-		""" 
-		__new__ is overridden such that a singlezone object is returned 
-		when n_zones = 1. 
-		""" 
+		# return a singlezone object when n_zones = 1 
 		if isinstance(n_zones, numbers.Number): 
 			if n_zones > 0: 
 				if n_zones % 1 == 0: 
@@ -91,13 +131,6 @@ int. Got: %g""" % (n_zones))
 Got: %s""" % (type(n_zones))) 
 
 	def __init__(self, n_zones = 10, **kwargs): 
-		""" 
-		All attributes can be specified as a keyword argument. 
-
-		Notes 
-		===== 
-		When n_zones = 1, a singlezone object is initialized instead 
-		""" 
 		self.__c_version = c_multizone(n_zones = int(n_zones), **kwargs) 
 
 	def __repr__(self): 
@@ -110,7 +143,7 @@ Got: %s""" % (type(n_zones)))
 		attrs = {
 			"name": 			self.name, 
 			"n_zones": 			self.n_zones, 
-			"n_tracers": 		self.n_tracers, 
+			"n_stars": 			self.n_stars, 
 			"verbose": 			self.verbose, 
 			"simple": 			self.simple, 
 			"zones": 			[self.zones[i].name for i in range(
@@ -144,50 +177,70 @@ Got: %s""" % (type(n_zones)))
 
 	@classmethod  
 	def from_output(cls, arg): 
-		""" 
-		Obtain an instance of the vice.multizone class given either the path 
-		to an output or a multioutput itself. 
+		r""" 
+		Obtain an instance of the ``multizone`` class given either the path 
+		to an output of a ``multioutput`` object itself. 
 
-		Signature: vice.multizone.from_output(arg) 
+		**Signature**: vice.multizone.from_output(arg) 
+
+		.. versionadded:: 1.1.0 
 
 		Parameters 
-		========== 
-		arg :: str or vice.multioutput 
-			The full or relative path to the multioutput directory. 
-			Alternatively, the multioutput object. 
+		----------
+		arg : ``str`` or ``multioutput`` 
+			The full or relative path to the output directory; the '.vice' 
+			extension is not necessary. Alternatively, an output object. 
 
 		Returns 
-		======= 
-		mz :: vice.multizone 
-			A multizone object with the same parameters as the one which 
-			produced the multioutput. 
+		-------
+		mz : ``multizone`` 
+			A ``multizone`` object with the same parameters as the one which 
+			produced the output. 
 
 		Raises 
-		====== 
-		TypeError :: 
-			::	arg is neither a multioutput object nor a string 
-		IOError :: 
-			::	output is not found, or is missing files 
+		------
+		* TypeError 
+			- ``arg`` is neither a ``multioutput`` object nor a string. 
+		* IOError [Only occurs if the output has been altered] 
+			- The output is missing files 
 
 		Notes 
-		===== 
-		If arg corresponds to either a singlezone output or an output object, 
-		a singlezone object is returned. 
+		-----
+		.. note:: 
 
-		See Also 
-		======== 
-		vice.mirror 
+			If arg is either a ``singlezone`` output or an ``output`` object, 
+			a ``singlezone`` object will be returned. 
 
-		Added: 1.1.0 
-		""" 
+		.. note:: 
 
-		""" 
-		Developer's Notes 
-		================= 
-		While this function serves as the reader, the writer is the 
-		vice.core.multizone._multizone.c_multizone.pickle function, 
-		implemented in cython. Any changes to this function should be reflected 
-		there. 
+			This function serving as the reader, the writer is the 
+			vice.core.multizone._multizone.c_multizone.pickle function, 
+			implemented in Cython_. 
+
+			.. _Cython: https://cython.org/ 
+
+		Example Code 
+		------------
+		>>> import numpy as np 
+		>>> import vice
+		>>> vice.multizone(name = "example", n_zones = 3) 
+		>>> mz.run(np.linspace(0, 10, 1001)) 
+		>>> mz = vice.multizone.from_output("example") 
+		>>> mz 
+			vice.multizone{
+				name -----------> example
+				n_zones --------> 3
+				n_stars --------> 1
+				verbose --------> False
+				simple ---------> False
+				zones ----------> ['zone0', 'zone1', 'zone2']
+				migration ------> Stars: <function _DEFAULT_STELLAR_MIGRATION_ at 0x111393f80>
+								  ISM:     MigrationMatrix{
+					Zone 0 Likelihood{[0.0, 0.0, 0.0]}
+					Zone 1 Likelihood{[0.0, 0.0, 0.0]}
+					Zone 2 Likelihood{[0.0, 0.0, 0.0]}
+				}
+			}
 		""" 
 		if isinstance(arg, multioutput): 
 			# recursion to the algorithm which does it from the path 
@@ -213,7 +266,7 @@ Got: %s""" % (type(arg)))
 		attrs = pickles.jar.open("%s/attributes" % (dirname)) 
 		mz = cls(n_zones = attrs["n_zones"]) 
 		mz.name = attrs["name"] 
-		mz.n_tracers = attrs["n_tracers"] 
+		mz.n_stars = attrs["n_stars"] 
 		mz.simple = attrs["simple"] 
 		mz.verbose = attrs["verbose"] 
 		for i in range(mz.n_zones): 
@@ -246,27 +299,44 @@ simulation was ran.""" % (i, j), UserWarning)
 
 	@property 
 	def name(self): 
-		""" 
-		Type :: str 
-		Default :: "multizonemodel" 
+		r""" 
+		Type : ``str`` 
+
+		Default : "multizonemodel" 
 
 		The name of the simulation. The output will be stored in a directory 
 		under this name with the extension ".vice". This can also be of the 
-		form /path/to/directory/name and the output will be stored there. 
+		form ``./path/to/directory/name`` and the output will be stored there. 
 
-		Notes 
-		===== 
-		The user need not interact with any of the output files; the output 
-		object is designed to read in all of the results automatically. 
+		.. tip:: 
 
-		By forcing a ".vice" extension on the output file, users can run 
-		'<command> *.vice' in a linux terminal to run commands over all VICE 
-		outputs in a given directory. 
+			Users need not interact with any of the output files. The 
+			``multioutput`` object is designed to read in all of the results 
+			automatically. 
 
-		See Also 
-		======== 
-		vice.singlezone 
-		vice.singlezone.name 
+		.. tip:: 
+
+			By forcing a ".vice" extension on the output directory, users can 
+			run ``<command> \*.vice`` in a terminal to run commands over all 
+			VICE outputs in a given directory. 
+
+		.. note:: 
+
+			The outputs of this class contain the output from each individual 
+			zone in their respective ".vice" directories as well as the 
+			abundances, age information, and initial and final zone numbers 
+			of all star particles in an ascii file named "tracers.out". Like 
+			the "history.out" and "mdf.out" files associated with the 
+			``singlezone`` object, this allows this information to be analyzed 
+			in languages other than python with ease. 
+
+		.. seealso:: ``vice.singlezone.name`` 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> mz = vice.multizone(name = "example") 
+		>>> mz.name = "another_name" 
 		""" 
 		return self.__c_version.name 
 
@@ -276,97 +346,182 @@ simulation was ran.""" % (i, j), UserWarning)
 
 	@property 
 	def zones(self): 
-		""" 
-		Type :: array-like 
-		
-		An array-like object whose elements are the singlezone objects 
-		corresponding to each individual zone in the simulation. Since the 
-		elements of this property are all singlezone objects, their attributes 
-		and output may all be manipulated as such. 
+		r""" 
+		Type : ``zone_array`` 
 
-		Notes 
-		===== 
-		The output associated with each zone will be stored inside the output 
-		directory from this class. For example, for a multizone object whose 
-		name is "multizonemodel" with a zone named "onezonemodel", the output 
-		will be stored in the path: 
+		Default : ``n_zones`` singlezone objects with default parameters. 
 
-		multizonemodel.vice/onezonemodel.vice 
+		A 1-dimensional array-like object which forces all elements to be 
+		instances of the ``singlezone`` class. The attributes of each zone can 
+		be manipulated in exactly the same way as other ``singlezone`` objects. 
 
-		See Also 
-		======== 
-		vice.singlezone 
-		vice.singlezone.name 
+		.. note:: 
+
+			The output associated with each zone will be stored inside the 
+			output directory from this class. For example, for a multizone 
+			object whose name is "multizonemodel" with a zone named 
+			"onezonemodel", the output will be stored at the path 
+			``multizonemodel.vice/onezonemodel.vice``. 
+
+		.. seealso:: ``vice.singlezone`` 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> mz = vice.multizone(name = "example") 
+		>>> mz.zones[0] 
+			vice.singlezone{
+				name -----------> zone0
+				func -----------> <function _DEFAULT_FUNC_ at 0x10f896290>
+				mode -----------> ifr
+				verbose --------> False
+				elements -------> ('fe', 'sr', 'o')
+				IMF ------------> kroupa
+				eta ------------> 2.5
+				enhancement ----> 1.0
+				entrainment ----> <entrainment settings>
+				Zin ------------> 0.0
+				recycling ------> continuous
+				delay ----------> 0.15
+				RIa ------------> plaw
+				Mg0 ------------> 6000000000.0
+				smoothing ------> 0.0
+				tau_ia ---------> 1.5
+				tau_star -------> 2.0
+				schmidt --------> False
+				schmidt_index --> 0.5
+				MgSchmidt ------> 6000000000.0
+				dt -------------> 0.01
+				m_upper --------> 100.0
+				m_lower --------> 0.08
+				postMS ---------> 0.1
+				Z_solar --------> 0.014
+				bins -----------> [-3, -2.95, -2.9, ... , 0.9, 0.95, 1]
+			}
 		""" 
 		return self.__c_version.zones 
 
 	@property 
 	def migration(self): 
-		""" 
-		Type :: object 
+		r""" 
+		Type : ``mig_specs`` 
 
-		The migration specifications of the multizone model. For a simulation 
-		with N zones, the migration matrix is NxN, where the ij'th element 
-		represents the likelihood that either gas or stars migrate OUT OF the 
-		i'th zone and INTO the j'th zone. 
+		Default : No migration of either gas or stars. 
+
+		An object which stores the migration specifications of the multizone 
+		model. 
 
 		Attributes 
-		========== 
-		stars :: object 
-			The migration matrix for tracer particles of stellar populations 
-		gas :: object 
-			The migration matrix for interstellar gas 
+		----------
+		stars : <function> 
+			The migration settings for star particles. 
+		gas : ``mig_matrix`` 
+			A migration matrix describing how gas moves between zones. 
 
-		Notes 
-		===== 
-		By default, both migration matrices have elements that default to 
-		zero, meaning that by default this object runs N singlezone simulations 
-		with stars and gas that never migrate between zones. It is up to the 
-		user to specify each individual likelihood. 
+		.. seealso:: 
+
+			- ``vice.multizone.migration.gas`` 
+			- ``vice.multizone.migration.stars`` 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> mz = vice.multizone(name = "example") 
+		>>> mz.migration.gas[1][0] = 0.05 
+		>>> mz.migration.gas[0][1] = 0.05 
+		>>> def f(zone, tform): 
+			def zone_number(t): 
+				'''
+				stars born in zone 0 and 1 swap positions when they're more 
+				than 1 Gyr old. 
+				''' 
+				if zone == 0: 
+					if t - tform > 1: 
+						return 1 
+					else: 
+						return 0 
+				elif zone == 1: 
+					if t - tform > 1: 
+						return 0 
+					else: 
+						return 1 
+				else: 
+					return zone 
+		>>> mz.migration.stars = f 
 		""" 
 		return self.__c_version.migration 
 
 	@property 
 	def n_zones(self): 
-		""" 
-		Type :: int 
-		Default :: 10 
+		r""" 
+		Type : ``int`` 
+
+		Default : 10 
 
 		The number of zones in the simulation. 
 
-		Notes 
-		===== 
-		Users may only manipulate the value of thie object upon initialization 
-		of the multizone object. In order to change the number of zones in a 
-		multizone simulation, a new multizone object must be initialized. 
+		.. note:: 
+
+			This value may only be set upon initialization of the ``multizone`` 
+			object. In order to change the number of zones in the model, a 
+			new ``multizone`` object must be created. 
+
+		Example Code 
+		------------
+		>>> import vice
+		>>> mz1 = vice.multizone(name = "example1", n_zones = 8) 
+		>>> mz2 = vice.multizone(name = "example2", n_zones = 12) 
+		>>> mz2.n_zones 
+			12 
 		""" 
 		return self.__c_version.n_zones 
 
 	@property 
-	def n_tracers(self): 
-		""" 
-		Type :: int 
-		Default :: 1 
+	def n_stars(self): 
+		r""" 
+		Type : ``int`` 
 
-		The number of tracer particles per zone per timestep. These tracer 
-		particles represent the stellar populations that form in each zone, 
-		and migrate between zones according to the user-specified migration 
-		matrix. 
+		Default : 1 
+
+		The number of star particles to form per zone per timestep. These are 
+		tracer particles which are stand-ins for entire stellar populations 
+		which form and migrate between zones according to the attribute 
+		``migration.stars``. 
+
+		.. note:: If the star formation rate varies in the simulation, this 
+			will impact the simulation by forming star particles of different 
+			masses as opposed to a different number of star particles. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> mz = vice.multizone(name = "example") 
+		>>> mz.n_stars 
+			1 
+		>>> mz.n_stars = 3 
+		>>> mz.n_stars 
+			3 
 		""" 
 		return self.__c_version.n_tracers 
 
-	@n_tracers.setter 
-	def n_tracers(self, value): 
+	@n_stars.setter 
+	def n_stars(self, value): 
 		self.__c_version.n_tracers = value 
 
 	@property 
 	def verbose(self): 
-		""" 
-		Type :: bool 
-		Default :: False 
+		r""" 
+		Type : ``bool`` 
 
-		If True, the time in Gyr will print to the console as the simulation 
-		evolves. 
+		Default : ``False`` 
+
+		If True, the simulation will print to the console as it evolves. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> mz = vice.multizone(name = "example") 
+		>>> mz.verbose = True 
 		""" 
 		return self.__c_version.verbose 
 
@@ -376,15 +531,33 @@ simulation was ran.""" % (i, j), UserWarning)
 
 	@property 
 	def simple(self): 
-		""" 
-		Type :: bool 
-		Default :: True 
+		r""" 
+		Type : ``bool`` 
 
-		If False, the tracer particles' zone numbers at each intermediate 
-		timestep will be taken into account. Otherwise, each zone will 
-		evolve independently of one another, and the metallicity distribution 
-		functions will be computed from the final positions of each tracer 
-		particle. 
+		Default : ``False`` 
+
+		If ``True``, the star particles' zone numbers at timestep between 
+		formation and the final timestep will be ignored. Each zone will 
+		evolve independently, and mixing will be accounted for only at the 
+		final timestep. If ``False``, this information will be taken into 
+		account as the simulation evolves. 
+
+		.. warning:: Johnson et al. (2020, in prep) argues that the positions 
+			of stars as they migrate is necessary information to accurately 
+			model galactic chemical evolution. This suggests that this 
+			attribute should be always be ``False``. 
+
+		Raises 
+		------
+		* ScienceWarning 
+			- This attribute is set to ``True``. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> mz = vice.multizone(name = "example") 
+		>>> mz.simple 
+			False 
 		""" 
 		return self.__c_version.simple 
 
@@ -393,69 +566,75 @@ simulation was ran.""" % (i, j), UserWarning)
 		self.__c_version.simple = value 
 
 	def run(self, output_times, capture = False, overwrite = False): 
-		""" 
-		Run's the built-in timestep integration routines over the parameters 
-		built into the attributes of this class as well as the individual 
-		zones associated with it. Whether or not the user sets capture = True, 
-		the output files will be produced and can be read into an output 
-		object at any time. 
+		r""" 
+		Run the simulation. 
 
-		Signature: vice.multizone.run(output_times, capture = False, 
-			overwrite = False) 
+		**Signature**: x.run(output_times, capture = False, overwrite = False) 
 
 		Parameters 
-		========== 
-		output_times :: array-like [elements are real numbers] 
-			The time in Gyr at which VICE should record output from the 
-			simulation. These need not be sorted in any way; VICE will take 
-			care of that automatically. 
-		capture :: bool [default :: False] 
-			A boolean describing whether or not to return an output object 
-			from the results of the simulation. 
-		overwrite :: bool [default :: False] 
-			A boolean describing whether or not to force overwrite any 
-			existing files under the same name as this simulation. 
+		----------
+		x : ``multizone`` 
+			An instance of this class. 
+		output_times : array-like [elements are real numbers] 
+			The times in Gyr at which VICE should record output from the 
+			simulation. These need not be sorted from least to greatest. 
+		capture : ``bool`` [default : False] 
+			If ``True``, an output object containing the results of the 
+			simulation will be returned. 
+		overwrite : ``bool`` [default : False] 
+			If ``True``, will force overwrite any files with the same name as 
+			the simulation output files. 
 
 		Returns 
-		======= 
-		out :: vice.dataframe [only returned if capture = True] 
-			A VICE dataframe relating each zone to its associated output 
-			object. 
+		-------
+		out : ``multioutput`` [only returned if ``capture == True``] 
+			A ``multioutput`` object produced from this simulation's output. 
 
 		Raises 
-		====== 
-		RuntimeError :: 
-			::	A migration matrix cannot be setup properly according to the 
-				user's current specifications 
-			::	Any of the zones associated with this object have duplicate 
-				names 
-			:: 	The timestep size is not uniform across each zone 
-		ScienceWarning :: 
-			::	Any of the attributes 'IMF', 'recycling', 'delay', 'RIa', 
-				'schmidt', 'schmidt_index', 'MgSchmidt', 'm_upper', 'm_lower', 
-				'Z_solar', and 'agb_model' aren't uniform across all zones. 
-				Realistically these attributes would be, but this is not 
-				required for the simulation to run properly. 
-		Other exceptions raised by vice.singlezone.run 
+		------
+		* RuntimeError 
+			- 	A migration matrix cannot be setup properly according to the 
+				current specifications. 
+			- 	Any of the zones have duplicate names. 
+			- 	The timestep size is not uniform across all zones. 
+		* ScienceWarning 
+			-	Any of the attributes ``IMF``, ``recycling``, ``delay``, 
+				``RIa``, ``schmidt``, ``schmidt_index``, ``MgSchmidt``, 
+				``m_upper``, ``m_lower``, or ``Z_solar`` aren't uniform across 
+				all zones. Realistically these attributes would be, but this 
+				is not required for the simulation to run properly. 
 
-		Notes
-		=====
-		Encoding functional attributes into VICE outputs requires the 
-		package dill, an extension to pickle in the python standard library. 
-		Without this, the outputs will not have memory of any functional 
-		attributes stored in this class. It is recommended that VICE users 
-		install dill if they have not already so that they can make use of this 
-		feature; this can be done via 'pip install dill'. 
+		Other exceptions are raised by ``vice.singlezone.run``. 
 
-		When overwrite = False, and there are files under the same name as the 
-		output produced, this acts as a halting function. VICE will wait for 
-		the user's approval to overwrite existing files in this case. If 
-		user's are running multiple simulations and need their integrations 
-		not to stall, they must specify overwrite = True. 
+		Notes 
+		-----
+		.. note:: 
 
-		Example 
-		======= 
+			Calling this function only causes VICE to produce the output files. 
+			The ``multioutput`` class handles the reading and storing of the 
+			simulation results. 
+
+		.. note:: 
+
+			Saving functional attributes with VICE outputs requires the 
+			package dill_, an extension to ``pickle`` in the python standard 
+			library. It is recommended that VICE users install dill_ >= 0.2.0. 
+
+			.. _dill: https://pypi.org/project/dill/ 
+
+		.. note:: 
+
+			When ``overwrite == False``, and there are files under the same 
+			name as the output produced, this acts as a halting function. VICE 
+			will wait for the user's approval to overwrite existing files in 
+			this case. If users are running multiple simulations and need 
+			their integrations not to stall, they must specify 
+			``overwrite = True``. 
+
+		Example Code 
+		------------
 		>>> import numpy as np 
+		>>> import vice 
 		>>> mz = vice.multizone(name = "example") 
 		>>> outtimes = np.linspace(0, 10, 1001) 
 		>>> mz.run(outtimes) 

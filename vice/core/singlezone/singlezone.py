@@ -150,7 +150,7 @@ class singlezone:
 	run : [instancemethod] 
 		Run the simulation 
 	from_output : [classmethod] 
-		Obtain a singlezone object with the parameters of the one 
+		Obtain a ``singlezone`` object with the parameters of the one 
 		that produced an output. 
 
 	Example Code 
@@ -158,34 +158,34 @@ class singlezone:
 	>>> import vice 
 	>>> sz = vice.singlezone() 
 	>>> sz 
-	vice.singlezone{
-		name -----------> onezonemodel
-		func -----------> <function _DEFAULT_FUNC_ at 0x112180ae8>
-		mode -----------> ifr
-		verbose --------> False
-		elements -------> ('fe', 'sr', 'o')
-		IMF ------------> kroupa
-		eta ------------> 2.5
-		enhancement ----> 1.0
-		entrainment ----> <entrainment settings>
-		Zin ------------> 0.0
-		recycling ------> continuous
-		delay ----------> 0.15
-		RIa ------------> plaw
-		Mg0 ------------> 6000000000.0
-		smoothing ------> 0.0
-		tau_ia ---------> 1.5
-		tau_star -------> 2.0
-		schmidt --------> False
-		schmidt_index --> 0.5
-		MgSchmidt ------> 6000000000.0
-		dt -------------> 0.01
-		m_upper --------> 100.0
-		m_lower --------> 0.08
-		postMS ---------> 0.1
-		Z_solar --------> 0.014
-		bins -----------> [-3, -2.95, -2.9, ... , 0.9, 0.95, 1]
-	}
+		vice.singlezone{
+			name -----------> onezonemodel
+			func -----------> <function _DEFAULT_FUNC_ at 0x112180ae8>
+			mode -----------> ifr
+			verbose --------> False
+			elements -------> ('fe', 'sr', 'o')
+			IMF ------------> kroupa
+			eta ------------> 2.5
+			enhancement ----> 1.0
+			entrainment ----> <entrainment settings>
+			Zin ------------> 0.0
+			recycling ------> continuous
+			delay ----------> 0.15
+			RIa ------------> plaw
+			Mg0 ------------> 6000000000.0
+			smoothing ------> 0.0
+			tau_ia ---------> 1.5
+			tau_star -------> 2.0
+			schmidt --------> False
+			schmidt_index --> 0.5
+			MgSchmidt ------> 6000000000.0
+			dt -------------> 0.01
+			m_upper --------> 100.0
+			m_lower --------> 0.08
+			postMS ---------> 0.1
+			Z_solar --------> 0.014
+			bins -----------> [-3, -2.95, -2.9, ... , 0.9, 0.95, 1]
+		}
 
 	.. [1] Kroupa (2001), MNRAS, 231, 322 
 	.. [2] Salpeter (1955), ApJ, 121, 161 
@@ -313,8 +313,8 @@ class singlezone:
 		Parameters 
 		----------
 		arg : ``str`` or ``output`` 
-			The full or relative path to the output directory. Alternatively, 
-			an output object. 
+			The full or relative path to the output directory; the '.vice' 
+			extension is not necessary. Alternatively, an output object. 
 
 		Returns 
 		-------
@@ -326,8 +326,8 @@ class singlezone:
 		------
 		* TypeError 
 			- arg is neither an output object nor a string 
-		* IOError 
-			- output is not found, or is missing files 
+		* IOError [Only occurs if the output has been altered] 
+			- The output is missing files 
 
 		Notes 
 		-----
@@ -355,34 +355,35 @@ class singlezone:
 		>>> import vice 
 		>>> vice.singlezone(name = "example").run(np.linspace(0, 10, 1001)) 
 		>>> sz = vice.singlezone.from_output("example") 
-		vice.singlezone{
-			name -----------> example
-			func -----------> <function _DEFAULT_FUNC_ at 0x10d0c8e18>
-			mode -----------> ifr
-			verbose --------> False
-			elements -------> ('fe', 'sr', 'o')
-			IMF ------------> kroupa
-			eta ------------> 2.5
-			enhancement ----> 1.0
-			entrainment ----> <entrainment settings>
-			Zin ------------> 0.0
-			recycling ------> continuous
-			delay ----------> 0.15
-			RIa ------------> plaw
-			Mg0 ------------> 6000000000.0
-			smoothing ------> 0.0
-			tau_ia ---------> 1.5
-			tau_star -------> 2.0
-			schmidt --------> False
-			schmidt_index --> 0.5
-			MgSchmidt ------> 6000000000.0
-			dt -------------> 0.01
-			m_upper --------> 100.0
-			m_lower --------> 0.08
-			postMS ---------> 0.1
-			Z_solar --------> 0.014
-			bins -----------> [-3, -2.95, -2.9, ... , 0.9, 0.95, 1]
-		}
+		>>> sz 
+			vice.singlezone{
+				name -----------> example
+				func -----------> <function _DEFAULT_FUNC_ at 0x10d0c8e18>
+				mode -----------> ifr
+				verbose --------> False
+				elements -------> ('fe', 'sr', 'o')
+				IMF ------------> kroupa
+				eta ------------> 2.5
+				enhancement ----> 1.0
+				entrainment ----> <entrainment settings>
+				Zin ------------> 0.0
+				recycling ------> continuous
+				delay ----------> 0.15
+				RIa ------------> plaw
+				Mg0 ------------> 6000000000.0
+				smoothing ------> 0.0
+				tau_ia ---------> 1.5
+				tau_star -------> 2.0
+				schmidt --------> False
+				schmidt_index --> 0.5
+				MgSchmidt ------> 6000000000.0
+				dt -------------> 0.01
+				m_upper --------> 100.0
+				m_lower --------> 0.08
+				postMS ---------> 0.1
+				Z_solar --------> 0.014
+				bins -----------> [-3, -2.95, -2.9, ... , 0.9, 0.95, 1]
+			}
 		""" 
 		if isinstance(arg, output): 
 			# recursion to the algorithm which does it from the path 
@@ -456,14 +457,15 @@ ran.""" % (i, j), UserWarning)
 
 		.. tip:: 
 
-			Users need not interact with any of the output files. The output 
-			object is designed to read in all of the results automatically. 
+			Users need not interact with any of the output files. The 
+			``output`` object is designed to read in all of the results 
+			automatically. 
 
 		.. tip:: 
 
-			By forcing a ".vice" extension on the output file, users can run 
-			"<command> \*.vice" in a terminal to run commands over all VICE 
-			outputs in a given directory. 
+			By forcing a ".vice" extension on the output directory, users can 
+			run ``<command> \*.vice`` in a terminal to run commands over all 
+			VICE outputs in a given directory. 
 
 		.. note:: 
 
@@ -474,11 +476,9 @@ ran.""" % (i, j), UserWarning)
 			a handful of files, the full time evolution data and the resulting 
 			stellar metallicity distribution can be stored in pure ascii 
 			text files. This allows users to analyze their simulations in 
-			languages other than Python_ with ease. Most of the relevant 
+			languages other than python with ease. Most of the relevant 
 			information is stored in the history.out and mdf.out files within 
 			the output directory. 
-
-			.. _Python: https://www.python.org/ 
 
 		Example Code 
 		------------
@@ -1571,25 +1571,26 @@ ran.""" % (i, j), UserWarning)
 		r"""
 		Run the simulation. 
 
-		**Signature**: vice.singlezone.run(output_times, capture = False, 
-		overwrite = False) 
+		**Signature**: x.run(output_times, capture = False, overwrite = False) 
 
 		Parameters 
 		----------
+		x : ``singlezone`` 
+			An instance of this class. 
 		output_times : array-like [elements are real numbers] 
 			The times in Gyr at which VICE should record output from the 
 			simulation. These need not be sorted from least to greatest. 
 		capture : ``bool`` [default : False] 
-			If True, an output object containing the results of the simulation 
-			will be returned. 
+			If ``True``, an output object containing the results of the 
+			simulation will be returned. 
 		overwrite : ``bool`` [default : False] 
-			If True, will force overwrite any files with the same name as the 
-			simulation output files. 
+			If ``True``, will force overwrite any files with the same name as 
+			the simulation output files. 
 
 		Returns 
 		-------
-		out : ``output`` [only returned if ``capture`` == True] 
-			An output object produced from this simulation's output. 
+		out : ``output`` [only returned if ``capture == True``] 
+			An ``output`` object produced from this simulation's output. 
 
 		Raises 
 		------
@@ -1620,21 +1621,19 @@ ran.""" % (i, j), UserWarning)
 		.. note:: 
 
 			Saving functional attributes with VICE outputs requires the 
-			package dill_, an extension to ``pickle`` in the Python_ standard 
-			library. It is recommended that VICE user's install dill_ 
-			>= 0.2.0. 
+			package dill_, an extension to ``pickle`` in the python standard 
+			library. It is recommended that VICE users install dill_ >= 0.2.0. 
 
 			.. _dill: https://pypi.org/project/dill/ 
-			.. _Python: https://docs.python.org/library/ 
 
 		.. note:: 
 
-			When ``overwrite`` == False, and there are files under the same 
+			When ``overwrite == False``, and there are files under the same 
 			name as the output produced, this acts as a halting function. VICE 
 			will wait for the user's approval to overwrite existing files in 
-			this case. If user's are running multiple simulations and need 
+			this case. If users are running multiple simulations and need 
 			their integrations not to stall, they must specify 
-			``overwrite`` = True. 
+			``overwrite = True``. 
 
 		Example Code 
 		------------

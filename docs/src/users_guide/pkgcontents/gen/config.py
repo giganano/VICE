@@ -42,6 +42,7 @@ _CONFIG_ = {
 			vice.elements, 
 			vice.imf, 
 			vice.singlezone, 
+			vice.multizone, 
 			vice.history, 
 			vice.mdf, 
 			vice.output, 
@@ -594,14 +595,14 @@ _CONFIG_ = {
 			vice.singlezone.agb_model 
 		] 
 	}, 
-	vice.singlezone.from_output: {
-		"filename": 	"vice.singlezone.from_output.rst", 
-		"header": 		"vice.singlezone.from_output", 
-		"subs": 		[] 
-	}, 
 	vice.singlezone.run: {
 		"filename": 	"vice.singlezone.run.rst", 
 		"header": 		"vice.singlezone.run", 
+		"subs": 		[] 
+	}, 
+	vice.singlezone.from_output: {
+		"filename": 	"vice.singlezone.from_output.rst", 
+		"header": 		"vice.singlezone.from_output", 
 		"subs": 		[] 
 	}, 
 	vice.singlezone.name: {
@@ -756,6 +757,66 @@ _CONFIG_ = {
 	vice.singlezone.agb_model: {
 		"filename": 	"vice.singlezone.agb_model.rst", 
 		"header": 		"vice.singlezone.agb_model", 
+		"subs": 		[] 
+	}, 
+	vice.multizone: {
+		"filename": 	"vice.multizone.rst", 
+		"header": 		"vice.multizone", 
+		"subs": 		[
+			vice.multizone.run, 
+			vice.multizone.from_output, 
+			vice.multizone.name, 
+			vice.multizone.zones, 
+			vice.multizone.migration, 
+			vice.multizone.n_zones, 
+			vice.multizone.n_stars, 
+			vice.multizone.verbose, 
+			vice.multizone.simple 
+		] 
+	}, 
+	vice.multizone.run: {
+		"filename": 	"vice.multizone.run.rst", 
+		"header": 		"vice.multizone.run", 
+		"subs": 		[] 
+	}, 
+	vice.multizone.from_output: {
+		"filename": 	"vice.multizone.from_output.rst", 
+		"header": 		"vice.multizone.from_output", 
+		"subs": 		[] 
+	}, 
+	vice.multizone.name: {
+		"filename": 	"vice.multizone.name.rst", 
+		"header": 		"vice.multizone.name", 
+		"subs": 		[] 
+	}, 
+	vice.multizone.zones: {
+		"filename": 	"vice.multizone.zones.rst", 
+		"header": 		"vice.multizone.zones", 
+		"subs": 		[] 
+	}, 
+	vice.multizone.migration: {
+		"filename": 	"vice.multizone.migration.rst", 
+		"header": 		"vice.multizone.migration", 
+		"subs": 		[] 
+	}, 
+	vice.multizone.n_zones: {
+		"filename": 	"vice.multizone.n_zones.rst", 
+		"header": 		"vice.multizone.n_zones", 
+		"subs": 		[] 
+	}, 
+	vice.multizone.n_stars: {
+		"filename": 	"vice.multizone.n_stars.rst", 
+		"header": 		"vice.multizone.n_stars", 
+		"subs": 		[] 
+	}, 
+	vice.multizone.verbose: {
+		"filename": 	"vice.multizone.verbose.rst", 
+		"header": 		"vice.multizone.verbose", 
+		"subs": 		[] 
+	}, 
+	vice.multizone.simple: {
+		"filename": 	"vice.multizone.simple.rst", 
+		"header": 		"vice.multizone.simple", 
 		"subs": 		[] 
 	}, 
 	vice.history: {

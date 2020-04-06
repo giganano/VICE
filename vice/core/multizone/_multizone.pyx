@@ -236,7 +236,7 @@ a boolean. Got: %s""" % (type(value)))
 				warnings.warn("""\
 Mixture models in which the positions of stars at intermediate times are not \
 taken into account have been shown to oversimply age-abundance relations \
-(Johnson & Weinberg 2020, in prep). More accurate simulations arise when this \
+(Johnson et al. 2020, in prep). More accurate simulations arise when this \
 attribute is False.""", ScienceWarning) 
 				self._mz[0].simple = 1 
 			else: 
@@ -687,7 +687,7 @@ artifacts.""" % (key), ScienceWarning)
 		attrs = {
 			"name": 			self.name, 
 			"n_zones": 			self.n_zones, 
-			"n_tracers": 		self.n_tracers, 
+			"n_stars": 			self.n_stars, 
 			"simple": 			self.simple, 
 			"verbose": 			self.verbose 
 		} 
