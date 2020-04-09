@@ -413,10 +413,10 @@ simulation was ran.""" % (i, j), UserWarning)
 
 		Attributes 
 		----------
+		gas : ``mig_matrix`` 
+			A matrix describing how gas moves between zones. 
 		stars : <function> 
 			The migration settings for star particles. 
-		gas : ``mig_matrix`` 
-			A migration matrix describing how gas moves between zones. 
 
 		.. seealso:: 
 
@@ -447,9 +447,14 @@ simulation was ran.""" % (i, j), UserWarning)
 						return 1 
 				else: 
 					return zone 
+			return f 
 		>>> mz.migration.stars = f 
 		""" 
 		return self.__c_version.migration 
+
+	@migration.setter 
+	def migration(self, value): 
+		self.__c_version.migration = value 
 
 	@property 
 	def n_zones(self): 

@@ -250,6 +250,29 @@ a boolean. Got: %s""" % (type(value)))
 		# docstring in python version 
 		return self._migration 
 
+	@migration.setter 
+	def migration(self, value): 
+		""" 
+		The gas migration matrix. 
+
+		Allowed Types 
+		=============
+		_migration.specs 
+
+		Allowed Values 
+		==============
+		Any instance of the _migration.specs class 
+		""" 
+		if isinstance(value, _migration.mig_specs): 
+			if value.gas.size == self.n_zones: 
+				self._migration = value 
+			else: 
+				raise ValueError("""Migration specifications have incorrect \
+number of zones. Got: %d. Required: %d.""" % (value.gas.size, self.n_zones)) 
+		else: 
+			raise TypeError("""Attribute 'migration' must be of type \
+migration.specs. Got: %s""" % (type(value))) 
+
 	def run(self, output_times, capture = False, overwrite = False): 
 		""" 
 		See docstring in python version of this class. 
@@ -438,12 +461,12 @@ timesteps."""
 
 		This will call the function of initial zone number and time which 
 		they have constructed, and expect a function of time to be returned. 
-		The zone number passed to the first function is the zone number in which 
-		the tracer particle forms, and the time is the time at which it forms. 
-		The function of time returned must always return an integer, describing 
-		the zone number of the tracer particle at all subsequent times. The time 
-		is interpreted not as the age of the tracer particle, but as time in 
-		the simulation. 
+		The zone number passed to the first function is the zone number in 
+		which the tracer particle forms, and the time is the time at which it 
+		forms. The function of time returned must always return an integer, 
+		describing the zone number of the tracer particle at all subsequent 
+		times. The time is interpreted not as the age of the tracer particle, 
+		but as time in the simulation. 
 		""" 
 		n = _singlezone.n_timesteps(self._mz[0].zones[0][0]) 
 		eval_times = [i * self._mz[0].zones[0][0].dt for i in range(n)] 
@@ -454,11 +477,18 @@ timesteps."""
 		except TypeError: 
 			takes_keyword = False 
 		_tracer.malloc_tracers(self._mz) 
+		if hasattr(self.migration.stars, "write"): 
+			# Allow users to write extra data when the function is called. 
+			try: 
+				self.migration.stars.write = True 
+			except: pass 
 		for i in range(n): 		# for each timestep 
 			for j in range(self.n_zones): 		# for each zone 
 				for k in range(self.n_tracers): 
-					# for each tracer particle forming in that zone at that time 
-					# get the zone number as a function of time 
+					""" 
+					for each tracer particle forming in that zone at that 
+					time, get the zone number as a function of time 
+					""" 
 					if takes_keyword: 
 						zone_occupation = self.migration.stars(j, 
 							i * self._mz[0].zones[0][0].dt, n = k) 

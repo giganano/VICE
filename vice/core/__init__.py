@@ -19,7 +19,6 @@ if not __VICE_SETUP__:
 	__all__ = [
 		"dataframe", 
 		"singlezone", 
-		"multizone", 
 		"mirror", 
 		"test" 
 	] 
@@ -27,7 +26,9 @@ if not __VICE_SETUP__:
 	import warnings 
 	from .singlezone import singlezone 
 	from .mirror import mirror 
-	from .multizone import multizone 
+	from . import multizone 
+	__all__.extend(multizone.__all__) 
+	from .multizone import * 
 	from .ssp import * 
 	from .dataframe import * 
 	from .dataframe._builtin_dataframes import * 

@@ -87,7 +87,7 @@ def _DEFAULT_STELLAR_MIGRATION_(zone, tform):
 	r""" 
 	The default stellar migration prescription for multizone simulations. 
 
-	**Signature**: vice._globals._DEFAULT_STELLAR_MIGRATION(zone, tform) 
+	**Signature**: vice._globals._DEFAULT_STELLAR_MIGRATION_(zone, tform) 
 	
 	Parameters 
 	----------

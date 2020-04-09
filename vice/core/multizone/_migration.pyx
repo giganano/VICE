@@ -10,26 +10,55 @@ from . cimport _migration
 
 cdef class mig_specs: 
 
-	""" 
-	Migration specifications for multizone objects. 
+	r""" 
+	Multizone simulation migration prescriptions for gas and stars. 
+
+	**Signature**: vice.migration.specs(n) 
+
+	Parameters 
+	----------
+	n : ``int`` 
+		The number of rows and columns in the gas migration matrix. This is 
+		also the number of zones in a multizone model. 
 
 	Attributes 
-	========== 
-	gas :: mig_matrix 
-		A matrix containing mass fractions of migration between zones. 
-	stars :: <function> 
-		A callable object of initial zone number and time, expected to return 
-		a callable function of time, detailing tracer particle zones of 
-		occupation. 
+	----------
+	gas : ``mig_matrix`` 
+		A matrix containing the mass fraction of gas moving between zones. 
+	stars : <function> 
+		A function of the zone number and time of star formation. Expected to 
+		return a function of time in Gyr describing the zone number at all 
+		subsequent times of stars forming in that zone at that time. 
+
+	Example Code 
+	------------
+	>>> import math 
+	>>> import vice 
+	>>> example = vice.migration.specs(3) 
+	>>> def f(zone, tform): 
+		def g(time): 
+			# swap stars between zones 0 and 1 when they're >1 Gyr old. 
+			if zone == 0: 
+				if time - tform > 1: 
+					return 1 
+				else: 
+					return 0 
+			elif zone == 1: 
+				if time - tform > 1: 
+					return 0 
+				else: 
+					return 1 
+			else: 
+				return zone 
+		return g 
+	>>> example.stars = f 
+	>>> example.gas[1][0] = 0.1 
+	>>> def h(t): 
+		return 0.2 * math.exp(-t / 2) 
+	>>> example.gas[0][1] = h 
 	""" 
 
 	def __init__(self, n): 
-		""" 
-		Args 
-		==== 
-		n :: int 
-			The number of zones in the migration matrix. 
-		""" 
 		# type checking in multizone object 
 		assert isinstance(n, int), "Must be of type int. Got: %s" % (type(n)) 
 		self.stars = _DEFAULT_STELLAR_MIGRATION_ 
@@ -61,59 +90,133 @@ cdef class mig_specs:
 
 	@property 
 	def gas(self): 
-		""" 
-		The migration matrix associated with the interstellar gas. 
+		r""" 
+		Type : ``migration_matrix`` 
 
-		Contains user-specified migration prescriptions for use in multizone 
-		simulations. For a multizone simulation with N zones, this is an NxN 
-		matrix. 
+		Default: Zeroes (i.e. no gas migration) 
 
-		This matrix is defined such that the ij'th element represents the 
-		likelihood that interstellar gas or stars will migrate FROM the i'th 
-		TO the j'th zone in the simulation during a 10 Myr time interval. 
-		These entries may be either numerical values or functions of time in 
-		Gyr. In all cases, the value at a given time must be between 0 and 1, 
-		because the elements are interpreted as likelihoods. 
+		The gas migration matrix. For a multizone simulation with N zones, 
+		this is an NxN matrix. 
+
+		This matrix is defined such that :math:`G_{ij}` represents the 
+		mass fraction of gas that moves from the :math:`i`'th zone to the 
+		:math:`j`'th zone in a 10 Myr time interval. 
+
+		Allowed Types 
+		-------------
+		* 	real number 
+			The fraction of gas that migrates in a 10 Myr time interval is 
+			constant, given by this value. 
+		* 	<function> 
+			Must accept time in Gyr as the only parameter. The fraction of gas 
+			that migrates in a 10 Myr time interval varies with time, and is 
+			described by this function. 
+
+		Notes 
+		-----
+		The mass fraction of interstellar gas that migration from zone 
+		:math:`i` to zone :math:`j` at a time :math:`t` is calculated via 
+
+		.. math:: f_{ij} = G_{ij}(t) \frac{\Delta t}{\text{10 Myr}} 
+
+		This guarantees that the amount of gas that migrates in a given time 
+		interval does not depend on the timestep size. 
+
+		Example Code 
+		------------
+		>>> import math 
+		>>> import vice 
+		>>> example = vice.migration.specs(3) 
+		>>> example.gas[1][0] = 0.1 
+		>>> def f(t): 
+			return math.exp(-t / 2) 
+		>>> example.gas[0][1] = f 
 		""" 
 		return self._gas 
 
+	@gas.setter 
+	def gas(self, value): 
+		if isinstance(value, mig_matrix): 
+			if value.size == self._gas.size: 
+				self._gas = value 
+			else: 
+				raise ValueError("""Migration matrix of incorrect size. \
+Got: %d. Required: %d.""" % (value.size, self._gas.size)) 
+		else: 
+			raise TypeError("""Attribute 'gas' must be of type \
+'migration_matrix'. Got: %s""" % (type(value))) 
+
 	@property 
 	def stars(self): 
-		""" 
-		The migration settings associated with the stellar tracer particles. 
+		r""" 
+		Type : <function> 
 
-		This must be a callable object accepting two numerical parameters and 
-		optionally a keyword argument "n". The first parameter will be 
-		interpreted as the initial zone number of a tracer particle, and the 
-		second its formation time in Gyr. If a keyword argument "n" is accepted, 
-		it is interpreted as the index of the tracer particle that forms in 
-		that zone at that time. Upon setting up the user's multizone simulation, 
-		VICE will then call this function with "n" = 0, "n" = 1, "n" = 2, ... , 
-		"n" = n_tracers - 1. That is, if the user wishes to treat multiple 
-		tracer particles forming in the same zone at the same time differently, 
-		they must do so via a keyword argument "n" to this callable object. 
+		Default : vice._globals._DEFAULT_STELLAR_MIGRATION_ 
 
-		The returned value from this function must itself also be a callable 
-		object, accepting only one numerical parameter and returning an 
-		integer. The accepted parameter is interpreted as the zone occupation 
-		number as a function of time in Gyr, and the returned value as the 
-		zone number of that tracer particle at that time. 
+		.. note:: The default migration setting does not move stars between 
+			zones at all. 
 
-		In this manner, users may manipulate the detailed zone occupation of 
-		every individual tracer particle in their simulation as a function of 
-		time. 
+		The stellar migration prescription. 
 
-		Notes 
-		===== 
-		The function of time describing the zone number of each tracer particle 
-		is interpreted as the time in the simulation, not the age of the 
-		tracer particle. Times in the simulation before a given tracer particle 
-		forms are neglected. 
+		This function must accept an ``int`` and a real number as the first 
+		and second parameters, respectively. These are interpreted as the zone 
+		number and time at which a star particle forms in a multizone 
+		simulation. 
 
-		The function of time describing an individual tracer particle's zone 
-		occupation evaluated at its formation time must match the zone from 
-		which the tracer particle forms. If this is ever not the case, an 
-		exception will be raised when a multizone simulation is ran. 
+		This attribute must return another function, which must accept a real 
+		number as the only parameter. This is interpreted as time in Gyr. This 
+		is **NOT** the *age* of the star particle, but rather the time since 
+		the start of a multizone simulation (the same interpretation as the 
+		formation time of the star particle). This function must then return 
+		an ``int`` describing the zone number of the star particle at times 
+		following its formation. 
+
+		.. tip:: If users wish to write extra data for star particles to an 
+			output file, they should set up this attribute as an instance of 
+			a class (see the final tip below). If this class has an attribute 
+			``write``, VICE will switch it's value to ``True`` when setting 
+			up star particles for simulation. The lines which write to the 
+			output file can then be wrapped in an ``if self.write:`` 
+			statement. 
+
+		.. tip:: If a multizone simulation will form multiple star particles 
+			per zone per timestep, they can be assigned different zone 
+			occupation histories by allowing the function of initial zone 
+			number and formation time to take a keyword argument ``n``. 
+			VICE will then call this function with ``n = 1``, ``n = 2``, 
+			``n = 3``, and so on up to ``n = n_stars``, where ``n_stars`` 
+			is the number of star particles per zone per timestep. 
+
+		.. tip:: These functions need not be produced via ``def`` statements. 
+			They may also be instances of classes with a ``__call__`` 
+			function. An example of such a technique can be found in VICE's 
+			`git repository`__. 
+
+			__ git_repo_ 
+			.. _git_repo: https://github.com/giganano/VICE.git 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.migration.specs(3) 
+		>>> def f(zone, tform): 
+			def g(time): 
+				# stars forming in zones 0 and 1 swap when >1 Gyr old 
+				if zone == 0: 
+					if time - tform > 1: 
+						return 1 
+					else: 
+						return 0 
+				elif zone == 1: 
+					if time - tform > 1: 
+						return 0 
+					else: 
+						return 1 
+				else: 
+					# else no migration 
+					return zone 
+			return g 
+		>>> example.stars = f 
 		""" 
 		return self._stars 
 

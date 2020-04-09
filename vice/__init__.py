@@ -19,10 +19,12 @@ Documentation is available in several forms:
 
 Contents 
 --------
-singlezone : ``type``
+singlezone : ``type`` 
 	Simulate a single-zone galactic chemical evolution model 
 multizone : ``type`` 
 	Simulate a multi-zone galactic chemical evolution model 
+migration : ``module`` 
+	Tools for migration prescriptions of gas and stars in multizone models. 
 output : ``type`` 
 	Read and store output from single- and multi-zone simulations. 
 single_stellar_population : <function> 
