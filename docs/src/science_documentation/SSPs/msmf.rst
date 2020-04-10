@@ -1,5 +1,4 @@
 
-.. _msmf: 
 
 The Main Sequence Mass Fraction 
 -------------------------------
@@ -26,7 +25,7 @@ which for a power-law IMF :math:`dN/dm \sim m^{-\alpha}` becomes
 	\left[\frac{1}{2 - \alpha}m^{2 - \alpha}\Bigg|_l^u\right]^{-1} 
 
 It may be tempting to cancel the factor of :math:`1/(2 - \alpha)`, but more 
-careful consideration must be taken for piece-wise IMFs like Kroupa [1]_: 
+careful consideration must be taken for piece-wise IMFs like Kroupa [7]_: 
 
 .. math:: h(t) = 
 	\left[
@@ -41,21 +40,12 @@ indeces :math:`\alpha_i`. In the case of kroupa :math:`\alpha` = 2.3, 1.3, and
 0.3 for :math:`m` > 0.5, 0.08 :math:`\leq m \leq` 0.5, and :math:`m` < 0.08, 
 respectively. 
 
-.. _fig_msmf:
-
-.. figure:: ../../rh_2panel/h.png 
-	:align: center 
-
-	The main sequence mass fraction as a function of age for Kroupa and 
-	Salpeter [2]_ IMFs. The Kroupa IMF is lower at all nonzero ages because 
-	it has fewer low mass stars than Salpeter. 
-
 .. _approx_1minusr: 
 
 :ref:`Here <fig_msmf>` we plot :math:`h` as a function of the stellar 
 population's age. By 10 Gyr, :math:`h(t)` is as low as :math:`\sim0.45` 
 for the Kroupa IMF and 
-:math:`\sim0.65` for the Salpeter IMF. In comparison, the 
+:math:`\sim0.65` for the Salpeter [8]_ IMF. In comparison, the 
 :ref:`cumulative return fraction <crf>` :math:`r(t) \approx 0.45` for the 
 Kroupa IMF and :math:`\sim0.28` for the Salpeter IMF. This suggests that the 
 approximation :math:`h(t) \approx 1 - r(t)` fails at the :math:`\sim5-10\%` 
@@ -80,5 +70,5 @@ Relevant source code:
 	- ``vice/src/ssp/msmf.c`` 
 	- ``vice/src/yields/integral.c`` 
 
-.. [1] Kroupa (2001), MNRAS, 322, 231 
-.. [2] Salpeter (1955), ApJ, 121, 161 
+.. [7] Kroupa (2001), MNRAS, 322, 231 
+.. [8] Salpeter (1955), ApJ, 121, 161 

@@ -1,6 +1,4 @@
 
-.. _mlr: 
-
 Stellar Lifetimes 
 -----------------
 In VICE we adopt the following functional form for the lifetime of a star on 

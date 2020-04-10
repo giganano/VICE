@@ -42,3 +42,24 @@ Relevant Source Code:
 .. [3] Kroupa (2001), MNRAS, 322, 231 
 
 .. [4] Salpeter (1955), ApJ, 121, 161 
+
+
+Extension to Multizone Models 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In a multizone simulation, the rate of recycling may change due to stars 
+forming in a given zone and moving out of it, which decreases the rate of 
+recycling, as well as stars moving into it, which increases the rate of 
+recycling. In these simulations, however, VICE knows the zone number of each 
+star particle; the rate of recycling can then be determined from the initial 
+mass and age of each star particle in a given zone. This is given by: 
+
+.. math:: \dot{M}_\text{r}\Delta t = \sum_i M_i 
+	\left[r\left(\tau_i + \Delta t\right) - r\left(\tau_i\right)\right] 
+
+where :math:`M_i` and :math:`\tau_i` are the initial mass and age, 
+respectively, of the :math:`i`'th star particle in a given zone. 
+
+Relevant Source Code: 
+
+	- ``vice/src/multizone/recycling.c`` 
+

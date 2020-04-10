@@ -1,4 +1,6 @@
 
+.. _ssp: 
+
 Single Stellar Populations
 ==========================
 As discussed in our section on :ref:`implementation <implementation>`, VICE's 
@@ -19,10 +21,32 @@ its mass that is still in the form of main sequence stars. These quantities
 are of particular use in calculating the rate of mass recycling and the rate 
 of enrichment from asymptotic giant branch stars. 
 
-.. toctree::
-	:maxdepth: 5 
+.. _mlr: 
+.. include:: stellar_lifetimes.rst 
 
-	stellar_lifetimes 
-	crf 
-	msmf 
-	enrichment 
+.. _crf: 
+.. include:: crf.rst 
+
+.. _fig_crf: 
+.. include:: crf.fig.rst 
+
+.. _msmf: 
+.. include:: msmf.rst 
+
+.. _fig_msmf:
+.. include:: msmf.fig.rst 
+
+.. _ssp_enr: 
+.. include:: enrichment.rst 
+
+.. _ssp_multizone: 
+.. include:: multizone.rst 
+
+
+.. 	:maxdepth: 5 
+
+.. 	stellar_lifetimes 
+.. 	crf 
+.. 	msmf 
+.. 	enrichment 
+.. 	multizone 

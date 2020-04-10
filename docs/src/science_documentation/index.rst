@@ -49,6 +49,7 @@ general sense.
 	gas/index 
 	enrichment/index 
 	yields/index 
+	migration/index 
 	z_calibration 
 	stellar_mdfs 
 

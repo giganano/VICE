@@ -16,7 +16,7 @@ cdef class mig_matrix:
 
 
 cdef class mig_matrix_row: 
-	cdef int _dimension 
+	cdef int _size 
 	cdef object _row 
 
 

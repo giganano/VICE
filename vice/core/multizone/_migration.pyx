@@ -6,6 +6,10 @@ from .. import _pyutils
 import numbers 
 from ..objects cimport _migration 
 from . cimport _migration 
+try: 
+	ModuleNotFoundError 
+except NameError: 
+	ModuleNotFoundError = ImportError 
 
 
 cdef class mig_specs: 
@@ -118,6 +122,10 @@ cdef class mig_specs:
 		:math:`i` to zone :math:`j` at a time :math:`t` is calculated via 
 
 		.. math:: f_{ij} = G_{ij}(t) \frac{\Delta t}{\text{10 Myr}} 
+
+		The mass that migrates is then given by :math:`M_{g,i} f_{ij}(t)`, 
+		where :math:`M_{g,i}` is the total mass of the interstellar medium in 
+		zone :math:`i`. 
 
 		This guarantees that the amount of gas that migrates in a given time 
 		interval does not depend on the timestep size. 
@@ -245,31 +253,74 @@ object.""")
 
 cdef class mig_matrix: 
 
-	""" 
-	Contains user-specified migration prescriptions for use in multizone 
-	simulations. For a multizone simulation with N zones, this is an NxN 
-	matrix. 
+	r""" 
+	A square matrix designed to detail the manner in which gas migrates 
+	between zones in multizone models. This is a 2-dimensional array-like 
+	object denoted by :math:`G_{ij}`, defined as the mass fraction of the 
+	interstellar gas in zone :math:`i` that migrates to zone :math:`j` in a 
+	10 Myr time interval. 
 
-	This matrix is defined such that the ij'th element represents the 
-	likelihood that interstellar gas will migrate FROM the i'th TO the j'th 
-	zone in the simulation within a 10 Myr time interval. 
+	**Signature**: vice.migration.migration_matrix(size) 
 
-	Unallowed numerical values will not raise exceptions here, but will upon 
-	running a multizone object. 
+	Parameters 
+	----------
+	size : ``int`` 
+		The number of rows and columns. This is also the number of zones in 
+		the multizone model. 
 
 	Attributes 
-	========== 
-	size :: int 
-		The number of zones in the migration matrix 
+	----------
+	size : ``int`` 
+		See parameter "size". 
+
+	Allowed Data Types 
+	------------------
+	* real number 
+		:math:`G_{ij}` does not vary with time, and is given by this value. 
+	* <function> 
+		:math:`G_{ij}` varies with time, and is described by this function. 
+
+	Indexing 
+	--------
+	- ``int``, ``int`` : the row and column numbers 
+		The value of :math:`G_{ij}` can be accessed by indexing this object 
+		with :math:`i` as the first index and :math:`j` as the second. For 
+		instance, ``example[1][0]`` and ``example[1, 0]`` both look up 
+		:math:`G_{1,0}`. 
+
+	Functions 
+	---------
+	- tolist 
+	- tonumpyarray 
+
+	Example Code 
+	------------
+	>>> import math 
+	>>> import vice 
+	>>> example = vice.migration.migration_matrix(3) 
+	>>> example 
+		MigrationMatrix{
+			0 ---------> {[0.0, 0.0, 0.0]}
+			1 ---------> {[0.0, 0.0, 0.0]}
+			2 ---------> {[0.0, 0.0, 0.0]}
+		}
+	>>> example[1][0] = 0.1 
+	>>> def f(t): 
+		return 0.1 * math.exp(-t / 5) 
+	>>> example[0, 1] = f 
+	>>> example 
+		MigrationMatrix{
+			0 ---------> {[0.0, <function f at 0x120588560>, 0.0]}
+			1 ---------> {[0.1, 0.0, 0.0]}
+			2 ---------> {[0.0, 0.0, 0.0]}
+		}
+	>>> example.tonumpyarray() 
+		array([[0.0, <function f at 0x120588560>, 0.0], 
+			   [0.0, 0.0, 0.0], 
+			   [0.0, 0.0, 0.0]]) 
 	""" 
 
 	def __init__(self, size): 
-		""" 
-		Args 
-		==== 
-		size :: int 
-			The number of zones in the migration matrix 
-		""" 
 		# multizone object will perform this type-checking 
 		assert isinstance(size, int), "Must be an integer number of zones." 
 		assert size > 0, "Negative number of zones" 
@@ -321,14 +372,20 @@ cdef class mig_matrix:
 				else: 
 					# row.__setitem__ handles further exceptions 
 					self._rows[key1][key2] = value 
-		else: 
+		elif isinstance(key, numbers.Number) and key % 1: 
 			raise TypeError("""Assignment of entire row of migration matrix \
-not supported. Please modify each element individually.""")  
+not supported. Please modify each element individually.""") 
+		else: 
+			raise TypeError("""Item assignment requires two keys of type int. 
+Got: %s""" % (type(key))) 
 
 	def __repr__(self): 
 		rep = "MigrationMatrix{\n" 
 		for i in range(self.size): 
-			rep += "    Zone %d %s\n" % (i, str(self._rows[i])) 
+			rep += "    %d " % (i) 
+			for j in range(10 - len(str(i))): 
+				rep += '-' 
+			rep += "> %s\n" % (str(self._rows[i])) 
 		rep += "}" 
 		return rep 
 
@@ -337,50 +394,145 @@ not supported. Please modify each element individually.""")
 
 	@property 
 	def size(self): 
-		""" 
-		Type :: int 
+		r""" 
+		Type : ``int`` [positive definite] 
 
-		The number of zones in the simulation. 
+		The number of rows and columns of this matrix. This is also the number 
+		of zones in the multizone model. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.migration.migration_matrix(3) 
+		>>> example.size 
+			3 
 		""" 
-		return self._rows[0].dimension 
+		return self._rows[0].size 
 
 	def tolist(self): 
+		r""" 
+		Obtain a copy of this migration matrix as a list. 
+
+		**Signature**: x.tolist() 
+
+		Parameters 
+		----------
+		x : ``migration_matrix`` 
+			An instance of this class. 
+
+		Returns 
+		-------
+		copy : ``list`` 
+			A list comprehension of all values in this matrix. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.migration.migration_matrix(3) 
+		>>> example.tolist() 
+			[[0, 0, 0], [0, 0, 0], [0, 0, 0]] 
 		""" 
-		Obtain a copy of the migration matrix as a list 
+		return [i.tolist() for i in self._rows] 
+
+	def tonumpyarray(self): 
+		r""" 
+		Obtain a copy of this migration matrix as a `NumPy`__ matrix. 
+
+		**Signature**: x.tonumpyarray() 
+
+		Parameters 
+		----------
+		x : ``migration_matrix`` 
+			An instance of this class. 
+
+		Returns 
+		-------
+		copy : numpy.ndarray 
+			A `NumPy`__ array which stores the same values as ``x``. 
+
+		Raises 
+		------
+		* ModuleNotFoundError [ImportError for python < 3.6] 
+			- `NumPy`__ could not be imported. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.migration.migration_matrix(3) 
+		>>> example.tonumpyarray() 
+			array([[0, 0, 0], 
+					[0, 0, 0], 
+					[0, 0, 0]]) 
+
+		__ numpy_ 
+		__ numpy_ 
+		__ numpy_ 
+		.. _numpy: https://numpy.org 
 		""" 
-		return [i.tolist() for i in self._row] 
+		try: 
+			import numpy as np 
+		except (ModuleNotFoundError, ImportError): 
+			raise ModuleNotFoundError("NumPy not found.") 
+		return np.array(self.tolist()) 
 
 
 cdef class mig_matrix_row: 
 
-	""" 
-	A row of the migration matrix. For a multizone simulation with N zones, 
-	this is an N-element list. 
+	r""" 
+	A row of a migration matrix. This is a 1-dimension arary-like object 
+	whose elements denote the mass fraction of interstellar gas that migrates 
+	out of one zone and into other zones in a 10 Myr time interval in a 
+	multizone simulation. 
 
-	This row is defined such that the i'th element represents the likelihood 
-	that interstellar gas or stars will migrate FROM this zone TO the i'th 
-	zone in the simulation. These entries may be either numerical value or 
-	functions of time in Gyr. In all cases, the value at a given time must be 
-	between 0 and 1, because the elements are interpreted as likelihoods. 
+	.. seealso:: vice.migration.migration_matrix 
+
+	.. note:: Creation of new instances of this class is discouraged. This 
+		object only has use in the ``migration_matrix`` object, and it is 
+		recommended that users let that class generate instances of this 
+		class automatically. 
 
 	Attributes 
-	========== 
-	dimension :: int 
-		The number of zones in the row 
+	----------
+	size : ``int``
+		The number of elements stored by this array-like object. 
+
+	Allowed Data Types 
+	------------------
+	- real number 
+		The amount of gas migrating out of this zone and into another does 
+		not vary with time, and is given by this value. 
+	- <function> 
+		The amount of gas migrating out of this zone and into another varies 
+		with time, and is described by this function. 
+
+	Indexing 
+	--------
+	- ``int`` 
+		The element of this array to access. 
+
+	Functions 
+	---------
+	- tolist 
+	- tonumpyarray 
+
+	Example Code 
+	------------
+	>>> import vice 
+	>>> example = vice.migration.migration_matrix(3) 
+	>>> example[0].size 
+		3 
+	>>> example[0].tolist() 
+		[0, 0, 0] 
+	>>> example[0].tonumpyarray() 
+		array([0, 0, 0]) 
 	""" 
-	def __init__(self, dimension): 
-		""" 
-		Args 
-		==== 
-		dimension :: int 
-			The number of zones in the multizone simulation (i.e. length of 
-			this array). 
-		""" 
-		self.dimension = dimension # type checking in setter routine 
-		self._row = self.dimension * [0.] 
+
+	def __init__(self, size): 
+		self.size = size # type checking in setter routine 
+		self._row = self.size * [0.] 
 
 	def __getitem__(self, key): 
-		key = key_check(key, self.dimension) 
+		key = key_check(key, self.size) 
 		if isinstance(key, int): 
 			# user passed the proper type 
 			return self._row[key] 
@@ -392,7 +544,7 @@ cdef class mig_matrix_row:
 			raise SystemError("Internal Error") 
 
 	def __setitem__(self, key, value): 
-		key = key_check(key, self.dimension) 
+		key = key_check(key, self.size) 
 		if isinstance(key, numbers.Number) and key % 1 == 0: 
 			key = int(key) 
 			# user passed the proper type 
@@ -418,41 +570,106 @@ real number or a callable function. Got: %s""" % (type(value)))
 			raise SystemError("Internal Error") 
 
 	def __repr__(self): 
-		return "Likelihood{%s}" % (str(self._row)) 
+		# return "{%s}" % (str(self._row)) 
+		return str(self._row).replace('[', '{').replace(']', '}') 
 
 	def __str__(self): 
 		return self.__repr__() 
 
 	@property 
-	def dimension(self): 
-		""" 
-		Type :: int [positive definite] 
+	def size(self): 
+		r""" 
+		Type : ``int`` [positive definite] 
 
-		The number of zones in the simulation. 
-		""" 
-		return self._dimension 
+		The number of elements stored by this array-like object. 
 
-	@dimension.setter 
-	def dimension(self, value): 
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.migration.migration_matrix(3) 
+		>>> example[0].size 
+			3 
+		""" 
+		return self._size 
+
+	@size.setter 
+	def size(self, value): 
 		if isinstance(value, numbers.Number): 
 			if value > 0: 
 				if value % 1 == 0: 
-					self._dimension = int(value) 
+					self._size = int(value) 
 				else: 
-					raise ValueError("""Attribute 'dimension' must be \
+					raise ValueError("""Attribute 'size' must be \
 interpretable as an integer. Got: %g""" % (value)) 
 			else: 
-				raise ValueError("Attribute 'dimension' must be positive.") 
+				raise ValueError("Attribute 'size' must be positive.") 
 		else: 
-			raise TypeError("""Attribute 'dimension' must be an integer. \
+			raise TypeError("""Attribute 'size' must be an integer. \
 Got: %s""" % (type(value))) 
 
 	def tolist(self): 
-		""" 
-		Obtain this row of the migration matrix as a list 
+		r""" 
+		Obtain a copy of this object as a list. 
+
+		**Signature**: x.tolist() 
+
+		Parameters 
+		----------
+		x : ``mig_matrix_row`` 
+			An instance of this class. 
+
+		Returns 
+		-------
+		copy : ``list`` 
+			A list comprehension of all values in this array. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.migration.migration_matrix(3) 
+		>>> example[0].tolist() 
+			[0, 0, 0] 
 		""" 
 		return self._row 
 
+	def tonumpyarray(self): 
+		r""" 
+		Obtain a copy of this array-like object as a `NumPy`__ matrix. 
+
+		**Signature**: x.tonumpyarray() 
+
+		Parameters 
+		----------
+		x : ``mig_matrix_row`` 
+			An instance of this class. 
+
+		Returns 
+		-------
+		copy : numpy.ndarray 
+			A `NumPy`__ array which stores the same values as ``x``. 
+
+		Raises 
+		------
+		* ModuleNotFoundError [ImportError for python < 3.6] 
+			- `NumPy`__ could not be imported. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.migration.migration_matrix(3) 
+		>>> example[0].tonumpyarray() 
+			array([0, 0, 0]) 
+
+		__ numpy_ 
+		__ numpy_ 
+		__ numpy_ 
+		.. _numpy: https://numpy.org 
+		""" 
+		try: 
+			import numpy as np 
+		except (ModuleNotFoundError, ImportError): 
+			raise ModuleNotFoundError("NumPy not found.") 
+		return np.array(self.tolist()) 
 
 
 def key_check(key, maximum): 

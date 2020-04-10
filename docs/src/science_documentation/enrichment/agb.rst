@@ -51,7 +51,7 @@ From a single stellar population, the rate of ejection of an element :math:`x`
 from AGB stars to the ISM is given by: 
 
 .. math:: \dot{M}_x^\text{AGB} = 
-	-y_x^\text{AGB}(m_\text{postMS}, Z)M_\star\dot{h} 
+	-\epsilon_x^\text{AGB}y_x^\text{AGB}(m_\text{postMS}, Z)M_\star\dot{h} 
 
 where :math:`\dot{h}` is evaluated at the lookback time to the stellar 
 population's formation [3]_, :math:`M_\star` is the initial mass of the 
@@ -60,6 +60,10 @@ stellar population, and :math:`y_x^\text{AGB}` is the
 :math:`m_\text{postMS}` and metallicity :math:`Z`: the fraction of a single 
 star's initial mass that is processed into element :math:`x` *and* ejected to 
 the interstellar medium *minus* the amount that the star was born with. 
+:math:`\epsilon_x^\text{AGB}` is the *entrainment fraction* of the element 
+:math:`x` from AGB stars; this is the mass fraction of the net yield which is 
+retained by the interstellar medium, the remainder of which is added directly 
+to the outflow. 
 
 .. note:: VICE implements recycling of previously produced elements separate 
 	from nucleosynthetic yields, running from the standpoint of *net* rather 
@@ -104,4 +108,28 @@ Relevant source code:
 
 .. [4] See Andrews, Weinberg, Schoenrich & Johnson (2017), ApJ, 835, 224 and 
 	the citations therein for a detailed analysis of multiple elements. 
+
+
+Extension to Multizone Models 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The migration of star particles into and out of zones can affect the AGB star 
+enrichment rate in a given zone. In a singlezone simulation it is exactly as 
+expected for the star formation history, but in a multizone model, it is 
+coupled to the star formation histories in other zones. Because VICE knows the 
+zone each star particle occupies at all times in simulation, the rate of AGB 
+star enrichment rate of some element :math:`x` should not be expressed as an 
+integral over the star formation history, but as a summation over the stellar 
+populations present in the zone: 
+
+.. math:: \dot{M}_x^\text{AGB} \approx \sum_i 
+	y_x^\text{AGB}(m_\text{postMS}(\tau_i), Z_i) M_i 
+	[h(\tau_i) - h(\tau_i + \Delta t)] 
+
+where :math:`Z_i`, :math:`M_i`, and :math:`\tau_i` are the metallicity, 
+initial mass, and age, respectively, of the :math:`i`'th star particle in a 
+given zone at a given time. 
+
+Relevant Source Code: 
+
+	- ``vice/src/multizone/agb.c`` 
 

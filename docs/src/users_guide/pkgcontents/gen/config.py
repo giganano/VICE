@@ -43,6 +43,7 @@ _CONFIG_ = {
 			vice.imf, 
 			vice.singlezone, 
 			vice.multizone, 
+			vice.migration, 
 			vice.history, 
 			vice.mdf, 
 			vice.output, 
@@ -817,6 +818,56 @@ _CONFIG_ = {
 	vice.multizone.simple: {
 		"filename": 	"vice.multizone.simple.rst", 
 		"header": 		"vice.multizone.simple", 
+		"subs": 		[] 
+	}, 
+	vice.migration: {
+		"filename": 	"vice.migration.rst", 
+		"header": 		"vice.migration", 
+		"subs": 		[
+			vice.migration.specs, 
+			vice.migration.migration_matrix 
+		]  
+	}, 
+	vice.migration.specs: {
+		"filename": 	"vice.migration.specs.rst", 
+		"header": 		"vice.migration.specs", 
+		"subs": 		[
+			vice.migration.specs.gas, 
+			vice.migration.specs.stars 
+		]  
+	}, 
+	vice.migration.specs.gas: {
+		"filename": 	"vice.migration.specs.gas.rst", 
+		"header": 		"vice.migration.specs.gas", 
+		"subs": 		[] 
+	}, 
+	vice.migration.specs.stars: {
+		"filename": 	"vice.migration.specs.stars.rst", 
+		"header": 		"vice.migration.specs.stars", 
+		"subs": 		[] 
+	}, 
+	vice.migration.migration_matrix: {
+		"filename": 	"vice.migration.migration_matrix.rst", 
+		"header": 		"vice.migration.migration_matrix", 
+		"subs": 		[
+			vice.migration.migration_matrix.size, 
+			vice.migration.migration_matrix.tolist, 
+			vice.migration.migration_matrix.tonumpyarray 
+		] 
+	}, 
+	vice.migration.migration_matrix.size: {
+		"filename": 	"vice.migration.migration_matrix.size.rst", 
+		"header": 		"vice.migration.migration_matrix.size", 
+		"subs": 		[] 
+	}, 
+	vice.migration.migration_matrix.tolist: {
+		"filename": 	"vice.migration.migration_matrix.tolist.rst", 
+		"header": 		"vice.migration.migration_matrix.tolist", 
+		"subs": 		[] 
+	}, 
+	vice.migration.migration_matrix.tonumpyarray: {
+		"filename": 	"vice.migration.migration_matrix.tonumpyarray.rst", 
+		"header": 		"vice.migration.migration_matrix.tonumpyarray", 
 		"subs": 		[] 
 	}, 
 	vice.history: {

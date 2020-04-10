@@ -1,6 +1,4 @@
 
-.. _crf: 
-
 The Cumulative Return Fraction 
 ------------------------------
 The cumulative return fraction is defined as the mass fraction of a single 
@@ -53,25 +51,14 @@ The denominator has a simpler analytic form:
 .. math:: \int_l^u m \frac{dN}{dm} dm = 
 	\frac{1}{2 - \alpha} m^{2 - \alpha} \Bigg|_l^u 
 
-.. _fig_crf: 
-
-.. figure:: ../../rh_2panel/r.png 
-	:align: center 
-
-	The cumulative return fraction as a function of age for Kroupa [3]_ (red) 
-	and Salpeter [4]_ (blue) IMFs. The Kroupa IMF is higher at all nonzero 
-	ages because it has fewer low mass stars than Salpeter. In both cases 
-	the post main sequence lifetime is assumed to be 10\% of the main sequence 
-	lifetime (i.e. :math:`p_\text{MS} = 0.1`). 
-
 :ref:`Here <fig_crf>` we plot :math:`r` as a function of the stellar 
 population's age. Weinberg, Andrews, and Freudenburg (2017) [2]_ adopted 
 instantaneous recycling, whereby a fraction of the stellar population's mass 
 :math:`r_\text{inst}` is returned *instantaneously* in the interest of an 
 analytic approach to singlezone models. They find that :math:`r_\text{inst}` = 
 0.4 and :math:`r_\text{inst}` = 0.2 is an adequate approximation for Kroupa 
-and Salpeter IMFs. This reduces the more sophisticated formulation implemented 
-here to: 
+[3]_ and Salpeter [4]_ IMFs. This reduces the more sophisticated formulation 
+implemented here to: 
 
 .. math:: r(t) \approx \Bigg \lbrace { 
 	r_\text{inst}\ (t = 0) 
