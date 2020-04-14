@@ -493,7 +493,7 @@ timesteps."""
 					kwargs = {} 
 					if takes_keyword: kwargs["n"] = k 
 					zone_history = n * [j] 
-					if i < n - _singlezone.BUFFER: 
+					if i <= n - _singlezone.BUFFER: 
 						""" 
 						For each timestep in the buffer, set the zone number 
 						according to the user specification at that time. 
@@ -502,7 +502,7 @@ timesteps."""
 							self.migration.stars(j, 
 								i * self._mz[0].zones[0][0].dt, 
 								l, **kwargs) for l in eval_times[i:(n - 
-									_singlezone.BUFFER)]
+									_singlezone.BUFFER + 1)]
 						] 
 
 						""" 
