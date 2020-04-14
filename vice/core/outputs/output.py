@@ -8,8 +8,8 @@ import os
 class output: 
 
 	r""" 
-	Reads in the output from VICE simulations and allows the user to access it 
-	easily via VICE dataframes. 
+	Reads in the output from singlezone simulations and allows the 
+	user to access it easily via dataframes. 
 
 	**Signature**: vice.output(name) 
 

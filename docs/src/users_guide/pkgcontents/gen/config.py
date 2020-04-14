@@ -47,6 +47,7 @@ _CONFIG_ = {
 			vice.history, 
 			vice.mdf, 
 			vice.output, 
+			vice.multioutput, 
 			vice.stars, 
 			vice.mirror, 
 			vice.ScienceWarning, 
@@ -944,6 +945,30 @@ _CONFIG_ = {
 	vice.output.unzip: {
 		"filename": 	"vice.output.unzip.rst", 
 		"header": 		"vice.output.unzip", 
+		"subs": 		[] 
+	}, 
+	vice.multioutput: {
+		"filename": 	"vice.multioutput.rst", 
+		"header": 		"vice.multioutput", 
+		"subs": 		[
+			vice.multioutput.name, 
+			vice.multioutput.zones, 
+			vice.multioutput.stars 
+		]  
+	}, 
+	vice.multioutput.name: {
+		"filename": 	"vice.multioutput.name.rst", 
+		"header": 		"vice.multioutput.name", 
+		"subs": 		[] 
+	}, 
+	vice.multioutput.zones: {
+		"filename": 	"vice.multioutput.zones.rst", 
+		"header": 		"vice.multioutput.zones", 
+		"subs": 		[] 
+	}, 
+	vice.multioutput.stars: {
+		"filename": 	"vice.multioutput.stars.rst", 
+		"header": 		"vice.multioutput.stars", 
 		"subs": 		[] 
 	}, 
 	vice.stars: {

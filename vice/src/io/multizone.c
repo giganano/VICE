@@ -140,18 +140,30 @@ extern void write_tracers_output(MULTIZONE mz) {
 		TRACER t = *(*mz.mig).tracers[i]; 
 		SINGLEZONE origin = *(mz.zones[t.zone_origin]); 
 
-		/* Formation time, final and origin zones, and mass in Msun */ 
-		fprintf(out, "%e\t", t.timestep_origin * origin.dt); 
-		fprintf(out, "%u\t", t.zone_origin); 
-		fprintf(out, "%u\t", t.zone_current); 
-		fprintf(out, "%e\t", t.mass); 
+		/* 
+		 * If the tracer particle formed **before** the user's specified 
+		 * final output time. 
+		 */ 
+		if (t.timestep_origin * origin.dt <= 
+			origin.output_times[origin.n_outputs - 1l]) {
 
-		/* Metallicity by mass of each element in the simulation */ 
-		unsigned int j; 
-		for (j = 0; j < origin.n_elements; j++) {
-			fprintf(out, "%e\t", (*origin.elements[j]).Z[t.timestep_origin]); 
-		} 
-		fprintf(out, "\n"); 
+			/* Formation time, final and origin zones, and mass in Msun */ 
+			fprintf(out, "%e\t", t.timestep_origin * origin.dt); 
+			fprintf(out, "%u\t", t.zone_origin); 
+			fprintf(out, "%u\t", t.zone_current); 
+			fprintf(out, "%e\t", t.mass); 
+
+			/* Metallicity by mass of each element in the simulation */ 
+			unsigned int j; 
+			for (j = 0; j < origin.n_elements; j++) {
+				fprintf(out, "%e\t", (*origin.elements[j]).Z[t.timestep_origin]); 
+			} 
+			fprintf(out, "\n"); 
+
+		/* 
+		 * Otherwise don't include it in the output. 
+		 */ 
+		} else {} 
 
 		if (mz.verbose) {
 			printf("Progress: %.1f%%\r", 
