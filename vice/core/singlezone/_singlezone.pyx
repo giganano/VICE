@@ -1543,7 +1543,15 @@ value detected in output times.""")
 				# If not, exclude it 
 				continue 
 
-		return arr[:(n + 1)] 
+		arr = arr[:(n + 1)] 
+		if len(arr) < len(output_times): 
+			warnings.warn("""\
+Specified output times denser are finer than the timestep size. This may \
+affect when output is written. Consider rerunning this simulation with \
+coarser output times.""", UserWarning) 
+		else: pass 
+		
+		return arr 
 
 
 	def open_output_dir(self, overwrite): 

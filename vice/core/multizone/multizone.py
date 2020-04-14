@@ -639,6 +639,12 @@ simulation was ran.""" % (i, j), UserWarning)
 			their integrations not to stall, they must specify 
 			``overwrite = True``. 
 
+		.. note:: 
+
+			VICE will always write output at the final timestep of the 
+			simulation. This may be one timestep beyond the last element of 
+			the specified ``output_times`` array. 
+
 		Example Code 
 		------------
 		>>> import numpy as np 

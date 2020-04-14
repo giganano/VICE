@@ -88,6 +88,7 @@ extern void singlezone_evolve_no_setup_no_clean(SINGLEZONE *sz) {
 		if (singlezone_timestepper(sz)) break; 
 		verbosity(*sz); 
 	} 
+	write_singlezone_history(*sz); 
 	if ((*sz).verbose) printf("\n"); 
 
 }

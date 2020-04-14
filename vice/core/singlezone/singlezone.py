@@ -1604,6 +1604,7 @@ ran.""" % (i, j), UserWarning)
 		* UserWarning 
 			- 	Any yield settings or class attributes are callable and the 
 				user does not have dill_ installed. 
+			- 	Output times are more finely spaced than the timestep size. 
 		* ScienceWarning 
 			- 	Any element tracked by the simulation is enriched in signifcant 
 				part by r-process nucleosynthesis. 
@@ -1634,6 +1635,12 @@ ran.""" % (i, j), UserWarning)
 			this case. If users are running multiple simulations and need 
 			their integrations not to stall, they must specify 
 			``overwrite = True``. 
+
+		.. note:: 
+
+			VICE will always write output at the final timestep of the 
+			simulation. This may be one timestep beyond the last element of 
+			the specified ``output_times`` array. 
 
 		Example Code 
 		------------
