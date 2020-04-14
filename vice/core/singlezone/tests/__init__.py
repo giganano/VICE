@@ -11,6 +11,7 @@ if not __VICE_SETUP__:
 	from ....testing import moduletest 
 	from ._singlezone import singlezone_tester 
 	from . import singlezone 
+	from .from_output import test_from_output 
 
 	@moduletest 
 	def test(): 
@@ -49,6 +50,7 @@ if not __VICE_SETUP__:
 				st.test_set_ria(), 
 				st.test_setup_Zin(), 
 				st.test_pickle(), 
+				test_from_output(), 
 				singlezone.test(run = False) 
 			] 
 		] 

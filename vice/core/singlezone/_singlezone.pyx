@@ -1574,14 +1574,15 @@ coarser output times.""", UserWarning)
 			:: 	Output directory could not be opened - name is an invalid path 
 		""" 
 		if self.outfile_check(overwrite): 
+			if os.path.exists("%s.vice" % (self.name)): 
+				os.system("rm -rf %s.vice" % (self.name))
+			else: pass 
+			# if not os.path.exists("%s.vice" % (self.name)): 
+			os.system("mkdir %s.vice" % (self.name)) 
 			if not os.path.exists("%s.vice" % (self.name)): 
-				os.system("mkdir %s.vice" % (self.name)) 
-				if not os.path.exists("%s.vice" % (self.name)): 
-					raise RuntimeError("""\
-Invalid path: could not create output directory from name: %s.vice/\
-""" % (self.name)) 
-				else: 
-					pass 
+				raise RuntimeError("""\
+Invalid path: could not create output directory from name: %s.vice/""" % (
+					self.name)) 
 			else: 
 				pass 
 			return True 

@@ -3,6 +3,7 @@ from __future__ import absolute_import
 __all__ = ["test"] 
 from ....testing import moduletest 
 from ....testing import unittest 
+from ...dataframe import base as dataframe 
 from ...singlezone import singlezone 
 from ..output import output 
 import os 
@@ -17,10 +18,35 @@ def test():
 	""" 
 	return ["vice.output", 
 		[ 
+			test_output(), 
 			test_zip(), 
 			test_unzip() 
 		] 
 	] 
+
+
+@unittest 
+def test_output(): 
+	r""" 
+	vice.output unittest 
+	""" 
+	def test(): 
+		try: 
+			singlezone.singlezone(name = "test").run(_OUTTIMES_, 
+				overwrite = True) 
+			test_ = output("test") 
+		except: 
+			return False 
+		return (
+			isinstance(test_, output) and 
+			isinstance(test_.elements, tuple) and 
+			isinstance(test_.agb_yields, dataframe) and 
+			isinstance(test_.ccsne_yields, dataframe) and 
+			isinstance(test_.sneia_yields, dataframe) and 
+			isinstance(test_.mdf, dataframe) and 
+			isinstance(test_.history, dataframe) 
+		) 
+	return ["vice.output", test] 
 
 
 @unittest 
