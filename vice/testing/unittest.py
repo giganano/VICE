@@ -16,6 +16,7 @@ else:
 # "Passed" and "Failed" as green and red strings, respectively 
 _PASSED_MESSAGE_ = "\033[92mPassed\033[00m" 
 _FAILED_MESSAGE_ = "\033[91mFailed\033[00m" 
+_SKIPPED_MESSAGE_ = "\033[94mSkipped\033[00m" 
 
 
 class _unittest: 
@@ -33,7 +34,12 @@ class _unittest:
 
 	def __repr__(self): 
 		return "%s :: %s" % (self.name, 
-			_PASSED_MESSAGE_ if self.run() else _FAILED_MESSAGE_) 
+			{
+				True: 		_PASSED_MESSAGE_, 
+				False: 		_FAILED_MESSAGE_, 
+				None: 		_SKIPPED_MESSAGE_ 
+			}[self.run()]) 
+			# _PASSED_MESSAGE_ if self.run() else _FAILED_MESSAGE_) 
 
 	def __str__(self): 
 		return self.__repr__() 

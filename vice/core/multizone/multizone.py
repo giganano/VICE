@@ -31,6 +31,11 @@ wrapper, it preserves the internal documentation. In order to maximize
 readability, the setter functions of the C version of the wrapper have brief 
 notes on the physical interpretation of each attribute as well as the allowed 
 types and values. 
+
+While the user sees the number of star particles formed per zone per timestep 
+as 'n_stars', that value exists under the hood as 'n_tracers'. Star particles 
+are referred to in VICE's C library as tracer particles rather than star 
+particles. 
 """ 
 
 class multizone(object): 
@@ -64,7 +69,7 @@ class multizone(object):
 	zones : ``zone_array`` [default : always ``singlezone`` objects] 
 		An array-like object of ``singlezone`` objects, detailing the 
 		evolutionary parameters of each zone. 
-	migration : ``mig_specs`` [default : no migration] 
+	migration : ``migration.specs`` [default : no migration] 
 		The migration specifications for both gas and stars. 
 	n_zones : ``int`` [default : 10] 
 		The number of zones in the model. 
@@ -104,10 +109,10 @@ class multizone(object):
 			zones ----------> ['zone0', 'zone1', 'zone2']
 			migration ------> Stars: <function _DEFAULT_STELLAR_MIGRATION_ at 0x10e2150e0>
 							  ISM:     MigrationMatrix{
-				Zone 0 Likelihood{[0.0, 0.0, 0.0]}
-				Zone 1 Likelihood{[0.0, 0.0, 0.0]}
-				Zone 2 Likelihood{[0.0, 0.0, 0.0]}
-			}
+			0 ---------> {0.0, 0.0, 0.0}
+			1 ---------> {0.0, 0.0, 0.0}
+			2 ---------> {0.0, 0.0, 0.0}
+		}
 		}
 	""" 
 
@@ -236,9 +241,9 @@ Got: %s""" % (type(n_zones)))
 				zones ----------> ['zone0', 'zone1', 'zone2']
 				migration ------> Stars: <function _DEFAULT_STELLAR_MIGRATION_ at 0x111393f80>
 								  ISM:     MigrationMatrix{
-					Zone 0 Likelihood{[0.0, 0.0, 0.0]}
-					Zone 1 Likelihood{[0.0, 0.0, 0.0]}
-					Zone 2 Likelihood{[0.0, 0.0, 0.0]}
+					0 ---------> {0.0, 0.0, 0.0}
+					1 ---------> {0.0, 0.0, 0.0}
+					2 ---------> {0.0, 0.0, 0.0}
 				}
 			}
 		""" 
@@ -404,7 +409,7 @@ simulation was ran.""" % (i, j), UserWarning)
 	@property 
 	def migration(self): 
 		r""" 
-		Type : ``mig_specs`` 
+		Type : ``migration.specs`` 
 
 		Default : No migration of either gas or stars. 
 
@@ -429,25 +434,23 @@ simulation was ran.""" % (i, j), UserWarning)
 		>>> mz = vice.multizone(name = "example") 
 		>>> mz.migration.gas[1][0] = 0.05 
 		>>> mz.migration.gas[0][1] = 0.05 
-		>>> def f(zone, tform): 
-			def zone_number(t): 
-				'''
-				stars born in zone 0 and 1 swap positions when they're more 
-				than 1 Gyr old. 
-				''' 
-				if zone == 0: 
-					if t - tform > 1: 
-						return 1 
-					else: 
-						return 0 
-				elif zone == 1: 
-					if t - tform > 1: 
-						return 0 
-					else: 
-						return 1 
+		>>> def f(zone, tform, time): 
+			'''
+			stars born in zone 0 and 1 swap positions when they're more 
+			than 1 Gyr old. 
+			''' 
+			if zone == 0: 
+				if time - tform > 1: 
+					return 1 
 				else: 
-					return zone 
-			return f 
+					return 0 
+			elif zone == 1: 
+				if time - tform > 1: 
+					return 0 
+				else: 
+					return 1 
+			else: 
+				return zone 
 		>>> mz.migration.stars = f 
 		""" 
 		return self.__c_version.migration 

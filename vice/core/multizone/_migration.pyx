@@ -39,27 +39,31 @@ cdef class mig_specs:
 	>>> import math 
 	>>> import vice 
 	>>> example = vice.migration.specs(3) 
-	>>> def f(zone, tform): 
-		def g(time): 
-			# swap stars between zones 0 and 1 when they're >1 Gyr old. 
-			if zone == 0: 
-				if time - tform > 1: 
-					return 1 
-				else: 
-					return 0 
-			elif zone == 1: 
-				if time - tform > 1: 
-					return 0 
-				else: 
-					return 1 
+	>>> def f(zone, tform, time): 
+		# swap stars between zones 0 and 1 when they're >1 Gyr old. 
+		if zone == 0: 
+			if time - tform > 1: 
+				return 1 
 			else: 
-				return zone 
-		return g 
+				return 0 
+		elif zone == 1: 
+			if time - tform > 1: 
+				return 0 
+			else: 
+				return 1 
+		else: 
+			return zone 
 	>>> example.stars = f 
 	>>> example.gas[1][0] = 0.1 
-	>>> def h(t): 
+	>>> def g(t): 
 		return 0.2 * math.exp(-t / 2) 
-	>>> example.gas[0][1] = h 
+	>>> example.gas[0][1] = g 
+	>>> example.gas 
+		MigrationMatrix{
+			0 ---------> {0.0, <function g at 0x120588560>, 0.0}
+			1 ---------> {0.1, 0.0, 0.0}
+			2 ---------> {0.0, 0.0, 0.0}
+		}
 	""" 
 
 	def __init__(self, n): 
@@ -139,6 +143,12 @@ cdef class mig_specs:
 		>>> def f(t): 
 			return math.exp(-t / 2) 
 		>>> example.gas[0][1] = f 
+		>>> example.gas 
+			MigrationMatrix{
+				0 ---------> {0.0, <function f at 0x120588560>, 0.0}
+				1 ---------> {0.1, 0.0, 0.0}
+				2 ---------> {0.0, 0.0, 0.0}
+			}
 		""" 
 		return self._gas 
 
@@ -166,18 +176,23 @@ Got: %d. Required: %d.""" % (value.size, self._gas.size))
 
 		The stellar migration prescription. 
 
-		This function must accept an ``int`` and a real number as the first 
-		and second parameters, respectively. These are interpreted as the zone 
-		number and time at which a star particle forms in a multizone 
-		simulation. 
+		This function must accept at ``int`` followed by two real numbers as 
+		parameters, in that order. These are interpreted as the zone number in 
+		which a star particle forms in a multizone simulation, the time at 
+		which it forms in Gyr, and the time in the simulation in Gyr. 
 
-		This attribute must return another function, which must accept a real 
-		number as the only parameter. This is interpreted as time in Gyr. This 
-		is **NOT** the *age* of the star particle, but rather the time since 
-		the start of a multizone simulation (the same interpretation as the 
-		formation time of the star particle). This function must then return 
-		an ``int`` describing the zone number of the star particle at times 
-		following its formation. 
+		This function must return an ``int`` describing the zone number of the 
+		star particle at times following its formation. 
+
+		Notes 
+		-----
+		The third parameter returned by this function is interpreted as the 
+		time since the start of the simulation, **NOT** the age of the star 
+		particle in question. 
+
+		This function will never be called with a third parameter that is 
+		larger than the second parameter. These are times at which star 
+		particles have not formed yet. 
 
 		.. tip:: If users wish to write extra data for star particles to an 
 			output file, they should set up this attribute as an instance of 
@@ -191,8 +206,8 @@ Got: %d. Required: %d.""" % (value.size, self._gas.size))
 			per zone per timestep, they can be assigned different zone 
 			occupation histories by allowing the function of initial zone 
 			number and formation time to take a keyword argument ``n``. 
-			VICE will then call this function with ``n = 1``, ``n = 2``, 
-			``n = 3``, and so on up to ``n = n_stars``, where ``n_stars`` 
+			VICE will then call this function with ``n = 0``, ``n = 1``, 
+			``n = 2``, and so on up to ``n = n_stars - 1``, where ``n_stars`` 
 			is the number of star particles per zone per timestep. 
 
 		.. tip:: These functions need not be produced via ``def`` statements. 
@@ -207,23 +222,20 @@ Got: %d. Required: %d.""" % (value.size, self._gas.size))
 		------------
 		>>> import vice 
 		>>> example = vice.migration.specs(3) 
-		>>> def f(zone, tform): 
-			def g(time): 
-				# stars forming in zones 0 and 1 swap when >1 Gyr old 
-				if zone == 0: 
-					if time - tform > 1: 
-						return 1 
-					else: 
-						return 0 
-				elif zone == 1: 
-					if time - tform > 1: 
-						return 0 
-					else: 
-						return 1 
+		>>> def f(zone, tform, time): 
+			# swap stars between zones 0 and 1 when they're >1 Gyr old 
+			if zone == 0: 
+				if time - tform > 1: 
+					return 1 
 				else: 
-					# else no migration 
-					return zone 
-			return g 
+					return 0 
+			elif zone == 1: 
+				if time - tform > 1: 
+					return 0 
+				else: 
+					return 1 
+			else: 
+				return zone 
 		>>> example.stars = f 
 		""" 
 		return self._stars 
@@ -231,21 +243,11 @@ Got: %d. Required: %d.""" % (value.size, self._gas.size))
 	@stars.setter 
 	def stars(self, value): 
 		if callable(value): 
-			try: 
-				x = value(0, 0) 
-			except TypeError: 
-				raise ValueError("""Stellar migration setting must accept \
-two numerical parameters.""") 
-			if callable(x): 
-				try: 
-					x(0) 
-				except TypeError: 
-					raise ValueError("""Stellar migration setting must return \
-an object accepting one numerical parameter.""") 
+			if _pyutils.arg_count(value) == 3: 
 				self._stars = value 
 			else: 
-				raise TypeError("""Stellar migration setting must return a \
-callable object.""") 
+				raise TypeError("""Stellar migration setting must accept \
+three numerical parameters.""") 
 		else: 
 			raise TypeError("""Stellar migration setting must be a callable \
 object.""") 
@@ -300,9 +302,9 @@ cdef class mig_matrix:
 	>>> example = vice.migration.migration_matrix(3) 
 	>>> example 
 		MigrationMatrix{
-			0 ---------> {[0.0, 0.0, 0.0]}
-			1 ---------> {[0.0, 0.0, 0.0]}
-			2 ---------> {[0.0, 0.0, 0.0]}
+			0 ---------> {0.0, 0.0, 0.0}
+			1 ---------> {0.0, 0.0, 0.0}
+			2 ---------> {0.0, 0.0, 0.0}
 		}
 	>>> example[1][0] = 0.1 
 	>>> def f(t): 
@@ -310,14 +312,14 @@ cdef class mig_matrix:
 	>>> example[0, 1] = f 
 	>>> example 
 		MigrationMatrix{
-			0 ---------> {[0.0, <function f at 0x120588560>, 0.0]}
-			1 ---------> {[0.1, 0.0, 0.0]}
-			2 ---------> {[0.0, 0.0, 0.0]}
+			0 ---------> {0.0, <function f at 0x120588560>, 0.0}
+			1 ---------> {0.1, 0.0, 0.0}
+			2 ---------> {0.0, 0.0, 0.0}
 		}
 	>>> example.tonumpyarray() 
 		array([[0.0, <function f at 0x120588560>, 0.0], 
-			   [0.0, 0.0, 0.0], 
-			   [0.0, 0.0, 0.0]]) 
+			[0.0, 0.0, 0.0], 
+			[0.0, 0.0, 0.0]]) 
 	""" 
 
 	def __init__(self, size): 
@@ -461,8 +463,8 @@ Got: %s""" % (type(key)))
 		>>> example = vice.migration.migration_matrix(3) 
 		>>> example.tonumpyarray() 
 			array([[0, 0, 0], 
-					[0, 0, 0], 
-					[0, 0, 0]]) 
+				[0, 0, 0], 
+				[0, 0, 0]]) 
 
 		__ numpy_ 
 		__ numpy_ 

@@ -47,6 +47,11 @@ wrapper, it preserves the internal documentation. In order to maximize
 readability, the setter functions of the C version of the wrapper have brief 
 notes on the physical interpretation of each attribute as well as the allowed 
 types and values. 
+
+While the user sees the number of star particles formed per zone per timestep 
+as 'n_stars', that value exists under the hood as 'n_tracers'. Star particles 
+are referred to in VICE's C library as tracer particles rather than star 
+particles. 
 """ 
 
 cdef class c_multizone: 
@@ -62,7 +67,7 @@ cdef class c_multizone:
 	def __cinit__(self, 
 		n_zones = 10, 
 		name = "multizonemodel", 
-		n_tracers = 1, 
+		n_stars = 1, 
 		simple = False, 
 		verbose = False): 
 
@@ -80,7 +85,7 @@ cdef class c_multizone:
 	def __init__(self, 
 		n_zones = 10, 
 		name = "multizonemodel", 
-		n_tracers = 1, 
+		n_stars = 1, 
 		simple = False, 
 		verbose = False): 
 
@@ -88,7 +93,7 @@ cdef class c_multizone:
 		assert n_zones > 0, "Internal Error" 
 		self.name = name 
 		self._migration = _migration.mig_specs(n_zones) 
-		self.n_tracers = n_tracers 
+		self.n_tracers = n_stars 
 		self.simple = simple 
 		self.verbose = verbose 
 
@@ -175,13 +180,13 @@ empty string.""")
 				if value % 1 == 0: 
 					self._mz[0].mig[0].n_tracers = <unsigned int> value 
 				else: 
-					raise ValueError("""Attribute 'n_tracers' must be \
+					raise ValueError("""Attribute 'n_stars' must be \
 interpretable as an integer. Got: %g""" % (value)) 
 			else: 
-				raise ValueError("""Attribute 'n_tracers' must be positive. \
+				raise ValueError("""Attribute 'n_stars' must be positive. \
 Got: %g""" % (value)) 
 		else: 
-			raise TypeError("""Attribute 'n_tracers' must be an integer. \
+			raise TypeError("""Attribute 'n_stars' must be an integer. \
 Got: %s""" % (type(value))) 
 
 	@property 
@@ -273,6 +278,7 @@ number of zones. Got: %d. Required: %d.""" % (value.gas.size, self.n_zones))
 			raise TypeError("""Attribute 'migration' must be of type \
 migration.specs. Got: %s""" % (type(value))) 
 
+
 	def run(self, output_times, capture = False, overwrite = False): 
 		""" 
 		See docstring in python version of this class. 
@@ -316,6 +322,7 @@ zone and at least one timestep larger than 1.""")
 		else: 
 			pass 
 
+
 	def prep(self, output_times): 
 		""" 
 		Prepares the simulation to be ran based on the current settings. 
@@ -343,8 +350,7 @@ zone and at least one timestep larger than 1.""")
 			self._mz[0].zones[i][0].output_times = copy_pylist( 
 				times)
 			self._mz[0].zones[i][0].n_outputs = len(times) 
-		# setup migration moved to after the outfile check 
-		# self.setup_migration() 
+
 
 	def outfile_check(self, overwrite): 
 		""" 
@@ -390,12 +396,14 @@ leaving only the results of the current simulation.\nOutput directory: \
 			else: 
 				return True 
 
+
 	def setup_migration(self): 
 		""" 
 		Sets up both the gas and stellar migration for simulation 
 		""" 
 		self.setup_gas_migration() 
 		self.setup_tracers() 
+
 
 	def setup_gas_migration(self): 
 		""" 
@@ -455,25 +463,21 @@ timesteps."""
 				else: 
 					raise SystemError("Internal Error") 
 
+
 	def setup_tracers(self): 
 		""" 
 		Setup the tracer zone histories according to the user's prescription 
 
-		This will call the function of initial zone number and time which 
-		they have constructed, and expect a function of time to be returned. 
-		The zone number passed to the first function is the zone number in 
-		which the tracer particle forms, and the time is the time at which it 
-		forms. The function of time returned must always return an integer, 
-		describing the zone number of the tracer particle at all subsequent 
-		times. The time is interpreted not as the age of the tracer particle, 
-		but as time in the simulation. 
+		This will call the function of initial zone number, formation time, 
+		and simulation time, and expect an int to be returned describing the 
+		zone occupation number of that tracer particle at that time. 
 		""" 
 		n = _singlezone.n_timesteps(self._mz[0].zones[0][0]) 
-		eval_times = [i * self._mz[0].zones[0][0].dt for i in range(n)] 
+		eval_times = [i * self._mz[0].zones[0][0].dt for i in range(n + 1)] 
 		x = 0 
-		takes_keyword = True  
+		takes_keyword = True 
 		try: # check for an optional keyword argument 'n' 
-			self.migration.stars(0, 0, n = 1) 
+			self.migration.stars(0, 0, 0, n = 0) 
 		except TypeError: 
 			takes_keyword = False 
 		_tracer.malloc_tracers(self._mz) 
@@ -482,37 +486,40 @@ timesteps."""
 			try: 
 				self.migration.stars.write = True 
 			except: pass 
-		for i in range(n): 		# for each timestep 
-			for j in range(self.n_zones): 		# for each zone 
+
+		for i in range(n): # for each timestep 
+			for j in range(self.n_zones): # for each zone 
 				for k in range(self.n_tracers): 
-					""" 
-					for each tracer particle forming in that zone at that 
-					time, get the zone number as a function of time 
-					""" 
-					if takes_keyword: 
-						zone_occupation = self.migration.stars(j, 
-							i * self._mz[0].zones[0][0].dt, n = k) 
-					else: 
-						zone_occupation = self.migration.stars(j, 
-							i * self._mz[0].zones[0][0].dt) 
-					# map it across all timesteps 
-					zone_history = list(map(zone_occupation, eval_times)) 
+					kwargs = {} 
+					if takes_keyword: kwargs["n"] = k 
+					zone_history = n * [j] 
 					if i < n - _singlezone.BUFFER: 
 						""" 
-						For tracer particles formed before the timestep buffer, 
-						set their zone numbers to that of the final timestep 
-						in the buffer 
+						For each timestep in the buffer, set the zone number 
+						according to the user specification at that time. 
 						""" 
-						for l in range(_singlezone.BUFFER): 
-							zone_history[-(l + 1)] = zone_history[-(
-								_singlezone.BUFFER + 1)] 
+						zone_history[i:(n - _singlezone.BUFFER)] = [
+							self.migration.stars(j, 
+								i * self._mz[0].zones[0][0].dt, 
+								l, **kwargs) for l in eval_times[i:(n - 
+									_singlezone.BUFFER)]
+						] 
+
+						""" 
+						For each timestep in the buffer, set the zone number 
+						according to the user specification at the actual 
+						final timestep. 
+						""" 
+						zone_history[-_singlezone.BUFFER:] = (
+							_singlezone.BUFFER) * [zone_history[-(
+								_singlezone.BUFFER + 1)]
+						] 
 					else: 
 						""" 
 						For those that form in the buffer, set their zone 
 						number to the zone of origin always. 
 						""" 
-						for l in range(i, n): 
-							zone_history[l] = j 
+						pass 
 
 					# error handling, then send it down to C 
 					self.check_zone_history(zone_history, i, j) 
@@ -520,12 +527,18 @@ timesteps."""
 					self.copy_zone_history(zone_history, x, i, n) 
 					x += 1 # increment tracer particle index 
 			if self.verbose: 
-				sys.stdout.write("""Setting up tracer particles. Progress: \
-%.1f%%\r""" % (100 * (i + 1) / n)) 
+				sys.stdout.write("""Setting up star particles. \
+Progress: %.1f%%\r""" % (100 * (i + 1) / n)) 
 				sys.stdout.flush() 
-			else: 
-				pass 
+			else: pass 
 		if self.verbose: sys.stdout.write("\n") 
+
+		if hasattr(self.migration.stars, "write"): 
+			# revert write attribute to False 
+			try: 
+				self.migration.stars.write = False 
+			except: pass 
+
 
 	def check_zone_history(self, zones, timestep_origin, zone_origin): 
 		""" 
@@ -557,6 +570,7 @@ self.n_zones - 1 (inclusive).""")
 its time of formation, must equal its zone of origin.""") 
 		else: 
 			pass 
+
 
 	def copy_zone_history(self, zones, idx, formation_timestep, 
 		n_timesteps): 
@@ -617,6 +631,7 @@ its time of formation, must equal its zone of origin.""")
 			for i in range(self._mz[0].mig[0].n_zones): 
 				self._zones[i].name = "%s.vice/%s" % (self.name, names[i]) 
 
+
 	def dealign_name_attributes(self): 
 		""" 
 		Removes the multizone model's name from the front of each zone's name 
@@ -624,6 +639,7 @@ its time of formation, must equal its zone of origin.""")
 		""" 
 		for i in range(self._mz[0].mig[0].n_zones): 
 			self._zones[i].name = self._zones[i].name.split('/')[-1] 
+
 
 	def align_element_attributes(self): 
 		""" 
@@ -645,6 +661,7 @@ its time of formation, must equal its zone of origin.""")
 		# Set each zone's elements to the newly determined union 
 		for i in range(self._mz[0].mig[0].n_zones): 
 			self._zones[i].elements = elements 
+
 
 	def zone_alignment_warnings(self): 
 		""" 
@@ -669,6 +686,7 @@ its time of formation, must equal its zone of origin.""")
 			"agb_model": 	[self._zones[i].agb_model for i in range(n_zones)] 
 		} 
 
+
 		def checker(key): 
 			"""
 			Detects any non-uniformity across zones and raises ScienceWarning 
@@ -683,6 +701,7 @@ artifacts.""" % (key), ScienceWarning)
 		for i in attrs.keys(): 
 			checker(i) 
 
+
 	def timestep_alignment_error(self): 
 		""" 
 		Raises a Runtime Error if the timestep size is not uniform across 
@@ -695,6 +714,7 @@ artifacts.""" % (key), ScienceWarning)
 			raise RuntimeError("Timestep size not uniform across zones.") 
 		else: 
 			pass 
+
 
 	def pickle(self): 
 		""" 
@@ -717,7 +737,7 @@ artifacts.""" % (key), ScienceWarning)
 		attrs = {
 			"name": 			self.name, 
 			"n_zones": 			self.n_zones, 
-			"n_stars": 			self.n_stars, 
+			"n_stars": 			self.n_tracers, 
 			"simple": 			self.simple, 
 			"verbose": 			self.verbose 
 		} 

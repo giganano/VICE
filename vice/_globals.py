@@ -83,7 +83,7 @@ def _DEFAULT_FUNC_(t):
 	return 9.1 
 
 
-def _DEFAULT_STELLAR_MIGRATION_(zone, tform): 
+def _DEFAULT_STELLAR_MIGRATION_(zone, tform, time): 
 	r""" 
 	The default stellar migration prescription for multizone simulations. 
 
@@ -95,37 +95,43 @@ def _DEFAULT_STELLAR_MIGRATION_(zone, tform):
 		The zone number of star formation. 
 	tform : real number 
 		The time of star formation in Gyr. 
+	time : real number 
+		Time in the simulation in Gyr. 
 
 	Returns 
 	-------
-	_ZONE_OCCUPATION_ : <function> 
-		The zone number of the star as a function of time in Gyr. By default, 
-		this returns the parameter ``zone`` at all times, corresponding to 
-		stars not migrating between zones. 
+	zone : ``int`` 
+		The zone number of formation at all times. 
 
-	.. seealso:: vice.multizone.migration.stars 
+	Notes 
+	-----
+	This function will only ever be called with time >= tform. 
+
+	.. seealso:: vice.migration.specs.stars 
 	""" 
-	def _ZONE_OCCUPATION_(time): 
-		r""" 
-		The zone number of a star that forms in the given ``zone`` number and 
-		at the given time ``tform``. 
+	return zone 
+	
+	# def _ZONE_OCCUPATION_(time): 
+	# 	r""" 
+	# 	The zone number of a star that forms in the given ``zone`` number and 
+	# 	at the given time ``tform``. 
 
-		**Signature**: _ZONE_OCCUPATION_(time) 
+	# 	**Signature**: _ZONE_OCCUPATION_(time) 
 
-		Parameters 
-		---------- 
-		time : real number 
-			Time in the simulation in Gyr. 
+	# 	Parameters 
+	# 	---------- 
+	# 	time : real number 
+	# 		Time in the simulation in Gyr. 
 
-		Returns 
-		------- 
-		zone : ``int`` 
-			The zone number of formation at all times. 
+	# 	Returns 
+	# 	------- 
+	# 	zone : ``int`` 
+	# 		The zone number of formation at all times. 
 
-		.. seealso:: vice.multizone.migration.stars 
-		""" 
-		return zone 
-	return _ZONE_OCCUPATION_ 
+	# 	.. seealso:: vice.multizone.migration.stars 
+	# 	""" 
+	# 	return zone 
+	# return _ZONE_OCCUPATION_ 
 
 
 def _VERSION_ERROR_():

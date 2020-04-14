@@ -128,6 +128,8 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 			from . import elements 
 			from . import yields 
 			from .tests import test 
+			__all__.extend(core.__all__) 
+			__all__.extend(_build_utils.__all__) 
 		except (ImportError, ModuleNotFoundError): 
 			raise ImportError("""\
 Error importing VICE. If you have attempted an alternate installation method, \
@@ -138,7 +140,4 @@ To troubleshoot your build, see VICE's source code repository at \
 https://github.com/giganano/VICE.git and click on "Troubleshoot Your Build" \
 under "Install VICE." \
 """)
-
-	__all__.extend(core.__all__)
-	__all__.extend(_build_utils.__all__)
 

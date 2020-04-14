@@ -10,8 +10,9 @@ except NameError:
 	__VICE_SETUP__ = False 
 
 if not __VICE_SETUP__: 
-	__all__ = ["multizone", "migration"] 
+	__all__ = ["multizone", "migration", "test"]  
 	from .multizone import multizone 
 	from . import migration 
+	from .tests import test 
 else: 
 	pass 
