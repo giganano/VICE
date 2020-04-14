@@ -126,6 +126,7 @@ _CONFIG_ = {
 			vice.core.dataframe.fromfile, 
 			vice.core.dataframe.history, 
 			vice.core.dataframe.tracers, 
+			vice.core.dataframe.ccsn_yield_table 
 		]  
 	}, 
 	vice.dataframe.keys: {
@@ -161,6 +162,24 @@ _CONFIG_ = {
 	vice.core.dataframe.tracers: {
 		"filename": 	"vice.core.dataframe.tracers.rst", 
 		"header": 		"vice.core.dataframe.tracers", 
+		"subs": 		[] 
+	}, 
+	vice.core.dataframe.ccsn_yield_table: {
+		"filename": 	"vice.core.dataframe.ccsn_yield_table.rst", 
+		"header": 		"vice.core.dataframe.ccsn_yield_table", 
+		"subs": 		[
+			vice.core.dataframe.ccsn_yield_table.masses, 
+			vice.core.dataframe.ccsn_yield_table.isotopes 
+		] 
+	}, 
+	vice.core.dataframe.ccsn_yield_table.masses: {
+		"filename": 	"vice.core.dataframe.ccsn_yield_table.masses.rst", 
+		"header": 		"vice.core.dataframe.ccsn_yield_table.masses", 
+		"subs": 		[] 
+	}, 
+	vice.core.dataframe.ccsn_yield_table.isotopes: {
+		"filename": 	"vice.core.dataframe.ccsn_yield_table.isotopes.rst", 
+		"header": 		"vice.core.dataframe.ccsn_yield_table.isotopes", 
 		"subs": 		[] 
 	}, 
 	vice.yields: {

@@ -835,7 +835,7 @@ ran.""" % (i, j), UserWarning)
 		Each element from each enrichment channel assigned a value of 1. These 
 		values denote the mass fraction of nucleosynthetic yields that are 
 		retained by the interstellar medium, the remainder of which is added 
-		directly to outflows. This must always be numerical values between 0 
+		directly to outflows. These must always be numerical values between 0 
 		and 1. 
 
 		Attributes 

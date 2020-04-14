@@ -40,6 +40,8 @@ if not __VICE_SETUP__:
 	__all__ = [ 
 		"agb_yield_settings", 
 		"base", 
+		"ccsn_yield_table", 
+		"channel_entrainment", 
 		"elemental_settings", 
 		"evolutionary_settings", 
 		"fromfile", 
@@ -48,13 +50,14 @@ if not __VICE_SETUP__:
 		"saved_yields", 
 		"tracers", 
 		"yield_settings", 
-		"channel_entrainment", 
 		"test" 
 	] 
 
 	from ...testing import moduletest 
 	from ._agb_yield_settings import agb_yield_settings 
 	from ._base import base 
+	from ._ccsn_yield_table import ccsn_yield_table 
+	from ._entrainment import channel_entrainment 
 	from ._elemental_settings import elemental_settings 
 	from ._evolutionary_settings import evolutionary_settings 
 	from ._fromfile import fromfile 
@@ -63,7 +66,6 @@ if not __VICE_SETUP__:
 	from ._saved_yields import saved_yields 
 	from ._tracers import tracers 
 	from ._yield_settings import yield_settings 
-	from ._entrainment import channel_entrainment 
 	from ._builtin_dataframes import * 
 	from . import tests 
 	__all__.extend(_builtin_dataframes.__all__) 

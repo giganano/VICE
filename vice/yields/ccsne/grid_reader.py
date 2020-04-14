@@ -77,10 +77,10 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, isotopic = False):
 
 	Returns 
 	-------
-	yields : dataframe 
+	yields : ``ccsn_yield_table`` [VICE ``dataframe`` derived class] 
 		A dataframe designed to hold a CCSN yield table. It can be indexed via 
 		stellar mass in :math:`M_\odot` or the isotopes of the requested 
-		element (if isotopic == ``True``). 
+		element (if ``isotopic == True``). 
 
 	Raises 
 	------
