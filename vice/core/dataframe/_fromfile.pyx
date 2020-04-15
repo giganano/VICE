@@ -35,6 +35,13 @@ cdef class fromfile(base):
 	Fromfile objects are created by various functions which read in simulation 
 	output (e.g. vice.mdf). 
 
+	Attributes 
+	----------
+	name : ``str`` 
+		The name of the file that the data was pulled from. 
+	size : ``tuple`` 
+		Contains two integers: the (length, width) of the data. 
+
 	Allowed Data Types 
 	------------------
 	* Keys 
@@ -101,7 +108,7 @@ cdef class fromfile(base):
 		}
 
 	**Signature**: vice.core.dataframe.fromfile(filename = None, 
-	adopted_solar_z = None, labels = None) 
+	labels = None, adopted_solar_z = None) 
 
 	.. warning:: Users should avoid creating new instances of derived classes 
 		of the VICE dataframe. Fromfile objects are created by various 
@@ -111,21 +118,21 @@ cdef class fromfile(base):
 	----------
 	filename : ``str`` [default : None] 
 		The name of the ascii file containing the output. 
+	list : ``list`` of strings [default : None] 
+		The strings to assign the column labels. 
 	adopted_solar_z : real number [default : None] 
 		The metallicity by mass of the sun :math:`Z_\odot` adopted in the 
 		simulation. 
-	list : ``list`` of strings [default : None] 
-		The strings to assign the column labels. 
 	""" 
 	# cdef FROMFILE *_ff 
 
-	# Extra keyword args to __cinit__ and __init__ to not break history object 
-	def __cinit__(self, filename = None, adopted_solar_z = None, 
-		labels = None): 
+	# Extra keyword arg adopted_solar_z included to not break history object 
+	def __cinit__(self, filename = None, labels = None, 
+		adopted_solar_z = None): 
 		self._ff = _fromfile.fromfile_initialize() 
 
-	def __init__(self, filename = None, adoped_solar_z = None, 
-		labels = None): 
+	def __init__(self, filename = None, labels = None, 
+		adopted_solar_z = None): 
 		super().__init__({}) 
 		if os.path.exists(filename): 
 			# Set the filename and read in the data 
@@ -251,25 +258,36 @@ Got: %s""" % (type(key)))
 		else: 
 			return False 
 
-	def __exit__(self, exc_type, exc_value, exc_tb): 
-		""" 
-		Raises all exceptions inside with statements and automatically frees 
-		memory. 
-		""" 
-		return exc_value is not None 
-
 	@property 
 	def name(self): 
-		""" 
-		The name of the file that this data was imported from 
+		r""" 
+		Type : ``str`` 
+
+		The name of the file that this data was read from. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.mdf("example") 
+		>>> example.name 
+			'example.vice/mdf.out' 
 		""" 
 		return "".join([chr(self._ff[0].name[i]) for i in range(
 			strlen(self._ff[0].name))]) 
 
 	@property 
 	def size(self): 
-		""" 
-		The (length, width) of the dataframe. 
+		r""" 
+		Type : ``tuple`` 
+
+		Contains two integers: the (length, width) of the dataframe. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.mdf("example") 
+		>>> example.size 
+			(80, 8) 
 		""" 
 		return tuple([self._ff[0].n_rows, self._ff[0].n_cols]) 
 		

@@ -30,21 +30,57 @@ from . cimport _entrainment
 
 cdef class channel_entrainment(elemental_settings): 
 
-	""" 
-	Entrainment settings for a specific enrichment channel. Every element 
-	maps to a real number between 0 and 1, representing the mass fraction of 
-	that element produced by that enrichment channel which is retained by the 
-	interstellar medium. The remainder is added directly to an outflow. 
+	r""" 
+	The VICE dataframe: derived class (inherits from elemental_settings) 
+
+	Stores entrainment fractions for each element from a given enrichment 
+	channel. These numbers denote the mass fraction of that element produced 
+	by some enrichment channel which is retained by the interstellar medium, 
+	the remainder of which is added directly to an outflow. 
+
+	Allowed Data Types 
+	------------------
+	* Keys 
+		- ``str`` [case-insensitive] : elemental symbols 
+			The symbols of the elements as they appear on the periodic table. 
+
+	* Values 
+		- real number : mass fraction 
+			The mass fraction of the element that is entrained. Must be 
+			between 0 and 1. 
+
+	Indexing 
+	--------
+	- ``str`` [case-insensitive] : elemental symbols 
+		The symbols of the elements as they appear on the periodic table. 
+
+	Functions 
+	---------
+	- keys 
+	- todict 
+
+	Example Code 
+	------------
+	>>> import vice 
+	>>> example = vice.singlezone(name = "example") 
+	>>> example.entrainment.ccsne['o'] = 0.9 
+	>>> example.entrainment.ccsne['fe'] = 0.95 
+	>>> example.entrainment.sneia['fe'] = 0.95 
+
+	**Signature**: vice.core.dataframe.entrainment(frame) 
+
+	.. warning:: Users should avoid creating new instances of derived classes 
+		of the VICE dataframe and instead use the base class. Instances of 
+		this class are created automatically by the ``singlezone`` object. 
+
+	Parameters 
+	----------
+	frame : ``dict`` 
+		A dictionary from which to construct the dataframe. 
 	""" 
 
 	def __init__(self, frame): 
-		"""
-		Parameters 
-		==========
-		frame :: dict 
-			A python dictionary to construct the dataframe from 
-		""" 
-		# super will make sure frame is a dict whose keys are of type str 
+		# error handling in super 
 		super().__init__(frame) 
 
 	def __setitem__(self, key, value): 

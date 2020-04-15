@@ -88,7 +88,8 @@ cdef class agb_yield_settings(yield_settings):
 	allow_funcs, config_field) 
 
 	.. warning:: Users should avoid creating new instances of derived classes 
-		of the VICE dataframe. 
+		of the VICE dataframe and instead use the base class. Instances of 
+		this class are created automatically. 
 
 	Parameters 
 	----------

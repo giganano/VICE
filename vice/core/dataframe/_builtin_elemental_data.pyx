@@ -71,22 +71,16 @@ cdef class builtin_elemental_data(noncustomizable):
 	.. [3] Pattie et al. (2018), Science, 360, 627 
 	.. [4] Asplund et al. (2009), ARA&A, 47, 481 
 	.. [5] Johnson (2019), Science, 363, 474 
+
+	**Signature**: vice.core.dataframe.builtin_elemental_data(frame, name) 
+
+	.. warning:: Users should avoid creating new instances of derived classes 
+		of the VICE dataframe and instead use the base class. Instances of 
+		this class are created automatically. 
 	""" 
 
 	def __init__(self, frame, name): 
-		"""
-		Parameters 
-		========== 
-		frame :: dict 
-			A python dictionary to construct the dataframe from 
-		""" 
-
-		"""
-		super will make sure frame is a dict, that all keys are recognized 
-		elements, and that name is a string 
-		"""
 		super().__init__(frame, name) 
-
 		"""
 		Instances of this class store built-in data. At present, they must be 
 		either numerical values or of type list. 

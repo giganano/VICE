@@ -123,10 +123,17 @@ _CONFIG_ = {
 			vice.dataframe.todict, 
 			vice.dataframe.remove, 
 			vice.dataframe.filter, 
+			vice.core.dataframe.agb_yield_settings, 
+			vice.core.dataframe.builtin_elemental_data, 
+			vice.core.dataframe.ccsn_yield_table, 
+			vice.core.dataframe.channel_entrainment, 
+			vice.core.dataframe.elemental_settings, 
+			vice.core.dataframe.evolutionary_settings, 
 			vice.core.dataframe.fromfile, 
+			vice.core.dataframe.noncustomizable, 
 			vice.core.dataframe.history, 
-			vice.core.dataframe.tracers, 
-			vice.core.dataframe.ccsn_yield_table 
+			vice.core.dataframe.saved_yields, 
+			vice.core.dataframe.tracers 
 		]  
 	}, 
 	vice.dataframe.keys: {
@@ -149,19 +156,14 @@ _CONFIG_ = {
 		"header": 		"vice.dataframe.filter", 
 		"subs": 		[] 
 	}, 
-	vice.core.dataframe.history: {
-		"filename": 	"vice.core.dataframe.history.rst", 
-		"header": 		"vice.core.dataframe.history", 
+	vice.core.dataframe.agb_yield_settings: {
+		"filename": 	"vice.core.dataframe.agb_yield_settings.rst", 
+		"header": 		"vice.core.dataframe.agb_yield_settings", 
 		"subs": 		[] 
 	}, 
-	vice.core.dataframe.fromfile: {
-		"filename": 	"vice.core.dataframe.fromfile.rst", 
-		"header": 		"vice.core.dataframe.fromfile", 
-		"subs": 		[] 
-	}, 
-	vice.core.dataframe.tracers: {
-		"filename": 	"vice.core.dataframe.tracers.rst", 
-		"header": 		"vice.core.dataframe.tracers", 
+	vice.core.dataframe.builtin_elemental_data: {
+		"filename": 	"vice.core.dataframe.builtin_elemental_data.rst", 
+		"header": 		"vice.core.dataframe.builtin_elemental_data", 
 		"subs": 		[] 
 	}, 
 	vice.core.dataframe.ccsn_yield_table: {
@@ -181,6 +183,65 @@ _CONFIG_ = {
 		"filename": 	"vice.core.dataframe.ccsn_yield_table.isotopes.rst", 
 		"header": 		"vice.core.dataframe.ccsn_yield_table.isotopes", 
 		"subs": 		[] 
+	}, 
+	vice.core.dataframe.channel_entrainment: {
+		"filename": 	"vice.core.dataframe.channel_entrainment.rst", 
+		"header": 		"vice.core.dataframe.channel_entrainment", 
+		"subs": 		[] 
+	}, 
+	vice.core.dataframe.elemental_settings: {
+		"filename": 	"vice.core.dataframe.elemental_settings.rst", 
+		"header": 		"vice.core.dataframe.elemental_settings", 
+		"subs": 		[] 
+	}, 
+	vice.core.dataframe.evolutionary_settings: {
+		"filename": 	"vice.core.dataframe.evolutionary_settings.rst", 
+		"header": 		"vice.core.dataframe.evolutionary_settings", 
+		"subs": 		[] 
+	}, 
+	vice.core.dataframe.fromfile: {
+		"filename": 	"vice.core.dataframe.fromfile.rst", 
+		"header": 		"vice.core.dataframe.fromfile", 
+		"subs": 		[
+			vice.core.dataframe.fromfile.name, 
+			vice.core.dataframe.fromfile.size 
+		]  
+	}, 
+	vice.core.dataframe.fromfile.name: {
+		"filename": 	"vice.core.dataframe.fromfile.name.rst", 
+		"header": 		"vice.core.dataframe.fromfile.name", 
+		"subs": 		[] 
+	}, 
+	vice.core.dataframe.fromfile.size: {
+		"filename": 	"vice.core.dataframe.fromfile.size.rst", 
+		"header": 		"vice.core.dataframe.fromfile.size", 
+		"subs": 		[] 
+	}, 
+	vice.core.dataframe.noncustomizable: {
+		"filename": 	"vice.core.dataframe.noncustomizable.rst", 
+		"header": 		"vice.core.dataframe.noncustomizable", 
+		"subs": 		[] 
+	}, 
+	vice.core.dataframe.history: {
+		"filename": 	"vice.core.dataframe.history.rst", 
+		"header": 		"vice.core.dataframe.history", 
+		"subs": 		[
+			vice.core.dataframe.history.name, 
+			vice.core.dataframe.history.size 
+		]  
+	}, 
+	vice.core.dataframe.saved_yields: {
+		"filename": 	"vice.core.dataframe.saved_yields.rst", 
+		"header": 		"vice.core.dataframe.saved_yields", 
+		"subs": 		[] 
+	}, 
+	vice.core.dataframe.tracers: {
+		"filename": 	"vice.core.dataframe.tracers.rst", 
+		"header": 		"vice.core.dataframe.tracers", 
+		"subs": 		[
+			vice.core.dataframe.tracers.name, 
+			vice.core.dataframe.tracers.size 
+		] 
 	}, 
 	vice.yields: {
 		"filename": 	"vice.yields.rst", 

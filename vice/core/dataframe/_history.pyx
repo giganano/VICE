@@ -32,6 +32,13 @@ cdef class history(fromfile):
 	interstellar medium from the output of a singlezone object. History 
 	objects can be created from VICE outputs by calling vice.history. 
 
+	Attributes 
+	----------
+	name : ``str`` 
+		The name of the file that the data was pulled from. 
+	size : ``tuple`` 
+		Contains two integers: the (length, width) of the data. 
+
 	Allowed Data Types 
 	------------------
 	* Keys 
@@ -196,8 +203,8 @@ cdef class history(fromfile):
 	# cdef double *solar 
 	# cdef double Z_solar 
 
-	def __init__(self, filename = None, adopted_solar_z = None, 
-		labels = None): 
+	def __init__(self, filename = None, labels = None, 
+		adopted_solar_z = None): 
 		super().__init__(filename = filename, labels = 
 			_output_utils._load_column_labels_from_file_header(filename)) 
 		elements = self._load_elements() 
@@ -422,5 +429,6 @@ cdef class history(fromfile):
 		keys.append("z") 
 		keys.append("[m/h]") 
 		keys.append("lookback") 
+		if "he" in elements: keys.append("y") 
 		return keys 
 

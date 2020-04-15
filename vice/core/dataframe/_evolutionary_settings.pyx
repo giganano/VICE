@@ -24,38 +24,59 @@ from . cimport _evolutionary_settings
 #---------------------- EVOOLUTIONARY SETTINGS SUBCLASS ----------------------#
 cdef class evolutionary_settings(elemental_settings): 
 
-	""" 
-	A subclass of the elemental_settings subclass which allows only numerical 
-	values and functions of time to be assigned to individual elements. 
+	r""" 
+	The VICE dataframe: derived class (inherits from elemental_settings) 
 
-	See docstring of VICE dataframe base class for more information. 
-	""" 
+	Stores simulation parameters on an element-by-element basis which may or 
+	may not vary with time. 
 
+	Allowed Data Types 
+	------------------
+	* Keys 
+		- ``str`` [case-insensitive] : elemental symbols 
+			The symbols of the elements as they appear on the periodic table. 
+
+	* Values 
+		- real number 
+			A constant which does not vary with time. 
+
+		- <function> 
+			Must accept time in Gyr as the only parameter, and return the 
+			value of this parameter at that time for a given element. 
+
+	Indexing 
+	--------
+	- ``str`` [case-insensitive] : elemental symbols 
+		The symbols of the elements as they appear on the periodic table. 
+
+	Functions 
+	---------
+	- keys 
+	- todict 
+
+	Example Code 
+	------------
+	>>> import vice 
+	>>> example = vice.singlezone(name = "example", Zin = {}) 
+	>>> example.Zin['o'] = 0.002 
+	>>> example.Zin['fe'] = lambda t: 0.001 * (t / 3) 
+
+	**Signature**: vice.core.dataframe.evolutionary_settings(frame, name) 
+
+	.. warning:: Users should avoid creating new instances of derived classes 
+		of the VICE dataframe and instead use the base class. Instances of 
+		this class are created automatically. 
+
+	Parameters 
+	----------
+	frame : ``dict`` 
+		A dictionary from which to construct the dataframe. 
+	name : ``str`` 
+		String denoting a description of the values stored in this dataframe. 
+	""" 
 	# cdef object _name
 
 	def __init__(self, frame, name): 
-		""" 
-		Parameters 
-		========== 
-		frame :: dict 
-			A python dictionary to construct the dataframe from 
-		""" 
-		"""
-		(The above docstring is entered purely to keep the __init__ docstring 
-		consistent across subclasses and instances of the VICE dataframe. 
-		Below is the actual docstring for this function.) 
-
-		super() will make sure that frame is a dict with keys of type str that 
-		are recognized elements 
-
-		Parameters 
-		========== 
-		frame :: dict 
-			A python dictionary to construct the dataframe from 
-		name :: str 
-			A string denoting the name of the objects stored as fields in 
-			this dataframe (i.e. infall metallicity.) 
-		""" 
 		super().__init__(frame) 
 		if isinstance(name, strcomp): 
 			self._name = name 

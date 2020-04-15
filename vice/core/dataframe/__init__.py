@@ -40,6 +40,7 @@ if not __VICE_SETUP__:
 	__all__ = [ 
 		"agb_yield_settings", 
 		"base", 
+		"builtin_elemental_data", 
 		"ccsn_yield_table", 
 		"channel_entrainment", 
 		"elemental_settings", 
@@ -56,6 +57,7 @@ if not __VICE_SETUP__:
 	from ...testing import moduletest 
 	from ._agb_yield_settings import agb_yield_settings 
 	from ._base import base 
+	from ._builtin_elemental_data import builtin_elemental_data 
 	from ._ccsn_yield_table import ccsn_yield_table 
 	from ._entrainment import channel_entrainment 
 	from ._elemental_settings import elemental_settings 

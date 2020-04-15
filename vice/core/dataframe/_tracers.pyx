@@ -27,6 +27,13 @@ cdef class tracers(history):
 	multizone simulation. Tracers objects can be created from VICE outputs 
 	by calling vice.stars. 
 
+	Attributes 
+	----------
+	name : ``str`` 
+		The name of the file that the data was pulled from. 
+	size : ``tuple`` 
+		Contains two integers: the (length, width) of the data. 
+
 	Allowed Data Types 
 	------------------
 	* Keys 
@@ -240,6 +247,10 @@ cdef class tracers(history):
 			raise SystemError("Internal Error") 
 
 	def __subget__str_age(self, key): 
+		""" 
+		Performs the __getitem__ operation when the key is of type str and is 
+		requesting the age of the star particles. 
+		""" 
 		cdef double *item 
 		item = _tracers.tracers_age(self._ff) 
 		if item is not NULL: 
@@ -250,6 +261,10 @@ cdef class tracers(history):
 			raise SystemError("Internal Error") 
 
 	def __subget__str_logzratio(self, key): 
+		""" 
+		Performs the __getitem__ operation when the key is of type str and is 
+		requesting an abundance ratio [x/Y]. 
+		""" 
 		cdef double *item 
 		cdef char *copy 
 		cdef char *copy2 
@@ -336,5 +351,6 @@ cdef class tracers(history):
 		labels.append("z") 
 		labels.append("[m/h]") 
 		labels.append("age") 
+		if "he" in elements: labels.append("y") 
 		return labels 
 

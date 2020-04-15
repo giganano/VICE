@@ -45,7 +45,7 @@ cdef class base:
 	Allowed Data Types 
 	------------------
 	* Keys 
-		- 	``str`` [case-insensitive] : column label 
+		- ``str`` [case-insensitive] : column label 
 			A label given to the stored quantity (or list/array thereof). 
 
 	* Values 

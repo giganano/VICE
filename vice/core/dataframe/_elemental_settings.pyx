@@ -22,20 +22,54 @@ from . cimport _elemental_settings
 #---------------------------- ELEMENTAL SETTINGS ----------------------------# 
 cdef class elemental_settings(base): 
 
-	""" 
-	A subclass of the VICE dataframe which only allows keys that are the 
-	symbols of elements built into VICE [case-insensitive]. 
+	r""" 
+	The VICE dataframe: derived class (inherits from base) 
 
-	See docstring of VICE dataframe base class for more information. 
+	Stores data on an element-by-element basis. 
+
+	Allowed Data Types 
+	------------------
+	* Keys 
+		- ``str`` [case-insensitive] : elemental symbol 
+			The symbol of a chemical element as it appears on the periodic 
+			table. 
+
+	* Values 
+		- All 
+
+	Indexing 
+	--------
+	- ``str`` [case-insensitive] : elemental symbol 
+		The symbol of a chemical element as it appears on the periodic table. 
+
+	Functions 
+	---------
+	- keys 
+	- todict 
+
+	Example Code 
+	------------
+	>>> import vice 
+	>>> vice.yields.ccsne.settings['o'] = 0.01 
+	>>> vice.yields.ccsne.settings['fe'] = 0.0012 
+	>>> vice.yields.sneia.settings['o'] = 0.0 
+	>>> vice.yields.sneia.settings['fe'] = 0.0017 
+
+	**Signature**: vice.core.dataframe.elemental_settings(frame) 
+
+	.. warning:: Users should avoid creating new instances of derived classes 
+		of the VICE dataframe and instead use the base class. Instances of 
+		this class are created automatically. 
+
+	Parameters 
+	----------
+	frame : ``dict`` 
+		A dictionary from which to construct the dataframe. 
+	name : ``str`` 
+		String denoting a description of the values stored in this dataframe. 
 	""" 
 
 	def __init__(self, frame): 
-		"""
-		Parameters 
-		==========
-		frame :: dict 
-			A python dictionary to construct the dataframe from 
-		""" 
 		# super will make sure frame is a dict whose keys are of type str 
 		super().__init__(frame) 
 
@@ -70,8 +104,6 @@ cdef class elemental_settings(base):
 		""" 
 		This function throws a TypeError whenever called. This derived class 
 		of the VICE dataframe does not support filtering. 
-
-		.. seealso:: vice.dataframe.filter 
 		""" 
 		raise TypeError("This dataframe does not support the filter function.") 
 

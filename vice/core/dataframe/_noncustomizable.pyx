@@ -21,27 +21,56 @@ from . cimport _noncustomizable
 #-------------------- NONCUSTOMIZABLE DATAFRAME SUBCLASS --------------------#
 cdef class noncustomizable(elemental_settings): 
 
-	""" 
-	A subclass of the elemental_settings subclass which throws a TypeError 
-	whenever __setitem__ is called. 
+	r""" 
+	The VICE dataframe: derived class (inherits from elemental_settings) 
 
-	See docstring of VICE dataframe base class for more information. 
-	""" 
+	Stores data on an element-by-element basis that is not modifiable by the 
+	user. 
 
+	Allowed Data Types 
+	------------------
+	* Keys 
+		- ``str`` [case-insensitive] : elemental symbol 
+			The symbol of a chemical element as it appears on the periodic 
+			table. 
+
+	* Values 
+		- All 
+
+	Indexing 
+	--------
+	- ``str`` [case-insensitive] : elemental symbol 
+		The symbol of a chemical element as it appears on the periodic table. 
+
+	Functions 
+	---------
+	- keys 
+	- todict 
+
+	Example Code 
+	------------
+	>>> import vice 
+	>>> vice.atomic_number['c'] 
+		6 
+	>>> vice.solar_z['c'] 
+		0.00236 
+
+	**Signature**: vice.core.dataframe.noncustomizable(frame) 
+
+	.. warning:: Users should avoid creating new instances of derived classes 
+		of the VICE dataframe and instead use the base class. Instances of 
+		this class are created automatically. 
+
+	Parameters 
+	----------
+	frame : ``dict`` 
+		A dictionary from which to construct the dataframe. 
+	name : ``str`` 
+		String denoting a description of the values stored in this dataframe. 
+	""" 
 	# cdef object _name 
 
 	def __init__(self, frame, name): 
-		"""
-		Parameters 
-		========== 
-		frame :: dict 
-			A python dictionary to construct the dataframe from 
-		""" 
-
-		"""
-		super will make sure frame is a dict and that all keys are recognized 
-		elements. 
-		"""
 		super().__init__(frame) 
 		if isinstance(name, strcomp): 
 			self._name = name 
