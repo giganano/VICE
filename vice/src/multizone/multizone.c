@@ -163,6 +163,7 @@ static void multizone_evolve_full(MULTIZONE *mz) {
 		if (multizone_timestepper(mz)) break; 
 		verbosity(*mz); 
 	} 
+	verbosity(*mz); 
 	inject_tracers(mz); 
 	write_multizone_history(*mz); 
 	if ((*mz).verbose) printf("\n"); 
