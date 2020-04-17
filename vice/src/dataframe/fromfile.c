@@ -11,9 +11,6 @@
 #include "fromfile.h" 
 #include "utils.h" 
 
-/* ---------- static function comment headers not duplicated here ---------- */
-// static int fromfile_column_number(FROMFILE *ff, char *label); 
-
 
 /* 
  * Read in the data in a file into the fromfile object 
@@ -176,28 +173,6 @@ extern unsigned short fromfile_new_column(FROMFILE *ff, char *label,
 	} 
 
 }
-
-
-#if 0 
-/* 
- * Obtain the column number of a given label in the data. Used for keying the 
- * data from a VICE dataframe wrapper. 
- * 
- * Parameters 
- * ========== 
- * ff: 		The fromfile object itself 
- * label: 	The label to key on 
- */ 
-static int fromfile_column_number(FROMFILE *ff, char *label) {
-
-	unsigned int i; 
-	for (i = 0; i < (*ff).n_cols; i++) { 
-		if (!strcmp((*ff).labels[i], label)) return (signed) i; 
-	} 
-	return -1; 
-
-} 
-#endif 
 
 
 /* 

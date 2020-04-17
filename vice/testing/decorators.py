@@ -24,8 +24,11 @@ def moduletest(function):
 			print(function) 
 			raise 
 		test = _moduletest(description) 
-		for i in unittests: 
-			test.new(i) 
+		if unittests is None: 
+			test.new(skip_dummy(description)) 
+		else:  
+			for i in unittests: 
+				test.new(i) 
 		if run: 
 			test.run(print_results = True) 
 		else: 
@@ -47,4 +50,15 @@ def unittest(function):
 		description, testfunc = function(*args) 
 		return _unittest(description, testfunc) 
 	return wrapper 
+
+
+
+@unittest 
+def skip_dummy(description): 
+	r""" 
+	Produces a skip message for a module test 
+	""" 
+	def test(): 
+		return None 
+	return [description, test] 
 

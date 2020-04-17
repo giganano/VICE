@@ -16,5 +16,6 @@ print_message:
 clean: 
 	@ echo Cleaning vice/src/singlezone/tests/ 
 	@ rm -f *.o 
+	@ rm -f _singlezone.c 
 	@ rm -rf __pycache__ 
 

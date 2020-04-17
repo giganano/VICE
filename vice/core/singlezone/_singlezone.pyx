@@ -834,8 +834,8 @@ Got: %s""" % (type(value)))
 		if isinstance(value, numbers.Number): 
 			if value >= 0: 
 				self._Mg0 = float(value) 
-				# avoid ZeroDivisionError 
-				if self._Mg0 == 0: self._Mg0 += 1e-12 
+				# avoid ZeroDivisionError, enforce floor 
+				if self._Mg0 <= 1e-12: self._Mg0 = 1e-12 
 			else: 
 				raise ValueError("""Attribute 'Mg0' must be non-negative. \
 Got: %s""" % (value)) 

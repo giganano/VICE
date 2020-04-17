@@ -5,22 +5,70 @@ __all__ = [
 	"singlezone_tester" 
 ] 
 from ...._globals import _DEFAULT_FUNC_ 
+from ....testing import moduletest 
 from ....testing import unittest 
 from ...dataframe import base as dataframe 
 from ....yields import agb 
 from ....yields import ccsne 
 from ....yields import sneia 
 import os 
+
+from libc.string cimport strcmp 
 from . cimport _singlezone 
+
+
+@moduletest 
+def test(): 
+	r""" 
+	vice.core.singlezone module test 
+	""" 
+	try: 
+		_TEST_ = singlezone_tester() 
+	except: 
+		return ["vice.core.singlezone", None] 
+	return ["vice.core.singlezone", 
+		[ 
+			_TEST_.test_name_setter(), 
+			_TEST_.test_func_setter(), 
+			_TEST_.test_mode_setter(), 
+			_TEST_.test_verbose_setter(), 
+			_TEST_.test_elements_setter(), 
+			_TEST_.test_imf_setter(), 
+			_TEST_.test_eta_setter(), 
+			_TEST_.test_enhancement_setter(), 
+			_TEST_.test_entrainment(), 
+			_TEST_.test_zin_setter(), 
+			_TEST_.test_recycling_setter(), 
+			_TEST_.test_bins_setter(), 
+			_TEST_.test_delay_setter(), 
+			_TEST_.test_ria_setter(), 
+			_TEST_.test_mg0_setter(), 
+			_TEST_.test_smoothing_setter(), 
+			_TEST_.test_tau_ia_setter(), 
+			_TEST_.test_tau_star_setter(), 
+			_TEST_.test_dt_setter(), 
+			_TEST_.test_schmidt_setter(), 
+			_TEST_.test_mgschmidt_setter(), 
+			_TEST_.test_m_upper_setter(), 
+			_TEST_.test_m_lower_setter(), 
+			_TEST_.test_postMS_setter(), 
+			_TEST_.test_z_solar_setter(), 
+			_TEST_.test_prep(), 
+			_TEST_.test_output_times_check(), 
+			_TEST_.test_open_output_dir(), 
+			_TEST_.test_setup_elements(), 
+			_TEST_.test_set_ria(), 
+			_TEST_.test_setup_Zin(), 
+			_TEST_.test_pickle() 
+		]
+	] 
 
 
 cdef class singlezone_tester: 
 
-	""" 
-	This class inherits from the singlezone object at 
-	vice/core/singlezone/_singlezone.pyx, and each function here simply 
-	tests one of the functions under the hood denoted by the names of each 
-	function. 
+	r""" 
+	The c_singlezone class is subclassed here to give these routines access to 
+	the SINGLEZONE *_sz attribute. 
 	""" 
 
 	def __init__(self): 
@@ -41,7 +89,7 @@ cdef class singlezone_tester:
 				self.name = "test" 
 			except: 
 				return False 
-			return self.name == "test" 
+			return not strcmp(self._sz[0].name, "test.vice") 
 		return ["vice.core.singlezone.name.setter", test] 
 
 
@@ -78,9 +126,20 @@ cdef class singlezone_tester:
 			""" 
 			try: 
 				self.mode = "gas" 
+				assert not strcmp(self._sz[0].ism[0].mode, "gas") 
 			except: 
 				return False 
-			return self.mode == "gas" 
+			try: 
+				self.mode = "ifr" 
+				assert not strcmp(self._sz[0].ism[0].mode, "ifr") 
+			except: 
+				return False 
+			try: 
+				self.mode = "sfr" 
+				assert not strcmp(self._sz[0].ism[0].mode, "sfr") 
+			except: 
+				return False 
+			return True 
 		return ["vice.core.singlezone.mode.setter", test] 
 
 
@@ -116,7 +175,18 @@ cdef class singlezone_tester:
 				self.elements = ["c", "n", "o"] 
 			except: 
 				return False 
-			return len(self.elements) == 3 and self.elements == ("c", "n", "o") 
+			status = (self._sz[0].n_elements == 3 and 
+				self.elements == ('c', 'n', 'o'))
+			if status: 
+				for i in range(3): 
+					if status: 
+						status = not strcmp(self._sz[0].elements[i][0].symbol, 
+							self.elements[i].encode())  
+					else: 
+						break 
+			else: pass 
+			return status 
+			# return len(self.elements) == 3 and self.elements == ("c", "n", "o") 
 		return ["vice.core.singlezone.elements.setter", test] 
 
 
@@ -241,12 +311,17 @@ cdef class singlezone_tester:
 			""" 
 			try: 
 				self.recycling = 0.4 
-				x = self.recycling == 0.4 
-				self.recycling = "continuous" 
-				y = self.recycling == "continuous" 
+				assert self._sz[0].ssp[0].R0 == 0.4 
+				assert self._sz[0].ssp[0].continuous == 0 
 			except: 
 				return False 
-			return x and y 
+			try: 
+				self.recycling = "continuous" 
+				assert self._sz[0].ssp[0].R0 == 0.0 
+				assert self._sz[0].ssp[0].continuous == 1 
+			except: 
+				return False 
+			return True 
 		return ["vice.core.singlezone.recycling.setter", test] 
 
 
@@ -262,9 +337,12 @@ cdef class singlezone_tester:
 			""" 
 			try: 
 				self.bins = [-3 + 0.01 * i for i in range(401)] 
+				assert self._sz[0].mdf[0].n_bins == 400 
+				for i in range(self._sz[0].mdf[0].n_bins + 1): 
+					assert self._sz[0].mdf[0].bins[i] == -3 + 0.01 * i 
 			except: 
 				return False 
-			return len(self.bins) == 401 and self.bins == sorted(self.bins) 
+			return True 
 		return ["vice.core.singlezone.bins.setter", test] 
 
 
@@ -280,9 +358,11 @@ cdef class singlezone_tester:
 			""" 
 			try: 
 				self.delay = 0.1 
+				for i in range(self._sz[0].n_elements): 
+					assert self._sz[0].elements[i][0].sneia_yields[0].t_d == 0.1 
 			except: 
 				return False 
-			return self.delay == 0.1 
+			return True 
 		return ["vice.core.singlezone.delay.setter", test] 
 
 
@@ -321,10 +401,13 @@ cdef class singlezone_tester:
 			1 on success, 0 on failure 
 			""" 
 			try: 
+				self.Mg0 = 10 
+				assert self._Mg0 == 10 
 				self.Mg0 = 0 
+				assert self._Mg0 == 1e-12 
 			except: 
 				return False 
-			return self.Mg0 == 1e-12 
+			return True 
 		return ["vice.core.singlezone.Mg0.setter", test] 
 
 
@@ -340,9 +423,10 @@ cdef class singlezone_tester:
 			""" 
 			try: 
 				self.smoothing = 1 
+				assert self._sz[0].ism[0].smoothing_time == 1 
 			except: 
 				return False 
-			return self.smoothing == 1 
+			return True 
 		return ["vice.core.singlezone.smoothing.setter", test] 
 
 
@@ -358,9 +442,13 @@ cdef class singlezone_tester:
 			""" 
 			try: 
 				self.tau_ia = 1.0 
+				for i in range(self._sz[0].n_elements): 
+					assert (
+						self._sz[0].elements[i][0].sneia_yields[0].tau_ia == 1.0 
+					)
 			except: 
 				return False 
-			return self.tau_ia == 1 
+			return True 
 		return ["vice.core.singlezone.tau_ia.setter", test] 
 
 
@@ -398,9 +486,10 @@ cdef class singlezone_tester:
 			""" 
 			try: 
 				self.dt = 0.05 
+				assert self._sz[0].dt == 0.05 
 			except: 
 				return False 
-			return self.dt == 0.05 
+			return True 
 		return ["vice.core.singlezone.dt.setter", test] 
 
 
@@ -416,9 +505,12 @@ cdef class singlezone_tester:
 			""" 
 			try: 
 				self.schmidt = True 
-				return self.schmidt 
+				assert self._sz[0].ism[0].schmidt == 1 
+				self.schmidt = False 
+				assert self._sz[0].ism[0].schmidt == 0 
 			except: 
 				return False 
+			return True 
 		return ["vice.core.singlezone.schmidt.setter", test] 
 
 
@@ -434,9 +526,10 @@ cdef class singlezone_tester:
 			""" 
 			try: 
 				self.MgSchmidt = 5.e9 
+				assert self._sz[0].ism[0].mgschmidt == 5.e9 
 			except: 
 				return False 
-			return self.MgSchmidt == 5.e9 
+			return True 
 		return ["vice.core.singlezone.MgSchmidt.setter", test] 
 
 
@@ -452,9 +545,10 @@ cdef class singlezone_tester:
 			""" 
 			try: 
 				self.m_upper = 101 
+				assert self._sz[0].ssp[0].imf[0].m_upper == 101 
 			except: 
 				return False 
-			return self.m_upper == 101 
+			return True 
 		return ["vice.core.singlezone.m_upper.setter", test] 
 
 
@@ -470,9 +564,10 @@ cdef class singlezone_tester:
 			""" 
 			try: 
 				self.m_lower = 0.1 
+				assert self._sz[0].ssp[0].imf[0].m_lower == 0.1 
 			except: 
 				return False 
-			return self.m_lower == 0.1 
+			return True 
 		return ["vice.core.singlezone.m_lower.setter", test] 
 
 
@@ -488,9 +583,10 @@ cdef class singlezone_tester:
 			""" 
 			try: 
 				self.postMS = 0.15 
+				assert self._sz[0].ssp[0].postMS == 0.15 
 			except: 
 				return False 
-			return self.postMS == 0.15 
+			return True 
 		return ["vice.core.singlezone.postMS.setter", test] 
 
 
@@ -506,9 +602,10 @@ cdef class singlezone_tester:
 			""" 
 			try: 
 				self.Z_solar = 0.013 
+				assert self._sz[0].Z_solar == 0.013 
 			except: 
 				return False 
-			return self.Z_solar == 0.013 
+			return True 
 		return ["vice.core.singlezone.Z_solar.setter", test] 
 
 
@@ -645,6 +742,7 @@ cdef class singlezone_tester:
 				for i in range(self._sz[0].n_elements): 
 					if <void *> e[i][0].sneia_yields[0].RIa is NULL: 
 						x = False 
+						break 
 					else: 
 						pass 
 				self.RIa = "plaw" 

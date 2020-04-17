@@ -385,8 +385,8 @@ extern double singlezone_stellar_mass(SINGLEZONE sz) {
 	unsigned long i; 
 	double mass = 0; 
 	for (i = 0l; i < sz.timestep; i++) {
-		mass += ((*sz.ism).star_formation_history[sz.timestep - i] * sz.dt * 
-			(1 - (*sz.ssp).crf[i])); 
+		mass += ((*sz.ism).star_formation_history[sz.timestep - i - 1l] * 
+			sz.dt * (1 - (*sz.ssp).crf[i + 1l])); 
 	} 
 	return mass; 
 
