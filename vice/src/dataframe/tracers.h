@@ -40,6 +40,7 @@ extern double *tracers_row(FROMFILE *ff, unsigned long row, char **elements,
  * ========== 
  * ff: 			The fromfile object holding the tracers data 
  * n_elements: 	The number of elements with recorded data 
+ * elements: 	The symbols of the chemical elements in the output 
  * 
  * Returns 
  * ======= 
@@ -47,7 +48,8 @@ extern double *tracers_row(FROMFILE *ff, unsigned long row, char **elements,
  * 
  * source: tracers.c 
  */ 
-extern unsigned int tracers_row_length(FROMFILE *ff, unsigned int n_elements); 
+extern unsigned int tracers_row_length(FROMFILE *ff, unsigned int n_elements, 
+	char **elements); 
 
 #ifdef __cplusplus 
 } 

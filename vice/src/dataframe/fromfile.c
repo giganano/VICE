@@ -9,9 +9,10 @@
 #include "../dataframe.h" 
 #include "../io.h" 
 #include "fromfile.h" 
+#include "utils.h" 
 
 /* ---------- static function comment headers not duplicated here ---------- */
-static int fromfile_column_number(FROMFILE *ff, char *label); 
+// static int fromfile_column_number(FROMFILE *ff, char *label); 
 
 
 /* 
@@ -73,7 +74,7 @@ extern unsigned short fromfile_read(FROMFILE *ff) {
  */ 
 extern double *fromfile_column(FROMFILE *ff, char *label) {
 
-	int col = fromfile_column_number(ff, label); 
+	int col = column_number(ff, label); 
 	unsigned long i; 
 	double *column; 
 
@@ -113,7 +114,7 @@ extern double *fromfile_column(FROMFILE *ff, char *label) {
 extern unsigned short fromfile_modify_column(FROMFILE *ff, char *label, 
 	double *arr) {
 
-	int column = fromfile_column_number(ff, label); 
+	int column = column_number(ff, label); 
 	unsigned long i; 
 
 	switch (column) {
@@ -152,7 +153,7 @@ extern unsigned short fromfile_new_column(FROMFILE *ff, char *label,
 	double *arr) {
 
 	unsigned long i; 
-	switch (fromfile_column_number(ff, label)) {
+	switch (column_number(ff, label)) {
 
 		case -1: 
 			/* Only assigned the new column if the label isn't recognized */ 
@@ -177,6 +178,7 @@ extern unsigned short fromfile_new_column(FROMFILE *ff, char *label,
 }
 
 
+#if 0 
 /* 
  * Obtain the column number of a given label in the data. Used for keying the 
  * data from a VICE dataframe wrapper. 
@@ -195,6 +197,7 @@ static int fromfile_column_number(FROMFILE *ff, char *label) {
 	return -1; 
 
 } 
+#endif 
 
 
 /* 

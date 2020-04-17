@@ -41,7 +41,7 @@ extern double *history_row(FROMFILE *ff, unsigned long row, char **elements,
 
 	/* Allowed range of row number */ 
 	if (row >= (*ff).n_rows) return NULL; 
-	unsigned int length = history_row_length(ff, n_elements); 
+	unsigned int length = history_row_length(ff, n_elements, elements); 
 
 	/* Pull the columns already there and resize */ 
 	double *data = fromfile_row(ff, row); 
@@ -57,6 +57,7 @@ extern double *history_row(FROMFILE *ff, unsigned long row, char **elements,
 		double *Z = history_Z_element(ff, elements[i]); 
 		if (Z != NULL) {
 			data[n] = Z[row]; 
+			if (!strcmp(elements[i], "he")) data[length - 1u] = Z[row]; 
 			free(Z); 
 			n++; 
 		} else {
@@ -112,7 +113,7 @@ extern double *history_row(FROMFILE *ff, unsigned long row, char **elements,
 	double *MonH = history_logarithmic_scaled(ff, n_elements, elements, solar); 
 	if (MonH != NULL) {
 		data[n] = MonH[row]; 
-		free(scaled); 
+		free(MonH); 
 		n++; 
 	} else {
 		free(data); 
@@ -141,6 +142,7 @@ extern double *history_row(FROMFILE *ff, unsigned long row, char **elements,
  * ========== 
  * ff: 				A pointer to the fromfile object 
  * n_elements: 		The number of elements in the output 
+ * elements: 		The symbols of the chemical elements in the output 
  * 
  * Returns 
  * ======= 
@@ -148,14 +150,25 @@ extern double *history_row(FROMFILE *ff, unsigned long row, char **elements,
  * 
  * header: history.h 
  */ 
-extern unsigned int history_row_length(FROMFILE *ff, unsigned int n_elements) {
+extern unsigned int history_row_length(FROMFILE *ff, unsigned int n_elements, 
+	char **elements) {
 
 	/* 
 	 * One for each column already there, another two for each z(x) and [x/h] 
 	 * measurement, then n choose 2 cross combinations of [X/Y] abundance 
-	 * ratios, and one each for Z and [M/H] 
+	 * ratios, one each for Z and [M/H], and potentially one for Y. 
 	 */ 
-	return 3u + (*ff).n_cols + (2u * n_elements) + choose(n_elements, 2ul); 
+
+	unsigned short i, has_helium = 0u; 
+	for (i = 0ul; i < n_elements; i++) {
+		if (!strcmp(elements[i], "he")) {
+			has_helium = 1u; 
+			break; 
+		} else {} 
+	} 
+
+	return has_helium + 3u + (*ff).n_cols + (2u * n_elements) + choose(
+		n_elements, 2ul); 
 
 } 
 

@@ -41,6 +41,7 @@ extern double *history_row(FROMFILE *ff, unsigned long row, char **elements,
  * ========== 
  * ff: 				A pointer to the fromfile object 
  * n_elements: 		The number of elements in the output 
+  * elements: 		The symbols of the chemical elements in the output 
  * 
  * Returns 
  * ======= 
@@ -48,7 +49,8 @@ extern double *history_row(FROMFILE *ff, unsigned long row, char **elements,
  * 
  * source: history.c 
  */ 
-extern unsigned int history_row_length(FROMFILE *ff, unsigned int n_elements); 
+extern unsigned int history_row_length(FROMFILE *ff, unsigned int n_elements, 
+	char **elements); 
 
 #ifdef __cplusplus 
 } 

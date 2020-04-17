@@ -6,7 +6,7 @@ from ....testing import unittest
 from .._fromfile import fromfile 
 from .._base import base 
 from ...singlezone import singlezone 
-import os 
+import numbers 
 
 
 @moduletest 
@@ -59,8 +59,11 @@ def test_getitem():
 		try: 
 			for i in keys: 
 				assert isinstance(_TEST_[i], list) 
-			for i in range(len(_TEST_[keys[0]])): 
-				assert isinstance(_TEST_[i], base)
+			for i in range(_TEST_.size[0]): 
+				assert isinstance(_TEST_[i], base) 
+				assert _TEST_[i].keys() == _TEST_.keys() 
+				assert all(map(lambda x: isinstance(x, numbers.Number), 
+					[_TEST_[i][j] for j in keys])) 
 		except: 
 			return False 
 		return True 

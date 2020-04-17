@@ -67,3 +67,30 @@ extern double Zsolar_by_element(double *solar, unsigned int n_elements,
 }
 
 
+/* 
+ * Obtain the column number of a given label in the data. Used for keying the 
+ * data from a VICE dataframe wrapper. 
+ * 
+ * Parameters 
+ * ==========
+ * ff: 		The fromfile object itself 
+ * label: 	The label to key on 
+ * 
+ * Returns 
+ * =======
+ * The column number corresponding to the label. -1 if not found in the 
+ * dataframe. 
+ * 
+ * header: utils.h 
+ */ 
+extern int column_number(FROMFILE *ff, char *label) { 
+
+	unsigned int i; 
+	for (i = 0u; i < (*ff).n_cols; i++) {
+		if (!strcmp((*ff).labels[i], label)) return (signed) i; 
+	} 
+	return -1; 
+
+}
+
+

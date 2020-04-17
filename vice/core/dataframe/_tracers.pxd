@@ -8,7 +8,8 @@ from ._fromfile cimport FROMFILE
 cdef extern from "../../src/dataframe/tracers.h": 
 	double *tracers_row(FROMFILE *ff, unsigned long row, char **elements, 
 		unsigned int n_elements, double *solar, double Z_solar)  
-	unsigned int tracers_row_length(FROMFILE *ff, unsigned int n_elements)  
+	unsigned int tracers_row_length(FROMFILE *ff, unsigned int n_elements, 
+		char **elements)  
 	double *tracers_age(FROMFILE *ff) 
 	double *tracers_Z_element(FROMFILE *ff, char *element) 
 	double *tracers_logarithmic_abundance_ratio(FROMFILE *ff, char *element1, 

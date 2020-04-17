@@ -4,6 +4,12 @@ __all__ = ["test"]
 from ...._globals import _VERSION_ERROR_ 
 from ....testing import moduletest 
 from ....testing import unittest 
+from ....src.dataframe.tests.calclookback import calclookback_history 
+from ....src.dataframe.tests.calclogz import logzscaled_history 
+from ....src.dataframe.tests.calclogz import calclogz_history 
+from ....src.dataframe.tests.history import test_history_row 
+from ....src.dataframe.tests.calcz import zscaled_history 
+from ....src.dataframe.tests.calcz import calcz_history 
 from ...dataframe._builtin_dataframes import solar_z 
 from ...singlezone import singlezone 
 from .._history import history 
@@ -28,8 +34,8 @@ def test():
 	return ["vice.core.dataframe.history", 
 		[ 
 			test_initialize(), 
-			test_getitem(), 
-			test_keys() 
+			test_keys(), 
+			test_getitem(run = False) 
 		] 
 	] 
 
@@ -54,9 +60,43 @@ def test_initialize():
 
 
 @unittest 
+def test_keys(): 
+	r""" 
+	vice.core.dataframe.history.keys unit test 
+	""" 
+	def test(): 
+		try: 
+			assert isinstance(_TEST_.keys(), list) 
+			assert all(map(lambda x: isinstance(x, strcomp), _TEST_.keys())) 
+			[_TEST_.__getitem__(i) for i in _TEST_.keys()] 
+		except: 
+			return False 
+		return True 
+	return ["vice.core.dataframe.history.keys", test] 
+
+
+@moduletest 
 def test_getitem(): 
 	r""" 
-	vice.core.dataframe.history.__getitem__ unit test 
+	vice.core.dataframe.history.__getitem__ module test 
+	""" 
+	return ["vice.core.dataframe.history.__getitem__", 
+		[
+			test_getitem_builtins(),
+			calcz_history(), 
+			zscaled_history(), 
+			calclogz_history(), 
+			logzscaled_history(), 
+			calclookback_history(), 
+			test_history_row()  
+		] 
+	] 
+
+
+@unittest 
+def test_getitem_builtins(): 
+	r""" 
+	vice.core.dataframe.history.__getitem__.builtins unit test 
 	""" 
 	def test(): 
 		r""" 
@@ -86,68 +126,8 @@ def test_getitem():
 				assert all(map(lambda x: isinstance(x, numbers.Number), 
 					_TEST_["mass(%s)" % (i)])) 
 				assert all(map(lambda x: x >= 0, _TEST_["mass(%s)" % (i)])) 
-				assert isinstance(_TEST_["z(%s)" % (i)], list) 
-				assert all(map(lambda x: isinstance(x, numbers.Number), 
-					_TEST_["z(%s)" % (i)])) 
-				assert all(map(lambda x, y, z: abs(x - y / z) < 1e-7, 
-					_TEST_["z(%s)" % (i)], _TEST_["mass(%s)" % (i)], 
-					_TEST_["mgas"] 
-				))
-				assert isinstance(_TEST_["[%s/h]" % (i)], list) 
-				assert all(map(lambda x: isinstance(x, numbers.Number), 
-					_TEST_["[%s/h]" % (i)])) 
-				assert all(map(lambda x, y: 
-					abs(x - m.log10(y / solar_z[i])) < 1e-7, 
-					_TEST_["[%s/h]" % (i)][1:], _TEST_["z(%s)" % (i)][1:])) 
-				for j in _ELEMENTS_: 
-					assert isinstance(_TEST_["[%s/%s]" % (i, j)], list) 
-					assert all(map(lambda x: isinstance(x, numbers.Number), 
-						_TEST_["[%s/%s]" % (i, j)])) 
-					assert all(map(lambda x, y, z: abs(x - (y - z)) < 1e-7, 
-						_TEST_["[%s/%s]" % (i, j)][1:], 
-						_TEST_["[%s/h]" % (i)][1:], 
-						_TEST_["[%s/h]" % (j)][1:])) 
-			assert isinstance(_TEST_["lookback"], list) 
-			assert all(map(lambda x: isinstance(x, numbers.Number), 
-				_TEST_["lookback"])) 
-			assert all(map(lambda x, y: 
-				abs(x - (max(_TEST_["time"]) - y)) < 1e-7, 
-				_TEST_["lookback"], _TEST_["time"])) 
-			assert isinstance(_TEST_["z"], list) 
-			assert all(map(lambda x: isinstance(x, numbers.Number), 
-				_TEST_["z"])) 
-			for i in range(len(_TEST_["z"])): 
-				assert abs(_TEST_["z"][i] - 0.014 * sum(
-					[_TEST_["z(%s)" % (j)][i] for j in _ELEMENTS_]) / sum(
-					[solar_z[j] for j in _ELEMENTS_])) < 1e-7 
-			assert isinstance(_TEST_["[m/h]"], list) 
-			assert all(map(lambda x: isinstance(x, numbers.Number), 
-				_TEST_["[m/h]"])) 
-			assert all(map(lambda x, y: abs(x - m.log10(y / 0.014)) < 1e-7, 
-				_TEST_["[m/h]"][1:], _TEST_["z"][1:])) 
-			assert isinstance(_TEST_["y"], list) 
-			assert all(map(lambda x: isinstance(x, numbers.Number), 
-				_TEST_["y"]))  
-			assert all(map(lambda x, y: x == y, 
-				_TEST_["y"], _TEST_["z(he)"])) 
 		except: 
 			return False 
 		return True 
-	return ["vice.core.dataframe.history.__getitem__", test] 
-
-
-@unittest 
-def test_keys(): 
-	r""" 
-	vice.core.dataframe.history.keys unit test 
-	""" 
-	def test(): 
-		try: 
-			assert isinstance(_TEST_.keys(), list) 
-			assert all(map(lambda x: isinstance(x, strcomp), _TEST_.keys())) 
-			[_TEST_.__getitem__(i) for i in _TEST_.keys()] 
-		except: 
-			return False 
-		return True 
-	return ["vice.core.dataframe.history.keys", test] 
+	return ["vice.core.dataframe.history.__getitem__.builtins", test] 
 

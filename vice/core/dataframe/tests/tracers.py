@@ -4,6 +4,12 @@ __all__ = ["test"]
 from ...._globals import _VERSION_ERROR_ 
 from ....testing import moduletest 
 from ....testing import unittest 
+from ....src.dataframe.tests.calclookback import calclookback_tracers 
+from ....src.dataframe.tests.calclogz import logzscaled_tracers 
+from ....src.dataframe.tests.calclogz import calclogz_tracers 
+from ....src.dataframe.tests.tracers import test_tracers_row 
+from ....src.dataframe.tests.calcz import zscaled_tracers 
+from ....src.dataframe.tests.calcz import calcz_tracers 
 from ...dataframe._builtin_dataframes import solar_z 
 from .._tracers import tracers 
 import math as m 
@@ -26,7 +32,8 @@ def test():
 	return ["vice.core.dataframe.tracers", 
 		[ 
 			test_initialize(), 
-			test_getitem() 
+			test_keys(), 
+			test_getitem(run = False) 
 		] 
 	] 
 
@@ -42,7 +49,7 @@ def test_initialize():
 		for i in mz.zones: 
 			i.elements = _ELEMENTS_ + ["he"] 
 			i.dt = 0.05 
-		mz.run([0.01 * i for i in range(1001)], overwrite = True) 
+		mz.run([0.05 * i for i in range(201)], overwrite = True) 
 		global _TEST_ 
 		try: 
 			_TEST_ = tracers(filename = "test.vice/tracers.out", 
@@ -53,10 +60,27 @@ def test_initialize():
 	return ["vice.core.dataframe.tracers.__init__", test] 
 
 
-@unittest 
+@moduletest 
 def test_getitem(): 
 	r""" 
-	vice.core.dataframe.stars.__getitem__ unit test 
+	vice.core.dataframe.tracers.__getitem__ module test 
+	""" 
+	return ["vice.core.dataframe.tracers.__getitem__", 
+		[ 
+			test_getitem_builtins(), 
+			calcz_tracers(), 
+			zscaled_tracers(), 
+			calclogz_tracers(), 
+			logzscaled_tracers(), 
+			calclookback_tracers(), 
+			test_tracers_row() 
+		] 
+	] 
+
+@unittest 
+def test_getitem_builtins(): 
+	r""" 
+	vice.core.dataframe.stars.__getitem__.builtins unit test 
 	""" 
 	def test(): 
 		r""" 
@@ -71,57 +95,10 @@ def test_getitem():
 				assert all(map(lambda x: isinstance(x, numbers.Number), 
 					_TEST_[i])) 
 				assert all(map(lambda x: x >= 0, _TEST_[i])) 
-			first_nonzero_idx = 0 
-			while _TEST_["z(fe)"][first_nonzero_idx] == 0: 
-				first_nonzero_idx += 1 
-			for i in _ELEMENTS_: 
-				assert isinstance(_TEST_["z(%s)" % (i)], list) 
-				assert all(map(lambda x: isinstance(x, numbers.Number), 
-					_TEST_["z(%s)" % (i)])) 
-				assert all(map(lambda x: x >= 0, _TEST_["z(%s)" % (i)])) 
-				assert isinstance(_TEST_["[%s/h]" % (i)], list) 
-				assert all(map(lambda x: isinstance(x, numbers.Number), 
-					_TEST_["[%s/h]" % (i)])) 
-				assert all(map(lambda x, y: 
-					abs(x - m.log10(y / solar_z[i])) < 1e-7, 
-					_TEST_["[%s/h]" % (i)][first_nonzero_idx:], 
-					_TEST_["z(%s)" % (i)][first_nonzero_idx:])) 
-				for j in _ELEMENTS_: 
-					assert isinstance(_TEST_["[%s/%s]" % (i, j)], list) 
-					assert all(map(lambda x: isinstance(x, numbers.Number), 
-						_TEST_["[%s/%s]" % (i, j)])) 
-					assert all(map(lambda x, y, z: abs(x - (y - z)) < 1e-7, 
-						_TEST_["[%s/%s]" % (i, j)][first_nonzero_idx:], 
-						_TEST_["[%s/h]" % (i)][first_nonzero_idx:], 
-						_TEST_["[%s/h]" % (j)][first_nonzero_idx:])) 
-			assert isinstance(_TEST_["age"], list) 
-			assert all(map(lambda x: isinstance(x, numbers.Number), 
-				_TEST_["age"])) 
-			assert all(map(lambda x, y: 
-				abs(x - (max(_TEST_["formation_time"]) - y)) < 1e-7, 
-				_TEST_["age"], _TEST_["formation_time"])) 
-			assert isinstance(_TEST_["z"], list) 
-			assert all(map(lambda x: isinstance(x, numbers.Number), 
-				_TEST_["z"])) 
-			for i in range(len(_TEST_["z"])): 
-				assert abs(_TEST_["z"][i] - 0.014 * sum(
-					[_TEST_["z(%s)" % (j)][i] for j in _ELEMENTS_]) / sum(
-					[solar_z[j] for j in _ELEMENTS_])) < 1e-7 
-			assert isinstance(_TEST_["[m/h]"], list) 
-			assert all(map(lambda x: isinstance(x, numbers.Number), 
-				_TEST_["[m/h]"])) 
-			assert all(map(lambda x, y: abs(x - m.log10(y / 0.014)) < 1e-7, 
-				_TEST_["[m/h]"][first_nonzero_idx:], 
-				_TEST_["z"][first_nonzero_idx:])) 
-			assert isinstance(_TEST_["y"], list) 
-			assert all(map(lambda x: isinstance(x, numbers.Number), 
-				_TEST_["y"]))  
-			assert all(map(lambda x, y: x == y, 
-				_TEST_["y"], _TEST_["z(he)"])) 
 		except: 
 			return False 
 		return True 
-	return ["vice.core.dataframe.tracers.__getitem__", test] 
+	return ["vice.core.dataframe.tracers.__getitem__.builtins", test] 
 
 
 @unittest 

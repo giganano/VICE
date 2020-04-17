@@ -378,7 +378,7 @@ cdef class history(fromfile):
 			raise IndexError("Index out of bounds: %d" % (int(key))) 
 		if item is not NULL: 
 			x = [item[i] for i in range(_history.history_row_length(self._ff, 
-				self._n_elements))]   
+				self._n_elements, self._elements))]  
 			free(item) 
 			return _base.base(dict(zip(self.keys(), x))) 
 		else: 

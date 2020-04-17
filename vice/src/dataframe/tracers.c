@@ -39,7 +39,7 @@ extern double *tracers_row(FROMFILE *ff, unsigned long row, char **elements,
 
 	/* Allowed range of row number */ 
 	if (row >= (*ff).n_rows) return NULL; 
-	unsigned int length = tracers_row_length(ff, n_elements); 
+	unsigned int length = tracers_row_length(ff, n_elements, elements); 
 
 	/* Pull the columns already there and resize */ 
 	double *data = fromfile_row(ff, row); 
@@ -112,7 +112,21 @@ extern double *tracers_row(FROMFILE *ff, unsigned long row, char **elements,
 	} else {
 		free(data); 
 		return NULL; 
-	}
+	} 
+
+	for (i = 0u; i < n_elements; i++) {
+		if (!strcmp(elements[i], "he")) {
+			int idx = column_number(ff, "z(he)"); 
+			if (idx >= 0) {
+				data[n] = data[idx]; 
+				n++; 
+				break; 
+			} else {
+				free(data); 
+				return NULL; 
+			} 
+		} else {} 
+	} 
 
 	return data; 
 
@@ -126,6 +140,7 @@ extern double *tracers_row(FROMFILE *ff, unsigned long row, char **elements,
  * ========== 
  * ff: 			The fromfile object holding the tracers data 
  * n_elements: 	The number of elements with recorded data 
+ * elements: 	The symbols of the chemical elements in the output 
  * 
  * Returns 
  * ======= 
@@ -133,14 +148,25 @@ extern double *tracers_row(FROMFILE *ff, unsigned long row, char **elements,
  * 
  * header: tracers,h 
  */ 
-extern unsigned int tracers_row_length(FROMFILE *ff, unsigned int n_elements) {
+extern unsigned int tracers_row_length(FROMFILE *ff, unsigned int n_elements, 
+	char **elements) {
 
 	/* 
 	 * One for each column already there, another one for each [X/H] 
 	 * measurement, and then n choose 2 cross combinations of [X/Y] 
-	 * abundance ratios, and one each for Z, [M/H], and age. 
+	 * abundance ratios, one each for Z, [M/H], and age, and potentially one 
+	 * for Y. 
 	 */ 
-	return 3u + (*ff).n_cols + n_elements + choose(n_elements, 2ul); 
+	unsigned short i, has_helium = 0u; 
+	for (i = 0ul; i < n_elements; i++) {
+		if (!strcmp(elements[i], "he")) {
+			has_helium = 1u; 
+			break; 
+		} else {} 
+	} 
+
+	return has_helium + 3u + (*ff).n_cols + n_elements + choose(
+		n_elements, 2ul); 
 
 }
 

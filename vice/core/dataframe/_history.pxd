@@ -8,7 +8,8 @@ from ._fromfile cimport fromfile
 cdef extern from "../../src/dataframe/history.h": 
 	double *history_row(FROMFILE *ff, unsigned long row, char **elements, 
 		unsigned int n_elements, double *solar, double Z_solar)
-	unsigned int history_row_length(FROMFILE *ff, unsigned int n_elements) 
+	unsigned int history_row_length(FROMFILE *ff, unsigned int n_elements, 
+		char **elements)  
 	double *history_lookback(FROMFILE *ff) 
 	double *history_Z_element(FROMFILE *ff, char *element) 
 	double *history_logarithmic_abundance_ratio(FROMFILE *ff, char *element1, 
