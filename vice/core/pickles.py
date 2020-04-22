@@ -1,8 +1,17 @@
 """ 
-This file handles pickling of singlezone object attributes. The singlezone 
-object itself is not pickled, because it always has at least one functional 
-attribute, and encoding functional attributes requires dill, which is a 
-secondary dependence of VICE. 
+VICE Pickle Utility Functions 
+=============================
+
+.. warning:: User access of these routines is discouraged. 
+
+Handles pickling of ``singlezone`` and ``multizone`` object attributes. These 
+objects themselves are not pickles, because there is always at least one 
+functional attribute. Encoding functional attributes requires dill_, a 
+*secondary* dependence of VICE which is an extension to ``pickle`` in the 
+python standard library. It is recommended that VICE user's install dill_ >= 
+0.2.0. 
+
+.. _dill: https://pypi.org/project/dill/ 
 """ 
 
 from __future__ import absolute_import 
@@ -33,28 +42,41 @@ except (ModuleNotFoundError, ImportError):
 
 class jar: 
 
-	""" 
-	A directory containing pickled object (i.e. a pickle jar). 
+	r""" 
+	A directory of pickled objects (i.e. a pickle jar). Serves as the engine 
+	for saving the attributes of singlezone and multizone objects after 
+	simulation and in reading them back in thereafter. 
 
-	This class serves as the engine for saving the attributes of singlezone 
-	and multizone objects after simulation, in reading them back in thereafter, 
-	and in the mirror function. 
+	.. warning:: User access of this class is discouraged. 
+
+	Parameters 
+	----------
+	objects : ``dict``  
+		The attribute ``objects``, initialized via keyword argument. 
+	name : ``str`` [default : "objects"] 
+		The attribute ``name``, initialized via keyword argument. 
+	default : ``object`` [default : None] 
+		The value to assume in the case that an object can't be pickled. 
+		This will be the case if the object is a function and the user does 
+		not have dill_ installed. 
+
+	.. _dill: https://pypi.org/project/dill/ 
+
+	Attributes 
+	----------
+	objects : ``dict`` 
+		The objects to pickle. The keys to this dictionary will serve as the 
+		names of these attributes. 
+	name : ``str`` [default : "objects"] 
+		The name of the directory to save pickles in. 
+
+	Functions 
+	--------- 
+	- close : Save pickles 
+	- open [staticmethod] : Load pickles from a directory 
 	""" 
 
 	def __init__(self, objects, name = "objects", default = None): 
-		""" 
-		Parameters 
-		========== 
-		objects :: dict 
-			The objects to pickle. The keys to this dictionary will serve as 
-			the names of these attributes. 
-		name :: str [default :: "objects"] 
-			The name of the directory to save pickles in. 
-		default :: object [default :: None] 
-			The value to assume in the case that an object can't be pickled. 
-			This will be the case if the object is a function and the user 
-			does not have dill installed. 
-		""" 
 		if isinstance(objects, dict): 
 			if all(map(lambda x: isinstance(x, strcomp), objects.keys())): 
 				self._objects = objects 
@@ -67,8 +89,10 @@ class jar:
 
 	@property 
 	def objects(self): 
-		""" 
-		Type :: dict
+		r""" 
+		Type : ``dict``
+
+		.. warning:: User access of this attribute is discouraged. 
 
 		The objects to put in a pickle jar. The keys of this dictionary will 
 		be taken as the names of the objects. 
@@ -77,10 +101,12 @@ class jar:
 
 	@property 
 	def name(self): 
-		""" 
-		Type :: str 
+		r""" 
+		Type : ``str`` 
 
-		The names of the directory to put a pickle jar in 
+		.. warning:: User access of this attribute is discouraged. 
+
+		The name of the directory to put a pickle jar in. 
 		""" 
 		return self._name 
 
@@ -93,9 +119,18 @@ class jar:
 				type(name))) 
 
 	def close(self): 
-		""" 
+		r""" 
 		Save all of the attributes of this class as pickles in a directory 
 		under the name <self.name> (i.e. "close the jar"). 
+
+		.. warning:: User access of this function is discouraged. 
+
+		**Signature**: x.close() 
+
+		Parameters 
+		----------
+		x : ``jar`` 
+			An instance of this class 
 		""" 
 		if os.path.exists(self.name): os.system("rm -rf %s" % (self.name)) 
 		os.system("mkdir %s" % (self.name)) 
@@ -109,25 +144,35 @@ class jar:
 
 	@staticmethod 
 	def open(dirname): 
-		""" 
+		r""" 
 		Obtain a dictionary of all of the values stored in a pickle jar 
 		(i.e. open the jar). 
 
+		.. warning:: User access of this function is discouraged. 
+
+		**Signature**: vice.core.pickles.jar.open(dirname) 
+
 		Parameters 
-		========== 
-		dirname :: str 
+		----------
+		dirname : ``str`` 
 			The name of the directory storing pickled objects. Only files with 
 			a ".obj" extension will be included. 
 
-		Raises 
-		====== 
-		TypeError :: 
-			::	dirname is not of type str 
-		IOError :: 
-			::	dirname does not exist, or is not a directory 
-			::	No pickled objects found in that directory 
+		Returns 
+		-------
+		objects : ``dict`` 
+			All unpickled objects with a ".obj" extension inside the specified 
+			directory. 
 
-		Other errors may be raised by pickled_object.from_pickle. 
+		Raises 
+		------
+		* TypeError 
+			- dirname is not of type str 
+		* IOError  
+			- dirname does not exist, or is not a directory 
+			- No pickled objects found in that directory 
+
+		.. note:: Other errors may be raised by pickled_object.from_pickle. 
 		""" 
 		if isinstance(dirname, strcomp): 
 			if os.path.isdir(dirname): 
@@ -152,45 +197,62 @@ class jar:
 
 class pickled_object: 
 
-	""" 
-	A python object which is to be pickled. 
+	r""" 
+	An object which is to be pickled. Along with ``jar``, this class serves 
+	as the engine for saving attributes of the ``singlezone`` and ``multizone`` 
+	objects after simulation and in reading them back in thereafter. 
 
-	Along with jar, this class serves as a part of the engine for saving the 
-	attributes of singlezone and multizone objects after simulation, in 
-	reading them back in thereafter, and in the mirror function. 
+	.. warning:: User access of this class is discouraged. 
+
+	Parameters 
+	----------
+	obj : ``object`` 
+		The attribute ``obj``, initialized via keyword argument. 
+	name : ``str`` [default : "object"] 
+		The attribute ``name``, initialized via keyword argument. 
+	default : ``object`` [default : None] 
+		The value to assume in the event that the object cannot be pickled. 
+		This will be the case if the object is a function and the user does 
+		not have dill_ installed. 
+
+	.. _dill: https://pypi.org/project/dill/ 
+
+	Attributes 
+	----------
+	obj : ``object`` 
+		The object to pickle. 
+	name : ``str`` [default : "object"] 
+		The name of the object. A file will be created at <name>.obj 
+		containing the pickled object. 
+
+	Functions 
+	--------- 
+	- save : Save the object 
+	- from_pickle [staticmethod] : Load an object from a pickle. 
 	""" 
 
 	def __init__(self, obj, name = "object", default = None): 
-		""" 
-		Parameters 
-		========== 
-		obj :: object 
-			The object to pickle 
-		name :: str [default :: "object"] 
-			The name of the object. A file will be created at <name>.obj 
-			containing the pickled object itself. 
-		default :: object [default :: None] 
-			The value to assume in the event that the object cannot be pickled. 
-			This will always be the case of the object is callable and the 
-			user does not have dill installed. 
-		""" 
 		self._obj = obj 
 		self.name = name 
 		self._default = default 
 
 	@property 
 	def obj(self): 
-		""" 
-		Type :: any 
+		r""" 
+		Type : any 
 
-		The object to pickle 
+		.. warning:: User access of this attribute is discouraged. 
+
+		The object to pickle. 
 		""" 
 		return self._obj 
 
 	@property 
 	def name(self): 
-		""" 
-		Type :: str 
+		r""" 
+		Type : str 
+
+		.. warning:: User access of this attribute is discouraged. 
 
 		The name of the object. When saved, a file at <name>.obj will be 
 		created. 
@@ -206,20 +268,29 @@ class pickled_object:
 				type(value))) 
 
 	def save(self): 
-		""" 
+		r""" 
 		Save the object in a pickle. 
 
+		.. warning:: User access of this function is discouraged. 
+
+		**Signature**: x.save() 
+
+		Parameters 
+		----------
+		x : ``pickled_object`` 
+			An instance of this class. 
+
 		Raises 
-		====== 
-		UserWarning :: 
-			::	The object is callable, and the user does not have dill 
+		------
+		* UserWarning 
+			- 	The object is callable, and the user does not have dill 
 				installed. In this case, the default value (usually None) will 
 				be saved instead. 
-			::	The object is not callable, but could still not be pickled. 
+			- 	The object is not callable, but could still not be pickled. 
 				In this case a None will be pickled regardless of the default. 
 
 		Notes 
-		===== 
+		-----
 		This will remove any file previously located at <self.name>.obj 
 		""" 
 		if os.path.exists("%s.obj" % (self.name)): 
@@ -227,7 +298,14 @@ class pickled_object:
 		else: pass 
 		if callable(self.obj): 
 			if "dill" in sys.modules: 
-				pickle.dump(self.obj, open("%s.obj" % (self.name), "wb")) 
+				try: 
+					pickle.dump(self.obj, open("%s.obj" % (self.name), "wb")) 
+				except: 
+					warnings.warn("""\
+Could not pickle function. The following attribute will not be saved with \
+this output: %s""" % (self.name), UserWarning) 
+					os.system("rm -f %s.obj" % (self.name)) 
+					pickle.dump(None, open("%s.obj" % (self.name), "wb")) 
 			else: 
 				warnings.warn("""\
 Encoding functions along with VICE outputs requires the package dill \
@@ -237,6 +315,7 @@ output: %s""" % (self.name), UserWarning)
 					pickle.dump(self._default, open("%s.obj" % (self.name), 
 						"wb")) 
 				except: 
+					os.system("rm -f %s.obj" % (self.name)) 
 					pickle.dump(None, open("%s.obj" % (self.name), "wb")) 
 		else: 
 			try: 
@@ -244,33 +323,40 @@ output: %s""" % (self.name), UserWarning)
 			except: 
 				warnings.warn("""Could not save object %s with this VICE \
 output.""" % (self.name), UserWarning) 
+				os.system("rm -f %s.obj" % (self.name)) 
 				pickle.dump(None, open("%s.obj" % (self.name), "wb")) 
 
 	@staticmethod 
 	def from_pickle(filename): 
-		""" 
+		r""" 
 		Obtain an object from its pickled version. 
 
+		.. warning:: User access of this function is discouraged. 
+
+		**Signature**: vice.core.pickles.pickled_object.from_pickle(filename) 
+
 		Parameters 
-		========== 
-		filename :: str 
-			The path to the pickled object 
+		----------
+		filename : ``str`` 
+			The full or relative path to the pickled object. 
 
 		Returns 
-		======= 
-		obj :: object 
+		-------
+		obj : ``object`` 
 			The object pickled in the file. If the pickled object was a 
-			function and the user does not have dill installed, this will be 
+			function and the user does not have dill_ installed, this will be 
 			None. 
 
+		.. _dill: https://pypi.org/project/dill 
+
 		Raises 
-		====== 
-		TypeError :: 
-			::	filename is not of type str 
-		FileNotFoundError :: 
-			::	filename does not exist 
-		IOError :: 
-			::	Could not unpickle the file 
+		------
+		* TypeError 
+			- ``filename`` is not of type str 
+		* FileNotFoundError 
+			- ``filename`` does not exist 
+		* IOError 
+			- Could not unpickle the file 
 		""" 
 		if isinstance(filename, strcomp): 
 			if os.path.exists(filename): 
