@@ -1,4 +1,4 @@
-"""
+r"""
 VICE global variables 
 ===================== 
 This module contains variables that are global to the VICE package. 
@@ -110,28 +110,6 @@ def _DEFAULT_STELLAR_MIGRATION_(zone, tform, time):
 	.. seealso:: vice.migration.specs.stars 
 	""" 
 	return zone 
-	
-	# def _ZONE_OCCUPATION_(time): 
-	# 	r""" 
-	# 	The zone number of a star that forms in the given ``zone`` number and 
-	# 	at the given time ``tform``. 
-
-	# 	**Signature**: _ZONE_OCCUPATION_(time) 
-
-	# 	Parameters 
-	# 	---------- 
-	# 	time : real number 
-	# 		Time in the simulation in Gyr. 
-
-	# 	Returns 
-	# 	------- 
-	# 	zone : ``int`` 
-	# 		The zone number of formation at all times. 
-
-	# 	.. seealso:: vice.multizone.migration.stars 
-	# 	""" 
-	# 	return zone 
-	# return _ZONE_OCCUPATION_ 
 
 
 def _VERSION_ERROR_():

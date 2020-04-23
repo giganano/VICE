@@ -5,6 +5,7 @@ from ...._globals import _DIRECTORY_
 from ....testing import moduletest 
 from ....testing import unittest 
 from .._yield_settings import yield_settings 
+import os 
 
 _TEST_DICT_ = {
 	"c": 0.1, 
@@ -99,7 +100,7 @@ def test_save_defaults():
 		except: 
 			return True 
 		status = "settings.config" in os.listdir("%syields/ccsne" % (
-			_DIRECTORY)) 
+			_DIRECTORY_)) 
 		if status: os.system("rm -f %syields/ccsne/settings.config" % (
 			_DIRECTORY_)) 
 		return status 

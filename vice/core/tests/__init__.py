@@ -9,7 +9,8 @@ if not __VICE_SETUP__:
 
 	__all__ = ["test"] 
 	from ...testing import moduletest 
-	from . import pickles
+	from . import callback 
+	from . import pickles 
 
 	@moduletest 
 	def test(): 
@@ -18,6 +19,7 @@ if not __VICE_SETUP__:
 		""" 
 		return ["vice.core.tests", 
 			[
+				callback.test(run = False), 
 				pickles.test(run = False) 
 			] 
 		] 
