@@ -1283,79 +1283,10 @@ All elemental yields in the current simulation will be set to the table of \
 	# ------------------------ RUN THE SIMULATION ------------------------ # 
 	def run(self, output_times, capture = False, overwrite = False): 
 		
-		"""
-		Run's the built-in timestep integration routines over the parameters 
-		built into the attributes of this class. Whether or not the user sets 
-		capture = True, the output files will be produced and can be read into 
-		an output object at any time. 
+		r""" 
+		See docstring in singlezone.py. 
+		""" 
 
-		Signature: vice.singlezone.run(output_times, capture = False, 
-			overwrite = False) 
-
-		Parameters 
-		========== 
-		output_times :: array-like [elements are real numbers] 
-			The times in Gyr at which VICE should record output from the 
-			simulation. These need not be sorted in any way; VICE will take 
-			care of that automatically. 
-		capture :: bool [default :: False] 
-			A boolean describing whether or not to return an output object 
-			from the results of the simulation. 
-		overwrite :: bool [default :: False] 
-			A boolean describing whether or not to force overwrite any existing 
-			files under the same name as this simulation's output files. 
-
-		Returns 
-		======= 
-		out :: output [only returned if capture = True] 
-			An output object produced from this simulation's output. 
-
-		Raises 
-		====== 
-		TypeError :: 
-			::	Any functional attribute evaluates to a non-numerical value 
-				at any timestep 
-		ValueError :: 
-			::	Any element of output_times is negative 
-			:: 	An inflow metallicity evaluates to a negative value 
-		RuntimeError :: 
-			::	Output directory could not be created - attribute 'name' is an 
-				invalid path 
-		ArithmeticError :: 
-			::	An inflow metallicity evaluates to NaN or inf 
-			::	Any functional attribute evaluates to NaN or inf at any 
-				timestep 
-		UserWarning :: 
-			::	Any yield settings or class attributes are callable 
-				functions and the user does not have dill installed 
-		ScienceWarning :: 
-			::	Any element tracked by the simulation is enriched in 
-				significant part by the r-process 
-			::	Any element tracked by the simulation has a weakly constrained 
-				solar abundance measurement 
-
-		Notes
-		=====
-		Encoding functional attributes into VICE outputs requires the 
-		package dill, an extension to pickle in the python standard library. 
-		Without this, the outputs will not have memory of any functional 
-		attributes stored in this class. It is recommended that VICE users 
-		install dill if they have not already so that they can make use of this 
-		feature; this can be done via 'pip install dill'. 
-
-		When overwrite = False, and there are files under the same name as the 
-		output produced, this acts as a halting function. VICE will wait for 
-		the user's approval to overwrite existing files in this case. If 
-		user's are running multiple simulations and need their integrations 
-		not to stall, they must specify overwrite = True. 
-
-		Example 
-		======= 
-		>>> import numpy as np 
-		>>> sz = vice.singlezone(name = "example") 
-		>>> outtimes = np.linspace(0, 10, 1001) 
-		>>> sz.run(outtimes) 
-		"""
 		output_times = self.prep(output_times) 
 		cdef int enrichment 
 		if self.open_output_dir(overwrite): 

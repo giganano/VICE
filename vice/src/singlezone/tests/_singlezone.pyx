@@ -24,7 +24,9 @@ def test():
 		[ 
 			_TEST_.test_singlezone_address(), 
 			_TEST_.test_singlezone_n_timesteps(), 
-			_TEST_.test_singlezone_stellar_mass() 
+			_TEST_.test_singlezone_stellar_mass(), 
+			_TEST_.test_singlezone_setup(), 
+			_TEST_.test_singlezone_evolve() 
 		] 
 	] 
 
@@ -38,6 +40,10 @@ cdef class singlezone_tester:
 
 	def __init__(self): 
 		super().__init__(name = "test", dt = _TEST_DT_) 
+		self._reset_prep() 
+
+
+	def _reset_prep(self): 
 		self.prep(_TEST_TIMES_) 
 		self.open_output_dir(True) 
 		self._sz[0].n_outputs = len(_TEST_TIMES_) 
@@ -45,7 +51,6 @@ cdef class singlezone_tester:
 			sizeof(double)) 
 		for i in range(self._sz[0].n_outputs): 
 			self._sz[0].output_times[i] = _TEST_TIMES_[i] 
-
 
 	@unittest 
 	def test_singlezone_address(self): 
@@ -72,6 +77,7 @@ cdef class singlezone_tester:
 			result = _singlezone.n_timesteps(self._sz[0]) == (test_time / 
 				test_dt + _singlezone.BUFFER) 
 			free(self._sz[0].output_times) 
+			self._reset_prep() 
 			return result 
 		return ["vice.src.singlezone.singlezone.n_timesteps", test] 
 
@@ -92,5 +98,26 @@ cdef class singlezone_tester:
 			return (abs(_singlezone.singlezone_stellar_mass(self._sz[0]) -
 				(self._sz[0].n_outputs) * self._sz[0].dt) <= 1.e-15) 
 		return ["vice.src.singlezone.singlezone.singlezone_stellar_mass", test] 
+
+	@unittest 
+	def test_singlezone_setup(self): 
+		r""" 
+		vice.src.singlezone.singlezone.singlezone_setup unit test 
+		""" 
+		def test(): 
+			result = 1 - _singlezone.singlezone_setup(self._sz) 
+			_singlezone.singlezone_cancel(self._sz) 
+			return result 
+		return ["vice.src.singlezone.singlezone.singlezone_setup", test] 
+
+	@unittest 
+	def test_singlezone_evolve(self): 
+		r""" 
+		vice.src.singlezone.singlezone.singlezone_evolve unit test 
+		""" 
+		def test(): 
+			self._reset_prep() 
+			return 1 - _singlezone.singlezone_evolve(self._sz) 
+		return ["vice.src.singlezone.singlezone.singlezone_evolve", test] 
 
 

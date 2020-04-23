@@ -10,6 +10,10 @@ cdef extern from "../singlezone.h":
 	extern long singlezone_address(SINGLEZONE *sz) 
 	extern unsigned long n_timesteps(SINGLEZONE sz) 
 	extern double singlezone_stellar_mass(SINGLEZONE sz) 
+	extern unsigned short singlezone_setup(SINGLEZONE *sz) 
+	extern unsigned short singlezone_evolve(SINGLEZONE *sz) 
+	extern void singlezone_cancel(SINGLEZONE *sz) 
+	extern void singlezone_clean(SINGLEZONE *sz) 
 
 
 cdef extern from "../../singlezone.h": 

@@ -168,34 +168,28 @@ extern unsigned short singlezone_setup(SINGLEZONE *sz) {
 	 * Setup the cumulative return fraction, main sequence mass fraction, 
 	 * metallicity distribution function, SNe Ia rates, and gas evolution. 
 	 */ 
-	if (setup_CRF(sz)) { 
-		return 1; 
-	} else if (setup_MSMF(sz)) { 
-		return 1; 
-	} else if (setup_MDF(sz)) { 
-		return 1; 
-	} else if (setup_RIa(sz)) { 
-		return 1; 
-	} else if (setup_gas_evolution(sz)) { 
-		return 1; 
-	} else { 
-		unsigned int i; 
-		for (i = 0; i < (*sz).n_elements; i++) { 
-			/* 
-			 * The singlezone object always allocates memory for 10 timesteps 
-			 * beyond the ending time as a safeguard against memory errors. 
-			 */ 
-			if (malloc_Z(sz -> elements[i], n_timesteps(*sz))) { 
-				return 1; 
-			} else {
-				sz -> elements[i] -> mass = ( 
-					(*(*sz).elements[i]).primordial * (*(*sz).ism).mass 
-				); 
-				sz -> elements[i] -> Z[0l] = 0.0; 
-			} 
-		} 
-		return 0; 
-	}
+
+	if (setup_CRF(sz)) return 1; 
+	if (setup_MSMF(sz)) return 1; 
+	if (setup_MDF(sz)) return 1; 
+	if (setup_RIa(sz)) return 1; 
+	if (setup_gas_evolution(sz)) return 1; 
+	unsigned int i; 
+	for (i = 0u; i < (*sz).n_elements; i++) {
+		/* 
+		 * The singlezone object always allocates memory for 10 timesteps 
+		 * beyond the ending time as a safeguard against memory errors. 
+		 */ 
+		if (malloc_Z(sz -> elements[i], n_timesteps(*sz))) return 1; 
+		sz -> elements[i] -> mass = (
+			(*(*sz).elements[i]).primordial * (*(*sz).ism).mass 
+		); 
+		sz -> elements[i] -> Z[0l] = (
+			(*(*sz).elements[i]).mass / (*(*sz).ism).mass 
+		); 
+	} 
+
+	return 0; 
 
 } 
 
