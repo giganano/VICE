@@ -11,6 +11,7 @@ if not __VICE_SETUP__:
 	from ...testing import moduletest 
 	from . import callback 
 	from . import pickles 
+	from . import _pyutils 
 
 	@moduletest 
 	def test(): 
@@ -20,7 +21,8 @@ if not __VICE_SETUP__:
 		return ["vice.core.tests", 
 			[
 				callback.test(run = False), 
-				pickles.test(run = False) 
+				pickles.test(run = False), 
+				_pyutils.test(run = False) 
 			] 
 		] 
 
