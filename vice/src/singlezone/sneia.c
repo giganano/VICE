@@ -169,7 +169,7 @@ static double RIa_builtin(ELEMENT e, double time) {
 			default: 
 				return -1; 
 
-		}
+		} 
 	} 
 
 } 

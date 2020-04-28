@@ -5,7 +5,12 @@ from ....testing import moduletest
 from ....testing import unittest 
 
 from libc.stdlib cimport malloc, free 
+from libc.string cimport strcpy 
 from . cimport _singlezone 
+from . cimport _element 
+from . cimport _sneia 
+from . cimport _ism 
+from . cimport _mdf 
 
 _TEST_DT_ = 0.01 
 _TEST_TIMES_ = [_TEST_DT_ * i for i in range(101)] 
@@ -13,6 +18,22 @@ _TEST_TIMES_ = [_TEST_DT_ * i for i in range(101)]
 
 @moduletest 
 def test(): 
+	r""" 
+	vice.src.singlezone.singlezone module test 
+	""" 
+	return ["vice.src.singlezone", 
+		[ 
+			test_singlezone(run = False), 
+			test_element(run = False), 
+			test_ism(run = False), 
+			test_mdf(run = False), 
+			test_sneia(run = False) 
+		] 
+	]
+
+
+@moduletest 
+def test_singlezone(): 
 	r""" 
 	vice.src.singlezone.singlezone module test 
 	""" 
@@ -24,9 +45,73 @@ def test():
 		[ 
 			_TEST_.test_singlezone_address(), 
 			_TEST_.test_singlezone_n_timesteps(), 
-			_TEST_.test_singlezone_stellar_mass(), 
 			_TEST_.test_singlezone_setup(), 
 			_TEST_.test_singlezone_evolve() 
+		] 
+	] 
+
+
+@moduletest 
+def test_element(): 
+	r""" 
+	vice.src.singlezone.element module test 
+	""" 
+	try: 
+		_TEST_ = singlezone_tester() 
+	except: 
+		return ["vice.src.singlezone.element", None] 
+	return ["vice.src.singlezone.element", 
+		[ 
+			_TEST_.test_element_malloc_Z() 
+		] 
+	] 
+
+
+@moduletest 
+def test_ism(): 
+	r""" 
+	vice.src.singlezone.ism module test 
+	""" 
+	try: 
+		_TEST_ = singlezone_tester() 
+	except: 
+		return ["vice.src.singlezone.ism", None] 
+	return ["vice.src.singlezone.ism", 
+		[ 
+			_TEST_.test_ism_setup_gas_evolution(), 
+			_TEST_.test_ism_update_gas_evolution() 
+		] 
+	] 
+
+
+@moduletest 
+def test_mdf(): 
+	r""" 
+	vice.src.singlezone.mdf module test 
+	""" 
+	try: 
+		_TEST_ = singlezone_tester() 
+	except: 
+		return ["vice.src.singlezone.mdf", None] 
+	return ["vice.src.singlezone.mdf", 
+		[ 
+			_TEST_.test_mdf_setup_MDF() 
+		] 
+	] 
+
+
+@moduletest 
+def test_sneia(): 
+	r""" 
+	vice.src.singlezone.sneia module test 
+	""" 
+	try: 
+		_TEST_ = singlezone_tester() 
+	except: 
+		return ["vice.src.singlezone.sneia", None] 
+	return ["vice.src.singlezone.sneia", 
+		[ 
+			_TEST_.test_sneia_setup_RIa() 
 		] 
 	] 
 
@@ -68,36 +153,8 @@ cdef class singlezone_tester:
 		vice.src.singlezone.singlezone.n_timesteps unit test 
 		""" 
 		def test(): 
-			test_time = 10
-			test_dt = 0.01 
-			self._sz[0].output_times = <double *> malloc (10 * sizeof(double)) 
-			self._sz[0].output_times[9] = 10 
-			self._sz[0].n_outputs = 10 
-			self._sz[0].dt = test_dt 
-			result = _singlezone.n_timesteps(self._sz[0]) == (test_time / 
-				test_dt + _singlezone.BUFFER) 
-			free(self._sz[0].output_times) 
-			self._reset_prep() 
-			return result 
+			return _singlezone.n_timesteps(self._sz[0]) == 110 
 		return ["vice.src.singlezone.singlezone.n_timesteps", test] 
-
-	@unittest 
-	def test_singlezone_stellar_mass(self): 
-		r""" 
-		vice.src.singlezone.singlezone.singlezone_stellar_mass unit test 
-		""" 
-		def test(): 
-			self._sz[0].ism[0].star_formation_history = <double *> malloc (
-				_singlezone.n_timesteps(self._sz[0]) * sizeof(double)) 
-			self._sz[0].ssp[0].crf = <double *> malloc (
-				_singlezone.n_timesteps(self._sz[0]) * sizeof(double)) 
-			for i in range(_singlezone.n_timesteps(self._sz[0])): 
-				self._sz[0].ism[0].star_formation_history[i] = 1 
-				self._sz[0].ssp[0].crf[i] = 0 
-			self._sz[0].timestep = self._sz[0].n_outputs 
-			return (abs(_singlezone.singlezone_stellar_mass(self._sz[0]) -
-				(self._sz[0].n_outputs) * self._sz[0].dt) <= 1.e-15) 
-		return ["vice.src.singlezone.singlezone.singlezone_stellar_mass", test] 
 
 	@unittest 
 	def test_singlezone_setup(self): 
@@ -120,4 +177,72 @@ cdef class singlezone_tester:
 			return 1 - _singlezone.singlezone_evolve(self._sz) 
 		return ["vice.src.singlezone.singlezone.singlezone_evolve", test] 
 
+	@unittest 
+	def test_element_malloc_Z(self): 
+		r""" 
+		vice.src.singlezone.element.malloc_Z unit test 
+		""" 
+		def test(): 
+			if 1 - _element.malloc_Z(self._sz[0].elements[0], 10): 
+				free(self._sz[0].elements[0][0].Z) 
+				return True 
+			else: 
+				return False 
+		return ["vice.src.singlezone.element.malloc_Z", test] 
+
+	@unittest 
+	def test_ism_setup_gas_evolution(self): 
+		r""" 
+		vice.src.singlezone.ism.setup_gas_evolution unit test 
+		""" 
+		def test(): 
+			self._sz[0].timestep = 0 
+			try: 
+				strcpy(self._sz[0].ism[0].mode, "gas") 
+				assert _ism.setup_gas_evolution(self._sz) == 0 
+				strcpy(self._sz[0].ism[0].mode, "ifr") 
+				assert _ism.setup_gas_evolution(self._sz) == 0 
+				strcpy(self._sz[0].ism[0].mode, "sfr") 
+				assert _ism.setup_gas_evolution(self._sz) == 0 
+			except: 
+				return False 
+			return True 
+		return ["vice.src.singlezone.ism.setup_gas_evolution", test] 
+
+	@unittest 
+	def test_ism_update_gas_evolution(self): 
+		r""" 
+		vice.src.singlezone.ism.update_gas_evolution unit test 
+		""" 
+		def test(): 
+			if _singlezone.singlezone_setup(self._sz): return False
+			try: 
+				strcpy(self._sz[0].ism[0].mode, "gas") 
+				assert _ism.update_gas_evolution(self._sz) == 0 
+				strcpy(self._sz[0].ism[0].mode, "ifr") 
+				assert _ism.update_gas_evolution(self._sz) == 0 
+				strcpy(self._sz[0].ism[0].mode, "sfr") 
+				assert _ism.update_gas_evolution(self._sz) == 0 
+			except: 
+				return False 
+			return True 
+		return ["vice.src.singlezone.ism.update_gas_evolution", test] 
+
+	@unittest 
+	def test_mdf_setup_MDF(self): 
+		r""" 
+		vice.src.singlezone.mdf.setup_MDF unit test 
+		""" 
+		def test(): 
+			return 1 - _mdf.setup_MDF(self._sz) 
+		return ["vice.src.singlezone.mdf.setup_MDF", test] 
+
+	@unittest  
+	def test_sneia_setup_RIa(self): 
+		r""" 
+		vice.src.singlezone.sneia.setup_RIa unit test 
+		""" 
+		def test(): 
+			return 1 - _sneia.setup_RIa(self._sz) 
+		return ["vice.src.singlezone.sneia.setup_RIa", test] 
 

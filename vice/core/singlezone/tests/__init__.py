@@ -19,9 +19,9 @@ if not __VICE_SETUP__:
 		return ["vice.singlezone", 
 			[ 
 				test_from_output(), 
+				src_test(run = False), 
 				_singlezone.test(run = False), 
-				trials.test(run = False), 
-				src_test(run = False) 
+				trials.test(run = False) 
 			] 
 		] 
 		

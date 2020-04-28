@@ -48,8 +48,8 @@ extern double m_AGB(SINGLEZONE sz, ELEMENT e) {
 			
 		} 
 
-		// return (*e.agb_grid).entrainment * mass; 
 		return mass; 
+		
 	}
 
 } 
