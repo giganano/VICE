@@ -10,6 +10,9 @@ from ....src.dataframe.tests.calclogz import calclogz_tracers
 from ....src.dataframe.tests.tracers import test_tracers_row 
 from ....src.dataframe.tests.calcz import zscaled_tracers 
 from ....src.dataframe.tests.calcz import calcz_tracers 
+from ....yields import agb 
+from ....yields import ccsne 
+from ....yields import sneia 
 from ...dataframe._builtin_dataframes import solar_z 
 from .._tracers import tracers 
 import math as m 
@@ -45,6 +48,9 @@ def test_initialize():
 	""" 
 	from ...multizone import multizone 
 	def test(): 
+		agb.settings.factory_settings() 
+		ccsne.settings.factory_settings() 
+		sneia.settings.factory_settings() 
 		mz = multizone(name = "test", n_zones = 3) 
 		for i in mz.zones: 
 			i.elements = _ELEMENTS_ + ["he"] 

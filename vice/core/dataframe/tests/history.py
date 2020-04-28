@@ -10,6 +10,9 @@ from ....src.dataframe.tests.calclogz import calclogz_history
 from ....src.dataframe.tests.history import test_history_row 
 from ....src.dataframe.tests.calcz import zscaled_history 
 from ....src.dataframe.tests.calcz import calcz_history 
+from ....yields import agb 
+from ....yields import ccsne 
+from ....yields import sneia 
 from ...dataframe._builtin_dataframes import solar_z 
 from ...singlezone import singlezone 
 from .._history import history 
@@ -46,6 +49,9 @@ def test_initialize():
 	vice.core.dataframe.history.__init__ unit test 
 	""" 
 	def test(): 
+		agb.settings.factory_settings() 
+		ccsne.settings.factory_settings() 
+		sneia.settings.factory_settings() 
 		singlezone.singlezone(name = "test", 
 			elements = _ELEMENTS_ + ["he"]).run(
 			[0.01 * i for i in range(1001)], overwrite = True) 
