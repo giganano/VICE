@@ -12,6 +12,7 @@ if not __VICE_SETUP__:
 	from . import callback 
 	from . import pickles 
 	from . import _pyutils 
+	from . import _cutils 
 
 	@moduletest 
 	def test(): 
@@ -22,7 +23,8 @@ if not __VICE_SETUP__:
 			[
 				callback.test(run = False), 
 				pickles.test(run = False), 
-				_pyutils.test(run = False) 
+				_pyutils.test(run = False), 
+				_cutils.test(run = False) 
 			] 
 		] 
 

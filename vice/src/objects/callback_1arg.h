@@ -12,14 +12,14 @@ extern "C" {
  * Allocate memory for and return a pointer to a CALLBACK_1ARG object, 
  * initializing the user_func = NULL 
  * 
- * header: callback_1arg.h 
+ * source: callback_1arg.c 
  */ 
 extern CALLBACK_1ARG *callback_1arg_initialize(void); 
 
 /* 
  * Free up the memory stored in a CALLBACK_1ARG object 
  * 
- * header: callback_1arg.h 
+ * source: callback_1arg.c 
  */ 
 extern void callback_1arg_free(CALLBACK_1ARG *cb1); 
 
