@@ -1,10 +1,5 @@
 # cython: language_level = 3, boundscheck = False 
 
-from __future__ import absolute_import 
-from . cimport _tracer 
-from . cimport _multizone 
-
-
 cdef extern from "../../src/objects.h": 
 	ctypedef struct TRACER: 
 		double mass 
@@ -16,7 +11,5 @@ cdef extern from "../../src/objects.h":
 
 cdef extern from "../../src/multizone/tracer.h": 
 	TRACER *tracer_initialize() 
-	void tracer_free(_tracer.TRACER *t) 
-	void malloc_tracers(_multizone.MULTIZONE *mz) 
-
+	void tracer_free(TRACER *t) 
 

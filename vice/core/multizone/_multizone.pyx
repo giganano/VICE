@@ -29,7 +29,7 @@ from libc.string cimport strlen
 from .._cutils cimport set_string 
 from .._cutils cimport copy_pylist 
 from ..objects cimport _singlezone 
-from ..objects cimport _tracer 
+from . cimport _tracer 
 from . cimport _zone_array 
 from . cimport _multizone 
 from . cimport _migration 
