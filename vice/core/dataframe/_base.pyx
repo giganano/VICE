@@ -139,10 +139,6 @@ Got: %s""" % (type(frame)))
 Got: %s""" % (type(key))) 
 
 
-	def __hash__(self): 
-		return id(self) 
-
-
 	def __subget__str(self, key): 
 		""" 
 		Performs the __getitem__ operation when the key is a string. 
@@ -274,6 +270,10 @@ Got: %s""" % (type(key)))
 		Raises all exceptions inside with statements 
 		""" 
 		return exc_value is None 
+
+
+	def __hash__(self): 
+		return id(self) 
 
 
 	def keys(self): 
