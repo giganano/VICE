@@ -51,10 +51,10 @@ class generator:
 		self._sz = singlezone(name = "test", dt = 0.05, **kwargs) 
 
 	def __call__(self): 
-		# try: 
-		self._sz.run(_OUTTIMES_, overwrite = True) 
-		# except: 
-		# 	return False 
+		try: 
+			self._sz.run(_OUTTIMES_, overwrite = True) 
+		except: 
+			return False 
 		return True 
 
 
