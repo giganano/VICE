@@ -1,6 +1,6 @@
 
 From the Command Line 
-+++++++++++++++++++++
+=====================
 Included with VICE is a command line entry which runs simple simulations from 
 a terminal. This feature allows the parameters of a onezone model to be 
 specified as command-line arguments; run ``vice --help`` from a terminal 

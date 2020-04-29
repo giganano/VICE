@@ -17,6 +17,9 @@ Documentation is available in several forms:
 	3. In PDF format 
 	4. Tutorials and example scripts, available in the git repository 
 
+Run ``vice-docs`` from the command line to open the documentation in the 
+default web browser. 
+
 Contents 
 --------
 singlezone : ``type`` 

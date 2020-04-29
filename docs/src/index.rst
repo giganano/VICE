@@ -23,13 +23,11 @@ __ install_
 
 
 .. toctree:: 
-	:maxdepth: 5
+	:maxdepth: 1 
 
+	install 
+	getting_started 
 	science_documentation/index 
-
-.. toctree:: 
-	:maxdepth: 8 
-	:titlesonly: 
-
 	users_guide/index 
+	developers/index 
 

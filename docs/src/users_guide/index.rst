@@ -1,6 +1,6 @@
 
-User's Guide 
-============
+Comprehensive API Reference 
+===========================
 
 .. toctree:: 
 	:titlesonly: 
@@ -8,4 +8,5 @@ User's Guide
 
 	command_line 
 	pkgcontents/index 
+
 
