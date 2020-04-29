@@ -13,6 +13,7 @@ if not __VICE_SETUP__:
 	from . import _ccsne 
 	from . import _sneia 
 	from . import _utils 
+	from . import singlezone 
 
 	@moduletest 
 	def test(): 
@@ -23,6 +24,7 @@ if not __VICE_SETUP__:
 			[ 
 				_agb.test(run = False), 
 				_ccsne.test(run = False), 
+				singlezone.test(run = False), 
 				_sneia.test(run = False), 
 				_utils.test(run = False) 
 			] 

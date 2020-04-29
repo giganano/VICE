@@ -9,6 +9,7 @@ from libc.string cimport strcpy
 from . cimport _singlezone 
 from . cimport _element 
 from . cimport _sneia 
+from . cimport _io 
 from . cimport _ism 
 from . cimport _mdf 
 
@@ -245,4 +246,15 @@ cdef class singlezone_tester:
 		def test(): 
 			return 1 - _sneia.setup_RIa(self._sz) 
 		return ["vice.src.singlezone.sneia.setup_RIa", test] 
+
+	@unittest 
+	def test_singlezone_open_files(self): 
+		r""" 
+		vice.src.io.singlezone.singlezone_open_files unit test 
+		""" 
+		def test(): 
+			result = 1 - _io.singlezone_open_files(self._sz)  
+			if result: _io.singlezone_close_files(self._sz) 
+			return result 
+		return ["vice.src.io.singlezone.singlezone_open_files", test] 
 
