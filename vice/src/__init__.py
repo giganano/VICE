@@ -1,27 +1,28 @@
 
+from __future__ import absolute_import 
+import os 
+
 try: 
 	__VICE_SETUP__ 
 except NameError: 
 	__VICE_SETUP__ = False 
 
 if __VICE_SETUP__: 
-	__all__ = [
-		"find_c_extensions"
-	]
-	import os 
+
+	__all__ = ["find_c_extensions"]
 
 	def find_c_extensions(tests = False): 
-		""" 
+		r""" 
 		Finds the paths to the C extensions
 
 		Parameters 
-		========== 
-		tests :: bool 
+		----------
+		tests : bool [default : False] 
 			Whether or not to include the test functions 
 
 		Returns 
-		======= 
-		exts :: list 
+		------- 
+		exts : list 
 			A list of the relative paths to all C extensions 
 		""" 
 		path = os.path.dirname(os.path.abspath(__file__)) 
@@ -39,6 +40,34 @@ if __VICE_SETUP__:
 		return extensions 
 
 else: 
-	pass 
+	
+	__all__ = [
+		"callback", 
+		"imf", 
+		"io", 
+		"stats", 
+		"test", 
+		"utils"
+	] 
+	from ..testing import moduletest 
+	from . import io 
+	from .tests import callback 
+	from .tests import imf 
+	from .tests import stats 
+	from .tests import utils 
 
+	@moduletest 
+	def test(): 
+		r""" 
+		vice.src module test 
+		""" 
+		return ["vice.src", 
+			[ 
+				callback.test(run = False), 
+				imf.test(run = False), 
+				io.test(run = False), 
+				stats.test(run = False), 
+				utils.test(run = False) 
+			] 
+		] 
 

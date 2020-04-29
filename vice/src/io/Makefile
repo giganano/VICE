@@ -18,7 +18,7 @@ tests:
 
 clean: 
 	@ echo Cleaning vice/src/io/ 
-	@ $(MAKE) -C tests/ clean 
 	@ rm -f *.o 
 	@ rm -rf __pycache__ 
+	@ $(MAKE) -C tests/ clean 
 

@@ -8,8 +8,8 @@ __all__ = [
 	"test_file_dimension_finder", 
 	"test_line_counter"  
 ] 
-from ...testing import moduletest 
-from ...testing import unittest 
+from ....testing import moduletest 
+from ....testing import unittest 
 from . cimport _utils 
 
 

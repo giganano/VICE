@@ -16,25 +16,19 @@ except NameError:
 if not __VICE_SETUP__: 
 
 	__all__ = [ 
-		"callback", 
-		"imf", 
-		"stats", 
-		"utils", 
 		"core", 
+		"elements", 
 		"modeling", 
+		"src", 
 		"yields", 
 		"test" 
 	] 
 
 	from ..testing import moduletest 
-	from . import _callback as callback 
 	from . import elements 
-	from . import _imf as imf 
-	from . import _stats as stats 
-	from . import _utils as utils 
-	from . import io 
 	from .. import core 
 	from .. import modeling 
+	from .. import src 
 	from .. import yields 
 	import warnings 
 	import sys 
@@ -69,14 +63,10 @@ This program will overwrite the VICE output at %s/test.vice. Proceed? \
 		warnings.filterwarnings("ignore") 
 		return ["", 
 			[ 
-				callback.test(run = False), 
 				core.test(run = False), 
 				elements.test(run = False), 
-				imf.test(run = False), 
-				io.test(run = False), 
 				modeling.test(run = False), 
-				stats.test(run = False), 
-				utils.test(run = False), 
+				src.test(run = False), 
 				yields.test(run = False) 
 			] 
 		] 

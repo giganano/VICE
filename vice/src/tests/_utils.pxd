@@ -1,6 +1,6 @@
 # cython: language_level = 3, boundscheck = False 
 
-cdef extern from "../src/tests/utils.h": 
+cdef extern from "utils.h": 
 	unsigned short test_choose() 
 	unsigned short test_absval() 
 	unsigned short test_sign() 

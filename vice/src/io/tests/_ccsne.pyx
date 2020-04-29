@@ -1,11 +1,12 @@
 # cython: language_level = 3, boundscheck = False 
 
 from __future__ import absolute_import 
-__all__ = [
+__all__ = [ 
+	"test", 
 	"test_ccsn_yield_grid_reader" 
 ] 
-from ...testing import moduletest 
-from ...testing import unittest 
+from ....testing import moduletest 
+from ....testing import unittest 
 from . cimport _ccsne 
 
 

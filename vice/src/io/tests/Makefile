@@ -3,6 +3,8 @@ CC = gcc
 CFLAGS = -fPIC -Wsign-conversion -Wsign-compare 
 SOURCES = $(wildcard *.c) 
 OBJECTS = $(SOURCES:.c=.o) 
+CYTHON_SOURCES = $(wildcard *.pyx) 
+CYTHON_OUTPUTS = $(CYTHON_SOURCES:.pyx=.c) 
 
 all: print_message $(OBJECTS) 
 .PHONY: print_message clean 
@@ -16,5 +18,8 @@ print_message:
 clean: 
 	@ echo Cleaning vice/src/io/tests/ 
 	@ rm -f *.o 
+	@ for i in $(CYTHON_OUTPUTS) ; do \
+		rm -f $$i ; \
+	done 
 	@ rm -rf __pycache__ 
 
