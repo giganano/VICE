@@ -39,7 +39,6 @@ if not __VICE_SETUP__:
 
 	from ..testing import moduletest 
 	from .dataframe import test as test_dataframe 
-	from .io import test as test_io 
 	from .multizone import test as test_multizone 
 	from .objects import test as test_objects 
 	from .outputs import test as test_outputs 
@@ -52,7 +51,6 @@ if not __VICE_SETUP__:
 		return ["vice.core", 
 			[ 
 				test_dataframe(run = False), 
-				test_io(run = False), 
 				test_multizone(run = False), 
 				test_objects(run = False), 
 				test_outputs(run = False), 

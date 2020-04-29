@@ -8,4 +8,5 @@ clean:
 	@ rm -f *.c 
 	@ rm -rf *.vice/ 
 	@ rm -rf __pycache__ 
+	@ $(MAKE) -C io/ clean 
 

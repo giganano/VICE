@@ -5,8 +5,8 @@ __all__ = [
 	"test", 
 	"test_agb_grid_import" 
 ] 
-from ....testing import moduletest 
-from ....testing import unittest 
+from ...testing import moduletest 
+from ...testing import unittest 
 from . cimport _agb 
 
 

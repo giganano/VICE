@@ -32,6 +32,7 @@ if not __VICE_SETUP__:
 	from . import _imf as imf 
 	from . import _stats as stats 
 	from . import _utils as utils 
+	from . import io 
 	from .. import core 
 	from .. import modeling 
 	from .. import yields 
@@ -72,6 +73,7 @@ This program will overwrite the VICE output at %s/test.vice. Proceed? \
 				core.test(run = False), 
 				elements.test(run = False), 
 				imf.test(run = False), 
+				io.test(run = False), 
 				modeling.test(run = False), 
 				stats.test(run = False), 
 				utils.test(run = False), 

@@ -8,7 +8,7 @@ except NameError:
 if not __VICE_SETUP__: 
 
 	__all__ = ["test"] 
-	from ....testing import moduletest 
+	from ...testing import moduletest 
 	from . import _agb 
 	from . import _ccsne 
 	from . import _sneia 
