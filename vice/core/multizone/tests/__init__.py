@@ -11,13 +11,19 @@ if not __VICE_SETUP__:
 	from ....testing import moduletest 
 	from . import mig_matrix_row 
 	from . import mig_matrix 
+	from . import mig_specs 
+	from . import zone_array 
+	from . import _multizone 
 
 	@moduletest 
 	def test(): 
 		return ["vice.core.multizone", 
 			[
 				mig_matrix_row.test(run = False), 
-				mig_matrix.test(run = False) 
+				mig_matrix.test(run = False), 
+				mig_specs.test(run = False), 
+				zone_array.test(run = False), 
+				_multizone.test(run = False) 
 			]
 		] 
 

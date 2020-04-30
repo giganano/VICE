@@ -22,6 +22,9 @@ cdef class zone_array:
 			self._zones[i] = singlezone() 
 			self._zones[i].name = "zone%d" % (i) 
 
+	def __len__(self): 
+		return self._n 
+
 	def __getitem__(self, key): 
 		""" 
 		Allow indexing by key of type int 

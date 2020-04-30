@@ -2,8 +2,7 @@
 .PHONY: clean 
 
 clean: 
-	@ echo Cleaning vice/core/multizone/ 
+	@ echo Cleaning vice/core/multizone/tests/ 
 	@ rm -f *.c 
 	@ rm -f *.so 
 	@ rm -rf __pycache__ 
-	@ $(MAKE) -C tests/ clean 

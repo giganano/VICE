@@ -1,9 +1,7 @@
 # cython: language_level = 3, boundscheck = False 
 
 from __future__ import absolute_import  
-__all__ = [
-	"singlezone_tester" 
-] 
+__all__ = ["test"] 
 from ...._globals import _DEFAULT_FUNC_ 
 from ....testing import moduletest 
 from ....testing import unittest 
@@ -77,14 +75,10 @@ cdef class singlezone_tester:
 
 	@unittest 
 	def test_name_setter(self): 
+		r""" 
+		vice.core.singlezone.name.setter unit test 
+		""" 
 		def test(): 
-			""" 
-			Tests the name.setter function 
-
-			Returns 
-			======= 
-			1 on success, 0 on failure 
-			""" 
 			try: 
 				self.name = "test" 
 			except: 
@@ -670,10 +664,7 @@ cdef class singlezone_tester:
 			""" 
 			try: 
 				self.name = "test" 
-				try: 
-					self.open_output_dir(True) 
-				except RuntimeError: 
-					return False 
+				self.open_output_dir(True) 
 			except: 
 				return False 
 			if os.path.exists("test.vice"): 
