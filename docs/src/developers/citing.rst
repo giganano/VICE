@@ -1,7 +1,7 @@
 
 Citing VICE 
 ===========
-Usage of this version of VICE leading to a citation should cite 
+Usage of this version of VICE in research should cite 
 `Johnson & Weinberg (2020)`__. If you're using ``BibTeX``, add the following 
 to your ``.bib`` file: 
 

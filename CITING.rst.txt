@@ -8,7 +8,7 @@
 .. Remainder copy-pasted from docs/src/developers/citing.rst 
 .. GitHub at present doesn't render the :include: directive in a browser 
 
-Usage of this version of VICE leading to a citation should cite 
+Usage of this version of VICE in research should cite 
 `Johnson & Weinberg (2020)`__. If you're using ``BibTeX``, add the following 
 to your ``.bib`` file: 
 

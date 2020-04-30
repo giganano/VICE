@@ -6,7 +6,7 @@ At present, VICE is not installable via ``pip``. Instructions can be found
 `here`__. If you have already installed VICE and are looking for help getting 
 started, usage guidelines can be found `here`__. 
 
-__ `Installation`_ 
+__ `Installing from Source`_ 
 __ usage_ 
 .. _usage: https://github.com/astrobeard/VICEdev/blob/master/USAGE.rst.txt
 
@@ -74,10 +74,10 @@ is designed to run independently of them.
 .. _pandas: https://pypi.org/project/pandas/ 
 
 
-Installation 
-============
-First download the source code using a terminal and change directories into 
-the source tree: 
+Installing from Source  
+======================
+To install VICE from source, first download the source code using a terminal 
+and change directories into the source tree: 
 
 :: 
 
@@ -109,9 +109,10 @@ Following the installation, to run the tests and clean the source tree:
 	$ make tests 
 	$ make clean 
 
-Please note that ``make tests`` runs VICE's tests in the user's default version 
-of Python_. To force the tests to run in Python_ 3, run ``make tests3``. 
-Alternatively, the tests can be ran from within Python_ itself: 
+Please also note that ``make tests`` runs VICE's tests in the user's default 
+version of Python_. To force the tests to run in Python_ 3, run 
+``make tests3``. Alternatively, the tests can be ran from within Python_ 
+itself: 
 
 .. code:: python 
 
