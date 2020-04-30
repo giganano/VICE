@@ -21,6 +21,8 @@ __ `Installation`_
 __ usage_ 
 .. _usage: https://github.com/astrobeard/VICEdev/blob/master/USAGE.rst.txt
 
+.. Contents:: 
+
 Dependencies 
 ============
 
