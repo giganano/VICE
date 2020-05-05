@@ -9,28 +9,6 @@ extern "C" {
 #include "../objects.h" 
 
 /* 
- * Test the function which sets the mass distribution 
- * 
- * Returns 
- * ======= 
- * 1 on success, 0 on failure 
- * 
- * source: imf.c 
- */ 
-extern unsigned short test_imf_set_mass_distribution(void); 
-
-/* 
- * Test the function which determines the number of mass bins in an IMF object 
- * 
- * Returns 
- * ======= 
- * 1 on success, 0 on failure 
- * 
- * source: imf.c 
- */ 
-extern unsigned short test_n_mass_bins(void); 
-
-/* 
  * Test the function which evaluates an IMF object at a given mass 
  * 
  * Returns 
@@ -70,17 +48,6 @@ extern unsigned short test_salpeter55(void);
  * source: imf.c 
  */ 
 extern unsigned short test_kroupa01(void); 
-
-/* 
- * Sets a custom mass distribution according to test_imf 
- * 
- * Returns 
- * ======= 
- * The value of imf_set_mass_distribution at vice/src/imf.h 
- * 
- * source: imf.c 
- */ 
-extern unsigned short set_test_custom_mass_distribution(IMF_ *test); 
 
 #ifdef __cplusplus 
 } 

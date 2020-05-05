@@ -67,7 +67,6 @@ cdef IMF_ *imf_object(user_spec, m_lower, m_upper) except *:
 			imf_obj = _imf.imf_initialize(m_lower, m_upper) 
 			set_string(imf_obj[0].spec, "custom") 
 			callback_1arg_setup(imf_obj[0].custom_imf, user_spec) 
-			# imf_obj[0].custom_imf = callback_1arg_from_pyfunc(user_spec) 
 		else: 
 			raise TypeError("""Custom IMF must accept exactly one parameter as \
 a positional argument.""") 

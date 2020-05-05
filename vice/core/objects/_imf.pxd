@@ -9,7 +9,6 @@ cdef extern from "../../src/objects.h":
 		char *spec 
 		double m_lower 
 		double m_upper 
-		double *mass_distribution 
 		CALLBACK_1ARG *custom_imf 
 
 

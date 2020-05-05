@@ -12,63 +12,6 @@
 
 
 /* 
- * Set the mass distribution of the IMF. 
- * 
- * Parameters 
- * ========== 
- * imf: 		The IMF object to set the distribution for 
- * arr: 		The array containing the values of the distribution. This is 
- * 				assumed to be the same length as the mass array 
- * 
- * Returns 
- * ======= 
- * 1 on an unallowed value of the distribution; 0 on success 
- * 
- * header: imf.h 
- */ 
-extern unsigned short imf_set_mass_distribution(IMF_ *imf, double *arr) {
-
-	/* 
-	 * For error handling purposes, copy the array into a new block of memory, 
-	 * freeing it up if an unallowed value is passed. 
-	 */ 
-	unsigned long i, n = n_mass_bins(*imf); 
-	double *new = (double *) malloc (n * sizeof(double)); 
-	for (i = 0l; i < n; i++) { 
-		if (arr[i] >= 0 && arr[i] != INFINITY && arr[i] != NAN) {
-			new[i] = arr[i]; 
-		} else { 
-			/* raise ValueError in python */ 
-			free(new); 
-			return 1; 
-		} 
-	} 
-
-	/* Free up the old block if a custom distribution has been specified */ 
-	if ((*imf).mass_distribution != NULL) free(imf -> mass_distribution); 
-	imf -> mass_distribution = new; 
-	return 0; /* success */ 
-
-}
-
-
-/* 
- * Determines the number of mass bins on the IMF grid. 
- * 
- * Parameters 
- * ========== 
- * imf:		The IMF object to determine the number of bins for 
- * 
- * header: imf.h 
- */ 
-extern unsigned long n_mass_bins(IMF_ imf) {
-
-	return 1l + (imf.m_upper - imf.m_lower) / IMF_STEPSIZE; 
-
-} 
-
-
-/* 
  * Evaluate the IMF at the stellar mass m in Msun 
  * 
  * Parameters 
@@ -87,8 +30,6 @@ extern double imf_evaluate(IMF_ imf, double m) {
 	/* If the mass in the specified mass range */ 
 	if (imf.m_lower <= m && m <= imf.m_upper) { 
 
-		/* check for a built-in IMF */ 
-		// unsigned long lower_bound_idx; 
 		switch(checksum(imf.spec)) { 
 
 			case SALPETER: 
@@ -98,24 +39,6 @@ extern double imf_evaluate(IMF_ imf, double m) {
 				return kroupa01(m); 
 
 			case CUSTOM: 
-				/* 
-				 * An interpolation scheme is implemented here so that the 
-				 * IMF is still quasi-continuous under the hood. The previous 
-				 * lines (below) constituted an implementation of a step 
-				 * function approximation. 
-				 * 
-				 * return imf.mass_distribution[(unsigned long) ((
-				 * 	m - imf.m_lower) / IMF_STEPSIZE)]; 
-				 */ 
-				// lower_bound_idx = (unsigned long) ( (m - imf.m_lower) / 
-				// 	IMF_STEPSIZE ); 
-				// return interpolate( 
-				// 	imf.m_lower + IMF_STEPSIZE * lower_bound_idx, 
-				// 	imf.m_lower + IMF_STEPSIZE * (lower_bound_idx + 1l), 
-				// 	imf.mass_distribution[lower_bound_idx], 
-				// 	imf.mass_distribution[lower_bound_idx + 1l], 
-				// 	m 
-				// ); 
 				return callback_1arg_evaluate(*imf.custom_imf, m); 
 
 			default: 	/* error handling */ 

@@ -35,34 +35,6 @@ extern "C" {
 #include "objects/imf.h" 
 
 /* 
- * Set the mass distribution of the IMF. 
- * 
- * Parameters 
- * ========== 
- * imf: 		The IMF object to set the distribution for 
- * arr: 		The array containing the values of the distribution. This is 
- * 				assumed to be the same length as the mass array 
- * 
- * Returns 
- * ======= 
- * 1 on an unallowed value of the distribution; 0 on success 
- * 
- * source: imf.c 
- */ 
-extern unsigned short imf_set_mass_distribution(IMF_ *imf, double *arr); 
-
-/* 
- * Determines the number of mass bins on the IMF grid. 
- * 
- * Parameters 
- * ========== 
- * imf:		The IMF object to determine the number of bins for 
- * 
- * source: imf.c 
- */ 
-extern unsigned long n_mass_bins(IMF_ imf); 
-
-/* 
  * Evaluate the IMF to an arbitrary normalization at the mass m 
  * 
  * Parameters 

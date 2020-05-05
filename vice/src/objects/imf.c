@@ -27,7 +27,6 @@ extern IMF_ *imf_initialize(double m_lower, double m_upper) {
 
 	IMF_ *imf = (IMF_ *) malloc (sizeof(IMF_)); 
 	imf -> spec = (char *) malloc (SPEC_CHARP_SIZE * sizeof(char)); 
-	imf -> mass_distribution = NULL; 
 	imf -> m_lower = m_lower; 
 	imf -> m_upper = m_upper; 
 	imf -> custom_imf = callback_1arg_initialize(); 
@@ -53,12 +52,7 @@ extern void imf_free(IMF_ *imf) {
 			free(imf -> spec); 
 			imf -> spec = NULL; 
 		} else {} 
-
-		if ((*imf).mass_distribution != NULL) {
-			free(imf -> mass_distribution); 
-			imf -> mass_distribution = NULL; 
-		} else {} 
-
+		
 		if ((*imf).custom_imf != NULL) {
 			callback_1arg_free(imf -> custom_imf); 
 			imf -> custom_imf = NULL; 

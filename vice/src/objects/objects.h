@@ -286,7 +286,6 @@ typedef struct initial_mass_function {
 	char *spec; 
 	double m_lower; 
 	double m_upper; 
-	double *mass_distribution; 
 	CALLBACK_1ARG *custom_imf; 
 
 } IMF_; 

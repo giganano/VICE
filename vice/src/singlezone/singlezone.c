@@ -248,10 +248,6 @@ extern void singlezone_clean(SINGLEZONE *sz) {
 	sz -> output_times = NULL; 
 	sz -> current_time = 0; 
 	sz -> timestep = 0l; 
-	if ((*(*(*sz).ssp).imf).mass_distribution != NULL) {
-		free(sz -> ssp -> imf -> mass_distribution); 
-		sz -> ssp -> imf -> mass_distribution = NULL; 
-	} else {} 
 
 } 
 

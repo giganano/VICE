@@ -21,31 +21,11 @@ def test():
 	""" 
 	return ["vice.src.imf", 
 		[ 
-			test_custom_mass_distribution(), 
-			test_mass_bin_counter(), 
 			test_imf_evaluation(), 
 			test_builtin_salpeter(), 
 			test_builtin_kroupa() 
 		] 
 	] 
-
-
-@unittest 
-def test_custom_mass_distribution(): 
-	""" 
-	Tests the function which sets a custom mass distribution at 
-	vice/src/imf.h 
-	""" 
-	return ["vice.src.imf.set_mass_distribution", 
-		_imf.test_imf_set_mass_distribution] 
-
-
-@unittest 
-def test_mass_bin_counter(): 
-	""" 
-	Tests the n_mass_bins function at vice/src/imf.h 
-	""" 
-	return ["vice.src.imf.n_mass_bins", _imf.test_n_mass_bins] 
 
 
 @unittest 

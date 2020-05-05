@@ -23,7 +23,6 @@ extern unsigned short test_imf_initialize(void) {
 	IMF_ *test = imf_initialize(TEST_IMF_M_LOWER, TEST_IMF_M_UPPER); 
 	unsigned short result = (test != NULL && 
 		(*test).spec != NULL && 
-		(*test).mass_distribution == NULL && 
 		(*test).m_lower == TEST_IMF_M_LOWER && 
 		(*test).m_upper == TEST_IMF_M_UPPER 
 	); 
