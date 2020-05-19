@@ -6,6 +6,8 @@
 extern "C" { 
 #endif /* __cplusplus */ 
 
+#include "../objects.h" 
+
 /* 
  * Determine the rate of mass enrichment of an element X from core-collapse 
  * supernovae at the current timestep. This is implemented acording to the 

@@ -18,21 +18,48 @@ _TIMES_ = [0.01 * i for i in range(1001)]
 
 
 @moduletest 
-def quiescence_test(): 
+def tau_star_inf(): 
+	r""" 
+	Runs a quiescence edge-case tests on a simulation in which the attribute 
+	tau_star is set to infinity. 
+	""" 
+	return [
+		"vice.core.singlezone edge case : quiescence [tau_star = infinity]", 
+		quiescence_test(tau_star = lambda t: float("inf"), 
+			smoothing = 10)  
+	] 
+
+
+def quiescence_test(**kwargs): 
 	r""" 
 	Run a quiescence edge-case test. These are defined as parameter spaces 
 	which yield no star formation, and thus no elemental production. This 
 	module test ensures that these conditions are met. 
+
+	Parameters 
+	----------
+	kwargs : varying types 
+		The keyword arguments to set as attributes of the singlezone class. 
+		Assumed to produce quiescence. 
+
+	Returns 
+	-------
+	tests : list 
+		The unit tests to return as a part of the moduletest object. 
+		None if the quiescence class can not be instantiated. 
 	""" 
-	description = "vice.core.singlezone edge case: quiescence" 
 	try: 
-		_TEST_ = quiescence() 
+		_TEST_ = quiescence(**kwargs)  
 	except: 
-		return [description, None] # skip test 
-	return [description, 
-		[ 
-			_TEST_.test_m_agb() 
-		] 
+		return None 
+	return [ 
+		_TEST_.test_m_agb(), 
+		_TEST_.test_m_ccsne(), 
+		_TEST_.test_update_element_mass(), 
+		_TEST_.test_onH(), 
+		_TEST_.test_update_gas_evolution(), 
+		_TEST_.test_get_outflow_rate(), 
+		_TEST_.test_singlezone_unretained() 
 	] 
 
 
@@ -45,8 +72,9 @@ cdef class quiescence:
 	production. 
 	""" 
 
-	def __init__(self): 
-		super().__init__(name = "test", tau_star = lambda t: float("inf"))  
+	def __init__(self, **kwargs): 
+		if "name" in kwargs.keys(): del kwargs["name"] 
+		super().__init__(name = "test", **kwargs)   
 		self.prep(_TIMES_) 
 		self.open_output_dir(True) 
 		self._sz[0].n_outputs = len(_TIMES_) 
@@ -68,4 +96,57 @@ cdef class quiescence:
 		def test(): 
 			return _quiescence.quiescence_test_m_AGB(self._sz) 
 		return ["vice.src.singlezone.agb.m_agb", test] 
+
+	@unittest 
+	def test_m_ccsne(self): 
+		r""" 
+		vice.src.singlezone.ccsne.m_ccsne quiescence test 
+		""" 
+		def test(): 
+			return _quiescence.quiescence_test_m_ccsne(self._sz) 
+		return ["vice.src.singlezone.ccsne.m_ccsne", test] 
+
+	@unittest 
+	def test_update_element_mass(self): 
+		r""" 
+		vice.src.singlezone.element.update_element_mass quiescence test 
+		""" 
+		def test(): 
+			return _quiescence.quiescence_test_update_element_mass(self._sz) 
+		return ["vice.src.singlezone.element.update_element_mass", test] 
+
+	@unittest 
+	def test_onH(self): 
+		r""" vice.src.singlezone.element.onH quiescence test 
+		""" 
+		def test(): 
+			return _quiescence.quiescence_test_onH(self._sz) 
+		return ["vice.src.singlezone.element.onH", test] 
+
+	@unittest 
+	def test_update_gas_evolution(self): 
+		r""" 
+		vice.src.singlezone.ism.update_gas_evolution quiescence test 
+		""" 
+		def test(): 
+			return _quiescence.quiescence_test_update_gas_evolution(self._sz) 
+		return ["vice.src.singlezone.ism.update_gas_evolution", test] 
+
+	@unittest 
+	def test_get_outflow_rate(self): 
+		r""" 
+		vice.src.singlezone.ism.get_outflow_rate quiescence test 
+		""" 
+		def test(): 
+			return _quiescence.quiescence_test_get_outflow_rate(self._sz) 
+		return ["vice.src.singlezone.ism.get_outflow_rate", test] 
+
+	@unittest 
+	def test_singlezone_unretained(self): 
+		r""" 
+		vice.src.singlezone.ism.singlezone_unretained quiescence test 
+		""" 
+		def test(): 
+			return _quiescence.quiescence_test_singlezone_unretained(self._sz) 
+		return ["vice.src.singlezone.ism.singlezone_unretained", test] 
 

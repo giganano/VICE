@@ -113,7 +113,7 @@ extern void update_element_mass_sanitycheck(ELEMENT *e) {
 	 * Moreover, 10^-12 Msun may be quite a bit of mass for some particularly 
 	 * heavy elements. Thus a lower bound of a true zero is implemented here. 
 	 */ 
-	if ((*e).mass < 0) e -> mass = 0; 	
+	if ((*e).mass < 0) e -> mass = 0; 
 
 } 
 

@@ -9,7 +9,7 @@ if not __VICE_SETUP__:
 
 	__all__ = ["test"] 
 	from .....testing import moduletest 
-	from ._quiescence import quiescence_test 
+	from ._quiescence import tau_star_inf 
 
 	@moduletest 
 	def test(): 
@@ -18,7 +18,7 @@ if not __VICE_SETUP__:
 		""" 
 		return ["vice.core.singlezone edge cases", 
 			[
-				quiescence_test(run = False) 
+				tau_star_inf(run = False) 
 			] 
 		] 
 
