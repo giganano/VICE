@@ -1,17 +1,22 @@
 
 Contributing to VICE 
 ====================
-VICE is written in a modular manner around a core set of objects implemented 
-in C. These objects are declared via ``typedef struct`` statements in the 
-file ``vice/src/objects/objects.h``. VICE's entire C library can be found in 
-the directory ``vice/src/``, and the major components of its python 
-implementation in ``vice/core/``. This includes the ``singlezone`` and 
-``multizone`` objects, the ``dataframe`` and all derived classes, the 
-``output`` and ``multioutput`` objects, and single stellar population 
-routines in the ``vice/core/ssp/`` subdirectory. The hierarchical file 
-structure of these directories is designed to mirror one another. Separate 
-from the VICE ``core`` is the ``yields`` module, in which all nucleosynthetic 
-yield calculations are implemented, independent of the simulation features. 
+VICE is written in a cohesive manner around a core set of objects. That is, 
+VICE's implementation shares one library, with considerable overlap between 
+relevant calculations (e.g. the ``multizone`` object makes use of the 
+``singlezone`` object, which makes use of the ``dataframe`` objects, and so 
+on). The ``dataframe`` being the exception which is implemented in ``Cython``, 
+the majority of these objects are implemented in C, declared via 
+``typedef struct`` statements in the file ``vice/src/objects/objects.h``. 
+VICE's entire C library can be found in the directory ``vice/src/``, and the 
+major components of its python implementation in ``vice/core/``. This includes 
+the ``singlezone`` and ``multizone`` objects, the ``dataframe`` and all 
+derived classes, the ``output`` and ``multioutput`` objects, and single 
+stellar population routines in the ``vice/core/ssp/`` subdirectory. The 
+hierarchical file structure of these directories is designed to mirror one 
+another. Separate from the VICE ``core`` is the ``yields`` module, in which 
+all nucleosynthetic yield calculations are implemented, independent of the 
+simulation features. 
 
 .. note:: The primary author (James W. Johnson) reserves the right to make 
 	revisions to all contributed code and associated documentation. 
