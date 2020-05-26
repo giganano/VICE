@@ -72,6 +72,16 @@ def yield_grid(element, study = "cristallo11"):
 		- 	The parameters passed to this function are allowed but the data 
 			file is not found. 
 
+	Notes 
+	-----
+	.. note:: The nucleosynthetic yield tables built into VICE do not include 
+		any treatment of radioactive isotopes. The yield tables returned by 
+		this function will not include what the specified study reported for 
+		radioactive isotopes. In the case of elements with a significant 
+		nucleosynthetic contribution from radioactive decay products, the 
+		values returned from this function should be interpreted as lower 
+		bounds rather than estimates of the true yield. 
+
 	Example Code 
 	------------
 	>>> y, m, z = vice.agb_yield_grid("sr") 

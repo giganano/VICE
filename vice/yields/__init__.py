@@ -18,6 +18,15 @@ presets : <package>
 	Yield settings presets 
 test : <function> 
 	Run the tests on this package 
+
+Notes 
+-----
+The yield tables built into VICE do not include any treatment of radioactive 
+isotopes. Equations are evaluated and tables are returned counting only the 
+total mass yield of stable isotopes. In the case of elements with a 
+significant nucleosynthetic contribution from radioactive decay products, the 
+values returned from the functions in this module should be interpreted as 
+lower bounds rather than estimates of the true yield. 
 """
 
 from __future__ import absolute_import 

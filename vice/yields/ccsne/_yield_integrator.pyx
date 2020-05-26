@@ -189,6 +189,14 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		25 :math:`M_\odot` were not forced to explode. The yields they report 
 		at these masses are only that ejected in the wind. 
 
+	.. note:: The nucleosynthetic yield tables built into VICE do not include 
+		any treatment of radioactive isotopes. The above equation is evaluated 
+		directly from the total mass yield of stable isotopes only. In this 
+		regard, if any element has a significant contribution to its 
+		nucleosynthesis from radioactive decay products, then the values 
+		returned from this function should be interpreted as lower bounds 
+		rather than estimates of the true nucleosynthetic yield. 
+
 	Example Code 
 	------------
 	>>> y, err = vice.yields.ccsne.fractional("o")

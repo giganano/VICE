@@ -97,6 +97,16 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, isotopic = False):
 			element is between 24 and 28 (inclusive). VICE warns against 
 			adopting these yields for iron peak elements. 
 
+	Notes 
+	-----
+	.. note:: The nucleosynthetic yield tables built into VICE do not include 
+		any treatment of radioactive isotopes. The yield tables returned from 
+		this function will not include what the specified study reported for 
+		radioactive isotopes. In the case of elements with a significant 
+		nucleosynthetic contribution from radioactive decay products, the 
+		values returned from this function should be interpreted as lower 
+		bounds rather than estimates of the true yield. 
+
 	Example Code 
 	------------
 	>>> import vice 
