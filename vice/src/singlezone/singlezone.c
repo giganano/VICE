@@ -46,7 +46,7 @@ extern long singlezone_address(SINGLEZONE *sz) {
  */ 
 extern unsigned short singlezone_evolve(SINGLEZONE *sz) {
 
-	if (singlezone_setup(sz)) return 1; 	/* setup failed */ 
+	if (singlezone_setup(sz)) return 1u; 	/* setup failed */ 
 	singlezone_evolve_no_setup_no_clean(sz); 
 
 	/* Normalize the MDF, write it out, close the files */ 
@@ -55,7 +55,7 @@ extern unsigned short singlezone_evolve(SINGLEZONE *sz) {
 	singlezone_close_files(sz); 
 	singlezone_clean(sz); 
 
-	return 0; 
+	return 0u; 
 
 } 
 
@@ -147,7 +147,7 @@ extern unsigned short singlezone_setup(SINGLEZONE *sz) {
 
 	/* Open output files and write headers */ 
 	if (singlezone_open_files(sz)) { 
-		return 1; 
+		return 1u; 
 	} else { 
 		write_history_header(*sz); 
 		sz -> current_time = 0.0; 
@@ -169,18 +169,18 @@ extern unsigned short singlezone_setup(SINGLEZONE *sz) {
 	 * metallicity distribution function, SNe Ia rates, and gas evolution. 
 	 */ 
 
-	if (setup_CRF(sz)) return 1; 
-	if (setup_MSMF(sz)) return 1; 
-	if (setup_MDF(sz)) return 1; 
-	if (setup_RIa(sz)) return 1; 
-	if (setup_gas_evolution(sz)) return 1; 
+	if (setup_CRF(sz)) return 1u; 
+	if (setup_MSMF(sz)) return 1u; 
+	if (setup_MDF(sz)) return 1u; 
+	if (setup_RIa(sz)) return 1u; 
+	if (setup_gas_evolution(sz)) return 1u; 
 	unsigned int i; 
 	for (i = 0u; i < (*sz).n_elements; i++) {
 		/* 
 		 * The singlezone object always allocates memory for 10 timesteps 
 		 * beyond the ending time as a safeguard against memory errors. 
 		 */ 
-		if (malloc_Z(sz -> elements[i], n_timesteps(*sz))) return 1; 
+		if (malloc_Z(sz -> elements[i], n_timesteps(*sz))) return 1u; 
 		sz -> elements[i] -> mass = (
 			(*(*sz).elements[i]).primordial * (*(*sz).ism).mass 
 		); 
@@ -189,7 +189,7 @@ extern unsigned short singlezone_setup(SINGLEZONE *sz) {
 		); 
 	} 
 
-	return 0; 
+	return 0u; 
 
 } 
 

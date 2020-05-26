@@ -39,3 +39,15 @@ cdef extern from "../ism.h":
 	unsigned short quiescence_test_get_outflow_rate(SINGLEZONE *sz) 
 	unsigned short quiescence_test_singlezone_unretained(SINGLEZONE *sz) 
 
+cdef extern from "../mdf.h": 
+	unsigned short quiescence_test_MDF(SINGLEZONE *sz) 
+
+cdef extern from "../recycling.h": 
+	unsigned short quiescence_test_mass_recycled(SINGLEZONE *sz) 
+
+cdef extern from "../singlezone.h": 
+	unsigned short quiescence_test_singlezone_stellar_mass(SINGLEZONE *sz) 
+
+cdef extern from "../sneia.h": 
+	unsigned short quiescence_test_mdot_sneia(SINGLEZONE *sz) 
+

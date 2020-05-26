@@ -10,9 +10,9 @@ if sys.version_info[:2] == (2, 7):
 elif sys.version_info[:2] >= (3, 5): 
 	strcomp = str
 else: 
-	_VERSION_ERROR_() 	
-from . cimport _quiescence 
+	_VERSION_ERROR_() 
 from libc.stdlib cimport malloc, free 
+from . cimport _quiescence 
 
 _TIMES_ = [0.01 * i for i in range(1001)] 
 
@@ -26,7 +26,7 @@ def tau_star_inf():
 	return [
 		"vice.core.singlezone edge case : quiescence [tau_star = infinity]", 
 		quiescence_test(tau_star = lambda t: float("inf"), 
-			smoothing = 10)  
+			smoothing = 10) 
 	] 
 
 
@@ -59,7 +59,11 @@ def quiescence_test(**kwargs):
 		_TEST_.test_onH(), 
 		_TEST_.test_update_gas_evolution(), 
 		_TEST_.test_get_outflow_rate(), 
-		_TEST_.test_singlezone_unretained() 
+		_TEST_.test_singlezone_unretained(), 
+		_TEST_.test_singlezone_mdf(), 
+		_TEST_.test_singlezone_mass_recycled(), 
+		_TEST_.test_singlezone_stellar_mass(), 
+		_TEST_.test_singlezone_m_sneia() 
 	] 
 
 
@@ -149,4 +153,40 @@ cdef class quiescence:
 		def test(): 
 			return _quiescence.quiescence_test_singlezone_unretained(self._sz) 
 		return ["vice.src.singlezone.ism.singlezone_unretained", test] 
+
+	@unittest 
+	def test_singlezone_mdf(self): 
+		r""" 
+		vice.src.singlezone.mdf quiescence test 
+		""" 
+		def test(): 
+			return _quiescence.quiescence_test_MDF(self._sz) 
+		return ["vice.src.singlezone.mdf", test] 
+
+	@unittest 
+	def test_singlezone_mass_recycled(self): 
+		r""" 
+		vice.src.singlezone.recycling.mass_recycled quiescence test 
+		""" 
+		def test(): 
+			return _quiescence.quiescence_test_mass_recycled(self._sz) 
+		return ["vice.src.singlezone.recycling.mass_recycled", test] 
+
+	@unittest 
+	def test_singlezone_stellar_mass(self): 
+		r""" 
+		vice.src.singlezone.singlezone.singlezone_stellar_mass quiescence test 
+		""" 
+		def test(): 
+			return _quiescence.quiescence_test_singlezone_stellar_mass(self._sz) 
+		return ["vice.src.singlezone.singlezone.singlezone_stellar_mass", test] 
+
+	@unittest 
+	def test_singlezone_m_sneia(self): 
+		r""" 
+		vice.src.singlezone.sneia.m_sneia quiescence test 
+		""" 
+		def test(): 
+			return _quiescence.quiescence_test_mdot_sneia(self._sz) 
+		return ["vice.src.singlezone.sneia.m_sneia", test] 
 

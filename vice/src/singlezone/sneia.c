@@ -194,7 +194,7 @@ extern void normalize_RIa(ELEMENT *e, unsigned long length) {
 		sum += (*(*e).sneia_yields).RIa[i]; 
 	} 
 	for (i = 0l; i < length; i++) {
-		 e -> sneia_yields -> RIa[i] /= sum; 
+		e -> sneia_yields -> RIa[i] /= sum; 
 	} 
 
 } 
