@@ -39,7 +39,7 @@ extern unsigned short setup_gas_evolution(SINGLEZONE *sz) {
 			 */ 
 			sz -> ism -> mass = (*(*sz).ism).specified[0]; 
 			sz -> ism -> star_formation_rate = ((*(*sz).ism).mass / 
-				get_SFE_timescale(*sz)); 
+				get_SFE_timescale(*sz, 1u)); 
 			sz -> ism -> infall_rate = NAN; /* lower bound at 10^-12 */  
 			break; 
 
@@ -47,17 +47,17 @@ extern unsigned short setup_gas_evolution(SINGLEZONE *sz) {
 			/* initial gas supply set by python in this case */ 
 			sz -> ism -> infall_rate = (*(*sz).ism).specified[0]; 
 			sz -> ism -> star_formation_rate = ((*(*sz).ism).mass / 
-				get_SFE_timescale(*sz)); 
+				get_SFE_timescale(*sz, 1u)); 
 			break; 
 
 		case SFR: 
 			sz -> ism -> star_formation_rate = (*(*sz).ism).specified[0]; 
-			sz -> ism -> mass = get_ism_mass_SFRmode(*sz); 
+			sz -> ism -> mass = get_ism_mass_SFRmode(*sz, 0u); 
 			sz -> ism -> infall_rate = NAN; 
 			break; 
 
 		default: 
-			return 1; 		/* unrecognized mode */ 
+			return 1u; 		/* unrecognized mode */ 
 	} 
 
 	/* Run the sanity checks to impose the lower bound */ 
@@ -68,7 +68,7 @@ extern unsigned short setup_gas_evolution(SINGLEZONE *sz) {
 		((unsigned long) ((*sz).output_times[(*sz).n_outputs - 1l] / (*sz).dt) 
 			+ 10l) * sizeof(double)); 
 	sz -> ism -> star_formation_history[0l] = (*(*sz).ism).star_formation_rate; 
-	return 0; 
+	return 0u; 
 
 } 
 
@@ -109,7 +109,7 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
 		case GAS: 
 			sz -> ism -> mass = (*(*sz).ism).specified[(*sz).timestep + 1l]; 
 			sz -> ism -> star_formation_rate = ((*(*sz).ism).mass / 
-				get_SFE_timescale(*sz)); 
+				get_SFE_timescale(*sz, 0u)); 
 			sz -> ism -> infall_rate = (
 				((*(*sz).ism).mass - (*(*sz).ism).specified[(*sz).timestep] - 
 					mass_recycled(*sz, NULL)) / (*sz).dt + 
@@ -125,13 +125,13 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
 			sz -> ism -> infall_rate = (*(*sz).ism).specified[(
 				*sz).timestep + 1l]; 
 			sz -> ism -> star_formation_rate = ((*(*sz).ism).mass / 
-				get_SFE_timescale(*sz)); 
+				get_SFE_timescale(*sz, 0u)); 
 			break; 
 
 		case SFR: 
 			sz -> ism -> star_formation_rate = (
 				*(*sz).ism).specified[(*sz).timestep + 1l];  
-			double dMg = get_ism_mass_SFRmode(*sz) - (*(*sz).ism).mass; 
+			double dMg = get_ism_mass_SFRmode(*sz, 0u) - (*(*sz).ism).mass; 
 			sz -> ism -> infall_rate = (
 				(dMg - mass_recycled(*sz, NULL)) / (*sz).dt + 
 				(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz)
@@ -140,14 +140,14 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
 			break; 
 
 		default: 
-			return 1; 
+			return 1u; 
 
 	} 
 
 	update_gas_evolution_sanitycheck(sz); 
 	sz -> ism -> star_formation_history[(*sz).timestep + 1l] = (
 		*(*sz).ism).star_formation_rate; 
-	return 0; 
+	return 0u; 
 
 } 
 
@@ -157,6 +157,7 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
  * Parameters 
  * ========== 
  * sz: 		The singlezone object for the current simulation 
+ * setup: 	1 if this function is being called from the setup, 0 otherwise 
  * 
  * Returns 
  * ======= 
@@ -165,15 +166,20 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
  * 
  * header: ism.h 
  */ 
-extern double get_SFE_timescale(SINGLEZONE sz) {
+extern double get_SFE_timescale(SINGLEZONE sz, unsigned short setup) {
 
+	/* 
+	 * If this function is not being called on singlezone setup, get the 
+	 * SFE timescale at the next timestep 
+	 */ 
+	setup = 1 - setup; 
 	if ((*sz.ism).schmidt) { 
 		/* Single-zone implementation of Kennicutt-Schmidt Law */ 
-		return ((*sz.ism).tau_star[sz.timestep + 1l] * pow((*sz.ism).mass / 
+		return ((*sz.ism).tau_star[sz.timestep + setup] * pow((*sz.ism).mass / 
 			(*sz.ism).mgschmidt, -(*sz.ism).schmidt_index)); 
 	} else { 
 		/* Instantaneous star formation efficiency */ 
-		return (*sz.ism).tau_star[sz.timestep + 1l]; 
+		return (*sz.ism).tau_star[sz.timestep + setup]; 
 	}
 
 } 
@@ -186,6 +192,7 @@ extern double get_SFE_timescale(SINGLEZONE sz) {
  * Parameters 
  * ========== 
  * sz: 		The singlezone object for the current simulation 
+ * setup: 	1 if this function is being called from the setup, 0 otherwise 
  * 
  * Returns 
  * ======= 
@@ -193,7 +200,7 @@ extern double get_SFE_timescale(SINGLEZONE sz) {
  * 
  * header: ism.h 
  */ 
-extern double get_ism_mass_SFRmode(SINGLEZONE sz) { 
+extern double get_ism_mass_SFRmode(SINGLEZONE sz, unsigned short setup) { 
 
 	/* 
 	 * The following are the analytically determined solutions for the gas 
@@ -201,17 +208,21 @@ extern double get_ism_mass_SFRmode(SINGLEZONE sz) {
 	 * documentation. Special consideration must be taken aside from a simple 
 	 * SFR x get_SFE_timescale approach because this introduces numerical 
 	 * artifacts when the star formation rate is low. 
+	 * 
+	 * If this function is not being called on singlezone setup, get the SFE 
+	 * timescale at the next timestep. 
 	 */ 
 
+	setup = 1 - setup; 
 	if ((*sz.ism).schmidt) { 
 		return pow( 
 			(*sz.ism).star_formation_rate * 
-			(*sz.ism).tau_star[sz.timestep + 1l] * 
+			(*sz.ism).tau_star[sz.timestep + setup] * 
 			pow((*sz.ism).mgschmidt, (*sz.ism).schmidt_index), 
 			1 / (1 + (*sz.ism).schmidt_index)); 
 	} else {
 		return ((*sz.ism).star_formation_rate * 
-			(*sz.ism).tau_star[sz.timestep + 1l]); 
+			(*sz.ism).tau_star[sz.timestep + setup]); 
 	}
 
 }

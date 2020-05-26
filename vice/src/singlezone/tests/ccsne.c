@@ -31,3 +31,29 @@ extern unsigned short quiescence_test_m_ccsne(SINGLEZONE *sz) {
 
 }
 
+
+/* 
+ * Performs the max age SSP edge-case test on the mdot_ccsne function at 
+ * ../ccsne.h applicable to cases where only the zero'th timestep has star 
+ * formation. 
+ * 
+ * Parameters 
+ * ==========
+ * sz: 		A pointer to the singlezone object to run the tests on 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * header: ccsne.h 
+ */ 
+extern unsigned short max_age_ssp_test_m_ccsne(SINGLEZONE *sz) {
+
+	/* 
+	 * Because CCSNe are approximated to explode instantaneously, for a max 
+	 * age SSP it's as if the stellar population weren't even there. 
+	 */ 
+	return quiescence_test_m_ccsne(sz); 
+
+}
+

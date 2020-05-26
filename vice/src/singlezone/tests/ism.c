@@ -4,7 +4,10 @@
  */ 
 
 #include <stdlib.h> 
+#include "../../utils.h" 
 #include "../ism.h" 
+
+static const double INITIAL_ISM_MASS = 6.0e9; 
 
 
 /* 
@@ -23,9 +26,60 @@
  */ 
 extern unsigned short quiescence_test_update_gas_evolution(SINGLEZONE *sz) {
 
-	return (*(*sz).ism).star_formation_rate == 0; 
+	unsigned short status = (*(*sz).ism).star_formation_rate == 0; 
+	if (status) {
+		/* 
+		 * Recalculate the ISM mass and compare based on a maximum percent 
+		 * difference to account for round-off error. 
+		 */ 
+		double ism_mass = (INITIAL_ISM_MASS + 
+			(*sz).current_time * (*(*sz).ism).infall_rate); 
+		double percent_difference = absval(
+			((*(*sz).ism).mass - ism_mass) / (*(*sz).ism).mass 
+		); 
+		status &= percent_difference < 1e-12; 
+	} else {} 
+	return status; 
 
 } 
+
+
+/* 
+ * Performs the max age ssp edge-case test on the update_gas_evolution 
+ * function in the parent directory. 
+ * 
+ * Parameters 
+ * ==========
+ * sz: 		A pointer to the singlezone object to run the test on 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * header: ism.h 
+ */ 
+extern unsigned short max_age_ssp_test_update_gas_evolution(SINGLEZONE *sz) {
+
+	unsigned short status = (*(*sz).ism).star_formation_rate == 0; 
+	if (status) {
+		/* 
+		 * Recalculate the ISM mass and compare based on a maximum percent 
+		 * difference to account for round-off error. 
+		 */ 
+		double ssp_mass = (*(*sz).ism).star_formation_history[0] * (*sz).dt; 
+		double ism_mass = (INITIAL_ISM_MASS + 
+			(*sz).current_time * (*(*sz).ism).infall_rate - ssp_mass + 
+			ssp_mass * (*(*sz).ssp).crf[(*sz).timestep] - 
+			(*(*sz).ism).eta[0] * ssp_mass 
+		); 
+		double percent_difference = absval(
+			((*(*sz).ism).mass - ism_mass) / (*(*sz).ism).mass 
+		); 
+		status &= percent_difference < 1e-12; 
+	} else {} 
+	return status; 
+
+}
 
 
 /* 
@@ -47,6 +101,28 @@ extern unsigned short quiescence_test_get_outflow_rate(SINGLEZONE *sz) {
 	return get_outflow_rate(*sz) == 0; 
 
 } 
+
+
+/* 
+ * Performs the max age ssp test on the get_outflow_rate function in the 
+ * parent directory. 
+ * 
+ * Parameters 
+ * ==========
+ * sz: 		A pointer to the singlezone object to perform the test on 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * header: ism.h 
+ */ 
+extern unsigned short max_age_ssp_test_get_outflow_rate(SINGLEZONE *sz) {
+
+	/* There shouldn't be any outflows under this edge case */ 
+	return quiescence_test_get_outflow_rate(sz); 
+
+}
 
 
 /* 
@@ -77,6 +153,28 @@ extern unsigned short quiescence_test_singlezone_unretained(SINGLEZONE *sz) {
 	} else {
 		return 0u; 
 	}
+
+}
+
+
+/* 
+ * Performs the max age ssp edge-case test on the get_outflow_rate function in 
+ * the parent directory. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		A pointer to the singlezone object to perform the test on 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * header: ism.h 
+ */ 
+extern unsigned short max_age_ssp_test_singlezone_unretained(SINGLEZONE *sz) {
+
+	/* There shouldn't be any unretained material under this test */ 
+	return quiescence_test_singlezone_unretained(sz); 
 
 }
 

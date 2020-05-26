@@ -52,7 +52,7 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 			case GAS: 
 				sz -> ism -> mass = (*(*sz).ism).specified[(*sz).timestep + 1l]; 
 				sz -> ism -> star_formation_rate = (
-					(*(*sz).ism).mass / get_SFE_timescale(*sz) 
+					(*(*sz).ism).mass / get_SFE_timescale(*sz, 0u) 
 				); 
 				sz -> ism -> infall_rate = (
 					((*(*sz).ism).mass - (*(*sz).ism).specified[(*sz).timestep] 
@@ -71,7 +71,7 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 				sz -> ism -> infall_rate = (
 					*(*sz).ism).specified[(*sz).timestep + 1l]; 
 				sz -> ism -> star_formation_rate = (
-					(*(*sz).ism).mass / get_SFE_timescale(*sz) 
+					(*(*sz).ism).mass / get_SFE_timescale(*sz, 0u) 
 				); 
 				// enforce_sfr_floor(sz); 
 				break; 
@@ -79,7 +79,7 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 			case SFR: 
 				sz -> ism -> star_formation_rate = (
 					*(*sz).ism).specified[(*sz).timestep + 1l]; 
-				double dMg = get_ism_mass_SFRmode(*sz) - (*(*sz).ism).mass; 
+				double dMg = get_ism_mass_SFRmode(*sz, 0u) - (*(*sz).ism).mass; 
 				sz -> ism -> infall_rate = (
 					(dMg - mass_recycled[i]) / (*sz).dt + 
 					(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz) 

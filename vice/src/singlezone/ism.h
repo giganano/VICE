@@ -46,6 +46,7 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz);
  * Parameters 
  * ========== 
  * sz: 		The singlezone object for the current simulation 
+ * setup: 	1 if this function is being called from the setup, 0 otherwise 
  * 
  * Returns 
  * ======= 
@@ -54,7 +55,7 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz);
  * 
  * source: ism.c 
  */ 
-extern double get_SFE_timescale(SINGLEZONE sz); 
+extern double get_SFE_timescale(SINGLEZONE sz, unsigned short setup); 
 
 /* 
  * Determines the mass of the ISM at the NEXT timestep when the simulation is 
@@ -70,7 +71,7 @@ extern double get_SFE_timescale(SINGLEZONE sz);
  * 
  * source: ism.c 
  */ 
-extern double get_ism_mass_SFRmode(SINGLEZONE sz); 
+extern double get_ism_mass_SFRmode(SINGLEZONE sz, unsigned short setup); 
 
 /* 
  * Performs a sanity check on the ISM parameters immediately after they 
