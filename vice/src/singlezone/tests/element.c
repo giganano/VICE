@@ -59,6 +59,28 @@ extern unsigned short max_age_ssp_test_update_element_mass(SINGLEZONE *sz) {
 
 
 /* 
+ * Performs the zero age SSP edge-case test on the update_element_mass function 
+ * in the parent directory. 
+ * 
+ * Parameters 
+ * ==========
+ * sz: 		A pointer to the singlezone object to run the test on 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * header: element.h 
+ */ 
+extern unsigned short zero_age_ssp_test_update_element_mass(SINGLEZONE *sz) {
+
+	/* The same criteria as the max age test */ 
+	return max_age_ssp_test_update_element_mass(sz); 
+
+}
+
+
+/* 
  * Implements the quiescence test on the onH function in the parent directory 
  * by ensuring that [X/H] = -infinity for each element. 
  * 
@@ -108,6 +130,27 @@ extern unsigned short max_age_ssp_test_onH(SINGLEZONE *sz) {
 		if (!status) break; 
 	} 
 	return status; 
+
+}
+
+
+/* 
+ * Performs the zero age SSP test on the onH function in the parent directory. 
+ * 
+ * Parameters 
+ * ==========
+ * sz: 		A pointer to the singlezone object to run the test on 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * header: element.h 
+ */ 
+extern unsigned short zero_age_ssp_test_onH(SINGLEZONE *sz) {
+
+	/* The same criteria as the max age test */ 
+	return max_age_ssp_test_onH(sz); 
 
 }
 

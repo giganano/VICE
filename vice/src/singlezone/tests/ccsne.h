@@ -39,6 +39,22 @@ extern unsigned short quiescence_test_m_ccsne(SINGLEZONE *sz);
  */ 
 extern unsigned short max_age_ssp_test_m_ccsne(SINGLEZONE *sz); 
 
+/* 
+ * Performs the zero age SSP edge-case test on the mdot_ccsne function in the 
+ * parent directory. 
+ * 
+ * Parameters 
+ * ==========
+ * sz: 		A pointer to the singlezone object to run the test on 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * header: ccsne.h 
+ */ 
+extern unsigned short zero_age_ssp_test_m_ccsne(SINGLEZONE *sz); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

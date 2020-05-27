@@ -39,6 +39,22 @@ extern unsigned short quiescence_test_m_AGB(SINGLEZONE *sz);
  */ 
 extern unsigned short max_age_ssp_test_m_AGB(SINGLEZONE *sz); 
 
+/* 
+ * Performs the zero age SSP edge-case test on the m_AGB function in the 
+ * parent directory. 
+ * 
+ * Parameters 
+ * ==========
+ * sz: 		A pointer to the singlezone object to perform the test on 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * source: agb.c 
+ */ 
+extern unsigned short zero_age_ssp_test_m_AGB(SINGLEZONE *sz); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

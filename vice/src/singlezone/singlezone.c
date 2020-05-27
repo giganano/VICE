@@ -125,7 +125,7 @@ static unsigned short singlezone_timestepper(SINGLEZONE *sz) {
 	sz -> current_time += (*sz).dt; 
 	sz -> timestep++; 
 
-	return (*sz).current_time > (*sz).output_times[(*sz).n_outputs - 1l]; 
+	return (*sz).current_time >= (*sz).output_times[(*sz).n_outputs - 1l]; 
 	
 }
 
@@ -372,6 +372,10 @@ static void verbosity(SINGLEZONE sz) {
  */ 
 extern double singlezone_stellar_mass(SINGLEZONE sz) {
 
+	/* 
+	 * Only previous timesteps are considered - stars currently forming not 
+	 * considered as stellar mass until at least one timestep old. 
+	 */ 
 	unsigned long i; 
 	double mass = 0; 
 	for (i = 0l; i < sz.timestep; i++) {

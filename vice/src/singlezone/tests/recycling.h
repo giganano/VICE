@@ -38,6 +38,22 @@ extern unsigned short quiescence_test_mass_recycled(SINGLEZONE *sz);
  */ 
 extern unsigned short max_age_ssp_test_mass_recycled(SINGLEZONE *sz); 
 
+/* 
+ * Performs the zero age SSP edge-case test on the mass_recycled function in 
+ * the parent directory. 
+ * 
+ * Parameters 
+ * ==========
+ * sz: 		A pointer to the singlezone object to run the test on 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * source: recycling.c 
+ */ 
+extern unsigned short zero_age_ssp_test_mass_recycled(SINGLEZONE *sz); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

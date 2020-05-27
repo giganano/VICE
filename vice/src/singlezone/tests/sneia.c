@@ -60,3 +60,29 @@ extern unsigned short max_age_ssp_test_mdot_sneia(SINGLEZONE *sz) {
 
 }
 
+
+/* 
+ * Performs the zero age ssp edge-case test on the mdot_sneia function in the 
+ * parent directory. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		A pointer to the singlezone object to run the test on 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * header: sneia.h 
+ */ 
+extern unsigned short zero_age_ssp_test_mdot_sneia(SINGLEZONE *sz) {
+
+	/* 
+	 * SNe Ia having an intrinsic delay, a zero age population shouldn't 
+	 * produce any SN Ia enrichment. This should thus be identical to the 
+	 * quiescent scenario. 
+	 */ 
+	return quiescence_test_mdot_sneia(sz); 
+
+}
+
