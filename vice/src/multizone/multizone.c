@@ -12,8 +12,6 @@
 #include "tracer.h" 
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
-static void multizone_evolve_simple(MULTIZONE *mz); 
-static void multizone_evolve_full(MULTIZONE *mz); 
 static unsigned short multizone_timestepper(MULTIZONE *mz); 
 static void verbosity(MULTIZONE mz); 
 
@@ -105,8 +103,10 @@ extern unsigned short multizone_evolve(MULTIZONE *mz) {
  * Parameters 
  * ========== 
  * mz: 		A pointer to the multizone object to run 
+ * 
+ * header: multizone.h 
  */ 
-static void multizone_evolve_simple(MULTIZONE *mz) {
+extern void multizone_evolve_simple(MULTIZONE *mz) {
 
 	unsigned int i; 
 	for (i = 0; i < (*(*mz).mig).n_zones; i++) { 
@@ -136,8 +136,10 @@ static void multizone_evolve_simple(MULTIZONE *mz) {
  * Parameters 
  * ========== 
  * mz: 		A pointer to the multizone object to run 
+ * 
+ * header: multizone.h 
  */ 
-static void multizone_evolve_full(MULTIZONE *mz) {
+extern void multizone_evolve_full(MULTIZONE *mz) {
 
 	/* 
 	 * Use the variable n to keep track of the number of outputs. Pull a 

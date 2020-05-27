@@ -14,16 +14,21 @@ if not __VICE_SETUP__:
 	from . import mig_specs 
 	from . import zone_array 
 	from . import _multizone 
+	from ....src.multizone.tests import test as src_test 
 
 	@moduletest 
 	def test(): 
-		return ["vice.core.multizone", 
+		r""" 
+		vice.multizone module test 
+		""" 
+		return ["vice.multizone", 
 			[
 				mig_matrix_row.test(run = False), 
 				mig_matrix.test(run = False), 
 				mig_specs.test(run = False), 
 				zone_array.test(run = False), 
-				_multizone.test(run = False) 
+				_multizone.test(run = False), 
+				src_test(run = False) 
 			]
 		] 
 

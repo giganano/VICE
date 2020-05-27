@@ -59,7 +59,6 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 						- mass_recycled[i]) / (*sz).dt + 
 					(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz) 
 				); 
-				// enforce_sfr_floor(sz); 
 				break; 
 
 			case IFR: 
@@ -73,7 +72,6 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 				sz -> ism -> star_formation_rate = (
 					(*(*sz).ism).mass / get_SFE_timescale(*sz, 0u) 
 				); 
-				// enforce_sfr_floor(sz); 
 				break; 
 
 			case SFR: 
@@ -135,27 +133,6 @@ extern double **multizone_unretained(MULTIZONE mz) {
 	} 
 
 	return unretained; 
-
-	#if 0 
-	for (i = 0u; i < (*mz.zones[0]).n_elements; i++) {
-		double *agb = m_AGB_from_tracers(mz, i); 
-		double *sneia = m_sneia_from_tracers(mz, i); 
-		for (j = 0u; j < (*mz.mig).n_zones; j++) {
-			unretained[j][i] += (
-				(1 - (*(*(*mz.zones[j]).elements[i]).agb_grid).entrainment) * 
-				agb[j] / (*mz.zones[j]).dt 
-			); 
-			unretained[j][i] += (
-				(1 - (*(*(*mz.zones[j]).elements[i]).ccsne_yields).entrainment) * 
-				mdot_ccsne(*mz.zones[j], *(*mz.zones[j]).elements[i]) 
-			); 
-			unretained[j][i] += (
-				(1 - (*(*(*mz.zones[j]).elements[i]).sneia_yields).entrainment) * 
-				sneia[j] / (*mz.zones[j]).dt 
-			); 
-		} 
-	} 
-	#endif 
 
 }
 

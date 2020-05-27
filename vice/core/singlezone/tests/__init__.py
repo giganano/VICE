@@ -16,12 +16,15 @@ if not __VICE_SETUP__:
 
 	@moduletest 
 	def test(): 
+		r""" 
+		vice.singlezone module test 
+		""" 
 		return ["vice.singlezone", 
 			[ 
 				test_from_output(), 
-				src_test(run = False), 
 				_singlezone.test(run = False), 
-				trials.test(run = False) 
+				trials.test(run = False), 
+				src_test(run = False) 
 			] 
 		] 
 		

@@ -39,6 +39,30 @@ extern void link_zone(MULTIZONE *mz, unsigned long address,
  */ 
 extern unsigned short multizone_evolve(MULTIZONE *mz); 
 
+/* 
+ * Runs the multizone simulation under current user settings with tracer 
+ * particles not tracked at each individual timestep 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		A pointer to the multizone object to run 
+ * 
+ * source: multizone.c 
+ */ 
+extern void multizone_evolve_simple(MULTIZONE *mz); 
+
+/* 
+ * Runs the multizone simulation under current user settings with tracer 
+ * particle zones tracked at each individual timestep. 
+ * 
+ * Parameters 
+ * ========== 
+ * mz: 		A pointer to the multizone object to run 
+ * 
+ * source: multizone.c 
+ */ 
+extern void multizone_evolve_full(MULTIZONE *mz); 
+
 /*
  * Sets up every zone in a multizone object for simulation 
  * 
