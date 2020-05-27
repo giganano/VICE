@@ -15,6 +15,10 @@ extern "C" {
 #include "ssp/tests.h" 
 #include "yields/tests.h" 
 
+#include "tests/imf.h" 
+#include "tests/stats.h" 
+#include "tests/utils.h" 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 
