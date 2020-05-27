@@ -242,9 +242,6 @@ class callback1_nan(callback1):
 	.. seealso:: ``callback1`` 
 	""" 
 
-	def __init__(self, function): 
-		super().__init__(function) 
-
 	@no_nan 
 	@numerical 
 	def __call__(self, x): 
@@ -262,9 +259,6 @@ class callback1_nan_inf(callback1):
 
 	.. seealso:: ``callback1`` 
 	""" 
-
-	def __init__(self, function): 
-		super().__init__(function) 
 
 	@no_inf 
 	@no_nan 
@@ -285,9 +279,6 @@ class callback1_nan_positive(callback1):
 	.. seealso:: ``callback1`` 
 	""" 
 
-	def __init__(self, function): 
-		super().__init__(function) 
-
 	@positive 
 	@no_nan 
 	@numerical 
@@ -306,9 +297,6 @@ class callback1_nan_inf_positive(callback1):
 
 	.. seealso:: ``callback1`` 
 	""" 
-
-	def __init__(self, function): 
-		super().__init__(function) 
 
 	@positive 
 	@no_inf 
@@ -393,9 +381,6 @@ class callback2_nan(callback2):
 	.. seealso:: ``callback1`` 
 	""" 
 
-	def __init__(self, function): 
-		super().__init__(function) 
-
 	@no_nan 
 	@numerical 
 	def __call__(self, x, y): 
@@ -413,9 +398,6 @@ class callback2_nan_inf(callback2):
 
 	.. seealso:: ``callback1`` 
 	""" 
-
-	def __init__(self, function): 
-		super().__init__(function) 
 
 	@no_inf 
 	@no_nan 
@@ -436,9 +418,6 @@ class callback2_nan_positive(callback2):
 	.. seealso:: ``callback1`` 
 	""" 
 
-	def __init__(self, function): 
-		super().__init__(function) 
-
 	@positive 
 	@no_nan 
 	@numerical 
@@ -457,9 +436,6 @@ class callback2_nan_inf_positive(callback2):
 
 	.. seealso:: ``callback1`` 
 	""" 
-
-	def __init__(self, function): 
-		super().__init__(function) 
 
 	@positive 
 	@no_inf 
