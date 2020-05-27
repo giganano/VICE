@@ -106,10 +106,10 @@ def test_getitem_builtins():
 	""" 
 	def test(): 
 		r""" 
-		VICE writes each quantity to the output file with 7 significant 
+		VICE writes each quantity to the output file with 6 significant 
 		digits. Therefore, due to roundoff error, some quantities that 
-		should be equal can actually be off by a difference of up to 1e-7. 
-		This is will within a reasonable tolerance. 
+		should be equal can actually be off by a difference of up to 1e-6. 
+		This is well within a reasonable tolerance. 
 		""" 
 		try: 
 			for i in ["time", "mgas", "mstar", "sfr", "ifr", "ofr", 
@@ -126,7 +126,7 @@ def test_getitem_builtins():
 				assert isinstance(_TEST_["z_out(%s)" % (i)], list) 
 				assert all(map(lambda x: isinstance(x, numbers.Number), 
 					_TEST_["z_out(%s)" % (i)])) 
-				assert all(map(lambda x, y: abs(x - y) < 1e-7, 
+				assert all(map(lambda x, y: abs(x - y) < 1e-6, 
 					_TEST_["z_out(%s)" % (i)], _TEST_["z(%s)" % (i)])) 
 				assert isinstance(_TEST_["mass(%s)" % (i)], list) 
 				assert all(map(lambda x: isinstance(x, numbers.Number), 
