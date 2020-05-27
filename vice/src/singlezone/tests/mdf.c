@@ -50,3 +50,28 @@ extern unsigned short quiescence_test_MDF(SINGLEZONE *sz) {
 
 } 
 
+
+/* 
+ * Performs the max age SSP edge-case test on the MDF routines in the parent 
+ * directory. 
+ * 
+ * Parameters 
+ * ==========
+ * sz: 		A pointer to the singlezone object to perform the test on 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * header: mdf.h 
+ */ 
+extern unsigned short max_age_ssp_test_MDF(SINGLEZONE *sz) {
+
+	/* 
+	 * The single stellar population formed is zero metallicity, so the 
+	 * distribution should be the same as in the quiescent case. 
+	 */ 
+	return quiescence_test_MDF(sz); 
+
+}
+

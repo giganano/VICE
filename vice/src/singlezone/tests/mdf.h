@@ -22,6 +22,22 @@ extern "C" {
  */ 
 extern unsigned short quiescence_test_MDF(SINGLEZONE *sz); 
 
+/* 
+ * Performs the max age SSP edge-case test on the MDF routines in the parent 
+ * directory. 
+ * 
+ * Parameters 
+ * ==========
+ * sz: 		A pointer to the singlezone object to perform the test on 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * source: mdf.c 
+ */ 
+extern unsigned short max_age_ssp_test_MDF(SINGLEZONE *sz); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

@@ -25,7 +25,7 @@ def single_max_age_ssp():
 	""" 
 	return [
 		"""vice.core.singlezone edge case : single max age stellar population \
-[tau_star = infinity if t >= %g Gyr else 2 Gyr]""" % (_TIMES_[1]), 
+[tau_star = infinity if t = 0 else 2 Gyr]""", 
 		max_age_ssp_test(tau_star = tau_star) 
 	] 
 
@@ -35,7 +35,7 @@ def tau_star(t):
 	The attribute tau_star as a function of time for the fiducial max age SSP 
 	edge-case test. 
 	""" 
-	if t >= _TIMES_[1]: 
+	if t: 
 		return float("inf") 
 	else: 
 		return 2 
@@ -70,7 +70,11 @@ def max_age_ssp_test(**kwargs):
 		_TEST_.test_onH(), 
 		_TEST_.test_update_gas_evolution(), 
 		_TEST_.test_get_outflow_rate(), 
-		_TEST_.test_singlezone_unretained() 
+		_TEST_.test_singlezone_unretained(), 
+		_TEST_.test_singlezone_mdf(), 
+		_TEST_.test_mass_recycled(), 
+		_TEST_.test_singlezone_stellar_mass(), 
+		_TEST_.test_m_sneia() 
 	] 
 
 
@@ -159,6 +163,44 @@ cdef class max_age_ssp:
 		def test(): 
 			return _max_age_ssp.max_age_ssp_test_singlezone_unretained(self._sz) 
 		return ["vice.src.singlezone.ism.singlezone_unretained", test] 
+
+	@unittest 
+	def test_singlezone_mdf(self): 
+		r""" 
+		vice.src.singlezone.mdf unit max age SSP test 
+		""" 
+		def test(): 
+			return _max_age_ssp.max_age_ssp_test_MDF(self._sz) 
+		return ["vice.src.singlezone.mdf", test] 
+
+	@unittest 
+	def test_mass_recycled(self): 
+		r""" 
+		vice.src.singlezone.recycling.mass_recycled max age SSP test 
+		""" 
+		def test(): 
+			return _max_age_ssp.max_age_ssp_test_mass_recycled(self._sz) 
+		return ["vice.src.singlezone.recycling.mass_recycled", test] 
+
+	@unittest 
+	def test_singlezone_stellar_mass(self): 
+		r""" 
+		vice.src.singlezone.singlezone_stellar_mass max age ssp test 
+		""" 
+		def test(): 
+			return _max_age_ssp.max_age_ssp_test_singlezone_stellar_mass(
+				self._sz) 
+		return ["vice.src.singlezone.singlezone.singlezone_stellar_mass", 
+			test] 
+
+	@unittest 
+	def test_m_sneia(self): 
+		r""" 
+		vice.src.singlezone.sneia.m_sneia max age ssp test 
+		""" 
+		def test(): 
+			return _max_age_ssp.max_age_ssp_test_mdot_sneia(self._sz) 
+		return ["vice.src.singlezone.sneia.m_sneia", test] 
 
 
 

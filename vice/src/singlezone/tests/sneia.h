@@ -22,6 +22,22 @@ extern "C" {
  */ 
 extern unsigned short quiescence_test_mdot_sneia(SINGLEZONE *sz); 
 
+/* 
+ * Performs the max age ssp edge-case test on the mdot_sneia function in the 
+ * parent directory. 
+ * 
+ * Parameters 
+ * ==========
+ * sz: 		A pointer to the singlezone object to run the test on 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * source: sneia.c 
+ */ 
+extern unsigned short max_age_ssp_test_mdot_sneia(SINGLEZONE *sz); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 
