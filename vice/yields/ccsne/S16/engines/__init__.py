@@ -18,7 +18,7 @@ except NameError:
 if not __VICE_SETUP__: 
 
 	__all__ = ["W18", "test"] 
-	from .tests import test  
+	from .tests import test 
 	from .W18 import W18 
 	W18 = W18() 
 

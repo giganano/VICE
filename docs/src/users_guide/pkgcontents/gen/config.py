@@ -437,7 +437,7 @@ _CONFIG_ = {
 	vice.yields.ccsne.S16.engines.W18: {
 		"filename": 	"vice.yields.ccsne.S16.engines.W18.rst", 
 		"header": 		"vice.yields.ccsne.S16.engines.W18", 
-		"subs": 		[] 
+		"subs": 		[]  
 	}, 
 	vice.yields.ccsne.LC18: {
 		"filename": 	"vice.yields.ccsne.LC18.rst", 
