@@ -14,34 +14,38 @@ import warnings
 import math 
 
 
-_STUDY_ = ["LC18", "CL13", "CL04", "WW95", "NKT13"] 
+_STUDY_ = ["LC18", "CL13", "CL04", "WW95", "NKT13", "S16/W18"]  
 _NAMES_ = {
 	"LC18": 		"Limongi & Chieffi (2018)", 
 	"CL13": 		"Chieffi & Limongi (2013)", 
 	"CL04": 		"Chieffi & Limongi (2004)", 
 	"WW95": 		"Woosley & Weaver (1995)", 
-	"NKT13": 		"Nomoto, Kobayashi & Tominaga (2013)" 
+	"NKT13": 		"Nomoto, Kobayashi & Tominaga (2013)", 
+	"S16/W18": 		"Sukhbold et al. (2016)" 
 }
 _MOVERH_ = {
 	"LC18":			[-3, -2, -1, 0], 
 	"CL13": 		[0], 
 	"CL04":			[-float("inf"), -4, -2, -1, -0.37, 0.15], 
 	"WW95":			[-float("inf"), -4, -2, -1, 0], 
-	"NKT13": 		[-float("inf"), -1.15, -0.54, -0.24, 0.15, 0.55] 
+	"NKT13": 		[-float("inf"), -1.15, -0.54, -0.24, 0.15, 0.55], 
+	"S16/W18": 		[0] 
 }
 _ROTATION_ = {
 	"LC18":			[0, 150, 300], 
 	"CL13":			[0, 300], 
 	"CL04":			[0], 
 	"WW95":			[0], 
-	"NKT13": 		[0] 
+	"NKT13": 		[0], 
+	"S16/W18": 		[0] 
 }
 _UPPER_ = {
 	"LC18":			120, 
 	"CL13": 		120, 
 	"CL04": 		35, 
 	"WW95": 		40, 
-	"NKT13": 		40 
+	"NKT13": 		40, 
+	"S16/W18": 		120 
 }
 _IMF_ = ["kroupa", "salpeter", lambda m: m**-2] 
 

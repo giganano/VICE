@@ -73,6 +73,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			- "NKT13": Nomoto, Kobayashi & Tominaga (2013) [3]_ 
 			- "CL04": Chieffi & Limongi (2004) [4]_ 
 			- "WW95": Woosley & Weaver (1995) [5]_ 
+			- "S16/W18": Sukhbold et al. (2016) [6]_ (W18 explosion engine) 
 
 	MoverH : real number [default : 0] 
 		The total metallicity [M/H] of the exploding stars. There are only a 
@@ -85,6 +86,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			- "NKT13": [M/H] = -inf, -1.15, -0.54, -0.24, 0.15, 0.55 
 			- "CL04": [M/H] = -inf, -4, -2, -1, -0.37, 0.15 
 			- "WW95": [M/H] = -inf, -4, -2, -1, 0 
+			- "S16/W18": [M/H] = 0 
 
 	rotation : real number [default : 0] 
 		The rotational velocity of the exploding stars in km/s. There are only 
@@ -97,15 +99,20 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			- "NKT13": v = 0 
 			- "CL04": v = 0 
 			- "WW95": v = 0 
+			- "S16/W18": v = 0 
 
 	explodability: <function> or ``None`` [default : ``None``] 
 		Stellar explodability as a function of mass. This function is expected 
 		to take stellar mass in :math:`M_\odot` as the only numberical 
 		parameter, and to return a number between 0 and 1 denoting the 
 		fraction of stars at that mass which explode as a CCSN. 
+
+		.. tip:: The S16 CCSN yield modules provides explosion engines as a 
+			function of mass as published in the Sukhbold et al. (2016) study. 
+
 	IMF : ``str`` [case-insensitive] or <function> [default : "kroupa"] 
 		The stellar initial mass function (IMF) to assume. Strings denote 
-		built-in IMFs, which must be either "Kroupa" [6]_ or "Salpeter" [7]_. 
+		built-in IMFs, which must be either "Kroupa" [7]_ or "Salpeter" [8]_. 
 		Functions must accept stellar mass in :math:`M_\odot` as the only 
 		numerical paraneter and will be interpreted as a custom, arbitrary 
 		stellar IMF. 
@@ -120,7 +127,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			- "euler" 
 
 		.. note:: These methods of quadrature are implemented according to 
-			Chapter 4 of Press, Teukolsky, Vetterling & Flannery (2007) [8]_. 
+			Chapter 4 of Press, Teukolsky, Vetterling & Flannery (2007) [9]_. 
 
 	m_lower : real number [default : 0.08] 
 		The lower mass limit on star formation in :math:`M_\odot`. 
@@ -167,8 +174,8 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			adopting these yields for iron peak elements. 
 		- 	Numerical quadrature did not converge within the maximum number 
 			of allowed quadrature bins to within the specified tolerance. 
-		- 	Explodability criteria specified in combination with the Limongi & 
-			Chieffi (2018) study. 
+		- 	Explodability criteria specified in combination with either the 
+			Limongi & Chieffi (2018) or Sukhbold et al. (2016) study. 
 
 	Notes 
 	-----
@@ -226,9 +233,10 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	.. [3] Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457 
 	.. [4] Chieffi & Limongi (2004), ApJ, 608, 405 
 	.. [5] Woosley & Weaver (1995), ApJ, 101, 181 
-	.. [6] Kroupa (2001), MNRAS, 231, 322 
-	.. [7] Salpeter (1955), ApJ, 121, 161 
-	.. [8] Press, Teukolsky, Vetterling & Flannery (2007), Numerical Recipes, 
+	.. [6] Sukhbold et al. (2016), ApJ, 821, 38 
+	.. [7] Kroupa (2001), MNRAS, 231, 322 
+	.. [8] Salpeter (1955), ApJ, 121, 161 
+	.. [9] Press, Teukolsky, Vetterling & Flannery (2007), Numerical Recipes, 
 		Cambridge University Press 
 	""" 
 
@@ -323,13 +331,19 @@ callable object. Got: %s""" % (type(explodability)))
 
 	3) The Woosley & Weaver (1995) study reported yields up to 40 Msun. Warn 
 	the user about extrapolation to higher initial masses. 
+
+	4) If the user specifies explodability in combination with either the 
+	Limongi & Chieffi (2018) or Sukhbold et al. (2016) yields, the 
+	explodability is over-specified. The yields reported by these studies are 
+	already masked by stellar explodability. 
 	"""
 	upper_mass_limits = {
 		"LC18":		120, 
 		"CL13": 	120, 
 		"CL04": 	35, 
 		"WW95": 	40, 
-		"NKT13": 	300 if MoverH == -float("inf") else 40 
+		"NKT13": 	300 if MoverH == -float("inf") else 40, 
+		"S16/W18": 	120 
 	} 
 
 	if m_upper > upper_mass_limits[study.upper()]: 
@@ -351,6 +365,13 @@ these yields of iron peak elements.""" % (_NAMES_[study.upper()]),
 			ScienceWarning) 
 	else: 
 		pass 
+
+	if explodability is not None and study.upper() in ["LC18", "S16/W18"]: 
+		warnings.warn("""The %s study published yields already masked by \
+stellar explodability (i.e. only wind yields are reported for stars that do \
+not explode under their explosion physics). Stellar explodability is \
+overspecified in this calculation""" % (_NAMES_[study.upper()]), 
+			ScienceWarning) 
 
 	"""
 	VICE includes yields for every element that these studies reported. 
@@ -407,7 +428,6 @@ Estimated fractional error: %.2e""" % (num[0].error), ScienceWarning)
 	den[0].Nmin = <unsigned long> Nmin 
 	try: 
 		x = _yield_integrator.IMFintegrated_fractional_yield_denominator(den, 
-			# IMF.lower().encode("latin-1")) 
 			imf_obj)  
 		if x == 1: 
 			warnings.warn("""Mass-weighted IMF integration did not converge. \
@@ -420,7 +440,6 @@ Estimated fractional error: %.2e""" % (den[0].error), ScienceWarning)
 		denominator = [den[0].result, den[0].error, den[0].iters] 
 		_integral.integral_free(den) 
 		_imf.imf_free(imf_obj) 
-		# callback_1arg_free(imf_cb) 
 
 	y = numerator[0] / denominator[0] 
 	errnum = numerator[1] * numerator[0] 

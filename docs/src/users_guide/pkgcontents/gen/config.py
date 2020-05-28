@@ -12,6 +12,7 @@ from vice.yields.ccsne import NKT13
 from vice.yields.ccsne import CL13 
 from vice.yields.ccsne import CL04 
 from vice.yields.ccsne import WW95 
+from vice.yields.ccsne import S16 
 from vice.yields.sneia import iwamoto99 
 from vice.yields.sneia import seitenzahl13 
 from vice.yields.agb import cristallo11 
@@ -325,6 +326,7 @@ _CONFIG_ = {
 			vice.yields.ccsne.CL04, 
 			vice.yields.ccsne.CL13, 
 			vice.yields.ccsne.NKT13, 
+			vice.yields.ccsne.S16, 
 			vice.yields.ccsne.LC18 
 		]  
 	}, 
@@ -412,6 +414,29 @@ _CONFIG_ = {
 	vice.yields.ccsne.CL13.set_params: {
 		"filename": 	"vice.yields.ccsne.CL13.set_params.rst", 
 		"header": 		"vice.yields.ccsne.CL13.set_params", 
+		"subs": 		[] 
+	}, 
+	vice.yields.ccsne.S16: {
+		"filename": 	"vice.yields.ccsne.S16.rst", 
+		"header": 		"vice.yields.ccsne.S16", 
+		"subs": 		[
+			vice.yields.ccsne.S16.set_params, 
+			vice.yields.ccsne.S16.engines 
+		] 
+	}, 
+	vice.yields.ccsne.S16.set_params: {
+		"filename": 	"vice.yields.ccsne.S16.set_params.rst", 
+		"header": 		"vice.yields.ccsne.S16.set_params", 
+		"subs": 		[] 
+	}, 
+	vice.yields.ccsne.S16.engines: {
+		"filename": 	"vice.yields.ccsne.S16.engines.rst", 
+		"header": 		"vice.yields.ccsne.S16.engines", 
+		"subs": 		[vice.yields.ccsne.S16.engines.W18] 
+	}, 
+	vice.yields.ccsne.S16.engines.W18: {
+		"filename": 	"vice.yields.ccsne.S16.engines.W18.rst", 
+		"header": 		"vice.yields.ccsne.S16.engines.W18", 
 		"subs": 		[] 
 	}, 
 	vice.yields.ccsne.LC18: {
