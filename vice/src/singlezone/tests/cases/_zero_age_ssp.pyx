@@ -86,20 +86,20 @@ cdef class zero_age_ssp:
 	timestep and thus elemental production only at the end of the simulation. 
 	""" 
 
-	def __init__(self, **kwargs): 
-		if "name" in kwargs.keys(): del kwargs["name"] 
-		super().__init__(name = "test", **kwargs) 
-		self.prep(_TIMES_) 
-		self.open_output_dir(True) 
-		self._sz[0].n_outputs = len(_TIMES_) 
-		self._sz[0].output_times = <double *> malloc (self._sz[0].n_outputs * 
-			sizeof(double)) 
-		for i in range(self._sz[0].n_outputs): 
-			self._sz[0].output_times[i] = _TIMES_[i] 
-		_zero_age_ssp.singlezone_setup(self._sz) 
-		_zero_age_ssp.singlezone_evolve_no_setup_no_clean(self._sz) 
-		_zero_age_ssp.normalize_MDF(self._sz) 
-		_zero_age_ssp.write_mdf_output(self._sz[0]) 
+	# def __init__(self, **kwargs): 
+	# 	if "name" in kwargs.keys(): del kwargs["name"] 
+	# 	super().__init__(name = "test", **kwargs) 
+	# 	self.prep(_TIMES_) 
+	# 	self.open_output_dir(True) 
+	# 	self._sz[0].n_outputs = len(_TIMES_) 
+	# 	self._sz[0].output_times = <double *> malloc (self._sz[0].n_outputs * 
+	# 		sizeof(double)) 
+	# 	for i in range(self._sz[0].n_outputs): 
+	# 		self._sz[0].output_times[i] = _TIMES_[i] 
+	# 	_zero_age_ssp.singlezone_setup(self._sz) 
+	# 	_zero_age_ssp.singlezone_evolve_no_setup_no_clean(self._sz) 
+	# 	_zero_age_ssp.normalize_MDF(self._sz) 
+	# 	_zero_age_ssp.write_mdf_output(self._sz[0]) 
 
 	@unittest 
 	def test_m_AGB(self): 

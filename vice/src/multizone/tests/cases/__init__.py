@@ -10,6 +10,7 @@ if not __VICE_SETUP__:
 	__all__ = ["test"] 
 	from .....testing import moduletest 
 	from ._no_migration import no_migration_test 
+	from ._generic import generic_test 
 
 	@moduletest 
 	def test(): 
@@ -18,6 +19,7 @@ if not __VICE_SETUP__:
 		""" 
 		return ["vice.core.multizone edge cases", 
 			[ 
+				generic_test(run = False), 
 				no_migration_test(run = False) 
 			] 
 		] 

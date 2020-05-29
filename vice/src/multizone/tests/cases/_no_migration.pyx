@@ -31,7 +31,12 @@ def no_migration_test():
 	return [msg, 
 		[ 
 			_TEST_.test_m_agb(), 
-			_TEST_.test_multizone_unretained() 
+			_TEST_.test_multizone_unretained(), 
+			_TEST_.test_migrate(), 
+			_TEST_.test_multizone_stellar_mass(), 
+			_TEST_.test_recycle_metals_from_tracers(), 
+			_TEST_.test_gas_recycled_in_zones(), 
+			_TEST_.test_m_sneia(), 
 		] 
 	] 
 
@@ -42,28 +47,7 @@ cdef class no_migration:
 	A class intended to run unit tests for no migration multizone cases. These 
 	are cases which should always produce no stellar migration between zones. 
 	""" 
-
-	def __init__(self, **kwargs): 
-		if "name" in kwargs.keys(): del kwargs["name"] 
-		super().__init__(name = "test", **kwargs) 
-		self.align_name_attributes() 
-		self.prep(_TIMES_) 
-		self.outfile_check(True) 
-		os.system("mkdir %s.vice" % (self.name)) 
-		for i in range(self._mz[0].mig[0].n_zones): 
-			os.system("mkdir %s.vice" % (self._zones[i].name)) 
-		self.setup_migration() 
-		_no_migration.multizone_setup(self._mz) 
-		_no_migration.multizone_evolve_full(self._mz) 
-		_no_migration.tracers_MDF(self._mz) 
-		_no_migration.write_multizone_mdf(self._mz[0]) 
-		if not _no_migration.multizone_open_tracer_file(self._mz): 
-			_no_migration.write_tracers_header(self._mz[0]) 
-			_no_migration.write_tracers_output(self._mz[0]) 
-			_no_migration.multizone_close_tracer_file(self._mz) 
-		else: 
-			raise Exception 
-
+	
 	@unittest 
 	def test_m_agb(self): 
 		r""" 
@@ -82,4 +66,55 @@ cdef class no_migration:
 			return _no_migration.no_migration_test_multizone_unretained(
 				self._mz) 
 		return ["vice.src.multizone.ism.multizone_unretained", test] 
+
+	@unittest 
+	def test_migrate(self): 
+		r""" 
+		vice.src.multizone.migration.migrate no migration test 
+		""" 
+		def test(): 
+			return _no_migration.no_migration_test_migrate(self._mz) 
+		return ["vice.src.multizone.migration.migrate", test] 
+
+	@unittest 
+	def test_multizone_stellar_mass(self): 
+		r""" 
+		vice.src.multizone.multizone.multizone_stellar_mass no migration test 
+		""" 
+		def test(): 
+			return _no_migration.no_migration_test_multizone_stellar_mass(
+				self._mz) 
+		return ["vice.src.multizone.multizone.multizone_stellar_mass", test] 
+
+	@unittest 
+	def test_recycle_metals_from_tracers(self): 
+		r""" 
+		vice.src.multizone.recycling.recycle_metals_from_tracers no migration 
+		test 
+		""" 
+		def test(): 
+			return _no_migration.no_migration_test_recycle_metals_from_tracers(
+				self._mz) 
+		return ["vice.src.multizone.recycling.recycle_metals_from_tracers", 
+			test] 
+
+	@unittest 
+	def test_gas_recycled_in_zones(self): 
+		r""" 
+		vice.src.multizone.recycling.gas_recycled_in_zones no migration test 
+		""" 
+		def test(): 
+			return _no_migration.no_migration_test_gas_recycled_in_zones(
+				self._mz) 
+		return ["vice.src.multizone.recycling.gas_recycled_in_zones", test] 
+
+	@unittest 
+	def test_m_sneia(self): 
+		r""" 
+		vice.src.multizone.sneia.m_sneia_from_tracers no migration test 
+		""" 
+		def test(): 
+			return _no_migration.no_migration_test_m_sneia_from_tracers(
+				self._mz) 
+		return ["vice.src.multizone.sneia.m_sneia", test] 
 

@@ -166,7 +166,7 @@ extern void multizone_evolve_full(MULTIZONE *mz) {
 		verbosity(*mz); 
 	} 
 	verbosity(*mz); 
-	inject_tracers(mz); 
+	// inject_tracers(mz); 
 	write_multizone_history(*mz); 
 	if ((*mz).verbose) printf("\n"); 
 
@@ -338,7 +338,9 @@ extern double *multizone_stellar_mass(MULTIZONE mz) {
 		unsigned long timestep = (*mz.zones[0]).timestep; 
 		
 		mstar[t.zone_current] += t.mass * (1 - 
-			(*(*mz.zones[t.zone_origin]).ssp).crf[timestep - t.timestep_origin]); 
+			(*(*mz.zones[t.zone_origin]).ssp).crf[
+				timestep - t.timestep_origin + 1l 
+			]); 
 	} 
 	return mstar; 
 
