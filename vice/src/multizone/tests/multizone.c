@@ -69,3 +69,55 @@ extern unsigned short no_migration_test_multizone_stellar_mass(MULTIZONE *mz) {
 
 }
 
+
+/* 
+ * Performs the separation test on the multizone stellar mass function in 
+ * the parent directory. 
+ * 
+ * Parameters 
+ * ==========
+ * mz: 		A pointer to the multizone object to run the tests on 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * header: multizone.h 
+ */ 
+extern unsigned short separation_test_multizone_stellar_mass(MULTIZONE *mz) {
+
+	double *actual = multizone_stellar_mass(*mz); 
+	if (actual != NULL) {
+		/* 
+		 * Potential issue: the migration tests pass, confirming that there 
+		 * are indeed only one timesteps worth of star particles in the 
+		 * star-forming zone. This test however passes when the most recent 
+		 * TWO timesteps are taken into account. The problem may be rooted in 
+		 * when the star particles migrate. 
+		 */ 
+		unsigned short status = actual[1] > 0; 
+		double expected = (
+			(*(*(*mz).zones[0]).ism).star_formation_rate * 
+			(*(*mz).zones[0]).dt * 
+			(1 - (*(*(*mz).zones[0]).ssp).crf[1]) 
+			// + 
+			// (*(*(*mz).zones[0]).ism).star_formation_rate * 
+			// (*(*mz).zones[0]).dt * 
+			// (1 - (*(*(*mz).zones[0]).ssp).crf[2]) 
+		); 
+		double percent_difference = absval( 
+			(expected - actual[0]) / expected 
+		); 
+		// printf("expected = %.5e\n", expected); 
+		// printf("actual[0] = %.5e\n", actual[0]); 
+		// printf("actual[1] = %.5e\n", actual[1]); 
+		// printf("percent_difference = %.5e\n", percent_difference); 
+		status &= percent_difference < 1e-3; 
+		return status; 
+
+	} else {
+		return 0u; 
+	}
+
+}
+

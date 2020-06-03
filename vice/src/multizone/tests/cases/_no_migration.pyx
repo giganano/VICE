@@ -12,7 +12,6 @@ elif sys.version_info[:2] >= (3, 5):
 	strcomp = str 
 else: 
 	_VERSION_ERROR_() 
-from libc.stdlib cimport malloc, free 
 from . cimport _no_migration 
 
 _TIMES_ = [0.05 * i for i in range(201)] 
@@ -26,6 +25,7 @@ def no_migration_test():
 	msg = "vice.core.multizone edge case : no migration" 
 	try: 
 		_TEST_ = no_migration(n_zones = 5) 
+		_TEST_.run() 
 	except: 
 		[msg, None] 
 	return [msg, 

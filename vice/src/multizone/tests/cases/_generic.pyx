@@ -26,7 +26,8 @@ def generic_test():
 	""" 
 	msg = "vice.core.multizone generic case : default parameters" 
 	try: 
-		_TEST_ = generic() 
+		_TEST_ = generic(n_zones = 5)  
+		_TEST_.run() 
 	except: 
 		return [msg, None] 
 	return [msg, 
@@ -46,6 +47,11 @@ cdef class generic:
 	def __init__(self, **kwargs): 
 		if "name" in kwargs.keys(): del kwargs["name"] 
 		super().__init__(name = "test", **kwargs) 
+
+	def run(self): 
+		r""" 
+		Runs the simulation 
+		""" 
 		self.align_name_attributes() 
 		self.prep(_TIMES_) 
 		self.outfile_check(True) 

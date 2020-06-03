@@ -63,3 +63,32 @@ extern unsigned short no_migration_test_migrate(MULTIZONE *mz) {
 
 }
 
+
+/* 
+ * Performs the separation test on the migration routines in the parent 
+ * directory. 
+ * 
+ * Parameters 
+ * ==========
+ * mz: 		A pointer to the multizone object to run the test on 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * header: migration.h 
+ */ 
+extern unsigned short separation_test_migrate(MULTIZONE *mz) {
+
+	/* 
+	 * There should only be one timestep's worth of tracer particles in the 
+	 * star forming zone. 
+	 */ 
+	unsigned long i, n = 0ul; 
+	for (i = 0ul; i < (*(*mz).mig).tracer_count; i++) {
+		if ((*(*(*mz).mig).tracers[i]).zone_current == 0u) n++; 
+	} 
+	return n == (*(*mz).mig).n_tracers * (*(*mz).mig).n_zones; 
+
+}
+

@@ -4,6 +4,7 @@
  */ 
 
 #include <stdlib.h> 
+#include <math.h> 
 #include "../../singlezone/agb.h" 
 #include "../../utils.h" 
 #include "../agb.h" 
@@ -51,6 +52,41 @@ extern unsigned short no_migration_test_m_AGB_from_tracers(MULTIZONE *mz) {
 			return 0u; 
 		} 
 		if (!status) break; 
+	} 
+	return status; 
+
+}
+
+
+/* 
+ * Performs the separation edge-case test on the m_AGB_from_tracers function 
+ * in the parent directory. 
+ * 
+ * Parameters 
+ * ==========
+ * mz: 		A pointer to the multizone object to run the test on 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * header: agb.h 
+ */ 
+extern unsigned short separation_test_m_AGB_from_tracers(MULTIZONE *mz) {
+
+	unsigned short i, status = 1u; 
+	for (i = 0u; i < (*(*mz).zones[0]).n_elements; i++) {
+		double *m_AGB = m_AGB_from_tracers(*mz, i); 
+		if (m_AGB != NULL) {
+			/* at least an order of magnitude more from the destination zone */ 
+			if (m_AGB[0] > 0 && m_AGB[1] > 0) {
+				status &= log10(m_AGB[1]) - log10(m_AGB[0]) > 1; 
+				free(m_AGB); 
+				if (!status) break; 
+			} else {} 
+		} else {
+			return 0u; 
+		} 
 	} 
 	return status; 
 

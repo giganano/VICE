@@ -23,6 +23,22 @@ extern "C" {
  */ 
 extern unsigned short no_migration_test_migrate(MULTIZONE *mz); 
 
+/* 
+ * Performs the separation test on the migration routines in the parent 
+ * directory. 
+ * 
+ * Parameters 
+ * ==========
+ * mz: 		A pointer to the multizone object to run the test on 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * source: migration.c 
+ */ 
+extern unsigned short separation_test_migrate(MULTIZONE *mz); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

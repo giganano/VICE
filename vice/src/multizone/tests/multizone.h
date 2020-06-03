@@ -22,6 +22,22 @@ extern "C" {
  */ 
 extern unsigned short no_migration_test_multizone_stellar_mass(MULTIZONE *mz); 
 
+/* 
+ * Performs the separation test on the multizone stellar mass function in 
+ * the parent directory. 
+ * 
+ * Parameters 
+ * ==========
+ * mz: 		A pointer to the multizone object to run the tests on 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * source: multizone.c 
+ */ 
+extern unsigned short separation_test_multizone_stellar_mass(MULTIZONE *mz); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 
