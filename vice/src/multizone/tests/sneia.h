@@ -22,6 +22,22 @@ extern "C" {
  */ 
 extern unsigned short no_migration_test_m_sneia_from_tracers(MULTIZONE *mz); 
 
+/* 
+ * Performs the separation test on the m_sneia_from_tracers function in the 
+ * parent directory. 
+ * 
+ * Parameters 
+ * ==========
+ * mz: 		A pointer to the multizone object to run the test on 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * source: sneia.c 
+ */ 
+extern unsigned short separation_test_m_sneia_from_tracers(MULTIZONE *mz); 
+
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 

@@ -57,3 +57,42 @@ extern unsigned short no_migration_test_m_sneia_from_tracers(MULTIZONE *mz) {
 
 }
 
+
+/* 
+ * Performs the separation test on the m_sneia_from_tracers function in the 
+ * parent directory. 
+ * 
+ * Parameters 
+ * ==========
+ * mz: 		A pointer to the multizone object to run the test on 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * header: sneia.h 
+ */ 
+extern unsigned short separation_test_m_sneia_from_tracers(MULTIZONE *mz) {
+
+	/* 
+	 * There shouldn't be any in the star-forming zone due to the intrinsic
+	 * time-delay -> all SN Ia enrichment should happen in the quiescent zone. 
+	 */ 
+	unsigned short i, status = 1u; 
+	for (i = 0u; i < (*(*mz).zones[0]).n_elements; i++) {
+		double *sneia = m_sneia_from_tracers(*mz, i); 
+		if (sneia != NULL) {
+			status &= sneia[0] == 0; 
+			if ((*(*(*(*(*
+				mz).zones[0]).elements[i]).sneia_yields).yield_
+				).assumed_constant) status &= sneia[1] > 0; 
+			free(sneia); 
+			if (!status) break; 
+		} else {
+			return 0u; 
+		} 
+	} 
+	return status; 
+
+}
+

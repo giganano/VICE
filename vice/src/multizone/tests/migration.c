@@ -81,14 +81,17 @@ extern unsigned short no_migration_test_migrate(MULTIZONE *mz) {
 extern unsigned short separation_test_migrate(MULTIZONE *mz) {
 
 	/* 
-	 * There should only be one timestep's worth of tracer particles in the 
-	 * star forming zone. 
+	 * There will be two rather than one timestep worth of tracer particles in 
+	 * the star forming zone. This has to do with when tracer particles are 
+	 * injected and migrated -> the stars that just formed and the stars that 
+	 * are forming will, at the end of a timestep, still be in the star 
+	 * forming zone. 
 	 */ 
 	unsigned long i, n = 0ul; 
 	for (i = 0ul; i < (*(*mz).mig).tracer_count; i++) {
 		if ((*(*(*mz).mig).tracers[i]).zone_current == 0u) n++; 
 	} 
-	return n == (*(*mz).mig).n_tracers * (*(*mz).mig).n_zones; 
+	return n == 2 * (*(*mz).mig).n_tracers; 
 
 }
 

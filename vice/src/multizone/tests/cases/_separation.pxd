@@ -28,3 +28,10 @@ cdef extern from "../migration.h":
 cdef extern from "../multizone.h": 
 	unsigned short separation_test_multizone_stellar_mass(MULTIZONE *mz) 
 
+cdef extern from "../recycling.h": 
+	unsigned short separation_test_recycle_metals_from_tracers(MULTIZONE *mz) 
+	unsigned short separation_test_gas_recycled_in_zones(MULTIZONE *mz) 
+
+cdef extern from "../sneia.h": 
+	unsigned short separation_test_m_sneia_from_tracers(MULTIZONE *mz) 
+

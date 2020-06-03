@@ -39,7 +39,10 @@ def separation_test():
 			_TEST_.test_update_zone_evolution(), 
 			_TEST_.test_tracers_MDF(), 
 			_TEST_.test_migrate(), 
-			_TEST_.test_multizone_stellar_mass() 
+			_TEST_.test_multizone_stellar_mass(), 
+			_TEST_.test_recycle_metals_from_tracers(), 
+			_TEST_.test_gas_recycled_in_zones(), 
+			_TEST_.test_m_sneia() 
 		] 
 	] 
 
@@ -106,4 +109,33 @@ cdef class separation:
 		def test(): 
 			return _separation.separation_test_multizone_stellar_mass(self._mz) 
 		return ["vice.src.multizone.multizone.multizone_stellar_mass", test] 
+
+	@unittest 
+	def test_recycle_metals_from_tracers(self): 
+		r""" 
+		vice.src.multizone.recycling.recycle_metals_from_tracers separation test 
+		""" 
+		def test(): 
+			return _separation.separation_test_recycle_metals_from_tracers(
+				self._mz) 
+		return ["vice.src.multizone.recycling.recycle_metals_from_tracers", 
+			test] 
+
+	@unittest 
+	def test_gas_recycled_in_zones(self): 
+		r""" 
+		vice.src.multizone.recycling.gas_recycled_in_zones separation test 
+		""" 
+		def test(): 
+			return _separation.separation_test_gas_recycled_in_zones(self._mz) 
+		return ["vice.src.multizone.recycling.gas_recycled_in_zones", test] 
+
+	@unittest 
+	def test_m_sneia(self): 
+		r""" 
+		vice.src.multizone.sneia.m_sneia separation test 
+		""" 
+		def test(): 
+			return _separation.separation_test_m_sneia_from_tracers(self._mz) 
+		return ["vice.src.multizone.sneia.m_sneia", test] 
 
