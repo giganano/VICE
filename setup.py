@@ -50,7 +50,7 @@ Topic :: Scientific/Engineering :: Physics
 
 # Version info 
 MAJOR 			= 1 
-MINOR 			= 1 
+MINOR 			= 3 
 MICRO 			= 0 
 ISRELEASED		= False 
 VERSION 		= "%d.%d.%d" % (MAJOR, MINOR, MICRO) 

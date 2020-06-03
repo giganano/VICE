@@ -5,8 +5,8 @@ VICE: Versatile Integrator for Chemical Evolution
 | |version| |MIT Licensed| |travis| |issues| |paper1| 
 | |Authors| |userguide| |scidocs| 
 
-..	|version| image:: https://img.shields.io/badge/version-1.0.0-blue.svg
-	:target: https://img.shields.io/badge/version-1.0.0-blue.svg
+..	|version| image:: https://img.shields.io/badge/version-1.3.0-blue.svg
+	:target: https://img.shields.io/badge/version-1.3.0-blue.svg
 	:alt: version
 ..	|MIT Licensed| image:: https://img.shields.io/badge/license-MIT-blue.svg
 	:target: https://raw.githubusercontent.com/giganano/VICE/master/LICENSE
