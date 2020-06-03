@@ -1,81 +1,76 @@
-"""
-Iwamoto et al. (1999), ApJ, 124, 439 Nucleosynthetic Yield Tools 
-================================================================ 
-Importing this module will automatically set all yield settings 
-from type Ia supernovae to the IMF-integrated yields as 
-determined from the simulations ran by Iwamoto et al. (1999). It 
-will default to the W70 explosion model.  
+r"""
+Iwamoto et al. (1999), ApJ, 124, 439 type Ia supernova (SN Ia) yields 
 
-VICE achieves this by calling yields.sneia.fractional for 
-every element built into the software and storing the returned value 
-in yields.sneia.settings.  
+**Signature**: from vice.yields.sneia import iwamoto99 
 
-set_params :: Update the parameters with which the yields are calculated. 
+Importing this module will automatically set the SN Ia yield settings for all 
+elements to the IMF-averaged yields calculated with the Iwamoto et al. (1999) 
+yield table under the W70 explosion model. This study is for Chandrasekhar 
+Mass progenitors (1.4 :math:`M_\odot`). 
 
-Notes 
-===== 
-By importing this module, the user does not sacrifice the flexibility of 
-VICE's user-specified yields. After importing this module, the fields of 
-vice.yields.sneia.settings can still be modified in whatever manner the 
-user sees fit. 
+.. tip:: By importing this module, the user does not sacrifice the ability to 
+	specify their yield settings directly. 
 
-This module is not imported with the simple 'import vice' statement. 
+.. note:: This module is not imported with a simple ``import vice`` statement. 
 
-Example 
-======= 
->>> from vice.yields.sneia import iwamoto99 
->>> iwamoto99.set_params(n = 1.5e-03) 
+Contents 
+--------
+set_params : <function> 
+	Update the parameters with which the yields are calculated. 
 """ 
 
-from .. import settings as __settings 
-from .. import fractional as __fractional 
-from ...._globals import _RECOGNIZED_ELEMENTS_ 
+from __future__ import absolute_import 
+try: 
+	__VICE_SETUP__ 
+except NameError: 
+	__VICE_SETUP__ = False 
 
-for i in range(len(_RECOGNIZED_ELEMENTS_)): 
-	__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(_RECOGNIZED_ELEMENTS_[i], 
-		study = "iwamoto99", model = "W70") 
-del i 
+if not __VICE_SETUP__: 
 
-def set_params(**kwargs): 
-	"""
-	Update the parameters with which the yields are calculated from the 
-	Iwamoto et al. (1999) data. 
+	__all__ = ["set_params", "test"]  
+	from ...._globals import _RECOGNIZED_ELEMENTS_ 
+	from .. import fractional as __fractional 
+	from .. import settings as __settings 
+	from .tests import test 
 
-	Parameters 
-	========== 
-	Kwargs :: varying types
-		Keyword arguments to pass to yields.sneia.fractional. 
+	def set_params(**kwargs): 
+		r"""
+		Update the parameters with which the yields are calculated from the 
+		Iwamoto et al. (1999) [1]_ data. 
 
-	Raises 
-	====== 
-	TypeError :: 
-		::	The user has specified a keyword argument "study" 
-	Other exceptions are raised by yields.sneia.fractional 
+		Parameters 
+		----------
+		kwargs : varying types
+			Keyword arguments to pass to vice.yields.sneia.fractional. 
 
-	See also 
-	======== 
-	yields.sneia.fractional docstring 
+		Raises 
+		------
+		* TypeError 
+			- 	Received a keyword argument "study". This will always be 
+				"iwamoto99" when called from this module. 
 
-	Example 
-	======= 
-	>>> from vice.yields.sneia import iwamoto99 
-	>>> iwamoto99.set_params(n = 1.5e-03) 
+		Other exceptions are raised by vice.yields.sneia.fractional. 
 
-	References 
-	========== 
-	Iwamoto et al. (1999), ApJ, 124, 439 
-	"""
-	if "study" in kwargs.keys(): 
-		raise TypeError("set_params got an unexpected keyword argument 'study'") 
-	else: 
-		if "model" not in kwargs.keys(): 
-			kwargs["model"] = "W70" # Default to W70 unless told otherwise 
-		else:
-			pass 
-		for i in range(len(_RECOGNIZED_ELEMENTS_)): 
-			__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(
-				_RECOGNIZED_ELEMENTS_[i], study = "iwamoto99", **kwargs) 
-		del i 
+		Example Code 
+		------------
+		>>> from vice.yields.sneia import iwamoto99 
+		>>> iwamoto99.set_params(n = 1.5e-03) 
 
+		.. seealso:: vice.yields.sneia.fractional 
+			vice.yields.sneia.single 
 
+		.. [1] Iwamoto et al. (1999), ApJ, 124, 439 
+		"""
+		if "study" in kwargs.keys(): 
+			raise TypeError("Got an unexpected keyword argument 'study'.") 
+		else: 
+			# Override the default, which is for Seitenzahl et al. (2013) yields 
+			if "model" not in kwargs.keys(): kwargs["model"] = "W70" 
+			for i in _RECOGNIZED_ELEMENTS_: 
+				__settings[i] = __fractional(i, study = "iwamoto99", **kwargs) 
+
+	set_params(model = "W70") 
+
+else: 
+	pass 
 

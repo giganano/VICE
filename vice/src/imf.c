@@ -2,8 +2,57 @@
  * This file implements stellar initial mass functions (IMFs). 
  */ 
 
+#include <stdlib.h> 
+#include <string.h> 
+#include <ctype.h> 
 #include <math.h> 
+#include "callback.h" 
 #include "imf.h" 
+#include "utils.h" 
+
+
+/* 
+ * Evaluate the IMF at the stellar mass m in Msun 
+ * 
+ * Parameters 
+ * ========== 
+ * imf: 		The IMF object 
+ * m: 			The stellar mass to evaluate the IMF at 
+ * 
+ * Returns 
+ * ======= 
+ * The un-normalized value of the IMF at the stellar mass m 
+ * 
+ * header: imf.h 
+ */ 
+extern double imf_evaluate(IMF_ imf, double m) { 
+
+	/* If the mass in the specified mass range */ 
+	if (imf.m_lower <= m && m <= imf.m_upper) { 
+
+		switch(checksum(imf.spec)) { 
+
+			case SALPETER: 
+				return salpeter55(m); 
+
+			case KROUPA: 
+				return kroupa01(m); 
+
+			case CUSTOM: 
+				return callback_1arg_evaluate(*imf.custom_imf, m); 
+
+			default: 	/* error handling */ 
+				return -1; 
+
+		}
+
+	} else {
+		/* not in the specified mass range for star formation */ 
+		return 0; 
+	} 
+
+}
+
 
 /* 
  * The Salpeter (1955) stellar initial mass function (IMF) up to a 
@@ -33,6 +82,7 @@ extern double salpeter55(double m) {
 	}
 
 } 
+
 
 /* 
  * The Kroupa (2001) stellar initial mass function (IMF) up to a 
@@ -77,5 +127,4 @@ extern double kroupa01(double m) {
 	}
 
 }
-
 

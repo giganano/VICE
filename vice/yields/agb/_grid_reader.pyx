@@ -8,7 +8,7 @@ from __future__ import absolute_import
 from ..._globals import _DIRECTORY_ 
 from ..._globals import _RECOGNIZED_ELEMENTS_ 
 from ..._globals import _VERSION_ERROR_ 
-from ...core._builtin_dataframes import atomic_number 
+from ...core.dataframe._builtin_dataframes import atomic_number 
 from ...core import _pyutils 
 import sys 
 import os 
@@ -21,62 +21,69 @@ else:
 
 # C imports 
 from libc.stdlib cimport malloc, free 
-from ...core._objects cimport AGB_YIELD_GRID, ELEMENT 
-from ...core cimport _agb 
-from ...core cimport _cutils 
-from ...core cimport _element 
-from ...core cimport _io 
+from ...core.objects._agb cimport AGB_YIELD_GRID 
+from ...core.objects._element cimport ELEMENT 
+from ...core.objects cimport _element 
+from ...core.objects cimport _agb 
 
 _RECOGNIZED_STUDIES_ = tuple(["cristallo11", "karakas10"]) 
 
+
 #-------------------------- AGB_YIELD_GRID FUNCTION --------------------------# 
 def yield_grid(element, study = "cristallo11"):
-	"""
-	Obtain the stellar mass-metallicity grid of fractional nucleosynthetic 
-	yields from asymptotic giant branch (AGB) stars. VICE includes yields 
-	from Cristallo et al. (2011), ApJS, 197, 17 and Karakas (2010), MNRAS, 403, 
-	1413, allowing users the choice of which to adopt in their simulations. 
+	r"""
+	Obtain the stellar mass-metallicity grid of fractional net yields from 
+	asymptotic giant branch stars published in a nucleosynthesis study. 
 
-	Signature: vice.yields.agb.grid(element, study = "cristallo11") 
+	**Signature**: vice.yields.agb.grid(element, study = "cristallo11") 
 
-	Parameters
-	==========
-	element :: str [case-insensitive] 
+	Parameters 
+	----------
+	element : ``str`` [case-insensitive] 
 		The symbol of the element to obtain the yield grid for. 
-	study :: str [case-insensitive] [default :: "cristallo11"]
-		A keyword denoting which AGB yield study to pull the yield table from. 
-		Keywords and their Associated Studies: 
-		--------------------------------------
-		"cristallo11" :: Cristallo et al. (2011), ApJS, 197, 17 
-		"karakas10" :: Karakas (2010), MNRAS, 403, 1413 
+	study : ``str`` [case-insensitive] [default : "cristallo11"] 
+		A keyword denoting which study to pull the yield table from. 
 
-	Returns
-	=======
-	grid :: tuple (2-D)
-		The yield grid itself; elements are tuples of fractional 
-		nucleosynthetic yields at constant stellar mass, but varying 
-		metallicity. It should be indexed with the rule: 
-		arr[mass_index][z_index]
-	masses :: tuple 
-		The masses in terms of the sun that the yield grid is sampled on. 
-	z :: tuple 
-		The metallicities by mass Z on that the yield grid is sampled on. 
+		Recognized Keywords: 
 
-	Raises
-	====== 
-	ValueError :: 
-		::	The study or the element are not built into VICE 
-	LookupError :: 
-		:: 	study == "karakas10" and the atomic number of the element is 
-			greater than or equal to 29. The Karakas (2010), MNRAS, 403, 1413 
-			study did not report yields from AGB stars for elements heavier 
-			than nickel. 
-	IOError :: [Occurs only if VICE's file structure has been tampered with] 
-		:: 	The parameters passed to this function are allowed but the data 
+			- "cristallo11": Cristallo et al. (2011) [1]_ 
+			- "karakas10": Karakas (2010) [2]_ 
+
+	Returns 
+	-------
+	grid : ``tuple`` (2-D) 
+		A tuple of tuples containing the yield grid. The first axis is the 
+		stellar mass, and second is the metallicity 
+	masses : ``tuple`` 
+		The masses in units of :math:`M_\odot` that the yield grid is sampled 
+		on. 
+	z : ``tuple`` 
+		The metallicities by mass :math:`Z` that the yield grid is sample on. 
+
+	Raises 
+	------
+	* ValueError 
+		- 	The study or the element are not built into VICE 
+	* LookupError 
+		- 	``study == "karakas10"`` and the atomic number of the element is 
+			:math:`\geq` 29. The Karakas (2010) study did not report yields 
+			for elements heavier the nickel. 
+	* IOError [Occur's only if VICE's file structure has been altered] 
+		- 	The parameters passed to this function are allowed but the data 
 			file is not found. 
 
-	Example
-	=======
+	Notes 
+	-----
+	.. note:: The nucleosynthetic yield tables built into VICE do not include 
+		any treatment of radioactive isotopes. The yield tables returned by 
+		this function will not include what the specified study reported for 
+		radioactive isotopes. In the case of elements with a significant 
+		nucleosynthetic contribution from radioactive decay products, the 
+		values returned from this function should be interpreted as lower 
+		bounds rather than estimates of the true yield. 
+
+	Example Code 
+	------------
 	>>> y, m, z = vice.agb_yield_grid("sr") 
 	>>> m 
 	    (1.3, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0) 
@@ -86,11 +93,9 @@ def yield_grid(element, study = "cristallo11"):
 	>>> y[0][2] 
 	    2.32254e-09
 
-	References 
-	========== 
-	Cristallo et al. (2011), ApJS, 197, 17 
-	Karakas (2010), MNRAS, 403, 1413 
-	""" 
+	.. [1] Cristallo et al. (2011), ApJS, 197, 17 
+	.. [2] Karakas (2010), MNRAS, 403, 1413 
+	"""
 	# Type checking  
 	if not isinstance(element, strcomp): 
 		raise TypeError("First argument must be of type string. Got: %s" % (
@@ -126,7 +131,7 @@ heavier than nickel (atomic number 28).""" % (studies["karakas10"]))
 
 	if not os.path.exists(filename): 
 		"""
-		File nt found ---> unless VICE was tampered with, this shouldn't 
+		File not found ---> unless VICE was tampered with, this shouldn't 
 		happen. 
 		""" 
 		raise IOError("Yield file not found. Please re-install VICE.") 
@@ -134,9 +139,9 @@ heavier than nickel (atomic number 28).""" % (studies["karakas10"]))
 		pass 
 
 	cdef ELEMENT *e = _element.element_initialize() 
-	if _io.import_agb_grid(e, filename.encode("latin-1")): 
-		free(e) 
-		raise SystemError("Internal Error: couldn't read yield file.") 
+	if _agb.import_agb_grid(e, filename.encode("latin-1")): 
+		_element.element_free(e) 
+		raise SystemError("Internal Error: couldn't read yield file.")  
 	else: 
 		try: 
 			# copy over the yields, masses, and metallicities 
@@ -150,13 +155,11 @@ heavier than nickel (atomic number 28).""" % (studies["karakas10"]))
 			metallicities = [e[0].agb_grid[0].z[i] for i in range(
 				e[0].agb_grid[0].n_z)] 
 		finally: 
-			free(e[0].agb_grid[0].m) 
-			free(e[0].agb_grid[0].z) 
-			free(e[0].agb_grid[0].grid) 
-			free(e) 
+			_element.element_free(e) 
 
 		return [tuple(i) for i in [[tuple(j) for j in yields], masses, 
 			metallicities]] 
+
 
 def find_yield_file(element, study): 
 	""" 
@@ -197,8 +200,4 @@ def find_yield_file(element, study):
 	else: 
 		return "%syields/agb/%s/%s.dat" % (_DIRECTORY_, study.lower(), 
 			element.lower()) 
-
-
-
-
 

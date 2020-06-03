@@ -1,46 +1,75 @@
 """
 VICE Tests 
 ========== 
-This module includes all of VICE's internal testing routines. 
-
-Functions 
-========= 
-run_comprehensive_tests 
-test_agb_yields
-test_cc_yields
-test_dataframes
-test_ia_yields
-test_ssp
-test_sz_output_mirror
+This module includes all of VICE's internal testing routines. The tests are 
+implemented in a tree strucutre - all tests can be ran via the test() 
+function, or alternatively, individual modules are imported here, and 
+their tests can also be ran, by calling their associated test() function 
 """
 
 from __future__ import absolute_import 
+try: 
+	__VICE_SETUP__ 
+except NameError: 
+	__VICE_SETUP__ = False 
 
-__all__ = ["test_agb_yields", "test_cc_yields", "test_dataframes", 
-	"test_ia_yields", "test_ssp", "test_sz_output_mirror", 
-	"run_comprehensive_tests"] 
+if not __VICE_SETUP__: 
 
-from .test_agb_yields import main as test_agb_yields 
-from .test_cc_yields import main as test_cc_yields 
-from .test_dataframes import main as test_dataframes 
-from .test_ia_yields import main as test_ia_yields 
-from .test_ssp import main as test_ssp 
-from .test_sz_output_mirror import main as test_sz_output_mirror 
+	__all__ = [ 
+		"core", 
+		"elements", 
+		"modeling", 
+		"src", 
+		"yields", 
+		"test" 
+	] 
 
-def run_comprehensive_tests(): 
-	"""
-	Runs the full comprehensive set of tests. 
-	"""
-	print("""\
-Running comprehensive tests. This will take several minutes, the exact \
-duration depending on the processing speed of the system. \
-""")
-	test_sz_output_mirror() 
-	test_agb_yields() 
-	test_cc_yields() 
-	test_dataframes() 
-	test_ia_yields() 
-	test_ssp() 
+	from ..testing import moduletest 
+	from . import elements 
+	from .. import core 
+	from .. import modeling 
+	from .. import src 
+	from .. import yields 
+	import warnings 
+	import sys 
+	import os 
+	if sys.version_info[:2] == (2, 7): input = raw_input 
 
-del absolute_import
+	@moduletest 
+	def test(): 
+		r""" 
+		Runs VICE's unit tests 
 
+		.. note:: Calling this function will cause warning messages to get 
+			suppressed. 
+		""" 
+		if "test.vice" in os.listdir(os.getcwd()): 
+			answer = input("""\
+This program will overwrite the VICE output at %s/test.vice. Proceed? \
+(y | n) """ % (os.getcwd())) 
+			while answer.lower() not in ["yes", "y", "no", "n"]: 
+				answer = input("Please enter either 'y' or 'n': ") 
+			if answer.lower() in ["yes", "y"]: 
+				os.system("rm -rf %s/test.vice" % (os.getcwd())) 
+			else: 
+				raise RuntimeError("Cancelling tests, ignore this error.") 
+		else: pass 
+		
+		header = "VICE Comprehensive Tests\n" 
+		for i in range(len(header) - 1): 
+			header += "=" 
+		print("\033[091m%s\033[00m" % (header)) 
+		print("This may take a few minutes.") 
+		warnings.filterwarnings("ignore") 
+		return ["", 
+			[ 
+				core.test(run = False), 
+				elements.test(run = False), 
+				modeling.test(run = False), 
+				src.test(run = False), 
+				yields.test(run = False) 
+			] 
+		] 
+
+else: 
+	pass 
