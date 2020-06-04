@@ -81,9 +81,9 @@ __ dependencies_
 __ installation_ 
 __ troubleshoot_ 
 .. _install: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/install.rst
-.. _dependencies: https://github.com/giganano/VICE/blob/v1.3.0/src/install.rst#dependencies
-.. _installation: https://github.com/giganano/VICE/blob/v1.3.0/src/install.rst#installing-from-source
-.. _troubleshoot: https://github.com/giganano/VICE/blob/v1.3.0/src/install.rst#troubleshooting-your-build
+.. _dependencies: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/install.rst#dependencies
+.. _installation: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/install.rst#installing-from-source
+.. _troubleshoot: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/install.rst#troubleshooting-your-build
 
 __ usage_ 
 __ tutorial_ 
