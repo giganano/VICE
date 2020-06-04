@@ -3,10 +3,10 @@ sudo: required
 os: linux 
 dist: xenial    # required for python >= 3.7  
 python: 
-  - 2.7 
   - 3.5 
   - 3.6 
-  - 3.7  
+  - 3.7
+  - 3.8   
 env: 
   - COMPILER=gcc CYTHON_VERSION=0.28.6 
   - COMPILER=gcc CYTHON_VERSION=0.29.13 
@@ -38,13 +38,15 @@ before_install:
   - make --version 
 
 install: 
-  - make -r CC=$COMPILER 
-  - python setup.py install 
-  - make clean 
+  - make CC=$COMPILER 
+  - python setup.py install --quiet  
 
 script: 
   - make tests 
+  - make clean 
 
 branches: 
   only: 
     - master 
+    
+    

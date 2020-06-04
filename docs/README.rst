@@ -1,70 +1,33 @@
 
-|userguide| |scidocs|
+VICE Documentation
+++++++++++++++++++
+Welcome to VICE's documentation! 
 
-``VICE Documentation``
-======================
+Prerequisites
+=============
+Rebuilding VICE's documetation requires the following 
 
-This directory contains all of ``VICE``'s documentation, which comes in two 
-forms. 
+1. Sphinx_ >= 2.0.0 
 
+2. Make_ >= 3.81 
 
+.. _Sphinx: https://www.sphinx-doc.org/en/master/ 
+.. _Make: https://www.gnu.org/software/make/ 
 
-.. 							SCIENCE DOCUMENTATION 
-Science Documentation
----------------------
-``VICE``'s `science documentation`__ provides detail on the analytic motivation 
-and numerical approximations of the implemented equations. While it is not 
-intended as a review of galactic chemical evolution modeling, it should provide 
-answers to many technical research-related questions specific to its 
-implementation. 
+Recompile 
+=========
+To recompile the documentation, first install VICE. Most of the user's guide 
+is generated from docstrings embedded in the code, which must be compiled 
+before python can import it. Then run either ``make`` within this directory or 
+``make docs`` in VICE's source directory immediately after running the 
+setup.py file. 
 
-.. Hyperlink the science documentation 
-.. _scidocs: https://github.com/giganano/VICE/blob/master/docs/science_documentation.pdf
-__ scidocs_ 
+This will automatically produce both the html and the PDF forms of the 
+documentation. The PDF form will be located here under the name vice.pdf, and 
+the root html document at src/_build/html/index.html. Running ``make open`` 
+within this directory will open the html documentation in the default web 
+browser. 
 
-
-
-..							USER'S GUIDE 
-User's Guide
-------------
-``VICE``'s `user's guide`__ provides the standard 
-``python`` documentation for functions and classes. For each class and 
-function: a short description of what it does, its signature, 
-attributes/parameters, what it returns, what exceptions it raises, and example 
-code. This should provide answers to many implementation-related questions. 
-
-.. Hyperlink the user's guide 
-.. _userguide: https://github.com/giganano/VICE/blob/master/docs/users_guide.pdf
-__ userguide_ 
-
-
-
-For First-Time Users
-====================
-We recommend that first-time users read through the QuickStartTutorial 
-``ipython notebook``. This is intended to familiarize them with how to use 
-all of ``VICE``'s features. 
-
-
-Figures
-=======
-We also provide separate copies of the figures in ``VICE``'s 
-`science documentation`__. See sections 2.2, 2.3, and 7 for the relevant 
-details.  
-
-.. Hyperlink the science documentation 
-.. _scidocs: https://github.com/giganano/VICE/blob/master/docs/science_documentation.pdf
-__ scidocs_ 
-
-
-..	|userguide| image:: https://img.shields.io/badge/-User's%20Guide-brightgreen.svg
-	:target: https://github.com/giganano/VICE/blob/master/docs/users_guide.pdf 
-	:alt: userguide
-
-..	|scidocs| image:: https://img.shields.io/badge/-Science%20Documentation-brightgreen.svg
-	:target: https://github.com/giganano/VICE/blob/master/docs/science_documentation.pdf
-	:alt: scidocs
-
-
-
+When finished, running ``make clean`` in this directory will remove all of the 
+output files. 
 

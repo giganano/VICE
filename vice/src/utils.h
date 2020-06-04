@@ -11,6 +11,98 @@ extern "C" {
 
 #include "objects.h" 
 
+extern unsigned long (*checksum)(char *); 
+
+/* 
+ * Performs the choose operations between two positive numbers 
+ * 
+ * Parameters 
+ * ========== 
+ * a: 		The larger of the two values 
+ * b: 		The smaller of the two values 
+ * 
+ * Returns 
+ * ======= 
+ * The value of a choose b. 0 if b > a. 
+ * 
+ * Notes 
+ * ===== 
+ * Sometimes the choose operation is referred to as 'take' (i.e. a 'take' b 
+ * rather than a 'choose' b) 
+ * 
+ * source: utils.c 
+ */ 
+extern unsigned long choose(unsigned long a, unsigned long b); 
+
+/* 
+ * Determine the absolute value of a double x. This function extends the 
+ * standard library function abs, which only excepts values of type int. 
+ * 
+ * Parameters 
+ * ========== 
+ * x: 		The number to determine the absolute value of 
+ * 
+ * Returns 
+ * ======= 
+ * +x if x >= 0, -x if x < 0 
+ * 
+ * source: utils.c 
+ */ 
+extern double absval(double x); 
+
+/* 
+ * Determine the sign of a double x 
+ * 
+ * Parameters 
+ * ========== 
+ * x: 		The value to determine the sign of 
+ * 
+ * Returns 
+ * ======= 
+ * +1 if x >= 0, -1 if x < 0 
+ * 
+ * source: utils.c 
+ */ 
+extern short sign(double x); 
+
+/* 
+ * Obtain a simple hash for a string 
+ * 
+ * Parameters 
+ * ========== 
+ * str: 		The string to hash 
+ * 
+ * Returns 
+ * ======= 
+ * The sum of the ordinal numbers for each character in the string 
+ * 
+ * source: utils.c  
+ */ 
+extern unsigned long simple_hash(char *str); 
+
+/* 
+ * Seeds the random number generator off of the current time. 
+ * 
+ * source: utils.c 
+ */ 
+extern void seed_random(void); 
+
+/* 
+ * Generate a pseudorandom number in a specified range. 
+ * 
+ * Parameters 
+ * ========== 
+ * minimum: 		The minimum value 
+ * maximum: 		The maximum value 
+ * 
+ * Returns 
+ * ======= 
+ * A pseudorandom number between minimum and maximum 
+ * 
+ * source: utils.c 
+ */ 
+extern double rand_range(double minimum, double maximum); 
+
 /* 
  * A standard interpolation function. For two points (x1, y1) and (x2, y2), 
  * this function draws the line between them and finds the expected value of y 
@@ -54,7 +146,7 @@ extern double interpolate(double x1, double x2, double y1, double y2,
  * interpolation operations, allowing for extrapolation to points of 
  * interest (x0, y0) not bound by the square definfed by x1, x2, y1, and y2. 
  * 
- * header: utils.h 
+ * source: utils.c  
  */ 
 extern double interpolate2D(double x[2], double y[2], double f[2][2], double x0, 
 	double y0); 
@@ -76,7 +168,8 @@ extern double interpolate2D(double x[2], double y[2], double f[2][2], double x0,
  * 
  * source: utils.c 
  */ 
-extern long get_bin_number(double *binspace, long num_bins, double value); 
+extern long get_bin_number(double *binspace, unsigned long num_bins, 
+	double value); 
 
 /* 
  * Determine the metallicity by mass of the ISM. This is not simply the sum 
@@ -100,7 +193,7 @@ extern long get_bin_number(double *binspace, long num_bins, double value);
  * 
  * source: utils.c 
  */ 
-extern double scale_metallicity(SINGLEZONE sz, long timestep); 
+extern double scale_metallicity(SINGLEZONE sz, unsigned long timestep); 
 
 /* 
  * Returns a pointer to an array of linearly spaced doubles between two 
@@ -115,7 +208,7 @@ extern double scale_metallicity(SINGLEZONE sz, long timestep);
  * 
  * source: utils.c 
  */ 
-extern double *binspace(double start, double stop, long N); 
+extern double *binspace(double start, double stop, unsigned long N); 
 
 /* 
  * Determine the center of each bin in an array of bin edges by taking the 
@@ -134,7 +227,7 @@ extern double *binspace(double start, double stop, long N);
  * 
  * source: utils.c 
  */ 
-extern double *bin_centers(double *edges, long n_bins); 
+extern double *bin_centers(double *edges, unsigned long n_bins); 
 
 /* 
  * Determine the sum of an array of double with known length. 
@@ -150,7 +243,7 @@ extern double *bin_centers(double *edges, long n_bins);
  * 
  * source: utils.c 
  */ 
-extern double sum(double *arr, long len); 
+extern double sum(double *arr, unsigned long len); 
 
 /* 
  * Sets the value of a string according to the ordinals of its values. Assumes 
@@ -166,6 +259,22 @@ extern double sum(double *arr, long len);
  * source: utils.c 
  */ 
  extern void set_char_p_value(char *dest, int *ords, int length); 
+
+/* 
+ * Determine the maximum value stored in an array of double precision values. 
+ * 
+ * Parameters 
+ * ========== 
+ * arr: 		A pointer to the array itself 
+ * length: 		The number of values stored in the array 
+ * 
+ * Returns 
+ * ======= 
+ * max_: The maximum value of the array 
+ * 
+ * source: utils.c 
+ */ 
+extern double max(double *arr, unsigned long length); 
 
 #ifdef __cplusplus 
 } 

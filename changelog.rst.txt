@@ -1,0 +1,39 @@
+
+1.2.0 (Upcoming) 
+================
+
+New 
+---
+- Sukhbold et al. (2016) CCSN nucleosynthetic yield tables 
+- CCSN nucleosynthetic yield table reader 
+- Stellar explodability features for nucleosynthetic yield calculations 
+
+1.1.0 (Upcoming) 
+================
+
+New 
+---
+- Multizone simulation features 
+- AGB star yields can be specified as functions of stellar mass and metallicity 
+- Nomoto, Kobayashi & Tominaga (2013) CCSN nucleosynthetic yield tables 
+- Customized nucleosynthetic yield presets 
+- Entrainment settings for nucleosynthetic sources 
+- Custom stellar initial mass function capabilities 
+
+1.0.1 
+=====
+
+New 
+---
+- Updated source code for Johnson & Weinberg (2020) figures following peer review 
+- Documentation updates 
+- Refactored backend 
+
+Patches 
+-------
+- Fixed a bug that didn't allow metal enhanced outflows in simulations 
+
+1.0.0 
+=====
+- Initial Relase
+

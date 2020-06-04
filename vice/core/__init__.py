@@ -1,17 +1,59 @@
+r""" 
+VICE Core
+=========
+Provides all galactic chemical evolution simulations and dataframe features
+
+.. warning:: The contents of this module are imported directly to vice.*. For 
+	example, the ``singlezone`` class should be accessed via ``vice.singlezone`` 
+	rather than ``vice.core.singlezone``. Accessing the VICE core directly is 
+	discouraged. 
+""" 
 
 from __future__ import absolute_import 
+try: 
+	__VICE_SETUP__ 
+except NameError: 
+	__VICE_SETUP__ = False 
 
-__all__ = ["dataframe", "singlezone", "mirror"]    
+if not __VICE_SETUP__: 
+	__all__ = [
+		"dataframe", 
+		"singlezone", 
+		"mirror", 
+		"test" 
+	] 
 
-from ._single_stellar_population import * 
-from ._dataframe import base as dataframe 
-from ._builtin_dataframes import * 
-from ._output import * 
-from ._pysinglezone import singlezone 
-from ._mirror import mirror 
+	import warnings 
+	from .singlezone import singlezone 
+	from .mirror import mirror 
+	from .ssp import * 
+	from .dataframe import * 
+	from .dataframe._builtin_dataframes import * 
+	from .outputs import * 
+	__all__.extend(dataframe._builtin_dataframes.__all__) 
+	__all__.extend(outputs.__all__) 
+	__all__.extend(ssp.__all__) 
 
-__all__.extend(_single_stellar_population.__all__) 
-__all__.extend(_builtin_dataframes.__all__) 
-__all__.extend(_output.__all__) 
-__all__ = [str(i) for i in __all__] 	# appease python 2 strings 
+	from ..testing import moduletest 
+	from .dataframe import test as test_dataframe 
+	from .objects import test as test_objects 
+	from .outputs import test as test_outputs 
+	from .singlezone import test as test_singlezone 
+	from .ssp import test as test_ssp 
+	from . import tests 
 
+	@moduletest 
+	def test(): 
+		return ["vice.core", 
+			[ 
+				test_dataframe(run = False), 
+				test_objects(run = False), 
+				test_outputs(run = False), 
+				test_singlezone(run = False), 
+				test_ssp(run = False), 
+				tests.test(run = False) 
+			] 
+		] 
+
+else: 
+	pass 

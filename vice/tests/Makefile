@@ -2,7 +2,10 @@
 .PHONY: clean 
 
 clean: 
-	rm -f *.pyc 
-	rm -f *.out 
-	rm -rf *.vice/ 
+	@ echo Cleaning vice/tests/ 
+	@ rm -f *.pyc 
+	@ rm -f *.out 
+	@ rm -f *.c 
+	@ rm -rf *.vice/ 
+	@ rm -rf __pycache__ 
 

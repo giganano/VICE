@@ -1,76 +1,80 @@
+r"""
+VICE: Versatile Integrator for Chemical Evolution 
+
+Provides
+--------
+- A dataframe object meant for case-insensitive lookup 
+- Simulations of galactic chemical evolution models 
+- Simulations of nucleosynthesis from single stellar populations 
+- Built-in yield tables from nucleosynthesis studies 
+
+How to Access the Documentation: 
+--------------------------------
+Documentation is available in several forms: 
+
+	1. Docstrings embedded within the code 
+	2. On PyPI 
+	3. In PDF format 
+	4. Tutorials and example scripts, available in the git repository 
+
+Run ``vice-docs`` from the command line to open the documentation in the 
+default web browser. 
+
+Contents 
+--------
+singlezone : ``type`` 
+	Simulate a single-zone galactic chemical evolution model 
+output : ``type`` 
+	Read and store output from single- and multi-zone simulations. 
+single_stellar_population : <function> 
+	Simulate enrichment from a single conatal star cluster 
+cumulative_return_fraction : <function> 
+	Calculate the cumulative return fraction of a star cluster of known age 
+main_sequence_mass_fraction : <function> 
+	Calculate the main sequence mass fraction of a star cluster of known age 
+imf : <module> 
+	Built-in funcitonal forms of popular stellar initial mass functions. 
+yields : <module> 
+	Calculate, access, and declare nucleosynthetic yield settings for use in 
+	simulations. 
+elements : <module> 
+	Access, and declare nucleosynthetic yield settings for use in simulations. 
+	Access other relevant information for each element such as the solar 
+	abundance or atomic number. 
+dataframe : ``type`` 
+	An extension to the Python type ``dict`` to allow case-insensitivity. 
+history : <function> 
+	Reads in time-evolution of interstellar medium from singlezone simulation. 
+mdf : <function> 
+	Reads in stellar metallicity distribution from singlezone simulation. 
+
+Built-In Dataframes 
+-------------------
+- atomic_number : The atomic number of each element 
+- primordial : The abundance of each element following big bang nucleosynthesis. 
+- solar_z : The abundance of each element in the sun. 
+- sources : The primary astrophysical production channels of each element. 
+- stable_isotopes : Lists of each elements' stable isotopes. 
+
+Utilities
+---------
+- VisibleDeprecationWarning : A DeprecationWarning that is visible by default. 
+- VisibleRuntimeWarning : A RuntimeWarning that is visible by default. 
+- ScienceWarning : A Warning concerning scientific accuracy and precision. 
+- test : Runs VICE's unit tests. 
+- version : VICE's version breakdown. 
+- __version__ : The version string. 
 """
-VICE: Versatile Integrator for Chemical Evolution
-=================================================
-A software built for numerical integration of single-zone chemical evolution 
-models. 
-
-Documentation for this package is available in several forms: 
-	1) In the docstrings of the objects and functions 
-	2) A user's guide, available at: 
-	https://github.com/giganano/VICE/tree/master/docs/users_guide.pdf 
-	3) Science documentation, available at: 
-	https://github.com/giganano/VICE/tree/master/docs/science_documentation.pdf
-
-We recommend first-time users visit the git repository to obtain copies of the 
-User's Guide and Science Documentation. Under the docs/ directory, they will 
-also find a QuickStartTutorial.ipynb notebook intended for quick 
-familiarization with the structure of VICE. 
-
-It is also recommended that VICE users install the package dill, an extension 
-of the python standard library package pickle. This enables VICE to encode 
-functional attributes with its output, and can be achieved via pip. 
-
-In all docstrings, examples of code are represented by three > signs:
-
-	>>> a = 5
-	>>> a += 10
-
-
-Included Features
-=================
-::	A dataframe object meant for case-insensitive lookup. 
-::	Simulations of galactic chemical enrichment under the single-zone 
-	approximation with support for user-specified parameters, many of which 
-	can be functions of time.  
-::	Simulations of enrichment from single stellar populations 
-::	Built-in yield tables from two recent studies of nucleosynthetic yields 
-	from asymptotic giant branch stars. 
-::	Calculations of IMF-integrated nucleosynthetic yields from both core 
-	collapse and type Ia supernovae. 
-:: 	User-specified yields from core-collapse supernovae, which may be callable 
-	functions of metallicity. 
-::	User-specified yields from type Ia supernovae. 
-::	A command-line entry allowing users to run simulations of simple 
-	evoluationary histories directly from a linux terminal. 
-::	A custom warning class (ScienceWarning) separating warnings about 
-	scientific accuracy and precision from those purely related to code. 
-
-LICENSE 
-======= 
-VICE is open-source software released under the MIT license. See LICENSE for 
-further details and copyright information. 
-
-Citing
-====== 
-If usage of this software leads to a publication, please cite Johnson & 
-Weinberg (2019, in prep). A BibTeX entry will be added to the git repository 
-once the paper is announced. 
-""" 
 
 from __future__ import absolute_import
 import warnings 
 import sys
 import os
-
-if sys.version_info[0] == 2: 
-	warnings.warn("""\
-Python 2 is set to be deprecated on January 1, 2020. A future version of VICE \
-will drop support for Python 2. \
-""", PendingDeprecationWarning) 
-else:
-	pass 
-
-__author__ = "James W. Johnson <giganano9@gmail.com>"
+if sys.version_info[:2] < (3, 5) and sys.version_info[:2] != (2, 7): 
+	raise RuntimeError("""This version of VICE requires python 2.7 or >= \
+3.5. Current version: %d.%d.%d.""" % (sys.version_info.major, 
+		sys.version_info.minor, sys.version_info.micro)) 
+else: pass 
 
 try: 
 	__VICE_SETUP__ 
@@ -82,60 +86,55 @@ except NameError:
 	ModuleNotFoundError = ImportError 
 
 if __VICE_SETUP__: 
-	from ._build_utils import *
+	from .src import * 
+	from ._build_utils import * 
 	_LONG_DESCRIPTION_ = __doc__
 else:
-	try:
-		from .version import version as __version__
-		from .version import release as __release
-	except: 
+	if "vice" in os.listdir(os.getcwd()): 
 		raise ImportError("""\
 Error importing VICE. VICE is a pre-compiled package and cannot be ran from \
 its source directory, because the compiled objects are not stored here. Please \
 exit the VICE source tree and relaunch your python interpreter from there. \
-""")
+""") 
+	else: 
 
-	if not __release: 
-		warnings.warn("Using un-released version of VICE", UserWarning)
+		__author__ = "James W. Johnson <giganano9@gmail.com>" 
+		__all__ = [
+			"__author__", 
+			"__version__", 
+			"modeling", 
+			"elements", 
+			"yields", 
+			"_globals", 
+			"ScienceWarning", 
+			"VisibleRuntimeWarning", 
+			"VisibleDeprecationWarning"
+		] 
 
-	__all__ = ["__author__", "__version__", "yields", "_globals", 
-		"ScienceWarning"] 
-
-	try: 
+		# try: 
+		from .version import version 
+		__version__ = str(version) 
+		if not version.released: 
+			warnings.warn("Using un-released version of VICE", UserWarning)
 		from .core import * 
+		from .core.dataframe import base as dataframe 
 		from ._build_utils import * 
 		from ._globals import ScienceWarning
+		from ._globals import VisibleRuntimeWarning 
+		from ._globals import VisibleDeprecationWarning 
+		from . import elements 
 		from . import yields 
-	except (ImportError, ModuleNotFoundError): 
-		raise ImportError("""\
-Error importing VICE. If you have attempted an alternate installation method, \
-please visit https://github.com/giganano/VICE.git and follow the preferred \
-installation method. \
+		from .tests import test 
+		__all__.extend(core.__all__) 
+		__all__.extend(_build_utils.__all__) 
+# 		except (ImportError, ModuleNotFoundError): 
+# 			raise ImportError("""\
+# Error importing VICE. If you have attempted an alternate installation method, \
+# please visit https://github.com/giganano/VICE.git and follow the preferred \
+# installation method. \
 
-Alternatively, if you have installed VICE in a conda environment, the \
-installation process will run, but its compiled extensions will not be placed \
-in the correct directories. If this is the case, please deactivate the conda \
-environment and install VICE globally. VICE is implemented independently of \
-anaconda, and for this reason a conda environment is not necessary. \
-
-If you have followed the preferred installation method outside of a conda \
-environment, then please open an issue at \
-https://github.com/giganano/VICE.git. \
-""")
-
-	__all__.extend(core.__all__)
-	__all__.extend(_build_utils.__all__)
-
-	"""
-	Remove locally imported variables that aren't needed, but leave the user 
-	the ability to call vice.warnings to get only VICE to keep quiet and let 
-	the rest of python raise warnings. 
-	"""
-	del core
-	del _build_utils
-	del version
-	del __release
-	del absolute_import
-	del sys
-	del os
+# To troubleshoot your build, see VICE's source code repository at \
+# https://github.com/giganano/VICE.git and click on "Troubleshoot Your Build" \
+# under "Install VICE." \
+# """)
 
