@@ -70,9 +70,9 @@ from __future__ import absolute_import
 import warnings 
 import sys
 import os
-if sys.version_info[:2] < (3, 5) and sys.version_info[:2] != (2, 7): 
-	raise RuntimeError("""This version of VICE requires python 2.7 or >= \
-3.5. Current version: %d.%d.%d.""" % (sys.version_info.major, 
+if sys.version_info[:2] < (3, 5): 
+	raise RuntimeError("""This version of VICE requires python >= 3.5. \
+Current version: %d.%d.%d.""" % (sys.version_info.major, 
 		sys.version_info.minor, sys.version_info.micro)) 
 else: pass 
 

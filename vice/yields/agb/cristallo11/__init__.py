@@ -4,10 +4,7 @@ yields.
 
 **Signature**: from vice.yields.agb import cristallo11 
 
-Importing this module will set the AGB star yield settings for all elements 
-to "cristallo11". 
-
-.. note:: This module is not imported with a simple ``import vice`` statement. 
+This module does not do anything in this version of VICE. 
 """ 
 
 from __future__ import absolute_import 
@@ -18,9 +15,11 @@ except NameError:
 
 if not __VICE_SETUP__: 
 
-	from .. import settings as __settings 
-	for i in __settings.keys(): 
-		__settings[i] = "cristallo11" 
+	# Code masked for future compatability 
+	# from .. import settings as __settings 
+	# for i in __settings.keys(): 
+	# 	__settings[i] = "cristallo11" 
+	pass 
 
 else: 
 	pass 

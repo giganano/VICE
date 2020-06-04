@@ -8,16 +8,13 @@ warnings.filterwarnings("ignore")
 import vice 
 from vice.yields.presets import JW20 
 from vice.yields.ccsne import LC18 
-from vice.yields.ccsne import NKT13 
 from vice.yields.ccsne import CL13 
 from vice.yields.ccsne import CL04 
 from vice.yields.ccsne import WW95 
-from vice.yields.ccsne import S16 
 from vice.yields.sneia import iwamoto99 
 from vice.yields.sneia import seitenzahl13 
 from vice.yields.agb import cristallo11 
 from vice.yields.agb import karakas10 
-from vice.core.singlezone.entrainment import entrainment 
 
 r""" 
 Each element of the _CONFIG_ dictionary should map an object in VICE to a 
@@ -43,13 +40,9 @@ _CONFIG_ = {
 			vice.elements, 
 			vice.imf, 
 			vice.singlezone, 
-			vice.multizone, 
-			vice.migration, 
 			vice.history, 
 			vice.mdf, 
 			vice.output, 
-			vice.multioutput, 
-			vice.stars, 
 			vice.mirror, 
 			vice.ScienceWarning, 
 			vice.VisibleRuntimeWarning, 
@@ -124,17 +117,13 @@ _CONFIG_ = {
 			vice.dataframe.todict, 
 			vice.dataframe.remove, 
 			vice.dataframe.filter, 
-			vice.core.dataframe.agb_yield_settings, 
 			vice.core.dataframe.builtin_elemental_data, 
-			vice.core.dataframe.ccsn_yield_table, 
-			vice.core.dataframe.channel_entrainment, 
 			vice.core.dataframe.elemental_settings, 
 			vice.core.dataframe.evolutionary_settings, 
 			vice.core.dataframe.fromfile, 
 			vice.core.dataframe.noncustomizable, 
 			vice.core.dataframe.history, 
-			vice.core.dataframe.saved_yields, 
-			vice.core.dataframe.tracers 
+			vice.core.dataframe.saved_yields 
 		]  
 	}, 
 	vice.dataframe.keys: {
@@ -157,37 +146,9 @@ _CONFIG_ = {
 		"header": 		"vice.dataframe.filter", 
 		"subs": 		[] 
 	}, 
-	vice.core.dataframe.agb_yield_settings: {
-		"filename": 	"vice.core.dataframe.agb_yield_settings.rst", 
-		"header": 		"vice.core.dataframe.agb_yield_settings", 
-		"subs": 		[] 
-	}, 
 	vice.core.dataframe.builtin_elemental_data: {
 		"filename": 	"vice.core.dataframe.builtin_elemental_data.rst", 
 		"header": 		"vice.core.dataframe.builtin_elemental_data", 
-		"subs": 		[] 
-	}, 
-	vice.core.dataframe.ccsn_yield_table: {
-		"filename": 	"vice.core.dataframe.ccsn_yield_table.rst", 
-		"header": 		"vice.core.dataframe.ccsn_yield_table", 
-		"subs": 		[
-			vice.core.dataframe.ccsn_yield_table.masses, 
-			vice.core.dataframe.ccsn_yield_table.isotopes 
-		] 
-	}, 
-	vice.core.dataframe.ccsn_yield_table.masses: {
-		"filename": 	"vice.core.dataframe.ccsn_yield_table.masses.rst", 
-		"header": 		"vice.core.dataframe.ccsn_yield_table.masses", 
-		"subs": 		[] 
-	}, 
-	vice.core.dataframe.ccsn_yield_table.isotopes: {
-		"filename": 	"vice.core.dataframe.ccsn_yield_table.isotopes.rst", 
-		"header": 		"vice.core.dataframe.ccsn_yield_table.isotopes", 
-		"subs": 		[] 
-	}, 
-	vice.core.dataframe.channel_entrainment: {
-		"filename": 	"vice.core.dataframe.channel_entrainment.rst", 
-		"header": 		"vice.core.dataframe.channel_entrainment", 
 		"subs": 		[] 
 	}, 
 	vice.core.dataframe.elemental_settings: {
@@ -236,14 +197,6 @@ _CONFIG_ = {
 		"header": 		"vice.core.dataframe.saved_yields", 
 		"subs": 		[] 
 	}, 
-	vice.core.dataframe.tracers: {
-		"filename": 	"vice.core.dataframe.tracers.rst", 
-		"header": 		"vice.core.dataframe.tracers", 
-		"subs": 		[
-			vice.core.dataframe.tracers.name, 
-			vice.core.dataframe.tracers.size 
-		] 
-	}, 
 	vice.yields: {
 		"filename": 	"vice.yields.rst", 
 		"header": 		"vice.yields", 
@@ -258,51 +211,12 @@ _CONFIG_ = {
 		"filename": 	"vice.yields.agb.rst", 
 		"header": 		"vice.yields.agb", 
 		"subs": 		[
-			vice.yields.agb.grid, 
-			vice.yields.agb.settings, 
-			vice.yields.agb.cristallo11, 
-			vice.yields.agb.karakas10 
+			vice.yields.agb.grid 
 		]  
 	}, 
 	vice.yields.agb.grid: {
 		"filename": 	"vice.yields.agb.grid.rst", 
 		"header": 		"vice.yields.agb.grid", 
-		"subs": 		[] 
-	}, 
-	vice.yields.agb.settings: {
-		"filename": 	"vice.yields.agb.settings.rst", 
-		"header": 		"vice.yields.agb.settings", 
-		"subs": 		[
-			vice.yields.agb.settings.keys, 
-			vice.yields.agb.settings.todict, 
-			vice.yields.agb.settings.restore_defaults, 
-			vice.yields.agb.settings.factory_settings, 
-			vice.yields.agb.settings.save_defaults 
-		]  
-	}, 
-	vice.yields.agb.settings.keys: {
-		"filename": 	"vice.yields.agb.settings.keys.rst", 
-		"header": 		"vice.yields.agb.settings.keys", 
-		"subs": 		[] 
-	}, 
-	vice.yields.agb.settings.todict: {
-		"filename": 	"vice.yields.agb.settings.todict.rst", 
-		"header": 		"vice.yields.agb.settings.todict", 
-		"subs": 		[] 
-	}, 
-	vice.yields.agb.settings.restore_defaults: {
-		"filename": 	"vice.yields.agb.settings.restore_defaults.rst", 
-		"header": 		"vice.yields.agb.settings.restore_defaults", 
-		"subs": 		[] 
-	}, 
-	vice.yields.agb.settings.factory_settings: {
-		"filename": 	"vice.yields.agb.settings.factory_settings.rst", 
-		"header": 		"vice.yields.agb.settings.factory_settings", 
-		"subs": 		[] 
-	}, 
-	vice.yields.agb.settings.save_defaults: {
-		"filename": 	"vice.yields.agb.settings.save_defaults.rst", 
-		"header": 		"vice.yields.agb.settings.save_defaults", 
 		"subs": 		[] 
 	}, 
 	vice.yields.agb.cristallo11: {
@@ -320,24 +234,16 @@ _CONFIG_ = {
 		"header": 		"vice.yields.ccsne", 
 		"subs": 		[
 			vice.yields.ccsne.fractional, 
-			vice.yields.ccsne.table, 
 			vice.yields.ccsne.settings, 
 			vice.yields.ccsne.WW95, 
 			vice.yields.ccsne.CL04, 
 			vice.yields.ccsne.CL13, 
-			vice.yields.ccsne.NKT13, 
-			vice.yields.ccsne.S16, 
 			vice.yields.ccsne.LC18 
 		]  
 	}, 
 	vice.yields.ccsne.fractional: {
 		"filename": 	"vice.yields.ccsne.fractional.rst", 
 		"header": 		"vice.yields.ccsne.fractional", 
-		"subs": 		[] 
-	}, 
-	vice.yields.ccsne.table: {
-		"filename": 	"vice.yields.ccsne.table.rst", 
-		"header": 		"vice.yields.ccsne.table", 
 		"subs": 		[] 
 	}, 
 	vice.yields.ccsne.settings: {
@@ -396,16 +302,6 @@ _CONFIG_ = {
 		"header": 		"vice.yields.ccsne.CL04.set_params", 
 		"subs": 		[] 
 	}, 
-	vice.yields.ccsne.NKT13: {
-		"filename": 	"vice.yields.ccsne.NKT13.rst", 
-		"header": 		"vice.yields.ccsne.NKT13", 
-		"subs": 		[vice.yields.ccsne.NKT13.set_params] 
-	}, 
-	vice.yields.ccsne.NKT13.set_params: {
-		"filename": 	"vice.yields.ccsne.NKT13.set_params.rst", 
-		"header": 		"vice.yields.ccsne.NKT13.set_params", 
-		"subs": 		[] 
-	}, 
 	vice.yields.ccsne.CL13: {
 		"filename": 	"vice.yields.ccsne.CL13.rst", 
 		"header": 		"vice.yields.ccsne.CL13", 
@@ -415,29 +311,6 @@ _CONFIG_ = {
 		"filename": 	"vice.yields.ccsne.CL13.set_params.rst", 
 		"header": 		"vice.yields.ccsne.CL13.set_params", 
 		"subs": 		[] 
-	}, 
-	vice.yields.ccsne.S16: {
-		"filename": 	"vice.yields.ccsne.S16.rst", 
-		"header": 		"vice.yields.ccsne.S16", 
-		"subs": 		[
-			vice.yields.ccsne.S16.set_params, 
-			vice.yields.ccsne.S16.engines 
-		] 
-	}, 
-	vice.yields.ccsne.S16.set_params: {
-		"filename": 	"vice.yields.ccsne.S16.set_params.rst", 
-		"header": 		"vice.yields.ccsne.S16.set_params", 
-		"subs": 		[] 
-	}, 
-	vice.yields.ccsne.S16.engines: {
-		"filename": 	"vice.yields.ccsne.S16.engines.rst", 
-		"header": 		"vice.yields.ccsne.S16.engines", 
-		"subs": 		[vice.yields.ccsne.S16.engines.W18] 
-	}, 
-	vice.yields.ccsne.S16.engines.W18: {
-		"filename": 	"vice.yields.ccsne.S16.engines.W18.rst", 
-		"header": 		"vice.yields.ccsne.S16.engines.W18", 
-		"subs": 		[]  
 	}, 
 	vice.yields.ccsne.LC18: {
 		"filename": 	"vice.yields.ccsne.LC18.rst", 
@@ -681,7 +554,6 @@ _CONFIG_ = {
 			vice.singlezone.IMF, 
 			vice.singlezone.eta, 
 			vice.singlezone.enhancement, 
-			vice.singlezone.entrainment, 
 			vice.singlezone.Zin, 
 			vice.singlezone.recycling, 
 			vice.singlezone.bins, 
@@ -750,30 +622,6 @@ _CONFIG_ = {
 	vice.singlezone.enhancement: {
 		"filename": 	"vice.singlezone.enhancement.rst", 
 		"header": 		"vice.singlezone.enhancement", 
-		"subs": 		[] 
-	}, 
-	vice.singlezone.entrainment: {
-		"filename": 	"vice.singlezone.entrainment.rst", 
-		"header": 		"vice.singlezone.entrainment", 
-		"subs": 		[
-			entrainment.agb, 
-			entrainment.ccsne, 
-			entrainment.sneia 
-		]  
-	}, 
-	entrainment.agb: {
-		"filename": 	"vice.singlezone.entrainment.agb.rst", 
-		"header": 		"vice.singlezone.entrainment.agb", 
-		"subs": 		[] 
-	}, 
-	entrainment.ccsne: {
-		"filename": 	"vice.singlezone.entrainment.ccsne.rst", 
-		"header": 		"vice.singlezone.entrainment.ccsne", 
-		"subs": 		[] 
-	}, 
-	entrainment.sneia: {
-		"filename": 	"vice.singlezone.entrainment.sneia.rst", 
-		"header": 		"vice.singlezone.entrainment.sneia", 
 		"subs": 		[] 
 	}, 
 	vice.singlezone.Zin: {
@@ -866,116 +714,6 @@ _CONFIG_ = {
 		"header": 		"vice.singlezone.agb_model", 
 		"subs": 		[] 
 	}, 
-	vice.multizone: {
-		"filename": 	"vice.multizone.rst", 
-		"header": 		"vice.multizone", 
-		"subs": 		[
-			vice.multizone.run, 
-			vice.multizone.from_output, 
-			vice.multizone.name, 
-			vice.multizone.zones, 
-			vice.multizone.migration, 
-			vice.multizone.n_zones, 
-			vice.multizone.n_stars, 
-			vice.multizone.verbose, 
-			vice.multizone.simple 
-		] 
-	}, 
-	vice.multizone.run: {
-		"filename": 	"vice.multizone.run.rst", 
-		"header": 		"vice.multizone.run", 
-		"subs": 		[] 
-	}, 
-	vice.multizone.from_output: {
-		"filename": 	"vice.multizone.from_output.rst", 
-		"header": 		"vice.multizone.from_output", 
-		"subs": 		[] 
-	}, 
-	vice.multizone.name: {
-		"filename": 	"vice.multizone.name.rst", 
-		"header": 		"vice.multizone.name", 
-		"subs": 		[] 
-	}, 
-	vice.multizone.zones: {
-		"filename": 	"vice.multizone.zones.rst", 
-		"header": 		"vice.multizone.zones", 
-		"subs": 		[] 
-	}, 
-	vice.multizone.migration: {
-		"filename": 	"vice.multizone.migration.rst", 
-		"header": 		"vice.multizone.migration", 
-		"subs": 		[] 
-	}, 
-	vice.multizone.n_zones: {
-		"filename": 	"vice.multizone.n_zones.rst", 
-		"header": 		"vice.multizone.n_zones", 
-		"subs": 		[] 
-	}, 
-	vice.multizone.n_stars: {
-		"filename": 	"vice.multizone.n_stars.rst", 
-		"header": 		"vice.multizone.n_stars", 
-		"subs": 		[] 
-	}, 
-	vice.multizone.verbose: {
-		"filename": 	"vice.multizone.verbose.rst", 
-		"header": 		"vice.multizone.verbose", 
-		"subs": 		[] 
-	}, 
-	vice.multizone.simple: {
-		"filename": 	"vice.multizone.simple.rst", 
-		"header": 		"vice.multizone.simple", 
-		"subs": 		[] 
-	}, 
-	vice.migration: {
-		"filename": 	"vice.migration.rst", 
-		"header": 		"vice.migration", 
-		"subs": 		[
-			vice.migration.specs, 
-			vice.migration.migration_matrix 
-		]  
-	}, 
-	vice.migration.specs: {
-		"filename": 	"vice.migration.specs.rst", 
-		"header": 		"vice.migration.specs", 
-		"subs": 		[
-			vice.migration.specs.gas, 
-			vice.migration.specs.stars 
-		]  
-	}, 
-	vice.migration.specs.gas: {
-		"filename": 	"vice.migration.specs.gas.rst", 
-		"header": 		"vice.migration.specs.gas", 
-		"subs": 		[] 
-	}, 
-	vice.migration.specs.stars: {
-		"filename": 	"vice.migration.specs.stars.rst", 
-		"header": 		"vice.migration.specs.stars", 
-		"subs": 		[] 
-	}, 
-	vice.migration.migration_matrix: {
-		"filename": 	"vice.migration.migration_matrix.rst", 
-		"header": 		"vice.migration.migration_matrix", 
-		"subs": 		[
-			vice.migration.migration_matrix.size, 
-			vice.migration.migration_matrix.tolist, 
-			vice.migration.migration_matrix.tonumpyarray 
-		] 
-	}, 
-	vice.migration.migration_matrix.size: {
-		"filename": 	"vice.migration.migration_matrix.size.rst", 
-		"header": 		"vice.migration.migration_matrix.size", 
-		"subs": 		[] 
-	}, 
-	vice.migration.migration_matrix.tolist: {
-		"filename": 	"vice.migration.migration_matrix.tolist.rst", 
-		"header": 		"vice.migration.migration_matrix.tolist", 
-		"subs": 		[] 
-	}, 
-	vice.migration.migration_matrix.tonumpyarray: {
-		"filename": 	"vice.migration.migration_matrix.tonumpyarray.rst", 
-		"header": 		"vice.migration.migration_matrix.tonumpyarray", 
-		"subs": 		[] 
-	}, 
 	vice.history: {
 		"filename": 	"vice.history.rst", 
 		"header": 		"vice.history", 
@@ -1050,35 +788,6 @@ _CONFIG_ = {
 	vice.output.unzip: {
 		"filename": 	"vice.output.unzip.rst", 
 		"header": 		"vice.output.unzip", 
-		"subs": 		[] 
-	}, 
-	vice.multioutput: {
-		"filename": 	"vice.multioutput.rst", 
-		"header": 		"vice.multioutput", 
-		"subs": 		[
-			vice.multioutput.name, 
-			vice.multioutput.zones, 
-			vice.multioutput.stars 
-		]  
-	}, 
-	vice.multioutput.name: {
-		"filename": 	"vice.multioutput.name.rst", 
-		"header": 		"vice.multioutput.name", 
-		"subs": 		[] 
-	}, 
-	vice.multioutput.zones: {
-		"filename": 	"vice.multioutput.zones.rst", 
-		"header": 		"vice.multioutput.zones", 
-		"subs": 		[] 
-	}, 
-	vice.multioutput.stars: {
-		"filename": 	"vice.multioutput.stars.rst", 
-		"header": 		"vice.multioutput.stars", 
-		"subs": 		[] 
-	}, 
-	vice.stars: {
-		"filename": 	"vice.stars.rst", 
-		"header": 		"vice.stars", 
 		"subs": 		[] 
 	}, 
 	vice.mirror: {

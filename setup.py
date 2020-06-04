@@ -6,9 +6,9 @@ except NameError:
 from distutils.core import setup, Extension 
 import sys 
 import os 
-if sys.version_info[:2] < (3, 5) and sys.version_info[:2] != (2, 7): 
-	raise RuntimeError("""This version of VICE requires python 2.7 or >= \
-3.5. Current version: %d.%d.%d.""" % (sys.version_info.major, 
+if sys.version_info[:2] < (3, 5): 
+	raise RuntimeError("""This version of VICE requires python >= 3.5. \
+Current version: %d.%d.%d.""" % (sys.version_info.major, 
 		sys.version_info.minor, sys.version_info.micro)) 
 else: pass  
 
@@ -38,11 +38,12 @@ Operating System :: Unix
 Programming Language :: C 
 Programming Language :: Cython 
 Programming Language :: Python 
+Programming Language :: Python :: 2 
+Programming Language :: Python :: 2.7 
 Programming Language :: Python :: 3  
 Programming Language :: Python :: 3.5 
 Programming Language :: Python :: 3.6 
 Programming Language :: Python :: 3.7 
-Programming Language :: Python :: 3 :: Only 
 Topic :: Scientific/Engineering
 Topic :: Scientific/Engineering :: Astronomy 
 Topic :: Scientific/Engineering :: Physics
@@ -50,8 +51,8 @@ Topic :: Scientific/Engineering :: Physics
 
 # Version info 
 MAJOR 			= 1 
-MINOR 			= 0 
-MICRO 			= 1 
+MINOR 			= 1 
+MICRO 			= 0 
 ISRELEASED		= False 
 VERSION 		= "%d.%d.%d" % (MAJOR, MINOR, MICRO) 
 
@@ -71,8 +72,6 @@ def find_extensions(path = '.'):
 			ext = i.split('=')[1] 
 			src = "./%s.pyx" % (ext.replace('.', '/')) 
 			if os.path.exists(src): 
-				# src_files = [src] + vice.find_c_extensions() 
-				# if "tests" in src: src_files += vice.find_test_extensions() 
 				src_files = [src] + vice.find_c_extensions(
 					tests = "tests" in src
 				)
@@ -92,9 +91,6 @@ def find_extensions(path = '.'):
 		for root, dirs, files in os.walk(path): 
 			for i in files: 
 				if i.endswith(".pyx"): 
-					# src_files = ["%s/%s" % (root[2:], 
-					# 	i)] + vice.find_c_extensions() 
-					# if "tests" in root: src_files += vice.find_test_extensions() 
 					src_files = ["%s/%s" % (root[2:], i)] 
 					src_files += vice.find_c_extensions(tests = "tests" in root) 
 					extensions.append(Extension( 

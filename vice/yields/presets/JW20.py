@@ -39,10 +39,11 @@ alt_cc_sr_limitexp : <function>
 __all__ = ["alt_cc_sr_linear", "alt_cc_sr_limitexp"] 
 import math 
 import vice 
-if tuple([int(i) for i in vice.__version__.split('.')]) >= (1, 1, 0): 
-	for i in ["o", "fe", "sr"]: 
-		vice.yields.agb.settings[i] = "cristallo11" 
-else: pass 
+# Code masked for future compatability 
+# if tuple([int(i) for i in vice.__version__.split('.')]) >= (1, 1, 0): 
+# 	for i in ["o", "fe", "sr"]: 
+# 		vice.yields.agb.settings[i] = "cristallo11" 
+# else: pass 
 vice.yields.ccsne.settings["o"] = 0.015 
 vice.yields.ccsne.settings["fe"] = 0.0012 
 vice.yields.ccsne.settings["sr"] = 3.5e-8 

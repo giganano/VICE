@@ -3,16 +3,7 @@ Karakas (2010), MNRAS, 403, 1413 Asymptotic Giant Branch (AGB) star yields.
 
 **Signature**: from vice.yields.agb import karakas10 
 
-Importing this module will set the AGB star yield setting for all elements up 
-to nickel to "karakas10". 
-
-.. note:: This module is not imported with a simple ``import vice`` statement. 
-
-Raises 
-------
-* ScienceWarning 
-	The Karakas (2010) study did not report yields for elements heavier than 
-	nickel. The settings for these elements will not be modified. 
+This module doesn't do anything in this version of VICE. 
 """ 
 
 from __future__ import absolute_import 
@@ -23,17 +14,19 @@ except NameError:
 
 if not __VICE_SETUP__: 
 
-	from ...._globals import ScienceWarning 
-	from ....core.dataframe._builtin_dataframes import atomic_number 
-	from .. import settings as __settings 
-	import warnings 
-	for i in __settings.keys(): 
-		if atomic_number[i] <= 28: __settings[i] = "karakas10" 
+	# code masked for future compatability 
+# 	from ...._globals import ScienceWarning 
+# 	from ....core.dataframe._builtin_dataframes import atomic_number 
+# 	from .. import settings as __settings 
+# 	import warnings 
+# 	for i in __settings.keys(): 
+# 		if atomic_number[i] <= 28: __settings[i] = "karakas10" 
 
-	warnings.warn("""\
-The Karakas (2010) study did not report yields for elements heavier than \
-nickel. AGB star yield settings for these elements will not be modified.""", 
-		ScienceWarning)  
+# 	warnings.warn("""\
+# The Karakas (2010) study did not report yields for elements heavier than \
+# nickel. AGB star yield settings for these elements will not be modified.""", 
+# 		ScienceWarning)  
+	pass 
 
 else: 
 	pass 
