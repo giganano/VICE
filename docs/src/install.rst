@@ -2,43 +2,28 @@
 Installing VICE 
 +++++++++++++++
 
-At present, VICE is not installable via ``pip``. Instructions can be found 
-`here`__. If you have already installed VICE and are looking for help getting 
-started, usage guidelines can be found `here`__. 
+Binary installers for the latest released version of VICE are available on 
+PyPI. We recommend users install VICE in this manner by running 
+``pip install vice [--user]`` from the command line. Users should add the 
+``--user`` flag if they do not have administrator privileges; this will 
+install VICE to their ``~/.local`` directory. 
+
+Users who have or would like to modify VICE's source code should conduct a 
+`from source installation`__. If you have already installed VICE and would 
+like help getting started, usage guidelines and tutorials can be found 
+`here`__. 
 
 __ `Installing from Source`_ 
 __ usage_ 
 .. _usage: https://github.com/astrobeard/VICEdev/blob/master/USAGE.rst.txt
 
+.. Contents:: 
+
 Dependencies 
 ============
-
-Primary
--------
-The following dependencies must be satisfied for VICE to install properly: 
-
-1. Cython_ >= 0.28.0 
-
-2. Python_ >= 3.5 
-
-3. Make_ >= 3.81 
-
-4. gcc_ >= 4.6 or clang_ >= 3.6.0 
-
-On macOS and linux distributions, it is likely that Make_ and one of gcc_ or 
-clang_ come pre-installed. Users may install with alternative C compilers if 
-they so choose, but VICE is only tested with gcc_ and clang_. 
-
-.. _Cython: https://pypi.org/project/Cython/ 
-.. _Python: https://www.python.org/downloads/ 
-.. _Make: https://www.gnu.org/software/make/ 
-.. _gcc: https://gcc.gnu.org/ 
-.. _clang: https://clang.llvm.org/get_started.html 
-
-Secondary 
----------
-VICE will run independently of the following, but they enable additional 
-features. 
+The following are *secondary* dependencies in that VICE will run independently 
+of all of them. We nonetheless recommend that users install them to make use 
+of the features they allow. 
 
 1. dill_ >= 0.2.0 
 	dill_ allows VICE to save python functions with its output. This makes it 
@@ -60,6 +45,8 @@ features.
 .. _NumPy: https://pypi.org/project/numpy/ 
 .. _tutorial: https://github.com/astrobeard/VICEdev/blob/master/docs/QuickStartTutorial.ipynb 
 
+VICE has no *primary* usage dependencies; that is, it does not require any 
+external software to be installed in order to run properly. 
 
 A Note on Implementation 
 ------------------------
@@ -76,8 +63,30 @@ is designed to run independently of them.
 
 Installing from Source  
 ======================
-To install VICE from source, first download the source code using a terminal 
-and change directories into the source tree: 
+While VICE does not have any usage dependencies, building from source requires 
+several open-source softwares. The following must be satisfied for VICE 
+to install from source properly: 
+
+1. Cython_ >= 0.28.0 
+
+2. Python_ >= 3.5 
+
+3. Make_ >= 3.81 
+
+4. gcc_ >= 4.6 or clang_ >= 3.6.0 
+
+On macOS and linux distributions, it is likely that Make_ and one of gcc_ or 
+clang_ come pre-installed. Users may install with alternative C compilers if 
+they so choose, but VICE is only tested with gcc_ and clang_. 
+
+.. _Cython: https://pypi.org/project/Cython/ 
+.. _Python: https://www.python.org/downloads/ 
+.. _Make: https://www.gnu.org/software/make/ 
+.. _gcc: https://gcc.gnu.org/ 
+.. _clang: https://clang.llvm.org/get_started.html 
+
+Once the build dependencies are satisfied, download the source code 
+using a terminal and change directories into the source tree: 
 
 :: 
 

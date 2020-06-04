@@ -2,8 +2,7 @@
 VICE: Versatile Integrator for Chemical Evolution
 +++++++++++++++++++++++++++++++++++++++++++++++++
 
-| |version| |MIT Licensed| |travis| |issues| |paper1| 
-| |Authors| |userguide| |scidocs| 
+|version| |MIT Licensed| |travis| |issues| |paper1| 
 
 ..	|version| image:: https://img.shields.io/badge/version-1.3.0-blue.svg
 	:target: https://img.shields.io/badge/version-1.3.0-blue.svg
@@ -19,18 +18,6 @@ VICE: Versatile Integrator for Chemical Evolution
 ..	|travis| image:: https://travis-ci.com/giganano/VICE.svg?branch=master 
 	:target: https://travis-ci.com/giganano/VICE 
 	:alt: travis 
-
-..	|authors| image:: https://img.shields.io/badge/-Authors-blue.svg
-	:target: https://github.com/giganano/VICE/blob/master/AUTHORS.rst
-	:alt: authors 
-
-..	|userguide| image:: https://img.shields.io/badge/-User's%20Guide-blue.svg
-	:target: https://github.com/giganano/VICE/blob/master/docs/users_guide.pdf 
-	:alt: userguide 
-
-..	|scidocs| image:: https://img.shields.io/badge/-Science%20Documentation-blue.svg
-	:target: https://github.com/giganano/VICE/blob/master/docs/science_documentation.pdf
-	:alt: scidocs 
 
 ..	|paper1| image:: https://img.shields.io/badge/NASA%20ADS-Johnson%20%26%20Weinberg%20(2020)-red
 	:target: https://ui.adsabs.harvard.edu/abs/2019arXiv191102598J/abstract 
@@ -77,7 +64,7 @@ Links
 
 * `Install VICE`__ 
 	- `Dependencies`__ 
-	- `Installation`__ 
+	- `Installing from Source`__ 
 	- `Troubleshoot Your Build`__ 
 * `Usage`__ 
 	- `Tutorial`__ 
@@ -93,30 +80,30 @@ __ install_
 __ dependencies_ 
 __ installation_ 
 __ troubleshoot_ 
-.. _install: https://github.com/astrobeard/VICEdev/blob/master/INSTALL.rst.txt
-.. _dependencies: https://github.com/astrobeard/VICEdev/blob/master/INSTALL.rst.txt#dependencies
-.. _installation: https://github.com/astrobeard/VICEdev/blob/master/INSTALL.rst.txt#installation
-.. _troubleshoot: https://github.com/astrobeard/VICEdev/blob/master/INSTALL.rst.txt#troubleshooting-your-build
+.. _install: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/install.rst
+.. _dependencies: https://github.com/giganano/VICE/blob/v1.3.0/src/install.rst#dependencies
+.. _installation: https://github.com/giganano/VICE/blob/v1.3.0/src/install.rst#installing-from-source
+.. _troubleshoot: https://github.com/giganano/VICE/blob/v1.3.0/src/install.rst#troubleshooting-your-build
 
 __ usage_ 
 __ tutorial_ 
 __ example_ 
 __ accessdocs_ 
 __ fromcmdline_ 
-.. _usage: https://github.com/astrobeard/VICEdev/blob/master/USAGE.rst.txt
-.. _tutorial: https://github.com/astrobeard/VICEdev/blob/master/USAGE.rst.txt#tutorial
-.. _example: https://github.com/astrobeard/VICEdev/tree/master/examples
-.. _accessdocs: https://github.com/astrobeard/VICEdev/blob/master/USAGE.rst.txt#accessing-documentation
-.. _fromcmdline: https://github.com/astrobeard/VICEdev/blob/master/USAGE.rst.txt#from-the-command-line 
+.. _usage: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/getting_started.rst
+.. _tutorial: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/getting_started.rst#tutorial
+.. _example: https://github.com/giganano/VICE/tree/v1.3.0/examples
+.. _accessdocs: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/getting_started.rst#accessing-documentation
+.. _fromcmdline: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/getting_started.rst#from-the-command-line 
 
 __ issues_ 
 .. _issues: https://github.com/giganano/VICE/issues
 
 __ citing_ 
-.. _citing: https://github.com/astrobeard/VICEdev/blob/master/CITING.rst.txt
+.. _citing: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/developers/citing.rst
 
 __ acknowledgements_ 
-.. _acknowledgements: https://github.com/astrobeard/VICEdev/blob/master/THANKS.rst.txt
+.. _acknowledgements: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/developers/acknowledgements.rst
 
 __ license_ 
 .. _license: https://github.com/giganano/VICE/blob/master/LICENSE
