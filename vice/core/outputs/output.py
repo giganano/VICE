@@ -274,29 +274,30 @@ class output:
 		""" 
 		return self.__c_version.mdf 
 
-	@property 
-	def agb_yields(self): 
-		r""" 
-		Type : ``dataframe`` 
+	# Code masked for future compatability 
+	# @property 
+	# def agb_yields(self): 
+	# 	r""" 
+	# 	Type : ``dataframe`` 
 
-		The asymptotic giant branch star yields employed in the simulation. 
+	# 	The asymptotic giant branch star yields employed in the simulation. 
 
-		.. note:: This dataframe is not be customizable. 
+	# 	.. note:: This dataframe is not be customizable. 
 
-		.. seealso:: vice.yields.agb.settings 
+	# 	.. seealso:: vice.yields.agb.settings 
 
-		Example Code 
-		------------
-		>>> import vice 
-		>>> example = vice.output("example") 
-		>>> example.agb_yields 
-			vice.dataframe{
-				fe -------------> cristallo11
-				o --------------> cristallo11
-				sr -------------> cristallo11
-			} 
-		""" 
-		return self.__c_version.agb_yields 
+	# 	Example Code 
+	# 	------------
+	# 	>>> import vice 
+	# 	>>> example = vice.output("example") 
+	# 	>>> example.agb_yields 
+	# 		vice.dataframe{
+	# 			fe -------------> cristallo11
+	# 			o --------------> cristallo11
+	# 			sr -------------> cristallo11
+	# 		} 
+	# 	""" 
+	# 	return self.__c_version.agb_yields 
 
 	@property
 	def ccsne_yields(self): 

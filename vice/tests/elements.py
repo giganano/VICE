@@ -69,7 +69,7 @@ def test_yields():
 		try: 
 			for i in _RECOGNIZED_ELEMENTS_: 
 				test = elements.yields(i) 
-				assert isinstance(test.agb, strcomp) or callable(test.agb) 
+				# assert isinstance(test.agb, strcomp) or callable(test.agb) 
 				assert isinstance(test.ccsne, numbers.Number) or callable(
 					test.ccsne) 
 				assert isinstance(test.sneia, numbers.Number) or callable(

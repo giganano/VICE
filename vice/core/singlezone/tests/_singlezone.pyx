@@ -34,7 +34,8 @@ def test():
 			_TEST_.test_imf_setter(), 
 			_TEST_.test_eta_setter(), 
 			_TEST_.test_enhancement_setter(), 
-			_TEST_.test_entrainment(), 
+			# test masked for future compatability 
+			# _TEST_.test_entrainment(), 
 			_TEST_.test_zin_setter(), 
 			_TEST_.test_recycling_setter(), 
 			_TEST_.test_bins_setter(), 
@@ -195,11 +196,14 @@ cdef class singlezone_tester:
 			1 on success, 0 on failure 
 			""" 
 			try: 
-				custom = lambda m: m**-2 
-				self.IMF = custom 
-				x = self.IMF == custom 
+				# Code masked for future compatability 
+				# custom = lambda m: m**-2 
+				# self.IMF = custom 
+				# x = self.IMF == custom 
 				self.IMF = "kroupa" 
-				y = self.IMF == "kroupa" 
+				x = self.IMF == "kroupa" 
+				self.IMF = "salpeter" 
+				y = self.IMF == "salpeter" 
 			except: 
 				return False 
 			return x and y 
@@ -250,23 +254,24 @@ cdef class singlezone_tester:
 		return ["vice.core.singlezone.enhancement.setter", test] 
 
 
-	@unittest 
-	def test_entrainment(self): 
-		def test(): 
-			""" 
-			Tests the entrainment settings 
+	# Code masked for future compatability 
+	# @unittest 
+	# def test_entrainment(self): 
+	# 	def test(): 
+	# 		""" 
+	# 		Tests the entrainment settings 
 
-			Returns 
-			======= 
-			1 on success, 0 on failure 
-			""" 
-			try: 
-				return (isinstance(self.entrainment.ccsne, dataframe) and 
-					isinstance(self.entrainment.sneia, dataframe) and 
-					isinstance(self.entrainment.agb, dataframe)) 
-			except: 
-				return False 
-		return ["vice.core.singlezone.entrainment", test] 
+	# 		Returns 
+	# 		======= 
+	# 		1 on success, 0 on failure 
+	# 		""" 
+	# 		try: 
+	# 			return (isinstance(self.entrainment.ccsne, dataframe) and 
+	# 				isinstance(self.entrainment.sneia, dataframe) and 
+	# 				isinstance(self.entrainment.agb, dataframe)) 
+	# 		except: 
+	# 			return False 
+	# 	return ["vice.core.singlezone.entrainment", test] 
 
 
 	@unittest 
@@ -800,17 +805,20 @@ cdef class singlezone_tester:
 			except: 
 				return False 
 			x = (
-				os.path.exists("%s.vice/yields/agb" % (self.name)) and 
+				# A few assertions masked for future compatability 
+				# os.path.exists("%s.vice/yields/agb" % (self.name)) and 
 				os.path.exists("%s.vice/yields/ccsne" % (self.name)) and 
 				os.path.exists("%s.vice/yields/sneia" % (self.name)) and 
 				os.path.exists("%s.vice/attributes" % (self.name)) and 
-				len(os.listdir("%s.vice/yields/agb" % (self.name))) == len(
-					self.elements) and 
+				# len(os.listdir("%s.vice/yields/agb" % (self.name))) == len(
+				# 	self.elements) and 
 				len(os.listdir("%s.vice/yields/ccsne" % (self.name))) == len(
 					self.elements) and 
 				len(os.listdir("%s.vice/yields/sneia" % (self.name))) == len(
 					self.elements) and 
-				len(os.listdir("%s.vice/attributes" % (self.name))) == 28 
+				# entrainment settings in future release 
+				# len(os.listdir("%s.vice/attributes" % (self.name))) == 28 
+				len(os.listdir("%s.vice/attributes" % (self.name))) == 25 
 			) 
 			os.system("rm -rf %s.vice" % (self.name)) 
 			return x 

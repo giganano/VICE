@@ -30,7 +30,6 @@ through VICE's namespace. For example:
 		stable isotopes --- > [54, 56, 57, 58]
 		yields.ccsne ------ > 0.000246
 		yields.sneia ------ > 0.00258
-		yields.agb -------- > cristallo11
 	}
 >>> example = vice.elements.element("sr") 
 >>> example 
@@ -44,7 +43,6 @@ through VICE's namespace. For example:
 		stable isotopes --- > [84, 86, 87, 88]
 		yields.ccsne ------ > 1.34e-08
 		yields.sneia ------ > 0
-		yields.agb -------- > cristallo11
 	} 
 >>> example.symbol = 'fe' 
 >>> example 
@@ -58,7 +56,6 @@ through VICE's namespace. For example:
 		stable isotopes --- > [54, 56, 57, 58]
 		yields.ccsne ------ > 0.000246
 		yields.sneia ------ > 0.00258
-		yields.agb -------- > cristallo11
 	}
 
 .. seealso:: vice.yields 
@@ -368,7 +365,7 @@ class element:
 	def symbol(self, value): 
 		if isinstance(value, strcomp): 
 			if value.lower() in recognized: 
-				self._symbol = _get_proper_name(value) 
+				self._symbol = value.capitalize() 
 			else: 
 				raise ValueError("Unrecognized element: %s" % (value)) 
 		else: 
@@ -392,7 +389,8 @@ Got: %s""" % (type(value)))
 		>>> vice.elements.Ne.name 
 			'Neon' 
 		""" 
-		return _get_proper_name(_FULL_NAMES_[self._symbol.lower()]) 
+		# return _get_proper_name(_FULL_NAMES_[self._symbol.lower()]) 
+		return _FULL_NAMES_[self._symbol.lower()].capitalize() 
 
 	@property 
 	def yields(self): 
@@ -542,7 +540,14 @@ class yields:
 	""" 
 
 	def __init__(self, symbol): 
-		self._symbol = _get_proper_name(symbol) 
+		# self._symbol = _get_proper_name(symbol) 
+		if isinstance(symbol, strcomp): 
+			if symbol.lower() in recognized: 
+				self._symbol = symbol.capitalize() 
+			else: 
+				raise ValueError("Unrecognized element: %s" % (symbol)) 
+		else: 
+			raise TypeError("Must be of type str. Got: %s" % (type(symbol))) 
 
 	def __enter__(self): 
 		""" 
@@ -556,45 +561,46 @@ class yields:
 		""" 
 		return exc_value is None 
 
-	@property 
-	def agb(self): 
-		r""" 
-		Type : ``str`` [case-insensitive] or <function> 
+	# Code masked for future compatability 
+	# @property 
+	# def agb(self): 
+	# 	r""" 
+	# 	Type : ``str`` [case-insensitive] or <function> 
 
-		The current yield setting for asymptotic giant branch stars. If this 
-		is a string, it will be interpreted as a keyword denoting the built-in 
-		table from a nucleosynthesis study to adopt. If this is a <function>, 
-		it must accept stellar mass in :math:`M_\odot` as the first parameter 
-		and the metallicity by mass :math:`Z` as the second. 
+	# 	The current yield setting for asymptotic giant branch stars. If this 
+	# 	is a string, it will be interpreted as a keyword denoting the built-in 
+	# 	table from a nucleosynthesis study to adopt. If this is a <function>, 
+	# 	it must accept stellar mass in :math:`M_\odot` as the first parameter 
+	# 	and the metallicity by mass :math:`Z` as the second. 
 
-			Keywords and their Associated Studies: 
+	# 		Keywords and their Associated Studies: 
 
-				- "cristallo11": Cristallo et al. (2011) [1]_ 
-				- "karakas10": Karakas (2010) [2]_ 
+	# 			- "cristallo11": Cristallo et al. (2011) [1]_ 
+	# 			- "karakas10": Karakas (2010) [2]_ 
 
-		Internal yield tables can be analyzed by calling vice.yields.agb.grid. 
+	# 	Internal yield tables can be analyzed by calling vice.yields.agb.grid. 
 
-		.. note:: Modifying yield settings here is equivalent to modifying 
-			vice.yields.agb.settings. 
+	# 	.. note:: Modifying yield settings here is equivalent to modifying 
+	# 		vice.yields.agb.settings. 
 
-		.. seealso:: vice.yields.agb.settings 
-			vice.yields.agb.grid 
+	# 	.. seealso:: vice.yields.agb.settings 
+	# 		vice.yields.agb.grid 
 
-		Example Code 
-		------------
-		>>> import vice 
-		>>> vice.elements.C.yields.agb = "cristallo11" 
-		>>> vice.elements.N.yields.agb = "cristallo11" 
+	# 	Example Code 
+	# 	------------
+	# 	>>> import vice 
+	# 	>>> vice.elements.C.yields.agb = "cristallo11" 
+	# 	>>> vice.elements.N.yields.agb = "cristallo11" 
 
-		.. [1] Cristallo et al. (2011), ApJS, 197, 17 
-		.. [2] Karakas (2010), MNRAS, 403, 1413 
-		""" 
-		return agb.settings[self._symbol] 
+	# 	.. [1] Cristallo et al. (2011), ApJS, 197, 17 
+	# 	.. [2] Karakas (2010), MNRAS, 403, 1413 
+	# 	""" 
+	# 	return agb.settings[self._symbol] 
 
-	@agb.setter 
-	def agb(self, value): 
-		# error handling in the yield_settings object 
-		agb.settings[self._symbol] = value 
+	# @agb.setter 
+	# def agb(self, value): 
+	# 	# error handling in the yield_settings object 
+	# 	agb.settings[self._symbol] = value 
 
 	@property 
 	def ccsne(self): 
@@ -661,10 +667,12 @@ class yields:
 		sneia.settings[self._symbol] = value 
 
 
-__all__.extend([_get_proper_name(i) for i in recognized]) 
+# __all__.extend([_get_proper_name(i) for i in recognized]) 
+__all__.extend([i.capitalize() for i in recognized]) 
 
 
 # Create the element objects 
 for i in recognized: 
-	exec("%s = element(\"%s\")" % (_get_proper_name(i), i)) 
+	# exec("%s = element(\"%s\")" % (_get_proper_name(i), i)) 
+	exec("%s = element(\"%s\")" % (i.capitalize(), i)) 
 

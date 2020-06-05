@@ -52,10 +52,11 @@ cdef class c_output:
 		self._elements = self._hist._load_elements() 
 
 		# Read in the yield settings 
-		from ...yields import agb 
+		# AGB yields masked for future compatability 
+		# from ...yields import agb 
 		from ...yields import ccsne 
 		from ...yields import sneia 
-		self._agb_yields = self.__load_saved_yields("agb", agb.settings) 
+		# self._agb_yields = self.__load_saved_yields("agb", agb.settings) 
 		self._ccsne_yields = self.__load_saved_yields("ccsne", ccsne.settings) 
 		self._sneia_yields = self.__load_saved_yields("sneia", sneia.settings) 
 
@@ -89,10 +90,11 @@ cdef class c_output:
 		# docstring in python version 
 		return self._sneia_yields 
 
-	@property 
-	def agb_yields(self): 
-		# docstring in python version 
-		return self._agb_yields 
+	# Code masked for future compatability 
+	# @property 
+	# def agb_yields(self): 
+	# 	# docstring in python version 
+	# 	return self._agb_yields 
 
 	def show(self, key, xlim = None, ylim = None): 
 		# docstring in python version 

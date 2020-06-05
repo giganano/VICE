@@ -490,15 +490,9 @@ _CONFIG_ = {
 		"filename": 	"vice.elements.yields.rst", 
 		"header": 		"vice.elements.yields", 
 		"subs": 		[
-			vice.elements.yields.agb, 
 			vice.elements.yields.ccsne, 
 			vice.elements.yields.sneia 
 		]  
-	}, 
-	vice.elements.yields.agb: {
-		"filename": 	"vice.elements.yields.agb.rst", 
-		"header": 		"vice.elements.yield.agb", 
-		"subs": 		[] 
 	}, 
 	vice.elements.yields.ccsne: {
 		"filename": 	"vice.elements.yields.ccsne.rst", 
@@ -720,7 +714,6 @@ _CONFIG_ = {
 			vice.output.elements, 
 			vice.output.history, 
 			vice.output.mdf, 
-			vice.output.agb_yields, 
 			vice.output.ccsne_yields, 
 			vice.output.sneia_yields, 
 			vice.output.show, 
@@ -746,11 +739,6 @@ _CONFIG_ = {
 	vice.output.mdf: {
 		"filename": 	"vice.output.mdf.rst", 
 		"header": 		"vice.output.mdf", 
-		"subs": 		[] 
-	}, 
-	vice.output.agb_yields: {
-		"filename": 	"vice.output.agb_yields.rst", 
-		"header": 		"vice.output.agb_yields", 
 		"subs": 		[] 
 	}, 
 	vice.output.ccsne_yields: {

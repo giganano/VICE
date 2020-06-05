@@ -325,11 +325,6 @@ class singlezone:
 		-----
 		.. note:: 
 
-			If arg is either a ``multizone`` output or a ``multioutput`` 
-			object, a ``multizone`` object will be returned. 
-
-		.. note:: 
-
 			In versions before 1.1.0, this function had the call signature 
 			``vice.mirror`` (now deprecated). 
 
@@ -379,20 +374,22 @@ class singlezone:
 		if isinstance(arg, output): 
 			# recursion to the algorithm which does it from the path 
 			return cls.from_output(arg.name) 
-		elif isinstance(arg, multioutput): 
-			""" 
-			Return the corresponding multizone object 
-			These import statements are here to prevent ImportErrors caused by 
-			nested recursive imports. 
-			""" 
-			from ..multizone import multizone 
-			return multizone.from_output(arg) 
+		# Code masked for future compatability 
+		# elif isinstance(arg, multioutput): 
+		# 	""" 
+		# 	Return the corresponding multizone object 
+		# 	These import statements are here to prevent ImportErrors caused by 
+		# 	nested recursive imports. 
+		# 	""" 
+		# 	from ..multizone import multizone 
+		# 	return multizone.from_output(arg) 
 		if isinstance(arg, strcomp): 
 			# make sure the output looks okay 
 			dirname = _get_name(arg) 
-			if _is_multizone(dirname): 
-				from ..multizone import multizone 
-				return multizone.from_output(dirname) 
+			# Code masked for future compatability 
+			# if _is_multizone(dirname): 
+			# 	from ..multizone import multizone 
+			# 	return multizone.from_output(dirname) 
 			_check_singlezone_output(dirname) 
 		else: 
 			raise TypeError("""Must be either a string or an output object. \

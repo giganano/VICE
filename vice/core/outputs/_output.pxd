@@ -11,7 +11,7 @@ cdef class c_output:
 	cdef object _elements 
 	cdef saved_yields _ccsne_yields 
 	cdef saved_yields _sneia_yields 
-	cdef saved_yields _agb_yields 
+	# cdef saved_yields _agb_yields 
 	cdef object _name 
 
 

@@ -40,7 +40,6 @@ def test_output():
 		return (
 			isinstance(test_, output) and 
 			isinstance(test_.elements, tuple) and 
-			isinstance(test_.agb_yields, dataframe) and 
 			isinstance(test_.ccsne_yields, dataframe) and 
 			isinstance(test_.sneia_yields, dataframe) and 
 			isinstance(test_.mdf, dataframe) and 
@@ -57,7 +56,7 @@ def test_zip():
 	def test(): 
 		if os.path.exists("test.vice"): os.system("rm -rf test.vice") 
 		try: 
-			singlezone.singlezone(name = "test").run(_OUTTIMES_)  
+			singlezone.singlezone(name = "test").run(_OUTTIMES_) 
 			output.zip("test") 
 		except: 
 			return False 
