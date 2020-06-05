@@ -4,6 +4,8 @@ Chemical Elements
 Provides a means of accessing nucleosynthetic yield information on an 
 element-by-element basis. 
 
+.. versionadded:: 1.1.0 
+
 Contents 
 --------
 recognized : ``tuple`` of strings 
@@ -179,6 +181,8 @@ class element:
 	nucleosynthetic sources and their associated yields. 
 
 	**Signature**: vice.elements.element(symbol) 
+
+	.. versionadded:: 1.1.0 
 
 	Parameters 
 	----------
@@ -484,6 +488,8 @@ class yields:
 	Current Nucleosynthetic yield settings for a given element. 
 
 	**Signature**: vice.elements.yields(symbol) 
+
+	.. versionadded:: 1.1.0 
 
 	Parameters 
 	----------
