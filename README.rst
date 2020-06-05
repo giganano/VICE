@@ -1,6 +1,8 @@
 
-VICE: Versatile Integrator for Chemical Evolution
-+++++++++++++++++++++++++++++++++++++++++++++++++
+|logo| 
+
+Versatile Integrator for Chemical Evolution
++++++++++++++++++++++++++++++++++++++++++++
 
 |version| |MIT Licensed| |travis| |issues| |paper1| 
 
@@ -22,6 +24,8 @@ VICE: Versatile Integrator for Chemical Evolution
 ..	|paper1| image:: https://img.shields.io/badge/NASA%20ADS-Johnson%20%26%20Weinberg%20(2020)-red
 	:target: https://ui.adsabs.harvard.edu/abs/2019arXiv191102598J/abstract 
 	:alt: paper1 
+
+..	|logo| image:: logo/logo.png 
 
 Overview
 ========
