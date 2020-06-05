@@ -263,7 +263,6 @@ class element:
 			stable isotopes --- > [54, 56, 57, 58]
 			yields.ccsne ------ > 0.000246
 			yields.sneia ------ > 0.00258
-			yields.agb -------- > cristallo11
 		}
 	>>> example = vice.elements.element("sr") 
 	>>> example 
@@ -277,7 +276,6 @@ class element:
 			stable isotopes --- > [84, 86, 87, 88]
 			yields.ccsne ------ > 1.34e-08
 			yields.sneia ------ > 0
-			yields.agb -------- > cristallo11
 		} 
 	>>> example.symbol = 'fe' 
 	>>> example 
@@ -291,7 +289,6 @@ class element:
 			stable isotopes --- > [54, 56, 57, 58]
 			yields.ccsne ------ > 0.000246
 			yields.sneia ------ > 0.00258
-			yields.agb -------- > cristallo11
 		}
 
 	.. [1] Asplund et al. (2009), ARA&A, 47, 481 
@@ -327,8 +324,7 @@ class element:
 			"sources": 				self.sources, 
 			"stable isotopes": 		self.stable_isotopes, 
 			"yields.ccsne": 		self.yields.ccsne, 
-			"yields.sneia": 		self.yields.sneia, 
-			"yields.agb": 			self.yields.agb 
+			"yields.sneia": 		self.yields.sneia 
 		}
 
 		rep = "vice.element{\n" 
@@ -411,8 +407,8 @@ Got: %s""" % (type(value)))
 		Example Code 
 		------------
 		>>> import vice
-		>>> vice.elements.Fe.yields.agb 
-			"cristallo11" 
+		>>> vice.elements.Fe.yields.sneia 
+			0.00258 
 		>>> vice.elements.Fe.yields.ccsne = 0.0012 
 		>>> vice.yields.ccsne.settings['fe'] 
 			0.0012 
