@@ -1,4 +1,4 @@
-r"""
+.r"""
 VICE: Versatile Integrator for Chemical Evolution 
 
 Provides
@@ -111,30 +111,30 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 			"VisibleDeprecationWarning"
 		] 
 
-		# try: 
-		from .version import version 
-		__version__ = str(version) 
-		if not version.released: 
-			warnings.warn("Using un-released version of VICE", UserWarning)
-		from .core import * 
-		from .core.dataframe import base as dataframe 
-		from ._build_utils import * 
-		from ._globals import ScienceWarning
-		from ._globals import VisibleRuntimeWarning 
-		from ._globals import VisibleDeprecationWarning 
-		from . import elements 
-		from . import yields 
-		from .tests import test 
-		__all__.extend(core.__all__) 
-		__all__.extend(_build_utils.__all__) 
-# 		except (ImportError, ModuleNotFoundError): 
-# 			raise ImportError("""\
-# Error importing VICE. If you have attempted an alternate installation method, \
-# please visit https://github.com/giganano/VICE.git and follow the preferred \
-# installation method. \
+		try: 
+			from .version import version 
+			__version__ = str(version) 
+			if not version.released: 
+				warnings.warn("Using un-released version of VICE", UserWarning)
+			from .core import * 
+			from .core.dataframe import base as dataframe 
+			from ._build_utils import * 
+			from ._globals import ScienceWarning
+			from ._globals import VisibleRuntimeWarning 
+			from ._globals import VisibleDeprecationWarning 
+			from . import elements 
+			from . import yields 
+			from .tests import test 
+			__all__.extend(core.__all__) 
+			__all__.extend(_build_utils.__all__) 
+		except (ImportError, ModuleNotFoundError): 
+			raise ImportError("""\
+Error importing VICE. If you have attempted an alternate installation method, \
+please visit https://github.com/giganano/VICE.git and follow the preferred \
+installation method. \
 
-# To troubleshoot your build, see VICE's source code repository at \
-# https://github.com/giganano/VICE.git and click on "Troubleshoot Your Build" \
-# under "Install VICE." \
-# """)
+To troubleshoot your build, see VICE's source code repository at \
+https://github.com/giganano/VICE.git and click on "Troubleshoot Your Build" \
+under "Install VICE." \
+""")
 
