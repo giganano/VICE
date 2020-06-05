@@ -172,37 +172,6 @@ _FULL_NAMES_ = {
 }
 
 
-def _get_proper_name(element): 
-	r""" 
-	Determines the properly spelled elemental symbol taking into account case. 
-
-	Parameters 
-	========== 
-	element :: str [case-insensitive] 
-		The one- or two-letter symbol for the element as it appears on the 
-		periodic table or it's name 
-
-	Returns 
-	======= 
-	symbol :: str 
-		The same string that is passed with the first letter capitalized and 
-		all subsequent letters in lower-case. 
-
-	Raises 
-	====== 
-	TypeError :: 
-		::	element is not of type str. 
-	""" 
-	if isinstance(element, strcomp): 
-		sym = element[0].upper() 
-		for i in element[1:]: 
-			sym += i.lower() 
-		return sym 
-	else: 
-		raise TypeError("Argument must be of type str. Got: %s" % (
-			type(element)))
-
-
 class element: 
 
 	r""" 
@@ -385,7 +354,6 @@ Got: %s""" % (type(value)))
 		>>> vice.elements.Ne.name 
 			'Neon' 
 		""" 
-		# return _get_proper_name(_FULL_NAMES_[self._symbol.lower()]) 
 		return _FULL_NAMES_[self._symbol.lower()].capitalize() 
 
 	@property 
@@ -536,7 +504,6 @@ class yields:
 	""" 
 
 	def __init__(self, symbol): 
-		# self._symbol = _get_proper_name(symbol) 
 		if isinstance(symbol, strcomp): 
 			if symbol.lower() in recognized: 
 				self._symbol = symbol.capitalize() 
@@ -663,12 +630,10 @@ class yields:
 		sneia.settings[self._symbol] = value 
 
 
-# __all__.extend([_get_proper_name(i) for i in recognized]) 
 __all__.extend([i.capitalize() for i in recognized]) 
 
 
 # Create the element objects 
 for i in recognized: 
-	# exec("%s = element(\"%s\")" % (_get_proper_name(i), i)) 
 	exec("%s = element(\"%s\")" % (i.capitalize(), i)) 
 
