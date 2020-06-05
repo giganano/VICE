@@ -13,8 +13,6 @@ from vice.yields.ccsne import CL04
 from vice.yields.ccsne import WW95 
 from vice.yields.sneia import iwamoto99 
 from vice.yields.sneia import seitenzahl13 
-from vice.yields.agb import cristallo11 
-from vice.yields.agb import karakas10 
 
 r""" 
 Each element of the _CONFIG_ dictionary should map an object in VICE to a 
@@ -217,16 +215,6 @@ _CONFIG_ = {
 	vice.yields.agb.grid: {
 		"filename": 	"vice.yields.agb.grid.rst", 
 		"header": 		"vice.yields.agb.grid", 
-		"subs": 		[] 
-	}, 
-	vice.yields.agb.cristallo11: {
-		"filename": 	"vice.yields.agb.cristallo11.rst", 
-		"header": 		"vice.yields.agb.cristallo11", 
-		"subs": 		[] 
-	}, 
-	vice.yields.agb.karakas10: {
-		"filename": 	"vice.yields.agb.karakas10.rst", 
-		"header": 		"vice.yields.agb.karakas10", 
 		"subs": 		[] 
 	}, 
 	vice.yields.ccsne: {

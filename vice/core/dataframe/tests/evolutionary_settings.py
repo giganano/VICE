@@ -74,7 +74,7 @@ def test_setitem():
 			_RECOGNIZED_ELEMENTS_, 
 			len(_RECOGNIZED_ELEMENTS_) * [dummy] 
 		)), "test")  
-	return ["vice.core.dataframe.evolutioanry_settings.__setitem__", test] 
+	return ["vice.core.dataframe.evolutionary_settings.__setitem__", test] 
 
 
 def dummy(t): 

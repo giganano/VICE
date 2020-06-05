@@ -53,7 +53,7 @@ def test_initialize():
 		ccsne.settings.factory_settings() 
 		sneia.settings.factory_settings() 
 		singlezone.singlezone(name = "test", 
-			elements = _ELEMENTS_).run(
+			elements = _ELEMENTS_ + ["he"]).run(
 			[0.01 * i for i in range(1001)], overwrite = True) 
 		global _TEST_ 
 		try: 
