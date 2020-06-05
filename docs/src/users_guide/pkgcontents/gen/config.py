@@ -103,7 +103,7 @@ _CONFIG_ = {
 		"subs": 		[] 
 	}, 
 	vice.single_stellar_population: {
-		"filename": 	"vice.single_stellar_populaiton.rst", 
+		"filename": 	"vice.single_stellar_population.rst", 
 		"header": 		"vice.single_stellar_population", 
 		"subs": 		[] 
 	}, 

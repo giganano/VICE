@@ -114,7 +114,6 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 		The minimum delay time following the formation of a single stellar 
 		population before the onset of type Ia supernovae in Gyr. 
 	agb_model : string [case-insensitive] [default : "cristallo11"] 
-		
 		A keyword denoting which table of nucleosynthetic yields from AGB stars 
 		to adopt. 
 
