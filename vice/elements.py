@@ -4,6 +4,8 @@ Chemical Elements
 Provides a means of accessing nucleosynthetic yield information on an 
 element-by-element basis. 
 
+.. versionadded:: 1.1.0 
+
 Contents 
 --------
 recognized : ``tuple`` of strings 
@@ -175,37 +177,6 @@ _FULL_NAMES_ = {
 }
 
 
-def _get_proper_name(element): 
-	r""" 
-	Determines the properly spelled elemental symbol taking into account case. 
-
-	Parameters 
-	========== 
-	element :: str [case-insensitive] 
-		The one- or two-letter symbol for the element as it appears on the 
-		periodic table or it's name 
-
-	Returns 
-	======= 
-	symbol :: str 
-		The same string that is passed with the first letter capitalized and 
-		all subsequent letters in lower-case. 
-
-	Raises 
-	====== 
-	TypeError :: 
-		::	element is not of type str. 
-	""" 
-	if isinstance(element, strcomp): 
-		sym = element[0].upper() 
-		for i in element[1:]: 
-			sym += i.lower() 
-		return sym 
-	else: 
-		raise TypeError("Argument must be of type str. Got: %s" % (
-			type(element)))
-
-
 class element: 
 
 	r""" 
@@ -213,6 +184,8 @@ class element:
 	nucleosynthetic sources and their associated yields. 
 
 	**Signature**: vice.elements.element(symbol) 
+
+	.. versionadded:: 1.1.0 
 
 	Parameters 
 	----------
@@ -368,7 +341,7 @@ class element:
 	def symbol(self, value): 
 		if isinstance(value, strcomp): 
 			if value.lower() in recognized: 
-				self._symbol = _get_proper_name(value) 
+				self._symbol = value.capitalize() 
 			else: 
 				raise ValueError("Unrecognized element: %s" % (value)) 
 		else: 
@@ -392,7 +365,7 @@ Got: %s""" % (type(value)))
 		>>> vice.elements.Ne.name 
 			'Neon' 
 		""" 
-		return _get_proper_name(_FULL_NAMES_[self._symbol.lower()]) 
+		return _FULL_NAMES_[self._symbol.lower()].capitalize() 
 
 	@property 
 	def yields(self): 
@@ -523,6 +496,8 @@ class yields:
 
 	**Signature**: vice.elements.yields(symbol) 
 
+	.. versionadded:: 1.1.0 
+
 	Parameters 
 	----------
 	symbol : ``str`` [case-insensitive]	
@@ -542,7 +517,13 @@ class yields:
 	""" 
 
 	def __init__(self, symbol): 
-		self._symbol = _get_proper_name(symbol) 
+		if isinstance(symbol, strcomp): 
+			if symbol.lower() in recognized: 
+				self._symbol = symbol.capitalize() 
+			else: 
+				raise ValueError("Unrecognized element: %s" % (symbol)) 
+		else: 
+			raise TypeError("Must be of type str. Got: %s" % (type(symbol))) 
 
 	def __enter__(self): 
 		""" 
@@ -560,6 +541,8 @@ class yields:
 	def agb(self): 
 		r""" 
 		Type : ``str`` [case-insensitive] or <function> 
+
+		.. versionadded:: 1.2.0 
 
 		The current yield setting for asymptotic giant branch stars. If this 
 		is a string, it will be interpreted as a keyword denoting the built-in 
@@ -661,10 +644,10 @@ class yields:
 		sneia.settings[self._symbol] = value 
 
 
-__all__.extend([_get_proper_name(i) for i in recognized]) 
+__all__.extend([i.capitalize() for i in recognized]) 
 
 
 # Create the element objects 
 for i in recognized: 
-	exec("%s = element(\"%s\")" % (_get_proper_name(i), i)) 
+	exec("%s = element(\"%s\")" % (i.capitalize(), i)) 
 
