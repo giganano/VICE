@@ -4,9 +4,10 @@
 all: figures
 
 figures: 
-	$(MAKE) -C plots/ 
+	@ $(MAKE) -C plots/ 
 
 clean: 
-	$(MAKE) -C plots/ clean
-	rm -f *.pyc
+	@ echo Cleaning starbursts/plots/ 
+	@ rm -f *.pyc
+	@ $(MAKE) -C plots/ clean
 
