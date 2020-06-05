@@ -1,11 +1,13 @@
 
-VICE: Versatile Integrator for Chemical Evolution
-+++++++++++++++++++++++++++++++++++++++++++++++++
+|logo| 
+
+Versatile Integrator for Chemical Evolution
++++++++++++++++++++++++++++++++++++++++++++
 
 |version| |MIT Licensed| |travis| |issues| |paper1| 
 
-..	|version| image:: https://img.shields.io/badge/version-1.3.0-blue.svg
-	:target: https://img.shields.io/badge/version-1.3.0-blue.svg
+..	|version| image:: https://img.shields.io/badge/version-1.4.0-blue.svg
+	:target: https://img.shields.io/badge/version-1.4.0-blue.svg
 	:alt: version
 ..	|MIT Licensed| image:: https://img.shields.io/badge/license-MIT-blue.svg
 	:target: https://raw.githubusercontent.com/giganano/VICE/master/LICENSE
@@ -22,6 +24,8 @@ VICE: Versatile Integrator for Chemical Evolution
 ..	|paper1| image:: https://img.shields.io/badge/NASA%20ADS-Johnson%20%26%20Weinberg%20(2020)-red
 	:target: https://ui.adsabs.harvard.edu/abs/2019arXiv191102598J/abstract 
 	:alt: paper1 
+
+..	|logo| image:: logo/logo.png 
 
 Overview
 ========
@@ -80,30 +84,30 @@ __ install_
 __ dependencies_ 
 __ installation_ 
 __ troubleshoot_ 
-.. _install: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/install.rst
-.. _dependencies: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/install.rst#dependencies
-.. _installation: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/install.rst#installing-from-source
-.. _troubleshoot: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/install.rst#troubleshooting-your-build
+.. _install: https://github.com/giganano/VICE/blob/master/docs/src/install.rst
+.. _dependencies: https://github.com/giganano/VICE/blob/master/docs/src/install.rst#dependencies
+.. _installation: https://github.com/giganano/VICE/blob/master/docs/src/install.rst#installing-from-source
+.. _troubleshoot: https://github.com/giganano/VICE/blob/master/docs/src/install.rst#troubleshooting-your-build
 
 __ usage_ 
 __ tutorial_ 
 __ example_ 
 __ accessdocs_ 
 __ fromcmdline_ 
-.. _usage: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/getting_started.rst
-.. _tutorial: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/getting_started.rst#tutorial
-.. _example: https://github.com/giganano/VICE/tree/v1.3.0/examples
-.. _accessdocs: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/getting_started.rst#accessing-documentation
-.. _fromcmdline: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/getting_started.rst#from-the-command-line 
+.. _usage: https://github.com/giganano/VICE/blob/master/docs/src/getting_started.rst
+.. _tutorial: https://github.com/giganano/VICE/blob/master/docs/src/getting_started.rst#tutorial
+.. _example: https://github.com/giganano/VICE/tree/master/examples
+.. _accessdocs: https://github.com/giganano/VICE/blob/master/docs/src/getting_started.rst#accessing-documentation
+.. _fromcmdline: https://github.com/giganano/VICE/blob/master/docs/src/getting_started.rst#from-the-command-line 
 
 __ issues_ 
 .. _issues: https://github.com/giganano/VICE/issues
 
 __ citing_ 
-.. _citing: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/developers/citing.rst
+.. _citing: https://github.com/giganano/VICE/blob/master/docs/src/developers/citing.rst
 
 __ acknowledgements_ 
-.. _acknowledgements: https://github.com/giganano/VICE/blob/v1.3.0/docs/src/developers/acknowledgements.rst
+.. _acknowledgements: https://github.com/giganano/VICE/blob/master/docs/src/developers/acknowledgements.rst
 
 __ license_ 
 .. _license: https://github.com/giganano/VICE/blob/master/LICENSE
