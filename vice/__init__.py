@@ -1,4 +1,4 @@
-.r"""
+r"""
 VICE: Versatile Integrator for Chemical Evolution 
 
 Provides
