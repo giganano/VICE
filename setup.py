@@ -1,3 +1,31 @@
+r""" 
+VICE setup.py file 
+
+If building VICE from source, first run ``make`` in this directory before 
+running this file. This file should then be ran with the following rule: 
+
+python setup.py build [-j N] install [--user] [-q --quiet] 
+	[ext=ext1] [ext=ext2] [ext=ext3] [...] 
+
+Install Options 
+---------------
+-j N 		: Run build in parallel across N cores 
+--user 		: Install to ~/.local directory 
+-q --quiet 	: Run the installation non-verbosely 
+ext= 		: Build and install specific extension 
+
+Individual extensions should be rebuilt and reinstalled only after the entire 
+body of VICE has been installed. This allows slight modifications to be 
+installed with ease. 
+
+After running this file, ``make clean`` will remove all of the Cython and 
+compiler outputs from the source tree. 
+
+Raises 
+------
+* RuntimeError 
+	- The name of the extension to reinstall is invalid 
+""" 
 
 try: 
 	ModuleNotFoundError 
@@ -55,12 +83,27 @@ ISRELEASED		= False
 VERSION 		= "%d.%d.%d" % (MAJOR, MINOR, MICRO) 
 
 
-def find_extensions(path = '.'): 
-	""" 
+def find_extensions(path = './vice'): 
+	r""" 
 	Finds each extension to install 
 
-	This function allows extra command line arguments in the format of 
-	ext="path.to.extension" to install/update an individual extension 
+	.. tip:: Install a specific with the ext=<name of extension> command-line 
+		argument at runtime. 
+
+	Parameters 
+	----------
+	path : str [default : './vice'] 
+		The path to the package directory 
+
+	Returns 
+	-------
+	exts : list 
+		A list of strings denoting the names of the extensions to install. 
+
+	Raises 
+	------
+	* RuntimeError 
+		- Invalid extension (file not found) 
 	""" 
 	specified = list(filter(lambda x: x.startswith("ext="), sys.argv)) 
 	extensions = [] 
@@ -102,11 +145,20 @@ def find_extensions(path = '.'):
 	return extensions 
 
 
-def find_packages(path = '.'): 
-	"""
+def find_packages(path = './vice'): 
+	r"""
 	Finds each subpackage given the presence of an __init__.py file 
+
+	Parameters 
+	----------
+	path : str [default : './vice'] 
+		The path to the package directory 
 	
-	path: 			The relative patch to the directory 
+	Returns 
+	-------
+	pkgs : list 
+		The names of all sub-packages, determined from the names of 
+		directories containing an __init__.py file. 
 	"""
 	packages = []
 	for root, dirs, files in os.walk(path):
@@ -118,26 +170,27 @@ def find_packages(path = '.'):
 
 
 def find_package_data(): 
-	# Finds data files associated with each package 
+	r""" 
+	Finds the data files to install based on a given extension 
+
+	Extensions 
+	----------
+	.dat : files holding built-in data 
+	.obj : a pickled object -> currently the only instance is the pickled 
+		dictionary containing version info of build dependencies 
+	.so : shared object 
+	.o : compiled C code 
+	.pdf : documentation 
+
+	VICE's C extensions are compiled individually and wrapped into a 
+	shared object using make. All of this output is moved to the install 
+	directory to allow forward compatibility with future features that may 
+	require it. 
+	""" 
 	packages = find_packages()
 	data = {}
 	data_extensions = [".dat", ".so", ".obj", ".o", ".pdf"]  
 	for i in packages: 
-		""" 
-		Extensions 
-		========== 
-		.dat :: files holding built-in data 
-		.obj :: a pickled object -> currently the only instance is the pickled 
-			dictionary containing version info of build dependencies 
-		.so :: shared object 
-		.o :: compiled C code 
-		.pdf :: documentation 
-
-		VICE's C extensions are compiled individually and wrapped into a 
-		shared object using make. All of this output is moved to the install 
-		directory to allow forward compatibility with future features that may 
-		require it. 
-		""" 
 		data[i] = [] 
 		for j in os.listdir(i.replace('.', '/')): 
 			# look at each files extension 
@@ -149,9 +202,16 @@ def find_package_data():
 	return data 
 
 
-def write_version_info(filename = "vice/version_breakdown.py"): 
-	"""
-	Writes the version info to filename
+def write_version_info(filename = "./vice/version_breakdown.py"): 
+	r"""
+	Writes the version info to disk within the source tree 
+
+	Parameters 
+	----------
+	filename : str [default : "./vice/version_breakdown.py"] 
+		The file to write the version info to. 
+
+	.. note:: vice/version.py depends on the file produced by this function. 
 	"""
 	cnt = """
 # This file is generated from vice setup.py %(version)s
@@ -175,10 +235,14 @@ RELEASED = %(isreleased)s
 
 
 def set_path_variable(filename = "~/.bash_profile"):
-	"""
-	Permanently adds ~/.local/bin/ to the user's $PATH if they are installing 
-	via --user, allowing them to run vice from the command line without having 
-	to set this environment variable themselves.
+	r"""
+	Permanently adds ~/.local/bin/ to the user's $PATH for local 
+	installations (i.e. with [--user] directive). 
+
+	Parameters 
+	----------
+	filename : str [default : "~/.bash_profile"] 
+		The filename to put the PATH modification in. 
 	"""
 	if ("--user" in sys.argv and "%s/.local/bin" % (os.environ["HOME"]) not in 
 		os.environ["PATH"].split(':')): 
@@ -195,6 +259,9 @@ export PATH=$PATH:$HOME/.local/bin
 
 
 def setup_package(): 
+	r""" 
+	Build and install VICE. 
+	""" 
 	src_path = os.path.dirname(os.path.abspath(sys.argv[0])) 
 	old_path = os.getcwd() 
 	os.chdir(src_path) 
@@ -239,7 +306,7 @@ if __name__ == "__main__":
 	setup_package()
 	del builtins.__VICE_SETUP__
 
-	# tell them if dill isn't installed
+	# tell them if dill isn't installed 
 	try: 
 		import dill 
 	except (ImportError, ModuleNotFoundError): 
