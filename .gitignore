@@ -15,11 +15,14 @@ vice/core/*.c
 vice/yields/agb/*.c 
 vice/yields/ccsne/*.c 
 vice/yields/sneia/*.c 
-vice/src/test.* 
 vice/_build_utils/*.obj 
 vice/modeling/parameters/*.c 
 
-# installation artifacts 
+# Ignore locally compiled documentation 
+docs/vice.pdf 
+docs/src/_build/* 
+
+# source installation artifacts 
 VICE.egg-info/* 
 UNKNOWN.egg-info/* 
 dist/*
