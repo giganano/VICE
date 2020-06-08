@@ -1,35 +1,53 @@
 
-1.2.0 (Upcoming) 
-================
-
-New 
----
-- Sukhbold et al. (2016) CCSN nucleosynthetic yield tables 
-- CCSN nucleosynthetic yield table reader 
-
-1.1.0 (Upcoming) 
-================
-
-New 
----
-- Multizone simulation features 
-- AGB star yields can be specified as functions of stellar mass and metallicity 
-- Nomoto, Kobayashi & Tominaga (2013) CCSN nucleosynthetic yield tables 
-- Customized nucleosynthetic yield presets 
-- Entrainment settings for nucleosynthetic sources 
-
-1.0.1 
+1.1.0 
 =====
 
 New 
 ---
-- Updated source code for Johnson & Weinberg (2020) figures following peer review 
-- Documentation updates 
-- Refactored backend 
+- Updated source code for Johnson & Weinberg (2020) figures following peer 
+  review. 
+- New chemical element: helium (``he``) 
+- ``vice.primordial`` : ``dataframe`` 
+	Mapping from elements to their abundance by mass immediately following 
+	big bang nucleosynthesis. 
+- ``vice.stable_isotopes`` : ``dataframe`` 
+	Mapping from elements to their non-radioactive isotopes. 
+- Nonzero post-main-sequence lifetimes. 
+	* ``vice.cumulative_return_fraction`` 
+	* ``vice.single_stellar_population`` 
+	* ``vice.singlezone.postMS`` 
+- ``vice.dataframe.remove`` : ``function`` 
+	Remove a variable from a dataframe. 
+- ``vice.dataframe.filter`` : ``function`` 
+	Remove variables from a dataframe based on some criteria. 
+- ``vice.yields.presets`` : ``module`` 
+	Saved presets for nucleosynthetic yield settings. 
+
+	* User-constructed presets 
+	* ``vice.yields.presets.JW20``: built-in preset for Johnson & Weinberg 
+	  (2020) adopted nucleosynthetic yields. 
+- ``vice.elements`` : ``module`` 
+	A means of accessing yields and other data on an element-by-element basis. 
+- ``vice.imf`` : ``module`` 
+	Functional forms for popular stellar initial mass functions. 
+- ``vice.singlezone.verbose`` : ``property`` 
+	Singlezone object can be set to print the simulation time as it runs. 
+- ``vice.singlezone.from_output`` : ``function`` 
+	Obtain a singlezone object with the same parameters as the one which 
+	produced some output. Replaces ``vice.mirror`` (now deprecated). 
+- ``vice.output.zip`` and ``vice.output.unzip`` : ``function`` 
+	Zip and unzip VICE simulation output directories. 
+- ``vice.VisibleRuntimeWarning`` : ``Warning`` 
+	A ``RuntimeWarning`` which - contrary to the built-in version - is visible 
+	by default. 
+- ``vice.VisibleDeprecationWarning`` : ``Warning`` 
+	A ``DeprecationWarning`` which - contrary to the built-in version - is 
+	visible by default. 
 
 Patches 
 -------
-- Fixed a bug that didn't allow metal enhanced outflows in simulations 
+- Fixed a bug that didn't allow metal enhanced outflows in the ``singlezone`` 
+  object.  
 
 1.0.0 
 =====
