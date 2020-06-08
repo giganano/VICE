@@ -22,7 +22,7 @@ Versatile Integrator for Chemical Evolution
 	:alt: travis 
 
 ..	|paper1| image:: https://img.shields.io/badge/NASA%20ADS-Johnson%20%26%20Weinberg%20(2020)-red
-	:target: https://ui.adsabs.harvard.edu/abs/2019arXiv191102598J/abstract 
+	:target: https://arxiv.org/abs/1911.02598 
 	:alt: paper1 
 
 ..	|logo| image:: logo/logo.png 
@@ -121,6 +121,6 @@ in this directory, the figures will be located here under starbursts_.
 __ starbursts_ 
 __ jw20_ 
 .. _starbursts: https://github.com/giganano/VICE/tree/master/starbursts 
-.. _jw20: https://ui.adsabs.harvard.edu/abs/2019arXiv191102598J/abstract 
+.. _jw20: https://arxiv.org/abs/1911.02598 
 
 

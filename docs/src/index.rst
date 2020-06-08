@@ -18,7 +18,7 @@ __ src_
 __ paper1_ 
 __ install_ 
 .. _src: https://github.com/giganano/VICE.git 
-.. _paper1: https://ui.adsabs.harvard.edu/abs/2019arXiv191102598J/abstract 
+.. _paper1: https://arxiv.org/abs/1911.02598 
 .. _install: https://github.com/astrobeard/VICEdev/blob/master/INSTALL.rst.txt#installation
 
 First-time users should familiarize themselves with VICE's API by going 

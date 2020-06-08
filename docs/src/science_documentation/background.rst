@@ -17,7 +17,7 @@ For more theoretical background on galactic archaeology, see sections 1 and 2
 and the citations therein of `Johnson & Weinberg (2020)`__. 
 
 __ paper1_ 
-.. _paper1: https://ui.adsabs.harvard.edu/abs/2019arXiv191102598J/abstract 
+.. _paper1: https://arxiv.org/abs/1911.02598 
 
 The Singlezone Approximation 
 ----------------------------
