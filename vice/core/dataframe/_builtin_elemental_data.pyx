@@ -13,8 +13,6 @@ cdef class builtin_elemental_data(noncustomizable):
 
 	Stores persistent data for each element. 
 
-	.. versionadded:: 1.1.0 
-
 	Allowed Data Types 
 	------------------
 	* Keys 
