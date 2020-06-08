@@ -74,9 +74,12 @@ def save(filename):
 	if isinstance(filename, strcomp): 
 		if filename.split('/')[-1] in ["__init__.py", "_presets.py"]: 
 			# Don't allow changing these files -> will break the module 
-			raise RuntimeError("Cannot install module of name %s without \
+			raise RuntimeError("""Cannot install module of name %s without \
 modifying VICE's internal file structure. Please choose an alternate \
 name.""" % (filename.split('/')[-1])) 
+		elif filename.split('/')[-1] == "JW20.py": 
+			raise RuntimeError("""Cannot overwrite Johnson & Weinberg (2020) 
+yield presets. Please choose an alternate name.""") 
 		elif os.path.exists(filename): 
 			src_path = os.path.dirname(os.path.abspath(filename)) 
 			old_path = os.getcwd() 
@@ -189,8 +192,8 @@ Error message: %s""" % (str(exc)))
 				current_presets = list(filter(lambda x: x not in 
 					forbidden_names, os.listdir('.'))) 
 				os.chdir(old_path) 
-				errmsg = "Preset yield module not found: %s. Currently \
-installed presets: " % (name) 
+				errmsg = """Preset yield module not found: %s. Currently \
+installed presets: """ % (name) 
 				for i in current_presets: 
 					errmsg += "\n\t\t%s" % (i) 
 				raise ModuleNotFoundError(errmsg) 
