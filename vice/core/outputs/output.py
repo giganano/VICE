@@ -41,7 +41,7 @@ class output:
 		The dataframe read in via vice.history. 
 	mdf : ``dataframe`` 
 		The dataframe read in via vice.mdf. 
-	agb_yield : ``dataframe`` 
+	agb_yields : ``dataframe`` 
 		The asymptotic giant branch star yields employed in the simulation. 
 	ccsne_yields : ``dataframe`` 
 		The core-collapse supernova yields employed in the simulation. 

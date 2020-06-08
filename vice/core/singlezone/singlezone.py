@@ -811,7 +811,7 @@ ran.""" % (i, j), UserWarning)
 
 		.. seealso:: 
 			- vice.singlezone.eta 
-			- vice.singlezone.smooting 
+			- vice.singlezone.smoothing 
 
 		Example Code 
 		------------
