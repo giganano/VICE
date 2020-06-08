@@ -35,7 +35,6 @@ nucleosynthesis studies:
 
 	- Limongi & Chieffi (2018), ApJS, 237, 13 
 	- Chieffi & Limongi (2013), ApJ, 764, 21 
-	- Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 547 
 	- Chieffi & Limongi (2004), ApJ, 608, 405 
 	- Woosley & Weaver (1995), ApJS, 101, 181 
 

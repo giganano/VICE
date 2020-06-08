@@ -116,33 +116,6 @@ Relevant Source Code:
 	- ``vice/src/singlezone/ism.c`` 
 
 
-Extension to Multizone Models 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The only subsequent term of the enrichment equation modified in multizone 
-simulations is that quantifying the rate of recycling of an element :math:`x`. 
-The migration of star particles into and out of zones can affect the recycling 
-rate in a given zone. In a singlezone simulation it is exactly as expected for 
-the star formation history, but in a multizone model, it is coupled to the 
-star formation histories in other zones. Because VICE knows the zone each 
-star particle occupies at all times in simulation, the rate of recycling 
-of some element :math:`x` should be expressed not as an integral over the star 
-formation history, but as a summation over the stellar populations in the 
-zone: 
-
-.. math:: \dot{M}_x^\text{r} \approx \sum_i M_i Z_{x,i} 
-	[r(\tau_i + \Delta t) - r(\tau_i)] 
-
-where :math:`M_i`, :math:`Z_i`, and :math:`\tau_i` are the mass, metallicity, 
-and age, respectively, of the :math:`i`'th star particle in a given zone at 
-a given time. 
-
-Relevant Source Code: 
-
-	- ``vice/src/multizone/recycling.c`` 
-	- ``vice/src/multizone/element.c`` 
-	- ``vice/src/multizone/ism.c`` 
-
-
 Sanity Checks 
 -------------
 At all timesteps VICE forces the mass of every element to be non-negative. If 

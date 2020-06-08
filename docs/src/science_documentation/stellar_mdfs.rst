@@ -1,7 +1,7 @@
 
 Stellar Metallicity Distribution Functions 
 ------------------------------------------
-VICE's ``singlezone`` and ``multizone`` objects automatically determine 
+VICE's ``singlezone`` objects automatically determine 
 normalized stellar metallicity distribution functions (MDFs) for each 
 simulation. The MDF, in its most general form, is given by: 
 
@@ -46,12 +46,4 @@ bin is then approximated numerically by:
 
 The fraction of stars in a given range :math:`\Delta [X/Y]` is then given by 
 the value of the reported MDF times :math:`\Delta [X/Y]`. 
-
-In a multizone simulation, the metallicity distribution function is calculated 
-directly from the star particles that are in a given zone at a given time. 
-For each star particle in a given zone, the appropriate bins in [X/H] and 
-[X/Y] are incremented by the mass of the star rather than by the star 
-formation rate at previous timesteps. The same normalization process is then 
-applied. 
-
 

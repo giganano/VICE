@@ -36,15 +36,3 @@ in the ``singlezone`` class. In this documentation, we detail the analytic
 motivation and numerical approximations implemented in VICE in handling 
 these simulations. 
 
-The Multizone Approximation
-----------------------------
-The multizone approximation refers to the extension of singlezone models to 
-take into account phase space information with any degree of sophistication. 
-By allowing singlezone models to evolve in parallel, and to mix stars and gas 
-amongst them under some prescription, information on the spatial structure of 
-the model galaxy can be added back to the simulation. 
-
-VICE includes features for running numerical simulations of multizone models 
-in the ``multizone`` class. In this documentation, we detail the analytic 
-motivation and numerical approximations implemented in VICE in handling 
-these simulations. 

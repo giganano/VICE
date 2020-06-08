@@ -59,16 +59,3 @@ Relevant Source Code:
 .. [1] See Andrews, Weinberg, Schoenrich & Johnson (2017), ApJ, 835, 224 and 
 	the citations therein for a detailed analysis of multiple elements. 
 
-
-Extension to Multizone Models 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Because VICE approximates core collapse supernovae as occuring instantaneously 
-following the formation of their progenitor stars, this implies that 
-CCSN progenitors also should not migrate between zones in a multizone model. 
-Therefore, the formalism implemented for singlezone models is retained in 
-multizone simulations. 
-
-Relevant Source Code: 
-
-	- ``vice/src/multizone/ccsne.c`` 
-

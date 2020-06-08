@@ -120,31 +120,3 @@ Relevant Source Code:
 .. [2] See Andrews, Weinberg, Schoenrich & Johnson (2017), ApJ, 835, 224 and 
 	the citations therein for a detailed analysis of multiple elements. 
 
-
-Extension to Multizone Models 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The migration of star particles into and out of zones can affect the SN Ia 
-rate in a given zone. In a singlezone simulation it is exactly as expected for 
-the star formation history, but in a multizone model, it is coupled to the 
-star formation histories in other zones. Because VICE knows the zone each 
-star particle occupies at all times in simulation, the rate of SN Ia 
-production of some element :math:`x` should be expressed not as an integral 
-over the star formation history, but as a summation over the stellar 
-populations present in the zone: 
-
-.. math:: \dot{M}_x^\text{Ia} \approx \sum_i 
-	y_x^\text{Ia}(Z_i) M_i R_\text{Ia}(\tau_i) 
-
-where :math:`(Z_i)`, :math:`M_i`, and :math:`\tau_i` are the metallicity, 
-initial mass, and age, respectively, of the :math:`i`'th star particle in a 
-given zone at a given time. 
-
-It is important to note that with this implementation, VICE is not sampling 
-the SN Ia delay time distribution and stochastically ejecting iron according 
-thereto. Instead, star particles gradually eject iron to the interstellar 
-medium with a time-dependence given by the delay-time distribution. 
-
-Relevant Source Code: 
-
-	- ``vice/src/multizone/sneia.c`` 
-

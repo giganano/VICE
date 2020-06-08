@@ -7,8 +7,8 @@ As discussed in our section on :ref:`implementation <implementation>`, VICE's
 simulations are implemented with a Forward Euler timestep solution, an 
 approximation made possible by numerics not being the dominant source of 
 error. The quantization of timesteps necessitates the quantization of the 
-episodes of star formation. This allows VICE to model enrichment in both 
-singlezone and multizone models by using summations over a sample of 
+episodes of star formation. This allows VICE to model enrichment in 
+singlezone models by using summations over a sample of 
 discretized stellar populations. 
 
 For this reason, we implement a treatment of two quantities particularly 
@@ -39,14 +39,3 @@ of enrichment from asymptotic giant branch stars.
 .. _ssp_enr: 
 .. include:: enrichment.rst 
 
-.. _ssp_multizone: 
-.. include:: multizone.rst 
-
-
-.. 	:maxdepth: 5 
-
-.. 	stellar_lifetimes 
-.. 	crf 
-.. 	msmf 
-.. 	enrichment 
-.. 	multizone 

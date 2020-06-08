@@ -16,7 +16,7 @@ in Python_. The only assumption VICE's model adopts is physical plausibility.
 
 Numerical Approach 
 ------------------
-Because VICE is built to handle singlezone and multizone simulations, numerics 
+Because VICE is built to handle singlezone simulations, numerics 
 are not the dominant source of error, but rather in the model itself. The 
 assumption of instantaneous diffusion of newly produced metals introduces an 
 error that which is larger than even modest numerical errors to the equations 
