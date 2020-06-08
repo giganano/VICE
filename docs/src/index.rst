@@ -21,6 +21,13 @@ __ install_
 .. _paper1: https://ui.adsabs.harvard.edu/abs/2019arXiv191102598J/abstract 
 .. _install: https://github.com/astrobeard/VICEdev/blob/master/INSTALL.rst.txt#installation
 
+First-time users should familiarize themselves with VICE's API by going 
+through the `tutorial`__, available in the `git repository`__. 
+
+__ tutorial_ 
+__ src_ 
+.. _tutorial: https://github.com/giganano/VICE/blob/development/examples/QuickStartTutorial.ipynb 
+
 
 .. toctree:: 
 	:maxdepth: 1 

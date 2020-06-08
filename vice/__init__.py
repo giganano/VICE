@@ -13,7 +13,7 @@ How to Access the Documentation:
 Documentation is available in several forms: 
 
 	1. Docstrings embedded within the code 
-	2. On PyPI 
+	2. Online: http://vice-astro.readthedocs.io 
 	3. In PDF format 
 	4. Tutorials and example scripts, available in the git repository 
 
