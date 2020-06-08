@@ -463,7 +463,7 @@ _CONFIG_ = {
 	}, 
 	vice.elements.element.atomic_number: {
 		"filename": 	"vice.elements.element.atomic_number.rst", 
-		"header": 		"vice.elements.element.atmoic_number", 
+		"header": 		"vice.elements.element.atomic_number", 
 		"subs": 		[] 
 	}, 
 	vice.elements.element.primordial: {

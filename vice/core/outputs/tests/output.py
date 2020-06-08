@@ -56,8 +56,9 @@ def test_zip():
 	def test(): 
 		if os.path.exists("test.vice"): os.system("rm -rf test.vice") 
 		try: 
-			singlezone.singlezone(name = "test").run(_OUTTIMES_) 
-			output.zip("test") 
+			out = singlezone.singlezone(name = "test").run(_OUTTIMES_, 
+				overwrite = True, capture = True) 
+			output.zip(out) 
 		except: 
 			return False 
 		return os.path.exists("test.vice.zip") 
@@ -72,7 +73,8 @@ def test_unzip():
 	def test(): 
 		if os.path.exists("test.vice.zip"): os.system("rm -rf test.vice") 
 		try: 
-			singlezone.singlezone(name = "test").run(_OUTTIMES_) 
+			singlezone.singlezone(name = "test").run(_OUTTIMES_, 
+				overwrite = True)  
 			output.zip("test") 
 			os.system("rm -rf test.vice") 
 			output.unzip("test") 

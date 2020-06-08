@@ -77,7 +77,8 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 		The ratio of a star's post main sequence lifetime to its main sequence 
 		lifetime. 
 
-		.. versionadded:: 1.2.0 
+		.. versionadded:: 1.1.0 
+
 	IMF : ``str`` [case-insensitive] or ``<function>`` [default : "kroupa"] 
 		The stellar initial mass function (IMF) to assume. Strings denote 
 		built-in IMFs. Functions must accept only one numerical parameter and 
@@ -153,7 +154,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	* ArithmeticError 
 		- 	A functional RIa evaluated to a negative value, inf, or NaN at any 
 			given timestep. 
-	* IOError [Only occurs if VICE's file structure has been tampered with] 
+	* IOError [Only occurs if VICE's file structure has been modified] 
 		- 	The AGB yield file is not found. 
 
 	Example Code 

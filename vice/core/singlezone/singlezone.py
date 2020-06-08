@@ -60,6 +60,9 @@ class singlezone:
 		rate, "sfr" for star formation rate, or "gas" for the mass of gas. 
 	verbose : ``bool`` [default : False] 
 		Whether or not to print to the console as the simulation runs. 
+
+		.. versionadded:: 1.1.0 
+
 	elements : ``tuple`` [default : ("fe", "sr", "o")] 
 		A tuple of strings holding the symbols of the elements to be 
 		simulated. 
@@ -126,6 +129,9 @@ class singlezone:
 	postMS : real number [default : 0.1] 
 		The lifetime ratio of the post main sequence to main sequence phases 
 		of stellar evolution. 
+
+		.. versionadded:: 1.1.0 
+
 	Z_solar : real number [default : 0.014]	
 		The adopted metallicity by mass of the sun. 
 	agb_model : ``str`` [case-insensitive] [default : "cristallo11"] 
@@ -517,7 +523,7 @@ ran.""" % (i, j), UserWarning)
 			rates will be interpreted as having units of 
 			:math:`M_\odot\ yr^{-1}` according to convention. 
 
-		.. seealso:: ``vice.singlezone.mode`` 
+		.. seealso:: vice.singlezone.mode 
 
 		Example Code 
 		------------
@@ -565,7 +571,7 @@ ran.""" % (i, j), UserWarning)
 			rates will be interpreted as having units of 
 			:math:`M_\odot\ yr^{-1}` according to convention. 
 
-		.. seealso:: ``vice.singlezone.func`` 
+		.. seealso:: vice.singlezone.func 
 
 		Example Code
 		------------
@@ -588,6 +594,8 @@ ran.""" % (i, j), UserWarning)
 		Default : ``False`` 
 
 		If True, the simulation will print to the console as it evolves. 
+
+		.. versionadded:: 1.1.0 
 
 		Example Code 
 		------------
@@ -791,9 +799,8 @@ ran.""" % (i, j), UserWarning)
 			.. _Python: https://docs.python.org/library/ 
 
 		.. seealso:: 
-
-			``vice.singlezone.eta`` 
-			``vice.singlezone.smooting`` 
+			- vice.singlezone.eta 
+			- vice.singlezone.smooting 
 
 		Example Code 
 		------------
@@ -837,7 +844,7 @@ ran.""" % (i, j), UserWarning)
 	# 	sneia : ``dataframe`` 
 	# 		The entrainment fraction of each element fron SNe Ia 
 
-	# 	.. seealso:: ``vice.dataframe`` 
+	# 	.. seealso:: vice.dataframe 
 
 	# 	Example Code 
 	# 	------------
@@ -1008,7 +1015,7 @@ ran.""" % (i, j), UserWarning)
 		associated with a single stellar population. Default value is adopted 
 		from Weinberg, Andrews & Freudenburg (2017) [1]_. 
 
-		.. seealso:: ``vice.singlezone.RIa`` 
+		.. seealso:: vice.singlezone.RIa 
 
 		.. [1] Weinberg, Andrews & Freudenburg (2017), ApJ, 837, 183 
 		""" 
@@ -1077,7 +1084,8 @@ ran.""" % (i, j), UserWarning)
 
 		Default : 6.0e+09 
 
-		The mass of the ISM gas at time = 0 in :math:`M_\odot`. 
+		The mass of the ISM gas at time = 0 in :math:`M_\odot` when ran in 
+		infall mode. 
 
 		.. note:: 
 
@@ -1158,7 +1166,7 @@ ran.""" % (i, j), UserWarning)
 			Because this is an e-folding timescale, it only matter when the 
 			attribute ``RIa`` == "exp". 
 
-		.. seealso:: ``vice.singlezone.RIa`` 
+		.. seealso:: vice.singlezone.RIa 
 
 		Example Code 
 		------------
@@ -1304,10 +1312,9 @@ ran.""" % (i, j), UserWarning)
 		that the user has specified. 
 
 		.. seealso:: 
-
-			- ``vice.singlezone.tau_star`` 
-			- ``vice.singlezone.schmidt_index`` 
-			- ``vice.singlezone.MgSchmidt`` 
+			- vice.singlezone.tau_star 
+			- vice.singlezone.schmidt_index 
+			- vice.singlezone.MgSchmidt 
 
 		Example Code 
 		------------
@@ -1348,10 +1355,9 @@ ran.""" % (i, j), UserWarning)
 			efficiency at a given timestep is near the user-specified value. 
 
 		.. seealso:: 
-
-			- ``vice.singlezone.tau_star`` 
-			- ``vice.singlezone.schmidt`` 
-			- ``vice.singlezone.schmidt_index`` 
+			- vice.singlezone.tau_star 
+			- vice.singlezone.schmidt 
+			- vice.singlezone.schmidt_index 
 
 		Example Code 
 		------------
@@ -1384,10 +1390,9 @@ ran.""" % (i, j), UserWarning)
 			of gas. 
 
 		.. seealso:: 
-
-			- ``vice.singlezone.tau_star`` 
-			- ``vice.singlezone.schmidt`` 
-			- ``vice.singlezone.schmidt_index`` 
+			- vice.singlezone.tau_star 
+			- vice.singlezone.schmidt 
+			- vice.singlezone.schmidt_index 
 
 		Example Code 
 		------------
@@ -1451,7 +1456,7 @@ ran.""" % (i, j), UserWarning)
 
 		Default : 0.1 
 
-		.. versionadded:: 1.2.0 
+		.. versionadded:: 1.1.0 
 
 		The ratio of a star's post main sequence lifetime to its main sequence 
 		lifetime. 

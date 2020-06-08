@@ -3,6 +3,8 @@ Johnson & Weinberg (2020), arxiv:1911.02598 Nucleosynthetic Yield Settings
 
 **Signature**: from vice.yields.presets import JW20 
 
+.. versionadded:: 1.1.0 
+
 Importing this module sets the yields of oxygen, iron, and strontium to that 
 adopted in the Johnson & Weinberg (2020) paper on starburst scenarios. 
 
@@ -57,6 +59,10 @@ def alt_cc_sr_linear(Z, Z_solar = 0.014):
 	The functional form of the alternative CCSN Sr yield explored in Johnson & 
 	Weinberg (2020) [1]_ which is linear in metallicity :math:`Z`. 
 
+	**Signature**: vice.yields.presets.JW20.alt_cc_sr_linear(Z, Z_solar = 0.014) 
+
+	.. versionadded:: 1.1.0 
+
 	Parameters 
 	----------
 	Z : real number 
@@ -95,6 +101,11 @@ def alt_cc_sr_limitexp(Z, Z_solar = 0.014):
 	r""" 
 	The functional form of the alternative CCSN Sr yield explored in Johnson & 
 	Weinberg (2020) [1]_ which is a limited exponential in :math:`Z`. 
+
+	**Signature**: vice.yields.presets.JW20.alt_cc_sr_limitexp(Z, 
+	Z_solar = 0.014) 
+
+	.. versionadded:: 1.1.0 
 
 	Parameters 
 	----------

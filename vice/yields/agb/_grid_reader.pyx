@@ -68,7 +68,7 @@ def yield_grid(element, study = "cristallo11"):
 		- 	``study == "karakas10"`` and the atomic number of the element is 
 			:math:`\geq` 29. The Karakas (2010) study did not report yields 
 			for elements heavier the nickel. 
-	* IOError [Occur's only if VICE's file structure has been altered] 
+	* IOError [Occur's only if VICE's file structure has been modified] 
 		- 	The parameters passed to this function are allowed but the data 
 			file is not found. 
 

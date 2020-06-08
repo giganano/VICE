@@ -1,9 +1,17 @@
 
 from __future__ import absolute_import 
+from ..._globals import _VERSION_ERROR_ 
 from ._output import c_output 
 from . import _output_utils 
 import zipfile 
+import sys 
 import os 
+if sys.version_info[:2] == (2, 7): 
+	strcomp = basestring 
+elif sys.version_info[:2] >= (3, 5): 
+	strcomp = str 
+else: 
+	_VERSION_ERROR_() 
 
 class output: 
 
@@ -57,9 +65,10 @@ class output:
 
 	.. _matplotlib: https://matplotlib.org/ 
 
-	.. seealso:: vice.history 
-		vice.mdf 
-		vice.multioutput 
+	.. seealso:: 
+		- vice.history 
+		- vice.mdf 
+		- vice.multioutput 
 
 	Example Code 
 	------------
@@ -366,17 +375,17 @@ class output:
 			Users can also specify an argument of the format "key1-key2" 
 			where key1 and key2 are elements of the history output. This will 
 			then plot key1 against key2. 
-		xlim : array-like (contains real numbers) 
-			The x-limits to impose on the shown plot. 
-		ylim : array-like (contains real numbers) 
-			The y-limits to impose on the shown plot. 
+		xlim : array-like (contains real numbers) [default : None] 
+			The x-limits to impose on the shown plot, if any. 
+		ylim : array-like (contains real numbers) [default : None] 
+			The y-limits to impose on the shown plot, if any. 
 
 		Raises 
 		------
 		* KeyError 
 			-	Key is not found in either history or mdf attributes 
 		* ModuleNotFoundError 
-			- 	Matplotlib version >= 2 is not found in the user's system. 
+			- 	Matplotlib version >= 2.0.x is not found in the user's system. 
 
 				.. note:: In python 3.5.x, this will be an ``ImportError``. 
 
@@ -407,11 +416,13 @@ class output:
 
 		**Signature**: vice.output.zip(name) 
 
+		.. versionadded:: 1.1.0 
+
 		Parameters 
 		----------
-		name : ``str`` 
-			The full or relative path to an output. The '.vice' extension is 
-			not required. 
+		name : ``str`` or output 
+			The full or relative path to an output, or the output object 
+			itself. The '.vice' extension is not required. 
 
 		Raises 
 		------
@@ -426,20 +437,25 @@ class output:
 		>>> vice.singlezone(name = "example").run(np.linspace(0, 10, 1001)) 
 		>>> vice.output.zip("example") 
 		""" 
-		name = _output_utils._get_name(name) 
-		if os.path.exists(name): 
-			try: 
-				test = output(name) 
-			except: 
-				raise IOError("Could not read VICE output: %s" % (name)) 
-			zipf = zipfile.ZipFile("%s.zip" % (name), 'w', 
-				zipfile.ZIP_DEFLATED) 
-			for root, dirs, files in os.walk(name): 
-				for file in files: 
-					zipf.write(os.path.join(root, file)) 
-			zipf.close() 
+		if isinstance(name, output): 
+			output.zip(name.name) 
+		elif isinstance(name, strcomp): 
+			name = _output_utils._get_name(name) 
+			if os.path.exists(name): 
+				try: 
+					test = output(name) 
+				except: 
+					raise IOError("Could not read VICE output: %s" % (name)) 
+				zipf = zipfile.ZipFile("%s.zip" % (name), 'w', 
+					zipfile.ZIP_DEFLATED) 
+				for root, dirs, files in os.walk(name): 
+					for file in files: 
+						zipf.write(os.path.join(root, file)) 
+				zipf.close() 
+			else: 
+				raise IOError("Output not found: %s" % (name)) 
 		else: 
-			raise IOError("Output not found: %s" % (name)) 
+			raise TypeError("Must be of type str. Got: %s" % (type(name))) 
 
 
 	@staticmethod 
@@ -448,6 +464,8 @@ class output:
 		Decompress a VICE output from a zipfile. 
 
 		**Signature**: vice.output.unzip(name) 
+
+		.. versionadded:: 1.1.0 
 
 		Parameters 
 		----------
@@ -466,10 +484,13 @@ class output:
 		>>> vice.output.unzip("example.vice.zip") 
 		>>> out = vice.output("example") 
 		""" 
-		if not name.endswith(".vice.zip"): name += ".vice.zip" 
-		if os.path.exists(name): 
-			with zipfile.ZipFile(name, 'r') as zipf: 
-				zipf.extractall('.') 
+		if isinstance(name, strcomp): 
+			if not name.endswith(".vice.zip"): name += ".vice.zip" 
+			if os.path.exists(name): 
+				with zipfile.ZipFile(name, 'r') as zipf: 
+					zipf.extractall('.') 
+			else: 
+				raise IOError("Zipped file not found: %s" % (name)) 
 		else: 
-			raise IOError("Zipped file not found: %s" % (name)) 
+			raise TypeError("Must be of type str. Got: %s" % (type(name))) 
 

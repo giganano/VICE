@@ -38,6 +38,8 @@ if not __VICE_SETUP__:
 		Update the parameters with which the yields are calculated from the 
 		Iwamoto et al. (1999) [1]_ data. 
 
+		**Signature**: vice.yields.sneia.iwamoto99.set_params(\*\*kwargs) 
+
 		Parameters 
 		----------
 		kwargs : varying types
@@ -56,8 +58,9 @@ if not __VICE_SETUP__:
 		>>> from vice.yields.sneia import iwamoto99 
 		>>> iwamoto99.set_params(n = 1.5e-03) 
 
-		.. seealso:: vice.yields.sneia.fractional 
-			vice.yields.sneia.single 
+		.. seealso:: 
+			- vice.yields.sneia.fractional 
+			- vice.yields.sneia.single 
 
 		.. [1] Iwamoto et al. (1999), ApJ, 124, 439 
 		"""

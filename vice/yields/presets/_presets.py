@@ -26,6 +26,10 @@ def save(filename):
 	Save a permanent copy of yields stored in a given file for loading back 
 	into VICE at any time via an import statement. 
 
+	**Signature**: vice.yields.presets.save(filename) 
+
+	.. versionadded:: 1.1.0 
+
 	Parameters 
 	----------
 	filename : ``str`` 
@@ -102,6 +106,10 @@ def remove(name, force = False):
 	r""" 
 	Delete a copy of yield presets previously saved by a call to 
 	vice.yields.presets.save. 
+
+	**Signature** vice.yields.presets.remove(name, force = False) 
+
+	.. versionadded:: 1.1.0 
 
 	Parameters 
 	----------
