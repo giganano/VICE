@@ -356,6 +356,8 @@ Got: %s""" % (type(key)))
 
 		**Signature**: x.remove(key) 
 
+		.. versionadded:: 1.1.0 
+
 		Parameters 
 		----------
 		x : ``dataframe`` 
@@ -388,13 +390,7 @@ Got: %s""" % (type(key)))
 		} 
 		>>> example.remove("b") 
 		vice.dataframe{
-			a --------------> [1, 2, 3] 
 			c --------------> [7, 8, 9] 
-		} 
-		>>> example.remove("c") 
-		vice.dataframe{ 
-			a --------------> [1, 2, 3] 
-			b --------------> [4, 5, 6] 
 		} 
 		""" 
 		if key.lower() in self._frame.keys(): 
