@@ -79,19 +79,14 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 
 		.. versionadded:: 1.1.0 
 
-	IMF : ``str`` [case-insensitive] or ``<function>`` [default : "kroupa"] 
+	IMF : ``str`` [case-insensitive] [default : "kroupa"] 
 		The stellar initial mass function (IMF) to assume. Strings denote 
-		built-in IMFs. Functions must accept only one numerical parameter and 
-		will be interpreted as a custom, arbitrary stellar IMF. 
+		built-in IMFs. 
 
 		Recognized built-in IMFs: 
 
 		- Kroupa [1]_ 
 		- Salpeter [2]_ 
-
-		.. note:: 
-			Functions do not need to be normalized. VICE will take care of this 
-			automatically. 
 
 	RIa : ``str`` [case-insensitive] or ``<function>`` [default : "plaw"] 
 		The delay-time distribution for type Ia supernovae to adopt. Strings 

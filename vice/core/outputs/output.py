@@ -27,9 +27,6 @@ class output:
 		The full or relative path to the output directory. The '.vice' 
 		extension is not required. 
 
-	.. note:: If ``name`` corresponds to output from the ``multizone`` class, 
-		a ``multioutput`` object is created instead. 
-
 	Attributes 
 	----------
 	name : ``str`` 
@@ -41,8 +38,6 @@ class output:
 		The dataframe read in via vice.history. 
 	mdf : ``dataframe`` 
 		The dataframe read in via vice.mdf. 
-	agb_yield : ``dataframe`` 
-		The asymptotic giant branch star yields employed in the simulation. 
 	ccsne_yields : ``dataframe`` 
 		The core-collapse supernova yields employed in the simulation. 
 	sneia_yields : ``dataframe`` 
@@ -68,7 +63,6 @@ class output:
 	.. seealso:: 
 		- vice.history 
 		- vice.mdf 
-		- vice.multioutput 
 
 	Example Code 
 	------------

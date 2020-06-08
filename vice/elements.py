@@ -215,7 +215,6 @@ class element:
 		this element. 
 
 	.. seealso:: 
-		- vice.yields.agb.settings 
 		- vice.yields.ccsne.settings 
 		- vice.yields.sneia.settings 
 		- vice.atomic_number 
@@ -623,12 +622,10 @@ class yields:
 	@property 
 	def sneia(self): 
 		r""" 
-		Type : real number or <function> 
+		Type : real number 
 
-		The current yield setting for type Ia supernovae (SNe Ia). If this is 
-		a real number, it will be interpreted as a constant, 
-		metallicity-independent yield. If it is a function, it must accept 
-		the metallicity by mass :math:`Z` as the only parameter. 
+		The current yield setting for type Ia supernovae (SNe Ia). Interpreted 
+		as a constant, metallicity-independent yield. 
 
 		.. versionadded:: 1.1.0 
 

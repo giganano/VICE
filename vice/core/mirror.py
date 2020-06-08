@@ -14,17 +14,16 @@ def mirror(arg):
 	r"""
 	**[DEPRECATED]** 
 
-	Obtain an instance of either vice.singlezone or vice.multizone class 
-	given only an instance of the vice.output class or the path to the output. 
-	The returned object will have the same parameters as that which produced 
-	the output, allowing re-simulation with whatever modifications the user 
-	desires. 
+	Obtain an instance of the vice.singlezone class given only an instance of 
+	the vice.output class or the path to the output. The returned object will 
+	have the same parameters as that which produced the output, allowing 
+	re-simulation with whatever modifications the user desires. 
 
 	**Signature**: vice.mirror(arg) 
 
 	.. deprecated:: 1.1.0 
-		Users should instead call vice.singlezone.from_output or 
-		vice.multizone.from_output to achieve this functionality. 
+		Users should instead call vice.singlezone.from_output to achieve this 
+		functionality. 
 
 	Parameters 
 	----------
@@ -34,13 +33,9 @@ def mirror(arg):
 
 	Returns 
 	-------
-	obj : ``singlezone`` or ``multizone`` 
-		If arg is of type ``output``, then the ``singlezone`` object which 
-		produced the output is returned. If arg is of type ``str``, then obj 
-		is either of type vice.singlezone or vice.multizone, depending on 
-		which type of simulation produced the output. If arg is of type 
-		``multioutput``, then the corresponding ``multizone`` object is 
-		returned. 
+	obj : ``singlezone`` 
+		A new ``singlezone`` object, with the same parameters as that which 
+		produced the output. 
 
 	Raises 
 	------

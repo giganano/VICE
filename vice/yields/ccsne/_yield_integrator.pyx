@@ -54,9 +54,9 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	given element from core-collapse supernovae. 
 
 	**Signature**: vice.yields.ccsne.fractional(element, study = "LC18", 
-	MoverH = 0, rotation = 0, explodability = None, IMF = "kroupa", 
-	method = "simpson", m_lower = 0.08, m_upper = 100, tolerance = 1.0e-03, 
-	Nmin = 64, Nmax = 2.0e+08) 
+	MoverH = 0, rotation = 0, IMF = "kroupa", method = "simpson", 
+	m_lower = 0.08, m_upper = 100, tolerance = 1.0e-03, Nmin = 64, 
+	Nmax = 2.0e+08) 
 
 	Parameters 
 	----------
@@ -70,9 +70,8 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 
 			- "LC18": Limongi & Chieffi (2018) [1]_ 
 			- "CL13": Chieffi & Limongi (2013) [2]_ 
-			- "NKT13": Nomoto, Kobayashi & Tominaga (2013) [3]_ 
-			- "CL04": Chieffi & Limongi (2004) [4]_ 
-			- "WW95": Woosley & Weaver (1995) [5]_ 
+			- "CL04": Chieffi & Limongi (2004) [3]_ 
+			- "WW95": Woosley & Weaver (1995) [4]_ 
 
 	MoverH : real number [default : 0] 
 		The total metallicity [M/H] of the exploding stars. There are only a 
@@ -82,7 +81,6 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 
 			- "LC18": [M/H] = -3, -2, -1, 0 
 			- "CL13": [M/H] = 0 
-			- "NKT13": [M/H] = -inf, -1.15, -0.54, -0.24, 0.15, 0.55 
 			- "CL04": [M/H] = -inf, -4, -2, -1, -0.37, 0.15 
 			- "WW95": [M/H] = -inf, -4, -2, -1, 0 
 
@@ -94,16 +92,12 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 
 			- "LC18": v = 0, 150, 300 
 			- "CL13": v = 0, 300 
-			- "NKT13": v = 0 
 			- "CL04": v = 0 
 			- "WW95": v = 0 
 
-	IMF : ``str`` [case-insensitive] or <function> [default : "kroupa"] 
+	IMF : ``str`` [case-insensitive] [default : "kroupa"] 
 		The stellar initial mass function (IMF) to assume. Strings denote 
-		built-in IMFs, which must be either "Kroupa" [6]_ or "Salpeter" [7]_. 
-		Functions must accept stellar mass in :math:`M_\odot` as the only 
-		numerical paraneter and will be interpreted as a custom, arbitrary 
-		stellar IMF. 
+		built-in IMFs, which must be either "Kroupa" [5]_ or "Salpeter" [6]_. 
 	method : ``str`` [case-insensitive] [default : "simpson"] 
 		The method of quadrature. 
 
@@ -115,7 +109,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			- "euler" 
 
 		.. note:: These methods of quadrature are implemented according to 
-			Chapter 4 of Press, Teukolsky, Vetterling & Flannery (2007) [8]_. 
+			Chapter 4 of Press, Teukolsky, Vetterling & Flannery (2007) [7]_. 
 
 	m_lower : real number [default : 0.08] 
 		The lower mass limit on star formation in :math:`M_\odot`. 
@@ -193,12 +187,11 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 
 	.. [1] Limongi & Chieffi (2018), ApJS, 237, 13 
 	.. [2] Chieffi & Limongi (2013), ApJ, 764, 21 
-	.. [3] Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457 
-	.. [4] Chieffi & Limongi (2004), ApJ, 608, 405 
-	.. [5] Woosley & Weaver (1995), ApJ, 101, 181 
-	.. [6] Kroupa (2001), MNRAS, 231, 322 
-	.. [7] Salpeter (1955), ApJ, 121, 161 
-	.. [8] Press, Teukolsky, Vetterling & Flannery (2007), Numerical Recipes, 
+	.. [3] Chieffi & Limongi (2004), ApJ, 608, 405 
+	.. [4] Woosley & Weaver (1995), ApJ, 101, 181 
+	.. [5] Kroupa (2001), MNRAS, 231, 322 
+	.. [6] Salpeter (1955), ApJ, 121, 161 
+	.. [7] Press, Teukolsky, Vetterling & Flannery (2007), Numerical Recipes, 
 		Cambridge University Press 
 	""" 
 

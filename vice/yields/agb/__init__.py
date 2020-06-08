@@ -12,8 +12,6 @@ Contents
 grid : <function> 
 	Return the stellar mass-metallicity grid of fractional nucleosynthetic 
 	yields for given element and study 
-settings : ``dataframe`` 
-	Stores current settings for these yields 
 
 .. [1] Cristallo et al. (2011), ApJS, 197, 17 
 .. [2] Karakas (2010), MNRAS, 403, 1413 

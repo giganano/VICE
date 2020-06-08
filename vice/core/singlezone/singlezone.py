@@ -670,43 +670,24 @@ ran.""" % (i, j), UserWarning)
 	@property 
 	def IMF(self): 
 		r"""
-		Type : ``str`` [case-insensitive] or ``<function>`` 
+		Type : ``str`` [case-insensitive] 
 
 		Default : "kroupa" 
 
-		.. versionadded:: 1.2
-			In versions >= 1.2.0, users may construct a function of mass to 
-			describe the IMF. 
-
-		The assumed stellar initial mass function (IMF). If assigned a string, 
-		VICE will adopt a built-in IMF. Functions must accept stellar mass as 
-		the only parameter and is expected to return the value of the IMF at 
-		that mass. 
+		The assumed stellar initial mass function (IMF). Strings denote 
+		built-in IMFs. 
 
 		Built-in IMFs: 
 
 			- "kroupa" [1]_ 
 			- "salpeter" [2]_ 
 
-		.. note:: 
-
-			VICE has analytic soluations to the 
-			:ref:`cumulative return fraction <crf>` and the 
-			:ref:`main sequence mass fraction <msmf>` for built-in IMFs. If 
-			assigned a function, VICE will calculate these quantities 
-			numerically, increasing the required integration time. 
-
 		Example Code 
 		------------
 		>>> import vice 
 		>>> sz = vice.singlezone(name = "example") 
 		>>> sz.IMF = "kroupa" 
-		>>> def f(m): 
-			if m < 0.5: 
-				return m**-1.2
-			else: 
-				return m**-2.2 
-		>>> sz.IMF = f 
+		>>> sz.IMF = "salpeter" 
 
 		.. [1] Kroupa (2001), MNRAS, 322, 231 
 		.. [2] Salpeter (1955), ApJ, 121, 161 
@@ -800,7 +781,7 @@ ran.""" % (i, j), UserWarning)
 
 		.. seealso:: 
 			- vice.singlezone.eta 
-			- vice.singlezone.smooting 
+			- vice.singlezone.smoothing 
 
 		Example Code 
 		------------

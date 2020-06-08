@@ -37,10 +37,9 @@ def cumulative_return_fraction(age, IMF = "kroupa", m_upper = 100,
 	----------
 	age : real number 
 		The age of the stellar population in Gyr. 
-	IMF : ``str`` [case-insensitive] or ``<function>`` [default : "kroupa"] 
+	IMF : ``str`` [case-insensitive] [default : "kroupa"] 
 		The assumed stellar initial mass function (IMF). Strings denote 
-		built-in IMFs. Functions must accept only one numerical parameter and 
-		will be interpreted as a custom, arbitrary stellar IMF. 
+		built-in IMFs. 
 
 		Recognized built-in IMFs: 
 		
