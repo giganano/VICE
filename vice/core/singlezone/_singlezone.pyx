@@ -1278,7 +1278,6 @@ Got: %s""" % (type(value)))
 		if enrichment: 
 			raise SystemError("Internal Error") 
 		elif capture: 
-			print("H") 
 			return output(self.name) 
 		else: 
 			pass 
