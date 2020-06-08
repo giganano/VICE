@@ -22,7 +22,8 @@ __ install_
 .. _install: https://github.com/astrobeard/VICEdev/blob/master/INSTALL.rst.txt#installation
 
 First-time users should familiarize themselves with VICE's API by going 
-through the `tutorial`__, available in the `git repository`__. 
+through the `tutorial`__, available in the `git repository`__. Any questions 
+users may have can be emailed to the primary author (James W. Johnson). 
 
 __ tutorial_ 
 __ src_ 
