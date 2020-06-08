@@ -156,6 +156,8 @@ class VisibleRuntimeWarning(Warning):
 
 	**Signature**: vice.VisibleRuntimeWarning 
 
+	.. versionadded:: 1.1.0 
+
 	Although it is not recommended, this class of warnings can be silenced via: 
 
 		>>> warnings.filterwarnings("ignore", 
@@ -179,6 +181,8 @@ class VisibleDeprecationWarning(Warning):
 	warning are deprecated and will be removed in a future release of VICE. 
 
 	**Signature**: vice.VisibleDeprecationWarning 
+
+	.. versionadded:: 1.1.0 
 
 	Although it is not recommended, this class of warnings can be silenced via: 
 

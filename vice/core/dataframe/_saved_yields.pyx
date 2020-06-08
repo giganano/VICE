@@ -46,15 +46,9 @@ cdef class saved_yields(noncustomizable):
 			metallicity. 
 
 		- <function> 
-			A function of either one or two variables, depending on the 
-			enrichment channel. Core collapse and type Ia supernova yields 
-			will be functions of metallicity, while asymptotic giant branch 
-			star yields will be functions of stellar mass and metallicity. 
-
-		- ``str`` 
-			Keywords denoting a built-in table of yields sampled on a grid of 
-			stellar masses and metallicities. Only allowed for asymptotic 
-			giant branch star yields. 
+			A function of one variable describing the yield as a function of 
+			metallicity :math:`Z`. In this version of VICE, this is only 
+			applicable to CCSN yields. 
 
 	Indexing 
 	--------

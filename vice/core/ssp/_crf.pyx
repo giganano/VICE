@@ -59,7 +59,7 @@ def cumulative_return_fraction(age, IMF = "kroupa", m_upper = 100,
 		The ratio of a star's post main sequence lifetime to its main sequence 
 		lifetime. 
 
-		.. versionadded:: 1.2.0 
+		.. versionadded:: 1.1.0 
 
 	Returns 
 	-------

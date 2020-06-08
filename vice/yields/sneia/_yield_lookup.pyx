@@ -69,7 +69,7 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 	* LookupError 
 		- 	The study is recognized, but the model is not recognized for that 
 			particular study. 
-	* IOError [Occurs only if VICE's file structure has been tampered with] 
+	* IOError [Occurs only if VICE's file structure has been modified] 
 		- 	The data file is not found. 
 
 	Notes 
@@ -209,7 +209,7 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 		- 	n < 0  
 	* LookupError 
 		- 	The model is not recognized for the given study. 
-	* IOError [Occurs only if VICE's file structure has been tampered with] 
+	* IOError [Occurs only if VICE's file structure has been modified] 
 		- 	The parameters passed to this function are allowed but the data 
 			file is not found. 
 

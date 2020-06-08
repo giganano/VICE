@@ -1,6 +1,8 @@
 r""" 
 Nucleosynthetic Yield Presets 
 
+.. versionadded:: 1.1.0 
+
 Save copies of user-constructed yield settings for loading into VICE. Users 
 can create external yield scripts which modify VICE's nucleosynthetic yield 
 settings, then make these settings available to import statements. 

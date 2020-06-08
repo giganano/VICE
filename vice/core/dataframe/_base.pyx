@@ -406,6 +406,8 @@ Got: %s""" % (type(key)))
 
 		**Signature**: x.filter(key, relation, value) 
 
+		.. versionadded:: 1.1.0 
+
 		Parameters 
 		----------
 		x : ``dataframe`` 

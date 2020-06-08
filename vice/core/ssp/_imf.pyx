@@ -2,6 +2,8 @@
 r""" 
 Built-in functional forms of popular stellar initial mass functions (IMFs). 
 
+.. versionadded:: 1.1.0 
+
 Contains 
 --------
 Kroupa : <function> 
@@ -26,6 +28,8 @@ def kroupa(mass):
 	The (unnormalized) Kroupa (2001) [1]_ stellar initial mass function (IMF). 
 
 	**Signature**: vice.imf.kroupa(mass) 
+
+	.. versionadded:: 1.1.0 
 
 	Parameters 
 	----------
@@ -70,6 +74,8 @@ def salpeter(mass):
 	(IMF). 
 
 	**Signature**: vice.imf.salpeter(mass) 
+
+	.. versionadded:: 1.1.0 
 
 	Parameters 
 	----------

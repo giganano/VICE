@@ -13,6 +13,8 @@ cdef class builtin_elemental_data(noncustomizable):
 
 	Stores persistent data for each element. 
 
+	.. versionadded:: 1.1.0 
+
 	Allowed Data Types 
 	------------------
 	* Keys 
@@ -42,6 +44,9 @@ cdef class builtin_elemental_data(noncustomizable):
 		big bang nucleosynthesis. This is zero for all elements with the 
 		exception of helium, which is assigned the standard model value of 
 		:math:`Y_\text{p} = 0.24672 \pm 0.00017` [1]_ [2]_ [3]_. 
+
+		.. versionadded:: 1.1.0 
+
 	- vice.solar_z 
 		The abundance by mass of each element in the sun. This is adopted from 
 		Asplund et al. (2009) [4]_. 
@@ -51,6 +56,8 @@ cdef class builtin_elemental_data(noncustomizable):
 	- vice.stable_isotopes 
 		The mass number (protons + neutrons) of the stable isotopes of each 
 		element. 
+
+		.. versionadded:: 1.1.0 
 
 	Example Code 
 	------------

@@ -12,7 +12,7 @@ recognized : ``tuple`` of strings
 	The symbols of all elements that VICE recognizes as they appear on the 
 	periodic table. 
 element : ``type`` 
-	Provides a maens of accessing and modifying relevant information for 
+	Provides a means of accessing and modifying relevant information for 
 	different elements as well nucleosynthetic yields. 
 yields : ``type`` 
 	Provides a means of accessing and modifying nucleosynthetic yield settings. 
@@ -63,12 +63,13 @@ through VICE's namespace. For example:
 		yields.agb -------- > cristallo11
 	}
 
-.. seealso:: vice.yields 
-	vice.atomic_number 
-	vice.primordial 
-	vice.solar_z 
-	vice.sources 
-	vice.stable_isotopes 
+.. seealso:: 
+	- vice.yields 
+	- vice.atomic_number 
+	- vice.primordial 
+	- vice.solar_z 
+	- vice.sources 
+	- vice.stable_isotopes 
 """ 
 
 from __future__ import absolute_import 
@@ -216,14 +217,15 @@ class element:
 		The mass numbers (protons and neutrons) of the stable isotopes of 
 		this element. 
 
-	.. seealso:: vice.yields.agb.settings 
-		vice.yields.ccsne.settings 
-		vice.yields.sneia.settings 
-		vice.atomic_number 
-		vice.primordial 
-		vice.solar_z 
-		vice.sources 
-		vice.stable_isotopes 
+	.. seealso:: 
+		- vice.yields.agb.settings 
+		- vice.yields.ccsne.settings 
+		- vice.yields.sneia.settings 
+		- vice.atomic_number 
+		- vice.primordial 
+		- vice.solar_z 
+		- vice.sources 
+		- vice.stable_isotopes 
 
 	Example Code 
 	------------
@@ -327,6 +329,8 @@ class element:
 		The one- or two-letter symbol of this element as it appears on the 
 		periodic table. 
 
+		.. versionadded:: 1.1.0 
+
 		Example Code 
 		------------
 		>>> import vice 
@@ -355,6 +359,8 @@ Got: %s""" % (type(value)))
 
 		The full name of the element in English. 
 
+		.. versionadded:: 1.1.0 
+
 		Example Code 
 		------------
 		>>> import vice 
@@ -373,6 +379,8 @@ Got: %s""" % (type(value)))
 		The current yield settings from core collapse and type Ia supernovae 
 		and asymptotic giant branch stars. See ach attribute's docstring for 
 		more information. 
+
+		.. versionadded:: 1.1.0 
 
 		Attributes 
 		----------
@@ -400,6 +408,8 @@ Got: %s""" % (type(value)))
 		Type : ``int`` 
 
 		The atomic number (protons only) of the element. 
+
+		.. versionadded:: 1.1.0 
 		""" 
 		return atomic_number[self._symbol] 
 
@@ -412,6 +422,8 @@ Got: %s""" % (type(value)))
 		nucleosynthesis, according to the standard model [1]_ [2]_ [3]_. This 
 		is zero for all elements with the exception of helium, for which it is 
 		0.24672. 
+
+		.. versionadded:: 1.1.0 
 
 		Example Code 
 		------------
@@ -435,6 +447,8 @@ Got: %s""" % (type(value)))
 		The abundance by mass of this element in the sun as reported by 
 		Asplund et al. (2009) [1]_. 
 
+		.. versionadded:: 1.1.0 
+
 		Example Code 
 		------------
 		>>> import vice 
@@ -454,6 +468,8 @@ Got: %s""" % (type(value)))
 
 		Strings denoting the dominant sources of enrichment for this 
 		element as reported by Johnson (2019) [1]_. 
+
+		.. versionadded:: 1.1.0 
 
 		Example Code 
 		------------
@@ -477,6 +493,8 @@ Got: %s""" % (type(value)))
 
 		The mass numbers (protons and neutrons) of the stable isotopes of this 
 		element. 
+
+		.. versionadded:: 1.1.0 
 
 		Example Code 
 		------------
@@ -505,12 +523,12 @@ class yields:
 
 	Attributes 
 	----------
+	agb : ``str`` [case-insensitive] or <function> 
+		The asymptotic giant branch star yield setting. 
 	ccsne : ``float`` or <function> 
 		The core collapse supernova yield setting. 
 	sneia : ``float`` or <function> 
 		The type Ia supernova yield setting. 
-	agb : ``str`` [case-insensitive] or <function> 
-		The asymptotic giant branch star yield setting. 
 
 	.. note:: modifying yields here is equivalent to modifying them through 
 		the vice.yields module. 
@@ -589,14 +607,17 @@ class yields:
 		metallicity-independent yield. If it is a function, it must accept 
 		the metallicity by mass :math:`Z` as the only parameter. 
 
+		.. versionadded:: 1.1.0 
+
 		These values can be calculated by calling vice.yields.ccsne.fractional. 
 
 		.. note:: Modifying yield settings here is equivalent to modifying 
 			vice.yields.ccsne.settings. 
 
-		.. seealso:: vice.yields.ccsne.settings 
-			vice.yields.ccsne.fractional 
-			vice.yields.ccsne.table 
+		.. seealso:: 
+			- vice.yields.ccsne.settings 
+			- vice.yields.ccsne.fractional 
+			- vice.yields.ccsne.table 
 
 		Example Code 
 		------------
@@ -621,14 +642,17 @@ class yields:
 		metallicity-independent yield. If it is a function, it must accept 
 		the metallicity by mass :math:`Z` as the only parameter. 
 
+		.. versionadded:: 1.1.0 
+
 		These values can be calculated by calling vice.yields.sneia.fractional. 
 
 		.. note:: Modifying yield settings here is equivalent to modifying 
 			vice.yields.sneia.settings. 
 
-		.. seealso:: vice.yields.sneia.settings 
-			vice.yields.sneia.fractional 
-			vice.yields.sneia.single 
+		.. seealso:: 
+			- vice.yields.sneia.settings 
+			- vice.yields.sneia.fractional 
+			- vice.yields.sneia.single 
 
 		Example Code 
 		------------

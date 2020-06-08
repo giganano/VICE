@@ -38,6 +38,8 @@ if not __VICE_SETUP__:
 		Update the parameters with which the yields are calculated from the 
 		Woosley & Weaver (1995) [1]_ data. 
 
+		**Signature**: vice.yields.ccsne.WW95.set_params(\*\*kwargs) 
+
 		Parameters 
 		----------
 		kwargs : varying types 

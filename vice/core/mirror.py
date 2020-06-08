@@ -22,7 +22,7 @@ def mirror(arg):
 
 	**Signature**: vice.mirror(arg) 
 
-	.. deprecated:: 1.2.0 
+	.. deprecated:: 1.1.0 
 		Users should instead call vice.singlezone.from_output or 
 		vice.multizone.from_output to achieve this functionality. 
 
@@ -94,8 +94,8 @@ def mirror(arg):
 	""" 
 	warnings.warn("""\
 The vice.mirror function is deprecated in versions >= 1.1.0 and will be \
-removed in a future relase of VICE. Users should instead call either \
-vice.singlezone.from_output or vice.multizone.from_output to achieve the same \
-functionality.""", VisibleDeprecationWarning) 
+removed in a future relase of VICE. Users should instead call \
+vice.singlezone.from_output to achieve the same functionality.""", 
+		VisibleDeprecationWarning) 
 	return singlezone.singlezone.from_output(arg) 
 

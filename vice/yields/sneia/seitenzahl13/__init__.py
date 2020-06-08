@@ -39,6 +39,8 @@ if not __VICE_SETUP__:
 		Update the parameters with which the yields are calculated from the 
 		Seitenzahl et al. (2013) [1]_ data. 
 
+		**Signature**: vice.yields.sneia.seitenzahl13(\*\*kwargs) 
+
 		Parameters 
 		---------- 
 		kwargs : varying types 
@@ -59,8 +61,9 @@ if not __VICE_SETUP__:
 		>>> from vice.yields.sneia import seitenzahl13 
 		>>> seitenzahl13.set_params(n = 1.5e-03) 
 
-		.. seealso:: vice.yields.sneia.fractional 
-			vice.yields.sneia.single 
+		.. seealso:: 
+			- vice.yields.sneia.fractional 
+			- vice.yields.sneia.single 
 
 		.. [1] Seitenzahl et al. (2013), ApJ, 124, 439 
 		"""
