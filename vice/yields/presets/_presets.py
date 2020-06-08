@@ -41,6 +41,8 @@ def save(filename):
 	------
 	* RuntimeError 
 		- An exception occurs in attempting to import the file 
+		- The file is named JW20.py. This will always be the Johnson & Weinberg 
+		  (2020) preset file. 
 	* IOError 
 		- The file does not exist 
 	* TypeError 
