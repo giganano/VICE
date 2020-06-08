@@ -8,8 +8,12 @@ Tutorial
 --------
 Under ``examples`` in VICE's source directory is the `quick start tutorial`__, 
 a notebook intended to provide first-time users with a primar on how to use 
-all of VICE's features. After installation, users can launch the tutorial 
-immediately via ``make tutorial``. 
+all of VICE's features. After installation, this jupyter notebook can be 
+viewed in the web browser by running ``vice --tutorial`` from the command 
+line. Alternatively, if installing from source, it can be launched via 
+``make tutorial`` in the root directory. To download this jupyter notebook, 
+simply clone the git repository if you haven't already, and it will be under 
+the ``examples`` directory. 
 
 __ tutorial_ 
 .. _tutorial: https://github.com/giganano/VICE/blob/master/examples/QuickStartTutorial.ipynb
@@ -32,7 +36,7 @@ be found in the docstrings embedded in the code, and in the
 
 __ troubleshooting_ 
 __ repo_ 
-.. _troubleshooting: https://github.com/giganano/VICE/blob/master/INSTALL.rst.txt#vice-isn-t-running-from-the-command-line
+.. _troubleshooting: https://github.com/giganano/VICE/blob/master/docs/src/install.rst#troubleshooting-your-build
 .. _repo: https://github.com/giganano/VICE.git 
 
 
