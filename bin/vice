@@ -46,10 +46,9 @@ documentation at <https://github.com/giganano/VICE/tree/master/docs>.\
 
 """) 
 
-	parser.add_argument("-s", "--schmidt", 
-		help = """\
-Implement star formation efficiency driven by the Kennicutt-Schmidt Law (i.e. \
-SFE ~ Mgas^n)""", 
+	parser.add_argument("-t", "--tutorial", 
+		help = """Open the default web browser to VICE QuickStartTutorial \
+jupyter notebook on GitHub.""", 
 		action = "store_true") 
 
 	parser.add_argument("-f", "--force", 
@@ -179,6 +178,12 @@ The recycling fraction (continuous if a negative number) (Default: -1)""",
 		type = float, 
 		default = -1)
 
+	parser.add_argument("-s", "--schmidt", 
+		help = """\
+Implement star formation efficiency driven by the Kennicutt-Schmidt Law (i.e. \
+SFE ~ Mgas^n)""", 
+		action = "store_true") 
+
 	parser.add_argument("--MgSchmidt", 
 		help = """\
 The normalization of the gas supply in Msun when implementing \
@@ -249,12 +254,38 @@ def print_version(args):
 
 	Returns 
 	-------
-	proceedd : bool 
+	proceed : bool 
 		True if this program should continue with a simulation. 
 	""" 
 	if args.version: print("VICE %s" % (vice.__version__)) 
 	if "-V" in sys.argv: sys.argv.remove("-V") 
 	if "--version" in sys.argv: sys.argv.remove("--version") 
+	return len(sys.argv) > 1 
+
+
+def launch_tutorial(args): 
+	r""" 
+	Launches VICE's QuickStartTutorial jupyter notebook on GitHub. 
+
+	Parameters 
+	----------
+	args : argparse.Namespace 
+		The command line arguments parsed via argparse. 
+
+	Returns 
+	-------
+	proceed : bool 
+		True if this program should continue with a simulation. 
+	""" 
+	if args.tutorial: 
+		import webbrowser 
+		url = """https://github.com/giganano/VICE/blob/master/examples/\
+QuickStartTutorial.ipynb""" 
+		webbrowser.open(url) 
+		if "-t" in sys.argv: sys.argv.remove("-t") 
+		if "--tutorial" in sys.argv: sys.argv.remove("--tutorial") 
+	else: 
+		pass 
 	return len(sys.argv) > 1 
 
 
@@ -335,8 +366,11 @@ def main():
 	if print_help_message(parser): 
 		args = parser.parse_args() 
 		if print_version(args): 
-			if print_recognized_elements(args): 
-				run_simulation(args) 
+			if launch_tutorial(args): 
+				if print_recognized_elements(args): 
+					run_simulation(args) 
+				else: 
+					pass 
 			else: 
 				pass 
 		else: 
