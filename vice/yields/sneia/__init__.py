@@ -118,7 +118,7 @@ if not __VICE_SETUP__:
 		"tl":	0, 
 		"pb":	0, 
 		"bi":	0, 
-	}, "SNe Ia yield", True, "sneia")
+	}, "SNe Ia yield", False, "sneia")
 else: 
 	pass 
 
