@@ -1,8 +1,8 @@
 
 .. _implementation: 
 
-Implemementation
-================
+Implementation
+==============
 
 Motivation
 ----------
