@@ -22,6 +22,8 @@ documentation can be compiled.""")
 import warnings 
 warnings.filterwarnings("ignore") 
 import os 
+# Generates the comprehensive API reference 
+os.system("make userguide") 
 
 
 
