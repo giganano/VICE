@@ -3,6 +3,5 @@
 import webbrowser 
 
 if __name__ == "__main__": 
-	webbrowser.open("https://github.com/astrobeard/VICEdev/tree/master/docs", 
-		new = 2) 
+	webbrowser.open("https://vice-astro.readthedocs.io", new = 2) 
 
