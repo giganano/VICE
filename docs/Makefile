@@ -4,7 +4,6 @@ all: src
 
 src: 
 	@ echo Compiling documentation 
-	@ $(MAKE) -C src/ userguide 
 	@ $(MAKE) -C src/ html 
 	@ $(MAKE) -C src/ latexpdf 
 	@ cp src/_build/latex/vice.pdf . 
