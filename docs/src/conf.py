@@ -23,7 +23,8 @@ import warnings
 warnings.filterwarnings("ignore") 
 import os 
 # Generates the comprehensive API reference 
-os.system("make userguide") 
+os.system("make -C %s/users_guide" % (
+	os.path.dirname(os.path.abspath(__file__)))) 
 
 
 
@@ -32,7 +33,7 @@ os.system("make userguide")
 
 project = 'VICE'
 copyright = '2020, James W. Johnson'
-author = 'James W. Johnson'
+author = vice.__author__ 
 release = vice.__version__ 
 
 
