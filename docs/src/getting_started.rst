@@ -29,9 +29,9 @@ We provide example scripts in VICE's source tree under examples_.
 Accessing Documentation 
 -----------------------
 After installing VICE, the documentation can be launched in a browser window 
-via the ``vice-docs`` command line entry. If this feature does not work after 
-installing VICE, troubleshooting can be found `here`__. Documentation can also 
-be found in the docstrings embedded in the code, and in the 
+via the ``vice --docs`` command line entry. If this feature does not work 
+after installing VICE, troubleshooting can be found `here`__. Documentation 
+can also be found in the docstrings embedded in the code, and in the 
 `git repository`__. 
 
 __ troubleshooting_ 

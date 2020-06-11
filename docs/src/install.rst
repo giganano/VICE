@@ -246,14 +246,12 @@ can be permanently added to your path by adding
 	export PATH=$HOME/.local/bin:$PATH 
 
 to ``~/.bash_profile``. This will require ``source ~/.bash_profile`` to be 
-ran from the terminal before ``vice`` or ``vice-docs`` can be ran from the 
+ran from the terminal before ``vice`` can be ran from the 
 command line. 
 
 **Note**: If you have installed VICE with the ``--user`` option, it is likely 
 that VICE has automatically modified your PATH, and that 
 ``source ~/.bash_profile`` is all that needs ran. 
-
-**Note**: This applies to both ``vice`` and ``vice-docs`` command line entries. 
 
 More information on modifying your PATH can be found `here`__. 
 

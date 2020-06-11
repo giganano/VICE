@@ -16,7 +16,7 @@ Documentation is available in several forms:
 	2. In PDF format, available for download at the same address 
 	3. In the docstrings embedded within the software 
 
-Running ``vice-docs`` from the terminal will open the online documentation 
+Running ``vice --docs`` from the terminal will open the online documentation 
 in the default web browser. 
 
 First time users should go through VICE's QuickStartTutorial jupyter notebook, 
