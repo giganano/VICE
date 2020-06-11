@@ -31,7 +31,10 @@ try:
 	ModuleNotFoundError 
 except NameError: 
 	ModuleNotFoundError = ImportError 
-from distutils.core import setup, Extension 
+try: 
+	from setuptools import setup, Extension 
+except (ImportError, ModuleNotFoundError): 
+	from distutils.core import setup, Extension 
 import sys 
 import os 
 if sys.version_info[:2] < (3, 5): 
@@ -289,6 +292,7 @@ def setup_package():
 		package_data = find_package_data(), 
 		scripts = ["bin/%s" % (i) for i in os.listdir("./bin/")], 
 		ext_modules = cythonize(find_extensions()), 
+		python_requires=">=3.5.*, <4", 
 		verbose = "-q" not in sys.argv and "--quiet" not in sys.argv 
 	)
 
