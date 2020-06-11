@@ -25,4 +25,4 @@ to your ``.bib`` file:
 
 
 __ paper1_ 
-.. _paper1: https://ui.adsabs.harvard.edu/abs/2019arXiv191102598J/abstract 
+.. _paper1: https://arxiv.org/abs/1911.02598

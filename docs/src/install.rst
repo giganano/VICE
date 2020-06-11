@@ -15,7 +15,7 @@ like help getting started, usage guidelines and tutorials can be found
 
 __ `Installing from Source`_ 
 __ usage_ 
-.. _usage: https://github.com/astrobeard/VICEdev/blob/master/USAGE.rst.txt
+.. _usage: https://github.com/giganano/VICE/blob/master/docs/src/getting_started.rst
 
 .. Contents:: 
 
@@ -43,7 +43,7 @@ of the features they allow.
 .. _dill: https://pypi.org/project/dill/ 
 .. _matplotlib: https://pypi.org/project/matplotlib/ 
 .. _NumPy: https://pypi.org/project/numpy/ 
-.. _tutorial: https://github.com/astrobeard/VICEdev/blob/master/docs/QuickStartTutorial.ipynb 
+.. _tutorial: https://github.com/giganano/VICE/blob/master/examples/QuickStartTutorial.ipynb
 
 VICE has no *primary* usage dependencies; that is, it does not require any 
 external software to be installed in order to run properly. 

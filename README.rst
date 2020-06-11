@@ -4,7 +4,7 @@
 Versatile Integrator for Chemical Evolution
 +++++++++++++++++++++++++++++++++++++++++++
 
-|version| |MIT Licensed| |travis| |issues| |paper1| 
+|version| |MIT Licensed| |travis| |docs| |issues| |paper1| 
 
 ..	|version| image:: https://img.shields.io/badge/version-1.4.0-blue.svg
 	:target: https://img.shields.io/badge/version-1.4.0-blue.svg
@@ -20,6 +20,10 @@ Versatile Integrator for Chemical Evolution
 ..	|travis| image:: https://travis-ci.com/giganano/VICE.svg?branch=master 
 	:target: https://travis-ci.com/giganano/VICE 
 	:alt: travis 
+
+.. 	|docs| image:: https://readthedocs.org/projects/vice-astro/badge/?version=latest
+	:target: https://vice-astro.readthedocs.io/en/latest/?badge=latest
+	:alt: Documentation Status
 
 ..	|paper1| image:: https://img.shields.io/badge/NASA%20ADS-Johnson%20%26%20Weinberg%20(2020)-red
 	:target: https://ui.adsabs.harvard.edu/abs/2019arXiv191102598J/abstract 
