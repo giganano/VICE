@@ -47,6 +47,6 @@ script:
 
 branches: 
   only: 
-    - master 
+    - /.*/ 
     
     

@@ -81,7 +81,7 @@ Topic :: Scientific/Engineering :: Physics
 MAJOR 			= 1 
 MINOR 			= 1 
 MICRO 			= 0 
-ISRELEASED		= False 
+ISRELEASED		= True  
 VERSION 		= "%d.%d.%d" % (MAJOR, MINOR, MICRO) 
 
 
