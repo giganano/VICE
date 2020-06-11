@@ -10,7 +10,7 @@ in capability when ran from the command-line in comparison to when ran from
 the Python_ interpreter. 
 
 VICE also includes a command-line entry for automatically accessing the 
-documentation. Simply run ``vice-docs`` from any directory except the source 
+documentation. Simply run ``vice --docs`` from any directory except the source 
 tree, and the documentation will be opened by the default web browser. 
 
 .. _Python: https://www.python.org/ 
