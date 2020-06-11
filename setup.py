@@ -54,8 +54,8 @@ import Cython
 from Cython.Build import cythonize 
 
 # ---------------------------- PACKAGE METADATA ---------------------------- # 
-package_name = "VICE" 
-base_url = "http://github.com/giganano/VICE"
+package_name = "vice" 
+base_url = "http://github.com/giganano/VICE.git"
 CLASSIFIERS = """\
 Development Status :: 5 - Production/Stable  
 Intended Audience :: Developers 
