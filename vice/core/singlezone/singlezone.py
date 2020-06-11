@@ -860,6 +860,15 @@ ran.""" % (i, j), UserWarning)
 
 		.. note:: 
 
+			Inflow masses due to primordial abundances and metal-rich infall 
+			are treated independently of one another. For this reason, if 
+			a helium-rich infall is required, the difference between the 
+			desired helium abundance and the primordial abundance 
+			:math:`\Delta Y` should be specified as opposed to the total 
+			abundance. 
+
+		.. note:: 
+
 			Dictionaries will be automatically converted into a ``dataframe``. 
 
 		.. note:: 

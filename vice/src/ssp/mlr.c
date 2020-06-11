@@ -24,7 +24,7 @@
  * Notes 
  * ===== 
  * Versions >= 1.1: This is the mass of a dying star taking into account their 
- * 		main sequence lifetimes. 
+ * 		post main sequence lifetimes. 
  * 10 Gyr and 3.5 are values that can be changed in ssp.h  
  * 
  * header: mlr.h 
