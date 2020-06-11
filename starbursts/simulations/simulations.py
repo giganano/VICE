@@ -12,6 +12,7 @@ try:
 	import vice 
 except ModuleNotFoundError: 
 	raise ModuleNotFoundError("Could not import VICE.") 
+_VICE_VERSION_ = tuple([int(i) for i in vice.__version__.split('.')]) 
 import math as m 
 import sys 
 import os 
@@ -145,6 +146,8 @@ def oscillatory(mean, amplitude, period, which, **kwargs):
 	""" 
 	kwargs[which] = lambda t: mean + amplitude * m.sin(2 * m.pi * t / period) 
 	if which == "func": kwargs["mode"] = "sfr" 
+	# post main sequence lifetimes not tracked in this paper 
+	if _VICE_VERSION_ >= (1, 1): kwargs["postMS"] = 0 
 	sz = vice.singlezone(**kwargs) 
 	print(sz) 
 	sz.run(_ALL_TIMES_[:], overwrite = True) # output at all times needed 
@@ -168,6 +171,8 @@ def single_burst(which, generator, *gen_args, **kwargs):
 		Other keyword args to pass as attributes to a vice.singlezone object 
 	""" 
 	kwargs[which] = generator(*gen_args) 
+	# post main sequence lifetimes not tracked in this paper 
+	if _VICE_VERSION_ >= (1, 1): kwargs["postMS"] = 0 
 	outtimes = _TIMES_[:] 
 	for i in range(9): 
 		""" 
@@ -309,6 +314,8 @@ def oscillatory(mean, amplitude, period, which, **kwargs):
 	""" 
 	kwargs[which] = lambda t: mean + amplitude * m.sin(2 * m.pi * t / period) 
 	if which == "func": kwargs["mode"] = "sfr" 
+	# post main sequence lifetimes not tracked in this paper 
+	if _VICE_VERSION_ >= (1, 1): kwargs["postMS"] = 0 
 	sz = vice.singlezone(**kwargs) 
 	print(sz) 
 	sz.run(_ALL_TIMES_[:], overwrite = True) # output at all times needed 
@@ -347,6 +354,8 @@ def run_slow_burst_models():
 		"dt": 				_TIMESTEP_, 
 		"bins": 			bins[:] 
 	} 
+	# post main sequence lifetimes not tracked in this paper 
+	if _VICE_VERSION_ >= (1, 1): kwargs["postMS"] = 0 
 	sz1 = vice.singlezone(name = "simulations/slowburst_episodic_infall", 
 		func = slow_gaussian_generator(lambda t: 10 * t**2 * m.exp(-t / 2.2), 
 			12, 60, 1), 
@@ -384,6 +393,8 @@ def run_kirby2010_comparisons():
 		"elements": 	["fe", "sr", "mg"], 
 		"enhancement": 	3 
 	} 
+	# post main sequence lifetimes not tracked in this paper 
+	if _VICE_VERSION_ >= (1, 1): kwargs["postMS"] = 0 
 	sz1 = vice.singlezone(name = "simulations/kirby2010_smooth", 
 		func = lambda t: 9.1 * m.exp(-t / 2), 
 		**kwargs) 
