@@ -12,13 +12,19 @@ How to Access the Documentation:
 --------------------------------
 Documentation is available in several forms: 
 
-	1. Docstrings embedded within the code 
-	2. Online: http://vice-astro.readthedocs.io 
-	3. In PDF format 
-	4. Tutorials and example scripts, available in the git repository 
+	1. Online: http://vice-astro.readthedocs.io 
+	2. In PDF format, available for download at the same address 
+	3. In the docstrings embedded within the software 
 
-Run ``vice-docs`` from the command line to open the documentation in the 
-default web browser. 
+Running ``vice-docs`` from the terminal will open the online documentation 
+in the default web browser. 
+
+First time users should go through VICE's QuickStartTutorial jupyter notebook, 
+available under examples/ in the git repository. This can be launched from 
+the command line by running ``vice --tutorial``. 
+
+Example scripts can be found under examples/ in the git repository at 
+http://github.com/giganano/VICE. 
 
 Contents 
 --------
@@ -102,7 +108,6 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 		__all__ = [
 			"__author__", 
 			"__version__", 
-			"modeling", 
 			"elements", 
 			"yields", 
 			"_globals", 

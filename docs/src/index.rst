@@ -19,7 +19,7 @@ __ paper1_
 __ install_ 
 .. _src: https://github.com/giganano/VICE.git 
 .. _paper1: https://arxiv.org/abs/1911.02598 
-.. _install: https://github.com/astrobeard/VICEdev/blob/master/INSTALL.rst.txt#installation
+.. _install: https://github.com/giganano/VICE/blob/master/docs/src/install.rst
 
 First-time users should familiarize themselves with VICE's API by going 
 through the `tutorial`__, available in the `git repository`__. Any questions 
@@ -27,7 +27,7 @@ users may have can be emailed to the primary author (James W. Johnson).
 
 __ tutorial_ 
 __ src_ 
-.. _tutorial: https://github.com/giganano/VICE/blob/development/examples/QuickStartTutorial.ipynb 
+.. _tutorial: https://github.com/giganano/VICE/blob/master/examples/QuickStartTutorial.ipynb 
 
 
 .. toctree:: 
