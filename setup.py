@@ -63,8 +63,6 @@ Intended Audience :: Science/Research
 License :: OSI Approved :: MIT License 
 Natural Language :: English 
 Operating System :: POSIX 
-Operating System :: Mac OS 
-Operating System :: Mac OS :: Mac OS X 
 Operating System :: Unix 
 Programming Language :: C 
 Programming Language :: Cython 
