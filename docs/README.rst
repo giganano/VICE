@@ -23,7 +23,7 @@ either ``make`` within this directory or ``make docs`` in the parent
 directory immediately after running the ``setup.py`` file. 
 
 __ install_ 
-.. _install: https://github.com/giganano/VICE/blob/development/docs/src/install.rst#installing-from-source
+.. _install: https://github.com/giganano/VICE/blob/master/docs/src/install.rst#installing-from-source
 
 This will automatically produce both the HTML and the PDF forms of the 
 documentation. The PDF form will be located here under the name vice.pdf, and 
