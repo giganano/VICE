@@ -15,7 +15,7 @@ class version_info:
 	- minor : The minor version number 
 	- micro : The micro version number (also known as patch number) 
 	- post : The post number 
-	- __version__ : The version string <major>.<minor>.<micro>-<post> 
+	- __version__ : The version string <major>.<minor>.<micro> 
 	- released : If True, this version of VICE has been released 
 	""" 
 
@@ -69,7 +69,7 @@ class version_info:
 	@property 
 	def __version__(self): 
 		r""" 
-		The version string <major>.<minor>.<micro>-<post> 
+		The version string <major>.<minor>.<micro> 
 		""" 
 		return self.__repr__() 
 
