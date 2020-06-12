@@ -30,6 +30,9 @@ vice.so: $(OBJECTS)
 
 clean: 
 	@ echo Cleaning vice/src/ 
+	@ rm -f *.o 
+	@ rm -f *.so 
+	@ rm -rf __pycache__ 
 	@ $(MAKE) -C dataframe/ clean 
 	@ $(MAKE) -C io/ clean 
 	@ $(MAKE) -C objects/ clean 
@@ -37,7 +40,4 @@ clean:
 	@ $(MAKE) -C ssp/ clean 
 	@ $(MAKE) -C yields/ clean 
 	@ $(MAKE) -C tests/ clean 
-	@ rm -f *.o 
-	@ rm -f *.so 
-	@ rm -rf __pycache__ 
 

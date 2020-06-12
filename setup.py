@@ -82,8 +82,9 @@ Topic :: Scientific/Engineering :: Physics
 MAJOR 			= 1 
 MINOR 			= 1 
 MICRO 			= 0 
+POST 			= 8 
 ISRELEASED		= True  
-VERSION 		= "%d.%d.%d" % (MAJOR, MINOR, MICRO) 
+VERSION 		= "%d.%d.%d.%d" % (MAJOR, MINOR, MICRO, POST) 
 
 
 def find_extensions(path = './vice'): 
@@ -222,6 +223,7 @@ def write_version_info(filename = "./vice/version_breakdown.py"):
 MAJOR = %(major)d 
 MINOR = %(minor)d 
 MICRO = %(micro)d 
+POST = %(post)d 
 RELEASED = %(isreleased)s
 """
 	with open(filename, 'w') as f: 
@@ -231,6 +233,7 @@ RELEASED = %(isreleased)s
 					"major": 		MAJOR, 
 					"minor": 		MINOR, 
 					"micro": 		MICRO, 
+					"post": 		POST, 
 					"isreleased": 	str(ISRELEASED)
 				})
 		finally: 
@@ -273,7 +276,7 @@ def setup_package():
 	# Keywords to the setup() call 
 	metadata = dict(
 		name = package_name, 
-		version = "%s-7" % (VERSION), 
+		version = VERSION, 
 		author = "James W. Johnson", 
 		author_email = "giganano9@gmail.com", 
 		maintainer = "James W. Johnson", 
@@ -310,7 +313,7 @@ if __name__ == "__main__":
 	setup_package()
 	del builtins.__VICE_SETUP__
 
-	# tell them if dill isn't installed 
+	# tell them if dill isn't installed if they're doing a source install 
 	try: 
 		import dill 
 	except (ImportError, ModuleNotFoundError): 

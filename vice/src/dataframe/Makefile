@@ -17,4 +17,5 @@ clean:
 	@ echo Cleaning vice/src/dataframe/ 
 	@ rm -f *.o 
 	@ rm -rf __pycache__ 
+	@ $(MAKE) -C tests/ clean 
 

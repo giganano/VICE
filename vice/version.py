@@ -14,15 +14,29 @@ class version_info:
 	- major : The major version number 
 	- minor : The minor version number 
 	- micro : The micro version number (also known as patch number) 
-	- __version__ : The version string <major>.<minor>.<micro> 
+	- post : The post number 
+	- __version__ : The version string <major>.<minor>.<micro>-<post> 
 	- released : If True, this version of VICE has been released 
 	""" 
 
 	def __repr__(self): 
-		return "%d.%d.%d" % (self.major, self.minor, self.micro) 
+		return "%d.%d.%d" % (
+			self.major, 
+			self.minor, 
+			self.micro 
+		)  
 
 	def __str__(self): 
 		return self.__repr__() 
+
+	def __iter__(self): 
+		yield self.major 
+		yield self.minor 
+		yield self.micro 
+		yield self.post 
+
+	def __getitem__(self, key): 
+		return tuple(self).__getitem__(key) 
 
 	@property 
 	def major(self): 
@@ -46,9 +60,16 @@ class version_info:
 		return version_breakdown.MICRO 
 
 	@property 
+	def post(self): 
+		r""" 
+		The post version number 
+		""" 
+		return version_breakdown.POST 
+
+	@property 
 	def __version__(self): 
 		r""" 
-		The version string <major>.<minor>.<micro> 
+		The version string <major>.<minor>.<micro>-<post> 
 		""" 
 		return self.__repr__() 
 

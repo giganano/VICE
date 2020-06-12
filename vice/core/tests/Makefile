@@ -4,4 +4,5 @@
 clean: 
 	@ echo Cleaning vice/core/tests/ 
 	@ rm -f *.c 
+	@ rm -f *.so 
 	@ rm -rf __pycache__ 
