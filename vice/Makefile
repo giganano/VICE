@@ -3,6 +3,7 @@
 
 clean: 
 	@ echo Cleaning vice/ 
+	@ rm -f version_breakdown.py 
 	@ rm -f *.out 
 	@ rm -f *.pyc 
 	@ rm -f *.vice.zip 

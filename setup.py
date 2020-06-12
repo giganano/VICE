@@ -273,7 +273,7 @@ def setup_package():
 	# Keywords to the setup() call 
 	metadata = dict(
 		name = package_name, 
-		version = VERSION, 
+		version = "%s-7" % (VERSION), 
 		author = "James W. Johnson", 
 		author_email = "giganano9@gmail.com", 
 		maintainer = "James W. Johnson", 
@@ -290,6 +290,7 @@ def setup_package():
 		package_data = find_package_data(), 
 		scripts = ["bin/%s" % (i) for i in os.listdir("./bin/")], 
 		ext_modules = cythonize(find_extensions()), 
+		requires = ["wheel", "Cython"], 
 		python_requires=">=3.5.*, <4", 
 		verbose = "-q" not in sys.argv and "--quiet" not in sys.argv 
 	)
@@ -300,8 +301,7 @@ def setup_package():
 		setup(**metadata) 
 		set_path_variable() 
 	finally: 
-		del sys.path[0]
-		os.system("rm -f vice/version_breakdown.py")
+		del sys.path[0] 
 		os.chdir(old_path)
 	return 
 
