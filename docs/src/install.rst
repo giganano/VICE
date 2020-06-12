@@ -2,15 +2,24 @@
 Installing VICE 
 +++++++++++++++
 
-Binary installers for the latest released version of VICE are available on 
-PyPI. We recommend users install VICE in this manner by running 
-``pip install vice [--user]`` from the command line. Users should add the 
+Binary installers of the latest version of VICE for python versions 3.5-3.8 
+on Mac OS X and Linux distributions can be found on PyPI_. Windows users 
+should install VICE within the `Windows Subsystem for Linux (WSL)`__. We 
+recommend that VICE be installed in this manner by running 
+``pip install vice [--user]`` from a bash terminal. Users should add the 
 ``--user`` flag if they do not have administrator privileges; this will 
 install VICE to their ``~/.local`` directory. 
 
+__ WSL_ 
+.. _PyPI: https://pypi.org/project/vice/ 
+.. _WSL: https://docs.microsoft.com/en-us/windows/wsl/install-win10 
+
 Users who have or would like to modify VICE's source code should conduct a 
-`from source installation`__. If you have already installed VICE and would 
-like help getting started, usage guidelines and tutorials can be found 
+`from source installation`__; this also applies to users who would like to 
+install for a development version of python, such as 3.9. Installing from 
+source is also an alternative in the event that the PyPI_ installation fails. 
+If you have already installed VICE and would like help getting started, usage 
+guidelines and tutorials can be found 
 `here`__. 
 
 __ `Installing from Source`_ 
