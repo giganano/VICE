@@ -1,8 +1,0 @@
-
-[build-system] 
-# requirements for the build to run 
-requires = [
-	"setuptools", 
-	"wheel", 
-	"Cython>=0.28.0" 
-]

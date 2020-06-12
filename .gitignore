@@ -1,7 +1,4 @@
 
-# Ignore any local builds during modification
-build/*
-
 # Ignore any .pyc files and local .o/.so files that get created during local 
 # development as well as the .out files from the test scripts 
 *.o
@@ -24,9 +21,10 @@ docs/src/_build/*
 docs/src/users_guide/pkgcontents/*.rst 
 
 # source installation artifacts 
-VICE.egg-info/* 
+vice.egg-info/* 
 UNKNOWN.egg-info/* 
 dist/*
+build/*
 
 # A local script that takes the output from the FRUITY database and processes 
 # it into the .dat files packaged with VICE
