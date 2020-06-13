@@ -294,8 +294,8 @@ def setup_package():
 		package_data = find_package_data(), 
 		scripts = ["bin/%s" % (i) for i in os.listdir("./bin/")], 
 		ext_modules = cythonize(find_extensions()), 
-		requires = ["wheel", "Cython"], 
 		python_requires=">=3.5.*, <4", 
+		zip_safe = False, 
 		verbose = "-q" not in sys.argv and "--quiet" not in sys.argv 
 	)
 
