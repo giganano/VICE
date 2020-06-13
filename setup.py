@@ -57,8 +57,7 @@ from Cython.Build import cythonize
 package_name = "vice" 
 base_url = "http://github.com/giganano/VICE.git"
 CLASSIFIERS = """\
-Development Status :: 5 - Production/Stable  
-Intended Audience :: Developers 
+Development Status :: 5 - Production/Stable 
 Intended Audience :: Science/Research 
 License :: OSI Approved :: MIT License 
 Natural Language :: English 
@@ -82,9 +81,11 @@ Topic :: Scientific/Engineering :: Physics
 MAJOR 			= 1 
 MINOR 			= 1 
 MICRO 			= 0 
-POST 			= 8 
+BUILD 			= 8 
 ISRELEASED		= True  
-VERSION 		= "%d.%d.%d.%d" % (MAJOR, MINOR, MICRO, POST) 
+VERSION  		= "%d.%d.%d" % (MAJOR, MINOR, MICRO) 
+if BUILD: VERSION += ".%d" % (BUILD) 
+
 
 
 def find_extensions(path = './vice'): 
@@ -223,7 +224,7 @@ def write_version_info(filename = "./vice/version_breakdown.py"):
 MAJOR = %(major)d 
 MINOR = %(minor)d 
 MICRO = %(micro)d 
-POST = %(post)d 
+BUILD = %(build)d 
 RELEASED = %(isreleased)s
 """
 	with open(filename, 'w') as f: 
@@ -233,7 +234,7 @@ RELEASED = %(isreleased)s
 					"major": 		MAJOR, 
 					"minor": 		MINOR, 
 					"micro": 		MICRO, 
-					"post": 		POST, 
+					"build": 		BUILD, 
 					"isreleased": 	str(ISRELEASED)
 				})
 		finally: 
