@@ -336,11 +336,11 @@ VICE tree:
 	$ rm -rf vice/ 
 
 Then, check the remaining contents for an ``egg``. This will likely be of the 
-format ``vice-<version number>.egg-info``. Remove this file as well: 
+format ``vice-<version number>.egg-info``. Remove this directory as well: 
 
 :: 
 
-	$ rm -f vice-<version number>.egg-info 
+	$ rm -rf vice-<version number>.egg-info 
 
 Finally, the command line entry must be removed. The full path to this script 
 can be found with the ``which`` command in the terminal: 
