@@ -141,7 +141,19 @@ extern double onH(SINGLEZONE sz, ELEMENT e) {
 	if ((*sz.ism).mass) { 
 		return log10( (e.mass / (*sz.ism).mass) / e.solar ); 
 	} else { 
-		return -INFINITY; 
+		/* 
+		 * Take into account definition of INFINITY and NAN for generating the 
+		 * manylinux1 distributions. 
+		 */ 
+		#ifdef INFINITY 
+			return INFINITY; 
+		#else 
+			#ifdef NAN 
+				return NAN; 
+			#else 
+				return -100; 
+			#endif 
+		#endif 
 	} 
 
 }

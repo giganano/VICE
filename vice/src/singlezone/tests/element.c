@@ -98,7 +98,19 @@ extern unsigned short quiescence_test_onH(SINGLEZONE *sz) {
 
 	unsigned short i, status = 1u; 
 	for (i = 0u; i < (*sz).n_elements; i++) {
-		status &= onH(*sz, *(*sz).elements[i]) == -INFINITY; 
+		/* 
+		 * Take into account definition of INFINITY and NAN for generating the 
+		 * manylinux1 distributions. 
+		 */ 
+		#ifdef INFINITY 
+			status &= onH(*sz, *(*sz).elements[i]) == -INFINITY; 
+		#else 
+			#ifdef NAN 
+				status &= isnan(onH(*sz, *(*sz).elements[i])); 
+			#else 
+				status &= onH(*sz, *(*sz).elements[i]) == -100; 
+			#endif 
+		#endif 
 		if (!status) break; 
 	} 
 	return status; 
