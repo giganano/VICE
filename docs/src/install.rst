@@ -24,9 +24,9 @@ __ `Installing from Source`_
 Users who have or would like to modify VICE's source code should conduct a 
 `from source installation`__; this also applies to users who would like to 
 install for a development version of python, such as 3.9. Installing from 
-source is also an alternative in the event that the PyPI_ installation fails. 
-If you have already installed VICE and would like help getting started, usage 
-guidelines and tutorials can be found 
+source is also an alternative in the event that the PyPI_ installation fails 
+for some reason. If you have already installed VICE and would like help 
+getting started, usage guidelines and tutorials can be found 
 `here`__. 
 
 __ `Installing from Source`_ 
@@ -37,11 +37,11 @@ __ usage_
 
 Dependencies 
 ============
-VICE has no *primary* usage dependencies; that is, it does not require any 
+VICE has no *primary* runtime dependencies; that is, it does not require any 
 external software to run properly. There are however a handful of features 
 which are enabled when certain dependencies are satisfied, and we recommend 
-users install them to make use of VICE to its full extent. The following are 
-these *secondary* dependencies: 
+users install them to make use of VICE to its full extent. These *secondary* 
+dependencies are as follows: 
 
 1. dill_ >= 0.2.0 
 	dill_ allows VICE to save python functions with its output. This makes it 
@@ -78,9 +78,9 @@ is designed to run independently of them.
 
 Installing from Source  
 ======================
-While VICE does not have any primary usage dependencies, building from source 
-requires several open-source softwares. The following must be satisfied for 
-VICE to compile and install from source properly: 
+While VICE does not have any primary runtime dependencies, there are several 
+compile-time dependencies that must be satisfied to install from source. They 
+are as follows: 
 
 1. Cython_ >= 0.28.0 
 
@@ -90,9 +90,9 @@ VICE to compile and install from source properly:
 
 4. gcc_ >= 4.6 or clang_ >= 3.6.0 
 
-On macOS and linux distributions, it is likely that Make_ and one of gcc_ or 
-clang_ come pre-installed. Users may install with alternative C compilers if 
-they so choose, but VICE is only tested with gcc_ and clang_. 
+On Mac OS X and Linux architectures, it is likely that Make_ and one of gcc_ 
+or clang_ come pre-installed. Users may install with alternative C compilers 
+if they so choose, but VICE is tested with only gcc_ and clang_. 
 
 .. _Cython: https://pypi.org/project/Cython/ 
 .. _Python: https://www.python.org/downloads/ 
@@ -328,7 +328,7 @@ Note that there are *four* underscores in total: two each before and after
 ``path``. This will print a single-element list containing a string denoting 
 the name of the directory holding VICE's compiled extensions, of the format 
 ``/path/to/install/dir/vice``. Change into this directory, and remove the 
-directory: 
+VICE tree: 
 
 :: 
 
@@ -357,5 +357,6 @@ Pass it to the ``rm`` command as well:
 	$ rm -f /path/to/cmdline/entry/vice 
 
 If this process completed without any errors, then VICE was successfully 
-uninstalled. 
+uninstalled. To double-check, rerunning ``which vice`` should now print 
+nothing. 
 
