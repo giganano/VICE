@@ -17,6 +17,9 @@ class version_info:
 	- build : The build number 
 	- __version__ : The version string <major>.<minor>.<micro> 
 	- released : If True, this version of VICE has been released 
+
+	.. note:: This object can be type-cast to a tuple of the form: 
+		(major, minor, micro, build). 
 	""" 
 
 	def __repr__(self): 
