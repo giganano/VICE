@@ -61,6 +61,7 @@ Development Status :: 5 - Production/Stable
 Intended Audience :: Science/Research 
 License :: OSI Approved :: MIT License 
 Natural Language :: English 
+Operating System :: MacOS 
 Operating System :: POSIX 
 Operating System :: Unix 
 Programming Language :: C 
@@ -81,7 +82,7 @@ Topic :: Scientific/Engineering :: Physics
 MAJOR 			= 1 
 MINOR 			= 1 
 MICRO 			= 0 
-BUILD 			= 8 
+BUILD 			= 10 
 ISRELEASED		= True  
 VERSION  		= "%d.%d.%d" % (MAJOR, MINOR, MICRO) 
 if BUILD: VERSION += ".%d" % (BUILD) 

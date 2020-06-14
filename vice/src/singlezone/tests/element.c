@@ -137,8 +137,14 @@ extern unsigned short max_age_ssp_test_onH(SINGLEZONE *sz) {
 
 	unsigned short i, status = 1u; 
 	for (i = 0u; i < (*sz).n_elements; i++) {
-		status &= (isfinite(onH(*sz, *(*sz).elements[i])) && 
-			onH(*sz, *(*sz).elements[i]) < 0); 
+		/* 
+		 * manylinux1 distributions are not C99, and thus don't have 
+		 * INFINITY and isfinite. Take this into account. 
+		 */ 
+		#ifdef INFINITY 
+			status &= isfinite(onH(*sz, *(*sz).elements[i])); 
+		#endif 
+		status &= onH(*sz, *(*sz).elements[i]) < 0; 
 		if (!status) break; 
 	} 
 	return status; 

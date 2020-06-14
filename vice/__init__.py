@@ -134,12 +134,14 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 			__all__.extend(_build_utils.__all__) 
 		except (ImportError, ModuleNotFoundError): 
 			raise ImportError("""\
-Error importing VICE. If you have attempted an alternate installation method, \
-please visit https://github.com/giganano/VICE.git and follow the preferred \
-installation method. \
+Error importing VICE. If you conducted this installation with pip, it is \
+likely there is not a binary installer for this operating system and \
+version of python. \
 
-To troubleshoot your build, see VICE's source code repository at \
-https://github.com/giganano/VICE.git and click on "Troubleshoot Your Build" \
-under "Install VICE." \
+To solve this, use pip to uninstall VICE, and then install from source. If \
+you have installed from source, see the section of the documentation entitled \
+"Troubleshooting Your Build" at the following link: \
+
+https://vice-astro.readthedocs.io/en/latest/install.html#troubleshooting-your-build
 """)
 
