@@ -1,6 +1,7 @@
 
-# Local script for building distributions 
+# Local scripts for building distributions 
 dist.sh 
+dist_x86_64.sh 
 
 # Ignore any .pyc files and local .o/.so files that get created during local 
 # development as well as the .out files from the test scripts 
