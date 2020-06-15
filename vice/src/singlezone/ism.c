@@ -40,7 +40,15 @@ extern unsigned short setup_gas_evolution(SINGLEZONE *sz) {
 			sz -> ism -> mass = (*(*sz).ism).specified[0]; 
 			sz -> ism -> star_formation_rate = ((*(*sz).ism).mass / 
 				get_SFE_timescale(*sz, 1u)); 
-			sz -> ism -> infall_rate = NAN; /* lower bound at 10^-12 */  
+			/* 
+			 * Take into account definition of NAN for generating the 
+			 * manylinux1 distributions. 
+			 */ 
+			#ifdef NAN 
+				sz -> ism -> infall_rate = NAN; 
+			#else 
+				sz -> ism -> infall_rate = 0; 
+			#endif 
 			break; 
 
 		case IFR: 
@@ -53,7 +61,12 @@ extern unsigned short setup_gas_evolution(SINGLEZONE *sz) {
 		case SFR: 
 			sz -> ism -> star_formation_rate = (*(*sz).ism).specified[0]; 
 			sz -> ism -> mass = get_ism_mass_SFRmode(*sz, 0u); 
-			sz -> ism -> infall_rate = NAN; 
+			/* manylinux1 distributions, see above comment */ 
+			#ifdef NAN 
+				sz -> ism -> infall_rate = NAN; 
+			#else 
+				sz -> ism -> infall_rate = 0; 
+			#endif 
 			break; 
 
 		default: 

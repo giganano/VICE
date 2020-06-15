@@ -2,15 +2,31 @@
 Installing VICE 
 +++++++++++++++
 
-Binary installers for the latest released version of VICE are available on 
-PyPI. We recommend users install VICE in this manner by running 
-``pip install vice [--user]`` from the command line. Users should add the 
-``--user`` flag if they do not have administrator privileges; this will 
-install VICE to their ``~/.local`` directory. 
+Binary installers of the latest version of VICE for python versions 3.5-3.8 
+on Mac OS X and Linux operating systems can be found on PyPI_. We recommend 
+that VICE be installed in this manner by running ``pip install vice [--user]`` 
+from a bash terminal. Users should add the ``--user`` flag if they do not have 
+administrator privileges; this will install VICE to their ``~/.local`` 
+directory. 
+
+.. _PyPI: https://pypi.org/project/vice/ 
+
+Designed for Unix system architectures, VICE does not function within a 
+windows environment. Windows users should therefore install VICE within the 
+`Windows Subsystem for Linux (WSL)`__. An `installation from source`__ on a 
+windows machine should also be ran from within WSL. 
+
+__ WSL_ 
+__ `Installing from Source`_ 
+.. _WSL: https://docs.microsoft.com/en-us/windows/wsl/install-win10 
+
 
 Users who have or would like to modify VICE's source code should conduct a 
-`from source installation`__. If you have already installed VICE and would 
-like help getting started, usage guidelines and tutorials can be found 
+`from source installation`__; this also applies to users who would like to 
+install for a development version of python, such as 3.9. Installing from 
+source is also an alternative in the event that the PyPI_ installation fails 
+for some reason. If you have already installed VICE and would like help 
+getting started, usage guidelines and tutorials can be found 
 `here`__. 
 
 __ `Installing from Source`_ 
@@ -21,9 +37,11 @@ __ usage_
 
 Dependencies 
 ============
-The following are *secondary* dependencies in that VICE will run independently 
-of all of them. We nonetheless recommend that users install them to make use 
-of the features they allow. 
+VICE has no *primary* runtime dependencies; that is, it does not require any 
+external software to run properly. There are however a handful of features 
+which are enabled when certain dependencies are satisfied, and we recommend 
+users install them to make use of VICE to its full extent. These *secondary* 
+dependencies are as follows: 
 
 1. dill_ >= 0.2.0 
 	dill_ allows VICE to save python functions with its output. This makes it 
@@ -45,9 +63,6 @@ of the features they allow.
 .. _NumPy: https://pypi.org/project/numpy/ 
 .. _tutorial: https://github.com/giganano/VICE/blob/master/examples/QuickStartTutorial.ipynb
 
-VICE has no *primary* usage dependencies; that is, it does not require any 
-external software to be installed in order to run properly. 
-
 A Note on Implementation 
 ------------------------
 VICE is implemented in ANSI/ISO C and is wrapped using only standard library 
@@ -63,9 +78,9 @@ is designed to run independently of them.
 
 Installing from Source  
 ======================
-While VICE does not have any usage dependencies, building from source requires 
-several open-source softwares. The following must be satisfied for VICE 
-to install from source properly: 
+While VICE does not have any primary runtime dependencies, there are several 
+compile-time dependencies that must be satisfied to install from source. They 
+are as follows: 
 
 1. Cython_ >= 0.28.0 
 
@@ -75,9 +90,9 @@ to install from source properly:
 
 4. gcc_ >= 4.6 or clang_ >= 3.6.0 
 
-On macOS and linux distributions, it is likely that Make_ and one of gcc_ or 
-clang_ come pre-installed. Users may install with alternative C compilers if 
-they so choose, but VICE is only tested with gcc_ and clang_. 
+On Mac OS X and Linux architectures, it is likely that Make_ and one of gcc_ 
+or clang_ come pre-installed. Users may install with alternative C compilers 
+if they so choose, but VICE is tested with only gcc_ and clang_. 
 
 .. _Cython: https://pypi.org/project/Cython/ 
 .. _Python: https://www.python.org/downloads/ 
@@ -109,7 +124,7 @@ privileges should perform a local installation. This can be achieved with the
 
 	$ python setup.py build -j 4 install --user 
 
-Please note that users installing VICE to multiple versions of Python_ will 
+Please note that users installing VICE to multiple versions of python will 
 likely have to run ``make clean`` between runs of the setup.py file. 
 Following the installation, to run the tests and clean the source tree: 
 
@@ -119,8 +134,8 @@ Following the installation, to run the tests and clean the source tree:
 	$ make clean 
 
 Please also note that ``make tests`` runs VICE's tests in the user's default 
-version of Python_. To force the tests to run in Python_ 3, run 
-``make tests3``. Alternatively, the tests can be ran from within Python_ 
+version of python. To force the tests to run in python 3, run 
+``make tests3``. Alternatively, the tests can be ran from within python 
 itself: 
 
 .. code:: python 
@@ -141,17 +156,21 @@ Things to Avoid
 .. _condanote: 
 
 1. conda Environments
-	VICE should **never** be installed from within a conda environment. In 
-	this case, the installation process will run without errors, but the 
-	compiled extensions will not be placed in the correct directory, 
-	preventing VICE from running properly. This does not apply to the default 
-	environment ``base`` associated with later versions of Python_ and 
-	Anaconda_. 
+	VICE should **never** be installed from source within a conda environment. 
+	This only applies to from source installations; a binary installation from 
+	PyPI_ should run properly within any conda environment provided the 
+	version of python is supported. When installing from source in a conda 
+	environment, the installation process will run without errors, but the 
+	compiled extensions are not placed in the correct directory, preventing 
+	VICE from running properly. This does not apply to the default environment 
+	``base`` associated with later versions of python and Anaconda_. 
 
 	VICE will *run* within whatever conda environments users create; it is only 
-	the installation process that this applies to. As noted `here`__, VICE is 
-	implemented entirely independently of Anaconda_, and for this reason, it 
-	does not make sense to install VICE in a conda environment anyway. 
+	the source installation process that this applies to. As noted `here`__, 
+	VICE is implemented entirely independently of Anaconda_, and for this 
+	reason, it does not make sense to install VICE from source in a conda 
+	environment anyway. This is also true for installing from PyPI_ in a 
+	conda environment, unless a specific version of python is required. 
 
 	__ `A Note on Implementation`_ 
 
@@ -199,6 +218,12 @@ following will rebuild the singlezone object, whose extension is
 
 Troubleshooting Your Build 
 ==========================
+The following are a number of issues that can arise when installing VICE from 
+source. If none of these options solve your problem, you may open an issue 
+`here`__, or email VICE's primary author (James W. Johnson) at 
+giganano9@gmail.com. 
+
+__ issues_ 
 
 ImportError After Installation 
 ------------------------------
@@ -283,4 +308,55 @@ If neither of these recommendations fixed your problem, please open an
 issue `here`__. 
 
 __ issues_ 
+
+Uninstalling VICE 
+=================
+If you have installed VICE from PyPI_, it can be uninstalled from the terminal 
+via ``pip uninstall vice``. When prompted, simply confirm that you would like 
+the files removed. 
+
+If you have installed from source, uninstalling requires a couple of steps. 
+First, you must find the path to the directory that it was installed to. This 
+can be done by launching python and running the following two lines: 
+
+.. code:: python 
+
+	import vice 
+	print(vice.__path__) 
+
+Note that there are *four* underscores in total: two each before and after 
+``path``. This will print a single-element list containing a string denoting 
+the name of the directory holding VICE's compiled extensions, of the format 
+``/path/to/install/dir/vice``. Change into this directory, and remove the 
+VICE tree: 
+
+:: 
+
+	$ cd /path/to/install/dir/ 
+	$ rm -rf vice/ 
+
+Then, check the remaining contents for an ``egg``. This will likely be of the 
+format ``vice-<version number>.egg-info``. Remove this directory as well: 
+
+:: 
+
+	$ rm -rf vice-<version number>.egg-info 
+
+Finally, the command line entry must be removed. The full path to this script 
+can be found with the ``which`` command in the terminal: 
+
+:: 
+
+	$ which vice 
+
+This will print the full path in the format ``/path/to/cmdline/entry/vice``. 
+Pass it to the ``rm`` command as well: 
+
+:: 
+
+	$ rm -f /path/to/cmdline/entry/vice 
+
+If this process completed without any errors, then VICE was successfully 
+uninstalled. To double-check, rerunning ``which vice`` should now print 
+nothing. 
 

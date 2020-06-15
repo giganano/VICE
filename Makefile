@@ -1,7 +1,7 @@
 
 all: src
 
-.PHONY: src docs tests tests2 tests3 starburst tutorial clean 
+.PHONY: src docs tests tests2 tests3 starburst tutorial clean distclean 
 
 src: 
 	@ $(MAKE) -C vice/src/ 
@@ -31,7 +31,9 @@ tutorial:
 
 clean: 
 	@ echo Cleaning VICE source tree 
-	@ rm -rf build
-	@ rm -rf *.egg-info 
-	@ rm -rf dist
 	@ $(MAKE) -C vice/ clean 
+
+distclean: 
+	@ rm -rf build 
+	@ rm -rf *.egg-info 
+	@ rm -rf dist 

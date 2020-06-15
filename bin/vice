@@ -31,8 +31,8 @@ def parse():
 	""" 
 	parser = argparse.ArgumentParser(
 		description = """\
-Run simple simulations of single-zone models of galactic chemical evolution \
-from the linux command line.""", 
+Run a simulation of a simple one-zone model and/or access VICE's \
+documentation. """, 
 		epilog = """\
 The functionality available on the command line is severely limited compared \
 to the full python capabilities of VICE. In python, the user can specify \
@@ -40,11 +40,9 @@ their own functions of time to describe evolutionary parameters, construct \
 their own stellar IMF, change their nucleosynthetic yield settings, and run \
 multiple zones linked via gas and stellar migration. From the command line, \
 users are restricted to smooth evolutionary histories, the built-in stellar \
-IMFs, their default nucleosynthetic yields, and only one zone. 
-
-For details on the implementation of VICE, see the associated \
-documentation at <https://vice-astro.readthedocs.io>.\
-
+IMFs, their default nucleosynthetic yields, and only one zone. For details on \
+the implementation of VICE, see the associated documentation at \
+<https://vice-astro.readthedocs.io>.\
 """) 
 
 	parser.add_argument("-t", "--tutorial", 
@@ -72,10 +70,16 @@ jupyter notebook on GitHub.""",
 		help = "Print the current version of VICE.", 
 		action = "store_true")  
 
+	parser.add_argument("-s", "--schmidt", 
+		help = """\
+Implement star formation efficiency driven by the Kennicutt-Schmidt Law (i.e. \
+SFE ~ Mgas^n)""", 
+		action = "store_true") 
+
 	parser.add_argument("--timedep", 
 		help = """\
 The time dependence of the evolutionary model. Either 'constant', 'exp' \
-(exponential decay), or 'linexp' (linear-exponential)""", 
+(exponential decay), or 'linexp' (linear-exponential) (Default: constant)""", 
 		type = str, 
 		default = "constant") 
 
@@ -84,7 +88,7 @@ The time dependence of the evolutionary model. Either 'constant', 'exp' \
 The specification of the evolutionary model. Either 'ifr' for a specified \
 infall rate, 'sfr' for a specified star formation rate, or 'gas' for a \
 specified gas supply. The time evolution of this parameter is set by the \
-argument --timedep""", 
+argument --timedep (Default: ifr)""", 
 		type = str, 
 		default = "ifr") 
 
@@ -182,12 +186,6 @@ The e-folding timescale for SNe Ia in Gyr (only relevant for --ria=\"exp\") \
 The recycling fraction (continuous if a negative number) (Default: -1)""", 
 		type = float, 
 		default = -1)
-
-	parser.add_argument("-s", "--schmidt", 
-		help = """\
-Implement star formation efficiency driven by the Kennicutt-Schmidt Law (i.e. \
-SFE ~ Mgas^n)""", 
-		action = "store_true") 
 
 	parser.add_argument("--MgSchmidt", 
 		help = """\

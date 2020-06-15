@@ -30,10 +30,6 @@ Contents
 --------
 singlezone : ``type`` 
 	Simulate a single-zone galactic chemical evolution model 
-multizone : ``type`` 
-	Simulate a multi-zone galactic chemical evolution model 
-migration : ``module`` 
-	Tools for migration prescriptions of gas and stars in multizone models. 
 output : ``type`` 
 	Read and store output from single- and multi-zone simulations. 
 single_stellar_population : <function> 
@@ -57,8 +53,6 @@ history : <function>
 	Reads in time-evolution of interstellar medium from singlezone simulation. 
 mdf : <function> 
 	Reads in stellar metallicity distribution from singlezone simulation. 
-stars : <function> 
-	Reads in all star particles from a multizone simulation. 
 
 Built-In Dataframes 
 -------------------
@@ -85,8 +79,9 @@ import os
 if sys.version_info[:2] < (3, 5): 
 	raise RuntimeError("""This version of VICE requires python >= 3.5. \
 Current version: %d.%d.%d.""" % (sys.version_info.major, 
-	sys.version_info.minor, sys.version_info.micro)) 
+		sys.version_info.minor, sys.version_info.micro)) 
 else: pass 
+
 try: 
 	__VICE_SETUP__ 
 except NameError:
@@ -132,7 +127,6 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 			from ._globals import ScienceWarning
 			from ._globals import VisibleRuntimeWarning 
 			from ._globals import VisibleDeprecationWarning 
-			from . import modeling 
 			from . import elements 
 			from . import yields 
 			from .tests import test 
@@ -140,12 +134,14 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 			__all__.extend(_build_utils.__all__) 
 		except (ImportError, ModuleNotFoundError): 
 			raise ImportError("""\
-Error importing VICE. If you have attempted an alternate installation method, \
-please visit https://github.com/giganano/VICE.git and follow the preferred \
-installation method. \
+Error importing VICE. If you conducted this installation with pip, it is \
+likely there is not a binary installer for this operating system and \
+version of python. \
 
-To troubleshoot your build, see VICE's source code repository at \
-https://github.com/giganano/VICE.git and click on "Troubleshoot Your Build" \
-under "Install VICE." \
+To solve this, use pip to uninstall VICE, and then install from source. If \
+you have installed from source, see the section of the documentation entitled \
+"Troubleshooting Your Build" at the following link: \
+
+https://vice-astro.readthedocs.io/en/latest/install.html#troubleshooting-your-build
 """)
 

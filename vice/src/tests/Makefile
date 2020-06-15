@@ -18,6 +18,7 @@ print_message:
 clean: 
 	@ echo Cleaning vice/src/tests/ 
 	@ rm -f *.o 
+	@ rm -f *.so 
 	@ for i in $(CYTHON_OUTPUTS) ; do \
 		rm -f $$i ; \
 	done 

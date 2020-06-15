@@ -31,11 +31,14 @@ try:
 	ModuleNotFoundError 
 except NameError: 
 	ModuleNotFoundError = ImportError 
-from distutils.core import setup, Extension 
+try: 
+	from setuptools import setup, Extension 
+except (ImportError, ModuleNotFoundError): 
+	from distutils.core import setup, Extension 
 import sys 
 import os 
 if sys.version_info[:2] < (3, 5): 
-	raise RuntimeError("""Installing VICE from source requires python >= 3.5. \
+	raise RuntimeError("""This version of VICE requires python >= 3.5. \
 Current version: %d.%d.%d.""" % (sys.version_info.major, 
 		sys.version_info.minor, sys.version_info.micro)) 
 else: pass  
@@ -51,17 +54,15 @@ import Cython
 from Cython.Build import cythonize 
 
 # ---------------------------- PACKAGE METADATA ---------------------------- # 
-package_name = "VICE" 
-base_url = "http://github.com/giganano/VICE"
+package_name = "vice" 
+base_url = "http://github.com/giganano/VICE.git"
 CLASSIFIERS = """\
 Development Status :: 5 - Production/Stable 
-Intended Audience :: Developers 
 Intended Audience :: Science/Research 
 License :: OSI Approved :: MIT License 
 Natural Language :: English 
+Operating System :: MacOS 
 Operating System :: POSIX 
-Operating System :: Mac OS 
-Operating System :: Mac OS :: Mac OS X 
 Operating System :: Unix 
 Programming Language :: C 
 Programming Language :: Cython 
@@ -72,6 +73,7 @@ Programming Language :: Python :: 3.6
 Programming Language :: Python :: 3.7 
 Programming Language :: Python :: 3.8 
 Programming Language :: Python :: 3 :: Only 
+Programming Language :: Python :: Implementation :: CPython 
 Topic :: Scientific/Engineering
 Topic :: Scientific/Engineering :: Astronomy 
 Topic :: Scientific/Engineering :: Physics
@@ -81,8 +83,11 @@ Topic :: Scientific/Engineering :: Physics
 MAJOR 			= 1 
 MINOR 			= 4 
 MICRO 			= 0 
-ISRELEASED		= False 
-VERSION 		= "%d.%d.%d" % (MAJOR, MINOR, MICRO) 
+BUILD 			= 0 
+ISRELEASED		= False   
+VERSION  		= "%d.%d.%d" % (MAJOR, MINOR, MICRO) 
+if BUILD: VERSION += ".%d" % (BUILD) 
+
 
 
 def find_extensions(path = './vice'): 
@@ -221,6 +226,7 @@ def write_version_info(filename = "./vice/version_breakdown.py"):
 MAJOR = %(major)d 
 MINOR = %(minor)d 
 MICRO = %(micro)d 
+BUILD = %(build)d 
 RELEASED = %(isreleased)s
 """
 	with open(filename, 'w') as f: 
@@ -230,6 +236,7 @@ RELEASED = %(isreleased)s
 					"major": 		MAJOR, 
 					"minor": 		MINOR, 
 					"micro": 		MICRO, 
+					"build": 		BUILD, 
 					"isreleased": 	str(ISRELEASED)
 				})
 		finally: 
@@ -289,6 +296,8 @@ def setup_package():
 		package_data = find_package_data(), 
 		scripts = ["bin/%s" % (i) for i in os.listdir("./bin/")], 
 		ext_modules = cythonize(find_extensions()), 
+		python_requires=">=3.5.*, <4", 
+		zip_safe = False, 
 		verbose = "-q" not in sys.argv and "--quiet" not in sys.argv 
 	)
 
@@ -298,8 +307,7 @@ def setup_package():
 		setup(**metadata) 
 		set_path_variable() 
 	finally: 
-		del sys.path[0]
-		os.system("rm -f vice/version_breakdown.py")
+		del sys.path[0] 
 		os.chdir(old_path)
 	return 
 
@@ -308,7 +316,7 @@ if __name__ == "__main__":
 	setup_package()
 	del builtins.__VICE_SETUP__
 
-	# tell them if dill isn't installed 
+	# tell them if dill isn't installed if they're doing a source install 
 	try: 
 		import dill 
 	except (ImportError, ModuleNotFoundError): 
