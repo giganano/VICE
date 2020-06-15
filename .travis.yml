@@ -48,5 +48,10 @@ script:
 branches: 
   only: 
     - master 
+    - development 
+    - v1.2.0 
+    - v1.3.0 
+    - v1.4.0 
+    - experimental 
     
     
