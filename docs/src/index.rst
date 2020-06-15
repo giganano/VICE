@@ -2,7 +2,7 @@
 
 VICE: Versatile Integrator for Chemical Evolution 
 =================================================
-| **Version 1.4.0** 
+| **Version 1.5.0** 
 | James W. Johnson 
 |	Primary Author 
 | 	Email: giganano9@gmail.com 

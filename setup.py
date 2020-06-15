@@ -81,7 +81,7 @@ Topic :: Scientific/Engineering :: Physics
 
 # Version info 
 MAJOR 			= 1 
-MINOR 			= 4 
+MINOR 			= 5 
 MICRO 			= 0 
 BUILD 			= 0 
 ISRELEASED		= False   
