@@ -7,6 +7,7 @@ clean:
 	@ rm -f *.so 
 	@ rm -rf __pycache__ 
 	@ $(MAKE) -C dataframe/ clean 
+	@ $(MAKE) -C multizone/ clean 
 	@ $(MAKE) -C objects/ clean 
 	@ $(MAKE) -C outputs/ clean 
 	@ $(MAKE) -C singlezone/ clean 

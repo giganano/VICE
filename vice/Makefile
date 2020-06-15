@@ -11,10 +11,7 @@ clean:
 	@ rm -rf __pycache__ 
 	@ $(MAKE) -C _build_utils/ clean 
 	@ $(MAKE) -C core/ clean 
-<<<<<<< HEAD
 	@ $(MAKE) -C modeling/ clean 
-=======
->>>>>>> 6491bcc... maint: PyPI build configurations moved downstream
 	@ $(MAKE) -C yields/ clean 
 	@ $(MAKE) -C src/ clean 
 	@ $(MAKE) -C tests/ clean 
