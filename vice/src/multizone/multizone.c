@@ -166,7 +166,7 @@ extern void multizone_evolve_full(MULTIZONE *mz) {
 		verbosity(*mz); 
 	} 
 	verbosity(*mz); 
-	// inject_tracers(mz); 
+	inject_tracers(mz); 
 	write_multizone_history(*mz); 
 	if ((*mz).verbose) printf("\n"); 
 
@@ -206,10 +206,8 @@ static unsigned short multizone_timestepper(MULTIZONE *mz) {
 	} 
 
 	/* 
-	 * Migration must be done before incrementing the timestep number as that 
-	 * is used to determine the number of tracer particles present. Migrating 
-	 * first also ensures that newly injected tracer particles never migrate 
-	 * at the timestep they're born. 
+	 * Migrating gas and stars before injecting tracers ensures that stars 
+	 * will never migrate the timestep they're born. 
 	 */ 
 	migrate(mz); 
 	inject_tracers(mz); 

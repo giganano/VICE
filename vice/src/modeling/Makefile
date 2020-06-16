@@ -5,7 +5,7 @@ SOURCES = $(wildcard *.c)
 OBJECTS = $(SOURCES:.c=.o) 
 
 all: print_message $(OBJECTS) likelihood tests
-.PHONY: print_message likelihood tests clean 
+.PHONY: print_message likelihood tests clean clibclean 
 
 print_message: 
 	@ echo Compiling vice/src/modeling/ 
@@ -18,6 +18,11 @@ likelihood:
 
 tests: 
 	@ $(MAKE) -C tests/ 
+
+clibclean: 
+	@ echo vice/src/modeling/ 
+	@ rm -f *.o 
+	@ $(MAKE) -C likelihood/ clibclean 
 
 clean: 
 	@ echo Cleaning vice/src/modeling/ 

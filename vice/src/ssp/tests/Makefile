@@ -5,7 +5,7 @@ SOURCES = $(wildcard *.c)
 OBJECTS = $(SOURCES:.c=.o) 
 
 all: print_message $(OBJECTS) 
-.PHONY: print_message clean 
+.PHONY: print_message clean clibclean 
 
 print_message: 
 	@ echo Compiling vice/src/ssp/tests/ 
@@ -13,6 +13,9 @@ print_message:
 %.o: %.c *.h 
 	@ $(CC) $(CFLAGS) -c $< -o $@ 
 
+clibclean: 
+	@ echo vice/src/ssp/tests/ 
+	@ rm -f *.o 
 
 clean: 
 	@ echo Cleaning vice/src/ssp/tests/ 

@@ -7,7 +7,7 @@ EXTS = dataframe/*.o io/*.o modeling/*.o modeling/likelihood/*.o multizone/*.o \
 	objects/*.o singlezone/*.o ssp/*.o yields/*.o 
 
 all: print_message vice.so 
-.PHONY: print_message clean  
+.PHONY: print_message clean clibclean  
 
 print_message: 
 	@ echo Compiling VICE C Library 
@@ -29,6 +29,21 @@ vice.so: $(OBJECTS)
 
 %.o: %.c *.h 
 	@ $(CC) $(CFLAGS) -c $< -o $@ 
+
+clibclean: 
+	@ echo Cleaning C Library 
+	@ echo vice/src/ 
+	@ rm -f vice.so  
+	@ rm -f *.o 
+	@ $(MAKE) -C dataframe/ clibclean 
+	@ $(MAKE) -C io/ clibclean 
+	@ $(MAKE) -C modeling/ clibclean 
+	@ $(MAKE) -C multizone/ clibclean 
+	@ $(MAKE) -C objects/ clibclean 
+	@ $(MAKE) -C singlezone/ clibclean 
+	@ $(MAKE) -C ssp/ clibclean 
+	@ $(MAKE) -C yields/ clibclean 
+	@ $(MAKE) -C tests/ clibclean 
 
 clean: 
 	@ echo Cleaning vice/src/ 

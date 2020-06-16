@@ -1,5 +1,8 @@
 
-.PHONY: clean 
+.PHONY: clean clibclean 
+
+clibclean: 
+	@ $(MAKE) -C src/ clibclean 
 
 clean: 
 	@ echo Cleaning vice/ 

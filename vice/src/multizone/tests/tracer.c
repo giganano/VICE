@@ -22,9 +22,9 @@
  */ 
 extern unsigned short generic_test_inject_tracers(MULTIZONE *mz) {
 
-	/* +1l takes into account 0'th timestep */ 
+	/* +2l takes into account injection before and after evolution */ 
 	return (*(*mz).mig).tracer_count == (
-		((*(*mz).zones[0]).timestep + 1l) * 
+		((*(*mz).zones[0]).timestep + 2l) * 
 		(*(*mz).mig).n_zones * 
 		(*(*mz).mig).n_tracers 
 	); 

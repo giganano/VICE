@@ -81,17 +81,18 @@ extern unsigned short no_migration_test_migrate(MULTIZONE *mz) {
 extern unsigned short separation_test_migrate(MULTIZONE *mz) {
 
 	/* 
-	 * There will be two rather than one timestep worth of tracer particles in 
+	 * There will be three rather than one timestep worth of tracer particles in 
 	 * the star forming zone. This has to do with when tracer particles are 
 	 * injected and migrated -> the stars that just formed and the stars that 
 	 * are forming will, at the end of a timestep, still be in the star 
-	 * forming zone. 
+	 * forming zone. inject_tracers is then called when the simulation 
+	 * finishes to ensure the final timestep is reflected. 
 	 */ 
 	unsigned long i, n = 0ul; 
 	for (i = 0ul; i < (*(*mz).mig).tracer_count; i++) {
 		if ((*(*(*mz).mig).tracers[i]).zone_current == 0u) n++; 
 	} 
-	return n == 2 * (*(*mz).mig).n_tracers; 
+	return n == 3 * (*(*mz).mig).n_tracers; 
 
 }
 

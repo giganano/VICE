@@ -7,13 +7,17 @@ CYTHON_SOURCES = $(wildcard *.pyx)
 CYTHON_OUTPUTS = $(CYTHON_SOURCES:.pyx=.c) 
 
 all: print_message $(OBJECTS) 
-.PHONY: print_message clean 
+.PHONY: print_message clean clibclean 
 
 print_message: 
 	@ echo Compiling vice/src/multizone/tests/ 
 
 %.o: %.c *.h 
 	@ $(CC) $(CFLAGS) -c $< -o $@ 
+
+clibclean: 
+	@ echo vice/src/multizone/tests/ 
+	@ rm -f *.o 
 
 clean: 
 	@ echo Cleaning vice/src/multizone/tests/ 
