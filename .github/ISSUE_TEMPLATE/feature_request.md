@@ -1,17 +1,23 @@
----
-name: Feature request
-about: Suggest an idea for this project
+<!-- Please provide a summary of the feature you would like implemented. --> 
+<!-- You may add or remove sections that aren't applicable at your own --> 
+<!-- discretion. --> 
 
----
+### Feature Request 
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+**Feature Summary** 
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+<!-- Place as much text as necessary here to describe the feature. Any --> 
+<!-- example code demonstrating how you would imagine this feature fitting --> 
+<!-- into VICE's API would be helpful, though aren't necessary. --> 
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+```python 
+# Paste here any example code demonstrating how you as the user might 
+# interact with this feature after it's been implemented. 
+# 
+``` 
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+**Desired Output** 
+
+<!-- Place here any description of the output you would expect from this --> 
+<!-- feature, including any console output or more example code. --> 
+
