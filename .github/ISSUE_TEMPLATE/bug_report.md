@@ -29,8 +29,8 @@
 **VICE Version** 
 <!-- Please provide information regarding your version of VICE and its --> 
 <!-- dependencies. --> 
-VICE version: 
-Python version: 
+  * VICE version: 
+  * Python version: 
 
 <!-- Both VICE and python versions can be determined in the terminal via --> 
 <!-- vice --version and python --version --> 
