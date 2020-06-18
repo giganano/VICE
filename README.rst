@@ -54,8 +54,9 @@ supernovae. In the case of core-collapse supernovae, VICE allows users to
 construct their own arbitrary, callable functions of metallicity. This wide 
 range of customizability allows VICE to simulate galactic chemical 
 enrichment for highly complex parameter spaces in nearly full generality. 
-Furthermore, VICE recognizes all astrophysically produced elements between 
-carbon and bismuth: a total of 76 elements on the periodic table. 
+Furthermore, VICE recognizes all astrophysically produced elements with stable 
+isotopes between carbon and bismuth plus helium: a total of 77 elements on the 
+periodic table. 
 
 Furthermore, VICE achieves powerful computing speeds. On a system with a 
 2.7 GHz Intel Core i5 processor with 8 GB of DDR3 RAM (e.g. a base-model 
@@ -67,8 +68,8 @@ RAM per simulated element, respectively, and are thus not memory-limited.
 
 .. _Python: https://www.python.org/ 
 
-Links
-=====
+Quick Links
+===========
 
 * `Install VICE`__ 
 	- `Dependencies`__ 
