@@ -18,6 +18,7 @@ from vice.yields.sneia import seitenzahl13
 from vice.yields.agb import cristallo11 
 from vice.yields.agb import karakas10 
 from vice.core.singlezone.entrainment import entrainment 
+from vice.toolkit.repair_function import repfunc 
 
 r""" 
 Each element of the _CONFIG_ dictionary should map an object in VICE to a 
@@ -51,6 +52,7 @@ _CONFIG_ = {
 			vice.multioutput, 
 			vice.stars, 
 			vice.mirror, 
+			vice.toolkit, 
 			vice.ScienceWarning, 
 			vice.VisibleRuntimeWarning, 
 			vice.VisibleDeprecationWarning, 
@@ -1084,6 +1086,24 @@ _CONFIG_ = {
 	vice.mirror: {
 		"filename": 	"vice.mirror.rst", 
 		"header": 		"vice.mirror", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit: {
+		"filename": 	"vice.toolkit.rst", 
+		"header": 		"vice.toolkit", 
+		"subs": 		[
+			vice.toolkit.repair_function, 
+			repfunc 
+		]  
+	}, 
+	vice.toolkit.repair_function: {
+		"filename": 	"vice.toolkit.repair_function.rst", 
+		"header": 		"vice.toolkit.repair_function", 
+		"subs": 		[] 
+	}, 
+	repfunc: {
+		"filename": 	"vice.toolkit.repair_function.repfunc.rst", 
+		"header": 		"vice.toolkit.repair_function.repfunc", 
 		"subs": 		[] 
 	}
 

@@ -488,6 +488,22 @@ typedef struct fromfile {
 } FROMFILE; 
 
 
+typedef struct repaired_function {
+
+	/* 
+	 * This struct holds the necessary information for the repfunc object, 
+	 * which constructs a function of time out of an output that couldn't 
+	 * be pickled. 
+	 * 
+	 */
+
+	unsigned long n_points; 
+	double *xcoords; 
+	double *ycoords; 
+
+} REPFUNC; 
+
+
 typedef struct dataset {
 
 	double **data; 

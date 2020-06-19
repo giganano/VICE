@@ -29,6 +29,7 @@ if not __VICE_SETUP__:
 	from .. import core 
 	from .. import modeling 
 	from .. import src 
+	from .. import toolkit 
 	from .. import yields 
 	import warnings 
 	import sys 
@@ -67,6 +68,7 @@ This program will overwrite the VICE output at %s/test.vice. Proceed? \
 				elements.test(run = False), 
 				modeling.test(run = False), 
 				src.test(run = False), 
+				toolkit.test(run = False), 
 				yields.test(run = False) 
 			] 
 		] 

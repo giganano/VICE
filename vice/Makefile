@@ -17,5 +17,6 @@ clean:
 	@ $(MAKE) -C modeling/ clean 
 	@ $(MAKE) -C yields/ clean 
 	@ $(MAKE) -C src/ clean 
+	@ $(MAKE) -C toolkit/ clean 
 	@ $(MAKE) -C tests/ clean 
 	@ $(MAKE) -C testing/ clean 

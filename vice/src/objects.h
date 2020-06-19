@@ -21,6 +21,7 @@ extern "C" {
 #include "objects/mdf.h" 
 #include "objects/migration.h" 
 #include "objects/multizone.h" 
+#include "objects/repfunc.h" 
 #include "objects/singlezone.h" 
 #include "objects/sneia.h" 
 #include "objects/ssp.h" 

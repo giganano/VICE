@@ -4,7 +4,7 @@ CFLAGS = -fPIC -Wsign-conversion -Wsign-compare
 SOURCES = $(wildcard *.c) 
 OBJECTS = $(SOURCES:.c=.o) 
 EXTS = dataframe/*.o io/*.o modeling/*.o modeling/likelihood/*.o multizone/*.o \
-	objects/*.o singlezone/*.o ssp/*.o yields/*.o 
+	objects/*.o singlezone/*.o ssp/*.o toolkit/*.o yields/*.o 
 
 all: print_message vice.so 
 .PHONY: print_message clean clibclean  
@@ -23,6 +23,7 @@ vice.so: $(OBJECTS)
 	@ $(MAKE) -C objects/ 
 	@ $(MAKE) -C singlezone/ 
 	@ $(MAKE) -C ssp/ 
+	@ $(MAKE) -C toolkit/ 
 	@ $(MAKE) -C yields/ 
 	@ $(MAKE) -C tests/ 
 	@ $(CC) *.o $(EXTS) -shared -o $@ 
@@ -42,6 +43,7 @@ clibclean:
 	@ $(MAKE) -C objects/ clibclean 
 	@ $(MAKE) -C singlezone/ clibclean 
 	@ $(MAKE) -C ssp/ clibclean 
+	@ $(MAKE) -C toolkit/ clibclean 
 	@ $(MAKE) -C yields/ clibclean 
 	@ $(MAKE) -C tests/ clibclean 
 
@@ -57,6 +59,7 @@ clean:
 	@ $(MAKE) -C objects/ clean 
 	@ $(MAKE) -C singlezone/ clean 
 	@ $(MAKE) -C ssp/ clean 
+	@ $(MAKE) -C toolkit/ clean 
 	@ $(MAKE) -C yields/ clean 
 	@ $(MAKE) -C tests/ clean 
 

@@ -111,6 +111,7 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 			"elements", 
 			"yields", 
 			"_globals", 
+			"toolkit", 
 			"ScienceWarning", 
 			"VisibleRuntimeWarning", 
 			"VisibleDeprecationWarning"
@@ -129,6 +130,7 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 			from ._globals import VisibleDeprecationWarning 
 			from . import elements 
 			from . import yields 
+			from . import toolkit 
 			from .tests import test 
 			__all__.extend(core.__all__) 
 			__all__.extend(_build_utils.__all__) 

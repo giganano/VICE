@@ -44,6 +44,7 @@ if not __VICE_SETUP__:
 	from . import _mdf as mdf 
 	from . import _migration as migration 
 	from . import _multizone as multizone 
+	from . import _repfunc as repfunc 
 	from . import _singlezone as singlezone 
 	from . import _sneia as sneia 
 	from . import _ssp as ssp 
@@ -84,6 +85,8 @@ if not __VICE_SETUP__:
 				migration.test_migration_destructor(), 
 				multizone.test_multizone_constructor(), 
 				multizone.test_multizone_destructor(), 
+				repfunc.test_repfunc_constructor(), 
+				repfunc.test_repfunc_destructor(), 
 				singlezone.test_singlezone_constructor(), 
 				singlezone.test_singlezone_destructor(), 
 				sneia.test_sneia_yield_specs_constructor(), 
