@@ -4,9 +4,11 @@ This file implements the repair_function function.
 
 from __future__ import absolute_import 
 from ..._globals import _VERSION_ERROR_ 
+from ..._globals import ScienceWarning 
 from ...core.outputs import output 
 from ...core import pickles 
 from .repfunc import repfunc 
+import warnings 
 import sys 
 if sys.version_info[:2] == (2, 7): 
 	strcomp = basestring 
@@ -97,8 +99,13 @@ This simulation was ran with the attribute 'schmidt' = True. With this \
 repaired function, its parameters are best reproduced by switching this \
 parameter to False.""", ScienceWarning) 
 				else: pass 
-				tstar = list(map(lambda x, y: 1.e-9 * x / y, 
-					out.history["mgas"], out.history["sfr"])) 
+				tstar = out.history.size[0] * [0.] 
+				for i in range(len(tstar)): 
+					if out.history["sfr"][i]: 
+						tstar[i] = 1.e-9 * (out.history["mgas"][i] / 
+							out.history["sfr"][i]) 
+					else: 
+						tstar[i] = float("inf") 
 				return repfunc(out.history["time"], tstar) 
 			else: 
 				raise ValueError("""Unrecognized key. Must be one of: 'sfr', \
