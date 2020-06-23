@@ -78,8 +78,8 @@ Quick Links
 * `Usage`__ 
 	- `Tutorial`__ 
 	- `Example Code`__ 
-	- `Accessing Documentation`__ 
 	- `From the Command Line`__ 
+* `Documentation`__ 
 * `Submit a Bug Report`__ 
 * `Cite VICE`__ 
 * `Acknowledgements`__ 
@@ -97,13 +97,14 @@ __ troubleshoot_
 __ usage_ 
 __ tutorial_ 
 __ example_ 
-__ accessdocs_ 
 __ fromcmdline_ 
 .. _usage: https://github.com/giganano/VICE/blob/master/docs/src/getting_started.rst
 .. _tutorial: https://github.com/giganano/VICE/blob/master/docs/src/getting_started.rst#tutorial
 .. _example: https://github.com/giganano/VICE/tree/master/examples
-.. _accessdocs: https://github.com/giganano/VICE/blob/master/docs/src/getting_started.rst#accessing-documentation
 .. _fromcmdline: https://github.com/giganano/VICE/blob/master/docs/src/getting_started.rst#from-the-command-line 
+
+__ docs_ 
+.. _docs: https://vice-astro.readthedocs.io/en/latest/
 
 __ issues_ 
 .. _issues: https://github.com/giganano/VICE/issues
