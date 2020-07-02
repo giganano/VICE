@@ -4,7 +4,7 @@ all: pkgcontents
 
 pkgcontents: 
 	@ echo Generating package contents documentation 
-	@ python ./gen 
+	@ python3 ./gen 
 
 clean: 
 	@ echo Cleaning docs/src/users_guide/pkgcontents/ 
