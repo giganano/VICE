@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3 
 r""" 
 Runs a singlezone simulation from the command line. Alternatively, open the 
 documentation or the QuickStartTutorial. 
