@@ -19,6 +19,7 @@ from vice.yields.agb import cristallo11
 from vice.yields.agb import karakas10 
 from vice.core.singlezone.entrainment import entrainment 
 from vice.toolkit.repair_function import repfunc 
+from vice.toolkit import hydrodisk 
 
 r""" 
 Each element of the _CONFIG_ dictionary should map an object in VICE to a 
@@ -1093,8 +1094,9 @@ _CONFIG_ = {
 		"header": 		"vice.toolkit", 
 		"subs": 		[
 			vice.toolkit.repair_function, 
-			repfunc 
-		]  
+			repfunc, 
+			vice.toolkit.hydrodisk 
+		] 
 	}, 
 	vice.toolkit.repair_function: {
 		"filename": 	"vice.toolkit.repair_function.rst", 
@@ -1104,6 +1106,30 @@ _CONFIG_ = {
 	repfunc: {
 		"filename": 	"vice.toolkit.repair_function.repfunc.rst", 
 		"header": 		"vice.toolkit.repair_function.repfunc", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.hydrodisk: {
+		"filename": 	"vice.toolkit.hydrodisk.rst", 
+		"header": 		"vice.toolkit.hydrodisk", 
+		"subs": 		[
+			vice.toolkit.hydrodisk.linear, 
+			vice.toolkit.hydrodisk.sudden, 
+			vice.toolkit.hydrodisk.diffusion 
+		] 
+	}, 
+	vice.toolkit.hydrodisk.linear: {
+		"filename": 	"vice.toolkit.hydrodisk.linear.rst", 
+		"header": 		"vice.toolkit.hydrodisk.linear", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.hydrodisk.sudden: {
+		"filename": 	"vice.toolkit.hydrodisk.sudden.rst", 
+		"header": 		"vice.toolkit.hydrodisk.sudden", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.hydrodisk.diffusion: {
+		"filename":		"vice.toolkit.hydrodisk.diffusion.rst", 
+		"header": 		"vice.toolkit.hydrodisk.diffusion", 
 		"subs": 		[] 
 	}
 
