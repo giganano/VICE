@@ -19,10 +19,11 @@ except NameError:
 
 if not __VICE_SETUP__: 
 
-	__all__ = ["repair_function", "test"] 
+	__all__ = ["hydrodisk", "repair_function", "test"] 
 	from ..testing import moduletest 
 	from .repair_function import repair_function 
 	from .repair_function import test as test_repfunc 
+	from . import hydrodisk 
 
 	@moduletest 
 	def test(): 
@@ -31,6 +32,7 @@ if not __VICE_SETUP__:
 		""" 
 		return ["vice.toolkit", 
 			[
+				hydrodisk.test(run = False), 
 				test_repfunc(run = False) 
 			] 
 		] 

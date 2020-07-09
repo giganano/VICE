@@ -15,6 +15,7 @@ extern "C" {
 #include "objects/channel.h" 
 #include "objects/element.h" 
 #include "objects/fromfile.h" 
+#include "objects/hydrodiskstars.h" 
 #include "objects/imf.h" 
 #include "objects/integral.h" 
 #include "objects/ism.h" 

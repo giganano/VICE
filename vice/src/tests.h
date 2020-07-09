@@ -13,6 +13,7 @@ extern "C" {
 #include "objects/tests.h" 
 #include "singlezone/tests.h" 
 #include "ssp/tests.h" 
+#include "toolkit/tests.h" 
 #include "yields/tests.h" 
 
 #include "tests/imf.h" 

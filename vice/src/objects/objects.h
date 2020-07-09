@@ -495,6 +495,11 @@ typedef struct repaired_function {
 	 * which constructs a function of time out of an output that couldn't 
 	 * be pickled. 
 	 * 
+	 * n_points: The number of points on which the function was evaluated 
+	 * xcoords: The x-coordinates in arbitrary units 
+	 * ycoords: The y-coordinates in arbitrary units 
+	 * 
+	 * Both xcoords and ycoords pointers will always store n_points numbers 
 	 */
 
 	unsigned long n_points; 
@@ -502,6 +507,30 @@ typedef struct repaired_function {
 	double *ycoords; 
 
 } REPFUNC; 
+
+
+typedef struct hydrodiskstars {
+
+	/* 
+	 * This struct holds data from star particles in a hydrodynamical 
+	 * simulation for construction of migration schemes. 
+	 * 
+	 * n_stars: the number of star particles in the data 
+	 * birth_times: The times in Gyr at which each star particle was born 
+	 * birth_radii: The radii in kpc at which each star particle was born 
+	 * final_radii: The radii in kpc at which each star particle was located 
+	 * 		at the end of the simulation. 
+	 * rad_bins: The radial bins in kpc which discretize the disk 
+	 */ 
+
+	unsigned long n_stars; 
+	double *birth_times; 
+	double *birth_radii; 
+	double *final_radii; 
+	double *rad_bins; 
+	unsigned short n_rad_bins; 
+
+} HYDRODISKSTARS; 
 
 
 typedef struct dataset {

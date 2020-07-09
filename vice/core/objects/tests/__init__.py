@@ -38,6 +38,7 @@ if not __VICE_SETUP__:
 	from . import _dataset as dataset 
 	from . import _element as element 
 	from . import _fromfile as fromfile 
+	from . import _hydrodiskstars as hydrodiskstars 
 	from . import _imf as imf 
 	from . import _integral as integral 
 	from . import _ism as ism 
@@ -73,6 +74,8 @@ if not __VICE_SETUP__:
 				element.test_element_destructor(), 
 				fromfile.test_fromfile_constructor(), 
 				fromfile.test_fromfile_destructor(), 
+				hydrodiskstars.test_hydrodiskstars_constructor(), 
+				hydrodiskstars.test_hydrodiskstars_destructor(), 
 				imf.test_imf_constructor(), 
 				imf.test_imf_destructor(), 
 				integral.test_integral_constructor(), 

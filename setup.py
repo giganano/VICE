@@ -4,15 +4,16 @@ VICE setup.py file
 If building VICE from source, first run ``make`` in this directory before 
 running this file. This file should then be ran with the following rule: 
 
-python setup.py build [-j N] install [--user] [-q --quiet] 
+python setup.py build [-j N] install [--user] [-q --quiet] [distutils] 
 	[ext=ext1] [ext=ext2] [ext=ext3] [...] 
 
 Install Options 
 ---------------
--j N 		: Run build in parallel across N cores 
---user 		: Install to ~/.local directory 
--q --quiet 	: Run the installation non-verbosely 
-ext= 		: Build and install specific extension 
+-j N        : Run build in parallel across N cores 
+--user      : Install to ~/.local directory 
+-q --quiet  : Run the installation non-verbosely 
+distutils   : Run the installation with distutils rather than setuptools 
+ext=        : Build and install specific extension 
 
 Individual extensions should be rebuilt and reinstalled only after the entire 
 body of VICE has been installed. This allows slight modifications to be 
@@ -31,12 +32,16 @@ try:
 	ModuleNotFoundError 
 except NameError: 
 	ModuleNotFoundError = ImportError 
-try: 
-	from setuptools import setup, Extension 
-except (ImportError, ModuleNotFoundError): 
-	from distutils.core import setup, Extension 
 import sys 
 import os 
+if "distutils" in sys.argv: 
+	from distutils.core import setup, Extension 
+	sys.argv.remove("distutils") 
+else: 
+	try: 
+		from setuptools import setup, Extension 
+	except (ImportError, ModuleNotFoundError): 
+		from distutils.core import setup, Extension 
 if sys.version_info[:2] < (3, 5): 
 	raise RuntimeError("""This version of VICE requires python >= 3.5. \
 Current version: %d.%d.%d.""" % (sys.version_info.major, 

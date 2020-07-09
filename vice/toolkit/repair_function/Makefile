@@ -2,7 +2,7 @@
 .PHONY: clean 
 
 clean: 
-	@ echo cleaning vice/toolkit/repair_function/ 
+	@ echo Cleaning vice/toolkit/repair_function/ 
 	@ rm -f *.c 
 	@ rm -f *.so 
 	@ rm -rf __pycache__ 
