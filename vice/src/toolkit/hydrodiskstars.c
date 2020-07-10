@@ -22,9 +22,14 @@ static unsigned long candidate_search(HYDRODISKSTARS hds, double birth_radius,
  * ==========
  * hds: 				A pointer to the hydrodiskstars object to import into 
  * filename: 			The name of the file holding the data 
+ * ids_column: 			The column of star particle IDs 
  * birth_times_column: 	The column of times in Gyr each star particle was born 
  * birth_radii_column: 	The column of radii in kpc each star particle was born at 
  * final_radii_column: 	The column of radii in kpc each star particle ends at 
+ * zfinal_column: 		The column of disk heights in kpc 
+ * v_radcolumn: 		The column of radial velocities in km/sec 
+ * v_phicolumn: 		The column of azimuthal velocities in km/sec 
+ * v_zcolumn: 			The column of vertical velocities in km/sec 
  * 
  * Returns 
  * =======
@@ -33,8 +38,10 @@ static unsigned long candidate_search(HYDRODISKSTARS hds, double birth_radius,
  * header: hydrodiskstars.h 
  */ 
 extern unsigned short hydrodiskstars_import(HYDRODISKSTARS *hds, char *filename, 
-	unsigned short birth_times_column, unsigned short birth_radii_column, 
-	unsigned short final_radii_column) {
+	unsigned short ids_column, unsigned short birth_times_column, 
+	unsigned short birth_radii_column, unsigned short final_radii_column, 
+	unsigned short zfinal_column, unsigned short v_radcolumn, 
+	unsigned short v_phicolumn, unsigned short v_zcolumn) {
 
 	unsigned long n_lines = (unsigned long) (
 		line_count(filename) - header_length(filename)
@@ -43,14 +50,25 @@ extern unsigned short hydrodiskstars_import(HYDRODISKSTARS *hds, char *filename,
 		double **raw = read_square_ascii_file(filename); 
 		if (raw != NULL) { 
 			hds -> n_stars = n_lines; 
+			hds -> ids = (unsigned long *) malloc (n_lines * sizeof(
+				unsigned long)); 
 			hds -> birth_times = (double *) malloc (n_lines * sizeof(double)); 
 			hds -> birth_radii = (double *) malloc (n_lines * sizeof(double)); 
 			hds -> final_radii = (double *) malloc (n_lines * sizeof(double)); 
+			hds -> zfinal = (double *) malloc (n_lines * sizeof(double)); 
+			hds -> v_rad = (double *) malloc (n_lines * sizeof(double)); 
+			hds -> v_phi = (double *) malloc (n_lines * sizeof(double)); 
+			hds -> v_z = (double *) malloc (n_lines * sizeof(double)); 
 			unsigned long i; 
 			for (i = 0ul; i < n_lines; i++) { 
+				hds -> ids[i] = (unsigned long) raw[i][ids_column]; 
 				hds -> birth_times[i] = raw[i][birth_times_column]; 
 				hds -> birth_radii[i] = raw[i][birth_radii_column]; 
 				hds -> final_radii[i] = raw[i][final_radii_column]; 
+				hds -> zfinal[i] = raw[i][zfinal_column]; 
+				hds -> v_rad[i] = raw[i][v_radcolumn]; 
+				hds -> v_phi[i] = raw[i][v_phicolumn]; 
+				hds -> v_z[i] = raw[i][v_zcolumn]; 
 			} 
 			free(raw); 
 			return 1u; 

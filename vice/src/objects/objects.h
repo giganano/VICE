@@ -524,9 +524,14 @@ typedef struct hydrodiskstars {
 	 */ 
 
 	unsigned long n_stars; 
+	unsigned long *ids; 
 	double *birth_times; 
 	double *birth_radii; 
 	double *final_radii; 
+	double *zfinal; 
+	double *v_rad; 
+	double *v_phi; 
+	double *v_z; 
 	double *rad_bins; 
 	unsigned short n_rad_bins; 
 

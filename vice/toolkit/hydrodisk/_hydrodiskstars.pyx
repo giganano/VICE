@@ -29,15 +29,21 @@ cdef class c_hydrodiskstars:
 	The base hydrodiskstars object. See derived classes for more information. 
 	""" 
 
-	def __cinit__(self, radbins, tformcolumn = 1, rformcolumn = 2, 
-		rfinalcolumn = 4): 
+	def __cinit__(self, radbins, idcolumn = 0, tformcolumn = 1, 
+		rformcolumn = 2, rfinalcolumn = 4, zfinalcolumn = 5, 
+		v_radcolumn = 6, v_phicolumn = 7, v_zcolumn = 8): 
 		self._hds = _hydrodiskstars.hydrodiskstars_initialize() 
 		datafile = "%stoolkit/hydrodisk/data/UWhydro.dat" % (_DIRECTORY_) 
 		if not _hydrodiskstars.hydrodiskstars_import(self._hds, 
 			datafile.encode("latin-1"), 
+			<unsigned short> idcolumn, 
 			<unsigned short> tformcolumn, 
 			<unsigned short> rformcolumn, 
-			<unsigned short> rfinalcolumn): 
+			<unsigned short> rfinalcolumn, 
+			<unsigned short> zfinalcolumn, 
+			<unsigned short> v_radcolumn, 
+			<unsigned short> v_phicolumn, 
+			<unsigned short> v_zcolumn): 
 			raise IOError("Could not read file: %s" % (datafile)) 
 		else: 
 			pass 
@@ -48,8 +54,9 @@ cdef class c_hydrodiskstars:
 		self._hds[0].n_rad_bins = <unsigned short> len(radbins) - 1 
 		self._hds[0].rad_bins = copy_pylist(radbins) 
 
-	def __init__(self, radbins, tformcolumn = 1, rformcolumn = 2, 
-		rfinalcolumn = 4): 
+	def __init__(self, radbins, idcolumn = 0, tformcolumn = 1, 
+		rformcolumn = 2, rfinalcolumn = 4, zfinalcolumn = 5, 
+		v_radcolumn = 6, v_phicolumn = 7, v_zcolumn = 8): 
 		self._analog_idx = -1l 
 		_hydrodiskstars.seed_random() 
 
@@ -64,16 +71,35 @@ cdef class c_hydrodiskstars:
 		The star particle data from the hydrodynamical simulation. The 
 		following keys map to the following data: 
 
-			- tform:   The time the star particle formed in Gyr 
-			- rform:   The radius the star particle formed at in kpc 
-			- rfinal:  The radius the star particle ended up at in kpc 
+			- id:      	The IDs of each star particle 
+			- tform:   	The time the star particle formed in Gyr 
+			- rform:   	The radius the star particle formed at in kpc 
+			- rfinal:  	The radius the star particle ended up at in kpc 
+			- zfinal:  	The height above the disk midplane in kpc at the end 
+						of the simulation 
+			- vrad:     The radial velocity of the star particle at the end of 
+						the simulation in km/sec 
+			- vphi:     The azimuthal velocity of the star particle at the end 
+						of the simulation in km/sec 
+			- vz: 		The velocity perpendicular to the disk midplane at the 
+						end of the simulation in km/sec 
 		""" 
 		return dataframe({
+			"id": 		[self._hds[0].ids[i] for i in range(
+				self._hds[0].n_stars)], 
 			"tform":	[self._hds[0].birth_times[i] for i in range(
 				self._hds[0].n_stars)], 
 			"rform": 	[self._hds[0].birth_radii[i] for i in range(
 				self._hds[0].n_stars)], 
 			"rfinal": 	[self._hds[0].final_radii[i] for i in range(
+				self._hds[0].n_stars)], 
+			"zfinal": 	[self._hds[0].zfinal[i] for i in range(
+				self._hds[0].n_stars)], 
+			"vrad": 	[self._hds[0].v_rad[i] for i in range(
+				self._hds[0].n_stars)], 
+			"vphi": 	[self._hds[0].v_phi[i] for i in range(
+				self._hds[0].n_stars)], 
+			"vz": 		[self._hds[0].v_z[i] for i in range(
 				self._hds[0].n_stars)] 
 		})
 

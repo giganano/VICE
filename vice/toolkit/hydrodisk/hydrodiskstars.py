@@ -59,6 +59,10 @@ class linear(c_linear):
 	def __init__(self, rad_bins): 
 		super().__init__(rad_bins) 
 
+	# Signtaure not supported by cdef classes, hence seemingly redundant code 
+	def __call__(self, zone, tform, time): 
+		return super().__call__(zone, tform, time) 
+
 
 class sudden(c_sudden): 
 
@@ -113,6 +117,10 @@ class sudden(c_sudden):
 	def __init__(self, rad_bins): 
 		super().__init__(rad_bins) 
 
+	# Signtaure not supported by cdef classes, hence seemingly redundant code 
+	def __call__(self, zone, tform, time): 
+		return super().__call__(zone, tform, time) 
+
 
 class diffusion(c_diffusion): 
 
@@ -165,4 +173,8 @@ class diffusion(c_diffusion):
 
 	def __init__(self, rad_bins): 
 		super().__init__(rad_bins) 
+
+	# Signtaure not supported by cdef classes, hence seemingly redundant code 
+	def __call__(self, zone, tform, time): 
+		return super().__call__(zone, tform, time) 
 

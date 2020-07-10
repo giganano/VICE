@@ -81,10 +81,15 @@ def test_hydrodata_import(obj, name):
 	""" 
 	def test(): 
 		try: 
-		# print(obj.analog_data) 
 			assert all([0 <= i <= _END_TIME_ for i in obj.analog_data["tform"]]) 
 			assert all([0 <= i <= 30 for i in obj.analog_data["rform"]]) 
 			assert all([0 <= i <= 30 for i in obj.analog_data["rfinal"]]) 
+			assert all([isinstance(i, int) for i in obj.analog_data["id"]]) 
+			assert all([i > 0 for i in obj.analog_data["id"]]) 
+			assert all([isinstance(i, float) for i in obj.analog_data["zfinal"]]) 
+			assert all([isinstance(i, float) for i in obj.analog_data["vrad"]]) 
+			assert all([isinstance(i, float) for i in obj.analog_data["vphi"]]) 
+			assert all([isinstance(i, float) for i in obj.analog_data["vz"]]) 
 		except: 
 			return False 
 		return True 
