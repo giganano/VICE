@@ -1,11 +1,13 @@
 # cython: language_level = 3, boundscheck = False
 
 from __future__ import absolute_import 
-__all__ = ["hydrodiskstars"] 
 from ..._globals import _VERSION_ERROR_ 
 from ..._globals import _DIRECTORY_ 
+from ..._globals import ScienceWarning 
 from ...core import _pyutils 
 from ...core.dataframe import base as dataframe 
+import warnings 
+import numbers 
 import sys 
 if sys.version_info[:2] == (2, 7): 
 	strcomp = basestring 
@@ -22,16 +24,22 @@ from . cimport _hydrodiskstars
 # The end time of the simulation in Gyr 
 _END_TIME_ = 12.8 
 
+# The recognized hydrodiskstars migration modes 
+_RECOGNIZED_MODES_ = ["linear", "sudden", "diffusion"] 
+
 
 cdef class c_hydrodiskstars: 
 
 	""" 
-	The base hydrodiskstars object. See derived classes for more information. 
+	The C-implementation of the hydrodiskstars object. See python version for 
+	documentation. 
 	""" 
 
 	def __cinit__(self, radbins, idcolumn = 0, tformcolumn = 1, 
 		rformcolumn = 2, rfinalcolumn = 4, zfinalcolumn = 5, 
 		v_radcolumn = 6, v_phicolumn = 7, v_zcolumn = 8): 
+
+		# allocate memory for hydrodiskstars object in C and import the data 
 		self._hds = _hydrodiskstars.hydrodiskstars_initialize() 
 		datafile = "%stoolkit/hydrodisk/data/UWhydro.dat" % (_DIRECTORY_) 
 		if not _hydrodiskstars.hydrodiskstars_import(self._hds, 
@@ -47,44 +55,16 @@ cdef class c_hydrodiskstars:
 			raise IOError("Could not read file: %s" % (datafile)) 
 		else: 
 			pass 
-		radbins = _pyutils.copy_array_like_object(radbins) 
-		_pyutils.numeric_check(radbins, TypeError, 
-			"Non-numerical value detected.") 
-		radbins = sorted(radbins) 
-		self._hds[0].n_rad_bins = <unsigned short> len(radbins) - 1 
-		self._hds[0].rad_bins = copy_pylist(radbins) 
+		self.radial_bins = radbins 
+		self._mode = <char *> malloc (12 * sizeof(char)) 
 
 	def __init__(self, radbins, idcolumn = 0, tformcolumn = 1, 
 		rformcolumn = 2, rfinalcolumn = 4, zfinalcolumn = 5, 
 		v_radcolumn = 6, v_phicolumn = 7, v_zcolumn = 8): 
+		
 		self._analog_idx = -1l 
 		_hydrodiskstars.seed_random() 
-
-	def __dealloc__(self): 
-		_hydrodiskstars.hydrodiskstars_free(self._hds) 
-
-	@property 
-	def analog_data(self): 
-		r""" 
-		Type : dataframe 
-
-		The star particle data from the hydrodynamical simulation. The 
-		following keys map to the following data: 
-
-			- id:      	The IDs of each star particle 
-			- tform:   	The time the star particle formed in Gyr 
-			- rform:   	The radius the star particle formed at in kpc 
-			- rfinal:  	The radius the star particle ended up at in kpc 
-			- zfinal:  	The height above the disk midplane in kpc at the end 
-						of the simulation 
-			- vrad:     The radial velocity of the star particle at the end of 
-						the simulation in km/sec 
-			- vphi:     The azimuthal velocity of the star particle at the end 
-						of the simulation in km/sec 
-			- vz: 		The velocity perpendicular to the disk midplane at the 
-						end of the simulation in km/sec 
-		""" 
-		return dataframe({
+		self._analog_data = dataframe({
 			"id": 		[self._hds[0].ids[i] for i in range(
 				self._hds[0].n_stars)], 
 			"tform":	[self._hds[0].birth_times[i] for i in range(
@@ -101,109 +81,100 @@ cdef class c_hydrodiskstars:
 				self._hds[0].n_stars)], 
 			"vz": 		[self._hds[0].v_z[i] for i in range(
 				self._hds[0].n_stars)] 
-		})
+		}) 
 
+	def __dealloc__(self): 
+		_hydrodiskstars.hydrodiskstars_free(self._hds) 
+		free(self._mode) 
 
-cdef class c_linear(c_hydrodiskstars): 
-
-	r""" 
-	C-implementation of linear migration scheme. See python version for 
-	docstrings. 
-	""" 
-	
 	def __call__(self, zone, tform, time): 
 		if isinstance(zone, int): 
 			if 0 <= zone < self._hds[0].n_rad_bins: 
 				birth_radius = (self._hds[0].rad_bins[zone] + 
 					self._hds[0].rad_bins[zone + 1]) / 2 
-				if tform == time: 
-					self._analog_idx = (
-						_hydrodiskstars.hydrodiskstars_find_analog(
-							self._hds[0], <double> birth_radius, <double> tform) 
-					) 
-					return zone 
-				else: 
-					bin_ = int(_hydrodiskstars.calczone_linear(self._hds[0], 
-						tform, birth_radius, _END_TIME_, self._analog_idx, 
-						<double> time))
-					if bin_ != -1: 
-						return bin_ 
+				if (isinstance(tform, numbers.Number) and 
+					isinstance(time, numbers.Number)): 
+					if time > _END_TIME_: warnings.warn("""\
+Simulations of galactic chemical evolution with this object for timescales \
+longer than %g Gyr are not supported. This is the maximum range of star \
+particle ages.""" % (_END_TIME_), ScienceWarning) 
+					if tform == time: 
+						self._analog_idx = (
+							_hydrodiskstars.hydrodiskstars_find_analog(
+								self._hds[0], <double> birth_radius, 
+								<double> tform) 
+						) 
+						return zone 
 					else: 
-						raise ValueError("Radius out of bin range.") 
+						if self.mode == "linear": 
+							bin_ = int(_hydrodiskstars.calczone_linear(
+								self._hds[0], tform, birth_radius, _END_TIME_, 
+								self._analog_idx, <double> time)) 
+						elif self.mode == "sudden": 
+							bin_ = int(_hydrodiskstars.calczone_sudden(
+								self._hds[0], self._migration_time, 
+								birth_radius, self._analog_idx, <double> time)) 
+						elif self.mode == "diffusion": 
+							bin_ = int(_hydrodiskstars.calczone_diffusive(
+								self._hds[0], tform, birth_radius, _END_TIME_, 
+								self._analog_idx, <double> time)) 
+						else: 
+							raise SystemError("Internal Error.") 
+						if bin_ != -1: 
+							return bin_ 
+						else: 
+							raise ValueError("Radius out of bin range.") 
+				else: 
+					raise TypeError("""Time parameters must be numerical \
+values. Got: (%s, %s)""" % (type(tform), type(time))) 
 			else: 
 				raise ValueError("Zone out of range: %d" % (zone)) 
 		else: 
 			raise TypeError("Zone must be of type int. Got: %s" % (type(zone))) 
 
+	@property 
+	def radial_bins(self): 
+		# docstring in python version 
+		return [self._hds[0].rad_bins[i] for i in range(
+			self._hds[0].n_rad_bins + 1)] 
 
-cdef class c_sudden(c_hydrodiskstars): 
+	@radial_bins.setter 
+	def radial_bins(self, value): 
+		value = _pyutils.copy_array_like_object(value) 
+		_pyutils.numeric_check(value, TypeError, 
+			"Non-numerical value detected.") 
+		value = sorted(value) 
+		if not value[-1] >= 30: raise ValueError("""\
+Maximum radius must be at least 30 kpc. Got: %g""" % (value[-1])) 
+		if value[0] != 0: raise ValueError("""\
+Minimum radius must be zero. Got: %g kpc.""" % (value[0])) 
+		self._hds[0].n_rad_bins = len(value) - 1 
+		if self._hds[0].rad_bins is not NULL: free(self._hds[0].rad_bins) 
+		self._hds[0].rad_bins = copy_pylist(value) 
 
-	r""" 
-	C-implementation of sudden migration scheme. See python version for 
-	docstrings. 
-	""" 
+	@property 
+	def analog_data(self): 
+		# docstring in python version 
+		return self._analog_data 
 
-	def __init__(self, radbins, tformcolumn = 1, rformcolumn = 2, 
-		rfinalcolumn = 4): 
-		super().__init__(radbins, tformcolumn = tformcolumn, 
-			rformcolumn = rformcolumn, rfinalcolumn = rfinalcolumn) 
-		self._migration_time = 0 
+	@property 
+	def analog_index(self): 
+		# docstring in python version 
+		return self._analog_idx 
 
-	def __call__(self, zone, tform, time): 
-		if isinstance(zone, int): 
-			if 0 <= zone < self._hds[0].n_rad_bins: 
-				birth_radius = (self._hds[0].rad_bins[zone] + 
-					self._hds[0].rad_bins[zone + 1]) / 2 
-				if tform == time: 
-					self._analog_idx = (
-						_hydrodiskstars.hydrodiskstars_find_analog(
-							self._hds[0], birth_radius, tform) 
-					) 
-					self._migration_time = _hydrodiskstars.rand_range(tform, 
-						_END_TIME_) 
-					return zone 
-				else: 
-					bin_ = int(_hydrodiskstars.calczone_sudden(self._hds[0], 
-						self._migration_time, birth_radius, self._analog_idx, 
-						<double> time)) 
-					if bin_ != -1: 
-						return bin_ 
-					else: 
-						raise ValueError("Radius out of bin range.") 
+	@property 
+	def mode(self): 
+		# docstring in python version 
+		return "".join([chr(self._mode[i]) for i in range(strlen(self._mode))]) 
+
+	@mode.setter 
+	def mode(self, value): 
+		if isinstance(value, strcomp): 
+			if value.lower() in _RECOGNIZED_MODES_: 
+				set_string(self._mode, value.lower()) 
 			else: 
-				raise ValueError("Zone out of range: %d" % (zone)) 
+				raise ValueError("Unrecognized mode: %s" % (value)) 
 		else: 
-			raise TypeError("Zone must be of type int. Got: %s" % (type(zone))) 
-
-
-cdef class c_diffusion(c_hydrodiskstars): 
-
-	r""" 
-	C-implementation of diffusion migration scheme. See python version for 
-	docstrings. 
-	""" 
-
-	def __call__(self, zone, tform, time): 
-		if isinstance(zone, int): 
-			if 0 <= zone < self._hds[0].n_rad_bins: 
-				birth_radius = (self._hds[0].rad_bins[zone] + 
-					self._hds[0].rad_bins[zone + 1]) / 2 
-				if tform == time: 
-					self._analog_idx = (
-						_hydrodiskstars.hydrodiskstars_find_analog(
-							self._hds[0], birth_radius, tform) 
-					)  
-					return zone 
-				else: 
-					bin_ = int(_hydrodiskstars.calczone_diffusive(self._hds[0], 
-						tform, birth_radius, _END_TIME_, self._analog_idx, 
-						<double> time)) 
-					if bin_ != -1: 
-						return bin_ 
-					else: 
-						raise ValueError("Radius out of bin range.") 
-			else: 
-				raise ValueError("Zone out of range: %d" % (zone)) 
-		else: 
-			raise TypeError("Zone must be of type int. Got: %s" % (type(zone)))
+			raise TypeError("Attirbute 'mode' must be of type str. Got: %s" % (
+				type(value))) 
 

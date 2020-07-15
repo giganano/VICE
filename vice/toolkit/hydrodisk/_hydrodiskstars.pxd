@@ -32,12 +32,6 @@ cdef extern from "../../src/utils.h":
 cdef class c_hydrodiskstars: 
 	cdef HYDRODISKSTARS *_hds 
 	cdef long _analog_idx 
-
-cdef class c_linear(c_hydrodiskstars): 
-	pass 
-
-cdef class c_sudden(c_hydrodiskstars): 
 	cdef double _migration_time 
-
-cdef class c_diffusion(c_hydrodiskstars): 
-	pass 
+	cdef char *_mode 
+	cdef object _analog_data 

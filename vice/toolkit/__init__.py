@@ -9,6 +9,8 @@ Contents
 repair_function : <function> 
 	Obtain an approximation of a function which could not be pickled with a 
 	VICE output from the output itself. 
+hydrodisk : <module> 
+	Utilities for simulating migration in disk galaxies. 
 """ 
 
 from __future__ import absolute_import 

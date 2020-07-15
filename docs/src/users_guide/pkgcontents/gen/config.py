@@ -19,7 +19,6 @@ from vice.yields.agb import cristallo11
 from vice.yields.agb import karakas10 
 from vice.core.singlezone.entrainment import entrainment 
 from vice.toolkit.repair_function import repfunc 
-from vice.toolkit import hydrodisk 
 
 r""" 
 Each element of the _CONFIG_ dictionary should map an object in VICE to a 
@@ -1111,25 +1110,36 @@ _CONFIG_ = {
 	vice.toolkit.hydrodisk: {
 		"filename": 	"vice.toolkit.hydrodisk.rst", 
 		"header": 		"vice.toolkit.hydrodisk", 
+		"subs": 		[vice.toolkit.hydrodisk.hydrodiskstars] 
+	}, 
+	vice.toolkit.hydrodisk.hydrodiskstars: {
+		"filename": 	"vice.toolkit.hydrodisk.hydrodiskstars.rst", 
+		"header": 		"vice.toolkit.hydrodisk.hydrodiskstars", 
 		"subs": 		[
-			vice.toolkit.hydrodisk.linear, 
-			vice.toolkit.hydrodisk.sudden, 
-			vice.toolkit.hydrodisk.diffusion 
+			vice.toolkit.hydrodisk.hydrodiskstars.radial_bins, 
+			vice.toolkit.hydrodisk.hydrodiskstars.analog_data, 
+			vice.toolkit.hydrodisk.hydrodiskstars.analog_index, 
+			vice.toolkit.hydrodisk.hydrodiskstars.mode 
 		] 
 	}, 
-	vice.toolkit.hydrodisk.linear: {
-		"filename": 	"vice.toolkit.hydrodisk.linear.rst", 
-		"header": 		"vice.toolkit.hydrodisk.linear", 
+	vice.toolkit.hydrodisk.hydrodiskstars.radial_bins: {
+		"filename": 	"vice.toolkit.hydrodisk.hydrodiskstars.radial_bins.rst", 
+		"header": 		"vice.toolkit.hydrodisk.hydrodiskstars.radial_bins", 
 		"subs": 		[] 
 	}, 
-	vice.toolkit.hydrodisk.sudden: {
-		"filename": 	"vice.toolkit.hydrodisk.sudden.rst", 
-		"header": 		"vice.toolkit.hydrodisk.sudden", 
+	vice.toolkit.hydrodisk.hydrodiskstars.analog_data: {
+		"filename": 	"vice.toolkit.hydrodisk.hydrodiskstars.analog_data.rst", 
+		"header": 		"vice.toolkit.hydrodisk.hydrodiskstars.analog_data", 
 		"subs": 		[] 
 	}, 
-	vice.toolkit.hydrodisk.diffusion: {
-		"filename":		"vice.toolkit.hydrodisk.diffusion.rst", 
-		"header": 		"vice.toolkit.hydrodisk.diffusion", 
+	vice.toolkit.hydrodisk.hydrodiskstars.analog_index: {
+		"filename": "vice.toolkit.hydrodisk.hydrodiskstars.analog_index.rst", 
+		"header": 	"vice.toolkit.hydrodisk.hydrodiskstars.analog_index", 
+		"subs": 	[] 
+	}, 
+	vice.toolkit.hydrodisk.hydrodiskstars.mode: {
+		"filename": 	"vice.toolkit.hydrodisk.hydrodiskstars.mode.rst", 
+		"header": 		"vice.toolkit.hydrodisk.hydrodiskstars.mode", 
 		"subs": 		[] 
 	}
 

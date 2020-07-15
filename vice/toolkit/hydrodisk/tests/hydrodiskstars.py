@@ -1,9 +1,7 @@
 
 from __future__ import absolute_import 
-__all__ = ["test_linear", "test_sudden", "test_diffusion"] 
-from .._hydrodiskstars import c_linear 
-from .._hydrodiskstars import c_sudden 
-from .._hydrodiskstars import c_diffusion 
+__all__ = ["test"] 
+from ..hydrodiskstars import hydrodiskstars 
 from .._hydrodiskstars import _END_TIME_ 
 from ....testing import moduletest 
 from ....testing import unittest 
@@ -14,123 +12,121 @@ _TEST_TIMES_ = [0.05 * i for i in range(257)]
 
 
 @moduletest 
-def test_linear(): 
+def test(): 
 	r""" 
-	vice.toolkit.hydrodisk.linear module test 
+	The hydrodiskstars object module test 
 	""" 
-	name = "vice.toolkit.hydrodisk.linear" 
-	try: 
-		_TEST_ = c_linear(_RAD_BINS_) 
-	except: 
-		return [name, None]
-	return [name, 
+	return ["vice.toolkit.hydrodisk.hydrodiskstars", 
 		[ 
-			test_hydrodata_import(_TEST_, "linear"), 
-			test_call(_TEST_, "linear") 
-		] 
-	] 
-
-
-@moduletest 
-def test_sudden(): 
-	r""" 
-	vice.toolkit.hydrodisk.sudden module test 
-	""" 
-	name = "vice.toolkit.hydrodisk.sudden"
-	try: 
-		_TEST_ = c_sudden(_RAD_BINS_) 
-	except: 
-		return [name, None] 
-	return ["vice.toolkit.hydrodisk.sudden", 
-		[ 
-			test_hydrodata_import(_TEST_, "sudden"), 
-			test_call(_TEST_, "sudden") 
-		] 
-	] 
-
-
-@moduletest 
-def test_diffusion(): 
-	r""" 
-	vice.toolkit.hydrodisk.diffusion module test 
-	""" 
-	name = "vice.toolkit.hydrodisk.diffusion" 
-	try: 
-		_TEST_ = c_diffusion(_RAD_BINS_) 
-	except: 
-		return [name, None] 
-	return [name, 
-		[ 
-			test_hydrodata_import(_TEST_, "diffusion"), 
-			test_call(_TEST_, "diffusion") 
+			test_initialize(), 
+			test_import(), 
+			test_radial_bins_setter(), 
+			test_call("linear"), 
+			test_call("sudden"), 
+			test_call("diffusion") 
 		] 
 	] 
 
 
 @unittest 
-def test_hydrodata_import(obj, name): 
+def test_initialize(): 
+	r""" 
+	The initialization unit test 
+	""" 
+	def test(): 
+		global _TEST_ 
+		try: 
+			_TEST_ = hydrodiskstars(_RAD_BINS_) 
+		except: 
+			return False 
+		return isinstance(_TEST_, hydrodiskstars) 
+	return ["vice.toolkit.hydrodisk.hydrodiskstars.init", test] 
+
+
+@unittest 
+def test_import(): 
 	r""" 
 	The hydrodata import test function 
-
-	Parameters 
-	----------
-	obj : c_hydrodiskstars 
-		The hydrodiskstars object to test the import on 
-	name : str 
-		The name of the object within the API 
 	""" 
 	def test(): 
 		try: 
-			assert all([0 <= i <= _END_TIME_ for i in obj.analog_data["tform"]]) 
-			assert all([0 <= i <= 30 for i in obj.analog_data["rform"]]) 
-			assert all([0 <= i <= 30 for i in obj.analog_data["rfinal"]]) 
-			assert all([isinstance(i, int) for i in obj.analog_data["id"]]) 
-			assert all([i > 0 for i in obj.analog_data["id"]]) 
-			assert all([isinstance(i, float) for i in obj.analog_data["zfinal"]]) 
-			assert all([isinstance(i, float) for i in obj.analog_data["vrad"]]) 
-			assert all([isinstance(i, float) for i in obj.analog_data["vphi"]]) 
-			assert all([isinstance(i, float) for i in obj.analog_data["vz"]]) 
+			assert all([0 <= i <= _END_TIME_ for i in 
+				_TEST_.analog_data["tform"]]) 
+			assert all([0 <= i <= 30 for i in _TEST_.analog_data["rform"]]) 
+			assert all([0 <= i <= 30 for i in _TEST_.analog_data["rfinal"]]) 
+			assert all([isinstance(i, int) for i in _TEST_.analog_data["id"]]) 
+			assert all([i > 0 for i in _TEST_.analog_data["id"]]) 
+			assert all([isinstance(i, float) for i in 
+				_TEST_.analog_data["zfinal"]]) 
+			assert all([isinstance(i, float) for i in 
+				_TEST_.analog_data["vrad"]]) 
+			assert all([isinstance(i, float) for i in 
+				_TEST_.analog_data["vphi"]]) 
+			assert all([isinstance(i, float) for i in 
+				_TEST_.analog_data["vz"]]) 
 		except: 
 			return False 
 		return True 
-	return ["vice.toolkit.hydrodisk.%s.import" % (name), test] 
+	return ["vice.toolkit.hydrodisk.hydrodiskstars.import", test] 
 
 
 @unittest 
-def test_call(obj, name): 
+def test_radial_bins_setter(): 
+	r""" 
+	The radial_bins.setter unit test 
+	""" 
+	def test(): 
+		try: 
+			test1 = [0.5 * i for i in range(61)] 
+			_TEST_.radial_bins = test1 
+			assert _TEST_.radial_bins == test1 
+			test2 = list(range(31)) 
+			_TEST_.radial_bins = test2 
+			assert _TEST_.radial_bins == test2 
+			_TEST_.radial_bins = _RAD_BINS_ 
+			assert _TEST_.radial_bins == _RAD_BINS_ 
+		except: 
+			return False 
+		return True 
+	return ["vice.toolkit.hydrodisk.hydrodiskstars.radial_bins.setter", test] 
+
+
+@unittest 
+def test_call(mode): 
 	r""" 
 	The hydrodisk object call tester 
 
 	Parameters 
 	----------
-	obj : c_hydrodiskstars 
-		The hydrodiskstars object to test the call on 
-	name : str 
-		The name of the object within the API 
+	mode : str 
+		The mode under which to test the hydrodiskstars object under 
 	""" 
+	msg = "vice.toolkit.hydrodisk.hydrodiskstars.call [%s]" % (mode) 
 	def test(): 
+		try: 
+			_TEST_.mode = mode 
+		except: 
+			return None 
 		try: 
 			status = True 
 			for i in range(len(_RAD_BINS_) - 1): 
 				for j in range(len(_TEST_TIMES_)): 
-					x = obj(i, _TEST_TIMES_[j], _TEST_TIMES_[j]) 
+					x = _TEST_(i, _TEST_TIMES_[j], _TEST_TIMES_[j]) 
 					status &= isinstance(x, int) 
 					status &= x == i 
 					for k in range(j + 1, len(_TEST_TIMES_)): 
-						x = obj(i, _TEST_TIMES_[j], _TEST_TIMES_[k]) 
+						x = _TEST_(i, _TEST_TIMES_[j], _TEST_TIMES_[k]) 
 						status &= isinstance(x, int) 
 						status &= 0 <= x < len(_RAD_BINS_) or x == -1 
 						if not status: break 
 					if not status: break 
 				if not status: break 
-				sys.stdout.write("""\
-\r\tvice.toolkit.hydrodisk.%s.call :: Progress: %.2f%%\
-""" % (name, 100 * (i + 1) / (len(_RAD_BINS_) - 1))) 
-			sys.stdout.write("""\
-\r\tvice.toolkit.hydrodisk.%s.call ::                           """ % (name)) 
+				sys.stdout.write("\r\t%s :: Progress: %.2f%%" % (msg, 
+					100 * (i + 1) / (len(_RAD_BINS_) - 1))) 
+			sys.stdout.write("\r\t%s ::                      " % (msg)) 
 			sys.stdout.write("\r") 
 		except: 
 			return False 
 		return True 
-	return ["vice.toolkit.hydrodisk.%s.call" % (name), test] 
+	return [msg, test] 
 
