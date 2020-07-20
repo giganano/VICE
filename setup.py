@@ -263,7 +263,7 @@ def set_path_variable(filename = "~/.bash_profile"):
 		cnt = """\
 
 # This line added by vice setup.py %(version)s
-export PATH=$PATH:$HOME/.local/bin
+export PATH=$HOME/.local/bin:$PATH
 
 """
 		cmd = "echo \'%s\' >> %s" % (cnt % {"version": VERSION}, filename)
