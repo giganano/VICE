@@ -106,9 +106,51 @@ Star particle density must be an integer. Got: %s""" % (type(value)))
 		""" 
 		return 30. 
 
+	@property 
+	def scale_radius(self): 
+		r""" 
+		Type : float 
+
+		The scale radius of the stellar disk in kpc. 
+		""" 
+		return self._scale_radius 
+
+	@scale_radius.setter 
+	def scale_radius(self, value): 
+		if isinstance(value, numbers.Number): 
+			if value > 0: 
+				self._scale_radius = float(value) 
+			else: 
+				raise ValueError("Scale radius must be positive.") 
+		else: 
+			raise TypeError("Scale radius must be a numerical value.") 
+
+	@property 
+	def tau_star_norm(self): 
+		r""" 
+		Type : float 
+
+		The value of the star formation efficiency timescale at the center of 
+		the galaxy disk (i.e. at R = 0). 
+		""" 
+		return self._tau_star_norm 
+
+	@tau_star_norm.setter 
+	def tau_star_norm(self, value): 
+		if isinstance(value, numbers.Number): 
+			if value > 0: 
+				self._tau_star_norm = float(value) 
+			else: 
+				raise ValueError("SFE timescale normalization must be positive.") 
+		else: 
+			raise TypeError("""SFE timescale normalization must be a \
+numerical value.""") 
+
 
 config = config() 
 config.timestep_size = 0.05 
 config.star_particle_density = 1 
 config.zone_width = 0.25 
+config.scale_radius = 3 
+config.tau_star_norm = 0.05 
 

@@ -11,10 +11,14 @@ try:
 	import matplotlib as mpl 
 except (ModuleNotFoundError, ImportError): 
 	raise ModuleNotFoundError("Matplotlib not found.") 
-if tuple([int(i) for i in matplotlib.__version__.split('.')])[:2] <= (2, 0): 
+if tuple([int(i) for i in mpl.__version__.split('.')])[:2] <= (2, 0): 
 	raise RuntimeError("""Matplotlib version >= 2.0.0 required for producing \
-Johnson et al. (2021) figures. Current: %s""" % (matplotlib.__version__)) 
+Johnson et al. (2021) figures. Current: %s""" % (mpl.__version__)) 
 else: pass 
+try: 
+	import numpy as np 
+except (ModuleNotFoundError, ImportError): 
+	raise ModuleNotFoundError("NumPy not found.") 
 
 
 mpl.rcParams["font.family"] = "serif"

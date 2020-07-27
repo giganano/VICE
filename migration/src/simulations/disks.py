@@ -1,11 +1,5 @@
 r""" 
 The diskmodel objects employed in the Johnson et al. (2021) study. 
-
-ARGV 
-----
-1) 	The timestep size in Gyr 
-2) 	The number of star particles per zone per timestep 
-3) 	The width of each annulus in kpc 
 """ 
 
 try: 
@@ -23,18 +17,15 @@ else: pass
 from vice.yields.presets import JW20 
 from vice.toolkit import hydrodisk 
 from .config import config 
+from . import scalings 
 from . import stars 
 import sys 
-
-# print(config.radial_bins) 
-# print(len(config.radial_bins) - 1) 
-# print(type(len(config.radial_bins) - 1)) 
 
 
 class diskmodel(vice.multizone): 
 
 	# evolutionary parameters need added to this before it can be ran properly 
-	def __init__(self, n_zones = 10, name = "diskmodel"): 
+	def __init__(self, name = "diskmodel", mode = "linear"): 
 		super().__init__(
 			name = name, 
 			n_zones = len(config.radial_bins) - 1, 
@@ -42,9 +33,11 @@ class diskmodel(vice.multizone):
 			verbose = True, 
 			simple = False 
 		) 
+		self.migration.stars = stars.diskmigration(config.radial_bins, 
+			mode = mode, filename = "%s_analogdata.out" % (name)) 
 		for i in range(self.n_zones): 
 			self.zones[i].mode = "sfr" 
-			self.bins = [-3 + 0.01 * i for i in range(401)] 
+			self.zones[i].bins = [-3 + 0.01 * i for i in range(401)] 
 			self.zones[i].elements = ["fe", "o"] 
 			self.zones[i].dt = config.timestep_size 
 			self.zones[i].Mg0 = 0 
@@ -57,32 +50,40 @@ class diskmodel(vice.multizone):
 					self.zones[i].entrainment.agb[j] = 0 
 					self.zones[i].entrainment.ccsne[j] = 0 
 					self.zones[i].entrainment.sneia[j] = 0 
-			else: pass 
+			else: 
+				self.zones[i].tau_star = scalings.tau_star(
+					config.zone_width * (i + 0.5), 
+					norm = config.tau_star_norm, 
+					scale = config.scale_radius)  
+
 
 	def run(self): 
 		super().run(config.output_times, overwrite = True) 
 
-
-class linear(diskmodel): 
-
-	def __init__(self, name = "diskmodel"): 
-		super().__init__(self, name = name) 
-		self.migration.stars = stars.diskmigration(config.radial_bins, 
-			mode = "linear", filename = "%s_analogdata.out" % (name)) 
+		# diskmigration object used here has this function 
+		self.migration.stars.close_file() 
 
 
-class sudden(diskmodel): 
+# class linear(diskmodel): 
 
-	def __init__(self, name = "diskmodel"): 
-		super().__init__(self, name = name) 
-		self.migration.stars = stars.diskmigration(config.radial_bins, 
-			mode = "sudden", filename = "%s_analogdata.out" % (name)) 
+# 	def __init__(self, name = "diskmodel"): 
+# 		super().__init__(self, name = name) 
+# 		self.migration.stars = stars.diskmigration(config.radial_bins, 
+# 			mode = "linear", filename = "%s_analogdata.out" % (name)) 
 
 
-class diffusion(diskmodel): 
+# class sudden(diskmodel): 
 
-	def __init__(self, name = "diskmodel"): 
-		super().__init__(self, name = name) 
-		self.migration.stars = stars.diskmigration(config.radial_bins, 
-			mode = "diffusion", filename = "%s_analogdata.out" % (name)) 
+# 	def __init__(self, name = "diskmodel"): 
+# 		super().__init__(self, name = name) 
+# 		self.migration.stars = stars.diskmigration(config.radial_bins, 
+# 			mode = "sudden", filename = "%s_analogdata.out" % (name)) 
+
+
+# class diffusion(diskmodel): 
+
+# 	def __init__(self, name = "diskmodel"): 
+# 		super().__init__(self, name = name) 
+# 		self.migration.stars = stars.diskmigration(config.radial_bins, 
+# 			mode = "diffusion", filename = "%s_analogdata.out" % (name)) 
 

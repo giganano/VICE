@@ -4,6 +4,7 @@ adopted in the Johnson et al. (2021) study.
 """ 
 
 import math as m 
+import vice 
 
 
 def tau_star(rgal, norm = 2, scale = 3): 

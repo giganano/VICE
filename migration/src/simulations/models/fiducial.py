@@ -2,9 +2,11 @@ r"""
 The fiducial model simulation. 
 """ 
 
-from ..disks import linear, sudden, diffusion 
+# from ..disks import linear, sudden, diffusion 
+from ..disks import diskmodel 
 from ..utils import linear_exponential 
 from ..config import config 
+from ..scalings import eta 
 import math as m 
 import numbers 
 
@@ -92,14 +94,14 @@ def main(mode = "linear"):
 	mode : str [case-insensitive] [default : "linear"] 
 		The mode of radial migration. Either "linear", "sudden", or "diffusion" 
 	""" 
-	model = {
-		"linear": 		linear, 
-		"sudden": 		sudden, 
-		"diffusion": 	diffusion 
-	}[mode.lower()](name = "fiducial_%s" % (mode)) 
+	model = diskmodel(name = "fiducial_%s" % (mode), mode = mode) 
 	for i in range(model.n_zones): 
 		model.zones[i].func = sfh(
 			(config.radial_bins[i] + config.radial_bins[i + 1]) / 2
-		)  
+		) 
+		model.zones[i].eta = eta(
+			(config.radial_bins[i] + config.radial_bins[i + 1]) / 2, 
+			corrective = model.zones[i].tau_star / model.zones[i].func.timescale 
+		) 
 	model.run() 
 

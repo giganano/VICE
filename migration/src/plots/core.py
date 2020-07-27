@@ -3,11 +3,11 @@ Core routines for producing the Johnson et al. (2021) figures
 """ 
 
 __all__ = ["singlewide", "doublewide"] 
-import env 
+from . import env 
 import matplotlib.pyplot as plt 
 
 # The width of a single-column figure in inches 
-_SINGLEWIDE_WIDTH_ = 3 
+_SINGLEWIDE_WIDTH_ = 5 
 
 
 def singlewide(nrows = 1): 

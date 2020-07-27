@@ -5,6 +5,11 @@ from .config import config
 
 class diskmigration(hydrodisk.hydrodiskstars): 
 
+	r""" 
+	Subclassed hydrodiskstars object to write extra analog star particle data 
+	to an output file. 
+	""" 
+
 	def __init__(self, radbins, mode = "linear", filename = "stars.out"): 
 		super().__init__(radbins, mode = mode) 
 		if isinstance(filename, str): 
@@ -13,6 +18,9 @@ class diskmigration(hydrodisk.hydrodiskstars):
 		else: 
 			raise TypeError("Filename must be a string. Got: %s" % (
 				type(filename))) 
+
+		# Multizone object automatically swaps this to True in setting up 
+		# its stellar population zone histories 
 		self.write = False 
 
 	def __call__(self, zone, tform, time): 
@@ -28,6 +36,13 @@ class diskmigration(hydrodisk.hydrodiskstars):
 			return zone 
 		else: 
 			return super().__call__(zone, tform, time) 
+
+	def close_file(self): 
+		r""" 
+		Closes the output file - should be called after the multizone model 
+		simulation runs. 
+		""" 
+		self._file.close() 
 
 	@property 
 	def write(self): 
