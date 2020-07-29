@@ -27,6 +27,8 @@ class hydrodiskstars:
 		The bins in galactocentric radius in kpc describing the disk model. 
 		This must extend from 0 to at least 30 kpc. Need not be sorted in any 
 		way. Will be stored as an attribute. 
+	mode : str [case-insensitive] [default : "linear"] 
+		The attribute 'mode', initialized via keyword argument. 
 
 	Attributes 
 	----------
@@ -41,7 +43,7 @@ class hydrodiskstars:
 	mode : str 
 		The mode of stellar migration, describing the approximation of how 
 		stars move from birth to final radii. Either "linear", "sudden", or 
-		"diffusion". 
+		"diffusion". See property docstring for more details. 
 
 	Calling 
 	-------
