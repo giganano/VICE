@@ -1,4 +1,3 @@
-#!/usr/bin/env python3 
 
 try: 
 	__VICE_SETUP__ 
