@@ -46,17 +46,17 @@ from . cimport _yield_integrator
 
 
 def integrate(element, study = "LC18", MoverH = 0, rotation = 0, 
-	explodability = None, IMF = "kroupa", method = "simpson", m_lower = 0.08, 
-	m_upper = 100, tolerance = 1e-3, Nmin = 64, Nmax = 2e8): 
+	explodability = None, wind = True, IMF = "kroupa", method = "simpson", 
+	m_lower = 0.08, m_upper = 100, tolerance = 1e-3, Nmin = 64, Nmax = 2e8): 
 	
 	r""" 
-	Calculate an IMF-integrated fractional net nucleosynthetic yield of a 
+	Calculate an IMF-integrated fractional nucleosynthetic yield of a 
 	given element from core-collapse supernovae. 
 
 	**Signature**: vice.yields.ccsne.fractional(element, study = "LC18", 
-	MoverH = 0, rotation = 0, explodability = None, IMF = "kroupa", 
-	method = "simpson", m_lower = 0.08, m_upper = 100, tolerance = 1.0e-03, 
-	Nmin = 64, Nmax = 2.0e+08) 
+	MoverH = 0, rotation = 0, explodability = None, wind = True, 
+	IMF = "kroupa", method = "simpson", m_lower = 0.08, m_upper = 100, 
+	tolerance = 1.0e-03, Nmin = 64, Nmax = 2.0e+08) 
 
 	Parameters 
 	----------
@@ -101,7 +101,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			- "WW95": v = 0 
 			- "S16/W18": v = 0 
 
-	explodability: <function> or ``None`` [default : ``None``] 
+	explodability : <function> or ``None`` [default : ``None``] 
 		Stellar explodability as a function of mass. This function is expected 
 		to take stellar mass in :math:`M_\odot` as the only numberical 
 		parameter, and to return a number between 0 and 1 denoting the 
@@ -109,6 +109,16 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 
 		.. tip:: The S16 CCSN yield modules provides explosion engines as a 
 			function of mass as published in the Sukhbold et al. (2016) study. 
+
+	wind : bool [default : ``True``] 
+		If True, the stellar wind contribution to the yield will be included 
+		in the yield calculation. If False, the calculation will run 
+		considering only the supernova explosion yield. 
+
+		.. note:: Wind and explosive yields are only separated for the 
+			Limongi & Chieffi (2018) and Sukhbold et al. (2016) studies. Wind 
+			yields are not separable from explosive yields for other studies 
+			supported by this function. 
 
 	IMF : ``str`` [case-insensitive] or <function> [default : "kroupa"] 
 		The stellar initial mass function (IMF) to assume. Strings denote 
@@ -176,20 +186,24 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			of allowed quadrature bins to within the specified tolerance. 
 		- 	Explodability criteria specified in combination with either the 
 			Limongi & Chieffi (2018) or Sukhbold et al. (2016) study. 
+		- 	``wind = False`` and ``study`` is anything other than 
+			LC18 or S16. These are the only studies for which wind yields were 
+			reported separate from explosive yields. 
 
 	Notes 
 	-----
 	This function evaluates the solution to the following equation. 
 
 	.. math:: y_x^\text{CC} \frac{
-		\int_8^u E(m)m_x \frac{dN}{dm} dm 
+		\int_8^u (E(m)m_x + w_x) \frac{dN}{dm} dm 
 		}{
-		\int_l^u m_x \frac{dN}{dm} dm 
+		\int_l^u m \frac{dN}{dm} dm 
 		}
 
-	where :math:`E(m)` is the stellar explodability for progenitors of iitial 
-	mass :math:`m`, :math:`m_x` is the mass of the element :math:`x` present 
-	in the ejecta, and :math:`dN/dm` is the assumed stellar IMF. 
+	where :math:`E(m)` is the stellar explodability for progenitors of initial 
+	mass :math:`m`, :math:`m_x` is the mass of the element :math:`x` produced 
+	in the explosion, :math:`w_x` is the mass of the element :math:`x` ejected 
+	in the wind, and :math:`dN/dm` is the assumed stellar IMF. 
 
 	.. note:: Explodability criteria will be overspecified when calculating 
 		yields from the Limongi & Chieffi (2018) study, in which stars above 
@@ -336,6 +350,11 @@ callable object. Got: %s""" % (type(explodability)))
 	Limongi & Chieffi (2018) or Sukhbold et al. (2016) yields, the 
 	explodability is over-specified. The yields reported by these studies are 
 	already masked by stellar explodability. 
+
+	5) If the user wants to separate the wind yields from explosive yields for 
+	anything other than Limongi & Chieffi (2018) or Sukhbold et al. (2016), 
+	that can't be done, because these are the only studies that published 
+	separate wind and explosive yields. 
 	"""
 	upper_mass_limits = {
 		"LC18":		120, 
@@ -370,8 +389,20 @@ these yields of iron peak elements.""" % (_NAMES_[study.upper()]),
 		warnings.warn("""The %s study published yields already masked by \
 stellar explodability (i.e. only wind yields are reported for stars that do \
 not explode under their explosion physics). Stellar explodability is \
-overspecified in this calculation""" % (_NAMES_[study.upper()]), 
-			ScienceWarning) 
+overspecified in this calculation""" % (_NAMES_[study.upper()]), ScienceWarning) 
+
+	if not wind and study.upper() not in ["LC18", "S16/W18"]: 
+		warnings.warn("""The %s study did not separate the yields from the \
+wind and the explosion, publishing only the total yields from both. For this \
+reason, this calculation can only run including the wind yield.""" % (
+			_NAMES_[study.upper()]), ScienceWarning) 
+	else: 
+		pass 
+
+	path = "%syields/ccsne/%s/FeH%s/v%d/" % (_DIRECTORY_, 
+		study.upper(), 
+		MoverHstr, 
+		rotation) 
 
 	"""
 	VICE includes yields for every element that these studies reported. 
@@ -379,12 +410,7 @@ overspecified in this calculation""" % (_NAMES_[study.upper()]),
 	would suggest that the element is not produced in significant amounts by 
 	CCSNe, so we can safely return a 0 and raise a ScienceWarning. 
 	""" 
-	filename = "%syields/ccsne/%s/FeH%s/v%d/%s.dat" % (_DIRECTORY_, 
-		study.upper(), 
-		MoverHstr, 
-		rotation, 
-		element.lower()) 
-	if not os.path.exists(filename): 
+	if not os.path.exists("%sexplosive/%s.dat" % (path, element.lower())): 
 		warnings.warn("""The %s study did not report yields for the element \
 %s. If adopting these yields for simulation, it is likely that this yield \
 can be approximated as zero at this metallicity. Users may exercise their \
@@ -393,7 +419,6 @@ own discretion by modifying their CCSN yield settings directly.""" % (
 		return [0, float("nan")] 
 	else: 
 		pass 
-
 
 	# Compute the yield 
 	cdef INTEGRAL *num = _integral.integral_initialize() 
@@ -405,7 +430,8 @@ own discretion by modifying their CCSN yield settings directly.""" % (
 	num[0].Nmin = <unsigned long> Nmin 
 	try: 
 		x = _yield_integrator.IMFintegrated_fractional_yield_numerator(num, 
-			imf_obj, explodability_cb, filename.encode("latin-1")) 
+			imf_obj, explodability_cb, path.encode("latin-1"), 
+			int(wind), element.lower().encode("latin-1")) 
 		if x == 1: 
 			warnings.warn("""Yield-weighted IMF integration did not converge. \
 Estimated fractional error: %.2e""" % (num[0].error), ScienceWarning) 

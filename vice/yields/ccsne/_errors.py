@@ -102,30 +102,34 @@ def string_check(param, name):
 		pass 
 
 
-def find_yield_file(study, MoverH, rotation, element): 
+def find_yield_file(study, MoverH, rotation, which, element): 
 	""" 
 	Find the yield file associated with the given study, metallicity, 
 	rotational velocity, and element 
 
 	Parameters 
-	========== 
-	study :: str [case-insensitive] 
+	----------
+	study : str [case-insensitive] 
 		The study to pull the yields from 
-	MoverH :: real number 
+	MoverH : real number 
 		The adopted metallicity 
-	rotation :: real number 
+	rotation : real number 
 		The adopted rotational velocity in km/s 
-	element :: str [case-insensitive] 
+	which : str 
+		Either "wind" or "explosive", denoting which set of mass yields to 
+		take from. 
+	element : str [case-insensitive] 
 		The element to look up the yield for 
 	""" 
 	if MoverH % 1: 
 		MoverHstr = ("%.2f" % (MoverH)).replace('.', 'p') 
 	else: 
 		MoverHstr = "%d" % (int(MoverH)) 
-	return "%syields/ccsne/%s/FeH%s/v%d/%s.dat" % (
+	return "%syields/ccsne/%s/FeH%s/v%d/%s/%s.dat" % (
 		_DIRECTORY_, 
 		study.upper(), 
 		MoverHstr, 
 		rotation, 
+		which, 
 		element.lower()) 
 

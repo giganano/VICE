@@ -5,6 +5,7 @@ from ...core.dataframe._ccsn_yield_table import ccsn_yield_table
 from ...core.dataframe._builtin_dataframes import stable_isotopes 
 from ..._globals import _RECOGNIZED_ELEMENTS_ 
 from ..._globals import _VERSION_ERROR_ 
+from ..._globals import ScienceWarning 
 from ._errors import _RECOGNIZED_STUDIES_ 
 from ._errors import find_yield_file
 from ._errors import numeric_check 
@@ -12,6 +13,7 @@ from ._errors import string_check
 from ._errors import _ROTATION_ 
 from ._errors import _MOVERH_ 
 from ._errors import _NAMES_ 
+import warnings 
 import sys 
 import os 
 if sys.version_info[:2] == (2, 7): 
@@ -22,14 +24,15 @@ else:
 	_VERSION_ERROR_() 
 
 
-def table(element, study = "LC18", MoverH = 0, rotation = 0, isotopic = False): 
+def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True, 
+	isotopic = False): 
 	
 	r""" 
 	Look up the mass yield of a given element as a function of stellar mass 
 	as reported by a given study. 
 
 	**Signature**: vice.yields.ccsne.table(element, study = "LC18", MoverH = 0, 
-	rotation = 0, isotopic = False) 
+	rotation = 0, wind = True, isotopic = False) 
 
 	Parameters 
 	----------
@@ -45,6 +48,7 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, isotopic = False):
 			- "NKT13": Nomoto, Kobayashi & Tominaga (2013) [3]_ 
 			- "CL04": Chieffi & Limongi (2004) [4]_ 
 			- "WW95": Woosley & Weaver (1995) [5]_ 
+			- "S16/W18": Sukhbold et al. (2016) [6]_ (W18 explosion engine) 
 
 	MoverH : real number [default : 0] 
 		The total metallicity [M/H] of the exploding stars. There are only a 
@@ -57,6 +61,7 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, isotopic = False):
 			- "NKT13": [M/H] = -inf, -1.15, -0.54, -0.24, 0.15, 0.55 
 			- "CL04": [M/H] = -inf, -4, -2, -1, -0.37, 0.15 
 			- "WW95": [M/H] = -inf, -4, -2, -1, 0 
+			- "S16/W18": [M/H] = 0 
 
 	rotation : real number [default : 0] 
 		The rotational velocity of the exploding stars in km/s. There are only 
@@ -64,11 +69,22 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, isotopic = False):
 
 		Keywords and their Associated Rotational Velocities: 
 
-			- "LC18": 0, 150, 300 
-			- "CL13": 0, 300 
-			- "NKT13": 0 
-			- "CL04": 0 
-			- "WW95": 0 
+			- "LC18": v = 0, 150, 300 
+			- "CL13": v = 0, 300 
+			- "NKT13": v = 0 
+			- "CL04": v = 0 
+			- "WW95": v = 0 
+			- "S16/W18": v = 0 
+
+	wind : bool [default : ``True``] 
+		If True, the stellar wind contribution to the yield will be included 
+		in the reported table. If False, the table will include only the 
+		supernova explosion yields. 
+
+		.. note:: Wind and explosive yields are only separated for the 
+			Limongi & Chieffi (2018) and Sukhbold et al. (2016) studies. Wind 
+			yields are not separable from explosive yields for other studies 
+			supported by this function. 
 
 	isotopic : ``bool`` [default : ``False``] 
 		If ``True``, the full-breakdown of isotopic mass yields is returned. 
@@ -93,9 +109,9 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, isotopic = False):
 		- 	The study did not report yields at the specified rotational 
 			velocity. 
 	* ScienceWarning 
-		- 	Study is either "CL04" or "CL13" and the atomic number of the 
-			element is between 24 and 28 (inclusive). VICE warns against 
-			adopting these yields for iron peak elements. 
+		- 	``wind = False`` and ``study`` is anything other than 
+			LC18 or S16. These are the only studies for which wind yields were 
+			reported separate from explosive yields. 
 
 	Notes 
 	-----
@@ -140,6 +156,7 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, isotopic = False):
 	.. [3] Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457 
 	.. [4] Chieffi & Limongi (2004), ApJ, 608, 405 
 	.. [5] Woosley & Weaver (1995), ApJ, 101, 181 
+	.. [6] Sukhbold et al. (2016), ApJ, 821, 38 
 	""" 
 
 	if not isinstance(element, strcomp): 
@@ -151,9 +168,9 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, isotopic = False):
 		pass 
 
 	# Type check keyword args 
-	string_check(study, "study")  
-	numeric_check(MoverH, "MoverH")  
-	numeric_check(rotation, "rotation")  
+	string_check(study, "study") 
+	numeric_check(MoverH, "MoverH") 
+	numeric_check(rotation, "rotation") 
 	try: 
 		isotopic = bool(isotopic) 
 	except: 
@@ -170,7 +187,8 @@ boolean. Got: %s""" % (type(isotopic)))
 		raise LookupError("""The %s study does not have yields for v = %g \
 km/s and [M/H] = %g""" % (rotation, MoverH)) 
 	else: 
-		filename = find_yield_file(study, MoverH, rotation, element) 
+		filename = find_yield_file(study, MoverH, rotation, "explosive", 
+			element) 
 
 	# Find and read the file 
 	if not os.path.exists(filename): 
@@ -180,22 +198,26 @@ yield can be approximated as zero at this metallicity. Users may exercise \
 their own discretion by modifying their CCSN yield settings directly.""" % (
 			_NAMES_[study.upper()], element)) 
 	else: 
-		with open(filename, 'r') as f: 
-			contents = [] 
-			line = f.readline() 
-			while line[0] == '#': 
-				line = f.readline() 
-			line = f.readline() 
-			while line != "": 
-				contents.append([float(i) for i in line.split()])  
-				line = f.readline() 
-			f.close() 
+		grid = read_grid(filename) 
+
+	if wind: 
+		wind_grid = read_grid(find_yield_file(study, MoverH, rotation, "wind", 
+			element)) 
+		for i in range(len(grid)): 
+			for j in range(1, len(grid[i])): 
+				grid[i][j] += wind_grid[i][j] 
+	elif study.upper() not in ["LC18", "S16/W18"]: 
+		warnings.warn("""The %s study did not separate the yields from the \
+wind and the explosion, publishing only the total yields from both. For this \
+reason, this function cannot separate the wind yields from this table.""" % (
+			_NAMES_[study.upper()]), ScienceWarning) 
+	else: pass 
 
 	# Format them as total or isotopic mass yields, and return a yield table 
-	masses = tuple([i[0] for i in contents]) 
-	isotopic_yields = (len(contents[0]) - 1) * [None] 
-	for i in range(1, len(contents[0])): 
-		isotopic_yields[i - 1] = tuple([row[i] for row in contents]) 
+	masses = tuple([i[0] for i in grid]) 
+	isotopic_yields = (len(grid[0]) - 1) * [None] 
+	for i in range(1, len(grid[0])): 
+		isotopic_yields[i - 1] = tuple([row[i] for row in grid]) 
 
 	if isotopic: 
 		return ccsn_yield_table(masses, tuple(isotopic_yields), 
@@ -206,4 +228,31 @@ their own discretion by modifying their CCSN yield settings directly.""" % (
 		for i in range(len(mass_yields)): 
 			mass_yields[i] = sum([j[i] for j in isotopic_yields])  
 		return ccsn_yield_table(masses, mass_yields, isotopes = None) 
+
+
+def read_grid(filename): 
+	r""" 
+	Read in the contents of a yield grid given the filename. 
+
+	Parameters 
+	----------
+	filename: str 
+		The path to the file to read. 
+
+	Returns 
+	-------
+	yields : list 
+		The contents of the yield file as a 2-D list 
+	""" 
+	with open(filename, 'r') as f: 
+		contents = [] 
+		line = f.readline() 
+		while line[0] == '#': 
+			line = f.readline() 
+		line = f.readline() 
+		while line != "": 
+			contents.append([float(i) for i in line.split()]) 
+			line = f.readline() 
+		f.close() 
+	return contents 
 

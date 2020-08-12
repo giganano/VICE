@@ -14,20 +14,23 @@ extern "C" {
  * 
  * Parameters 
  * ========== 
- * intgrl: 		The integral object for the numerator of the yield 
- * imf:			The associated IMF object 
- * file:		The nme of the data file containing the grid
+ * intgrl: 			The integral object for the numerator of the yield 
+ * imf:				The associated IMF object
+ * explodability: 	Stellar explodability as a function of mass 
+ * path:			The nme of the data file containing the grid 
+ * wind: 			Boolean int describing whether or not to include winds 
+ * element: 		The symbol of the element 
  * 
  * Returns 
  * ======= 
- * The mass yield from all CCSNe in a stellar population as predicted by the 
- * built-in yields, up to the normalization of the IMF. 
+ * 3 on an unrecognized IMF, otherwise the value returned by quad (see 
+ * quadrature.h). 
  * 
  * source: ccsne.c 
  */ 
 extern unsigned short IMFintegrated_fractional_yield_numerator(
 	INTEGRAL *intgrl, IMF_ *imf, CALLBACK_1ARG *explodability, 
-	char *file); 
+	char *path, const unsigned short wind, char *element); 
 
 /* 
  * Determine the value of the integrated IMF weighted by stellar mass, up to 
