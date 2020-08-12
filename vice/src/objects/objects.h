@@ -75,6 +75,8 @@ typedef struct asymptotic_giant_branch_star_yield_grid {
 	 * z: The metallicities on which the grid is sampled 
 	 * n_m: The number of masses on which the grid is sampled 
 	 * n_z: The number of metallicities on which the grid is sampled 
+	 * enrtrainment: The fraction of this element from AGB stars that the ISM 
+	 * 		retains; the rest of which is added directly to outflows 
 	 */ 
 
 	CALLBACK_2ARG *custom_yield; 
@@ -145,6 +147,8 @@ typedef struct arbitrary_channel {
 	 * 		sampled. 
 	 * rate: The delay-time distribution of the channel: its rate following the 
 	 * 		formation of a simple stellar population. 
+	 * enrtrainment: The fraction of this element from this channel that the 
+	 *		ISM retains; the rest of which is added directly to outflows 
 	 */ 
 
 	CALLBACK_1ARG *yield_; 
@@ -161,8 +165,10 @@ typedef struct element {
 	 * and yields. 
 	 * 
 	 * agb_grid: The struct holding this element's AGB star yield information 
-	 * ccsne_yield: The struct holding this element's CCSNe yield information 
-	 * SNEIA_YIELD: The struct holding this element's SNeIa yield information 
+	 * ccsne_yields: The struct holding this element's CCSNe yield information 
+	 * sneia_yields: The struct holding this element's SNeIa yield information 
+	 * channels: The arbitrary enrichment channels for this element 
+	 * n_channels: The number of arbitrary enrichment channels for this element 
 	 * symbol: The symbol of the element from the periodic table (lower-case) 
 	 * Z: The metallicity by mass of this element at all previous timesteps 
 	 * Zin: The metallicity by mass of the infall rate at all timesteps 
@@ -297,14 +303,12 @@ typedef struct single_stellar_population {
 	 * This struct contains information relevant to single stellar populations 
 	 * (SSPs). 
 	 * 
-	 * imf: A string denoting the stellar initial mass function 
-	 * recycling: The cumulative return fraction at each timestep starting at 
+	 * imf: The imf object 
+	 * crf: The cumulative return fraction at each timestep starting at 
 	 * 		t = 0 
 	 * msmf: The main sequence mass fraction at each timestep starting at t = 0 
 	 * postMS: The ratio of a star's post main-sequence lifetime to its main 
 	 * 		sequence lifetime. 
-	 * m_upper: The upper mass limit on star formation in Msun 
-	 * m_lower: The lower mass limit on star formation in Msun 
 	 * R0: The instantaneous recycling rate, if applicable. 
 	 * continuous: A boolean int describing whether or not to adopt 
 	 * 		continuous recycling. 
@@ -401,6 +405,8 @@ typedef struct migration {
 	 * tracer_count: The number of active tracer particles 
 	 * gas_migration: The migration matrix associated with the ISM gas 
 	 * tracers: Pointers to the tracer particles themselves 
+	 * tracers_output: The file object to write out the tracer particle info 
+	 * 		at the end of a multizone simulation 
 	 */ 
 
 	unsigned int n_zones; 
@@ -423,6 +429,9 @@ typedef struct multizone {
 	 * mig: The migration settings for this simulation 
 	 * verbose: boolean int describing whether or not to print the time as the 
 	 * 		simulation evolves
+	 * simple: Whether or not to track tracer particle zone numbers at each 
+	 * 		individual timestep, or to simply evolve each zone in parallel, 
+	 * 		mixing afterward 
 	 */ 
 
 	char *name; 
@@ -447,9 +456,11 @@ typedef struct integral {
 	 * Nmax: The maximum number of bins in quadrature (failsafe against 
 	 * 		non-convergent solutions) 
 	 * Nmin: The minimum number of bins in quadrature 
+	 * iters: The number of bins in quadrature when the calculation converged 
 	 * results: The numerically computed value of the integral, it's 
 	 * 		approximate numerical errors and the number of bins in quadrature 
 	 * 		at the time of convergence. 
+	 * error: The estimated numerical error on the calculation 
 	 */ 
 
 	double (*func)(double); 
@@ -516,11 +527,17 @@ typedef struct hydrodiskstars {
 	 * simulation for construction of migration schemes. 
 	 * 
 	 * n_stars: the number of star particles in the data 
+	 * ids: Star particle IDs 
 	 * birth_times: The times in Gyr at which each star particle was born 
 	 * birth_radii: The radii in kpc at which each star particle was born 
 	 * final_radii: The radii in kpc at which each star particle was located 
 	 * 		at the end of the simulation. 
+	 * zfinal: The final heights above/below the disk midplane 
+	 * v_rad: The radial velocities in km/s of each star particle 
+	 * v_phi: The azimuthal velocities in km/s of each star particle 
+	 * v_z: The velocity perpendicular to the disk midplane in km/s 
 	 * rad_bins: The radial bins in kpc which discretize the disk 
+	 * n_rad_bins: The number of radial bins in the disk model 
 	 */ 
 
 	unsigned long n_stars; 
@@ -539,6 +556,18 @@ typedef struct hydrodiskstars {
 
 
 typedef struct dataset {
+
+	/* 
+	 * An observational dataset (modeling features in development) 
+	 * 
+	 * data: The data itself 
+	 * errors: The observational errors on each quantity 
+	 * inv_cov: The inverse covariance matrix of the data 
+	 * prediction: The model predictions for each data point 
+	 * labels: The names of each quantity reported in the data 
+	 * n_quantities: The dimensionality of the data 
+	 * n_points: The number of data points in the sample 
+	 */ 
 
 	double **data; 
 	double **errors; 
