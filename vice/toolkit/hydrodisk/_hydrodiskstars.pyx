@@ -36,8 +36,8 @@ cdef class c_hydrodiskstars:
 	""" 
 
 	def __cinit__(self, radbins, idcolumn = 0, tformcolumn = 1, 
-		rformcolumn = 2, rfinalcolumn = 4, zfinalcolumn = 5, 
-		v_radcolumn = 6, v_phicolumn = 7, v_zcolumn = 8): 
+		rformcolumn = 2, rfinalcolumn = 3, zfinalcolumn = 4, 
+		v_radcolumn = 5, v_phicolumn = 6, v_zcolumn = 7): 
 
 		# allocate memory for hydrodiskstars object in C and import the data 
 		self._hds = _hydrodiskstars.hydrodiskstars_initialize() 
@@ -59,8 +59,8 @@ cdef class c_hydrodiskstars:
 		self._mode = <char *> malloc (12 * sizeof(char)) 
 
 	def __init__(self, radbins, idcolumn = 0, tformcolumn = 1, 
-		rformcolumn = 2, rfinalcolumn = 4, zfinalcolumn = 5, 
-		v_radcolumn = 6, v_phicolumn = 7, v_zcolumn = 8): 
+		rformcolumn = 2, rfinalcolumn = 3, zfinalcolumn = 4, 
+		v_radcolumn = 5, v_phicolumn = 6, v_zcolumn = 7): 
 		
 		self._analog_idx = -1l 
 		_hydrodiskstars.seed_random() 
