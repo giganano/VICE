@@ -51,7 +51,8 @@ extern "C" {
  * Parameters 
  * ==========
  * hds: 				A pointer to the hydrodiskstars object to import into 
- * filename: 			The name of the file holding the data 
+ * Nstars: 				The number of star particles necessary for the model 
+ * filestem: 			The path to the files to import, minus the "_subN.dat" 
  * ids_column: 			The column of star particle IDs 
  * birth_times_column: 	The column of times in Gyr each star particle was born 
  * birth_radii_column: 	The column of radii in kpc each star particle was born at 
@@ -67,11 +68,12 @@ extern "C" {
  * 
  * source: hydrodiskstars.c 
  */ 
-extern unsigned short hydrodiskstars_import(HYDRODISKSTARS *hds, char *filename, 
-	unsigned short ids_column, unsigned short birth_times_column, 
-	unsigned short birth_radii_column, unsigned short final_radii_column, 
-	unsigned short zfinal_column, unsigned short v_radcolumn, 
-	unsigned short v_phicolumn, unsigned short v_zcolumn); 
+extern unsigned short hydrodiskstars_import(HYDRODISKSTARS *hds, 
+	unsigned long Nstars, char *filestem, unsigned short ids_column, 
+	unsigned short birth_times_column, unsigned short birth_radii_column, 
+	unsigned short final_radii_column, unsigned short zfinal_column, 
+	unsigned short v_radcolumn, unsigned short v_phicolumn, 
+	unsigned short v_zcolumn); 
 
 /* 
  * Find an analog star particle from the hydrodynamical simulation given a 

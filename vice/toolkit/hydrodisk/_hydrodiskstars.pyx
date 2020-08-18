@@ -27,6 +27,9 @@ _END_TIME_ = 12.8
 # The recognized hydrodiskstars migration modes 
 _RECOGNIZED_MODES_ = ["linear", "sudden", "diffusion"] 
 
+# The number of star particles in the simulation 
+_N_STAR_PARTICLES_ = 6646790 
+
 
 cdef class c_hydrodiskstars: 
 
@@ -35,36 +38,51 @@ cdef class c_hydrodiskstars:
 	documentation. 
 	""" 
 
-	def __cinit__(self, radbins, idcolumn = 0, tformcolumn = 1, 
+	def __cinit__(self, radbins, N = 1e5, idcolumn = 0, tformcolumn = 1, 
 		rformcolumn = 2, rfinalcolumn = 3, zfinalcolumn = 4, 
 		v_radcolumn = 5, v_phicolumn = 6, v_zcolumn = 7): 
 
 		# allocate memory for hydrodiskstars object in C and import the data 
 		self._hds = _hydrodiskstars.hydrodiskstars_initialize() 
-		datafile = "%stoolkit/hydrodisk/data/UWhydro_highres.dat" % (
+		datafilestem = "%stoolkit/hydrodisk/data/UWhydro" % (
 			_DIRECTORY_) 
-		if not _hydrodiskstars.hydrodiskstars_import(self._hds, 
-			datafile.encode("latin-1"), 
-			<unsigned short> idcolumn, 
-			<unsigned short> tformcolumn, 
-			<unsigned short> rformcolumn, 
-			<unsigned short> rfinalcolumn, 
-			<unsigned short> zfinalcolumn, 
-			<unsigned short> v_radcolumn, 
-			<unsigned short> v_phicolumn, 
-			<unsigned short> v_zcolumn): 
-			raise IOError("Could not read file: %s" % (datafile)) 
+		if isinstance(N, numbers.Number): 
+			if N % 1 == 0: 
+				_hydrodiskstars.seed_random() 
+				if N > _N_STAR_PARTICLES_: 
+					N = _N_STAR_PARTICLES_ 
+					warnings.warn("""\
+There are only %d star particles from the hydrodynamical simulation available \
+for this object. Running a multizone model with this many stellar populations \
+will oversample these data.""" % (_N_STAR_PARTICLES_), ScienceWarning) 
+				else: pass 
+				if not _hydrodiskstars.hydrodiskstars_import(self._hds, 
+					<unsigned long> N, 
+					datafilestem.encode("latin-1"), 
+					<unsigned short> idcolumn, 
+					<unsigned short> tformcolumn, 
+					<unsigned short> rformcolumn, 
+					<unsigned short> rfinalcolumn, 
+					<unsigned short> zfinalcolumn, 
+					<unsigned short> v_radcolumn, 
+					<unsigned short> v_phicolumn, 
+					<unsigned short> v_zcolumn): 
+					# raise IOError("Could not read file: %s" % (datafile)) 
+					raise SystemError("Internal Error.") 
+				else: 
+					pass 
+			else: 
+				raise ValueError("Keyword arg 'N' must be an integer.") 
 		else: 
-			pass 
+			raise TypeError("Keyword arg 'N' must be an integer.") 
 		self.radial_bins = radbins 
 		self._mode = <char *> malloc (12 * sizeof(char)) 
 
-	def __init__(self, radbins, idcolumn = 0, tformcolumn = 1, 
+	def __init__(self, radbins, N = 1e5, idcolumn = 0, tformcolumn = 1, 
 		rformcolumn = 2, rfinalcolumn = 3, zfinalcolumn = 4, 
 		v_radcolumn = 5, v_phicolumn = 6, v_zcolumn = 7): 
 		
 		self._analog_idx = -1l 
-		_hydrodiskstars.seed_random() 
 		self._analog_data = dataframe({
 			"id": 		[self._hds[0].ids[i] for i in range(
 				self._hds[0].n_stars)], 

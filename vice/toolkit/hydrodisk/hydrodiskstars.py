@@ -27,6 +27,18 @@ class hydrodiskstars:
 		The bins in galactocentric radius in kpc describing the disk model. 
 		This must extend from 0 to at least 30 kpc. Need not be sorted in any 
 		way. Will be stored as an attribute. 
+	N : int [default : 1e5] 
+		An approximate number of star particles from the hydrodynamical 
+		simulation to include in the sample of candidate analogs. Their data 
+		are not stored in a single file, but split across random subsamples to 
+		decrease computational overhead when the full sample is not required. 
+		In practice, this number should be slightly larger than the number of 
+		(relevant) stellar populations simulated by a multizone model. 
+
+		.. note:: There are 6,646,790 star particles available for this 
+			object. Any more stellar populations than this would oversample 
+			these data. 
+
 	mode : str [case-insensitive] [default : "linear"] 
 		The attribute 'mode', initialized via keyword argument. 
 
@@ -71,6 +83,8 @@ class hydrodiskstars:
 		- Maximum radius < 30 
 	* ScienceWarning 
 		- This object is called with a time larger than 12.8 Gyr 
+		- The number of analog star particles requested is larger than the 
+		  number available from the hydrodynamical simulation (6,646,790) 
 
 	Notes 
 	-----
@@ -115,8 +129,8 @@ class hydrodiskstars:
 	"linear" 
 	""" 
 
-	def __init__(self, rad_bins, mode = "linear"): 
-		self.__c_version = c_hydrodiskstars(rad_bins) 
+	def __init__(self, rad_bins, N = 1e5, mode = "linear"): 
+		self.__c_version = c_hydrodiskstars(rad_bins, N = N) 
 		self.mode = mode 
 
 	def __call__(self, zone, tform, time): 

@@ -9,11 +9,12 @@ cdef extern from "../../src/objects/hydrodiskstars.h":
 
 
 cdef extern from "../../src/toolkit/hydrodiskstars.h": 
-	unsigned short hydrodiskstars_import(HYDRODISKSTARS *hds, char *filename, 
-		unsigned short ids_column, unsigned short birth_times_column, 
-		unsigned short birth_radii_column, unsigned short final_radii_column, 
-		unsigned short zfinal_column, unsigned short v_radcolumn, 
-		unsigned short v_phicolumn, unsigned short v_zcolumn)
+	unsigned short hydrodiskstars_import(HYDRODISKSTARS *hds, 
+		unsigned long Nstars, char *filestem, unsigned short ids_column, 
+		unsigned short birth_times_column, unsigned short birth_radii_column, 
+		unsigned short final_radii_column, unsigned short zfinal_column, 
+		unsigned short v_radcolumn, unsigned short v_phicolumn, 
+		unsigned short v_zcolumn)
 	long hydrodiskstars_find_analog(HYDRODISKSTARS hds, double birth_radius, 
 		double birth_time) 
 	double calczone_linear(HYDRODISKSTARS hds, double birth_time, 

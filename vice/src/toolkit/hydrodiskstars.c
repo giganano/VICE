@@ -3,15 +3,27 @@
  */ 
 
 #include <stdlib.h> 
+#include <string.h> 
 #include <math.h> 
 #include "../utils.h" 
-#include "../io/utils.h" 
+#include "../io.h" 
 #include "hydrodiskstars.h" 
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
+static unsigned short already_included(unsigned short *included, 
+	const unsigned short subsample, const unsigned short n_subsamples); 
+static unsigned short hydrodiskstars_import_sub(HYDRODISKSTARS *hds, 
+	char *filename, unsigned short ids_column, 
+	unsigned short birth_times_column, unsigned short birth_radii_column, 
+	unsigned short final_radii_column, unsigned short zfinal_column, 
+	unsigned short v_radcolumn, unsigned short v_phicolumn, 
+	unsigned short v_zcolumn); 
 static unsigned long candidate_search(HYDRODISKSTARS hds, double birth_radius, 
 	double birth_time, unsigned long **candidates, double max_radius, 
 	double max_time); 
+
+/* The number of subsample files present in the code base */ 
+static unsigned short NSUBS = 68u; 
 
 
 /* 
@@ -21,7 +33,8 @@ static unsigned long candidate_search(HYDRODISKSTARS hds, double birth_radius,
  * Parameters 
  * ==========
  * hds: 				A pointer to the hydrodiskstars object to import into 
- * filename: 			The name of the file holding the data 
+ * Nstars: 				The number of star particles necessary for the model 
+ * filestem: 			The path to the files to import, minus the "_subN.dat" 
  * ids_column: 			The column of star particle IDs 
  * birth_times_column: 	The column of times in Gyr each star particle was born 
  * birth_radii_column: 	The column of radii in kpc each star particle was born at 
@@ -37,31 +50,149 @@ static unsigned long candidate_search(HYDRODISKSTARS hds, double birth_radius,
  * 
  * header: hydrodiskstars.h 
  */ 
-extern unsigned short hydrodiskstars_import(HYDRODISKSTARS *hds, char *filename, 
-	unsigned short ids_column, unsigned short birth_times_column, 
-	unsigned short birth_radii_column, unsigned short final_radii_column, 
-	unsigned short zfinal_column, unsigned short v_radcolumn, 
-	unsigned short v_phicolumn, unsigned short v_zcolumn) {
+extern unsigned short hydrodiskstars_import(HYDRODISKSTARS *hds, 
+	unsigned long Nstars, char *filestem, unsigned short ids_column, 
+	unsigned short birth_times_column, unsigned short birth_radii_column, 
+	unsigned short final_radii_column, unsigned short zfinal_column, 
+	unsigned short v_radcolumn, unsigned short v_phicolumn, 
+	unsigned short v_zcolumn) {
+
+	/* 
+	 * Bookkeeping 
+	 * ===========
+	 * status: 		Ensures that the import proceeds as planned 
+	 * n: 			The number of files already imported 
+	 * included: 	The subsamples already imported 
+	 */ 
+	unsigned short status = 1u, n = 0; 
+	unsigned short *included = (unsigned short *) malloc (sizeof(unsigned short)); 
+	do {
+		/* Find which subsample to import */ 
+		unsigned short subsample; 
+		do {
+			subsample = (unsigned short) rand_range(0, (double) NSUBS); 
+		} while (already_included(included, subsample, n)); 
+		included[n] = subsample; 
+		n++; 
+		included = (unsigned short *) realloc (included, 
+			(n + 1u) * sizeof(unsigned short)); 
+		
+		/* Construct the name of the file to import */ 
+		char *filename = (char *) malloc (MAX_FILENAME_SIZE * sizeof(char)); 
+		sprintf(filename, "%s_sub%u.dat", filestem, subsample); 
+		status &= hydrodiskstars_import_sub(hds, filename, ids_column, 
+			birth_times_column, birth_radii_column, final_radii_column, 
+			zfinal_column, v_radcolumn, v_phicolumn, v_zcolumn); 
+		free(filename); 
+	} while ((*hds).n_stars < Nstars && status); 
+	free(included); 
+
+	return status; 
+
+} 
+
+
+/* 
+ * Determines if a subsample of the data was already imported. 
+ * 
+ * Parameters 
+ * ==========
+ * included: 		The numbers of subsamples already included 
+ * subsample: 		The subsample to test if it has been included 
+ * n_subsamples: 	The number of subsamples thus far imported 
+ * 
+ * Returns 
+ * =======
+ * 1 if the subsample is already imported, 0 if it has not been imported. 
+ */ 
+static unsigned short already_included(unsigned short *included, 
+	const unsigned short subsample, const unsigned short n_subsamples) {
+
+	unsigned short i; 
+	for (i = 0u; i < n_subsamples; i++) {
+		if (included[i] == subsample) return 1u; 
+	} 
+	return 0u; 
+
+}
+
+
+/* 
+ * Imports a single subsample data file into the hydrodiskstars object. 
+ * 
+ * Parameters 
+ * ==========
+ * hds: 				A pointer to the hydrodiskstars object to import into 
+ * filename: 			The path to the file to import 
+ * ids_column: 			The column of star particle IDs 
+ * birth_times_column: 	The column of times in Gyr each star particle was born 
+ * birth_radii_column: 	The column of radii in kpc each star particle was born at 
+ * final_radii_column: 	The column of radii in kpc each star particle ends at 
+ * zfinal_column: 		The column of disk heights in kpc 
+ * v_radcolumn: 		The column of radial velocities in km/sec 
+ * v_phicolumn: 		The column of azimuthal velocities in km/sec 
+ * v_zcolumn: 			The column of vertical velocities in km/sec 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ */ 
+static unsigned short hydrodiskstars_import_sub(HYDRODISKSTARS *hds, 
+	char *filename, unsigned short ids_column, 
+	unsigned short birth_times_column, unsigned short birth_radii_column, 
+	unsigned short final_radii_column, unsigned short zfinal_column, 
+	unsigned short v_radcolumn, unsigned short v_phicolumn, 
+	unsigned short v_zcolumn) {
 
 	unsigned long n_lines = (unsigned long) (
-		line_count(filename) - header_length(filename)
+		line_count(filename) - header_length(filename) 
 	); 
-	if (n_lines) { 
+
+	if (n_lines) {
+
+		/* Read in the data if the file is populated */ 
 		double **raw = read_square_ascii_file(filename); 
-		if (raw != NULL) { 
-			hds -> n_stars = n_lines; 
-			hds -> ids = (unsigned long *) malloc (n_lines * sizeof(
-				unsigned long)); 
-			hds -> birth_times = (double *) malloc (n_lines * sizeof(double)); 
-			hds -> birth_radii = (double *) malloc (n_lines * sizeof(double)); 
-			hds -> final_radii = (double *) malloc (n_lines * sizeof(double)); 
-			hds -> zfinal = (double *) malloc (n_lines * sizeof(double)); 
-			hds -> v_rad = (double *) malloc (n_lines * sizeof(double)); 
-			hds -> v_phi = (double *) malloc (n_lines * sizeof(double)); 
-			hds -> v_z = (double *) malloc (n_lines * sizeof(double)); 
+		if (raw != NULL) {
+			
+			(*hds).n_stars += n_lines; 
+			if ((*hds).n_stars == n_lines) {
+				/* This is the first subsample import -> initialize the data */ 
+				hds -> ids = (unsigned long *) malloc (n_lines * 
+					sizeof(unsigned long)); 
+				hds -> birth_times = (double *) malloc (n_lines * 
+					sizeof(double)); 
+				hds -> birth_radii = (double *) malloc (n_lines * 
+					sizeof(double)); 
+				hds -> final_radii = (double *) malloc (n_lines * 
+					sizeof(double)); 
+				hds -> zfinal = (double *) malloc (n_lines * sizeof(double)); 
+				hds -> v_rad = (double *) malloc (n_lines * sizeof(double)); 
+				hds -> v_phi = (double *) malloc (n_lines * sizeof(double)); 
+				hds -> v_z = (double *) malloc (n_lines * sizeof(double)); 
+			} else {
+				/* This is not the first subsample import -> extend the data */ 
+				hds -> ids = (unsigned long *) realloc (hds -> ids, 
+					(*hds).n_stars * sizeof(unsigned long)); 
+				hds -> birth_times = (double *) realloc (hds -> birth_times, 
+					(*hds).n_stars * sizeof(double)); 
+				hds -> birth_radii = (double *) realloc (hds -> birth_radii, 
+					(*hds).n_stars * sizeof(double)); 
+				hds -> zfinal = (double *) realloc (hds -> zfinal, 
+					(*hds).n_stars * sizeof(double)); 
+				hds -> v_rad = (double *) realloc (hds -> v_rad, 
+					(*hds).n_stars * sizeof(double)); 
+				hds -> v_phi = (double *) realloc (hds -> v_phi, 
+					(*hds).n_stars * sizeof(double)); 
+				hds -> v_z = (double *) realloc (hds -> v_z, 
+					(*hds).n_stars * sizeof(double)); 
+			} 
+
+			/* Copy it over */ 
 			unsigned long i; 
-			for (i = 0ul; i < n_lines; i++) { 
-				hds -> ids[i] = (unsigned long) raw[i][ids_column]; 
+			for (i = 0u; i < n_lines; i++) { 
+				/* The position of this star particle in the data */ 
+				unsigned long idx = (*hds).n_stars - n_lines + i; 
+				hds -> ids[idx] = raw[i][ids_column]; 
 				hds -> birth_times[i] = raw[i][birth_times_column]; 
 				hds -> birth_radii[i] = raw[i][birth_radii_column]; 
 				hds -> final_radii[i] = raw[i][final_radii_column]; 
@@ -70,14 +201,17 @@ extern unsigned short hydrodiskstars_import(HYDRODISKSTARS *hds, char *filename,
 				hds -> v_phi[i] = raw[i][v_phicolumn]; 
 				hds -> v_z[i] = raw[i][v_zcolumn]; 
 			} 
+
 			free(raw); 
 			return 1u; 
+
 		} else {
 			return 0u; 
 		} 
+
 	} else {
 		return 0u; 
-	} 
+	}
 
 } 
 
@@ -203,20 +337,12 @@ extern long calczone_linear(HYDRODISKSTARS hds, double birth_time,
 	double birth_radius, double end_time, long analog_idx, double time) {
 
 	double radius; 
-	// printf("birth_time = %.5e\n", birth_time); 
-	// printf("birth_radius = %.5e\n", birth_radius); 
-	// printf("end_time = %5e\n", end_time); 
-	// printf("analog_idx = %ld\n", analog_idx); 
-	// printf("time = %.5e\n", time); 
 	if (analog_idx > -1l) {
-		// printf("A\n"); 
 		radius = interpolate(birth_time, end_time, birth_radius, 
 			hds.final_radii[analog_idx], time); 
-		// printf("B\n"); 
 	} else {
 		radius = birth_radius; 
 	}
-	// printf("C\n"); 
 
 	return get_bin_number(hds.rad_bins, hds.n_rad_bins, radius); 
 
