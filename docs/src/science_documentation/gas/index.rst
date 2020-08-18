@@ -9,8 +9,8 @@ The Gas Supply
 Inflows, Star Formation, and Efficiency 
 ---------------------------------------
 Like the :ref:`enrichment equation <enr_eq>`, the time derivative of the mass 
-of the gas in the interstellar medium (ISM) :math:`M_g` is a simple sum of 
-source and sink terms. For an infall rate (IFR) :math:`\dot{M}_\text{in}`, 
+of the gas in the interstellar medium (ISM) :math:`M_\text{g}` is a simple sum 
+of source and sink terms. For an infall rate (IFR) :math:`\dot{M}_\text{in}`, 
 star formation rate (SFR) :math:`\dot{M}_\star`, and outflow rate (OFR) 
 :math:`\dot{M}_\text{out}`: 
 
@@ -26,19 +26,21 @@ implemented with a Forward Euler solution, this equation is evaluated via:
 	\Delta t + \dot{M}_\text{r}\Delta t 
 
 By construction, VICE operates such that the user specifies either an infall 
-history (:math:`\dot{M}_\text{in}` as a function of time), a star formation 
-history (:math:`\dot{M}_\star` as a function of time), or the gas history 
-(:math:`\dot{M}_\text{gas}` as a function of time). The user also specifies a 
-star formation efficiency timescale [1]_: 
+history (:math:`\dot{M}_\text{in}` in :math:`M_\odot yr^{-1}` as a function of 
+time), a star formation history (:math:`\dot{M}_\star` in :math:`M_\odot 
+yr^{-1}` as a function of time), or the gas history (:math:`M_\text{g}` in 
+:math:`M_\odot` as a function of time). The user also specifies a star 
+formation efficiency timescale [1]_: 
 
 .. math:: \tau_\star \equiv \frac{M_g}{\dot{M}_\star} 
 
 Users may specify an arbitrary function of time in Gyr to describe 
 :math:`\tau_\star`, whose units are assumed to be Gyr. With one of either 
-:math:`\dot{M}_\text{in}`, :math:`\dot{M}_\star`, or :math:`\dot{M}_g` 
+:math:`\dot{M}_\text{in}`, :math:`\dot{M}_\star`, or :math:`M_\text{g}` 
 specified by the user, :math:`\tau_\star`,  and the implementation of 
 :math:`\dot{M}_\text{out}` and :math:`\dot{M}_\text{r}` discussed in this 
-section, the solution to :math:`M_g` as a function of time is unique. 
+section, the solutions to :math:`\dot{M}_\text{in}`, :math:`\dot{M}_\star`, 
+and :math:`M_g` as functions of time are unique. 
 
 VICE also allows users to adopt a formulation of :math:`\tau_\star` that 
 depends on the gas supply; this is an application of the Kennicutt-Schmidt 
