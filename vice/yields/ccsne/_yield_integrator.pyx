@@ -194,7 +194,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	-----
 	This function evaluates the solution to the following equation. 
 
-	.. math:: y_x^\text{CC} \frac{
+	.. math:: y_x^\text{CC} = \frac{
 		\int_8^u (E(m)m_x + w_x) \frac{dN}{dm} dm 
 		}{
 		\int_l^u m \frac{dN}{dm} dm 
