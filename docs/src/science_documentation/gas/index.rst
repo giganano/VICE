@@ -58,11 +58,11 @@ Relevant Source Code:
 
 	- ``vice/src/singlezone/ism.c`` 
 
-.. [1] In the astronomical literature, this quantity is often referred to as 
-	the "depletion time" rather than star formation efficiency. In the 
-	chemical evolution literature, it quantifies the fractioanl rate at which 
-	gas is converted into stars, and is thus referred to as star formation 
-	efficiency. This is the 
+.. [1] In the interstellar medium literature, this quantity is often referred 
+	to as the "depletion time" due to star formation. In the galactic 
+	archaeology literature, it quantifies the fractional rate at which gas 
+	forms stars, and is thus often refered to in terms of star formation 
+	efficiency. We retain this nomenclature here. 
 
 .. _gas_outflows: 
 
