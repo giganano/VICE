@@ -296,35 +296,36 @@ class pickled_object:
 		if os.path.exists("%s.obj" % (self.name)): 
 			os.system("rm -f %s.obj" % (self.name)) 
 		else: pass 
+		file = open("%s.obj" % (self.name), "wb") 
 		if callable(self.obj): 
 			if "dill" in sys.modules: 
 				try: 
-					pickle.dump(self.obj, open("%s.obj" % (self.name), "wb")) 
+					pickle.dump(self.obj, file) 
 				except: 
 					warnings.warn("""\
 Could not pickle function. The following attribute will not be saved with \
 this output: %s""" % (self.name), UserWarning) 
 					os.system("rm -f %s.obj" % (self.name)) 
-					pickle.dump(None, open("%s.obj" % (self.name), "wb")) 
+					pickle.dump(None, file) 
 			else: 
 				warnings.warn("""\
 Encoding functions along with VICE outputs requires the package dill \
 (installable via pip). The following attribute will not be saved with this \
 output: %s""" % (self.name), UserWarning) 
 				try: 
-					pickle.dump(self._default, open("%s.obj" % (self.name), 
-						"wb")) 
+					pickle.dump(self._default, file) 
 				except: 
 					os.system("rm -f %s.obj" % (self.name)) 
-					pickle.dump(None, open("%s.obj" % (self.name), "wb")) 
+					pickle.dump(None, file) 
 		else: 
 			try: 
-				pickle.dump(self.obj, open("%s.obj" % (self.name), "wb")) 
+				pickle.dump(self.obj, file) 
 			except: 
 				warnings.warn("""Could not save object %s with this VICE \
 output.""" % (self.name), UserWarning) 
 				os.system("rm -f %s.obj" % (self.name)) 
-				pickle.dump(None, open("%s.obj" % (self.name), "wb")) 
+				pickle.dump(None, file) 
+		file.close() 
 
 	@staticmethod 
 	def from_pickle(filename): 
@@ -361,7 +362,11 @@ output.""" % (self.name), UserWarning)
 		if isinstance(filename, strcomp): 
 			if os.path.exists(filename): 
 				try: 
-					return pickle.load(open(filename, "rb")) 
+					file = open(filename, "rb") 
+					obj = pickle.load(file) 
+					file.close() 
+					return obj 
+					# return pickle.load(open(filename, "rb")) 
 				except: 
 					raise IOError("Could not unpickle file: %s" % (filename)) 
 			else: 

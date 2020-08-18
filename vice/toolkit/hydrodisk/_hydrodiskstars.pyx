@@ -41,7 +41,8 @@ cdef class c_hydrodiskstars:
 
 		# allocate memory for hydrodiskstars object in C and import the data 
 		self._hds = _hydrodiskstars.hydrodiskstars_initialize() 
-		datafile = "%stoolkit/hydrodisk/data/UWhydro.dat" % (_DIRECTORY_) 
+		datafile = "%stoolkit/hydrodisk/data/UWhydro_highres.dat" % (
+			_DIRECTORY_) 
 		if not _hydrodiskstars.hydrodiskstars_import(self._hds, 
 			datafile.encode("latin-1"), 
 			<unsigned short> idcolumn, 
