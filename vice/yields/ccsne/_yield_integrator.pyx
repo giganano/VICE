@@ -362,7 +362,10 @@ callable object. Got: %s""" % (type(explodability)))
 		"CL04": 	35, 
 		"WW95": 	40, 
 		"NKT13": 	300 if MoverH == -float("inf") else 40, 
-		"S16/W18": 	120 
+		"S16/W18": 	120,
+		"S16/W18I": 	120,
+		"S16/W18F": 	120
+
 	} 
 
 	if m_upper > upper_mass_limits[study.upper()]: 
