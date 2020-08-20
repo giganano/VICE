@@ -153,7 +153,7 @@ static unsigned short hydrodiskstars_import_sub(HYDRODISKSTARS *hds,
 		/* Read in the data if the file is populated */ 
 		double **raw = read_square_ascii_file(filename); 
 		if (raw != NULL) {
-			
+
 			(*hds).n_stars += n_lines; 
 			if ((*hds).n_stars == n_lines) {
 				/* This is the first subsample import -> initialize the data */ 
@@ -177,6 +177,8 @@ static unsigned short hydrodiskstars_import_sub(HYDRODISKSTARS *hds,
 					(*hds).n_stars * sizeof(double)); 
 				hds -> birth_radii = (double *) realloc (hds -> birth_radii, 
 					(*hds).n_stars * sizeof(double)); 
+				hds -> final_radii = (double *) realloc (hds -> final_radii, 
+					(*hds).n_stars * sizeof(double)); 
 				hds -> zfinal = (double *) realloc (hds -> zfinal, 
 					(*hds).n_stars * sizeof(double)); 
 				hds -> v_rad = (double *) realloc (hds -> v_rad, 
@@ -193,13 +195,13 @@ static unsigned short hydrodiskstars_import_sub(HYDRODISKSTARS *hds,
 				/* The position of this star particle in the data */ 
 				unsigned long idx = (*hds).n_stars - n_lines + i; 
 				hds -> ids[idx] = raw[i][ids_column]; 
-				hds -> birth_times[i] = raw[i][birth_times_column]; 
-				hds -> birth_radii[i] = raw[i][birth_radii_column]; 
-				hds -> final_radii[i] = raw[i][final_radii_column]; 
-				hds -> zfinal[i] = raw[i][zfinal_column]; 
-				hds -> v_rad[i] = raw[i][v_radcolumn]; 
-				hds -> v_phi[i] = raw[i][v_phicolumn]; 
-				hds -> v_z[i] = raw[i][v_zcolumn]; 
+				hds -> birth_times[idx] = raw[i][birth_times_column]; 
+				hds -> birth_radii[idx] = raw[i][birth_radii_column]; 
+				hds -> final_radii[idx] = raw[i][final_radii_column]; 
+				hds -> zfinal[idx] = raw[i][zfinal_column]; 
+				hds -> v_rad[idx] = raw[i][v_radcolumn]; 
+				hds -> v_phi[idx] = raw[i][v_phicolumn]; 
+				hds -> v_z[idx] = raw[i][v_zcolumn]; 
 			} 
 
 			free(raw); 

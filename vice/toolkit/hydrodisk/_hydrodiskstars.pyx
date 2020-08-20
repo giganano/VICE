@@ -28,7 +28,7 @@ _END_TIME_ = 12.8
 _RECOGNIZED_MODES_ = ["linear", "sudden", "diffusion"] 
 
 # The number of star particles in the simulation 
-_N_STAR_PARTICLES_ = 6646790 
+_N_STAR_PARTICLES_ = 6510925 
 
 
 cdef class c_hydrodiskstars: 
@@ -142,7 +142,14 @@ particle ages.""" % (_END_TIME_), ScienceWarning)
 						if bin_ != -1: 
 							return bin_ 
 						else: 
-							raise ValueError("Radius out of bin range.") 
+							raise ValueError("""\
+Radius out of bin range. Relevant information: 
+Analog ID: %d 
+Zone of formation: %d 
+Time of formation: %.4e Gyr 
+Time in simulation: %.4e Gyr""" % (self.analog_data["id"][self.analog_index], 
+								zone, tform, time))
+							# raise ValueError("Radius out of bin range.")  
 				else: 
 					raise TypeError("""Time parameters must be numerical \
 values. Got: (%s, %s)""" % (type(tform), type(time))) 
