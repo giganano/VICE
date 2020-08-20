@@ -258,3 +258,35 @@ def is_ascii(pystr):
 	else: 
 		raise TypeError("Must be of type str. Got: %s" % (type(pystr))) 
 
+
+def format_time(seconds): 
+	r""" 
+	Convert a time in seconds into days, hours, minutes, and seconds. 
+
+	Parameters 
+	----------
+	seconds : float 
+		An amount of time in seconds. 
+
+	Returns 
+	-------
+	days : int 
+		The number of days in the specified time interval. 
+	hours : int 
+		The number of hours in excess of the number of days. 
+	minutes : int 
+		The number of minutes in excess of the number of hours. 
+	seconds : int 
+		The number of seconds in excess of the number of minutes. 
+	""" 
+	if isinstance(seconds, numbers.Number): 
+		days = seconds // (24 * 3600) 
+		seconds %= 24 * 3600 
+		hours = seconds // 3600 
+		seconds %= 3600 
+		minutes = seconds // 60 
+		seconds %= 60 
+		return [int(days), int(hours), int(minutes), int(seconds)] 
+	else: 
+		raise TypeError("Must be a real number. Got: %s" % (type(seconds))) 
+

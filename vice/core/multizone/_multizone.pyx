@@ -15,6 +15,7 @@ from ..pickles import jar
 from .. import _pyutils 
 import warnings 
 import numbers 
+import time 
 import sys 
 import os 
 if sys.version_info[:2] == (2, 7): 
@@ -316,7 +317,7 @@ migration.specs. Got: %s""" % (type(value)))
 			raise RuntimeError("""Sum of migration likelihoods for at least \
 zone and at least one timestep larger than 1.""") 
 		elif enrichment == 3: 
-			raise IOError("Couldn't save tracer particle data.") 
+			raise IOError("Couldn't save star particle data.") 
 		elif capture: 
 			return output(self.name) 
 		else: 
@@ -487,6 +488,7 @@ timesteps."""
 				self.migration.stars.write = True 
 			except: pass 
 
+		if self.verbose: start = time.time() # for printing the ETA 
 		for i in range(n): # for each timestep 
 			for j in range(self.n_zones): # for each zone 
 				for k in range(self.n_tracers): 
@@ -494,26 +496,52 @@ timesteps."""
 					if takes_keyword: kwargs["n"] = k 
 					zone_history = n * [j] 
 					if i <= n - _singlezone.BUFFER: 
-						""" 
-						For each timestep in the buffer, set the zone number 
-						according to the user specification at that time. 
-						""" 
-						zone_history[i:(n - _singlezone.BUFFER)] = [
-							self.migration.stars(j, 
-								i * self._mz[0].zones[0][0].dt, 
-								l, **kwargs) for l in eval_times[i:(n - 
-									_singlezone.BUFFER + 1)]
-						] 
+						if self.simple: 
+							""" 
+							This will set the analog star particle as necessary 
+							if using the hydrodiskstars object, then simply set 
+							the final zone number at the index that the 
+							copy_zone_history function assigns as the current 
+							zone number. 
+							""" 
+							self.migration.stars(j, i * self.zones[j].dt, 
+								i * self.zones[j].dt, **kwargs) 
+							final = self.migration.stars(j, 
+								i * self.zones[j].dt, i * self.zones[j].dt, 
+								**kwargs) 
+							if isinstance(final, numbers.Number): 
+								if final % 1 == 0: 
+									zone_history[n - _singlezone.BUFFER] = int(
+										final) 
+								else: 
+									raise ValueError("""\
+Zone number must always be an integer. Got: %g""" % (final)) 
+							else: 
+								raise TypeError("""\
+Zone number must always be an integer. Got: %s""" % (type(final))) 
 
-						""" 
-						For each timestep in the buffer, set the zone number 
-						according to the user specification at the actual 
-						final timestep. 
-						""" 
-						zone_history[-_singlezone.BUFFER:] = (
-							_singlezone.BUFFER) * [zone_history[-(
-								_singlezone.BUFFER + 1)]
-						] 
+						else: 
+							""" 
+							For each timestep in the buffer, set the zone 
+							number according to the user specification at that 
+							time. 
+							""" 
+							zone_history[i:(n - _singlezone.BUFFER)] = [
+								self.migration.stars(j, 
+									i * self._mz[0].zones[0][0].dt, 
+									l, **kwargs) for l in eval_times[i:(n - 
+										_singlezone.BUFFER + 1)]
+							] 
+
+							""" 
+							For each timestep in the buffer, set the zone 
+							number according to the user specification at the 
+							actual final timestep. 
+							""" 
+							zone_history[-_singlezone.BUFFER:] = (
+								_singlezone.BUFFER) * [zone_history[-(
+									_singlezone.BUFFER + 1)]
+							] 
 					else: 
 						""" 
 						For those that form in the buffer, set their zone 
@@ -522,13 +550,23 @@ timesteps."""
 						pass 
 
 					# error handling, then send it down to C 
-					self.check_zone_history(zone_history, i, j) 
-					zone_history = [int(l) for l in zone_history] 
+					if not self.simple: self.check_zone_history(
+						zone_history, i, j) 
 					self.copy_zone_history(zone_history, x, i, n) 
 					x += 1 # increment tracer particle index 
 			if self.verbose: 
-				sys.stdout.write("""Setting up star particles. \
-Progress: %.1f%%\r""" % (100 * (i + 1) / n)) 
+				# Estimate an ETA by linear extrapolation 
+				percentage = 100 * (i + 1) / n  
+				ETA = (100 - percentage) / percentage * (time.time() - start) 
+				days, hours, minutes, seconds = _pyutils.format_time(ETA) 
+				if days: 
+					ETA = "%d days %d:%d:%d" % (days, hours, minutes, 
+						int(seconds)) 
+				else: 
+					ETA = "%d:%d:%d" % (hours, minutes, int(seconds)) 
+				sys.stdout.write("""\
+Setting up star particles. Progress: %.2f%% | ETA: %s    \r""" % (percentage, 
+					ETA)) 
 				sys.stdout.flush() 
 			else: pass 
 		if self.verbose: sys.stdout.write("\n") 
@@ -557,16 +595,16 @@ Progress: %.1f%%\r""" % (100 * (i + 1) / n))
 			The zone number in which the tracer particle will form 
 		""" 
 		if not all(map(lambda x: isinstance(x, numbers.Number), zones)): 
-			raise TypeError("""Zone history for tracer particle mapped to \
+			raise TypeError("""Zone number for star particle mapped to \
 non-numerical value.""") 
 		elif not all(map(lambda x: x % 1 == 0, zones)): 
-			raise ValueError("""Zone history for tracer particle must be an \
+			raise ValueError("""Zone number for star particle must be an \
 integer.""") 
 		elif not all(map(lambda x: 0 <= x < self.n_zones, zones)): 
 			raise ValueError("""All zone numbers must be between 0 and \
 self.n_zones - 1 (inclusive).""") 
 		elif zones[timestep_origin] != zone_origin: 
-			raise ValueError("""Tracer particle's zone history, evaluated at \
+			raise ValueError("""Star particle's zone history, evaluated at \
 its time of formation, must equal its zone of origin.""") 
 		else: 
 			pass 
