@@ -95,6 +95,22 @@ class multizone(object):
 		Obtain a ``multizone`` object with the parameters of one that produced 
 		an output. 
 
+	Notes 
+	-----
+	POSIX operating systems by default limit the number of files open per 
+	process, though with administrator's privileges this number can be 
+	temporarily raised. For each simulation, VICE opens two files per zone, 
+	plus one to write the star particle information to, in addition to the 
+	python files it must import for overhead. Simulations with a particularly 
+	high number of zones will therefore require a relatively high number of 
+	files to be opened. The maximum number of files per process can be 
+	accessed by running ``ulimit -n`` in a bash terminal; users should be 
+	careful to ensure that this number is significantly higher than what is 
+	required for a given simulation. It is recommended that users run a coarse 
+	timestep, low star particle per timestep per zone version of higher 
+	resolution simulations before letting them run to ensure that errors like 
+	this do not arise when integration times are long. 
+
 	Example Code 
 	------------
 	>>> import vice 
