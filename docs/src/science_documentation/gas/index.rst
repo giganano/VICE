@@ -52,7 +52,19 @@ relation to the single-zone approximation. This is implemented as a power-law:
 where :math:`M_{g,\text{Schmidt}}` is a normalizing gas supply and 
 :math:`\tau_{\star,\text{spec}}` is the user-specified :math:`\tau_\star`. 
 The ``singlezone`` object will employ this scaling when the attribute 
-``schmidt = True``. 
+``schmidt = True``. Users may also enforce a minimum value of 
+:math:`\tau_\star` by specifying a "critical" gas supply, above which the 
+value of :math:`\tau_\star` is constant, given by: 
+
+.. math:: \tau_\star^{-1} = \tau_{\star,\text{spec}}^{-1} 
+	\left(\frac{M_{g,\text{crit}}}{M_{g,\text{Schmidt}}}\right)^\alpha 
+	\; (M_g > M_{g,\text{crit}}) 
+
+The value of :math:`M_{g,\text{crit}}` is an attribute of the ``singlezone`` 
+object, and is only relevant when the attribute ``schmidt = True``. By default 
+it is infinite, implying a scaling of :math:`\tau_\star` with :math:`M_g` that 
+is a power-law always. The minimum value of :math:`\tau_\star` can be achieved 
+by simply assigning :math:`M_{g,\text{crit}}` to a finite value. 
 
 Relevant Source Code: 
 
