@@ -13,6 +13,7 @@ cdef extern from "../../src/objects.h":
 		double *tau_star 
 		double schmidt_index 
 		double mgschmidt 
+		double mgcrit 
 		double smoothing_time 
 		int schmidt 
 

@@ -47,6 +47,7 @@ def test():
 			_TEST_.test_dt_setter(), 
 			_TEST_.test_schmidt_setter(), 
 			_TEST_.test_mgschmidt_setter(), 
+			_TEST_.test_mgcrit_setter(), 
 			_TEST_.test_m_upper_setter(), 
 			_TEST_.test_m_lower_setter(), 
 			_TEST_.test_postMS_setter(), 
@@ -512,7 +513,7 @@ cdef class singlezone_tester:
 	def test_mgschmidt_setter(self): 
 		def test(): 
 			""" 
-			Tests the mgschnidt.setter function 
+			Tests the mgschmidt.setter function 
 
 			Returns 
 			======= 
@@ -525,6 +526,24 @@ cdef class singlezone_tester:
 				return False 
 			return True 
 		return ["vice.core.singlezone.MgSchmidt.setter", test] 
+
+
+	@unittest 
+	def test_mgcrit_setter(self): 
+		def test(): 
+			""" 
+			Tests the mgcrit.setter function 
+
+			Returns 
+			=======
+			1 on success, 0 on failure 
+			""" 
+			try: 
+				self.MgCrit = 5.e9 
+			except: 
+				return False 
+			return self._sz[0].ism[0].mgcrit == 5.e9 
+		return ["vice.core.singlezone.MgCrit.setter", test] 
 
 
 	@unittest 

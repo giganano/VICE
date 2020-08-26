@@ -214,6 +214,7 @@ typedef struct interstellar_medium {
 	 * schmidt_index: The power law index on Kennicutt-Schmidt Law driven star 
 	 * 		formation efficiency, if applicable. 
 	 * mgschmidt: The normalization of the Kennicutt-Schmidt Law, if applicable 
+	 * mgcrit: The gas mass in Msun above which the SFE timescale is constant 
 	 * smoothing_time: The outflow smoothing time 
 	 * schmidt: A boolean int describing whether or not to adopt 
 	 * 		Kennicutt-Schmidt law driven star formation efficiency. 
@@ -230,6 +231,7 @@ typedef struct interstellar_medium {
 	double *tau_star; 
 	double schmidt_index; 
 	double mgschmidt; 
+	double mgcrit; 
 	double smoothing_time; 
 	int schmidt; 
 

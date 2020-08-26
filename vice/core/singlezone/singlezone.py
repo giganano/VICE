@@ -122,7 +122,14 @@ class singlezone:
 		The power-law index of gas-dependent star formation efficiency. 
 	MgSchmidt : real umber [default : 6.0e+09] 
 		The normalization of the gas-supply when the attribute 
-		``schmidt`` == True. 
+		``schmidt = True``. 
+	MgCrit : real number [defalut : float("inf")] 
+		The value of the gas supply in :math:`M_\odot` above which the star 
+		formation efficiency timescale is constant. Only applies when the 
+		attribute ``schmidt = True``. 
+
+		.. versionadded:: 1.X.0 
+
 	m_upper : real number [default : 100] 
 		The upper mass limit on star formation in solar masses 
 	m_lower : real number [default : 0.08] 
@@ -146,7 +153,7 @@ class singlezone:
 		- "cristallo11" [4]_ 
 		- "karakas10" [5]_ 
 
-		.. deprecated:: 1.2 
+		.. deprecated:: 1.X.0 
 			Users should instead modify their AGB star yield settings through 
 			``vice.yields.agb.settings``. Users may specify either a built-in 
 			study or a function of stellar mass and metallicity. 
@@ -646,7 +653,7 @@ ran.""" % (i, j), UserWarning)
 
 			All versions of VICE support the simulation of all 76 
 			astrophysically produced elements between carbon ("c") and 
-			bismuth ("bi"). Versions >= 1.2.0 also support helium ("he"). 
+			bismuth ("bi"). Versions >= 1.1.0 also support helium ("he"). 
 
 		.. note:: 
 
@@ -685,8 +692,8 @@ ran.""" % (i, j), UserWarning)
 
 		Default : "kroupa" 
 
-		.. versionadded:: 1.2
-			In versions >= 1.2.0, users may construct a function of mass to 
+		.. versionadded:: 1.X
+			In versions >= 1.X.0, users may construct a function of mass to 
 			describe the IMF. 
 
 		The assumed stellar initial mass function (IMF). If assigned a string, 
@@ -1303,16 +1310,23 @@ ran.""" % (i, j), UserWarning)
 		each timestep, the star formation efficiency timescale is determined 
 		via: 
 
-		.. math:: \tau_*(t) = \tau_{*,\text{specified}}(t) 
+		.. math:: \tau_\star(t) = \tau_{\star,\text{specified}}(t) 
 			\left(
 			\frac{M_g}{M_{g,\text{Schmidt}}} 
 			\right)^{-\alpha} 
 
-		where :math:`\tau_{*,\text{specified}}(t)` is the value of the attribute 
-		``tau_star``, :math:`M_g` is the mass of the interstellar medium, 
-		:math:`M_{g,\text{Schmidt}}` the normalization thereof (attribute 
-		``MgSchmidt``), and :math:`\alpha` the power-law index set by the 
-		attribute ``schmidt_index``. 
+		where :math:`\tau_{*,\text{specified}}(t)` is the value of the 
+		attribute ``tau_star``, :math:`M_g` is the mass of the interstellar 
+		medium, :math:`M_{g,\text{Schmidt}}` the normalization thereof 
+		(attribute ``MgSchmidt``), and :math:`\alpha` the power-law index set 
+		by the attribute ``schmidt_index``. When the gas mass exceeds the 
+		attribute ``MgCrit`` (infinite by default), the SFE timescale reaches 
+		its minimum value: 
+
+		.. math:: \tau_\star(t) = \tau_{\star,\text{specified}}(t) 
+			\left(
+			\frac{M_{g,crit}}{M_{g,\text{Schmidt}}} 
+			\right)^{-\alpha} 
 
 		This is an application of the Kennicutt-Schmidt star formation law 
 		to the single-zone approximation (Kennicutt 1998 [1]_; Schmidt 1959 
@@ -1325,6 +1339,7 @@ ran.""" % (i, j), UserWarning)
 			- vice.singlezone.tau_star 
 			- vice.singlezone.schmidt_index 
 			- vice.singlezone.MgSchmidt 
+			- vice.singlezone.MgCrit 
 
 		Example Code 
 		------------
@@ -1353,10 +1368,12 @@ ran.""" % (i, j), UserWarning)
 		The normalization of the gas supply in :math:`M_\odot` when star 
 		formation efficiency is dependent on the gas supply: 
 
-		.. math:: \tau_* \sim 
+		.. math:: \tau_\star \sim 
 			\left(\frac{M_g}{M_{g,\text{Schmidt}}}\right)^{-\alpha} 
 
 		where :math:`\alpha` is specified by the attribute ``schmidt_index``. 
+		The value of :math:`\tau_\star` reaches a minimum value when the 
+		value of the attribute ``MgCrit`` is finite (infinite by default). 
 
 		.. tip:: 
 
@@ -1368,6 +1385,7 @@ ran.""" % (i, j), UserWarning)
 			- vice.singlezone.tau_star 
 			- vice.singlezone.schmidt 
 			- vice.singlezone.schmidt_index 
+			- vice.singlezone.MgCrit 
 
 		Example Code 
 		------------
@@ -1380,6 +1398,45 @@ ran.""" % (i, j), UserWarning)
 	@MgSchmidt.setter 
 	def MgSchmidt(self, value): 
 		self.__c_version.MgSchmidt = value 
+
+	@property 
+	def MgCrit(self): 
+		r""" 
+		Type : real number 
+
+		Default : float('inf') 
+
+		The "critical" gas mass in :math:`M_\odot` above which the star 
+		formation efficiency timescale :math:`\tau_\star` is constant. It will 
+		reach a minimum value given by: 
+
+		.. math:: \tau_\star = \tau_{\star,\text{\specified}}(t)\left(
+			\frac{M_{g,\text{crit}}}{M_{g,\text{Schmidt}}} 
+			\right)^{-\alpha} 
+
+		where :math:`\tau_\star(t)` is the value of the user-specified 
+			attribute ``tau_star`` at a time :math:`t` in Gyr. 
+
+		.. note:: This parameter is only relevant when the attribute 
+			``schmidt = True``.  
+
+		.. seealso:: 
+			- vice.singlezone.tau_star 
+			- vice.singlezone.schmidt 
+			- vice.singlezone.schmidt_index 
+			- vice.singlezone.MgSchmidt 
+
+		Example Code 
+		------------
+		>>> import vice
+		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.MgCrit = 5.0e+09 
+		""" 
+		return self.__c_version.MgCrit 
+
+	@MgCrit.setter 
+	def MgCrit(self, value): 
+		self.__c_version.MgCrit = value 
 
 	@property 
 	def schmidt_index(self): 
@@ -1534,7 +1591,7 @@ ran.""" % (i, j), UserWarning)
 
 		Default : None 
 
-		.. deprecated:: 1.2.0 
+		.. deprecated:: 1.X.0 
 			Users should instead use the ``vice.yields.agb.settings`` 
 			``dataframe`` to declare their yields. These allow the same 
 			keywords as this attribute as well as user-constructed functions 

@@ -123,6 +123,7 @@ cdef class c_singlezone:
 		dt = 0.01, 
 		schmidt = False, 
 		MgSchmidt = 6.0e9, 
+		MgCrit = float("inf"), 
 		schmidt_index = 0.5, 
 		m_upper = 100, 
 		m_lower = 0.08, 
@@ -159,6 +160,7 @@ cdef class c_singlezone:
 		self.dt = dt 
 		self.schmidt = schmidt 
 		self.MgSchmidt = MgSchmidt 
+		self.MgCrit = MgCrit 
 		self.schmidt_index = schmidt_index 
 		self.m_upper = m_upper 
 		self.m_lower = m_lower 
@@ -1056,6 +1058,35 @@ definite. Got: %g""" % (value))
 		else: 
 			raise TypeError("""Attribute 'MgSchmidt' must be a numerical \
 value. Got: %s""" % (type(value))) 
+
+	@property 
+	def MgCrit(self): 
+		# docstring in python version 
+		return self._sz[0].ism[0].mgcrit 
+
+	@MgCrit.setter 
+	def MgCrit(self, value): 
+		""" 
+		Gas mass above which the star formation efficiency timescale is 
+		constant. 
+
+		Allowed Types 
+		=============
+		real number 
+
+		Allowed Values 
+		==============
+		> 0 
+		""" 
+		if isinstance(value, numbers.Number): 
+			if value > 0: 
+				self._sz[0].ism[0].mgcrit = value 
+			else: 
+				raise ValueError("""Attribute 'MgCrit' must be positive \
+definite. Got: %g""" % (value)) 
+		else: 
+			raise TypeError("""Attribute 'MgCrit' must be a numerical value. \
+Got: %s""" % (type(value))) 
 
 	@property
 	def m_upper(self): 

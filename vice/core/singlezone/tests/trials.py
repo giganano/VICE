@@ -9,6 +9,7 @@ __all__ = [
 ]
 from ....testing import moduletest 
 from ....testing import unittest 
+from ...outputs import output 
 from ..singlezone import singlezone 
 import math 
 try: 
@@ -49,13 +50,21 @@ class generator:
 
 	def __init__(self, **kwargs): 
 		self._sz = singlezone(name = "test", dt = 0.05, **kwargs) 
+		if self._sz.schmidt: self._sz.MgCrit = self._sz.MgSchmidt 
 
 	def __call__(self): 
 		try: 
 			self._sz.run(_OUTTIMES_, overwrite = True) 
 		except: 
 			return False 
-		return True 
+		status = True 
+		if self._sz.schmidt: 
+			out = output("test") 
+			tau_star = list(map(lambda x, y: 1.e-9 * x / y, 
+				out.history["mgas"], out.history["sfr"])) 
+			status &= all(map(lambda x: x >= self._sz.tau_star, tau_star)) 
+		else: pass 
+		return status 
 
 
 @moduletest 

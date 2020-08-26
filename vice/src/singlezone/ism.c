@@ -188,8 +188,21 @@ extern double get_SFE_timescale(SINGLEZONE sz, unsigned short setup) {
 	setup = 1 - setup; 
 	if ((*sz.ism).schmidt) { 
 		/* Single-zone implementation of Kennicutt-Schmidt Law */ 
-		return ((*sz.ism).tau_star[sz.timestep + setup] * pow((*sz.ism).mass / 
-			(*sz.ism).mgschmidt, -(*sz.ism).schmidt_index)); 
+		double star_forming_mass; 
+		if ((*sz.ism).mass > (*sz.ism).mgcrit) {
+			/* SFE timescale has reached its minimum value */ 
+			star_forming_mass = (*sz.ism).mgcrit; 
+		} else {
+			star_forming_mass = (*sz.ism).mass; 
+		} 
+
+		return (
+			(*sz.ism).tau_star[sz.timestep + setup] * pow(star_forming_mass / 
+				(*sz.ism).mgschmidt, -(*sz.ism).schmidt_index) 
+		); 
+		// return ((*sz.ism).tau_star[sz.timestep + setup] * 
+		// 	pow((*sz.ism).mass / (*sz.ism).mgschmidt, 
+		// 		-(*sz.ism).schmidt_index)); 
 	} else { 
 		/* Instantaneous star formation efficiency */ 
 		return (*sz.ism).tau_star[sz.timestep + setup]; 
@@ -228,11 +241,31 @@ extern double get_ism_mass_SFRmode(SINGLEZONE sz, unsigned short setup) {
 
 	setup = 1 - setup; 
 	if ((*sz.ism).schmidt) { 
-		return pow( 
-			(*sz.ism).star_formation_rate * 
-			(*sz.ism).tau_star[sz.timestep + setup] * 
-			pow((*sz.ism).mgschmidt, (*sz.ism).schmidt_index), 
-			1 / (1 + (*sz.ism).schmidt_index)); 
+		/* The minimum implied by the critical gas mass */ 
+		double minimum_tau_star = (
+			(*sz.ism).tau_star[sz.timestep + setup] * pow(
+				(*sz.ism).mgcrit / (*sz.ism).mgschmidt, 
+				-(*sz.ism).schmidt_index
+			) 
+		); 
+		/* The value implied by the current star formation rate */ 
+		double tau_star = (
+			pow(
+				(*sz.ism).tau_star[sz.timestep + setup], 
+				1 / (1 + (*sz.ism).schmidt_index)
+			) * pow(
+				(*sz.ism).star_formation_rate / (*sz.ism).mgschmidt, 
+				-(*sz.ism).schmidt_index / (1 + (*sz.ism).schmidt_index) 
+			) 
+		); 
+		/* Enforce the floor implied by the critical gas mass */ 
+		if (tau_star < minimum_tau_star) tau_star = minimum_tau_star; 
+		return (*sz.ism).star_formation_rate * tau_star; 
+		// return pow( 
+		// 	(*sz.ism).star_formation_rate * 
+		// 	(*sz.ism).tau_star[sz.timestep + setup] * 
+		// 	pow((*sz.ism).mgschmidt, (*sz.ism).schmidt_index), 
+		// 	1 / (1 + (*sz.ism).schmidt_index)); 
 	} else {
 		return ((*sz.ism).star_formation_rate * 
 			(*sz.ism).tau_star[sz.timestep + setup]); 
