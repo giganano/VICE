@@ -60,7 +60,8 @@ class generator:
 		status = True 
 		if self._sz.schmidt: 
 			out = output("test") 
-			tau_star = list(map(lambda x, y: 1.e-9 * x / y, 
+			tau_star = list(map(
+				lambda x, y: 1.e-9 * x / y if y else float('inf'), 
 				out.history["mgas"], out.history["sfr"])) 
 			status &= all(map(lambda x: x >= self._sz.tau_star, tau_star)) 
 		else: pass 
