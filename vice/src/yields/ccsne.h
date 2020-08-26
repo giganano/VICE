@@ -9,6 +9,31 @@ extern "C" {
 #include "../objects.h" 
 
 /* 
+ * Weight the initial composition of each star by explodability. This ensures 
+ * that net yields are not reported as negative when the study did not 
+ * separate wind and explosive yields. 
+ * 
+ * Parameters 
+ * ==========
+ * 1 to weight the initial composition by explodability, 0 to not. 
+ * 
+ * source: ccsne.c 
+ */ 
+extern void weight_initial_by_explodability(unsigned short weight); 
+
+/* 
+ * Set the value of the progenitor stars abundance by mass Z_x for the element 
+ * x whose net yield is being calculated. 
+ * 
+ * Parameters 
+ * ==========
+ * Z: 		The initial abundance Z_x itself 
+ * 
+ * source: ccsne.c 
+ */ 
+extern void set_Z_progenitor(double Z); 
+
+/* 
  * Determine the value of the integrated IMF weighted by the mass yield of a 
  * given element, up to the normalization of the IMF. 
  * 

@@ -32,12 +32,52 @@ static double y_cc_denominator(double m);
  * MASS_RANGES: 	Stellar initial mass ranges passed from the user for 
  * 					stellar explodability prescription 
  * EXPLODABILITY: 	The fractions of stars that explode in those mass ranges 
+ * Z_PROGENITOR: 	Z_x of the progenitor stars for the element x. 
+ * WEIGHT_INITIAL: 	A boolean int describing whether or not to weight the 
+ * 					initial composition by explodability 
  */
 static double **GRID; 
 static double **WIND; 
 static unsigned int GRIDSIZE = 0; 
 static IMF_ *IMF = NULL; 
 static CALLBACK_1ARG *EXPLODABILITY = NULL; 
+static double Z_PROGENITOR; 
+static unsigned short WEIGHT_INITIAL; 
+
+
+/* 
+ * Weight the initial composition of each star by explodability. This ensures 
+ * that net yields are not reported as negative when the study did not 
+ * separate wind and explosive yields. 
+ * 
+ * Parameters 
+ * ==========
+ * 1 to weight the initial composition by explodability, 0 to not. 
+ * 
+ * header: ccsne.h 
+ */ 
+extern void weight_initial_by_explodability(unsigned short weight) {
+
+	WEIGHT_INITIAL = weight; 
+
+} 
+
+
+/* 
+ * Set the value of the progenitor stars abundance by mass Z_x for the element 
+ * x whose net yield is being calculated. 
+ * 
+ * Parameters 
+ * ==========
+ * Z: 		The initial abundance Z_x itself 
+ * 
+ * header: ccsne.h 
+ */ 
+extern void set_Z_progenitor(double Z) {
+
+	Z_PROGENITOR = Z; 
+
+}
 
 
 /* 
@@ -169,14 +209,22 @@ static double interpolate_yield(double m) {
 	if (m < CC_MIN_STELLAR_MASS) { 
 		return 0; 
 	} else { 
+
+		/* 
+		 * The corrective term to subtract that accounts for initial abundances 
+		 * in calculating net yields 
+		 */ 
+		double initial = Z_PROGENITOR * m; 
+		if (WEIGHT_INITIAL) initial *= callback_1arg_evaluate(
+			*EXPLODABILITY, m); 
+
 		unsigned int i; 
-		// double explosion_fraction = get_explodability_fraction(m); 
 		for (i = 0; i < GRIDSIZE; i++) {
 			/* if the mass itself is on the grid, just return that yield */ 
 			if (m == GRID[i][0]) {
 				return (
 					callback_1arg_evaluate(*EXPLODABILITY, m) * GRID[i][1] + 
-					WIND[i][1] 
+					WIND[i][1] - initial 
 				); 
 			} else { 
 				continue; 
@@ -193,7 +241,8 @@ static double interpolate_yield(double m) {
 					interpolate(GRID[i][0], GRID[i + 1][0], GRID[i][1], 
 						GRID[i + 1][1], m) + 
 					interpolate(WIND[i][0], WIND[i + 1][0], WIND[i][1], 
-						WIND[i + 1][1], m) 
+						WIND[i + 1][1], m) - 
+					initial 
 				); 
 			} else { 
 				continue; 
@@ -210,7 +259,8 @@ static double interpolate_yield(double m) {
 			interpolate(GRID[GRIDSIZE - 2][0], GRID[GRIDSIZE - 1][0], 
 				GRID[GRIDSIZE - 2][1], GRID[GRIDSIZE - 1][1], m) + 
 			interpolate(WIND[GRIDSIZE - 2][0], WIND[GRIDSIZE - 1][0], 
-				WIND[GRIDSIZE - 2][1], WIND[GRIDSIZE - 1][1], m) 
+				WIND[GRIDSIZE - 2][1], WIND[GRIDSIZE - 1][1], m) - 
+			initial 
 		); 
 	}
 

@@ -11,6 +11,7 @@ from ..._globals import _RECOGNIZED_IMFS_
 from ..._globals import _VERSION_ERROR_ 
 from ..._globals import ScienceWarning 
 from ...core.dataframe._builtin_dataframes import atomic_number 
+from ...core.dataframe import elemental_settings 
 from ...core.callback import callback1_nan_inf_positive 
 from ...core.callback import callback1_nan_inf 
 from ...core import _pyutils 
@@ -46,15 +47,16 @@ from . cimport _yield_integrator
 
 
 def integrate(element, study = "LC18", MoverH = 0, rotation = 0, 
-	explodability = None, wind = True, IMF = "kroupa", method = "simpson", 
-	m_lower = 0.08, m_upper = 100, tolerance = 1e-3, Nmin = 64, Nmax = 2e8): 
+	explodability = None, wind = True, net = False, IMF = "kroupa", 
+	method = "simpson", m_lower = 0.08, m_upper = 100, tolerance = 1e-3, 
+	Nmin = 64, Nmax = 2e8): 
 	
 	r""" 
 	Calculate an IMF-integrated fractional nucleosynthetic yield of a 
 	given element from core-collapse supernovae. 
 
 	**Signature**: vice.yields.ccsne.fractional(element, study = "LC18", 
-	MoverH = 0, rotation = 0, explodability = None, wind = True, 
+	MoverH = 0, rotation = 0, explodability = None, wind = True, net = True, 
 	IMF = "kroupa", method = "simpson", m_lower = 0.08, m_upper = 100, 
 	tolerance = 1.0e-03, Nmin = 64, Nmax = 2.0e+08) 
 
@@ -107,7 +109,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		parameter, and to return a number between 0 and 1 denoting the 
 		fraction of stars at that mass which explode as a CCSN. 
 
-		.. tip:: The S16 CCSN yield modules provides explosion engines as a 
+		.. tip:: The S16 CCSN yield module provides explosion engines as a 
 			function of mass as published in the Sukhbold et al. (2016) study. 
 
 	wind : bool [default : ``True``] 
@@ -120,12 +122,26 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			yields are not separable from explosive yields for other studies 
 			supported by this function. 
 
+		.. versionadded:: 1.X.0 
+
+	net : bool [default : ``True``] 
+		If True, the initial abundance of each simulated CCSN progenitor star 
+		will be subtracted from the gross yield to convert the reported value 
+		to a net yield. 
+
+		.. versionadded:: 1.X.0 
+
 	IMF : ``str`` [case-insensitive] or <function> [default : "kroupa"] 
 		The stellar initial mass function (IMF) to assume. Strings denote 
 		built-in IMFs, which must be either "Kroupa" [7]_ or "Salpeter" [8]_. 
 		Functions must accept stellar mass in :math:`M_\odot` as the only 
 		numerical paraneter and will be interpreted as a custom, arbitrary 
 		stellar IMF. 
+
+		.. versionadded:: 1.X.0 
+			Prior to version 1.X.0, functions of mass as custom stellar IMF 
+			were not supported. 
+
 	method : ``str`` [case-insensitive] [default : "simpson"] 
 		The method of quadrature. 
 
@@ -195,7 +211,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	This function evaluates the solution to the following equation. 
 
 	.. math:: y_x^\text{CC} = \frac{
-		\int_8^u (E(m)m_x + w_x) \frac{dN}{dm} dm 
+		\int_8^u (E(m)m_x + w_x - Z_{x,\text{prog}}m) \frac{dN}{dm} dm 
 		}{
 		\int_l^u m \frac{dN}{dm} dm 
 		}
@@ -203,7 +219,10 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	where :math:`E(m)` is the stellar explodability for progenitors of initial 
 	mass :math:`m`, :math:`m_x` is the mass of the element :math:`x` produced 
 	in the explosion, :math:`w_x` is the mass of the element :math:`x` ejected 
-	in the wind, and :math:`dN/dm` is the assumed stellar IMF. 
+	in the wind, :math:`dN/dm` is the assumed stellar IMF, and 
+	:math:`Z_{x,\text{prog}}` is the abundance by mass of the element :math:`x` 
+	in the CCSN progenitor stars. If the keyword arg ``net = False``, 
+	:math:`Z_{x,\text{prog}}` is simply set to zero to calculate a gross yield. 
 
 	.. note:: Explodability criteria will be overspecified when calculating 
 		yields from the Limongi & Chieffi (2018) study, in which stars above 
@@ -423,6 +442,19 @@ own discretion by modifying their CCSN yield settings directly.""" % (
 	else: 
 		pass 
 
+	if net: 
+		zprog = initial_abundances(
+			"%syields/ccsne/%s/FeH%s/birth_composition.dat" % (
+				_DIRECTORY_, study.upper(), MoverHstr)) 
+		_yield_integrator.set_Z_progenitor(zprog[element.lower()]) 
+		if study.upper() not in ["S16/W18", "S16/W18F", "S16/W18I", "LC18"]: 
+			_yield_integrator.weight_initial_by_explodability(1) 
+		else: 
+			_yield_integrator.weight_initial_by_explodability(0) 
+	else: 
+		_yield_integrator.set_Z_progenitor(0) 
+		_yield_integrator.weight_initial_by_explodability(0) 
+
 	# Compute the yield 
 	cdef INTEGRAL *num = _integral.integral_initialize() 
 	num[0].a = m_lower 
@@ -445,7 +477,7 @@ Estimated fractional error: %.2e""" % (num[0].error), ScienceWarning)
 	finally: 
 		numerator = [num[0].result, num[0].error, num[0].iters] 
 		_integral.integral_free(num) 
-		callback_1arg_free(explodability_cb) 
+		callback_1arg_free(explodability_cb)  
 
 
 	cdef INTEGRAL *den = _integral.integral_initialize() 
@@ -477,4 +509,29 @@ Estimated fractional error: %.2e""" % (den[0].error), ScienceWarning)
 		denominator[0]**4 * errden**2) 
 
 	return [y, err] 
+
+
+def initial_abundances(filename): 
+	r""" 
+	Read in the table containing the initial abundances of each element. 
+
+	Parameters 
+	----------
+	filename : str 
+		The full path to the file containing the initial abundances 
+
+	Returns 
+	-------
+	zprog : elemental_settings 
+		A dataframe mapping elemental symbols to the initial abundance. 
+	""" 
+	zprog = elemental_settings({}) 
+	with open(filename, 'r') as f: 
+		line = f.readline() 
+		while line != "": 
+			element, Z = line.split() 
+			zprog[element.lower()] = float(Z) 
+			line = f.readline() 
+		f.close() 
+	return zprog 
 
