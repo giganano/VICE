@@ -28,7 +28,7 @@ _END_TIME_ = 12.8
 _RECOGNIZED_MODES_ = ["linear", "sudden", "diffusion"] 
 
 # The number of star particles in the simulation 
-_N_STAR_PARTICLES_ = 6510925 
+_N_STAR_PARTICLES_ = 1017612 
 
 
 cdef class c_hydrodiskstars: 
@@ -40,7 +40,7 @@ cdef class c_hydrodiskstars:
 
 	def __cinit__(self, radbins, N = 1e5, idcolumn = 0, tformcolumn = 1, 
 		rformcolumn = 2, rfinalcolumn = 3, zfinalcolumn = 4, 
-		v_radcolumn = 5, v_phicolumn = 6, v_zcolumn = 7): 
+		v_radcolumn = 5, v_phicolumn = 6, v_zcolumn = 7, decomp_column = 8): 
 
 		# allocate memory for hydrodiskstars object in C and import the data 
 		self._hds = _hydrodiskstars.hydrodiskstars_initialize() 
@@ -66,7 +66,8 @@ will oversample these data.""" % (_N_STAR_PARTICLES_), ScienceWarning)
 					<unsigned short> zfinalcolumn, 
 					<unsigned short> v_radcolumn, 
 					<unsigned short> v_phicolumn, 
-					<unsigned short> v_zcolumn): 
+					<unsigned short> v_zcolumn, 
+					<unsigned short> decomp_column): 
 					# raise IOError("Could not read file: %s" % (datafile)) 
 					raise SystemError("Internal Error.") 
 				else: 
@@ -99,6 +100,8 @@ will oversample these data.""" % (_N_STAR_PARTICLES_), ScienceWarning)
 			"vphi": 	[self._hds[0].v_phi[i] for i in range(
 				self._hds[0].n_stars)], 
 			"vz": 		[self._hds[0].v_z[i] for i in range(
+				self._hds[0].n_stars)], 
+			"decomp": 	[self._hds[0].decomp[i] for i in range(
 				self._hds[0].n_stars)] 
 		}) 
 

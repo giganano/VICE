@@ -242,30 +242,34 @@ extern double get_ism_mass_SFRmode(SINGLEZONE sz, unsigned short setup) {
 	setup = 1 - setup; 
 	if ((*sz.ism).schmidt) { 
 		/* The minimum implied by the critical gas mass */ 
-		double minimum_tau_star = (
-			(*sz.ism).tau_star[sz.timestep + setup] * pow(
-				(*sz.ism).mgcrit / (*sz.ism).mgschmidt, 
-				-(*sz.ism).schmidt_index
-			) 
-		); 
-		/* The value implied by the current star formation rate */ 
-		double tau_star = (
-			pow(
-				(*sz.ism).tau_star[sz.timestep + setup], 
-				1 / (1 + (*sz.ism).schmidt_index)
-			) * pow(
-				(*sz.ism).star_formation_rate / (*sz.ism).mgschmidt, 
-				-(*sz.ism).schmidt_index / (1 + (*sz.ism).schmidt_index) 
-			) 
-		); 
-		/* Enforce the floor implied by the critical gas mass */ 
-		if (tau_star < minimum_tau_star) tau_star = minimum_tau_star; 
-		return (*sz.ism).star_formation_rate * tau_star; 
-		// return pow( 
-		// 	(*sz.ism).star_formation_rate * 
-		// 	(*sz.ism).tau_star[sz.timestep + setup] * 
-		// 	pow((*sz.ism).mgschmidt, (*sz.ism).schmidt_index), 
-		// 	1 / (1 + (*sz.ism).schmidt_index)); 
+		if ((*sz.ism).star_formation_rate) { 
+			double minimum_tau_star = (
+				(*sz.ism).tau_star[sz.timestep + setup] * pow(
+					(*sz.ism).mgcrit / (*sz.ism).mgschmidt, 
+					-(*sz.ism).schmidt_index
+				) 
+			); 
+			/* The value implied by the current star formation rate */ 
+			double tau_star = (
+				pow(
+					(*sz.ism).tau_star[sz.timestep + setup], 
+					1 / (1 + (*sz.ism).schmidt_index)
+				) * pow(
+					(*sz.ism).star_formation_rate / (*sz.ism).mgschmidt, 
+					-(*sz.ism).schmidt_index / (1 + (*sz.ism).schmidt_index) 
+				) 
+			); 
+			/* Enforce the floor implied by the critical gas mass */ 
+			if (tau_star < minimum_tau_star) tau_star = minimum_tau_star; 
+			return (*sz.ism).star_formation_rate * tau_star; 
+			// return pow( 
+			// 	(*sz.ism).star_formation_rate * 
+			// 	(*sz.ism).tau_star[sz.timestep + setup] * 
+			// 	pow((*sz.ism).mgschmidt, (*sz.ism).schmidt_index), 
+			// 	1 / (1 + (*sz.ism).schmidt_index)); 
+		} else { 
+			return 0; 
+		}
 	} else {
 		return ((*sz.ism).star_formation_rate * 
 			(*sz.ism).tau_star[sz.timestep + setup]); 

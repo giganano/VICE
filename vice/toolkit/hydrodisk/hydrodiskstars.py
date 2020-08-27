@@ -35,7 +35,7 @@ class hydrodiskstars:
 		In practice, this number should be slightly larger than the number of 
 		(relevant) stellar populations simulated by a multizone model. 
 
-		.. note:: There are 6,646,790 star particles available for this 
+		.. note:: There are 1,017,612 star particles available for this 
 			object. Any more stellar populations than this would oversample 
 			these data. 
 
@@ -84,7 +84,7 @@ class hydrodiskstars:
 	* ScienceWarning 
 		- This object is called with a time larger than 12.8 Gyr 
 		- The number of analog star particles requested is larger than the 
-		  number available from the hydrodynamical simulation (6,646,790) 
+		  number available from the hydrodynamical simulation (1,017,612) 
 
 	Notes 
 	-----

@@ -535,6 +535,7 @@ typedef struct hydrodiskstars {
 	double *v_phi; 
 	double *v_z; 
 	double *rad_bins; 
+	unsigned short *decomp; 
 	unsigned short n_rad_bins; 
 
 } HYDRODISKSTARS; 

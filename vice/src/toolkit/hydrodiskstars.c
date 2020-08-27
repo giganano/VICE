@@ -17,13 +17,13 @@ static unsigned short hydrodiskstars_import_sub(HYDRODISKSTARS *hds,
 	unsigned short birth_times_column, unsigned short birth_radii_column, 
 	unsigned short final_radii_column, unsigned short zfinal_column, 
 	unsigned short v_radcolumn, unsigned short v_phicolumn, 
-	unsigned short v_zcolumn); 
+	unsigned short v_zcolumn, unsigned short decomp_column); 
 static unsigned long candidate_search(HYDRODISKSTARS hds, double birth_radius, 
 	double birth_time, unsigned long **candidates, double max_radius, 
 	double max_time); 
 
 /* The number of subsample files present in the code base */ 
-static unsigned short NSUBS = 68u; 
+static unsigned short NSUBS = 10u; 
 
 
 /* 
@@ -55,7 +55,7 @@ extern unsigned short hydrodiskstars_import(HYDRODISKSTARS *hds,
 	unsigned short birth_times_column, unsigned short birth_radii_column, 
 	unsigned short final_radii_column, unsigned short zfinal_column, 
 	unsigned short v_radcolumn, unsigned short v_phicolumn, 
-	unsigned short v_zcolumn) {
+	unsigned short v_zcolumn, unsigned short decomp_column) {
 
 	/* 
 	 * Bookkeeping 
@@ -65,7 +65,8 @@ extern unsigned short hydrodiskstars_import(HYDRODISKSTARS *hds,
 	 * included: 	The subsamples already imported 
 	 */ 
 	unsigned short status = 1u, n = 0; 
-	unsigned short *included = (unsigned short *) malloc (sizeof(unsigned short)); 
+	unsigned short *included = (unsigned short *) malloc (
+		sizeof(unsigned short)); 
 	do {
 		/* Find which subsample to import */ 
 		unsigned short subsample; 
@@ -82,7 +83,7 @@ extern unsigned short hydrodiskstars_import(HYDRODISKSTARS *hds,
 		sprintf(filename, "%s_sub%u.dat", filestem, subsample); 
 		status &= hydrodiskstars_import_sub(hds, filename, ids_column, 
 			birth_times_column, birth_radii_column, final_radii_column, 
-			zfinal_column, v_radcolumn, v_phicolumn, v_zcolumn); 
+			zfinal_column, v_radcolumn, v_phicolumn, v_zcolumn, decomp_column); 
 		free(filename); 
 	} while ((*hds).n_stars < Nstars && status); 
 	free(included); 
@@ -142,7 +143,7 @@ static unsigned short hydrodiskstars_import_sub(HYDRODISKSTARS *hds,
 	unsigned short birth_times_column, unsigned short birth_radii_column, 
 	unsigned short final_radii_column, unsigned short zfinal_column, 
 	unsigned short v_radcolumn, unsigned short v_phicolumn, 
-	unsigned short v_zcolumn) {
+	unsigned short v_zcolumn, unsigned short decomp_column) {
 
 	unsigned long n_lines = (unsigned long) (
 		line_count(filename) - header_length(filename) 
@@ -169,6 +170,8 @@ static unsigned short hydrodiskstars_import_sub(HYDRODISKSTARS *hds,
 				hds -> v_rad = (double *) malloc (n_lines * sizeof(double)); 
 				hds -> v_phi = (double *) malloc (n_lines * sizeof(double)); 
 				hds -> v_z = (double *) malloc (n_lines * sizeof(double)); 
+				hds -> decomp = (unsigned short *) malloc (n_lines * 
+					sizeof(unsigned short)); 
 			} else {
 				/* This is not the first subsample import -> extend the data */ 
 				hds -> ids = (unsigned long *) realloc (hds -> ids, 
@@ -187,6 +190,8 @@ static unsigned short hydrodiskstars_import_sub(HYDRODISKSTARS *hds,
 					(*hds).n_stars * sizeof(double)); 
 				hds -> v_z = (double *) realloc (hds -> v_z, 
 					(*hds).n_stars * sizeof(double)); 
+				hds -> decomp = (unsigned short *) realloc (hds -> decomp, 
+					(*hds).n_stars * sizeof(unsigned short)); 
 			} 
 
 			/* Copy it over */ 
@@ -202,6 +207,7 @@ static unsigned short hydrodiskstars_import_sub(HYDRODISKSTARS *hds,
 				hds -> v_rad[idx] = raw[i][v_radcolumn]; 
 				hds -> v_phi[idx] = raw[i][v_phicolumn]; 
 				hds -> v_z[idx] = raw[i][v_zcolumn]; 
+				hds -> decomp[idx] = raw[i][decomp_column]; 
 			} 
 
 			free(raw); 

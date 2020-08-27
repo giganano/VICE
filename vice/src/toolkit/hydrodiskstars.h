@@ -73,7 +73,7 @@ extern unsigned short hydrodiskstars_import(HYDRODISKSTARS *hds,
 	unsigned short birth_times_column, unsigned short birth_radii_column, 
 	unsigned short final_radii_column, unsigned short zfinal_column, 
 	unsigned short v_radcolumn, unsigned short v_phicolumn, 
-	unsigned short v_zcolumn); 
+	unsigned short v_zcolumn, unsigned short decomp_column); 
 
 /* 
  * Find an analog star particle from the hydrodynamical simulation given a 

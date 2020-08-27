@@ -25,6 +25,7 @@ extern HYDRODISKSTARS *hydrodiskstars_initialize(void) {
 	hds -> v_phi = NULL; 
 	hds -> v_z = NULL; 
 	hds -> rad_bins = NULL; 
+	hds -> decomp = NULL; 
 	hds -> n_rad_bins = 0u; 
 	return hds; 
 
