@@ -21,6 +21,9 @@ class hydrodiskstars:
 		12.8 Gyr are not supported. Stellar populations in the built-in 
 		hydrodynamical simulation data span 12.8 Gyr of ages. 
 
+	**Signature**: vice.toolkit.hydrodisk.hydrodiskstars(radial_bins, N = 1e5, 
+	mode = "linear") 
+
 	Parameters 
 	----------
 	radial_bins : array-like [elements must be positive real numbers] 

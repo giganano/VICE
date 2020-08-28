@@ -2,6 +2,7 @@
 from __future__ import absolute_import 
 from ..._globals import _VERSION_ERROR_ 
 from ._multizone import c_multizone 
+from ..singlezone import singlezone 
 from ..outputs._output_utils import _check_singlezone_output 
 from ..outputs._output_utils import _is_multizone 
 from ..outputs._output_utils import _get_name 
@@ -146,7 +147,7 @@ class multizone(object):
 					raise ValueError("""Attribute 'n_zones' must be of type \
 int. Got: %g""" % (n_zones)) 
 			else: 
-				raise ValueError("Attribute 'n_zones' must be non-negative.") 
+				raise ValueError("Attribute 'n_zones' must be positive.") 
 		else: 
 			raise TypeError("""Attribute 'n_zones' must be of type int. \
 Got: %s""" % (type(n_zones))) 
