@@ -333,7 +333,7 @@ static unsigned long candidate_search(HYDRODISKSTARS hds, double birth_radius,
  * 
  * Returns 
  * =======
- * The radius of the stellar population at the intermediate time. 
+ * The zone number of the stellar population at the intermediate time. 
  * 
  * Note 
  * ====
@@ -372,7 +372,7 @@ extern long calczone_linear(HYDRODISKSTARS hds, double birth_time,
  * 
  * Returns 
  * =======
- * The radius of the stellar population at the intermediate time. 
+ * The zone number of the stellar population at the intermediate time. 
  * 
  * Note 
  * ==== 
@@ -412,7 +412,7 @@ extern long calczone_sudden(HYDRODISKSTARS hds, double migration_time,
  * 
  * Returns 
  * =======
- * The radius of the stellar population at the intermediate time. 
+ * The zone number of the stellar population at the intermediate time. 
  * 
  * Note 
  * ====
@@ -425,9 +425,8 @@ extern long calczone_diffusive(HYDRODISKSTARS hds, double birth_time,
 
 	double radius; 
 	if (analog_idx > -1l) {
-		radius = (hds.final_radii[analog_idx] - birth_radius) * sqrt(
-			(time - birth_time) / (end_time - birth_time) 
-		) + birth_radius; 
+		radius = interpolate_sqrt(birth_time, end_time, birth_radius, 
+			hds.final_radii[analog_idx], time); 
 	} else {
 		radius = birth_radius; 
 	}

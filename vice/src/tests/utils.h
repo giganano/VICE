@@ -84,6 +84,17 @@ extern unsigned short test_interpolate(void);
 extern unsigned short test_interpolate2D(void); 
 
 /* 
+ * Test the sqrt(x) interpolation function at vice/src/utils.h 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * source: utils.c 
+ */ 
+extern unsigned short test_interpolate_sqrt(void); 
+
+/* 
  * Tests the bin number lookup function at vice/src/utils.h 
  * 
  * Returns 

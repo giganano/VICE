@@ -27,6 +27,7 @@ extern HYDRODISKSTARS *hydrodiskstars_initialize(void) {
 	hds -> rad_bins = NULL; 
 	hds -> decomp = NULL; 
 	hds -> n_rad_bins = 0u; 
+	hds -> mode = NULL; 
 	return hds; 
 
 } 
@@ -87,6 +88,11 @@ extern void hydrodiskstars_free(HYDRODISKSTARS *hds) {
 		if ((*hds).rad_bins != NULL) {
 			free(hds -> rad_bins); 
 			hds -> rad_bins = NULL; 
+		} else {} 
+
+		if ((*hds).mode != NULL) {
+			free(hds -> mode); 
+			hds -> mode = NULL; 
 		} else {} 
 
 		free(hds); 

@@ -55,7 +55,7 @@ class hydrodiskstars:
 		The index of the star particle acting as the current analog. -1 if the 
 		analog has not yet been set (see note below under `Calling`_) or if 
 		no analog is found. 
-	mode : str 
+	mode : str or ``None`` 
 		The mode of stellar migration, describing the approximation of how 
 		stars move from birth to final radii. Either "linear", "sudden", or 
 		"diffusion". See property docstring for more details. 
@@ -258,7 +258,7 @@ class hydrodiskstars:
 	@property 
 	def mode(self): 
 		r""" 
-		Type : str [case-insensitive] 
+		Type : str [case-insensitive] or ``None`` 
 
 		Default : "linear" 
 

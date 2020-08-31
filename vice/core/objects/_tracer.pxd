@@ -6,7 +6,7 @@ cdef extern from "../../src/objects.h":
 		int *zone_history 
 		unsigned int zone_origin 
 		unsigned int zone_current 
-		unsigned int timestep_origin 
+		unsigned long timestep_origin 
 
 
 cdef extern from "../../src/multizone/tracer.h": 

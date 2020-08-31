@@ -40,7 +40,15 @@ extern "C" {
  */ 
 #ifndef WIDENED_ANALOG_SEARCH_RADIUS 
 #define WIDENED_ANALOG_SEARCH_RADIUS 0.500 
-#endif /* WIDENED_ANALOG_SEARCH_TIME */  
+#endif /* WIDENED_ANALOG_SEARCH_TIME */ 
+
+/* 
+ * The span of ages in Gyr of each star particle in the hydrodynamical 
+ * simulationdata. 
+ */ 
+#ifndef HYDRODISK_END_TIME 
+#define HYDRODISK_END_TIME 12.8 
+#endif /* HYDRODISK_END_TIME */ 
 
 #include "../objects.h" 
 
@@ -112,7 +120,7 @@ extern long hydrodiskstars_find_analog(HYDRODISKSTARS hds, double birth_radius,
  * 
  * Returns 
  * =======
- * The radius of the stellar population at the intermediate time. 
+ * The zone number of the stellar population at the intermediate time. 
  * 
  * Note 
  * ====
@@ -138,7 +146,7 @@ extern long calczone_linear(HYDRODISKSTARS hds, double birth_time,
  * 
  * Returns 
  * =======
- * The radius of the stellar population at the intermediate time. 
+ * The zone number of the stellar population at the intermediate time. 
  * 
  * Note 
  * ==== 
@@ -166,7 +174,7 @@ extern long calczone_sudden(HYDRODISKSTARS hds, double migration_time,
  * 
  * Returns 
  * =======
- * The radius of the stellar population at the intermediate time. 
+ * The zone number of the stellar population at the intermediate time. 
  * 
  * Note 
  * ====

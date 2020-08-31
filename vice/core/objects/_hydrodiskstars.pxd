@@ -14,6 +14,7 @@ cdef extern from "../../src/objects.h":
 		double *rad_bins 
 		unsigned short *decomp 
 		unsigned short n_rad_bins 
+		char *mode 
 
 
 cdef extern from "../../src/objects/hydrodiskstars.h": 

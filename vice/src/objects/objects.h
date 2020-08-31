@@ -388,7 +388,7 @@ typedef struct tracer {
 	int *zone_history; 
 	unsigned int zone_origin; 
 	unsigned int zone_current; 
-	unsigned int timestep_origin; 
+	unsigned long timestep_origin; 
 
 } TRACER; 
 
@@ -518,11 +518,20 @@ typedef struct hydrodiskstars {
 	 * simulation for construction of migration schemes. 
 	 * 
 	 * n_stars: the number of star particles in the data 
+	 * ids: The ID of each star particle 
 	 * birth_times: The times in Gyr at which each star particle was born 
 	 * birth_radii: The radii in kpc at which each star particle was born 
 	 * final_radii: The radii in kpc at which each star particle was located 
 	 * 		at the end of the simulation. 
+	 * zfinal: The final height above/below disk midplane in kpc 
+	 * v_rad: Radial velocity in km/s 
+	 * v_phi: Circular velocity in km/s 
+	 * v_z: Vertical velocity in km/s 
 	 * rad_bins: The radial bins in kpc which discretize the disk 
+	 * decomp: An integer index assigning star particles to thin/thick disk, 
+	 * 		bulge, or pseudobulge 
+	 * n_rad_bins: The number of radial bins 
+	 * mode: The mode of stellar migration 
 	 */ 
 
 	unsigned long n_stars; 
@@ -537,6 +546,7 @@ typedef struct hydrodiskstars {
 	double *rad_bins; 
 	unsigned short *decomp; 
 	unsigned short n_rad_bins; 
+	char *mode; 
 
 } HYDRODISKSTARS; 
 

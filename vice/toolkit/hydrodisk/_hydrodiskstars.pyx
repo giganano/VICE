@@ -21,8 +21,8 @@ from ...core._cutils cimport copy_pylist
 from ...core._cutils cimport set_string 
 from . cimport _hydrodiskstars 
 
-# The end time of the simulation in Gyr 
-_END_TIME_ = 12.8 
+# The end time of the simulation in Gyr (12.8 Gyr by default - hard coded) 
+_END_TIME_ = _hydrodiskstars.HYDRODISK_END_TIME 
 
 # The recognized hydrodiskstars migration modes 
 _RECOGNIZED_MODES_ = ["linear", "sudden", "diffusion"] 
@@ -77,7 +77,6 @@ will oversample these data.""" % (_N_STAR_PARTICLES_), ScienceWarning)
 		else: 
 			raise TypeError("Keyword arg 'N' must be an integer.") 
 		self.radial_bins = radbins 
-		self._mode = <char *> malloc (12 * sizeof(char)) 
 
 	def __init__(self, radbins, N = 1e5, idcolumn = 0, tformcolumn = 1, 
 		rformcolumn = 2, rfinalcolumn = 3, zfinalcolumn = 4, 
@@ -107,7 +106,6 @@ will oversample these data.""" % (_N_STAR_PARTICLES_), ScienceWarning)
 
 	def __dealloc__(self): 
 		_hydrodiskstars.hydrodiskstars_free(self._hds) 
-		free(self._mode) 
 
 	def __call__(self, zone, tform, time): 
 		if isinstance(zone, int): 
@@ -194,16 +192,46 @@ Minimum radius must be zero. Got: %g kpc.""" % (value[0]))
 	@property 
 	def mode(self): 
 		# docstring in python version 
-		return "".join([chr(self._mode[i]) for i in range(strlen(self._mode))]) 
+		if self._hds[0].mode is NULL: 
+			return None 
+		else: 
+			return "".join([chr(self._hds[0].mode[i]) for i in range(strlen(
+				self._hds[0].mode))]) 
+		# if self._mode is NULL: 
+		# 	return None 
+		# else: 
+		# 	return "".join([chr(self._mode[i]) for i in range(strlen(
+		# 		self._mode))]) 
 
 	@mode.setter 
 	def mode(self, value): 
 		if isinstance(value, strcomp): 
 			if value.lower() in _RECOGNIZED_MODES_: 
-				set_string(self._mode, value.lower()) 
+				if self._hds[0].mode is NULL: 
+					self._hds[0].mode = <char *> malloc (12 * sizeof(char)) 
+				else: pass 
+				set_string(self._hds[0].mode, value.lower()) 
 			else: 
 				raise ValueError("Unrecognized mode: %s" % (value)) 
+		elif value is None: 
+			if self._hds[0].mode is not NULL: free(self._hds[0].mode) 
+			self._hds[0].mode = NULL 
 		else: 
-			raise TypeError("Attirbute 'mode' must be of type str. Got: %s" % (
-				type(value))) 
+			raise TypeError("""Attribute 'mode' must be either a string or 
+None. Got: %s""" % (type(value))) 
+
+		# if isinstance(value, strcomp): 
+		# 	if value.lower() in _RECOGNIZED_MODES_: 
+		# 		if self._mode is NULL: 
+		# 			self._mode = <char *> malloc (12 * sizeof(char)) 
+		# 		else: pass 
+		# 		set_string(self._mode, value.lower()) 
+		# 	else: 
+		# 		raise ValueError("Unrecognized mode: %s" % (value)) 
+		# elif value is None: 
+		# 	if self._mode is not NULL: free(self._mode) 
+		# 	self._mode = NULL 
+		# else: 
+		# 	raise TypeError("Attirbute 'mode' must be of type str. Got: %s" % (
+		# 		type(value))) 
 

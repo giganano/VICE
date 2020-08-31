@@ -5,6 +5,7 @@
 #include <stdlib.h> 
 #include <string.h> 
 #include <stdio.h> 
+#include <math.h> 
 #include "../utils.h" 
 #include "../yields.h" 
 #include "../ism.h" 
@@ -249,6 +250,41 @@ extern unsigned short test_interpolate2D(void) {
 	return 1u; 
 
 } 
+
+
+/* 
+ * Test the sqrt(x) interpolation function at vice/src/utils.h 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * header: utils.h 
+ */ 
+extern unsigned short test_interpolate_sqrt(void) {
+
+	/* 
+	 * Test this interpolation function by ensuring that something adequately 
+	 * close to sqrt(x) is returned when the points (0, 0) and (1, 1) are 
+	 * extrapolated from. 
+	 */ 
+
+	unsigned short i, status = 1u; 
+	for (i = 0u; i < 10000u; i++) {
+
+		double test_value = rand_range(TEST_RANDOM_RANGE_MIN, 
+			TEST_RANDOM_RANGE_MAX); 
+		status &= (
+			absval(interpolate_sqrt(0, 1, 0, 1, test_value) - sqrt(test_value)) 
+			< 1e-5 
+		); 
+		if (!status) break; 
+
+	} 
+
+	return status; 
+
+}
 
 
 /* 

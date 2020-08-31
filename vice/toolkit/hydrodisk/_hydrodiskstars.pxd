@@ -23,6 +23,7 @@ cdef extern from "../../src/toolkit/hydrodiskstars.h":
 		double birth_radius, long analog_idx, double time) 
 	double calczone_diffusive(HYDRODISKSTARS hds, double birth_time, 
 		double birth_radius, double end_time, long analog_idx, double time) 
+	double HYDRODISK_END_TIME 
 
 
 cdef extern from "../../src/utils.h": 
@@ -34,5 +35,4 @@ cdef class c_hydrodiskstars:
 	cdef HYDRODISKSTARS *_hds 
 	cdef long _analog_idx 
 	cdef double _migration_time 
-	cdef char *_mode 
 	cdef object _analog_data 
