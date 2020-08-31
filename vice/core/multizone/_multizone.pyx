@@ -13,7 +13,6 @@ from ...yields import ccsne
 from ...yields import sneia 
 from ..pickles import jar 
 from .. import _pyutils 
-from . import tracer 
 # from timeit import default_timer as timer 
 # from multiprocessing import Pool 
 import warnings 
