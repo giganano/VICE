@@ -168,6 +168,7 @@ extern void write_tracers_output(MULTIZONE mz) {
 		if (mz.verbose) {
 			printf("Progress: %.1f%%\r", 
 				100.0 * (i + 1) / (*mz.mig).tracer_count); 
+			fflush(stdout); 
 		} 
 	} 
 	if (mz.verbose) printf("\n"); 

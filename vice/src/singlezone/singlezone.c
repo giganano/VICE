@@ -352,6 +352,7 @@ static void verbosity(SINGLEZONE sz) {
 
 	if (sz.verbose) {
 		printf("\rCurrent Time: %.2f Gyr", sz.current_time); 
+		fflush(stdout); 
 	} else {} 
 
 }

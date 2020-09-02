@@ -38,8 +38,8 @@ cdef class c_hydrodiskstars:
 	documentation. 
 	""" 
 
-	def __cinit__(self, radbins, N = 1e5, idcolumn = 0, tformcolumn = 1, 
-		rformcolumn = 2, rfinalcolumn = 3, zfinalcolumn = 4, 
+	def __cinit__(self, radbins, N = 1e5, mode = "linear", idcolumn = 0, 
+		tformcolumn = 1, rformcolumn = 2, rfinalcolumn = 3, zfinalcolumn = 4, 
 		v_radcolumn = 5, v_phicolumn = 6, v_zcolumn = 7, decomp_column = 8): 
 
 		# allocate memory for hydrodiskstars object in C and import the data 
@@ -78,8 +78,8 @@ will oversample these data.""" % (_N_STAR_PARTICLES_), ScienceWarning)
 			raise TypeError("Keyword arg 'N' must be an integer.") 
 		self.radial_bins = radbins 
 
-	def __init__(self, radbins, N = 1e5, idcolumn = 0, tformcolumn = 1, 
-		rformcolumn = 2, rfinalcolumn = 3, zfinalcolumn = 4, 
+	def __init__(self, radbins, N = 1e5, mode = "linear", idcolumn = 0, 
+		tformcolumn = 1, rformcolumn = 2, rfinalcolumn = 3, zfinalcolumn = 4, 
 		v_radcolumn = 5, v_phicolumn = 6, v_zcolumn = 7): 
 		
 		self._analog_idx = -1l 
@@ -115,9 +115,9 @@ will oversample these data.""" % (_N_STAR_PARTICLES_), ScienceWarning)
 				if (isinstance(tform, numbers.Number) and 
 					isinstance(time, numbers.Number)): 
 					if time > _END_TIME_: warnings.warn("""\
-Simulations of galactic chemical evolution with this object for timescales \
-longer than %g Gyr are not supported. This is the maximum range of star \
-particle ages.""" % (_END_TIME_), ScienceWarning) 
+Simulations of galactic chemical evolution with the hydrodiskstars object for \
+timescales longer than %g Gyr are not supported. This is the maximum range of \
+star particle ages.""" % (_END_TIME_), ScienceWarning) 
 					if tform == time: 
 						self._analog_idx = (
 							_hydrodiskstars.hydrodiskstars_find_analog(
@@ -159,6 +159,12 @@ values. Got: (%s, %s)""" % (type(tform), type(time)))
 		else: 
 			raise TypeError("Zone must be of type int. Got: %s" % (type(zone))) 
 
+	def object_address(self): 
+		""" 
+		Returns the memory address of the HYDRODISKSTARS object in C. 
+		""" 
+		return <long> (<void *> self._hds) 
+
 	@property 
 	def radial_bins(self): 
 		# docstring in python version 
@@ -197,14 +203,13 @@ Minimum radius must be zero. Got: %g kpc.""" % (value[0]))
 		else: 
 			return "".join([chr(self._hds[0].mode[i]) for i in range(strlen(
 				self._hds[0].mode))]) 
-		# if self._mode is NULL: 
-		# 	return None 
-		# else: 
-		# 	return "".join([chr(self._mode[i]) for i in range(strlen(
-		# 		self._mode))]) 
 
 	@mode.setter 
 	def mode(self, value): 
+		""" 
+		Enforcement of only subclasses having mode = None handled in python 
+		as necessary. 
+		""" 
 		if isinstance(value, strcomp): 
 			if value.lower() in _RECOGNIZED_MODES_: 
 				if self._hds[0].mode is NULL: 
@@ -219,19 +224,4 @@ Minimum radius must be zero. Got: %g kpc.""" % (value[0]))
 		else: 
 			raise TypeError("""Attribute 'mode' must be either a string or 
 None. Got: %s""" % (type(value))) 
-
-		# if isinstance(value, strcomp): 
-		# 	if value.lower() in _RECOGNIZED_MODES_: 
-		# 		if self._mode is NULL: 
-		# 			self._mode = <char *> malloc (12 * sizeof(char)) 
-		# 		else: pass 
-		# 		set_string(self._mode, value.lower()) 
-		# 	else: 
-		# 		raise ValueError("Unrecognized mode: %s" % (value)) 
-		# elif value is None: 
-		# 	if self._mode is not NULL: free(self._mode) 
-		# 	self._mode = NULL 
-		# else: 
-		# 	raise TypeError("Attirbute 'mode' must be of type str. Got: %s" % (
-		# 		type(value))) 
 

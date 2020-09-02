@@ -4,6 +4,7 @@
 from __future__ import absolute_import 
 from ..._globals import _VERSION_ERROR_ 
 from ..._globals import ScienceWarning 
+from ...toolkit.hydrodisk import hydrodiskstars 
 from ..dataframe._builtin_dataframes import atomic_number 
 from ..dataframe._builtin_dataframes import solar_z 
 from ..dataframe._builtin_dataframes import sources 
@@ -12,9 +13,7 @@ from ...yields import agb
 from ...yields import ccsne 
 from ...yields import sneia 
 from ..pickles import jar 
-from .. import _pyutils 
-# from timeit import default_timer as timer 
-# from multiprocessing import Pool 
+from .. import _pyutils  
 import warnings 
 import numbers 
 import time 
@@ -33,6 +32,7 @@ from .._cutils cimport set_string
 from .._cutils cimport copy_pylist 
 from ..objects cimport _singlezone 
 from ..objects._tracer cimport TRACER 
+from . cimport _hydrodiskstars 
 from . cimport _tracer 
 from . cimport _zone_array 
 from . cimport _multizone 
@@ -478,7 +478,6 @@ timesteps."""
 		""" 
 		n = _singlezone.n_timesteps(self._mz[0].zones[0][0]) 
 		eval_times = [i * self._mz[0].zones[0][0].dt for i in range(n + 1)] 
-		x = 0 
 		takes_keyword = True 
 		try: # check for an optional keyword argument 'n' 
 			self.migration.stars(0, 0, 0, n = 0) 
@@ -491,11 +490,53 @@ timesteps."""
 				self.migration.stars.write = True 
 			except: pass 
 
+		# determine if the user is using the hydrodiskstars object 
+		if isinstance(self.migration.stars, hydrodiskstars): 
+			if self.migration.stars.mode is not None: 
+				_hydrodiskstars.set_hydrodiskstars_object(
+					self.migration.stars._hydrodiskstars__object_address() 
+				) 
+				using_hydrodisk = True 
+				if type(self.migration.stars) != hydrodiskstars: 
+					# if subclass, they haven't overridden the built-in 
+					warnings.warn("""\
+Subclassed hydrodiskstars object has attribute 'mode' = %s. If overriding a \
+built-in migration approximation, this value must be assigned a value of \
+None.""" % (self.migration.stars.mode), UserWarning) 
+				else: pass 
+			else: 
+				using_hydrodisk = False 
+		else: 
+			using_hydrodisk = False 
+
 		if self.verbose: start = time.time() # for printing the ETA 
 		for i in range(n): # for each timestep 
 			for j in range(self.n_zones): # for each zone 
-				self.setup_tracers_given_zone_timestep(j, i, n, 
-					takes_keyword = takes_keyword) 
+				if using_hydrodisk: 
+					for k in range(self.n_tracers): 
+						""" 
+						Set the analog tracer particle by calling the object 
+						with the time of formation and simulation times equal. 
+						""" 
+						if takes_keyword: 
+							self.migration.stars(j, 
+								i * self._mz[0].zones[0][0].dt, 
+								i * self._mz[0].zones[0][0].dt, n = k) 
+						else: 
+							self.migration.stars(j, 
+								i * self._mz[0].zones[0][0].dt, 
+								i * self._mz[0].zones[0][0].dt) 
+						# The index of this tracer particle 
+						idx = (i * (self.n_zones * self.n_tracers) + 
+							j * self.n_tracers + k) 
+						if _hydrodiskstars.setup_hydrodisk_tracer(self._mz[0], 
+							self._mz[0].mig[0].tracers[idx], j, i, 
+							self.migration.stars.analog_index): 
+							raise SystemError("Internal Error") 
+						else: pass 
+				else: 
+					self.setup_tracers_given_zone_timestep(j, i, n, 
+						takes_keyword = takes_keyword) 
 			if self.verbose: 
 				# Estimate an ETA by linear extrapolation 
 				percentage = 100 * (i + 1) / n  
@@ -521,83 +562,6 @@ Setting up star particles. Progress: %.2f%% | ETA: %s    \r""" % (percentage,
 			try: 
 				self.migration.stars.write = False 
 			except: pass 
-
-				# for k in range(self.n_tracers): 
-# 					kwargs = {} 
-# 					if takes_keyword: kwargs["n"] = k 
-# 					zone_history = n * [j] 
-# 					if i <= n - _singlezone.BUFFER: 
-# 						if self.simple: 
-# 							""" 
-# 							This will set the analog star particle as necessary 
-# 							if using the hydrodiskstars object, then simply set 
-# 							the final zone number at the index that the 
-# 							copy_zone_history function assigns as the current 
-# 							zone number. 
-# 							""" 
-# 							self.migration.stars(j, i * self.zones[j].dt, 
-# 								i * self.zones[j].dt, **kwargs) 
-# 							final = self.migration.stars(j, 
-# 								i * self.zones[j].dt, 
-# 								(n - _singlezone.BUFFER) * self.zones[j].dt, 
-# 								**kwargs) 
-# 							if isinstance(final, numbers.Number): 
-# 								if final % 1 == 0: 
-# 									zone_history[n - _singlezone.BUFFER] = int(
-# 										final) 
-# 								else: 
-# 									raise ValueError("""\
-# Zone number must always be an integer. Got: %g""" % (final)) 
-# 							else: 
-# 								raise TypeError("""\
-# Zone number must always be an integer. Got: %s""" % (type(final))) 
-
-# 						else: 
-# 							""" 
-# 							For each timestep outside the buffer, set the zone 
-# 							number according to the user specification at that 
-# 							time. 
-# 							""" 
-# 							zone_history[i:(n - _singlezone.BUFFER)] = [
-# 								self.migration.stars(j, 
-# 									i * self._mz[0].zones[0][0].dt, 
-# 									l, **kwargs) for l in eval_times[i:(n - 
-# 										_singlezone.BUFFER + 1)]
-# 							] 
-
-# 							""" 
-# 							For each timestep in the buffer, set the zone 
-# 							number according to the user specification at the 
-# 							actual final timestep. 
-# 							""" 
-# 							zone_history[-_singlezone.BUFFER:] = (
-# 								_singlezone.BUFFER) * [zone_history[-(
-# 									_singlezone.BUFFER + 1)]
-# 							] 
-# 					else: 
-# 						""" 
-# 						For those that form in the buffer, set their zone 
-# 						number to the zone of origin always. 
-# 						""" 
-# 						pass 
-
-					# zone_history = self.setup_single_tracer(j, i, n, n = k, 
-					# 	takes_keyword = takes_keyword) 
-
-					# error handling, then send it down to C 
-					# if not self.simple: 
-					# 	SETUP_TRACERS_TIME += timer() - START 
-					# 	START = timer() 
-					# 	self.check_zone_history(zone_history, i, j) 
-					# 	CHECK_ZONE_HISTORY_TIME += timer() - START 
-					# 	START = timer() 
-					# else: pass 
-					# SETUP_TRACERS_TIME += timer() - START 
-					# START = timer() 
-					# self.copy_zone_history(zone_history, x, i, n) 
-					# COPY_ZONE_HISTORY_TIME += timer() - START 
-					# START = timer() 
-					# x += 1 # increment tracer particle index 
 
 
 	def setup_tracers_given_zone_timestep(self, zone, timestep, n_timesteps, 
@@ -661,7 +625,9 @@ Setting up star particles. Progress: %.2f%% | ETA: %s    \r""" % (percentage,
 				This will set the analog star particle as necessary if using 
 				the hydrodiskstars object, then simply set the final zone 
 				number at the index that the copy_zone_history function 
-				assigns as the current zone number. 
+				assigns as the current zone number. Calling it with time of 
+				formation and simulation time equal also allows users to 
+				retain ability to write additional data to an output file. 
 				""" 
 				self.migration.stars(zone, timestep * self.zones[zone].dt, 
 					timestep * self.zones[zone].dt, **kwargs) 

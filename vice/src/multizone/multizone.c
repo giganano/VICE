@@ -357,6 +357,7 @@ static void verbosity(MULTIZONE mz) {
 
 	if (mz.verbose) { 
 		printf("\rCurrent Time: %.2f Gyr", (*mz.zones[0]).current_time); 
+		fflush(stdout); 
 	} else {} 
 
 }

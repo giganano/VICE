@@ -58,7 +58,13 @@ class hydrodiskstars:
 	mode : str or ``None`` 
 		The mode of stellar migration, describing the approximation of how 
 		stars move from birth to final radii. Either "linear", "sudden", or 
-		"diffusion". See property docstring for more details. 
+		"diffusion". 
+
+		.. note:: Only subclasses may set this attribute ``None``, in which 
+			case it is assumed that a custom migration approximation is 
+			employed by an overridden ``__call__`` function. If this attribute 
+			is note set to ``None``, multizone simulations will *still* use 
+			the approximation denoted by this property. 
 
 	Calling 
 	-------
@@ -77,7 +83,7 @@ class hydrodiskstars:
 		time and simulation time are equal. Therefore, calling this object 
 		with the second and third parameters equal resets the star particle 
 		acting as the analog, and the data for the corresponding star particle 
-		can then be accessed. 
+		can then be accessed via the attribute ``analog_index``. 
 
 	Raises 
 	------
@@ -104,6 +110,13 @@ class hydrodiskstars:
 	particles forming within 600 pc in radius and 500 Myr in formation time. 
 	These constants are declared in vice/src/toolkit/hydrodiskstars.h in the 
 	VICE source tree. 
+
+	This object can be subclassed to implement a customized migration 
+	approximation by overriding the ``__call__`` function. However, in this 
+	case, users must also set the attribute ``mode`` to ``None``. If this 
+	requirement is not satisfied, multizone simulations will **still** use the 
+	approximation denoted by the ``mode`` attribute, **not** their overridden 
+	``__call__`` function. 
 
 	Example Code 
 	------------
@@ -146,6 +159,14 @@ class hydrodiskstars:
 	def __exit__(self, exc_type, exc_value, exc_tb): 
 		# Raises all exceptions inside a with statement 
 		return exc_value is None 
+
+	def __object_address(self): 
+		r""" 
+		Returns the memory address of the HYDRODISKSTARS object in C. For 
+		internal usage only; usage of this function by the user is strongly 
+		discouraged. 
+		""" 
+		return self.__c_version.object_address() 
 
 	@property 
 	def radial_bins(self): 
@@ -282,6 +303,12 @@ class hydrodiskstars:
 			via a sqrt(time) dependence, approximating a random-walk motion. 
 			Stellar populations spiral inward or outward, but slightly faster 
 			than the linear approximation when they are young. 
+		- ``None`` 
+			Only supported for subclasses of the hydrodiskstars object, this 
+			should be used when the user intends to override the built-in 
+			migration assumptions and implement a different one. In these 
+			cases, the ``__call__`` method should be overridden in addition to 
+			this attribute being set to ``None``. If the ``
 
 		Example Code 
 		------------
@@ -297,5 +324,12 @@ class hydrodiskstars:
 
 	@mode.setter 
 	def mode(self, value): 
-		self.__c_version.mode = value 
+		if value is None: 
+			if type(self) != hydrodiskstars: 
+				self.__c_version.mode = None 
+			else: 
+				raise ValueError("""None-Type value for attribute 'mode' only \
+supported for subclasses of hydrodiskstars object.""") 
+		else: 
+			self.__c_version.mode = value 
 
