@@ -42,7 +42,7 @@ class hydrodiskstars:
 			object. Any more stellar populations than this would oversample 
 			these data. 
 
-	mode : str [case-insensitive] [default : "linear"] 
+	mode : str [case-insensitive] or ``None`` [default : "linear"] 
 		The attribute 'mode', initialized via keyword argument. 
 
 	Attributes 
@@ -62,9 +62,9 @@ class hydrodiskstars:
 
 		.. note:: Only subclasses may set this attribute ``None``, in which 
 			case it is assumed that a custom migration approximation is 
-			employed by an overridden ``__call__`` function. If this attribute 
-			is note set to ``None``, multizone simulations will *still* use 
-			the approximation denoted by this property. 
+			employed by an overridden ``__call__`` function. In this case, 
+			if this attribute is not set to ``None``, multizone simulations 
+			will *still* use the approximation denoted by this property. 
 
 	Calling 
 	-------
@@ -146,8 +146,7 @@ class hydrodiskstars:
 	""" 
 
 	def __init__(self, rad_bins, N = 1e5, mode = "linear"): 
-		self.__c_version = c_hydrodiskstars(rad_bins, N = N) 
-		self.mode = mode 
+		self.__c_version = c_hydrodiskstars(rad_bins, N = N, mode = mode) 
 
 	def __call__(self, zone, tform, time): 
 		return self.__c_version.__call__(zone, tform, time) 

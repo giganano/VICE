@@ -77,6 +77,7 @@ will oversample these data.""" % (_N_STAR_PARTICLES_), ScienceWarning)
 		else: 
 			raise TypeError("Keyword arg 'N' must be an integer.") 
 		self.radial_bins = radbins 
+		self.mode = mode 
 
 	def __init__(self, radbins, N = 1e5, mode = "linear", idcolumn = 0, 
 		tformcolumn = 1, rformcolumn = 2, rfinalcolumn = 3, zfinalcolumn = 4, 
