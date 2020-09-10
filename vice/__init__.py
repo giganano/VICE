@@ -108,6 +108,7 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 		__all__ = [
 			"__author__", 
 			"__version__", 
+			"milkyway", 
 			"elements", 
 			"yields", 
 			"_globals", 
@@ -122,6 +123,7 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 			__version__ = str(version) 
 			if not version.released: 
 				warnings.warn("Using un-released version of VICE", UserWarning)
+			from .milkyway import milkyway 
 			from .core import * 
 			from .core.dataframe import base as dataframe 
 			from ._build_utils import * 
