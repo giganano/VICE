@@ -28,7 +28,8 @@ _END_TIME_ = _hydrodiskstars.HYDRODISK_END_TIME
 _RECOGNIZED_MODES_ = ["linear", "sudden", "diffusion"] 
 
 # The number of star particles in the simulation 
-_N_STAR_PARTICLES_ = 1017612 
+# _N_STAR_PARTICLES_ = 1017612 
+_N_STAR_PARTICLES_ = 3019521 
 
 
 cdef class c_hydrodiskstars: 
@@ -178,8 +179,8 @@ values. Got: (%s, %s)""" % (type(tform), type(time)))
 		_pyutils.numeric_check(value, TypeError, 
 			"Non-numerical value detected.") 
 		value = sorted(value) 
-		if not value[-1] >= 30: raise ValueError("""\
-Maximum radius must be at least 30 kpc. Got: %g""" % (value[-1])) 
+		if not value[-1] >= 20: raise ValueError("""\
+Maximum radius must be at least 20 kpc. Got: %g""" % (value[-1])) 
 		if value[0] != 0: raise ValueError("""\
 Minimum radius must be zero. Got: %g kpc.""" % (value[0])) 
 		self._hds[0].n_rad_bins = len(value) - 1 

@@ -23,7 +23,7 @@ static unsigned long candidate_search(HYDRODISKSTARS hds, double birth_radius,
 	double max_time); 
 
 /* The number of subsample files present in the code base */ 
-static unsigned short NSUBS = 10u; 
+static unsigned short NSUBS = 30u; 
 
 
 /* 

@@ -7,7 +7,7 @@ from ....testing import moduletest
 from ....testing import unittest 
 import sys 
 
-_RAD_BINS_ = [0.25 * i for i in range(121)] 
+_RAD_BINS_ = [0.25 * i for i in range(81)] 
 _TEST_TIMES_ = [0.05 * i for i in range(257)] 
 
 
@@ -52,8 +52,8 @@ def test_import():
 		try: 
 			assert all([0 <= i <= _END_TIME_ for i in 
 				_TEST_.analog_data["tform"]]) 
-			assert all([0 <= i <= 30 for i in _TEST_.analog_data["rform"]]) 
-			assert all([0 <= i <= 30 for i in _TEST_.analog_data["rfinal"]]) 
+			assert all([0 <= i <= 20 for i in _TEST_.analog_data["rform"]]) 
+			assert all([0 <= i <= 20 for i in _TEST_.analog_data["rfinal"]]) 
 			assert all([isinstance(i, int) for i in _TEST_.analog_data["id"]]) 
 			assert all([i > 0 for i in _TEST_.analog_data["id"]]) 
 			assert all([isinstance(i, float) for i in 

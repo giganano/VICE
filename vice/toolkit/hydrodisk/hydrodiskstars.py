@@ -28,7 +28,7 @@ class hydrodiskstars:
 	----------
 	radial_bins : array-like [elements must be positive real numbers] 
 		The bins in galactocentric radius in kpc describing the disk model. 
-		This must extend from 0 to at least 30 kpc. Need not be sorted in any 
+		This must extend from 0 to at least 20 kpc. Need not be sorted in any 
 		way. Will be stored as an attribute. 
 	N : int [default : 1e5] 
 		An approximate number of star particles from the hydrodynamical 
@@ -89,7 +89,7 @@ class hydrodiskstars:
 	------
 	* ValueError 
 		- Minimum radius does not equal zero 
-		- Maximum radius < 30 
+		- Maximum radius < 20 
 	* ScienceWarning 
 		- This object is called with a time larger than 12.8 Gyr 
 		- The number of analog star particles requested is larger than the 
@@ -122,15 +122,15 @@ class hydrodiskstars:
 	------------
 	>>> from vice.toolkit.hydrodisk import hydrodiskstars 
 	>>> import numpy as np 
-	>>> example = hydrodiskstars(np.linspace(0, 30, 121)) 
+	>>> example = hydrodiskstars(np.linspace(0, 20, 81)) 
 	>>> example.radial_bins 
 	[0.0, 
 	 0.25, 
 	 0.5, 
 	 ... 
-	 29.5, 
-	 29.75, 
-	 30.0] 
+	 19.5, 
+	 19.75, 
+	 20.0] 
 	>>> example.analog_data.keys() 
 	['id', 'tform', 'rform', 'rfinal', 'zfinal', 'vrad', 'vphi', 'vz'] 
 	>>> example.analog_index 
@@ -173,26 +173,26 @@ class hydrodiskstars:
 		Type : list [elements are positive real numbers] 
 
 		The bins in galactocentric radius in kpc describing the disk model. 
-		Must extend from 0 to at least 30 kpc. Need not be sorted in any way 
+		Must extend from 0 to at least 20 kpc. Need not be sorted in any way 
 		when assigned. 
 
 		Example Code 
 		------------
 		>>> from vice.toolkit.hydrodisk import hydrodiskstars 
 		>>> import numpy as np 
-		>>> example = hydrodiskstars([0, 5, 10, 15, 20, 25, 30]) 
+		>>> example = hydrodiskstars([0, 5, 10, 15, 20]) 
 		>>> example.radial_bins 
-		[0, 5, 10, 15, 20, 25, 30] 
+		[0, 5, 10, 15, 20] 
 		>>> example.radial_bins = list(range(31)) 
 		>>> example.radial_bins 
 		[0, 
 		 1, 
 		 2, 
 		 ... 
-		 27, 
-		 28, 
-		 29, 
-		 30] 
+		 17, 
+		 18, 
+		 19, 
+		 20] 
 		""" 
 		return self.__c_version.radial_bins 
 
@@ -225,7 +225,7 @@ class hydrodiskstars:
 		------------
 		>>> from vice.toolkit.hydrodisk import hydrodiskstars 
 		>>> import numpy as np 
-		>>> example = hydrodiskstars(np.linspace(0, 30, 121)) 
+		>>> example = hydrodiskstars(np.linspace(0, 20, 81)) 
 		>>> example.analog_data.keys() 
 		['id', 'tform', 'rform', 'rfinal', 'zfinal', 'vrad', 'vphi', 'vz'] 
 		>>> example.analog_data["rfinal"][:10] 
@@ -259,7 +259,7 @@ class hydrodiskstars:
 		------------
 		>>> from vice.toolkit.hydrodisk import hydrodiskstars 
 		>>> import numpy as np 
-		>>> example = hydrodiskstars(np.linspace(0, 30, 121)) 
+		>>> example = hydrodiskstars(np.linspace(0, 20, 81)) 
 		>>> example.analog_index 
 		-1 # no analog yet 
 		>>> example(2, 1, 1) # final two arguments equal resets analog 
@@ -313,7 +313,7 @@ class hydrodiskstars:
 		------------
 		>>> from vice.toolkit.hydrodisk import hydrodiskstars 
 		>>> import numpy as np 
-		>>> example = hydrodiskstars(np.linspace(0, 30, 121)) 
+		>>> example = hydrodiskstars(np.linspace(0, 20, 81)) 
 		>>> example.mode 
 		'linear' 
 		>>> example.mode = "sudden" 
