@@ -162,11 +162,26 @@ def range_(start, stop, dx):
 	elif not isinstance(dx, numbers.Number): 
 		raise TypeError("Must be a numerical value. Got: %s" % (type(dx))) 
 	else: 
-		arr = int(((stop - start) / dx) + 1) * [0.] 
-		for i in range(len(arr)): 
-			arr[i] = start + i * dx 
-		return arr 
-
+		r""" 
+		Use recursion to force the algorithm to always run in increasing order 
+		with a positive dx. 
+		""" 
+		if dx < 0: 
+			return range_(start, stop, -dx) 
+		elif stop < start: 
+			return range_(stop, start, dx) 
+		elif stop == start: 
+			return [start] 
+		else: 
+			r""" 
+			Using an append approach causes floating point round-off errors 
+			here, causing the test to fail 
+			""" 
+			arr = int(((stop - start) / dx) + 1) * [0.] 
+			for i in range(len(arr)): 
+				arr[i] = start + i * dx 
+			if arr[-1] < stop: arr.append(len(arr) * dx) 
+			return arr  
 
 def args(func, errmsg): 
 	r"""
