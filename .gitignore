@@ -10,6 +10,7 @@ dist_x86_64.sh
 *.pyc
 *.out 
 *.vice 
+*.DS_Store 
 
 # Ignore all figures 
 *.pdf 
