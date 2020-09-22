@@ -31,7 +31,7 @@ extern void write_multizone_history(MULTIZONE mz) {
 	} 
 	free(unretained); 
 	free(mstar); 
-	free(recycled);
+	free(recycled); 
 
 }
 
@@ -133,7 +133,7 @@ extern void write_tracers_output(MULTIZONE mz) {
 	 * zone numbers. 
 	 */ 
 
-	if (mz.verbose) printf("Saving tracer particle data....\n"); 
+	if (mz.verbose) printf("Saving star particle data....\n"); 
 	unsigned long i; 
 	for (i = 0l; i < (*mz.mig).tracer_count; i++) { 
 		FILE *out = (*mz.mig).tracers_output; 

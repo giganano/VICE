@@ -97,6 +97,17 @@ extern unsigned short setup_hydrodisk_tracer(MULTIZONE mz, TRACER *t,
 			 */ 
 			t -> zone_history[i] = (*t).zone_history[N - BUFFER - 1ul]; 
 
+		} else if (mz.simple && i != N - BUFFER - 1ul) { 
+			/* 
+			 * If running in simple mode, the zone history should always be 
+			 * the birth zone right up until the buffer, at which point it 
+			 * switches. The second condition in the if statement allows this 
+			 * algorithm to naturally proceed to the case-switch block in 
+			 * below in the else-condition for exactly one iteration of the 
+			 * for-loop to achieve this. 
+			 */ 
+			t -> zone_history[i] = (signed) birth_zone; 
+
 		} else {
 			/* 
 			 * At this intermediate time, use the calczone_* functions that 

@@ -672,9 +672,9 @@ ran.""" % (i, j), UserWarning)
 		>>> sz = vice.singlezone(name = "example") 
 		>>> sz.elements 
 		("fe", "sr", "o") 
-		>>> sz.elements = ["mg", "fe", "c", "n", "o"] 
+		>>> sz.elements = ["mg", "fe", "n", "c", "o"] 
 		>>> sz.elements 
-		("mg", "fe", "c", "n", "o") 
+		("mg", "fe", "n", c", "o") 
 
 		.. [1] Johnson (2019), Science, 363, 474 
 		.. [2] Johnson & Weinberg (2020), arxiv:1911.02598 
@@ -698,8 +698,8 @@ ran.""" % (i, j), UserWarning)
 
 		The assumed stellar initial mass function (IMF). If assigned a string, 
 		VICE will adopt a built-in IMF. Functions must accept stellar mass as 
-		the only parameter and is expected to return the value of the IMF at 
-		that mass. 
+		the only parameter and are expected to return the value of the IMF at 
+		that mass (it need not be normalized). 
 
 		Built-in IMFs: 
 
@@ -708,7 +708,7 @@ ran.""" % (i, j), UserWarning)
 
 		.. note:: 
 
-			VICE has analytic soluations to the 
+			VICE has analytic solutions to the 
 			:ref:`cumulative return fraction <crf>` and the 
 			:ref:`main sequence mass fraction <msmf>` for built-in IMFs. If 
 			assigned a function, VICE will calculate these quantities 
@@ -745,7 +745,7 @@ ran.""" % (i, j), UserWarning)
 		The mass loading factor, defined as the ratio of the mass outflow 
 		rate to the star formation rate. 
 
-		.. math:: \eta \equiv \frac{\dot{M}_\text{out}}{\dot{M}_*} 
+		.. math:: \eta \equiv \frac{\dot{M}_\text{out}}{\dot{M}_\star} 
 
 		.. note:: 
 
@@ -753,12 +753,13 @@ ran.""" % (i, j), UserWarning)
 			generalizes to 
 
 			.. math:: \dot{M}_\text{out} = \eta(t) 
-				\langle\dot{M}_*\rangle_{\tau_\text{s}} = 
+				\langle\dot{M}_\star\rangle_{\tau_\text{s}} = 
 				\Bigg \lbrace {
-				\frac{\eta(t)}{t}\int_0^t \dot{M}_*(t') dt'\ (t < \tau_\text{s}) 
+				\frac{\eta(t)}{t}\int_0^t \dot{M}_\star(t') dt' 
+				(t < \tau_\text{s}) 
 				\atop 
 				\frac{\eta(t)}{\tau_\text{s}}\int_{t - \tau_\text{s}}^t 
-				\dot{M}_*(t') dt'\ (t \geq \tau_\text{s}) 
+				\dot{M}_\star(t') dt'\ (t \geq \tau_\text{s}) 
 				}
 
 			where :math:`\tau_\text{s}` is the value of the attribute, the 
@@ -1010,7 +1011,7 @@ ran.""" % (i, j), UserWarning)
 		>>> import numpy as np 
 		>>> import vice 
 		>>> sz = vice.singlezone(name = "example") 
-		>>> # 400 bins between 0 and 1 
+		>>> # 400 bins between -3 and 1 
 		>>> sz.bins = np.linspace(-3, 1, 401) 
 		>>> # 800 bins between -2 and +2 
 		>>> sz.bins = np.linspace(-2, 2, 801) 
@@ -1034,6 +1035,16 @@ ran.""" % (i, j), UserWarning)
 
 		.. seealso:: vice.singlezone.RIa 
 
+		Example Code 
+		------------
+		>>> import vice 
+		>>> sz = vice.singlezone(name = "example") 
+		>>> sz.delay 
+		0.15 
+		>>> sz.delay = 0.1 
+		>>> sz.delay 
+		0.1 
+
 		.. [1] Weinberg, Andrews & Freudenburg (2017), ApJ, 837, 183 
 		""" 
 		return self.__c_version.delay 
@@ -1045,7 +1056,7 @@ ran.""" % (i, j), UserWarning)
 	@property 
 	def RIa(self): 
 		r"""
-		Type : ``<function>`` or ``str`` [case-insensitive] 
+		Type : <function> or ``str`` [case-insensitive] 
 
 		Default : "plaw" 
 
@@ -1069,7 +1080,7 @@ ran.""" % (i, j), UserWarning)
 
 			Saving functional attributes with VICE outputs requires the 
 			package dill_, an extension to ``pickle`` in the Python_ standard 
-			library. It is recommended that VICE user's install dill_ 
+			library. It is recommended that VICE users install dill_ 
 			>= 0.2.0. 
 
 			.. _dill: https://pypi.org/project/dill/ 
@@ -1136,14 +1147,14 @@ ran.""" % (i, j), UserWarning)
 		the timescale on which the star formation rate is time-averaged 
 		before determining the outflow rate via the mass loading factor 
 		(attribute ``eta``). For an outflow rate :math:`\dot{M}_\text{out}` 
-		and a star formation rate :math:`\dot{M}_*` with a smoothing time 
+		and a star formation rate :math:`\dot{M}_\star` with a smoothing time 
 		:math:`\tau_\text{s}`: 
 
 		.. math:: \dot{M}_\text{out} = 
-			\eta(t) \langle\dot{M}_*\rangle_{\tau_\text{s}} 
+			\eta(t) \langle\dot{M}_\star\rangle_{\tau_\text{s}} 
 
 		The traditional relationship of 
-		:math:`\dot{M}_\text{out} = \eta \dot{M}_*` is recovered when the 
+		:math:`\dot{M}_\text{out} = \eta \dot{M}_\star` is recovered when the 
 		user specifies a smoothing time that is smaller than the timestep 
 		size. 
 
@@ -1208,10 +1219,10 @@ ran.""" % (i, j), UserWarning)
 
 		The star formation rate per unit gas supply in Gyr, defined by 
 
-		.. math:: \tau_* \equiv M_\text{g}/\dot{M}_* 
+		.. math:: \tau_\star \equiv M_\text{g}/\dot{M}_\star 
 
-		where :math:`M_\text{g}` is the ISM gas mass and :math:`\dot{M}_*` is 
-		the star formation rate. Numbers will be interpreted as a constant 
+		where :math:`M_\text{g}` is the ISM gas mass and :math:`\dot{M}_\star` 
+		is the star formation rate. Numbers will be interpreted as a constant 
 		value. Functions must accept time in Gyr as the only parameter. 
 
 		.. tip:: 
@@ -1224,7 +1235,7 @@ ran.""" % (i, j), UserWarning)
 			When the attribute ``schmidt == True``, this is interpreted as the 
 			prefactor on gas-dependent star formation efficiency: 
 
-			.. math:: \tau_*^{-1} = \tau_{*,\text{specified}}^{-1}
+			.. math:: \tau_\star^{-1} = \tau_{*,\text{specified}}^{-1}
 				\left(
 				\frac{M_\text{g}}{M_\text{g,Schmidt}} 
 				\right)^{\alpha} 
@@ -1306,22 +1317,22 @@ ran.""" % (i, j), UserWarning)
 
 		Default : False 
 
-		If true, the simulation will adopt a gas-dependent :math:`\tau_*`. At 
-		each timestep, the star formation efficiency timescale is determined 
-		via: 
+		If True, the simulation will adopt a gas-dependent scaling of the 
+		star formation efficiency timescale :math:`\tau_\star`. At each 
+		timestep, :math:`\tau_\star` is determined via: 
 
 		.. math:: \tau_\star(t) = \tau_{\star,\text{specified}}(t) 
 			\left(
 			\frac{M_g}{M_{g,\text{Schmidt}}} 
 			\right)^{-\alpha} 
 
-		where :math:`\tau_{*,\text{specified}}(t)` is the value of the 
-		attribute ``tau_star``, :math:`M_g` is the mass of the interstellar 
-		medium, :math:`M_{g,\text{Schmidt}}` the normalization thereof 
-		(attribute ``MgSchmidt``), and :math:`\alpha` the power-law index set 
-		by the attribute ``schmidt_index``. When the gas mass exceeds the 
-		attribute ``MgCrit`` (infinite by default), the SFE timescale reaches 
-		its minimum value: 
+		where :math:`\tau_{\star,\text{specified}}(t)` is the user-specified 
+		value of the attribute ``tau_star``, :math:`M_g` is the mass of the 
+		interstellar medium, :math:`M_{g,\text{Schmidt}}` is the normalization 
+		thereof (attribute ``MgSchmidt``), and :math:`\alpha` is the power-law 
+		index set by the attribute ``schmidt_index``. When the gas mass 
+		exceeds the attribute ``MgCrit`` (infinite by default), the SFE 
+		timescale reaches its minimum value: 
 
 		.. math:: \tau_\star(t) = \tau_{\star,\text{specified}}(t) 
 			\left(
@@ -1410,12 +1421,12 @@ ran.""" % (i, j), UserWarning)
 		formation efficiency timescale :math:`\tau_\star` is constant. It will 
 		reach a minimum value given by: 
 
-		.. math:: \tau_\star = \tau_{\star,\text{\specified}}(t)\left(
+		.. math:: \tau_\star = \tau_{\star,\text{specified}}(t)\left(
 			\frac{M_{g,\text{crit}}}{M_{g,\text{Schmidt}}} 
 			\right)^{-\alpha} 
 
 		where :math:`\tau_\star(t)` is the value of the user-specified 
-			attribute ``tau_star`` at a time :math:`t` in Gyr. 
+		attribute ``tau_star`` at a time :math:`t` in Gyr. 
 
 		.. note:: This parameter is only relevant when the attribute 
 			``schmidt = True``.  
@@ -1448,7 +1459,7 @@ ran.""" % (i, j), UserWarning)
 		The power-law index on gas-dependent star formation efficiency, if 
 		applicable: 
 
-		.. math:: \tau_*^{-1} \sim M_g^{\alpha} 
+		.. math:: \tau_\star^{-1} \sim M_g^{\alpha} 
 
 		.. note:: 
 
@@ -1502,7 +1513,7 @@ ran.""" % (i, j), UserWarning)
 
 		Default : 0.08 
 
-		The lower mass limit on star formation in solar masses. 
+		The lower mass limit on star formation in :math:`M_\odot`. 
 
 		Example Code 
 		------------

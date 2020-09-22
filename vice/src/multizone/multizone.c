@@ -110,9 +110,13 @@ extern void multizone_evolve_simple(MULTIZONE *mz) {
 
 	unsigned int i; 
 	for (i = 0; i < (*(*mz).mig).n_zones; i++) { 
-		if ((*mz).verbose) printf("Evolving zone %d...\n", i); 
+		if ((*mz).verbose) {
+			printf("\rEvolving zone: %d", i); 
+			fflush(stdout); 
+		} else {} 
 		singlezone_evolve_no_setup_no_clean(mz -> zones[i]); 
 	} 
+	if ((*mz).verbose) printf("\n"); 
 
 	/* 
 	 * Set the tracer count to the proper value for computing the MDF 
