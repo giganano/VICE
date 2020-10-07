@@ -62,13 +62,16 @@ class generator:
 			try: 
 				with_wind, err1 = fractional(elem, wind = True, **self._kwargs) 
 				no_wind, err2 = fractional(elem, wind = False, **self._kwargs)
+				sampled, err3 = fractional(elem, sample = 1000) 
 			except: 
 				success = False 
 				break 
 			success &= no_wind <= with_wind < 1 
 			success &= 0 <= no_wind <= with_wind
+			success &= 0 <= sampled < 1 
 			if with_wind == 0: success &= math.isnan(err1) 
 			if no_wind == 0: success &= math.isnan(err2) 
+			success &= math.isnan(err3) 
 			if not success: break 
 		return success 
 

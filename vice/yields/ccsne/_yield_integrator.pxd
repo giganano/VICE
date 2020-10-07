@@ -9,6 +9,10 @@ from ...core.objects._imf cimport IMF_
 cdef extern from "../../src/yields/ccsne.h": 
 	void weight_initial_by_explodability(unsigned short weight) 
 	void set_Z_progenitor(double Z) 
+	double IMFintegrated_fractional_yield_sampled(const unsigned long N, 
+		double m_lower, double m_upper, IMF_ *imf, 
+		CALLBACK_1ARG *explodability, char *path, const unsigned short wind, 
+		char *element)
 	unsigned short IMFintegrated_fractional_yield_numerator(
 		INTEGRAL *intgrl, IMF_ *imf, CALLBACK_1ARG *explodability, 
 		char *path, const unsigned short wind, char *element) 

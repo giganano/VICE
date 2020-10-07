@@ -28,11 +28,8 @@
  * header: stats.h 
  */ 
 extern double normal(double mean, double sigma) { 
-
-	/* 
-	 * Start by seeding the random number generator and generating two 
-	 * pseudo-random numbers 
-	 */ 
+ 
+	/* Start with two random numbers between 0 and 1 */ 
 	double r1 = (double) rand() / RAND_MAX; 
 	double r2 = (double) rand() / RAND_MAX; 
 

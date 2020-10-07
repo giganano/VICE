@@ -48,8 +48,8 @@ from . cimport _yield_integrator
 
 def integrate(element, study = "LC18", MoverH = 0, rotation = 0, 
 	explodability = None, wind = True, net = False, IMF = "kroupa", 
-	method = "simpson", m_lower = 0.08, m_upper = 100, tolerance = 1e-3, 
-	Nmin = 64, Nmax = 2e8): 
+	sample = 0, method = "simpson", m_lower = 0.08, m_upper = 100, 
+	tolerance = 1e-3, Nmin = 64, Nmax = 2e8): 
 	
 	r""" 
 	Calculate an IMF-integrated fractional nucleosynthetic yield of a 
@@ -142,6 +142,26 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			Prior to version 1.X.0, functions of mass as custom stellar IMF 
 			were not supported. 
 
+	sample : int [default : 0] 
+		The number of stars to sample from the IMF. If zero, VICE will proceed 
+		with the analytic calculation defined below. If nonzero, VICE will 
+		stochastically sample the IMF the specified number of times, and 
+		report the yield as the sum of the mass yield of the given element 
+		from the progenitors divided by the sum of the progenitor masses. 
+
+		.. versionadded:: 1.X.0 
+
+		.. note:: When this value is nonzero, the following keyword arguments 
+			play no role in the calculation: 
+
+				- method 
+				- tolerance 
+				- Nmin 
+				- Nmax 
+
+		.. note:: When this value is nonzero, the returned error will always 
+			be a NaN. 
+
 	method : ``str`` [case-insensitive] [default : "simpson"] 
 		The method of quadrature. 
 
@@ -174,7 +194,8 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	y : real number 
 		The numerically calculated yield. 
 	error : real number 
-		The estimated numerical error. 
+		The estimated numerical error. NaN if keyword argument ``sample`` is 
+		nonzero. 
 
 	Raises 
 	------
@@ -205,10 +226,13 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		- 	``wind = False`` and ``study`` is anything other than 
 			LC18 or S16. These are the only studies for which wind yields were 
 			reported separate from explosive yields. 
+		- 	``sample`` is nonzero but less than 100. In this case, numerical 
+			artifacts may be introduced by coarse sampling of the IMF. 
 
 	Notes 
 	-----
-	This function evaluates the solution to the following equation. 
+	If the keyword argument ``sample`` is zero, this function evaluates the 
+	solution to the following equation: 
 
 	.. math:: y_x^\text{CC} = \frac{
 		\int_8^u (E(m)m_x + w_x - Z_{x,\text{prog}}m) \frac{dN}{dm} dm 
@@ -236,6 +260,18 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		nucleosynthesis from radioactive decay products, then the values 
 		returned from this function should be interpreted as lower bounds 
 		rather than estimates of the true nucleosynthetic yield. 
+
+	If the keyword argument ``sample`` is nonzero, this function instead 
+	evaluates the solution to the following: 
+
+	.. math:: y_x^\text{CC} = \frac{
+		\sum_i (E(m)m_x + w_x - Z_{x,\text{prog}}m) \frac{dN}{dm} dm 
+		}{
+		\sum_i m \frac{dN}{dm} dm 
+		} 
+
+	where the index :math:`i` denotes the i'th progenitor mass sampled from 
+	the IMF, and the sum is taken over all progenitors. 
 
 	Example Code 
 	------------
@@ -282,6 +318,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		string_check(method, "method") 
 		numeric_check(MoverH, "MoverH") 
 		numeric_check(rotation, "rotation") 
+		numeric_check(sample, "sample") 
 		numeric_check(m_lower, "m_lower") 
 		numeric_check(m_upper, "m_upper") 
 		numeric_check(tolerance, "tolerance") 
@@ -306,6 +343,10 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		study.upper(), MoverHstr, rotation)): 
 		raise LookupError("""The %s study did not report yields for v = %d \
 km/s and [M/H] = %g""" % (study, rotation, MoverH)) 
+	elif sample < 0: 
+		raise ValueError("Sample must be positive. Got: %g" % (sample)) 
+	elif sample % 1: 
+		raise ValueError("Sample must be an integer. Got: %g" % (sample)) 
 	elif tolerance < 0 or tolerance > 1: 
 		raise ValueError("Tolerance must be between 0 and 1.") 
 	elif m_lower >= m_upper: 
@@ -455,6 +496,18 @@ own discretion by modifying their CCSN yield settings directly.""" % (
 	else: 
 		_yield_integrator.set_Z_progenitor(0) 
 		_yield_integrator.weight_initial_by_explodability(0) 
+
+	# compute the yield via sampling if instructed to do so 
+	if sample: 
+		if sample < 100: warnings.warn("""\
+Small number of progenitor stars for computing yield: %d. Beware that this \
+may introduce numerical artifacts.""" % (sample), ScienceWarning) 
+		yield_ = _yield_integrator.IMFintegrated_fractional_yield_sampled(
+			<unsigned long> sample, <double> m_lower, <double> m_upper, 
+			imf_obj, explodability_cb, path.encode("latin-1"), int(wind), 
+			element.lower().encode("latin-1")) 
+		return [yield_, float("nan")] 
+	else: pass 
 
 	# Compute the yield 
 	cdef INTEGRAL *num = _integral.integral_initialize() 

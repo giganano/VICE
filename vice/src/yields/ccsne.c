@@ -11,9 +11,12 @@
 #include "../imf.h" 
 #include "../utils.h" 
 #include "../ccsne.h" 
+#include "../stats.h" 
 #include "ccsne.h" 
 
 /* ---------- static function comment headers not duplicated here ---------- */
+static void setup_calculation(IMF_ *imf, CALLBACK_1ARG *explodability, 
+	char *path, const unsigned short wind, char *element); 
 static void zero_wind_yield_grid(void); 
 static double interpolate_yield(double m); 
 static double y_cc_numerator(double m); 
@@ -80,6 +83,68 @@ extern void set_Z_progenitor(double Z) {
 
 
 /* 
+ * Calculate an IMF integrated fractional yield by sampling the IMF and 
+ * summing up the yields and ZAMS masses as opposed to analytically 
+ * evaluating the solution. 
+ * 
+ * Parameters 
+ * ==========
+ * N: 				The number of stars to sample from the IMF 
+ * m_lower: 		The lower mass limit on star formation in Msun 
+ * m_upper: 		The upper mass limit on star formation in Msun 
+ * imf: 			The associated IMF object 
+ * explodability: 	Stellar explodability as a function of mass 
+ * path: 			The name of the data file containing the grid 
+ * wind: 			Boolean int describing whether or not to include winds 
+ * element: 		The symbol of the element 
+ * 
+ * Returns 
+ * =======
+ * The value of the IMF integrated fractional yield via stochastic sampling. 
+ * 
+ * header: ccsne.h 
+ */ 
+extern double IMFintegrated_fractional_yield_sampled(const unsigned long N, 
+	double m_lower, double m_upper, IMF_ *imf, CALLBACK_1ARG *explodability, 
+	char *path, const unsigned short wind, char *element) {
+
+	/* 
+	 * Bookkeeping 
+	 * ===========
+	 * prefactor: 	10 times as many bins as progenitors 
+	 * bins: 		Bin-edges in stellar mass 
+	 * dist: 		The mass distribution in the sampled bins 
+	 * progenitors: Progenitor ZAMS masses sampled from the IMF 
+	 * yields: 		The interpolated yields of each progenitor star 
+	 * 
+	 * IMFintegrated_yield is the value this function sets out to calculate 
+	 */ 
+	setup_calculation(imf, explodability, path, wind, element); 
+	unsigned short prefactor = 10; 
+	double *bins = binspace(m_lower, m_upper, prefactor * N); 
+	double *dist = (double *) malloc ((prefactor * N) * sizeof(double)); 
+	unsigned long i; 
+	for (i = 0ul; i < prefactor * N; i++) {
+		dist[i] = imf_evaluate(*IMF, (bins[i] + bins[i + 1]) / 2); 
+	}
+
+	double *progenitors = sample(dist, bins, prefactor * N, N); 
+	double *yields = (double *) malloc (N * sizeof(double)); 
+	for (i = 0ul; i < N; i++) {
+		yields[i] = interpolate_yield(progenitors[i]); 
+	} 
+
+	double IMFintegrated_yield = sum(yields, N) / sum(progenitors, N); 
+	free(bins); 
+	free(dist); 
+	free(progenitors); 
+	free(yields); 
+	return IMFintegrated_yield; 
+
+}
+
+
+/* 
  * Determine the value of the integrated IMF weighted by the mass yield of a 
  * given element, up to the normalization of the IMF. 
  * 
@@ -103,6 +168,7 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
 	INTEGRAL *intgrl, IMF_ *imf, CALLBACK_1ARG *explodability, 
 	char *path, const unsigned short wind, char *element) { 
 
+	#if 0 
 	/* 
 	 * Initialize these variables globally. This is such that the function 
 	 * which execute numerical quadrature can accept only one parameter - the 
@@ -131,6 +197,9 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
 
 	IMF = imf; 
 	EXPLODABILITY = explodability; 
+	#endif 
+
+	setup_calculation(imf, explodability, path, wind, element); 
 	intgrl -> func = &y_cc_numerator; 
 	int x = quad(intgrl); 
 	free(GRID); 
@@ -140,6 +209,53 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
 	IMF = NULL; 
 	EXPLODABILITY = NULL; 
 	return x; 
+
+} 
+
+
+/* 
+ * Setup the yield calculation by initializing all of the necessary global 
+ * variables. 
+ * 
+ * Parameters 
+ * ==========
+ * imf:				The associated IMF object
+ * explodability: 	Stellar explodability as a function of mass 
+ * path:			The nme of the data file containing the grid 
+ * wind: 			Boolean int describing whether or not to include winds 
+ * element: 		The symbol of the element 
+ */ 
+static void setup_calculation(IMF_ *imf, CALLBACK_1ARG *explodability, 
+	char *path, const unsigned short wind, char *element) {
+
+	/* 
+	 * Initialize these variables globally. This is such that the function 
+	 * which executes numerical quadrature can accept only one parameter - the 
+	 * ZAMS mass of the progenitor. 
+	 */ 
+	char *file = (char *) malloc (MAX_FILENAME_SIZE * sizeof(char)); 
+	strcpy(file, path); 
+	strcat(file, "explosive/"); 
+	strcat(file, element); 
+	strcat(file, ".dat"); 
+
+	GRIDSIZE = line_count(file) - header_length(file); 
+	GRID = cc_yield_grid(file); 
+
+	if (wind) {
+		char *wind = (char *) malloc (MAX_FILENAME_SIZE * sizeof(char)); 
+		strcpy(wind, path); 
+		strcat(wind, "wind/"); 
+		strcat(wind, element); 
+		strcat(wind, ".dat"); 
+		WIND = cc_yield_grid(wind); 
+		free(wind); 
+	} else {
+		zero_wind_yield_grid(); 
+	} 
+
+	IMF = imf; 
+	EXPLODABILITY = explodability; 
 
 }
 
