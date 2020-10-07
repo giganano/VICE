@@ -32,23 +32,30 @@ if not __VICE_SETUP__:
 		r"""
 		Update the parameters with which the yields are calculated from the 
 		Limongi & Chieffi (2018) [1]_ data. 
+
 		**Signature**: vice.yields.ccsne.LC18.set_params(\*\*kwargs) 
+
 		Parameters 
 		----------
 		kwargs : varying types 
 			Keyword arguments to pass to vice.yields.ccsne.fractional. 
+
 		Raises 
 		------
 		* TypeError 
 			- 	Received a keyword argument "study". This will always be "LC18" 
 				when called from this module. 
+
 		Other exceptions are raised by vice.yields.ccsne.fractional. 
+
 		Example Code 
 		------------
 		>>> import vice 
 		>>> from vice.yields.ccsne import LC18 
 		>>> LC18.set_params(m_lower = 0.3, m_upper = 40, IMF = "salpeter") 
+
 		.. seealso:: vice.yields.ccsne.fractional 
+
 		.. [1] Limongi & Chieffi (2018), ApJS, 237, 17 
 		"""
 		if "study" in kwargs.keys(): 
@@ -60,5 +67,5 @@ if not __VICE_SETUP__:
 
 	set_params() 
 
-else: 
-	pass 
+else: pass 
+
