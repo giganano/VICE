@@ -1,58 +1,35 @@
+r""" 
+Utility functions for running a given simulation suite. 
 
-import math as m 
-import numbers 
+Contents 
+--------
+generate_output_tree : <function> 
+	Create the directory tree to store the outputs in. 
+""" 
+
+import os 
 
 
-class exponential: 
+def generate_output_tree(name): 
+	r""" 
+	Generates a directory tree in which to store the outputs for a given 
+	simulation suite, the root being placed in the current working directory. 
 
-	def __init__(self, norm = 1, timescale = 1): 
-		self.norm = norm 
-		self.timescale = timescale 
-
-	def __call__(self, time): 
-		return self.norm * m.exp(-time / self.timescale) 
-
-	@property 
-	def norm(self): 
-		r""" 
-		Type : real number 
-
-		The normalization of the exponential. 
-		""" 
-		return self._norm 
-
-	@norm.setter 
-	def norm(self, value): 
-		if isinstance(value, numbers.Number): 
-			self._norm = float(value) 
-		else: 
-			raise TypeError("Normalization must be a real number. Got: %s" % (
-				type(value))) 
-
-	@property 
-	def timescale(self): 
-		r""" 
-		Type : real number 
-
-		The e-folding timescale of the exponential. If positive, this object 
-		describes exponential decay. If negative, it describes exponential 
-		growth. 
-		""" 
-		return self._timescale 
-
-	@timescale.setter 
-	def timescale(self, value): 
-		if isinstance(value, numbers.Number): 
-			if value: 
-				self._timescale = value 
-			else: 
-				raise ValueError("Timescale must be nonzero.") 
-		else: 
-			raise TypeError("Timescale must be a real number. Got: %s" % (
-				type(value))) 
-
-class linear_exponential(exponential): 
-
-	def __call__(self, time): 
-		return time * super().__call__(time) 
+	Parameters 
+	----------
+	name : str 
+		The name of the simulation suite. 
+	""" 
+	if isinstance(name, str): 
+		if not os.path.exists("outputs"): os.system("mkdir outputs") 
+		os.system("mkdir outputs/%s" % (name)) 
+		# Each SFE timescale prescription 
+		for i in ["2Gyr", "1Gyr", "2Gyr_timedep", "1Gyr_timedep"]: 
+			os.system("mkdir outputs/%s/%s" % (name, i)) 
+			# Each migration model 
+			for j in ["linear", "diffusion", "sudden", "post-process"]: 
+				os.system("mkdir outputs/%s/%s/%s" % (name, i, j)) 
+				# Each evolutionary history within this directory 
+	else: 
+		raise TypeError("Name must be of type str. Got: %s" % (type(name))) 
 

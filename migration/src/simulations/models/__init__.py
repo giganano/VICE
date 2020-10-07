@@ -1,3 +1,5 @@
 
-__all__ = ["fiducial"] 
-from .fiducial import main as fiducial 
+__all__ = ["insideout", "lateburst", "static"] 
+from .insideout import insideout 
+from .lateburst import lateburst 
+from .static import static 

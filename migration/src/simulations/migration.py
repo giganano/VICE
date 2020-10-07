@@ -1,6 +1,5 @@
 
 from vice.toolkit import hydrodisk 
-from .config import config 
 
 
 class diskmigration(hydrodisk.hydrodiskstars): 
@@ -10,8 +9,9 @@ class diskmigration(hydrodisk.hydrodiskstars):
 	to an output file. 
 	""" 
 
-	def __init__(self, radbins, mode = "linear", filename = "stars.out"): 
-		super().__init__(radbins, mode = mode) 
+	def __init__(self, radbins, mode = "linear", filename = "stars.out", 
+		**kwargs): 
+		super().__init__(radbins, mode = mode, **kwargs) 
 		if isinstance(filename, str): 
 			self._file = open(filename, 'w') 
 			self._file.write("# zone_origin\ttime_origin\tzfinal\n") 

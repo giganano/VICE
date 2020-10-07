@@ -3,8 +3,10 @@ from __future__ import absolute_import
 __all__ = ["milkyway"] 
 from ._globals import _RECOGNIZED_ELEMENTS_ 
 from .core.multizone import multizone 
+from .core.dataframe._builtin_dataframes import solar_z 
 from .core import _pyutils 
 from .toolkit.hydrodisk import hydrodiskstars 
+from . import yields 
 import numbers 
 import math as m 
 
@@ -28,14 +30,16 @@ class milkyway(multizone):
 		return super().__new__(cls, n_zones = len(radial_bins) - 1) 
 
 	def __init__(self, zone_width = 0.5, name = "milkyway", n_stars = 1, 
-		simple = False, verbose = False, N = 1e5, mode = "linear"): 
+		simple = False, verbose = False, N = 1e5, migration_mode = "linear"): 
 		radial_bins = _get_radial_bins(zone_width) 
 		super().__init__(name = name, n_zones = len(radial_bins) - 1, 
 			n_stars = n_stars, simple = simple, verbose = verbose) 
 		
 		# set default values 
-		self.migration.stars = hydrodiskstars(radial_bins, N = N, mode = mode) 
+		self.migration.stars = hydrodiskstars(radial_bins, N = N, 
+			mode = migration_mode) 
 		self.evolution = milkyway.default_evolution 
+		self.mass_loading = milkyway.default_mass_loading 
 		self.schmidt = True 
 		self.Sigma_gCrit = 2.0e7 
 		for i in range(self.n_zones): 
@@ -296,6 +300,83 @@ class milkyway(multizone):
 		# Let the singlezone object do the error handling 
 		for i in range(self.n_zones): 
 			self.zones[i].IMF = value 
+
+	@property 
+	def mass_loading(self): 
+		r""" 
+		Type : <function> 
+
+		Default : vice.milkyway.default_mass_loading 
+
+		The mass-loading factor as a function of galactocentric radius in kpc 
+		describing the efficiency of outflows. For a given star formation rate 
+		:math:`\dot{M}_\star` and an outflow rate :math:`\dot{M}_\text{out}`, 
+		the mass-loading factor is defined as the unitless ratio: 
+
+		.. math:: \eta \equiv \dot{M}_\text{out} / \dot{M}_\star 
+
+		This function must return a non-negative real number for all radii 
+		defined in the disk model. 
+
+		Example Code 
+		------------
+		>>> import math as m 
+		>>> import vice 
+		>>> mw = vice.milkyway(name = "example") 
+		>>> def f(r): 
+			return 0.5 * m.exp(r / 3) 
+		>>> mw.mass_loading = f 
+		""" 
+		return self._mass_loading 
+
+	@mass_loading.setter 
+	def mass_loading(self, value): 
+		if callable(value): 
+			# Let the singlezone object do error handling from here 
+			for i in range(self.n_zones): 
+				self.zones[i].eta = value(
+					(self.annuli[i] + self.annuli[i + 1]) / 2
+				) 
+			# If the code gets here, the function passes 
+			self._mass_loading = value 
+		else: 
+			raise TypeError("""Attribute 'mass_loading' must be a callable \
+object. Got: %s""" % (type(value))) 
+
+	@staticmethod 
+	def default_mass_loading(rgal): 
+		r""" 
+		The default mass loading factor as a function of galactocentric 
+		radius in kpc. 
+
+		Parameters 
+		----------
+		rgal : real number 
+			Galactocentric radius in kpc. 
+
+		Returns 
+		-------
+		eta : real number 
+			The mass loading factor at that radius, defined by: 
+
+			.. math:: \eta(r) = y_\text{O}^\text{CC} / Z_\text{O}^\odot 
+				10^{0.06(r - 4\text{ kpc}) - 0.3} - 0.6 
+
+			where :math:`C` is the corrective term, :math:`Z_\text{O}^\odot` 
+			is the solar abundance by mass of oxygen, and 
+			:math:`y_\text{O}^\text{CC}` is the IMF-averaged CCSN yield of 
+			oxygen. These values are taken from the ``vice.yields`` module at 
+			the time the ``milkyway`` object is initialized. 
+
+		.. tip:: To reset the mass loading factor in each annulus after 
+			modifying the oxygen yield, this function can be simply 
+			reassigned. For a ``milkyway`` object ``x``: 
+
+			>>> x.mass_loading = vice.milkyway.default_mass_loading  
+		""" 
+		# return yields.ccsne.settings['o'] / solar_z['o'] * (
+		# 	10**(0.06 * (rgal - 4) - 0.3)) - 0.6 
+		return 0.015 / solar_z['o'] * (10**(0.06 * (rgal - 4) - 0.3)) - 0.6 
 
 	@property 
 	def dt(self): 

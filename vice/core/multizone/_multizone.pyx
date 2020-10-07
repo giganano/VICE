@@ -283,7 +283,8 @@ number of zones. Got: %d. Required: %d.""" % (value.gas.size, self.n_zones))
 migration.specs. Got: %s""" % (type(value))) 
 
 
-	def run(self, output_times, capture = False, overwrite = False): 
+	def run(self, output_times, capture = False, overwrite = False, 
+		pickle = True): 
 		""" 
 		See docstring in python version of this class. 
 		""" 
@@ -302,7 +303,7 @@ migration.specs. Got: %s""" % (type(value)))
 
 			# just do it #nike 
 			enrichment = _multizone.multizone_evolve(self._mz) 
-			self.pickle() 
+			if pickle: self.pickle() 
 
 			# save yield settings and attributes 
 			for i in range(self._mz[0].mig[0].n_zones): 

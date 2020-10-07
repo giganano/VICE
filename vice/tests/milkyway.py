@@ -26,6 +26,7 @@ def test():
 			test_mode(), 
 			test_elements(), 
 			test_IMF(), 
+			test_mass_loading(), 
 			test_dt(), 
 			test_bins(), 
 			test_delay(), 
@@ -160,6 +161,27 @@ def test_IMF():
 			if not status: break 
 		return status 
 	return ["vice.milkyway.IMF", test] 
+
+
+@unittest 
+def test_mass_loading(): 
+	r""" 
+	vice.milkyway.mass_loading unit test 
+	""" 
+	def test(): 
+		def testfunc(rgal): # dummy function for testing 
+			return rgal 
+		try: 
+			_TEST_.mass_loading = testfunc 
+		except: 
+			return False 
+		status = _TEST_.mass_loading == testfunc 
+		for i in range(_TEST_.n_zones): 
+			status &= _TEST_.zones[i].eta == (
+				_TEST_.annuli[i] + _TEST_.annuli[i + 1]) / 2 
+			if not status: break 
+		return status 
+	return ["vice.milkyway.mass_loading", test] 
 
 
 @unittest 

@@ -5,6 +5,23 @@ import numbers
 
 class config: 
 
+	def __init__(self, **kwargs): 
+		defaults = {
+			"timestep_size": 			0.01, 
+			"star_particle_density":	2, 
+			"zone_width": 				0.1, 
+			"elements": 				["fe", "o"], 
+			"tau_star_mol": 			2, 
+			"bins": 					[-3 + 0.01 * i for i in range(601)] 
+		} 
+		for i in kwargs.keys(): defaults[i] = kwargs[i] 
+		self.timestep_size = 			defaults["timestep_size"] 
+		self.star_particle_density = 	defaults["star_particle_density"] 
+		self.zone_width = 				defaults["zone_width"] 
+		self.elements = 				defaults["elements"] 
+		self.tau_star_mol = 			defaults["tau_star_mol"] 
+		self.bins = 					defaults["bins"] 
+
 	@property 
 	def timestep_size(self): 
 		r""" 
@@ -88,69 +105,68 @@ Star particle density must be an integer. Got: %s""" % (type(value)))
 				type(value))) 
 
 	@property 
-	def radial_bins(self): 
+	def max_radius(self): 
+		r""" 
+		Type : real number 
+
+		The maximum radius in kpc of the disk model. 
+		""" 
+		return 20. 
+
+	@property 
+	def elements(self): 
 		r""" 
 		Type : list 
 
-		The radial bin edges in kpc describing the multizone disk model. 
+		The symbols of the elements to simulate the enrichment for. 
 		""" 
-		return [self.zone_width * i for i in range(int(self.max_radius / 
-			self.zone_width) + 1)] 
+		return self._elements 
 
-	@property 
-	def max_radius(self): 
-		r""" 
-		Type : float 
-
-		The outermost radius for the multizone model annuli in kpc. 
-		""" 
-		return 30. 
-
-	@property 
-	def scale_radius(self): 
-		r""" 
-		Type : float 
-
-		The scale radius of the stellar disk in kpc. 
-		""" 
-		return self._scale_radius 
-
-	@scale_radius.setter 
-	def scale_radius(self, value): 
-		if isinstance(value, numbers.Number): 
-			if value > 0: 
-				self._scale_radius = float(value) 
+	@elements.setter 
+	def elements(self, value): 
+		if isinstance(value, list): 
+			if all([isinstance(i, str) for i in value]): 
+				self._elements = value 
 			else: 
-				raise ValueError("Scale radius must be positive.") 
+				raise ValueError("All elements must be of type str.") 
 		else: 
-			raise TypeError("Scale radius must be a numerical value.") 
+			raise TypeError("Expected type list. Got: %s" % (type(value))) 
 
 	@property 
-	def tau_star_norm(self): 
+	def tau_star_mol(self): 
 		r""" 
-		Type : float 
+		Type : real number or <function> 
 
-		The value of the star formation efficiency timescale at the center of 
-		the galaxy disk (i.e. at R = 0). 
+		The depletion time of molecular gas due to star formation. Either a 
+		constant, time-independent value, or a function of time in Gyr. 
 		""" 
-		return self._tau_star_norm 
+		return self._tau_star_mol 
 
-	@tau_star_norm.setter 
-	def tau_star_norm(self, value): 
-		if isinstance(value, numbers.Number): 
-			if value > 0: 
-				self._tau_star_norm = float(value) 
-			else: 
-				raise ValueError("SFE timescale normalization must be positive.") 
+	@tau_star_mol.setter 
+	def tau_star_mol(self, value): 
+		if isinstance(value, numbers.Number) or callable(value): 
+			self._tau_star_mol = value 
 		else: 
-			raise TypeError("""SFE timescale normalization must be a \
-numerical value.""") 
+			raise TypeError("Expected a real number or function. Got: %s" % (
+				type(value))) 
 
+	@property 
+	def bins(self): 
+		r""" 
+		Type : list 
 
-config = config() 
-config.timestep_size = 0.05 
-config.star_particle_density = 1 
-config.zone_width = 0.25 
-config.scale_radius = 3 
-config.tau_star_norm = 0.05 
+		The bins to sort metallicity distribution functions into. This will 
+		be assigned as the 'bins' attribute to the ``milkyway`` object. 
+		""" 
+		return self._bins 
+
+	@bins.setter 
+	def bins(self, value): 
+		if isinstance(value, list): 
+			if all([isinstance(i, numbers.Number) for i in value]): 
+				self._bins = value 
+			else: 
+				raise ValueError("Non-numerical value detected.") 
+		else: 
+			raise TypeError("Must be of type list. Got: %s" % (type(value))) 
 
