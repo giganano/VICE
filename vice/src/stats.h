@@ -28,7 +28,6 @@ extern "C" {
  */ 
 extern double normal(double mean, double sigma); 
 
-#if 0 
 /* 
  * Draw a given number of samples from a known distribution. 
  * 
@@ -43,6 +42,11 @@ extern double normal(double mean, double sigma);
  * Returns 
  * ======= 
  * A double pointer to an n-element array of values drawn from the given 
+ * distribution. 
+ * 
+ * Notes 
+ * =====
+ * This function implements inverse transform sampling from a discrete 
  * distribution. 
  * 
  * source: stats.c 
@@ -69,7 +73,6 @@ extern double *sample(double *dist, double *bins, unsigned long n_bins,
  */ 
 extern double *convert_to_CDF(double *dist, double *bins, 
 	unsigned long n_bins); 
-#endif 
 
 /* 
  * Convert a distribution in a given binspace to a probability distribution 

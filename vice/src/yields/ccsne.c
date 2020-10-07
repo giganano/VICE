@@ -29,8 +29,7 @@ static double y_cc_denominator(double m);
  * WIND: 			The stellar mass - element yield from the wind 
  * GRIDSIZE:		The number of stellar masses on which the yield grid is 
  * 					sampled 
- * MASS_RANGES: 	Stellar initial mass ranges passed from the user for 
- * 					stellar explodability prescription 
+ * IMF: 			The assumed stellar IMF's corresponding object  
  * EXPLODABILITY: 	The fractions of stars that explode in those mass ranges 
  * Z_PROGENITOR: 	Z_x of the progenitor stars for the element x. 
  * WEIGHT_INITIAL: 	A boolean int describing whether or not to weight the 

@@ -18,6 +18,28 @@ extern "C" {
 extern unsigned short test_normal(void); 
 
 /* 
+ * Test the sample routine at vice/src/stats.h 
+ * 
+ * Returns 
+ * ======= 
+ * 1 on success, 0 on failure 
+ * 
+ * source: stats.c 
+ */ 
+extern unsigned short test_sample(void); 
+
+/* 
+ * Test the convert to CDF function at vice/src/stats.h 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * source: stats.c 
+ */ 
+extern unsigned short test_convert_to_CDF(void); 
+
+/* 
  * Test the convert to PDF function at vice/src/stats.h 
  * 
  * Returns 

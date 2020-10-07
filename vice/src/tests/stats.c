@@ -12,6 +12,7 @@
 /* ---------- static function comment headers not duplicated here ---------- */
 static unsigned short get_test_sample_bin_number(double deviation); 
 static double unnormalized_gaussian(double x); 
+static double standard_deviation(double *arr, unsigned long length); 
 
 /* 
  * TEST_GAUSSIAN_SIGMA: 	The dispersion of the test distribution 
@@ -111,6 +112,85 @@ static unsigned short get_test_sample_bin_number(double deviation) {
 
 
 /* 
+ * Test the sample routine at vice/src/stats.h 
+ * 
+ * Returns 
+ * ======= 
+ * 1 on success, 0 on failure 
+ * 
+ * header: stats.h 
+ */ 
+extern unsigned short test_sample(void) {
+
+	/* 
+	 * Test the function by sampling a gaussian distribution and ensuring that 
+	 * the mean and standard deviation are within a reasonable numerical error 
+	 * of the known values prior to resampling. 
+	 * 
+	 * In the case of the mean, ensure that it is within the error on the mean 
+	 * of the known mean of the distribution. 
+	 */ 
+
+	unsigned long i, n_bins = 2e5, n_sample = 1e4; 
+	double *bins = binspace(-10, 10, n_bins); 
+	double *centers = bin_centers(bins, n_bins); 
+	double *gaussian = (double *) malloc (n_bins * sizeof(double)); 
+	for (i = 0u; i < n_bins; i++) {
+		gaussian[i] = unnormalized_gaussian(centers[i]); 
+	} 
+
+	unsigned short status = 1u; 
+	double *resampled = sample(gaussian, bins, n_bins, n_sample); 
+	double mean = sum(resampled, n_sample) / n_sample; 
+	double std = standard_deviation(resampled, n_sample); 
+	status &= absval(mean - TEST_GAUSSIAN_MEAN) < 2 * std / sqrt(n_sample); 
+	status &= absval(std - TEST_GAUSSIAN_SIGMA) < 0.1; 
+	free(bins); 
+	free(centers); 
+	free(gaussian); 
+	free(resampled); 
+	return status; 
+
+}
+
+
+/* 
+ * Test the convert to CDF function at vice/src/stats.h 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * header: stats.h 
+ */ 
+extern unsigned short test_convert_to_CDF(void) {
+
+	unsigned short i, status = 1u, n = 20000u; 
+	double *bins = binspace(-10, 10, n); 
+	double *centers = bin_centers(bins, n); 
+	double *gaussian = (double *) malloc (n * sizeof(double)); 
+	for (i = 0u; i < n; i++) {
+		gaussian[i] = unnormalized_gaussian(centers[i]); 
+	} 
+
+	double *cdf = convert_to_CDF(gaussian, bins, n); 
+	for (i = 1u; i < n; i++) {
+		status &= cdf[i] >= 0; 
+		status &= cdf[i] >= cdf[i - 1u]; 
+		if (!status) break; 
+	} 
+	status &= absval(cdf[n - 1u] - 1) < 1e-15; 
+
+	free(bins); 
+	free(centers); 
+	free(gaussian); 
+	free(cdf); 
+	return status; 
+
+}
+
+
+/* 
  * Test the convert to PDF function at vice/src/stats.h 
  * 
  * Returns 
@@ -121,8 +201,8 @@ static unsigned short get_test_sample_bin_number(double deviation) {
  */ 
 extern unsigned short test_convert_to_PDF(void) { 
 
-	unsigned short i, n = 1000u; 
-	double *bins = binspace(-3, 3, n); 
+	unsigned short i, n = 20000u; 
+	double *bins = binspace(-10, 10, n); 
 	double *centers = bin_centers(bins, n); 
 	double *gaussian = (double *) malloc (n * sizeof(double)); 
 	for (i = 0u; i < n; i++) { 
@@ -151,7 +231,36 @@ extern unsigned short test_convert_to_PDF(void) {
  */ 
 static double unnormalized_gaussian(double x) { 
 
-	return exp( -pow(x, 2) / TEST_GAUSSIAN_SIGMA); 
+	return exp(
+		-pow( x - TEST_GAUSSIAN_MEAN, 2) / 
+		(2 * pow(TEST_GAUSSIAN_SIGMA, 2)) 
+	); 
+
+}
+
+
+/* 
+ * Compute the standard deviation of a sample of numbers. 
+ * 
+ * Parameters 
+ * ==========
+ * arr: 		A double pointer to the array of numbers to compute the 
+ * 				standard deviation for 
+ * length: 		The length of the array arr 
+ * 
+ * Returns 
+ * =======
+ * The square root of the sum of the squared difference between each value and 
+ * the mean of the sample divided by the sample size. 
+ */ 
+static double standard_deviation(double *arr, unsigned long length) {
+
+	unsigned long i; 
+	double s = 0, mean = sum(arr, length) / length; 
+	for (i = 0ul; i < length; i++) {
+		s += pow(arr[i] - mean, 2); 
+	} 
+	return sqrt(s / length); 
 
 }
 

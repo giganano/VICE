@@ -1,3 +1,9 @@
+/* 
+ * This file implements simple statistical functions, namely sampling from a 
+ * gaussian distribution via the Box-Muller transform, sampling from a generic 
+ * distribution via inverse transform sampling, conversion of a distribution 
+ * to a CDF, and conversion of a distribution to a PDF. 
+ */ 
 
 #include <stdlib.h> 
 #include <math.h> 
@@ -16,8 +22,8 @@
  * 
  * Returns 
  * ======= 
- * A psuedo-random number drawn from a guassian distribution with specified mean 
- * and standard deviation. 
+ * A psuedo-random number drawn from a guassian distribution with specified 
+ * mean and standard deviation. 
  * 
  * header: stats.h 
  */ 
@@ -49,7 +55,6 @@ extern double normal(double mean, double sigma) {
 } 
 
 
-#if 0 
 /* 
  * Draw a given number of samples from a known distribution. 
  * 
@@ -66,50 +71,33 @@ extern double normal(double mean, double sigma) {
  * A double pointer to an n-element array of values drawn from the given 
  * distribution. 
  * 
+ * Notes 
+ * =====
+ * This function implements inverse transform sampling from a discrete 
+ * distribution. 
+ * 
  * header: stats.h 
  */ 
 extern double *sample(double *dist, double *bins, unsigned long n_bins, 
 	unsigned long n) {
 
-	/* 
-	 * Given the cumulative distribution function associated with a known 
-	 * distribution, a sampled value can be drawn from the bin number of a 
-	 * pseudorandom number between 0 and 1. Thus first convert the 
-	 * distribution to a CDF and allocate memory for n doubles. 
-	 */ 
 	double *cdf = convert_to_CDF(dist, bins, n_bins); 
 	double *values = (double *) malloc (n * sizeof(double)); 
 
-	unsigned long i; 
 	seed_random(); 
-	for (i = 0l; i < n; i++) { 
-		double x = (double) rand() / RAND_MAX; 
+	unsigned long i; 
+	for (i = 0ul; i < n; i++) {
+		double x = rand_range(0, 1); 
 		long bin = get_bin_number(cdf, n_bins, x); 
-		switch (bin) {
 
-			case -1l: 
-				/* 
-				 * This shouldn't happen given the nature of this 
-				 * implementation; included as a failsafe. 
-				 */ 
-				free(cdf); 
-				free(values); 
-				return NULL; 
-
-			default: 
-				/* 
-				 * CDFs must be interpreted from the right-hand bin edges 
-				 * rather than the left, so increment the bin number by 1 
-				 * 
-				 * Assume uniform likelihood within that bin of the CDF and 
-				 * randomly draw a value in that range. 
-				 */ 
-				if ((unsigned) bin != n_bins - 1l) bin++; 
-				values[i] = rand_range(bins[bin], bins[bin + 1l]); 
-				break; 
-
-		} 
-
+		/* 
+		 * If bin == -1, x is between 0 and cdf[0] -> zero'th bin 
+		 * If bin == 0, x is between cdf[0] and cdf[1] -> first bin 
+		 * If bin == 1, x is between cdf[1] and cdf[2] -> second bin 
+		 * 
+		 * ... and so on, hence the addition of one in the bin index. 
+		 */ 
+		values[i] = rand_range(bins[bin + 1l], bins[bin + 2l]); 
 	} 
 
 	free(cdf); 
@@ -138,33 +126,18 @@ extern double *sample(double *dist, double *bins, unsigned long n_bins,
 extern double *convert_to_CDF(double *dist, double *bins, 
 	unsigned long n_bins) { 
 
-	/* First make a copy of the distribution */ 
+	/* The CDF is defined as the area under the PDF up to a value x */ 
 	unsigned long i; 
+	double *pdf = convert_to_PDF(dist, bins, n_bins); 
 	double *cdf = (double *) malloc (n_bins * sizeof(double)); 
-	for (i = 0l; i < n_bins; i++) {
-		cdf[i] = dist[i]; 
-	}
-
-	/* 
-	 * Ignoring the first bin, add the value of the distribution from all 
-	 * previous bins. 
-	 */ 
-	for (i = 1l; i < n_bins; i++) {
-		cdf[i] += cdf[i - 1]; 
-	} 
-
-	/* 
-	 * By definition a CDF converges to 1 as the bin number increases, so 
-	 * enforce that definition here. 
-	 */ 
-	for (i = 0l; i < n_bins; i++) {
-		cdf[i] /= cdf[n_bins - 1l]; 
+	cdf[0] = pdf[0] * (bins[1] - bins[0]); 
+	for (i = 1ul; i < n_bins; i++) {
+		cdf[i] = cdf[i - 1ul] + pdf[i] * (bins[i + 1ul] - bins[i]); 
 	} 
 
 	return cdf; 
 
 }
-#endif 
 
 
 /* 

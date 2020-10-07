@@ -2,4 +2,6 @@
 
 cdef extern from "stats.h": 
 	unsigned short test_normal() 
+	unsigned short test_sample() 
+	unsigned short test_convert_to_CDF() 
 	unsigned short test_convert_to_PDF() 
