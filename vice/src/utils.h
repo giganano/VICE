@@ -222,6 +222,27 @@ extern double scale_metallicity(SINGLEZONE sz, unsigned long timestep);
 extern double *binspace(double start, double stop, unsigned long N); 
 
 /* 
+ * Returns a pointer to an array of log-spaced doubles between two specified 
+ * values. For a binspace N bins, the resulting array is of length (N + 1) due 
+ * to the final bin edge. 
+ * 
+ * Parameters 
+ * ==========
+ * start: 		The left-most bin edge 
+ * stop: 		The right-most bin edge 
+ * N: 			The number of desired binds 
+ * 
+ * Notes 
+ * ===== 
+ * This function differs from numpy.logspace in python in that the return 
+ * array is of length N + 1 instead of N, and the first and last elements will 
+ * be start and stop as opposed to 10^start and 10^stop. 
+ * 
+ * source: utils.c 
+ */ 
+extern double *logbinspace(double start, double stop, unsigned long N); 
+
+/* 
  * Determine the center of each bin in an array of bin edges by taking the 
  * arithmetic mean of adjacent bin edges. For a binspace with n bins (i.e. of 
  * length n + 1), the resultant array from this function will be of length n. 
@@ -239,6 +260,26 @@ extern double *binspace(double start, double stop, unsigned long N);
  * source: utils.c 
  */ 
 extern double *bin_centers(double *edges, unsigned long n_bins); 
+
+/* 
+ * Determine the log-center of each bin in an array of bin edges by taking 
+ * the arithmetic mean of the log of adjacent bin edges, and raising 10 to 
+ * that power. For a binspace with n bins (i.e. of length n + 1), the 
+ * resultant array from this function will be of length n. 
+ * 
+ * Parameters 
+ * ==========
+ * edges: 		The bin edges themselves 
+ * n_bins: 		The number of bins in the binspace. This is always 1 less than 
+ * 				the number of elements in the edges array. 
+ * 
+ * Returns 
+ * =======
+ * An array containing the logarithmic mean of the adjacent bin edges. 
+ * 
+ * source: utils.c 
+ */ 
+extern double *logbin_centers(double *edges, unsigned long n_bins); 
 
 /* 
  * Determine the sum of an array of double with known length. 

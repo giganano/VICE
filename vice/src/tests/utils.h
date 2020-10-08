@@ -106,6 +106,17 @@ extern unsigned short test_get_bin_number(void);
 extern unsigned short test_binspace(void); 
 
 /* 
+ * Test the logbinspace function at vice/src/utils.h 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * source: utils.c 
+ */ 
+extern unsigned short test_logbinspace(void); 
+
+/* 
  * Test the bin_centers function at vice/src/utils.h 
  * 
  * Returns 
@@ -115,6 +126,17 @@ extern unsigned short test_binspace(void);
  * source: utils.c 
  */ 
 extern unsigned short test_bin_centers(void); 
+
+/* 
+ * Test the logbin_centers function at vice/src/utils.h 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * source: utils.c 
+ */ 
+extern unsigned short test_logbin_centers(void); 
 
 /* 
  * Test the sum function at vice/src/utils.h 

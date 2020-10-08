@@ -589,3 +589,16 @@ def initial_abundances(filename):
 		f.close() 
 	return zprog 
 
+
+def _set_testing_status(testing = False): 
+	r""" 
+	Set the internal testing status of the CCSN yield calculations. When True, 
+	output files by the name "test.out" may be produced/overwritten. 
+
+	Parameters 
+	----------
+	testing : bool [default : False] 
+		The testing status. True if running tests, False otherwise. 
+	""" 
+	_yield_integrator.set_testing_status(<unsigned short> testing) 
+

@@ -81,7 +81,7 @@ def test():
 	""" 
 	Test the yield integration functions 
 	""" 
-	trials = [] 
+	trials = [sampling()] 
 	for i in _STUDY_: 
 		for j in _MOVERH_[i]: 
 			for k in _ROTATION_[i]: 
@@ -109,4 +109,30 @@ def trial(label, generator_):
 	def test_(): 
 		return generator_() 
 	return [label, test_] 
+
+
+@unittest 
+def sampling(): 
+	r""" 
+	Test the CCSN yield integrator random sampling but ensuring that repeated 
+	calls do not yield the same value for the smallest supported number of 
+	stars (N = 100). 
+	""" 
+	def test_(): 
+		status = True 
+		for elem in _RECOGNIZED_ELEMENTS_: 
+			# CL13 runs the fastest, followed closely by NKT13 
+			# 1000 realizations of a sampled yield with N = 100 
+			try: 
+				arr = [fractional(elem, study = "CL13", 
+					sample = 100) for _ in range(1000)] 
+			except: 
+				return False 
+			for i in range(len(arr)): # swap zeroes for NaNs 
+				if arr[i] == 0: arr[i] = float('nan') 
+			# Repeats are indicative of the same random number seed 
+			status &= all([a != b for a, b in zip(arr[:-1], arr[1:])]) 
+			if not status: break 
+		return status 
+	return ["vice.yields.ccsne.fractional.sampling", test_] 
 

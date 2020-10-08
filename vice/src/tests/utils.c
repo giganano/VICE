@@ -317,6 +317,46 @@ extern unsigned short test_binspace(void) {
 
 
 /* 
+ * Test the logbinspace function at vice/src/utils.h 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * header: utils.h 
+ */ 
+extern unsigned short test_logbinspace(void) {
+
+	/* 
+	 * Generate a test binspace with known bounds, then make sure that each 
+	 * adjacent pair of elements are separated by the same multiplicative 
+	 * factor. 
+	 */ 
+	unsigned short i, status = 1u; 
+	double start = 1, stop = 100; 
+	double *test = logbinspace(start, stop, TEST_BINSPACE_N_BINS); 
+	double *factors = (double *) malloc (TEST_BINSPACE_N_BINS * sizeof(double)); 
+
+	for (i = 0u; i < TEST_BINSPACE_N_BINS; i++) {
+		factors[i] = test[i + 1u] / test[i]; 
+	} 
+
+	status &= test[0] == start; 
+	status &= test[TEST_BINSPACE_N_BINS] == stop; 
+	for (i = 0u; i < TEST_BINSPACE_N_BINS - 1u; i++) {
+		/* Any 2 neighboring factors should be within reasonable roundoff */ 
+		status &= absval(factors[i + 1u] - factors[i]) < 1e-10; 
+		if (!status) break; 
+	} 
+
+	free(test); 
+	free(factors); 
+	return status; 
+
+}
+
+
+/* 
  * Test the bin_centers function at vice/src/utils.h 
  * 
  * Returns 
@@ -347,6 +387,40 @@ extern unsigned short test_bin_centers(void) {
 	return 1u; 
 
 } 
+
+
+/* 
+ * Test the logbin_centers function at vice/src/utils.h 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * header: utils.h 
+ */ 
+extern unsigned short test_logbin_centers(void) {
+
+	unsigned short i, status = 1u; 
+	double start = 1, stop = 100; 
+	double *bins = logbinspace(start, stop, TEST_BINSPACE_N_BINS); 
+	double *test = logbin_centers(bins, TEST_BINSPACE_N_BINS); 
+	for (i = 0u; i < TEST_BINSPACE_N_BINS; i++) {
+		/* 
+		 * Each element of test should differ by the same multiplicative 
+		 * factor between the two corresponding elements of the log binspace. 
+		 * Account for a reasonable round-off error. 
+		 */ 
+		double factor1 = test[i] / bins[i]; 
+		double factor2 = bins[i + 1u] / test[i]; 
+		status &= absval(factor1 - factor2) < 1e-10; 
+		if (!status) break; 
+	} 
+
+	free(bins); 
+	free(test); 
+	return status; 
+
+}
 
 
 /* 

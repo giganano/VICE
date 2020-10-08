@@ -2,7 +2,7 @@
 
 from __future__ import absolute_import 
 __all__ = [
-	"test_all", 
+	"test", 
 	"test_choose_operation", 
 	"test_absolute_value", 
 	"test_sign_function", 
@@ -12,7 +12,9 @@ __all__ = [
 	"test_2D_interpolation", 
 	"test_bin_number_finder", 
 	"test_binspace_generator", 
+	"test_logbinspace_generator", 
 	"test_bin_center_calculator", 
+	"test_logbin_center_calculator", 
 	"test_summation", 
 	"test_string_copier", 
 	"test_maximum" 
@@ -38,7 +40,9 @@ def test():
 			test_2D_interpolation(), 
 			test_bin_number_finder(), 
 			test_binspace_generator(), 
+			test_logbinspace_generator(), 
 			test_bin_center_calculator(), 
+			test_logbin_center_calculator(), 
 			test_summation(), 
 			test_string_copier(), 
 			test_maximum() 
@@ -119,11 +123,27 @@ def test_binspace_generator():
 
 
 @unittest 
+def test_logbinspace_generator(): 
+	r""" 
+	Tests the logbinspace generator at vice/src/utils.h 
+	""" 
+	return ["vice.src.utils.logbinspace", _utils.test_logbinspace] 
+
+
+@unittest 
 def test_bin_center_calculator(): 
 	""" 
 	Tests the bin-center calculator at vice/src/utils.h 
 	""" 
 	return ["vice.src.utils.bin_centers", _utils.test_bin_centers] 
+
+
+@unittest 
+def test_logbin_center_calculator(): 
+	r""" 
+	Tests the logbin-center calculator at vice/src/utils.h 
+	""" 
+	return ["vice.src.utils.logbin_centers", _utils.test_logbin_centers] 
 
 
 @unittest 

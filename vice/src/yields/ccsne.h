@@ -9,6 +9,17 @@ extern "C" {
 #include "../objects.h" 
 
 /* 
+ * Set the global testing status. 
+ * 
+ * Parameters 
+ * ========== 
+ * testing: 	A boolean int describing whether or not testing is being ran. 
+ * 
+ * header: ccsne.h 
+ */ 
+extern void set_testing_status(unsigned short testing); 
+
+/* 
  * Weight the initial composition of each star by explodability. This ensures 
  * that net yields are not reported as negative when the study did not 
  * separate wind and explosive yields. 

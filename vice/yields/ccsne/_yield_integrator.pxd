@@ -7,6 +7,7 @@ from ...core.objects._imf cimport IMF_
 
 
 cdef extern from "../../src/yields/ccsne.h": 
+	void set_testing_status(unsigned short testing) 
 	void weight_initial_by_explodability(unsigned short weight) 
 	void set_Z_progenitor(double Z) 
 	double IMFintegrated_fractional_yield_sampled(const unsigned long N, 
