@@ -85,7 +85,8 @@ class star_formation_history:
 			self._evol.append({
 					"static": 		models.static, 
 					"insideout": 	models.insideout, 
-					"lateburst": 	models.lateburst 
+					"lateburst": 	models.lateburst, 
+					"outerburst": 	models.outerburst 
 				}[spec.lower()]((i + 0.5) * zone_width)) 
 			i += 1 
 

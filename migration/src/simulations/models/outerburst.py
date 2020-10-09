@@ -3,7 +3,7 @@ This file declares the time-dependence of the star formation history at a
 given radius in the outerburst model from Johnson et al. (2021). 
 """ 
 
-from .utils import modified_exponential, gaussian 
+from .utils import modified_exponential 
 from .lateburst import _BURST_TIME_, lateburst 
 from .insideout import _TAU_RISE_, insideout 
 from .normalize import normalize 
