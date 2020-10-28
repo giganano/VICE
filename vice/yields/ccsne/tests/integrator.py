@@ -125,7 +125,7 @@ def sampling():
 			# 1000 realizations of a sampled yield with N = 100 
 			try: 
 				arr = [fractional(elem, study = "CL13", 
-					sample = 100) for _ in range(1000)] 
+					sample = 100)[0] for _ in range(1000)] 
 			except: 
 				return False 
 			for i in range(len(arr)): # swap zeroes for NaNs 
@@ -133,6 +133,14 @@ def sampling():
 			# Repeats are indicative of the same random number seed 
 			status &= all([a != b for a, b in zip(arr[:-1], arr[1:])]) 
 			if not status: break 
+		if status: 
+			# 1000 realizations of an O yield with the same seed 
+			# They should all be the same 
+			arr = 100 * [0.] 
+			for i in range(len(arr)): 
+				arr[i], _ = fractional('o', sample = 1000, seed = 1) 
+			status &= len(list(set(arr))) == 1 
+		else: pass 
 		return status 
 	return ["vice.yields.ccsne.fractional.sampling", test_] 
 

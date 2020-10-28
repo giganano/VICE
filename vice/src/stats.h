@@ -49,6 +49,8 @@ extern double normal(double mean, double sigma);
  * This function implements inverse transform sampling from a discrete 
  * distribution. 
  * 
+ * This function does NOT seed the random number generator. 
+ * 
  * source: stats.c 
  */ 
 extern double *sample(double *dist, double *bins, unsigned long n_bins, 

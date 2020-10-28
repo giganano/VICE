@@ -33,7 +33,8 @@ else:
 	_VERSION_ERROR_() 
 
 # C Functions 
-from libc.stdlib cimport free 
+from libc.stdlib cimport free, srand 
+from libc.limits cimport UINT_MAX 
 from ...core.objects._imf cimport imf_object 
 from ...core.objects._callback_1arg cimport CALLBACK_1ARG 
 from ...core.objects._callback_1arg cimport callback_1arg_initialize 
@@ -49,7 +50,7 @@ from . cimport _yield_integrator
 def integrate(element, study = "LC18", MoverH = 0, rotation = 0, 
 	explodability = None, wind = True, net = False, IMF = "kroupa", 
 	sample = 0, method = "simpson", m_lower = 0.08, m_upper = 100, 
-	tolerance = 1e-3, Nmin = 64, Nmax = 2e8): 
+	tolerance = 1e-3, Nmin = 64, Nmax = 2e8, seed = None): 
 	
 	r""" 
 	Calculate an IMF-integrated fractional nucleosynthetic yield of a 
@@ -57,8 +58,8 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 
 	**Signature**: vice.yields.ccsne.fractional(element, study = "LC18", 
 	MoverH = 0, rotation = 0, explodability = None, wind = True, net = True, 
-	IMF = "kroupa", method = "simpson", m_lower = 0.08, m_upper = 100, 
-	tolerance = 1.0e-03, Nmin = 64, Nmax = 2.0e+08) 
+	IMF = "kroupa", sample = 0, method = "simpson", m_lower = 0.08, 
+	m_upper = 100, tolerance = 1e-3, Nmin = 64, Nmax = 2.0e+08, seed = None) 
 
 	Parameters 
 	----------
@@ -188,6 +189,20 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	Nmax : real number [default : 2.0e+08] 
 		The maximum number of bins in quadrature. Included as a failsafe 
 		against solutions that din't converge numerically. 
+	seed : integer or ``None`` [default : ``None``] 
+		The seed to the random number generator. Only relevant when the 
+		keyword argument ``sample`` is nonzero. If ``None``, VICE will call 
+		its internal random number seed algorithm. If an integer, its value 
+		must be between 0 and :math:`2^{32} - 1` (inclusive). 
+
+		.. versionadded:: 1.X.0 
+
+		.. note:: VICE's internal random number seed algorithm is based on the 
+			current time of day, and can be reseeded every 25 microseconds. 
+			Because this is much shorter than the time required for this 
+			function to run once, yield calculations that require the same 
+			set of progenitor stellar masses should be ran with the same 
+			random number seed. 
 
 	Returns 
 	-------
@@ -356,8 +371,21 @@ km/s and [M/H] = %g""" % (study, rotation, MoverH))
 	elif Nmin >= Nmax: 
 		raise ValueError("""Minimum number of bins in quadrature must be \
 smaller than maximum number of bins.""") 
-	else: 
-		pass 
+	elif seed is not None: 
+		if isinstance(seed, numbers.Number): 
+			if seed % 1 == 0: 
+				seed = int(seed) 
+				if seed < 0 or seed > UINT_MAX: 
+					raise ValueError("""Keyword arg 'seed' out of range. Must \
+be between 0 and %d. Got: %d""" % (UINT_MAX, seed)) 
+				else: pass 
+			else: 
+				raise TypeError("""Keyword arg 'seed' must be an integer. \
+Got: %g""" % (seed)) 
+		else: 
+			raise TypeError("Keyword arg 'seed' must be an integer. Got: %s" % (
+				type(seed))) 
+	else: pass 
 
 	""" 
 	Explodability is either None or a callable function with one parameter. 
@@ -502,6 +530,10 @@ own discretion by modifying their CCSN yield settings directly.""" % (
 		if sample < 100: warnings.warn("""\
 Small number of progenitor stars for computing yield: %d. Beware that this \
 may introduce numerical artifacts.""" % (sample), ScienceWarning) 
+		if seed is None: 
+			_yield_integrator.seed_random() 
+		else: 
+			srand(<unsigned int> seed) 
 		yield_ = _yield_integrator.IMFintegrated_fractional_yield_sampled(
 			<unsigned long> sample, <double> m_lower, <double> m_upper, 
 			imf_obj, explodability_cb, path.encode("latin-1"), int(wind), 

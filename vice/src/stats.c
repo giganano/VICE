@@ -73,6 +73,8 @@ extern double normal(double mean, double sigma) {
  * This function implements inverse transform sampling from a discrete 
  * distribution. 
  * 
+ * This function does NOT seed the random number generator. 
+ * 
  * header: stats.h 
  */ 
 extern double *sample(double *dist, double *bins, unsigned long n_bins, 
@@ -81,7 +83,6 @@ extern double *sample(double *dist, double *bins, unsigned long n_bins,
 	double *cdf = convert_to_CDF(dist, bins, n_bins); 
 	double *values = (double *) malloc (n * sizeof(double)); 
 
-	seed_random(); 
 	unsigned long i; 
 	for (i = 0ul; i < n; i++) {
 		double x = rand_range(0, 1); 
