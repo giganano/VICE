@@ -15,6 +15,7 @@ elif sys.version_info[:2] >= (3, 5):
 	strcomp = str 
 else: 
 	_VERSION_ERROR_() 
+# from libc.stdlib cimport srand 
 from libc.stdlib cimport malloc, free 
 from libc.string cimport strcpy, strcmp, strlen 
 from ...core._cutils cimport copy_pylist 
@@ -50,6 +51,7 @@ cdef class c_hydrodiskstars:
 		if isinstance(N, numbers.Number): 
 			if N % 1 == 0: 
 				_hydrodiskstars.seed_random() 
+				# srand(2) 
 				if N > _N_STAR_PARTICLES_: 
 					N = _N_STAR_PARTICLES_ 
 					warnings.warn("""\

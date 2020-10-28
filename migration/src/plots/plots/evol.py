@@ -1,123 +1,91 @@
+r""" 
+Produces a plot of the densities of infall, star formation, and gas as a 
+function of simulation time for all models. 
+""" 
 
-from ..core import doublewide 
-from ...simulations.config import config 
+from .. import env 
+from .utils import named_colors, mpl_loc, yticklabel_formatter 
 import matplotlib.pyplot as plt 
-from matplotlib.ticker import FormatStrFormatter as fsf 
 import math as m 
 import vice 
 
-CMAP = "plasma" 
-XLIM = [-1, 14] 
+ZONE_WIDTH = 0.1 
+SFR_LIM = [3e-5, 0.3] 
+IFR_LIM = [3e-4, 3] 
+GAS_LIM = [3e5, 3e9] 
+TIME_LIM = [-1, 14] 
+RADII = [3, 5, 7, 9, 11, 13, 15] 
+COLORS = ["grey", "black", "red", "gold", "green", "blue", "darkviolet"] 
+MODELS = ["Constant SFR", "Inside-Out", "Late-Burst", "Outer-Burst"] 
+
 
 def setup_axes(): 
-	r""" 
-	Sets up the 3x1 matplotlib axes to plot on 
-	""" 
-	fig = doublewide(nrows = 2) 
-	fig = plt.figure(figsize = (10, 10)) 
-	axes = 2 * [None] 
+	fig = plt.figure(figsize = (20, 15)) 
+	fig, axes = plt.subplots(ncols = 4, nrows = 3, figsize = (20, 15)) 
 	ylabels = [ 
-		[ 
-		r"$\propto\dot{\Sigma}_\text{in}$ [M$_\odot$ yr$^{-1}$ kpc$^{-2}$]", 
-		r"$\propto\dot{\Sigma}_\star$ [M$_\odot$ yr$^{-1}$ kpc$^{-2}$]" 
-		], [
-		r"$\propto\Sigma_\text{gas}$ [M$_\odot$ kpc$^{-2}$]", 
-		r"$\tau_\star \equiv \Sigma_\text{gas}/\dot{\Sigma}_\star$ [Gyr]" 
-		]
+		r"$\dot{\Sigma}_\star$ [M$_\odot$ yr$^{-1}$ kpc$^{-2}$]", 
+		r"$\dot{\Sigma}_\text{in}$ [M$_\odot$ yr$^{-1}$ kpc$^{-2}$]", 
+		r"$\Sigma_\text{gas}$ [M$_\odot$ kpc$^{-2}$]" 
 	] 
 	for i in range(len(axes)): 
-		axes[i] = 2 * [None] 
 		for j in range(len(axes[i])): 
-			axes[i][j] = fig.add_subplot(221 + len(axes) * i + j, 
-				facecolor = "white")  
-			axes[i][j].set_xlabel("Time [Gyr]") 
-			axes[i][j].set_ylabel(ylabels[i][j]) 
-			axes[i][j].set_xlim(XLIM) 
-	axes[1][1].set_yscale("log") 
-	axes[1][1].yaxis.set_major_formatter(fsf("%g")) 
-	return fig, axes 
+			axes[i][j].set_yscale("log") 
+			axes[i][j].set_xlim(TIME_LIM) 
+			axes[i][j].set_ylim([SFR_LIM, IFR_LIM, GAS_LIM][i]) 
+			if i != len(axes) - 1: plt.setp(axes[i][j].get_xticklabels(), 
+				visible = False) 
+			if j != 0: plt.setp(axes[i][j].get_yticklabels(), visible = False) 
+			if i == 0: axes[i][j].set_title(MODELS[j], fontsize = 25) 
+		axes[i][0].set_ylabel(ylabels[i]) 
+		if i != len(axes) - 1: yticklabel_formatter(axes[i][0]) 
+
+	dummy = fig.add_subplot(111, facecolor = "white", zorder = -1) 
+	posd = dummy.get_position() 
+	posd.x0 = axes[-1][0].get_position().x0 
+	posd.x1 = axes[-1][-1].get_position().x1 
+	posd.y0 = axes[-1][0].get_position().y0 
+	posd.y1 = axes[0][0].get_position().y1 
+	dummy.set_position(posd) 
+	dummy.set_xlabel("Time [Gyr]", labelpad = 30) 
+	plt.setp(dummy.get_xticklabels(), visible = False) 
+	plt.setp(dummy.get_yticklabels(), visible = False) 
+
+	return axes 
 
 
-def plot_quantities(axes, out): 
-	r""" 
-	Plot the four quantities at each radius against time on the proper axes. 
-
-	Parameters 
-	----------
-	axes : list 
-		The 2x2 axes to plot on 
-	out : vice.multioutput 
-		The multioutput object from the VICE simulation. 
-	""" 
-	sigma_ifr_prefactor = 10 
-	sigma_sfr_prefactor = 100 
-	sigma_gas_prefactor = 1.e-8 
-	cmap = plt.get_cmap(CMAP) 
-	centers = list(map(lambda x, y: (x + y) / 2, 
-		config.radial_bins[1:], config.radial_bins[:-1])) 
-	bin_indeces = list(filter(lambda i: centers[i] <= 15.5, 
-		range(len(centers)))) 
-	for i in bin_indeces: 
-		sigma_ifr = out.zones["zone%d" % (i)].history.size[0] * [0.] 
-		sigma_sfr = out.zones["zone%d" % (i)].history.size[0] * [0.] 
-		sigma_gas = out.zones["zone%d" % (i)].history.size[0] * [0.] 
-		tau_star = out.zones["zone%d" % (i)].history.size[0] * [0.] 
-		area = m.pi * (config.radial_bins[i + 1]**2 - config.radial_bins[i]**2) 
-		for j in range(out.zones["zone%d" % (i)].history.size[0]): 
-			sigma_ifr[j] = out.zones["zone%d" % (i)].history["ifr"][j] / area 
-			sigma_sfr[j] = out.zones["zone%d" % (i)].history["sfr"][j] / area 
-			sigma_gas[j] = out.zones["zone%d" % (i)].history["mgas"][j] / area 
-			if sigma_sfr[j]: 
-				tau_star[j] = sigma_gas[j] / sigma_sfr[j] * 1.e-9 
-			else: 
-				tau_star[j] = float("inf") 
-			sigma_ifr[j] *= sigma_ifr_prefactor 
-			sigma_sfr[j] *= sigma_sfr_prefactor 
-			sigma_gas[j] *= sigma_gas_prefactor 
-
-		kwargs = {
-			"c": 	cmap(config.zone_width * (i + 0.5) / 15.5) 
-		} 
-		axes[0][0].plot(out.zones["zone%d" % (i)].history["time"], sigma_ifr, 
+def plot_evolution(axes, output, label = False): 
+	zones = ["zone%d" % (int(i / ZONE_WIDTH)) for i in RADII] 
+	for i in range(len(zones)): 
+		kwargs = {"c": named_colors()[COLORS[i]]} 
+		if label: kwargs["label"] = "%g kpc" % (RADII[i]) 
+		sigma_sfr = [j / (m.pi * ((RADII[i] + ZONE_WIDTH)**2 - RADII[i]**2)) 
+			for j in output.zones[zones[i]].history["sfr"]] 
+		sigma_ifr = [j / (m.pi * ((RADII[i] + ZONE_WIDTH)**2 - RADII[i]**2)) 
+			for j in output.zones[zones[i]].history["ifr"]] 
+		sigma_gas = [j / (m.pi * ((RADII[i] + ZONE_WIDTH)**2 - RADII[i]**2)) 
+			for j in output.zones[zones[i]].history["mgas"]] 
+		axes[0].plot(output.zones[zones[i]].history["time"], sigma_sfr, 
 			**kwargs) 
-		axes[0][1].plot(out.zones["zone%d" % (i)].history["time"], sigma_sfr, 
+		axes[1].plot(output.zones[zones[i]].history["time"], sigma_ifr, 
 			**kwargs) 
-		axes[1][0].plot(out.zones["zone%d" % (i)].history["time"], sigma_gas, 
-			**kwargs) 
-		axes[1][1].plot(out.zones["zone%d" % (i)].history["time"], tau_star, 
+		axes[2].plot(output.zones[zones[i]].history["time"], sigma_gas, 
 			**kwargs) 
 
 
-def main(name): 
-	r""" 
-	For a given simulation, produce the figure showing the surface density of 
-	gas and infall and star formation rates along with the SFE timescale as 
-	functions of simulation time in Gyr. 
-
-	Parameters 
-	----------
-	name : str 
-		The name of the VICE output to plot on the figure 
-	""" 
-	plt.clf() 
-	fig, axes = setup_axes() 
-	plot_quantities(axes, vice.multioutput(name)) 
+def main(static, insideout, lateburst, outerburst, stem): 
+	axes = setup_axes() 
+	plot_evolution([row[0] for row in axes], vice.output(static), label = True) 
+	plot_evolution([row[1] for row in axes], vice.output(insideout)) 
+	plot_evolution([row[2] for row in axes], vice.output(lateburst)) 
+	plot_evolution([row[3] for row in axes], vice.output(outerburst)) 
+	leg = axes[1][0].legend(loc = mpl_loc("upper center"), ncol = 3, 
+		frameon = False, bbox_to_anchor = (0.5, 0.99), handlelength = 0, 
+		fontsize = 20) 
+	for i in range(len(RADII)): 
+		leg.get_texts()[i].set_color(COLORS[i]) 
+		leg.legendHandles[i].set_visible(False) 
 	plt.tight_layout() 
-	cbar_ax = fig.add_axes([0.92, 0.02, 0.05, 0.95]) 
-	sm = plt.cm.ScalarMappable(cmap = plt.get_cmap(CMAP), 
-		norm = plt.Normalize(vmin = 0, vmax = 15.5)) 
-	cbar = plt.colorbar(sm, cax = cbar_ax) 
-	cbar.set_label(r"$R_\text{gal}$ [kpc]") 
-	axes[1][1].set_ylim([0.5, 30]) 
-	axes[0][0].set_ylim([-1, 6]) 
-	plt.subplots_adjust(right = 0.88) 
-	cbar_ax.set_position([
-		axes[0][1].get_position().x1, 
-		axes[1][1].get_position().y0, 
-		0.03, 
-		axes[0][1].get_position().y1 - axes[1][1].get_position().y0
-	]) 
-	plt.savefig("%s_evol.pdf" % (name)) 
-	plt.savefig("%s_evol.png" % (name)) 
-	plt.clf() 
+	plt.subplots_adjust(hspace = 0, wspace = 0, left = 0.08) 
+	plt.savefig("%s.png" % (stem)) 
+	plt.savefig("%s.pdf" % (stem)) 
 

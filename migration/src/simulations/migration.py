@@ -31,7 +31,8 @@ class diskmigration(hydrodisk.hydrodiskstars):
 					finalz = 100 
 				else: 
 					finalz = self.analog_data["zfinal"][self.analog_index] 
-				self._file.write("%d\t%.2f\t%.2f\n" % (zone, tform, finalz)) 
+				self._file.write("%d\t%.2f\t%d\t%.2f\n" % (zone, tform, 
+					self.analog_data["id"][self.analog_index], finalz)) 
 			else: pass 
 			return zone 
 		else: 

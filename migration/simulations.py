@@ -65,6 +65,12 @@ underscores. (Default: \"fe_o\")""",
 		type = float, 
 		default = 0.1) 
 
+	parser.add_argument("--Sigma_gCrit", 
+		help = """The critical gas surface density, in Msun/kpc^2. \
+(Default: 2.0e+07)""", 
+		type = float, 
+		default = 2.0e+07) 
+
 	return parser 
 
 
@@ -93,7 +99,8 @@ def suite(args):
 		star_particle_density = args.nstars, 
 		timestep_size = args.dt, 
 		elements = args.elements.split('_'), 
-		zone_width = args.zonewidth 
+		zone_width = args.zonewidth, 
+		Sigma_gCrit = args.Sigma_gCrit 
 	) 
 	for i in migration: 
 		for j in evolution: 

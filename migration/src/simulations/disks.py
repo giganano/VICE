@@ -71,6 +71,7 @@ class diskmodel(vice.milkyway):
 		model.tau_star_mol = config.tau_star_mol 
 		model.bins = config.bins 
 		model.elements = config.elements 
+		model.Sigma_gCrit = config.Sigma_gCrit 
 		return model 
 
 

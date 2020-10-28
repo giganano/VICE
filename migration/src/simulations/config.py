@@ -12,7 +12,8 @@ class config:
 			"zone_width": 				0.1, 
 			"elements": 				["fe", "o"], 
 			"tau_star_mol": 			2, 
-			"bins": 					[-3 + 0.01 * i for i in range(601)] 
+			"bins": 					[-3 + 0.01 * i for i in range(601)], 
+			"Sigma_gCrit": 				2.0e+07 
 		} 
 		for i in kwargs.keys(): defaults[i] = kwargs[i] 
 		self.timestep_size = 			defaults["timestep_size"] 
@@ -21,6 +22,7 @@ class config:
 		self.elements = 				defaults["elements"] 
 		self.tau_star_mol = 			defaults["tau_star_mol"] 
 		self.bins = 					defaults["bins"] 
+		self.Sigma_gCrit = 				defaults["Sigma_gCrit"] 
 
 	@property 
 	def timestep_size(self): 
@@ -169,4 +171,25 @@ Star particle density must be an integer. Got: %s""" % (type(value)))
 				raise ValueError("Non-numerical value detected.") 
 		else: 
 			raise TypeError("Must be of type list. Got: %s" % (type(value))) 
+
+	@property 
+	def Sigma_gCrit(self): 
+		r""" 
+		Type : float 
+
+		The critical surface density of gas in :math:`M_\odot kpc^{-2}`, above 
+		which the ISM is assumed to be fully molecular, and star formation 
+		proceeds at the assumed SFE timescale for molecular gas. 
+		""" 
+		return self._Sigma_gCrit 
+
+	@Sigma_gCrit.setter 
+	def Sigma_gCrit(self, value): 
+		if isinstance(value, numbers.Number): 
+			if value > 0: 
+				self._Sigma_gCrit = float(value) 
+			else: 
+				raise ValueError("Must be positive. Got: %g" % (value)) 
+		else: 
+			raise TypeError("Must be a real number. Got: %s" % (type(value))) 
 
