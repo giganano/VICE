@@ -6,7 +6,6 @@ the same model.
 from ... import env 
 from ...utils import zheights, weighted_median, feuillet2019_data 
 from ..utils import named_colors, mpl_loc, markers, xticklabel_formatter 
-from .model_comparison import median_ages 
 import matplotlib.pyplot as plt 
 import vice 
 
@@ -21,7 +20,7 @@ RADII = [5, 7, 9, 11, 13]
 HEIGHTS = [2.0, 1.0, 0.5, 0.0] 
 
 
-def setup_axes(element_x, element_y): 
+def setup_axes(element_x, element_y, zlabels = True): 
 	fig, axes = plt.subplots(ncols = 4, nrows = 3, figsize = (20, 15), 
 		sharex = True) 
 	axes = axes.tolist() 
@@ -44,15 +43,17 @@ def setup_axes(element_x, element_y):
 					axes[i][j].set_yticks([-0.1, 0.0, 0.1, 0.2, 0.3, 0.4]) 
 				else: 
 					axes[i][j].set_yticks([-0.1, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5]) 
-		if element_y.lower() == 'h': 
-			axes[i][0].text({"o": 0.7, "fe": 0.6}[element_x.lower()], 
-				{"o": -0.5, "fe": -0.7}[element_x.lower()], 
-				r"$\left|z\right|$ = %g - %g kpc" % (
-				HEIGHTS[i + 1], HEIGHTS[i]), fontsize = 20) 
-		else: 
-			axes[i][0].text(0.6, 0.32, 
-				r"$\left|z\right|$ = %g - %g kpc" % (HEIGHTS[i + 1], 
-					HEIGHTS[i]), fontsize = 20) 
+		if zlabels: 
+			if element_y.lower() == 'h': 
+				axes[i][0].text({"o": 0.7, "fe": 0.6}[element_x.lower()], 
+					{"o": -0.5, "fe": -0.7}[element_x.lower()], 
+					r"$\left|z\right|$ = %g - %g kpc" % (
+					HEIGHTS[i + 1], HEIGHTS[i]), fontsize = 20) 
+			else: 
+				axes[i][0].text(0.6, 0.32, 
+					r"$\left|z\right|$ = %g - %g kpc" % (HEIGHTS[i + 1], 
+						HEIGHTS[i]), fontsize = 20) 
+		else: pass 
 
 	# use dummy axes to draw the x-axis label in the middle and for colorbar 
 	dummy = fig.add_subplot(111, facecolor = "white", zorder = -1) 

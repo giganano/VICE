@@ -1,6 +1,7 @@
 
 import matplotlib as mpl 
 from matplotlib.ticker import FormatStrFormatter as fsf 
+import matplotlib.pyplot as plt 
 
 
 def xticklabel_formatter(ax): 
@@ -169,4 +170,39 @@ def markers():
 		"caretleftbase":	"CARETLEFTBASE",
 		"caretupbase":		"CARETUPBASE"
 	}
+
+
+def dummy_background_axes(axes): 
+	r""" 
+	Constructs a subplot in the background of a set of subplots with the 
+	corners aligned, but invisible tick labels. 
+
+	Parameters 
+	----------
+	axes : 2-d list 
+		A 2-d list of subplots. First axis must be the row number of the 
+		subplot, with the zero'th element at the top of the figure. Second 
+		axis must be the column number of the subplot, with the zero'th 
+		element at the left of the figure. 
+
+	Returns 
+	-------
+	dummy : subplot 
+		A matplotlib subplot whose corners are aligned with the grid of 
+		subplots passed, and will be drawn behind them. 
+
+	Raises 
+	------
+	No exceptions are explicitly raised by this routine. 
+	""" 
+	dummy = plt.gcf().add_subplot(111, facecolor = "white", zorder = -100) 
+	posd = dummy.get_position() 
+	posd.x0 = axes[-1][0].get_position().x0 
+	posd.x1 = axes[-1][-1].get_position().x1 
+	posd.y0 = axes[-1][0].get_position().y0 
+	posd.y1 = axes[0][0].get_position().y1 
+	dummy.set_position(posd) 
+	plt.setp(dummy.get_xticklabels(), visible = False) 
+	plt.setp(dummy.get_yticklabels(), visible = False) 
+	return dummy 
 

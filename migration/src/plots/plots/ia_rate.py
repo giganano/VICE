@@ -107,54 +107,54 @@ def feuillet2019_data(ax):
 		c = named_colors()["black"], linestyle = "None") 
 
 
-def ia_rate_proxies(zone, prefactor = 1): 
-	mir = vice.singlezone.from_output(zone) 
-	proxies = (len(zone.history["time"]) - 1) * [0.] 
-	for i in range(len(proxies)): 
-		if zone.history["time"][i] > mir.delay: 
-			proxies[i] = (
-				zone.history["mass(fe)"][i + 1] - zone.history["mass(fe)"][i] 
-			) / (
-				zone.history["time"][i + 1] - zone.history["time"][i] 
-			) 
-			proxies[i] -= 1.e9 * (
-				vice.yields.ccsne.settings["fe"] * zone.history["sfr"][i] 
-			) 
-			proxies[i] += zone.history["z(fe)"][i] * zone.history["sfr"][i] * (
-				1 + mir.eta - 0.4) * 1.e9 
-			proxies[i] /= zone.history["mass(fe)"][i] 
-			proxies[i] *= prefactor 
-			if proxies[i] < 0: proxies[i] = 0 
-		else: pass 
-	return proxies 
+# def ia_rate_proxies(zone, prefactor = 1): 
+# 	mir = vice.singlezone.from_output(zone) 
+# 	proxies = (len(zone.history["time"]) - 1) * [0.] 
+# 	for i in range(len(proxies)): 
+# 		if zone.history["time"][i] > mir.delay: 
+# 			proxies[i] = (
+# 				zone.history["mass(fe)"][i + 1] - zone.history["mass(fe)"][i] 
+# 			) / (
+# 				zone.history["time"][i + 1] - zone.history["time"][i] 
+# 			) 
+# 			proxies[i] -= 1.e9 * (
+# 				vice.yields.ccsne.settings["fe"] * zone.history["sfr"][i] 
+# 			) 
+# 			proxies[i] += zone.history["z(fe)"][i] * zone.history["sfr"][i] * (
+# 				1 + mir.eta - 0.4) * 1.e9 
+# 			proxies[i] /= zone.history["mass(fe)"][i] 
+# 			proxies[i] *= prefactor 
+# 			if proxies[i] < 0: proxies[i] = 0 
+# 		else: pass 
+# 	return proxies 
 
 
-def plot_ia_rate_proxies(ax, output, linestyle = '-', label = True, 
-	black = False): 
-	radii = [5, 10, 15] 
-	if black: 
-		colors = 3 * ["black"] 
-	else: 
-		colors = ["black", "red", "blue"] 
-	prefactors = [1., 1.4, 1.8] 
-	for i in range(len(radii)): 
-		kwargs = {
-			"c": 			colors[i], 
-			"linestyle": 	linestyle 
-		} 
-		if label: kwargs["label"] = "%g kpc" % (radii[i]) 
-		zone = int(radii[i] / ZONE_WIDTH) 
-		ax.plot(output.zones["zone%d" % (zone)].history["time"][:-1], 
-			ia_rate_proxies(output.zones["zone%d" % (zone)], 
-				prefactor = prefactors[i]), **kwargs) 
-	if label: 
-		leg = ax.legend(loc = mpl_loc("upper right"), ncol = 3, 
-			frameon = False, bbox_to_anchor = (0.99, 0.99), 
-			handlelength = 0, handletextpad = -0.3, fontsize = 22) 
-		for i in range(len(leg.legendHandles)): 
-			leg.get_texts()[i].set_color(colors[i]) 
-			leg.legendHandles[i].set_visible(False) 
-	else: pass 
+# def plot_ia_rate_proxies(ax, output, linestyle = '-', label = True, 
+# 	black = False): 
+# 	radii = [5, 10, 15] 
+# 	if black: 
+# 		colors = 3 * ["black"] 
+# 	else: 
+# 		colors = ["black", "red", "blue"] 
+# 	prefactors = [1., 1.4, 1.8] 
+# 	for i in range(len(radii)): 
+# 		kwargs = {
+# 			"c": 			colors[i], 
+# 			"linestyle": 	linestyle 
+# 		} 
+# 		if label: kwargs["label"] = "%g kpc" % (radii[i]) 
+# 		zone = int(radii[i] / ZONE_WIDTH) 
+# 		ax.plot(output.zones["zone%d" % (zone)].history["time"][:-1], 
+# 			ia_rate_proxies(output.zones["zone%d" % (zone)], 
+# 				prefactor = prefactors[i]), **kwargs) 
+# 	if label: 
+# 		leg = ax.legend(loc = mpl_loc("upper right"), ncol = 3, 
+# 			frameon = False, bbox_to_anchor = (0.99, 0.99), 
+# 			handlelength = 0, handletextpad = -0.3, fontsize = 22) 
+# 		for i in range(len(leg.legendHandles)): 
+# 			leg.get_texts()[i].set_color(colors[i]) 
+# 			leg.legendHandles[i].set_visible(False) 
+# 	else: pass 
 
 
 def main(diffusion, postprocess, stem): 

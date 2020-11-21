@@ -16,12 +16,12 @@ XLIM = [-0.1, 0.5]
 YLIM = [0, 25] 
 FEH_BINS = [
 	[-0.4, -0.2], 
-	[-0.2, 0.0], 
+	# [-0.2, 0.0], 
 	[0.0, 0.2] 
 ]
 COLORS = [
 	"dodgerblue", 
-	"black", 
+	# "black", 
 	"crimson" 
 ] 
 ZONE_WIDTH = 0.1 
@@ -32,18 +32,24 @@ def setup_axes():
 	Setup the 3x5 matplotlib axes. 
 	""" 
 	fig, axes = plt.subplots(ncols = 5, nrows = 3, figsize = (20, 12), 
-		sharex = True, sharey = True) 
+		sharex = True) 
 	for i in range(3): 
 		for j in range(5): 
 			if i != 2: plt.setp(axes[i][j].get_xticklabels(), visible = False) 
 			if j != 0: plt.setp(axes[i][j].get_yticklabels(), visible = False) 
 			axes[i][j].set_xlim(XLIM) 
 			axes[i][j].set_ylim(YLIM) 
+			if i: 
+				axes[i][j].set_yticks([0, 5, 10, 15, 20]) 
+			else: 
+				axes[i][j].set_yticks([0, 5, 10, 15, 20, 25]) 
+				axes[i][j].set_title(r"$R_\text{gal}$ = %g - %g kpc" % (
+					[3, 5, 7, 9, 11][j], [5, 7, 9, 11, 13][j]), fontsize = 25) 
 			axes[i][j].yaxis.set_ticks([0, 5, 10, 15, 20])  
 			axes[i][j].xaxis.set_ticks([0.0, 0.2, 0.4]) 
-			if i == 0: axes[i][j].set_title(r"$R_\text{gal}$ = %g - %g kpc" % (
-					[3, 5, 7, 9, 11][j], [5, 7, 9, 11, 13][j]), 
-				fontsize = 25) 
+			# if i == 0: axes[i][j].set_title(r"$R_\text{gal}$ = %g - %g kpc" % (
+			# 		[3, 5, 7, 9, 11][j], [5, 7, 9, 11, 13][j]), 
+			# 	fontsize = 25) 
 			if j == 0: axes[i][j].text(0.0, 21, 
 				r"$\left|z\right|$ = %g - %g kpc" % (
 					[1, 0.5, 0][i], [1.5, 1, 0.5][i]), 

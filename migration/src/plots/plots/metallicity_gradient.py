@@ -58,6 +58,19 @@ def setup_axes():
 	return axes 
 
 
+def target_gradient(rgal): 
+	r""" 
+	The target gradient as a function of galactocentric radius in kpc. 
+	""" 
+	return -0.06 * (rgal - 4) + 0.3 
+
+
+def plot_target_gradient(ax): 
+	radii = [0.01 * _ for _ in range(1551)] # 0 to 15.5 in steps of 0.01 
+	grad = [target_gradient(_) for _ in radii] 
+	ax.plot(radii, grad, c = named_colors()["black"], zorder = 100) 
+
+
 def combine_mdfs(zones, mdf_key): 
 	mdf = len(zones[0].mdf[mdf_key]) * [0.] 
 	for i in range(len(zones)): 
@@ -70,79 +83,79 @@ def combine_mdfs(zones, mdf_key):
 	return mdf 
 
 
-def mode_stellar_metallicity(zones, mdf_key): 
-	mdf = combine_mdfs(zones, mdf_key) 
+def mode_stellar_metallicity(zone, mdf_key): 
+	# mdf = combine_mdfs(zones, mdf_key) 
 	try: 
-		idx = mdf.index(max(mdf)) 
-		return (zones[0].mdf["bin_edge_left"][idx] + 
-			zones[0].mdf["bin_edge_right"][idx]) / 2. 
-		# idx = zone.mdf[mdf_key].index(max(zone.mdf[mdf_key])) 
-		# return (zone.mdf["bin_edge_left"][idx] + 
-		# 	zone.mdf["bin_edge_right"][idx]) / 2. 
+		# idx = mdf.index(max(mdf)) 
+		# return (zones[0].mdf["bin_edge_left"][idx] + 
+		# 	zones[0].mdf["bin_edge_right"][idx]) / 2. 
+		idx = zone.mdf[mdf_key].index(max(zone.mdf[mdf_key])) 
+		return (zone.mdf["bin_edge_left"][idx] + 
+			zone.mdf["bin_edge_right"][idx]) / 2. 
 	except ValueError: 
 		return float("nan") 
 
 
-def stellar_dispersion(zones, mdf_key): 
+def stellar_dispersion(zone, mdf_key): 
 	s = 0 
 	low = 0 
 	high = 0 
-	mdf = combine_mdfs(zones, mdf_key) 
-	for i in range(len(zones[0].mdf[mdf_key])): 
-	# for i in range(len(zone.mdf[mdf_key])): 
-		# s += (zone.mdf["bin_edge_right"][i] - 
-		# 	zone.mdf["bin_edge_left"][i]) * zone.mdf[mdf_key][i] 
-		s += (zones[0].mdf["bin_edge_right"][i] - 
-			zones[0].mdf["bin_edge_left"][i]) * mdf[i] 
+	# mdf = combine_mdfs(zones, mdf_key) 
+	# for i in range(len(zones[0].mdf[mdf_key])): 
+	for i in range(len(zone.mdf[mdf_key])): 
+		s += (zone.mdf["bin_edge_right"][i] - 
+			zone.mdf["bin_edge_left"][i]) * zone.mdf[mdf_key][i] 
+		# s += (zones[0].mdf["bin_edge_right"][i] - 
+		# 	zones[0].mdf["bin_edge_left"][i]) * mdf[i] 
 		if s >= 0.16 and low == 0: 
-			# low = (zone.mdf["bin_edge_right"][i] + 
-			# 	zone.mdf["bin_edge_left"][i]) / 2. 
-			low = (zones[0].mdf["bin_edge_right"][i] + 
-				zones[0].mdf["bin_edge_left"][i]) / 2. 
+			low = (zone.mdf["bin_edge_right"][i] + 
+				zone.mdf["bin_edge_left"][i]) / 2. 
+			# low = (zones[0].mdf["bin_edge_right"][i] + 
+			# 	zones[0].mdf["bin_edge_left"][i]) / 2. 
 		if s >= 0.84: 
-			# high = (zone.mdf["bin_edge_right"][i] + 
-			# 	zone.mdf["bin_edge_left"][i]) / 2. 
-			high = (zones[0].mdf["bin_edge_right"][i] + 
-				zones[0].mdf["bin_edge_left"][i]) / 2. 
+			high = (zone.mdf["bin_edge_right"][i] + 
+				zone.mdf["bin_edge_left"][i]) / 2. 
+			# high = (zones[0].mdf["bin_edge_right"][i] + 
+			# 	zones[0].mdf["bin_edge_left"][i]) / 2. 
 			break 
 	return [low, high] 
 
 
 def plot_stellar_metallicities(ax1, ax2, multioutput): 
-	# zones = ["zone%d" % (i) for i in range(int(MAX_RADIUS / ZONE_WIDTH))] 
-	width = 1 # kpc 
-	O = int(MAX_RADIUS / width) * [0.] 
-	Fe = int(MAX_RADIUS / width) * [0.] 
-	OFe = int(MAX_RADIUS / width) * [0.] 
-	O_disp = int(MAX_RADIUS / width) * [0.] 
-	Fe_disp = int(MAX_RADIUS / width) * [0.] 
-	OFe_disp = int(MAX_RADIUS / width) * [0.] 
-	for i in range(int(MAX_RADIUS / width)): 
-		radii = [i * width + ZONE_WIDTH * j for j in range(int(width / 
-			ZONE_WIDTH))] 
-		zones = ["zone%d" % (int(width / ZONE_WIDTH * j)) for j in radii] 
-		zones = [multioutput.zones[j] for j in zones] 
-		O[i] = mode_stellar_metallicity(zones, "dn/d[o/h]") 
-		Fe[i] = mode_stellar_metallicity(zones, "dn/d[fe/h]") 
-		OFe[i] = mode_stellar_metallicity(zones, "dn/d[o/fe]") 
-		O_disp[i] = stellar_dispersion(zones, "dn/d[o/h]") 
-		Fe_disp[i] = stellar_dispersion(zones, "dn/d[fe/h]") 
-		OFe_disp[i] = stellar_dispersion(zones, "dn/d[o/fe]") 
-	radii = [width * (i + 0.5) for i in range(int(MAX_RADIUS / width))] 
-	# O = [mode_stellar_metallicity(multioutput.zones[i], 
-	# 	"dn/d[o/h]") for i in zones] 
-	# O_disp = [stellar_dispersion(multioutput.zones[i], 
-	# 	"dn/d[o/h]") for i in zones] 
-	# Fe = [mode_stellar_metallicity(multioutput.zones[i], 
-	# 	"dn/d[fe/h]") for i in zones] 
-	# Fe_disp = [stellar_dispersion(multioutput.zones[i], 
-	# 	"dn/d[fe/h]") for i in zones] 
-	# OFe = [mode_stellar_metallicity(multioutput.zones[i], 
-	# 	"dn/d[o/fe]") for i in zones] 
-	# OFe_disp = [stellar_dispersion(multioutput.zones[i], 
-	# 	"dn/d[o/fe]") for i in zones] 
-	# radii = [ZONE_WIDTH * (i + 0.5) for i in range(
-	# 	len(multioutput.zones.keys()))] 
+	zones = ["zone%d" % (i) for i in range(int(MAX_RADIUS / ZONE_WIDTH))] 
+	# width = 1 # kpc 
+	# O = int(MAX_RADIUS / width) * [0.] 
+	# Fe = int(MAX_RADIUS / width) * [0.] 
+	# OFe = int(MAX_RADIUS / width) * [0.] 
+	# O_disp = int(MAX_RADIUS / width) * [0.] 
+	# Fe_disp = int(MAX_RADIUS / width) * [0.] 
+	# OFe_disp = int(MAX_RADIUS / width) * [0.] 
+	# for i in range(int(MAX_RADIUS / width)): 
+	# 	radii = [i * width + ZONE_WIDTH * j for j in range(int(width / 
+	# 		ZONE_WIDTH))] 
+	# 	zones = ["zone%d" % (int(width / ZONE_WIDTH * j)) for j in radii] 
+	# 	zones = [multioutput.zones[j] for j in zones] 
+	# 	O[i] = mode_stellar_metallicity(zones, "dn/d[o/h]") 
+	# 	Fe[i] = mode_stellar_metallicity(zones, "dn/d[fe/h]") 
+	# 	OFe[i] = mode_stellar_metallicity(zones, "dn/d[o/fe]") 
+	# 	O_disp[i] = stellar_dispersion(zones, "dn/d[o/h]") 
+	# 	Fe_disp[i] = stellar_dispersion(zones, "dn/d[fe/h]") 
+	# 	OFe_disp[i] = stellar_dispersion(zones, "dn/d[o/fe]") 
+	# radii = [width * (i + 0.5) for i in range(int(MAX_RADIUS / width))] 
+	O = [mode_stellar_metallicity(multioutput.zones[i], 
+		"dn/d[o/h]") for i in zones] 
+	O_disp = [stellar_dispersion(multioutput.zones[i], 
+		"dn/d[o/h]") for i in zones] 
+	Fe = [mode_stellar_metallicity(multioutput.zones[i], 
+		"dn/d[fe/h]") for i in zones] 
+	Fe_disp = [stellar_dispersion(multioutput.zones[i], 
+		"dn/d[fe/h]") for i in zones] 
+	OFe = [mode_stellar_metallicity(multioutput.zones[i], 
+		"dn/d[o/fe]") for i in zones] 
+	OFe_disp = [stellar_dispersion(multioutput.zones[i], 
+		"dn/d[o/fe]") for i in zones] 
+	radii = [ZONE_WIDTH * (i + 0.5) for i in range(
+		len(multioutput.zones.keys()))] 
 	ax1.scatter(radii, O, c = named_colors()["red"], 
 		marker = markers()["star"], s = 20, zorder = 20) 
 	ax1.scatter(radii, Fe, c = named_colors()["blue"], 
@@ -189,6 +202,7 @@ def main(static, insideout, lateburst, outerburst, stem):
 	plot_gas_phase_metallicity(axes[0][1], axes[1][1], insideout) 
 	plot_gas_phase_metallicity(axes[0][2], axes[1][2], lateburst) 
 	plot_gas_phase_metallicity(axes[0][3], axes[1][3], outerburst) 
+	for i in range(4): plot_target_gradient(axes[0][i]) 
 
 	leg = axes[0][0].legend(loc = mpl_loc("upper right"), frameon = False, 
 		ncol = 1, bbox_to_anchor = (0.99, 0.99), handlelength = 0) 

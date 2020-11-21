@@ -1,7 +1,7 @@
 
-.PHONY: clean 
+all: foo 
 
-clean: 
-	@ echo Cleaning migration/ 
-	@ rm -f *.out 
-	@ rm -rf *.vice/ 
+.PHONY: foo 
+foo: 
+	@ echo This Makefile does not do anything yet. 
+

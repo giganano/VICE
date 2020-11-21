@@ -72,6 +72,7 @@ class diskmodel(vice.milkyway):
 		model.bins = config.bins 
 		model.elements = config.elements 
 		model.Sigma_gCrit = config.Sigma_gCrit 
+		model.mass_loading = config.mass_loading 
 		return model 
 
 

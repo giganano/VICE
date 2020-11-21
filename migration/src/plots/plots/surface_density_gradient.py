@@ -13,7 +13,7 @@ ZONE_WIDTH = 0.1
 
 
 def setup_axis(): 
-	fig = plt.figure(figsize = (5, 5)) 
+	fig = plt.figure(figsize = (7, 7)) 
 	ax = fig.add_subplot(111, facecolor = "white") 
 	ax.set_xlabel(r"$R_\text{gal}$ [kpc]") 
 	ax.set_ylabel(r"$\Sigma$ [M$_\odot$ kpc$^{-2}$]") 
@@ -76,13 +76,15 @@ def target_gradient(radius):
 
 
 def thin_disk(radius): 
-	sigma_0 = 986e6 
+	# sigma_0 = 986e6 
+	sigma_0 = 1311e6 
 	rs = 2.5 
 	return sigma_0 * m.exp(-radius / rs) 
 
 
 def thick_disk(radius): 
-	sigma_0 = 266e6 
+	# sigma_0 = 266e6 
+	sigma_0 = 353e6 
 	rs = 2.0 
 	return sigma_0 * m.exp(-radius / rs) 
 

@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import vice 
 
 ZONE_WIDTH = 0.1 
+CMAP = "winter" 
 # MIN_RGAL = 7 
 # MAX_RGAL = 9 
 # MIN_ABSZ = 0 
@@ -62,8 +63,9 @@ def plot_relation(ax, output, label = False):
 	stars = stars.filter("abszfinal", ">=", MIN_ABSZ) 
 	stars = stars.filter("abszfinal", "<=", MAX_ABSZ) 
 	stars = stars.filter("mass", ">=", 1.) 
-	ax.scatter(stars["age"], stars["[O/Fe]"], c = named_colors()["dodgerblue"], 
-		s = 0.1, rasterized = True) 
+	colors = [ZONE_WIDTH * (i + 0.5) for i in stars["zone_origin"]]
+	sc = ax.scatter(stars["age"], stars["[O/Fe]"], c = colors, s = 0.1, 
+		cmap = plt.get_cmap(CMAP), vmin = 0, vmax = 15, rasterized = True) 
 	ages = (len(BINS) - 1) * [0.] 
 	lowers = (len(BINS) - 1) * [0.] 
 	uppers = (len(BINS) - 1) * [0.] 
@@ -92,6 +94,7 @@ def plot_relation(ax, output, label = False):
 	if label: kwargs["label"] = "Simulation" 
 	ax.errorbar(ages, [(a + b) / 2. for a, b in zip(BINS[1:], BINS[:-1])], 
 		**kwargs) 
+	return sc 
 
 
 def feuillet2019_data(ax, label = False): 
@@ -127,8 +130,9 @@ def feuillet2019_data(ax, label = False):
 	ax.errorbar(age, ofe, **kwargs) 
 
 
-def main(static, insideout, lateburst, outerburst, stem, 
-	min_rgal = 7, max_rgal = 9, min_absz = 0, max_absz = 0.5): 
+def main(upperleft, upperright, lowerleft, lowerright, stem, 
+	min_rgal = 7, max_rgal = 9, min_absz = 0, max_absz = 0.5, 
+	names = [["Constant SFR", "Inside-Out"], ["Late-Burst", "Outer-Burst"]]): 
 	global MIN_RGAL 
 	global MAX_RGAL 
 	global MIN_ABSZ 
@@ -143,25 +147,36 @@ def main(static, insideout, lateburst, outerburst, stem,
 	ZONE_MAX = int((MAX_RGAL - ZONE_WIDTH) / ZONE_WIDTH) 
 	axes = setup_axes() 
 	outputs = [
-		[vice.output(static), vice.output(insideout)], 
-		[vice.output(lateburst), vice.output(outerburst)] 
+		[vice.output(upperleft), vice.output(upperright)], 
+		[vice.output(lowerleft), vice.output(lowerright)] 
 	] 
-	names = [
-		["Constant SFR", "Inside-Out"], 
-		["Late-Burst", "Outer-Burst"] 
-	] 
+	# names = [
+	# 	["Constant SFR", "Inside-Out"], 
+	# 	["Late-Burst", "Outer-Burst"] 
+	# ] 
 	for i in range(2): 
 		for j in range(2): 
 			axes[i][j].text(1, 0.4, names[i][j], fontsize = 18) 
 			feuillet2019_data(axes[i][j], label = i == 0 and j == 0) 
 			outputs[i][j].stars["abszfinal"] = [abs(k) for k in zheights(
 				outputs[i][j].name)[:outputs[i][j].stars.size[0]]] 
-			plot_relation(axes[i][j], outputs[i][j], 
+			sc = plot_relation(axes[i][j], outputs[i][j], 
 				label = i == 0 and j == 0) 
 	axes[0][0].legend(loc = mpl_loc("upper left"), ncol = 1, frameon = False, 
 		bbox_to_anchor = (0.01, 0.85), fontsize = 18) 
+	cbar_ax = plt.gcf().add_axes([0.92, 0.05, 0.02, 0.95]) 
+	cbar = plt.colorbar(sc, cax = cbar_ax, pad = 0.0, orientation = "vertical") 
+	cbar.set_label(r"$R_\text{gal}$ of birth [kpc]", labelpad = 10) 
+	cbar.set_ticks(range(2, 16, 2)) 
 	plt.tight_layout() 
-	plt.subplots_adjust(hspace = 0, wspace = 0, left = 0.15, bottom = 0.1) 
+	plt.subplots_adjust(hspace = 0, wspace = 0, left = 0.15, bottom = 0.1, 
+		right = 0.85) 
+	cbar_ax.set_position([
+		axes[-1][-1].get_position().x1, 
+		axes[-1][-1].get_position().y0, 
+		0.05, 
+		axes[0][-1].get_position().y1 - axes[-1][-1].get_position().y0
+	]) 
 	plt.savefig("%s.pdf" % (stem)) 
 	plt.savefig("%s.png" % (stem)) 
 

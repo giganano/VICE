@@ -19,10 +19,47 @@ class insideout(modified_exponential):
 			rise = _TAU_RISE_) 
 		self.norm *= normalize(self, gradient, radius, dt = dt, dr = dr) 
 
+	# @staticmethod 
+	# def timescale(radius, rs = 7.0): 
+	# 	r""" 
+	# 	Determine the timescale of star formation at a given radius under 
+	# 	the exponential approximation to the Sanchez (2020) [1]_ timescales. 
+
+	# 	Parameters 
+	# 	----------
+	# 	radius : real number 
+	# 		Galactocentric radius in kpc. 
+	# 	rs : real number [default : 7] 
+	# 		The e-folding radius of the exponential approximation in kpc. 
+
+	# 	Returns 
+	# 	-------
+	# 	tau_sfh : real number 
+	# 		The e-folding timescale :math:`\tau_\text{sfh}` describing the 
+	# 		star formation history with the following dependence: 
+
+	# 		.. math:: \dot{M}_\star \sim 
+	# 			(1 - e^{-t / \tau_\text{rise}})e^{-t / \tau_\text{sfh}} 
+
+	# 		where :math:`\tau_\text{rise}` = 2 Gyr and :math:`\tau_\text{sfh}` 
+	# 		is the value returned by this function. The approximation of the 
+	# 		Sanchez (2020) [1]_ scaling is defined as follows: 
+
+	# 		.. math:: \tau_\text{sfh} = (\text{6 Gyr})e^{R/R_\text{s}} 
+
+	# 		where :math:`R` is the galactocentric radius (the argument 
+	# 		``radius``) and :math:`R_\text{s}` is the e-folding radius (the 
+	# 		argument ``rs``). 
+
+	# 	.. [1] Sanchez (2020), ARA&A, 58, 99 
+	# 	""" 
+	# 	return 6. * m.exp(radius / rs) 
+
 	@staticmethod 
 	def timescale(radius, Re = 5): 
 		r""" 
-		Determine the timescale of star formation at a given radius. 
+		Determine the timescale of star formation at a given radius reported 
+		by Sanchez (2020) [1]_. 
 
 		Parameters 
 		----------
@@ -43,6 +80,8 @@ class insideout(modified_exponential):
 
 			where :math:`\tau_\text{rise}` = 2 Gyr and :math:`\tau_\text{sfh}` 
 			is the value returned by this function. 
+
+		.. [1] Sanchez (2020), ARA&A, 58, 99 
 		""" 
 		radius /= Re # convert to units of Re 
 		radii, timescales = _read_sanchez_data() 
@@ -57,7 +96,7 @@ class insideout(modified_exponential):
 
 def _read_sanchez_data(): 
 	r""" 
-	Reads the Sanchez (2020) star formation timescale data. 
+	Reads the Sanchez (2020) [1]_ star formation timescale data. 
 
 	Returns 
 	-------
@@ -67,6 +106,8 @@ def _read_sanchez_data():
 	timescales : list 
 		The star formation timescales in Gyr associated with each effective 
 		radius. 
+
+	.. [1] Sanchez (2020), ARA&A, 58, 99 
 	""" 
 	radii = [] 
 	timescales = [] 

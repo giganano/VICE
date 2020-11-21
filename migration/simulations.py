@@ -1,6 +1,8 @@
 
 import argparse 
 import src 
+from src.simulations.mass_loading import strong_mass_loading 
+from vice import milkyway 
 import sys 
 
 _MIGRATION_MODELS_ = ["diffusion", "linear", "post-process", "sudden"] 
@@ -71,6 +73,12 @@ underscores. (Default: \"fe_o\")""",
 		type = float, 
 		default = 2.0e+07) 
 
+	parser.add_argument("--mass_loading", 
+		help = """The mass-loading prescription. Either 'standard' or \
+'strong'. (Default: "standard")""", 
+		type = str, 
+		default = "standard") 
+
 	return parser 
 
 
@@ -100,7 +108,11 @@ def suite(args):
 		timestep_size = args.dt, 
 		elements = args.elements.split('_'), 
 		zone_width = args.zonewidth, 
-		Sigma_gCrit = args.Sigma_gCrit 
+		Sigma_gCrit = args.Sigma_gCrit, 
+		mass_loading = {
+			"standard": 		milkyway.default_mass_loading, 
+			"strong": 			strong_mass_loading 
+		}[args.mass_loading] 
 	) 
 	for i in migration: 
 		for j in evolution: 

@@ -1,5 +1,6 @@
 
 from vice import ScienceWarning 
+from vice import milkyway 
 import warnings 
 import numbers 
 
@@ -13,7 +14,8 @@ class config:
 			"elements": 				["fe", "o"], 
 			"tau_star_mol": 			2, 
 			"bins": 					[-3 + 0.01 * i for i in range(601)], 
-			"Sigma_gCrit": 				2.0e+07 
+			"Sigma_gCrit": 				2.0e+07, 
+			"mass_loading": 			milkyway.default_mass_loading 
 		} 
 		for i in kwargs.keys(): defaults[i] = kwargs[i] 
 		self.timestep_size = 			defaults["timestep_size"] 
@@ -23,6 +25,7 @@ class config:
 		self.tau_star_mol = 			defaults["tau_star_mol"] 
 		self.bins = 					defaults["bins"] 
 		self.Sigma_gCrit = 				defaults["Sigma_gCrit"] 
+		self.mass_loading = 			defaults["mass_loading"] 
 
 	@property 
 	def timestep_size(self): 
@@ -192,4 +195,21 @@ Star particle density must be an integer. Got: %s""" % (type(value)))
 				raise ValueError("Must be positive. Got: %g" % (value)) 
 		else: 
 			raise TypeError("Must be a real number. Got: %s" % (type(value))) 
+
+	@property 
+	def mass_loading(self): 
+		r""" 
+		Type : function 
+
+		The mass loading factor :math:`\eta` as a function of galactocentric 
+		radius :math:`R_\text{gal}` in kpc. 
+		""" 
+		return self._mass_loading 
+
+	@mass_loading.setter 
+	def mass_loading(self, value): 
+		if callable(value): 
+			self._mass_loading = value 
+		else: 
+			raise TypeError("Must be callable. Got: %s" % (type(value))) 
 
