@@ -20,14 +20,14 @@ def parse():
 		action = "store_true") 
 
 	parser.add_argument("--migration", 
-		help = "The migration model to assume. (Default: all)", 
+		help = "The migration model to assume. (Default: diffusion)", 
 		type = str, 
-		default = "all") 
+		default = "diffusion") 
 
 	parser.add_argument("--evolution", 
-		help = "The evolutionary history to assume (Default: all)", 
+		help = "The evolutionary history to assume (Default: insideout)", 
 		type = str, 
-		default = "all") 
+		default = "insideout") 
 
 	parser.add_argument("--SFEmolecular", 
 		help = "SFE timescale of molecular gas at the present day (Default: 2)", 
@@ -51,10 +51,10 @@ simulation time. (Default: 0)""",
 		type = int, 
 		default = 2) 
 
-	parser.add_argument("--outdir", 
-		help = "The name of the output directory (Default: '.')", 
+	parser.add_argument("--name", 
+		help = "The name of the output simulations (Default: 'milkway')", 
 		type = str, 
-		default = '.') 
+		default = 'milkyway') 
 
 	parser.add_argument("--elements", 
 		help = """Elements to simulation the enrichment for separated by \
@@ -75,9 +75,9 @@ underscores. (Default: \"fe_o\")""",
 
 	parser.add_argument("--mass_loading", 
 		help = """The mass-loading prescription. Either 'standard' or \
-'strong'. (Default: "standard")""", 
+'strong'. (Default: "strong")""", 
 		type = str, 
-		default = "standard") 
+		default = "strong") 
 
 	return parser 
 
@@ -91,14 +91,14 @@ def suite(args):
 	args : argparse.Namespace 
 		The command line arguments parsed via argparse. 
 	""" 
-	if args.migration == "all": 
-		migration = _MIGRATION_MODELS_ 
-	else: 
-		migration = [args.migration] 
-	if args.evolution == "all": 
-		evolution = _EVOLUTION_MODELS_ 
-	else: 
-		evolution = [args.evolution] 
+	# if args.migration == "all": 
+	# 	migration = _MIGRATION_MODELS_ 
+	# else: 
+	# 	migration = [args.migration] 
+	# if args.evolution == "all": 
+	# 	evolution = _EVOLUTION_MODELS_ 
+	# else: 
+	# 	evolution = [args.evolution] 
 	suite = src.simulations.suite(
 		tau_star_mol = src.simulations.sfe(
 			baseline = args.SFEmolecular, 
@@ -114,20 +114,32 @@ def suite(args):
 			"strong": 			strong_mass_loading 
 		}[args.mass_loading] 
 	) 
-	for i in migration: 
-		for j in evolution: 
-			kwargs = dict(
-				name = "%s/%s/%s" % (args.outdir, i, j), 
-				spec = j 
-			) 
-			if i == "post-process": 
-				kwargs["simple"] = True 
-			else: 
-				kwargs["migration_mode"] = i 
-			suite.add_simulation(
-				src.simulations.diskmodel.from_config(suite.config, **kwargs) 
-			) 
+	kwargs = dict(
+		name = args.name, 
+		spec = args.evolution 
+	) 
+	if args.migration == "post-process": 
+		kwargs["simple"] = True 
+	else: 
+		kwargs["migration_mode"] = args.migration 
+	suite.add_simulation(
+		src.simulations.diskmodel.from_config(suite.config, **kwargs) 
+	) 
 	return suite 
+	# for i in migration: 
+	# 	for j in evolution: 
+	# 		kwargs = dict(
+	# 			name = "%s/%s/%s" % (args.outdir, i, j), 
+	# 			spec = j 
+	# 		) 
+	# 		if i == "post-process": 
+	# 			kwargs["simple"] = True 
+	# 		else: 
+	# 			kwargs["migration_mode"] = i 
+	# 		suite.add_simulation(
+	# 			src.simulations.diskmodel.from_config(suite.config, **kwargs) 
+	# 		) 
+	# return suite 
 
 
 if __name__ == "__main__": 

@@ -519,14 +519,17 @@ None.""" % (self.migration.stars.mode), UserWarning)
 						Set the analog tracer particle by calling the object 
 						with the time of formation and simulation times equal. 
 						""" 
-						if takes_keyword: 
-							self.migration.stars(j, 
-								i * self._mz[0].zones[0][0].dt, 
-								i * self._mz[0].zones[0][0].dt, n = k) 
-						else: 
-							self.migration.stars(j, 
-								i * self._mz[0].zones[0][0].dt, 
-								i * self._mz[0].zones[0][0].dt) 
+						if i <= n - _singlezone.BUFFER: 
+							# Don't bother resetting the analog in the buffer 
+							if takes_keyword: 
+								self.migration.stars(j, 
+									i * self._mz[0].zones[0][0].dt, 
+									i * self._mz[0].zones[0][0].dt, n = k) 
+							else: 
+								self.migration.stars(j, 
+									i * self._mz[0].zones[0][0].dt, 
+									i * self._mz[0].zones[0][0].dt) 
+						else: pass 
 						# The index of this tracer particle 
 						idx = (i * (self.n_zones * self.n_tracers) + 
 							j * self.n_tracers + k) 
@@ -544,19 +547,19 @@ None.""" % (self.migration.stars.mode), UserWarning)
 				ETA = (100 - percentage) / percentage * (time.time() - start) 
 				days, hours, minutes, seconds = _pyutils.format_time(ETA) 
 				if days: 
-					ETA = "%d days %d:%d:%d" % (days, hours, minutes, 
+					ETA = "%d days %02dh%02dm%02ds" % (days, hours, minutes, 
 						int(seconds)) 
 				else: 
-					ETA = "%d:%d:%d" % (hours, minutes, int(seconds)) 
+					ETA = "%02dh%02dm%02ds" % (hours, minutes, int(seconds)) 
 				sys.stdout.write("""\
-Setting up star particles. Progress: %.2f%% | ETA: %s    \r""" % (percentage, 
-					ETA)) 
+Setting up stellar populations. Progress: %.2f%% | ETA: %s    \r""" % (
+	percentage, ETA)) 
 				sys.stdout.flush() 
 			else: pass 
 		if self.verbose: 
 			sys.stdout.write("\n") 
-			sys.stdout.write("Setup time: %.2f seconds\n" % (
-				time.time() - start))
+			# sys.stdout.write("Setup time: %.2f seconds\n" % (
+			# 	time.time() - start))
 
 		if hasattr(self.migration.stars, "write"): 
 			# revert write attribute to False 

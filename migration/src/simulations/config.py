@@ -67,7 +67,7 @@ Large timestep size: %g. This may cause numerical artifacts.\
 
 		The amount of time to run the simulation for in Gyr. 
 		""" 
-		return 12.8 
+		return 12.7 
 
 	@property 
 	def star_particle_density(self): 

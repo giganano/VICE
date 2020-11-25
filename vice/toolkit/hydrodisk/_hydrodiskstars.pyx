@@ -22,7 +22,7 @@ from ...core._cutils cimport copy_pylist
 from ...core._cutils cimport set_string 
 from . cimport _hydrodiskstars 
 
-# The end time of the simulation in Gyr (12.8 Gyr by default - hard coded) 
+# The end time of the simulation in Gyr (12.7 Gyr by default - hard coded) 
 _END_TIME_ = _hydrodiskstars.HYDRODISK_END_TIME 
 
 # The recognized hydrodiskstars migration modes 
