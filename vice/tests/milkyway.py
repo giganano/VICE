@@ -35,7 +35,6 @@ def test():
 			test_tau_ia(), 
 			test_tau_star_mol(), 
 			test_schmidt(), 
-			test_Sigma_gCrit(), 
 			test_schmidt_index(), 
 			test_m_upper(), 
 			test_m_lower(), 
@@ -362,29 +361,6 @@ def test_schmidt():
 		else: pass 
 		return status 
 	return ["vice.milkyway.schmidt", test] 
-
-
-@unittest 
-def test_Sigma_gCrit(): 
-	r""" 
-	vice.milkyway.Sigma_gCrit unit test 
-	""" 
-	def test(): 
-		try: 
-			_TEST_.Sigma_gCrit = 3.0e7 
-		except: 
-			return False 
-		status = True 
-		for i in range(_TEST_.n_zones): 
-			# Account for floating point errors 
-			# milkyway object sets MgSchmidt to MgCrit 
-			correct = 3.0e7 * m.pi * (_TEST_.annuli[i + 1]**2 - 
-				_TEST_.annuli[i]**2) 
-			status &= abs(_TEST_.zones[i].MgCrit - correct) < 1e-12 
-			status &= abs(_TEST_.zones[i].MgSchmidt - correct) < 1e-12 
-			if not status: break 
-		return status 
-	return ["vice.milkyway.Sigma_gCrit", test] 
 
 
 @unittest 

@@ -47,7 +47,6 @@ def test():
 			_TEST_.test_dt_setter(), 
 			_TEST_.test_schmidt_setter(), 
 			_TEST_.test_mgschmidt_setter(), 
-			_TEST_.test_mgcrit_setter(), 
 			_TEST_.test_m_upper_setter(), 
 			_TEST_.test_m_lower_setter(), 
 			_TEST_.test_postMS_setter(), 
@@ -61,6 +60,20 @@ def test():
 			_TEST_.test_pickle() 
 		]
 	] 
+
+
+def _timedep_tau_star(t): 
+	r""" 
+	A dummy function to act as a time-dependent SFE timescale. 
+	""" 
+	return 2.0 * t / 10.0 
+
+
+def _time_and_gasdep_tau_star(t, m): 
+	r""" 
+	A dummy function to act as a time- and gas-dependent SFE timescale. 
+	""" 
+	return 2.0 * t / 10.0 * (m / 6.0e9)**0.5 
 
 
 cdef class singlezone_tester: 
@@ -458,14 +471,15 @@ cdef class singlezone_tester:
 			1 on success, 0 on failure 
 			""" 
 			try: 
-				custom = lambda t: 2 + 0.01 * t 
-				self.tau_star = custom 
-				x = self.tau_star == custom 
+				self.tau_star = _timedep_tau_star 
+				x = self.tau_star == _timedep_tau_star 
+				self.tau_star = _time_and_gasdep_tau_star 
+				y = self.tau_star == _time_and_gasdep_tau_star 
 				self.tau_star = 2
-				y = self.tau_star == 2 
+				z = self.tau_star == 2 
 			except: 
 				return False 
-			return x and y 
+			return x and y and z 
 		return ["vice.core.singlezone.tau_star.setter", test] 
 
 
@@ -526,24 +540,6 @@ cdef class singlezone_tester:
 				return False 
 			return True 
 		return ["vice.core.singlezone.MgSchmidt.setter", test] 
-
-
-	@unittest 
-	def test_mgcrit_setter(self): 
-		def test(): 
-			""" 
-			Tests the mgcrit.setter function 
-
-			Returns 
-			=======
-			1 on success, 0 on failure 
-			""" 
-			try: 
-				self.MgCrit = 5.e9 
-			except: 
-				return False 
-			return self._sz[0].ism[0].mgcrit == 5.e9 
-		return ["vice.core.singlezone.MgCrit.setter", test] 
 
 
 	@unittest 

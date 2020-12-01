@@ -37,7 +37,9 @@ _ZIN_ = [0, 1.0e-8, lambda t: 1.0e-8 * (t / 10.0), {
 }] 
 _RECYCLING_ = ["continuous", 0.4] 
 _RIA_ = ["plaw", "exp", lambda t: t**-1.5] 
-_TAU_STAR_ = [2.0, lambda t: 2.0 + t / 10.0] 
+_TAU_STAR_ = [2.0, 
+	lambda t: 2.0 + t / 10.0, 
+	lambda t, m: 2.0 * (m / 3.0)**0.5] 
 _SCHMIDT_ = [False, True] 
 
 

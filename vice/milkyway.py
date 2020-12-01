@@ -41,7 +41,6 @@ class milkyway(multizone):
 		self.evolution = milkyway.default_evolution 
 		self.mass_loading = milkyway.default_mass_loading 
 		self.schmidt = True 
-		self.Sigma_gCrit = 2.0e7 
 		for i in range(self.n_zones): 
 			# set the entrainment to zero beyond 15.5 kpc 
 			if (self.annuli[i] + self.annuli[i + 1]) / 2 > _MAX_SF_RADIUS_: 
@@ -665,14 +664,7 @@ object. Got: %s""" % (type(value)))
 		surface density of the interstellar medium, 
 		:math:`\Sigma_{g,\text{Schmidt}}` is the normalization thereof 
 		(attribute ``Sigma_gSchmidt``), and :math:`\alpha` is the power-law 
-		index set by the attribute ``schmidt_index``. When the gas gas surface 
-		density exceeds the attribute ``Sigma_gCrit`` (infinite by default), 
-		the SFE timescale reaches its minimum value: 
-
-		.. math:: \tau_\star(t) = \tau_{\star,\text{specified}}(t) 
-			\left(
-			\frac{\Sigma_{g,crit}}{\Sigma_{g,\text{Schmidt}}} 
-			\right)^{-\alpha} 
+		index set by the attribute ``schmidt_index``. 
 
 		This is an application of the Kennicutt-Schmidt star formation law 
 		(Kennicutt 1998 [1]_; Schmidt 1959 [2]_, 1963 [3]_). 
@@ -698,53 +690,6 @@ object. Got: %s""" % (type(value)))
 		# Let the singlezone object do the error handling 
 		for i in range(self.n_zones): 
 			self.zones[i].schmidt = value 
-
-	@property 
-	def Sigma_gCrit(self): 
-		r""" 
-		Type : real number 
-
-		Default : 2.0e+07
-
-		The "critical" gas surface density in :math:`M_\odot kpc^{-2}` above 
-		which the star formation efficiency timescale :math:`\tau_\star` is 
-		constant. It will reach a minimum value given by: 
-
-		.. math:: \tau_\star = \tau_{\star,\text{specified}}(t)\left(
-			\frac{\Sigma_{g,\text{crit}}}{\Sigma_{g,\text{Schmidt}}}
-			\right)^{-\alpha} 
-
-		where :math:`\tau_\star(t)` is the value of the user-speicifed 
-		attribute ``tau_star`` at a time :math:`t` in Gyr. 
-
-		.. note:: This parameter is only relevant when the attribute 
-			``schmidt = True``. 
-
-		Example Code 
-		------------
-		>>> import vice 
-		>>> mw = vice.milkyway(name = "example") 
-		>>> mw.Sigma_gCrit = 3.0e7 
-		""" 
-		return self.zones[0].MgCrit / (
-			m.pi * (self.annuli[1]**2 - self.annuli[0]**2) 
-		) 
-
-	@Sigma_gCrit.setter 
-	def Sigma_gCrit(self, value): 
-		if isinstance(value, numbers.Number): 
-			if value > 0: 
-				# let the singlezone object handle it from here 
-				for i in range(self.n_zones): 
-					self.zones[i].MgCrit = value * m.pi * (
-						self.annuli[i + 1]**2 - self.annuli[i]**2) 
-					self.zones[i].MgSchmidt = self.zones[i].MgCrit 
-			else: 
-				raise ValueError("""Attribute 'Sigma_gCrit' must be \
-positive definite. Got: %g""" % (value)) 
-		else: 
-			raise TypeError("""Attribute 'Sigma_gSchmidt' must be a numerical \
-value. Got: %s""" % (type(value))) 
 
 	@property 
 	def schmidt_index(self): 

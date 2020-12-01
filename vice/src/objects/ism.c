@@ -4,6 +4,7 @@
 
 #include <stdlib.h> 
 #include "../ism.h" 
+#include "callback_2arg.h" 
 #include "objects.h" 
 #include "ism.h" 
 
@@ -23,6 +24,7 @@ extern ISM *ism_initialize(void) {
 	ism -> eta = NULL; 
 	ism -> enh = NULL; 
 	ism -> tau_star = NULL; 
+	ism -> functional_tau_star = callback_2arg_initialize(); 
 	return ism; 
 
 } 
