@@ -1,4 +1,4 @@
-# cython: language_level = 3, boundscheck = False 
+# cython: language_level = 3, boundscheck = False, binding = True 
 
 from __future__ import absolute_import 
 from ....._globals import _VERSION_ERROR_ 
@@ -25,7 +25,7 @@ def single_zero_age_ssp():
 	""" 
 	return [
 		"""vice.core.singlezone edge case : single zero age stellar population \
-[tau_star = 2 if t > %g Gyr else infinity]""" % (_TIMES_[-1]), 
+[tau_star = 2 if t = %g Gyr else infinity]""" % (_TIMES_[-1]), 
 		zero_age_ssp_test(tau_star = tau_star) 
 	] 
 

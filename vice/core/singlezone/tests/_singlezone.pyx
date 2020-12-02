@@ -1,4 +1,4 @@
-# cython: language_level = 3, boundscheck = False 
+# cython: language_level = 3, boundscheck = False, binding = True 
 
 from __future__ import absolute_import  
 __all__ = ["test"] 

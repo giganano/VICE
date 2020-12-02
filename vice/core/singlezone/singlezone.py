@@ -1276,6 +1276,17 @@ ran.""" % (i, j), UserWarning)
 			literature, it is often referred to as the "star formation 
 			efficiency timescale." 
 
+		.. note:: 
+
+			If the user assigns this attribute a function which is ran through 
+			a Cython_ compiler, the corresponding Cython_ source code must be 
+			compiled with the ``binding = True`` directive. This allows 
+			VICE to inspect the signature of the compiled function; otherwise, 
+			assigning the function to this attribute will raise a 
+			``ValueError``. 
+
+			.. _Cython: https://cython.org/
+
 		Example Code 
 		------------
 		>>> import vice 

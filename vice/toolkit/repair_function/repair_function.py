@@ -7,6 +7,7 @@ from ..._globals import _VERSION_ERROR_
 from ..._globals import ScienceWarning 
 from ...core.outputs import output 
 from ...core import pickles 
+from ...core import _pyutils 
 from .repfunc import repfunc 
 import warnings 
 import sys 
@@ -92,20 +93,23 @@ def repair_function(out, key):
 				# This should be an infall metallicity 
 				return repfunc(out.history["time"], out.history[key]) 
 			elif key.lower() == "tau_star": 
-				if pickles.pickled_object.from_pickle(
+				attr = pickles.pickled_object.from_pickle(
+					"%s.vice/attributes/tau_star.obj" % (out.name)) 
+				if callable(attr) and _pyutils.arg_count(attr) == 2: 
+					warnings.warn("""\
+This simulation was ran with the attribute 'tau_star' set to a function of \
+two variables. We do not recommend making use of this repaired function, as \
+the results will likely be inaccurate. See vice.singlezone.tau_star \
+documentation for details.""", ScienceWarning) 
+				elif pickles.pickled_object.from_pickle(
 					"%s.vice/attributes/schmidt.obj" % (out.name)): 
 					warnings.warn("""\
 This simulation was ran with the attribute 'schmidt' = True. With this \
 repaired function, its parameters are best reproduced by switching this \
 parameter to False.""", ScienceWarning) 
 				else: pass 
-				tstar = out.history.size[0] * [0.] 
-				for i in range(len(tstar)): 
-					if out.history["sfr"][i]: 
-						tstar[i] = 1.e-9 * (out.history["mgas"][i] / 
-							out.history["sfr"][i]) 
-					else: 
-						tstar[i] = float("inf") 
+				tstar = [1.e-9 * a / b if b else float("inf") for a, b in zip(
+					out.history["mgas"], out.history["sfr"])] 
 				return repfunc(out.history["time"], tstar) 
 			else: 
 				raise ValueError("""Unrecognized key. Must be one of: 'sfr', \

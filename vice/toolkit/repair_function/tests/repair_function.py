@@ -26,9 +26,9 @@ def test_repair_function():
 				if i == "eta": 
 					status &= test_.ycoords == out.history["eta_0"] 
 				elif i == "tau_star": 
-					status &= test_.ycoords == list(map(lambda x, y: 
-						1.e-9 * x / y, 
-						out.history["mgas"], out.history["sfr"])) 
+					status &= test_.ycoords == [1.e-9 * a / b if b else float(
+						"inf") for a, b in zip(
+							out.history["mgas"], out.history["sfr"])] 
 				else: 
 					status &= test_.ycoords == out.history[i] 
 				if not status: break 

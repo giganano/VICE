@@ -8,7 +8,7 @@ from ....testing import unittest
 import sys 
 
 _RAD_BINS_ = [0.25 * i for i in range(81)] 
-_TEST_TIMES_ = [0.05 * i for i in range(257)] 
+_TEST_TIMES_ = [0.05 * i for i in range(255)] 
 
 
 @moduletest 
@@ -50,7 +50,9 @@ def test_import():
 	""" 
 	def test(): 
 		try: 
-			assert all([0 <= i <= _END_TIME_ for i in 
+			# _END_TIME_ = 12.7, and max tform is 12.73xyz... so the +0.04 
+			# merely accounts for the trailing digits on the max tform. 
+			assert all([0 <= i <= _END_TIME_ + 0.04 for i in 
 				_TEST_.analog_data["tform"]]) 
 			assert all([0 <= i <= 20 for i in _TEST_.analog_data["rform"]]) 
 			assert all([0 <= i <= 20 for i in _TEST_.analog_data["rfinal"]]) 
@@ -64,6 +66,9 @@ def test_import():
 				_TEST_.analog_data["vphi"]]) 
 			assert all([isinstance(i, float) for i in 
 				_TEST_.analog_data["vz"]]) 
+			assert all([isinstance(_, int) for _ in 
+				_TEST_.analog_data["decomp"]]) 
+			assert all([_ in [1, 2, 3, 4] for _ in _TEST_.analog_data["decomp"]]) 
 		except: 
 			return False 
 		return True 
