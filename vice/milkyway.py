@@ -359,7 +359,7 @@ object. Got: %s""" % (type(value)))
 			The mass loading factor at that radius, defined by: 
 
 			.. math:: \eta(r) = y_\text{O}^\text{CC} / Z_\text{O}^\odot 
-				10^{0.06(r - 4\text{ kpc}) - 0.3} - 0.6 
+				10^{0.08(r - 4\text{ kpc}) - 0.3} - 0.6 
 
 			where :math:`C` is the corrective term, :math:`Z_\text{O}^\odot` 
 			is the solar abundance by mass of oxygen, and 
@@ -375,7 +375,7 @@ object. Got: %s""" % (type(value)))
 		""" 
 		# return yields.ccsne.settings['o'] / solar_z['o'] * (
 		# 	10**(0.06 * (rgal - 4) - 0.3)) - 0.6 
-		return 0.015 / solar_z['o'] * (10**(0.06 * (rgal - 4) - 0.3)) - 0.6 
+		return 0.015 / solar_z['o'] * (10**(0.08 * (rgal - 4) - 0.3)) - 0.6 
 
 	@property 
 	def dt(self): 

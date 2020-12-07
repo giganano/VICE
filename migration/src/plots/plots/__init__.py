@@ -1,6 +1,6 @@
 
 __modules__ = ["amr", "h277"] 
-__files__ = ["age_ofe", "eta", "evol", "ia_rate", "mdf_3panel", 
+__files__ = ["age_ofe", "eta", "evol", "eta_tau_sfh", "ia_rate", "mdf_3panel", 
 	"metallicity_gradient", "migration", "ofe_feh_densitymap", "ofe_mdfs", 
 	"sfe", "surface_density_gradient", "tau_sfh", "tracks"] 
 __all__ = __modules__ + __files__ 

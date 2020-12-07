@@ -198,14 +198,17 @@ class callback1:
 		Ensures that the name of the function the user defined prints rather 
 		than the name of this class, for clearer error messages. 
 		""" 
-		return self._function.__name__ 
+		if hasattr(self._function, "__name__"): 
+			return self._function.__name__ 
+		else: 
+			return str(type(self._function)) 
 
-	def __str__(self): 
-		""" 
-		Ensures that the name of the function the user defined prints rather 
-		than the name of this class, for clearer error messages. 
-		""" 
-		return self._function.__name__ 
+	# def __str__(self): 
+	# 	""" 
+	# 	Ensures that the name of the function the user defined prints rather 
+	# 	than the name of this class, for clearer error messages. 
+	# 	""" 
+	# 	return self.__repr__() 
 
 	@property 
 	def function(self): 
@@ -337,14 +340,17 @@ class callback2:
 		Ensures that the name of the function the user defined prints rather 
 		than the name of this class, for clearer error messages. 
 		""" 
-		return self._function.__name__ 
+		if hasattr(self._function, "__name__"): 
+			return self._function.__name__ 
+		else: 
+			return str(type(self._function)) 
 
-	def __str__(self): 
-		""" 
-		Ensures that the name of the function the user defined prints rather 
-		than the name of this class, for clearer error messages. 
-		""" 
-		return self._function.__name__ 
+	# def __str__(self): 
+	# 	""" 
+	# 	Ensures that the name of the function the user defined prints rather 
+	# 	than the name of this class, for clearer error messages. 
+	# 	""" 
+	# 	return self._function.__name__ 
 
 	@property 
 	def function(self): 

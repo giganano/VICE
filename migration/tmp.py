@@ -2,9 +2,10 @@
 import src 
 
 # src.plots.migration("./figures/migration") 
+# src.plots.eta_tau_sfh("./figures/eta_tau_sfh") 
 # src.plots.tau_sfh("./figures/tau_sfh") 
 # src.plots.h277.birth_final_radii_pdfs("./figures/h277/birth_final_radii_pdfs") 
-# src.plots.h277.decomposition("./figures/h277/decomposition1") 
+# src.plots.h277.decomposition("./figures/h277/decomposition") 
 # src.plots.ofe_feh_densitymap(
 # 	["./outputs/low-resolution/2Gyr_timedep/diffusion/insideout", 
 # 	"./outputs/low-resolution/2Gyr_timedep/diffusion/lateburst", 
@@ -27,16 +28,21 @@ import src
 # 		["%s%s" % (output_path, i)], 
 # 		"%s%s" % (figure_path, i), 
 # 		colormaps = ["Greys"]) 
+for i in ["insideout", "lateburst", "outerburst", "static"]: 
+	print(i) 
+	src.plots.ofe_mdfs(
+		"./outputs/high-resolution/2Gyr_timedep/diffusion/%s" % (i), 
+		"./figures/ofe_mdfs/2Gyr_timedep/diffusion/%s" % (i)) 
 
 # src.plots.ofe_feh_densitymap(
 # 	"./outputs/high-resolution/2Gyr_timedep/diffusion/insideout", 
 # 	"./outputs/high-resolution/2Gyr_timedep/post-process/insideout", 
 # 	"./figures/ofe_feh_densitymaps/test") 
-for i in ["insideout", "static", "lateburst", "outerburst"]: 
-	print(i) 
-	src.plots.ofe_mdfs(
-		"./outputs/high-resolution/fiducial/2Gyr_timedep/diffusion/%s" % (i), 
-		"./figures/ofe_mdfs/fiducial/%s" % (i)) 
+# for i in ["insideout", "static", "lateburst", "outerburst"]: 
+# 	print(i) 
+# 	src.plots.ofe_mdfs(
+# 		"./outputs/high-resolution/fiducial/2Gyr_timedep/diffusion/%s" % (i), 
+# 		"./figures/ofe_mdfs/fiducial/%s" % (i)) 
 
 # labels = {
 # 	"insideout": 	"Inside-Out", 

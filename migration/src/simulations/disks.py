@@ -22,6 +22,8 @@ from . import scalings
 from . import models 
 from .models.utils import get_bin_number, interpolate 
 from .models.gradient import gradient 
+from .sfe import sfe 
+import math as m 
 import sys 
 
 
@@ -31,12 +33,17 @@ class diskmodel(vice.milkyway):
 		verbose = True, migration_mode = "linear", max_radius = 20, **kwargs): 
 		super().__init__(zone_width = zone_width, name = name, 
 			verbose = verbose, **kwargs) 
-		Nstars = 2 * int(15.5 / zone_width * 12.8 / self.dt * self.n_stars) 
-		self.migration.stars = migration.diskmigration(self.annuli, N = Nstars, 
-			mode = migration_mode, filename = "%s_analogdata.out" % (name)) 
+		Nstars = 2 * int(15.5 / zone_width * 12.7 / self.dt * self.n_stars) 
+		self.migration.stars = migration.diskmigration(self.annuli, 
+			N = Nstars, mode = migration_mode, 
+			filename = "%s_analogdata.out" % (name)) 
 		self.evolution = star_formation_history(spec = spec, 
 			zone_width = zone_width, max_radius = max_radius) 
 		self.mode = "sfr" 
+		for i in range(self.n_zones): 
+			self.zones[i].tau_star = sfe(
+				m.pi * (self.annuli[i + 1]**2 - self.annuli[i]**2) 
+			) 
 
 	def run(self, *args, **kwargs): 
 		out = super().run(*args, **kwargs) 
@@ -68,11 +75,8 @@ class diskmodel(vice.milkyway):
 			max_radius = config.max_radius, **kwargs) 
 		model.dt = config.timestep_size 
 		model.n_stars = config.star_particle_density 
-		model.tau_star_mol = config.tau_star_mol 
 		model.bins = config.bins 
 		model.elements = config.elements 
-		model.Sigma_gCrit = config.Sigma_gCrit 
-		model.mass_loading = config.mass_loading 
 		return model 
 
 

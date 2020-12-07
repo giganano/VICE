@@ -1,7 +1,6 @@
 
 import argparse 
 import src 
-from src.simulations.mass_loading import strong_mass_loading 
 from vice import milkyway 
 import sys 
 
@@ -29,16 +28,16 @@ def parse():
 		type = str, 
 		default = "insideout") 
 
-	parser.add_argument("--SFEmolecular", 
-		help = "SFE timescale of molecular gas at the present day (Default: 2)", 
-		type = float, 
-		default = 2.0) 
+# 	parser.add_argument("--SFEmolecular", 
+# 		help = "SFE timescale of molecular gas at the present day (Default: 2)", 
+# 		type = float, 
+# 		default = 2.0) 
 
-	parser.add_argument("--SFEindex", 
-		help = """Power-law index on molecular gas SFE timescale with \
-simulation time. (Default: 0)""", 
-		type = float, 
-		default = 0.0) 
+# 	parser.add_argument("--SFEindex", 
+# 		help = """Power-law index on molecular gas SFE timescale with \
+# simulation time. (Default: 0.5)""", 
+# 		type = float, 
+# 		default = 0.5) 
 
 	parser.add_argument("--dt", 
 		help = "Timestep size in Gyr. (Default: 0.01)", 
@@ -67,83 +66,39 @@ underscores. (Default: \"fe_o\")""",
 		type = float, 
 		default = 0.1) 
 
-	parser.add_argument("--Sigma_gCrit", 
-		help = """The critical gas surface density, in Msun/kpc^2. \
-(Default: 2.0e+07)""", 
-		type = float, 
-		default = 2.0e+07) 
-
-	parser.add_argument("--mass_loading", 
-		help = """The mass-loading prescription. Either 'standard' or \
-'strong'. (Default: "strong")""", 
-		type = str, 
-		default = "strong") 
-
 	return parser 
 
 
-def suite(args): 
+def model(args): 
 	r""" 
-	Get the simulation suite object. 
+	Get the milkyway object corresponding to the desired simulation. 
 
 	Parameters 
 	----------
 	args : argparse.Namespace 
 		The command line arguments parsed via argparse. 
 	""" 
-	# if args.migration == "all": 
-	# 	migration = _MIGRATION_MODELS_ 
-	# else: 
-	# 	migration = [args.migration] 
-	# if args.evolution == "all": 
-	# 	evolution = _EVOLUTION_MODELS_ 
-	# else: 
-	# 	evolution = [args.evolution] 
-	suite = src.simulations.suite(
-		tau_star_mol = src.simulations.sfe(
-			baseline = args.SFEmolecular, 
-			index = args.SFEindex 
-		), 
-		star_particle_density = args.nstars, 
+	config = src.simulations.config(
 		timestep_size = args.dt, 
-		elements = args.elements.split('_'), 
+		star_particle_density = args.nstars, 
 		zone_width = args.zonewidth, 
-		Sigma_gCrit = args.Sigma_gCrit, 
-		mass_loading = {
-			"standard": 		milkyway.default_mass_loading, 
-			"strong": 			strong_mass_loading 
-		}[args.mass_loading] 
+		elements = args.elements.split('_')
 	) 
 	kwargs = dict(
 		name = args.name, 
-		spec = args.evolution 
+		spec = args.evolution
 	) 
 	if args.migration == "post-process": 
 		kwargs["simple"] = True 
 	else: 
 		kwargs["migration_mode"] = args.migration 
-	suite.add_simulation(
-		src.simulations.diskmodel.from_config(suite.config, **kwargs) 
-	) 
-	return suite 
-	# for i in migration: 
-	# 	for j in evolution: 
-	# 		kwargs = dict(
-	# 			name = "%s/%s/%s" % (args.outdir, i, j), 
-	# 			spec = j 
-	# 		) 
-	# 		if i == "post-process": 
-	# 			kwargs["simple"] = True 
-	# 		else: 
-	# 			kwargs["migration_mode"] = i 
-	# 		suite.add_simulation(
-	# 			src.simulations.diskmodel.from_config(suite.config, **kwargs) 
-	# 		) 
-	# return suite 
+	return src.simulations.diskmodel.from_config(config, **kwargs) 
+
 
 
 if __name__ == "__main__": 
 	parser = parse() 
 	args = parser.parse_args() 
-	suite(args).run(overwrite = args.force, pickle = False) 
-
+	model = model(args) 
+	model.run([_ * model.dt for _ in range(round(12.7 / model.dt) + 1)], 
+		overwrite = args.force, pickle = False) 

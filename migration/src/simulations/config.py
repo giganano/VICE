@@ -12,20 +12,14 @@ class config:
 			"star_particle_density":	2, 
 			"zone_width": 				0.1, 
 			"elements": 				["fe", "o"], 
-			"tau_star_mol": 			2, 
 			"bins": 					[-3 + 0.01 * i for i in range(601)], 
-			"Sigma_gCrit": 				2.0e+07, 
-			"mass_loading": 			milkyway.default_mass_loading 
 		} 
 		for i in kwargs.keys(): defaults[i] = kwargs[i] 
 		self.timestep_size = 			defaults["timestep_size"] 
 		self.star_particle_density = 	defaults["star_particle_density"] 
 		self.zone_width = 				defaults["zone_width"] 
 		self.elements = 				defaults["elements"] 
-		self.tau_star_mol = 			defaults["tau_star_mol"] 
 		self.bins = 					defaults["bins"] 
-		self.Sigma_gCrit = 				defaults["Sigma_gCrit"] 
-		self.mass_loading = 			defaults["mass_loading"] 
 
 	@property 
 	def timestep_size(self): 
@@ -138,24 +132,6 @@ Star particle density must be an integer. Got: %s""" % (type(value)))
 			raise TypeError("Expected type list. Got: %s" % (type(value))) 
 
 	@property 
-	def tau_star_mol(self): 
-		r""" 
-		Type : real number or <function> 
-
-		The depletion time of molecular gas due to star formation. Either a 
-		constant, time-independent value, or a function of time in Gyr. 
-		""" 
-		return self._tau_star_mol 
-
-	@tau_star_mol.setter 
-	def tau_star_mol(self, value): 
-		if isinstance(value, numbers.Number) or callable(value): 
-			self._tau_star_mol = value 
-		else: 
-			raise TypeError("Expected a real number or function. Got: %s" % (
-				type(value))) 
-
-	@property 
 	def bins(self): 
 		r""" 
 		Type : list 
@@ -174,42 +150,4 @@ Star particle density must be an integer. Got: %s""" % (type(value)))
 				raise ValueError("Non-numerical value detected.") 
 		else: 
 			raise TypeError("Must be of type list. Got: %s" % (type(value))) 
-
-	@property 
-	def Sigma_gCrit(self): 
-		r""" 
-		Type : float 
-
-		The critical surface density of gas in :math:`M_\odot kpc^{-2}`, above 
-		which the ISM is assumed to be fully molecular, and star formation 
-		proceeds at the assumed SFE timescale for molecular gas. 
-		""" 
-		return self._Sigma_gCrit 
-
-	@Sigma_gCrit.setter 
-	def Sigma_gCrit(self, value): 
-		if isinstance(value, numbers.Number): 
-			if value > 0: 
-				self._Sigma_gCrit = float(value) 
-			else: 
-				raise ValueError("Must be positive. Got: %g" % (value)) 
-		else: 
-			raise TypeError("Must be a real number. Got: %s" % (type(value))) 
-
-	@property 
-	def mass_loading(self): 
-		r""" 
-		Type : function 
-
-		The mass loading factor :math:`\eta` as a function of galactocentric 
-		radius :math:`R_\text{gal}` in kpc. 
-		""" 
-		return self._mass_loading 
-
-	@mass_loading.setter 
-	def mass_loading(self, value): 
-		if callable(value): 
-			self._mass_loading = value 
-		else: 
-			raise TypeError("Must be callable. Got: %s" % (type(value))) 
 

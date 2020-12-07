@@ -15,27 +15,26 @@ def main(stem):
 	h277 = hydrodiskstars([0.1 * _ for _ in range(201)], N = 1e10) 
 	h277.analog_data["age"] = [12.7 - _ for _ in h277.analog_data["tform"]] 
 	age_bins = [[0, 2], [2, 4], [4, 6], [6, 8], [8, 10]] 
-	rbins = [[4, 6], [6, 8], [8, 10], [10, 12]] 
-	# rbins = [[5, 7], [7, 9], [9, 11], [11, 13]] 
+	# rbins = [[4, 6], [6, 8], [8, 10], [10, 12]] 
+	rbins = [[5, 7], [7, 9], [9, 11], [11, 13]] 
 	colors = ["darkviolet", "blue", "green", "gold", "red"] 
 	for i in range(len(axes[0])): 
 		if rbins[i][1] >= 11: 
 			text_radius = 0 
 		else: 
 			text_radius = 12 
-		axes[0][i].text(text_radius, 0.36, 
-			r"$R_\text{Final}$ = %d - %d" % (rbins[i][0], rbins[i][1]), 
-			fontsize = 20) 
-		axes[1][i].text(text_radius, 0.3, 
+		axes[0][i].text(text_radius, 0.3, 
 			r"$R_\text{Birth}$ = %d - %d" % (rbins[i][0], rbins[i][1]), 
 			fontsize = 20) 
+		axes[1][i].text(text_radius, 0.34, 
+			r"$R_\text{Final}$ = %d - %d" % (rbins[i][0], rbins[i][1]), 
+			fontsize = 20) 
 		for j in range(len(age_bins)): 
-			plot_subsample(axes[0][i], h277, rbins[i][0], rbins[i][1], 
-				age_bins[j][0], age_bins[j][1], color = colors[j], 
-				label = not i) 
 			plot_subsample(axes[1][i], h277, rbins[i][0], rbins[i][1], 
+				age_bins[j][0], age_bins[j][1], color = colors[j]) 
+			plot_subsample(axes[0][i], h277, rbins[i][0], rbins[i][1], 
 				age_bins[j][0], age_bins[j][1], cut = "rform", plot = "rfinal", 
-				color = colors[j]) 
+				color = colors[j], label = not i) 
 			axes[0][i].plot(2 * [rbins[i][0]], axes[0][i].get_ylim(), 
 				c = named_colors()["black"], linestyle = ':') 
 			axes[0][i].plot(2 * [rbins[i][1]], axes[0][i].get_ylim(), 
@@ -119,9 +118,9 @@ def setup_axes():
 			if j: plt.setp(axes[i][j].get_yticklabels(), visible = False) 
 			axes[i][j].set_xlim([-2, 22]) 
 			if i: 
-				axes[i][j].set_ylim([0, 0.36]) 
+				axes[i][j].set_ylim([0, 0.399]) 
 			else: 
-				axes[i][j].set_ylim([0, 0.42]) 
+				axes[i][j].set_ylim([0, 0.36]) 
 			axes[i][j].set_xticks([0, 5, 10, 15, 20])
 	dummy = dummy_background_axes(axes) 
 	dummy.set_xlabel(r"$R_\text{gal}$ [kpc]", labelpad = 30) 

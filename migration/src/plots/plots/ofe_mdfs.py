@@ -45,7 +45,6 @@ def setup_axes():
 				axes[i][j].set_yticks([0, 5, 10, 15, 20, 25]) 
 				axes[i][j].set_title(r"$R_\text{gal}$ = %g - %g kpc" % (
 					[3, 5, 7, 9, 11][j], [5, 7, 9, 11, 13][j]), fontsize = 25) 
-			axes[i][j].yaxis.set_ticks([0, 5, 10, 15, 20])  
 			axes[i][j].xaxis.set_ticks([0.0, 0.2, 0.4]) 
 			# if i == 0: axes[i][j].set_title(r"$R_\text{gal}$ = %g - %g kpc" % (
 			# 		[3, 5, 7, 9, 11][j], [5, 7, 9, 11, 13][j]), 
@@ -59,7 +58,44 @@ def setup_axes():
 	return axes 
 
 
-def get_ofe_pdf(stars, min_rgal, max_rgal, min_absz, max_absz, min_FeH, max_FeH): 
+def subsample(stars, min_rgal, max_rgal, min_absz, max_absz, min_FeH, 
+	max_FeH): 
+	return stars.filter(
+		"zone_final", ">=", min_rgal / ZONE_WIDTH
+	).filter(
+		"zone_final", "<=", max_rgal / ZONE_WIDTH - 1 
+	).filter(
+		"abszfinal", ">=", min_absz 
+	).filter(
+		"abszfinal", "<=", max_absz 
+	).filter(
+		"[Fe/H]", ">=", min_FeH
+	).filter(
+		"[Fe/H]", "<=", max_FeH
+	) 
+
+
+def get_pdf(stars, min_rgal, max_rgal, min_absz, max_absz, min_FeH, max_FeH, 
+	window = 0.04): 
+	stars = subsample(stars, min_rgal, max_rgal, min_absz, max_absz, 
+		min_FeH, max_FeH) 
+	print(len(stars["mass"])) 
+	xvals = [-0.1 + 0.001 * _ for _ in range(601)] 
+	dist = len(xvals) * [0.] 
+	mass = [a * (1 - vice.cumulative_return_fraction(b)) for a, b in zip(
+		stars["mass"], stars["age"])] 
+	for i in range(len(xvals)): 
+		# which stars are in the [Fe/H] box-car window 
+		test = [xvals[i] - window / 2 <= stars["[O/Fe]"][_] <= 
+			xvals[i] + window / 2 for _ in range(len(mass))] 
+		dist[i] = sum([a * b for a, b in zip(test, mass)]) 
+	norm = sum(dist) * (xvals[1] - xvals[0]) 
+	dist = [_ / norm for _ in dist] 
+	return [xvals, dist] 
+
+
+def get_ofe_pdf(stars, min_rgal, max_rgal, min_absz, max_absz, min_FeH, 
+	max_FeH): 
 	r""" 
 	Get the PDF within the binspace 
 
@@ -102,22 +138,18 @@ def plot_mdfs(ax, stars, min_rgal, max_rgal, min_absz, max_absz, label = False):
 	maxabsz : the maximum final |z| 
 	""" 
 	for i in range(len(FEH_BINS)): 
-		dist = get_ofe_pdf(stars, min_rgal, max_rgal, min_absz, max_absz, 
+		# dist = get_ofe_pdf(stars, min_rgal, max_rgal, min_absz, max_absz, 
+		# 	FEH_BINS[i][0], FEH_BINS[i][1]) 
+		xvals, dist = get_pdf(stars, min_rgal, max_rgal, min_absz, max_absz, 
 			FEH_BINS[i][0], FEH_BINS[i][1]) 
-		if dist is not None: 
-			kwargs = {
-				"c": 			named_colors()[COLORS[i]] 
-				# "color": 		named_colors()[COLORS[i]] 
-			} 
-			if label: kwargs["label"] = r"%g $\leq$ [Fe/H] $\leq$ %g" % (
-				FEH_BINS[i][0], FEH_BINS[i][1]) 
-			ax.plot([(a + b) / 2 for a, b in zip(OFE_BINS[1:], OFE_BINS[:-1])], 
-				dist, **kwargs) 
-			# ax.step([(a + b) / 2 for a, b in zip(OFE_BINS[1:], OFE_BINS[:-1])], 
-			# 	dist, where = "mid", **kwargs) 
-			# ax.bar([(a + b) / 2 for a, b in zip(OFE_BINS[1:], OFE_BINS[:-1])], 
-			# 	dist, width = BIN_WIDTH, alpha = 0.3, **kwargs) 
-		else: pass 
+		# if dist is not None: 
+		kwargs = {"c": named_colors()[COLORS[i]]} 
+		if label: kwargs["label"] = r"%g $\leq$ [Fe/H] $\leq$ %g" % (
+			FEH_BINS[i][0], FEH_BINS[i][1]) 
+		ax.plot(xvals, dist, **kwargs) 
+		# ax.plot([(a + b) / 2 for a, b in zip(OFE_BINS[1:], OFE_BINS[:-1])], 
+		# 	dist, **kwargs) 
+		# else: pass 
 
 
 def plot_observed_mdfs(ax, min_rgal, min_absz): 
