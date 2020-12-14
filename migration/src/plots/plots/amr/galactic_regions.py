@@ -167,6 +167,7 @@ def main(element_x, element_y, output, stem):
 		output.name)[:output.stars.size[0]]]
 	for i in range(len(axes)): 
 		for j in range(len(axes[i])): 
+			print([i, j]) 
 			sc = plot_amr(axes[i][j], element_x, element_y, output, RADII[j], 
 				RADII[j + 1], HEIGHTS[i + 1], HEIGHTS[i]) 
 			median_ages(axes[i][j], element_x, element_y, output, RADII[j], 

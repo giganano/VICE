@@ -236,8 +236,14 @@ static unsigned short hydrodiskstars_import_sub(HYDRODISKSTARS *hds,
  * 
  * Returns 
  * =======
- * The index of the star particle in the hydrodiskstars data. -1 if no analog 
- * is found in either initial or widened searches. 
+ * The index of the star particle in the hydrodiskstars data. 
+ * 
+ * Notes
+ * =====
+ * This function first searches for star particles born with R +/- 250 pc and 
+ * T +/- 300 Myr. If no candidate analog is found, it widens it to R +/- 500 pc 
+ * and T +/- 600 Myr. It continues this process of widening the search by 
+ * dR = 250 pc and dT = 300 Myr until an analog is found. 
  * 
  * header: hydrodiskstars.h 
  */ 
@@ -247,27 +253,25 @@ extern long hydrodiskstars_find_analog(HYDRODISKSTARS hds, double birth_radius,
 	/* Conduct the initial candidate search, default analog_idx of -1l */ 
 	long analog_idx = -1l; 
 	unsigned long *candidates; 
-	unsigned long n_candidates = candidate_search(hds, birth_radius, birth_time, 
-		&candidates, INITIAL_ANALOG_SEARCH_RADIUS, INITIAL_ANALOG_SEARCH_TIME); 
-	if (n_candidates) {
-		/* Candidates were found, take one of them at random */ 
-		analog_idx = (signed) candidates[(unsigned long) rand_range(0, 
-			n_candidates)]; 
-	} else {
-		/* No candidates found in initial search, conduct widened search */ 
+	unsigned long n_candidates; 
+	double search_radius = INITIAL_ANALOG_SEARCH_RADIUS; 
+	double search_time = INITIAL_ANALOG_SEARCH_TIME; 
+	do {
 		n_candidates = candidate_search(hds, birth_radius, birth_time, 
-			&candidates, WIDENED_ANALOG_SEARCH_RADIUS, 
-			WIDENED_ANALOG_SEARCH_TIME); 
+			&candidates, search_radius, search_time); 
 		if (n_candidates) {
-			/* Candidates were found take one of them at random */ 
+			/* Candidates were found, take one of them at random */ 
 			analog_idx = (signed) candidates[(unsigned long) rand_range(0, 
 				n_candidates)]; 
-		} else { /* no candidates found, leave analog_idx at -1l */ } 
-	} 
-	if (n_candidates) free(candidates); 
+		} else {
+			/* No candidates found; widen the search */ 
+			search_radius += INCREMENT_ANALOG_SEARCH_RADIUS; 
+			search_time += INCREMENT_ANALOG_SEARCH_TIME; 
+		} 
+	} while (!n_candidates); 
 	return analog_idx; 
 
-}
+} 
 
 
 /* 

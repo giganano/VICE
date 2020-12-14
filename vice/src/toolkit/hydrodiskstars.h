@@ -7,14 +7,6 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 /* 
- * Maximum allowed difference in birth times between a stellar population and 
- * its analog star particle in Gyr for initial analog search. 
- */ 
-#ifndef INITIAL_ANALOG_SEARCH_TIME 
-#define INITIAL_ANALOG_SEARCH_TIME 0.300 
-#endif /* INITIAL_ANALOG_SEARCH_TIME */ 
-
-/* 
  * Maximum allowed difference in birth radii between a stellar population and 
  * its analog star particle in kpc for initial analog search. 
  */ 
@@ -24,13 +16,39 @@ extern "C" {
 
 /* 
  * Maximum allowed difference in birth times between a stellar population and 
+ * its analog star particle in Gyr for initial analog search. 
+ */ 
+#ifndef INITIAL_ANALOG_SEARCH_TIME 
+#define INITIAL_ANALOG_SEARCH_TIME 0.300 
+#endif /* INITIAL_ANALOG_SEARCH_TIME */ 
+
+/* 
+ * The distance in kpc to increment the difference in birth radii until an 
+ * analog is found. This is relevant for widened searches of candidate 
+ * analogs. 
+ */ 
+#ifndef INCREMENT_ANALOG_SEARCH_RADIUS 
+#define INCREMENT_ANALOG_SEARCH_RADIUS 0.250 
+#endif 
+
+/* 
+ * The amount of time in Gyr to increment the difference in birth times until 
+ * an analog is found. This is relevant for widened searches of candidate 
+ * analogs.
+ */ 
+#ifndef INCREMENT_ANALOG_SEARCH_TIME 
+#define INCREMENT_ANALOG_SEARCH_TIME 0.300 
+#endif 
+
+/* 
+ * Maximum allowed difference in birth times between a stellar population and 
  * its analog star particle in Gyr for widened analog search. 
  * 
  * Note: widened search only runs if initial search finds no candidates 
  */ 
-#ifndef WIDENED_ANALOG_SEARCH_TIME 
-#define WIDENED_ANALOG_SEARCH_TIME 0.600 
-#endif /* WIDENED_ANALOG_SEARCH_TIME */ 
+// #ifndef WIDENED_ANALOG_SEARCH_TIME 
+// #define WIDENED_ANALOG_SEARCH_TIME 0.600 
+// #endif /* WIDENED_ANALOG_SEARCH_TIME */ 
 
 /* 
  * Maximum allowed difference in birth radii between a stellar population and 
@@ -38,9 +56,9 @@ extern "C" {
  * 
  * Note: widened search only runs if initial search finds no candidates 
  */ 
-#ifndef WIDENED_ANALOG_SEARCH_RADIUS 
-#define WIDENED_ANALOG_SEARCH_RADIUS 0.500 
-#endif /* WIDENED_ANALOG_SEARCH_TIME */ 
+// #ifndef WIDENED_ANALOG_SEARCH_RADIUS 
+// #define WIDENED_ANALOG_SEARCH_RADIUS 0.500 
+// #endif /* WIDENED_ANALOG_SEARCH_TIME */ 
 
 /* 
  * The span of ages in Gyr of each star particle in the hydrodynamical 
@@ -95,8 +113,14 @@ extern unsigned short hydrodiskstars_import(HYDRODISKSTARS *hds,
  * 
  * Returns 
  * =======
- * The index of the star particle in the hydrodiskstars data. -1 if no analog 
- * is found in either initial or widened searches. 
+ * The index of the star particle in the hydrodiskstars data. 
+ * 
+ * Notes
+ * =====
+ * This function first searches for star particles born with R +/- 250 pc and 
+ * T +/- 300 Myr. If no candidate analog is found, it widens it to R +/- 500 pc 
+ * and T +/- 600 Myr. It continues this process of widening the search by 
+ * dR = 250 pc and dT = 300 Myr until an analog is found. 
  * 
  * source: hydrodiskstars.c 
  */ 

@@ -122,7 +122,7 @@ def test_call(mode):
 					for k in range(j + 1, len(_TEST_TIMES_)): 
 						x = _TEST_(i, _TEST_TIMES_[j], _TEST_TIMES_[k]) 
 						status &= isinstance(x, int) 
-						status &= 0 <= x < len(_RAD_BINS_) or x == -1 
+						status &= 0 <= x < len(_RAD_BINS_) 
 						if not status: break 
 					if not status: break 
 				if not status: break 

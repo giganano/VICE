@@ -4,7 +4,8 @@ timestamps in the simulation.
 """ 
 
 from .. import env 
-from .utils import named_colors, mpl_loc, dummy_background_axes 
+from .utils import (named_colors, mpl_loc, dummy_background_axes, 
+	yticklabel_formatter) 
 import matplotlib.pyplot as plt 
 import vice 
 
@@ -12,17 +13,21 @@ ZONE_WIDTH = 0.1
 # MODELS = ["Constant SFR", "Inside-Out", "Late-Burst", "Outer-Burst"] 
 # TIMES = [2, 4, 6, 8, 10, 12.8] 
 # COLORS = ["red", "gold", "green", "blue", "darkviolet", "black"] 
-RGAL_LIM = [-1, 16] 
+RGAL_LIM = [-2, 17] 
 # TSTAR_LIM = [0, 7] 
 
 
 def setup_axes(n_outputs): 
 	fig, axes = plt.subplots(ncols = n_outputs, nrows = 1, 
 		figsize = (n_outputs * 5, 5), sharey = True) 
-	axes = axes.tolist() 
+	if n_outputs > 1: 
+		axes = axes.tolist() 
+	else: 
+		axes = [axes] 
 	for i in range(len(axes)): 
 		if i: plt.setp(axes[i].get_yticklabels(), visible = False) 
 		axes[i].set_xlim(RGAL_LIM) 
+		axes[i].set_xticks([0, 5, 10, 15]) 
 		# axes[i].set_ylim(TSTAR_LIM) 
 		# axes[i].set_yticks(range(8)) 
 		# axes[i].set_title(MODELS[i], fontsize = 25) 
@@ -101,18 +106,22 @@ def main(outputs, stem,
 	labels = ["Constant", "Inside-Out", "Late-Burst", "Outer-Burst"], 
 	times = [2, 4, 6, 8, 10, 12.7], 
 	colors = ["red", "gold", "green", "blue", "darkviolet", "black"], 
-	ylim = [0, 7], yticks = range(8)): 
+	# ylim = [-2, 17], yticks = [0, 5, 10, 15]): 
+	ylim = [0.5, 20], yticks = [1, 10]): 
 
 	axes = setup_axes(len(outputs)) 
 	for i in range(len(axes)): 
+		axes[i].set_yscale("log") 
 		axes[i].set_ylim(ylim) 
 		axes[i].set_yticks(yticks) 
-		axes[i].set_title(labels[i], fontsize = 25) 
+		yticklabel_formatter(axes[i]) 
+		if labels is not None: axes[i].set_title(labels[i], fontsize = 25) 
 	outputs = [vice.output(_) for _ in outputs] 
 	for i in range(len(outputs)): plot_sfe(axes[i], outputs[i], 
 		times, colors, label = not i) 
-	leg = axes[0].legend(loc = mpl_loc("upper left"), ncol = 2, frameon = False, 
-		bbox_to_anchor = (0.01, 0.99), handlelength = 0, fontsize = 20) 
+	leg = axes[0].legend(loc = mpl_loc("upper left"), ncol = 1, 
+		frameon = False, bbox_to_anchor = (0.01, 0.99), handlelength = 0, 
+		fontsize = 20, labelspacing = 0.2)  
 	for i in range(len(times)): 
 		leg.get_texts()[i].set_color(colors[i]) 
 		leg.legendHandles[i].set_visible(False) 

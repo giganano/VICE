@@ -14,7 +14,7 @@ class diskmigration(hydrodisk.hydrodiskstars):
 		super().__init__(radbins, mode = mode, **kwargs) 
 		if isinstance(filename, str): 
 			self._file = open(filename, 'w') 
-			self._file.write("# zone_origin\ttime_origin\tzfinal\n") 
+			self._file.write("# zone_origin\ttime_origin\tanalog_id\tzfinal\n") 
 		else: 
 			raise TypeError("Filename must be a string. Got: %s" % (
 				type(filename))) 
@@ -28,11 +28,14 @@ class diskmigration(hydrodisk.hydrodiskstars):
 			super().__call__(zone, tform, time) # reset analog star particle 
 			if self.write: 
 				if self.analog_index == -1: 
-					finalz = 100 
+					# finalz = 100 
+					finalz = 0 
+					analog_id = -1 
 				else: 
 					finalz = self.analog_data["zfinal"][self.analog_index] 
+					analog_id = self.analog_id["id"][self.analog_index] 
 				self._file.write("%d\t%.2f\t%d\t%.2f\n" % (zone, tform, 
-					self.analog_data["id"][self.analog_index], finalz)) 
+					analog_id, finalz)) 
 			else: pass 
 			return zone 
 		else: 

@@ -16,7 +16,7 @@ RADII = [3, 5, 7, 9, 11, 13, 15]
 COLORS = ["grey", "black", "red", "gold", "green", "blue", "darkviolet"] 
 # PREFACTORS = [1., 1.5, 2.0, 2.5, 3.0, 3.5, 4.0] 
 # PREFACTORS = [4.0, 3.5, 3.0, 2.5, 2.0, 1.5, 1.0] 
-PREFACTORS = [40, 20, 10, 5, 3, 1.5, 0.7] 
+PREFACTORS = [55, 25, 10, 5, 3, 2.0, 1.0] 
 
 
 def setup_axis(): 
@@ -28,9 +28,9 @@ def setup_axis():
 	axes[0].set_ylabel("[O/Fe]") 
 	axes[1].set_xlabel("Time [Gyr]") 
 	axes[1].set_ylabel(r"$\propto \dot{N}_\text{Ia}$ [Gyr$^{-1}$]") 
-	axes[0].set_xlim([-1.8, 0.8]) 
+	axes[0].set_xlim([-2.3, 0.8]) 
 	axes[0].set_ylim([-0.1, 0.5]) 
-	axes[0].set_xticks([-1.5, -1.0, -0.5, 0.0, 0.5]) 
+	axes[0].set_xticks([-2.0, -1.5, -1.0, -0.5, 0.0, 0.5]) 
 	axes[1].set_xlim([-1, 14]) 
 	axes[1].set_yscale("log") 
 	axes[1].set_ylim([0.1, 100]) 
@@ -99,7 +99,7 @@ def plot_ia_rate_proxies(ax, output, linestyle = '-'):
 				prefactor = PREFACTORS[i]), **kwargs) 
 
 
-def main(output1, output2, times, stem): 
+def main(output1, output2, stem, times = [2, 4, 6, 8, 10, 12.7]): 
 	axes = setup_axis() 
 	out1 = vice.output(output1) 
 	out2 = vice.output(output2) 

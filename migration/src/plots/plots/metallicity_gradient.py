@@ -8,7 +8,7 @@ import vice
 ZONE_WIDTH = 0.1 
 MAX_RADIUS = 20.0 
 MAX_SF_RADIUS = 15.5 
-XH_YLIM = [-0.7, 1.2] 
+XH_YLIM = [-0.9, 1.2] 
 OFE_YLIM = [-0.2, 0.5] 
 XLIM = [-2, 22] 
 MODELS = ["Static", "Inside-Out", "Late-Burst", "Outer-Burst"] 
@@ -62,7 +62,7 @@ def target_gradient(rgal):
 	r""" 
 	The target gradient as a function of galactocentric radius in kpc. 
 	""" 
-	return -0.06 * (rgal - 4) + 0.3 
+	return -0.08 * (rgal - 4) + 0.3 
 
 
 def plot_target_gradient(ax): 

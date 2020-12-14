@@ -150,10 +150,6 @@ def main(upperleft, upperright, lowerleft, lowerright, stem,
 		[vice.output(upperleft), vice.output(upperright)], 
 		[vice.output(lowerleft), vice.output(lowerright)] 
 	] 
-	# names = [
-	# 	["Constant SFR", "Inside-Out"], 
-	# 	["Late-Burst", "Outer-Burst"] 
-	# ] 
 	for i in range(2): 
 		for j in range(2): 
 			axes[i][j].text(1, 0.4, names[i][j], fontsize = 18) 
@@ -163,7 +159,7 @@ def main(upperleft, upperright, lowerleft, lowerright, stem,
 			sc = plot_relation(axes[i][j], outputs[i][j], 
 				label = i == 0 and j == 0) 
 	axes[0][0].legend(loc = mpl_loc("upper left"), ncol = 1, frameon = False, 
-		bbox_to_anchor = (0.01, 0.85), fontsize = 18) 
+		bbox_to_anchor = (0.01, 0.87), handletextpad = 0.4, fontsize = 18) 
 	cbar_ax = plt.gcf().add_axes([0.92, 0.05, 0.02, 0.95]) 
 	cbar = plt.colorbar(sc, cax = cbar_ax, pad = 0.0, orientation = "vertical") 
 	cbar.set_label(r"$R_\text{gal}$ of birth [kpc]", labelpad = 10) 

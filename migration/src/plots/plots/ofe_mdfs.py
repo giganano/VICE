@@ -12,15 +12,15 @@ import vice
 
 OFE_BINS = [-0.1 + 0.01 * i for i in range(61)] 
 BIN_WIDTH = 0.01 
-XLIM = [-0.1, 0.5] 
-YLIM = [0, 25] 
+XLIM = [-0.05, 0.35] 
+YLIM = [0, 20] 
 FEH_BINS = [
 	[-0.4, -0.2], 
 	# [-0.2, 0.0], 
 	[0.0, 0.2] 
 ]
 COLORS = [
-	"dodgerblue", 
+	"blue", 
 	# "black", 
 	"crimson" 
 ] 
@@ -40,18 +40,19 @@ def setup_axes():
 			axes[i][j].set_xlim(XLIM) 
 			axes[i][j].set_ylim(YLIM) 
 			if i: 
-				axes[i][j].set_yticks([0, 5, 10, 15, 20]) 
+				axes[i][j].set_yticks([0, 5, 10, 15]) 
 			else: 
-				axes[i][j].set_yticks([0, 5, 10, 15, 20, 25]) 
+				axes[i][j].set_yticks([0, 5, 10, 15, 20]) 
 				axes[i][j].set_title(r"$R_\text{gal}$ = %g - %g kpc" % (
 					[3, 5, 7, 9, 11][j], [5, 7, 9, 11, 13][j]), fontsize = 25) 
-			axes[i][j].xaxis.set_ticks([0.0, 0.2, 0.4]) 
+			# axes[i][j].xaxis.set_ticks([0.0, 0.2, 0.4]) 
+			axes[i][j].set_xticks([0.0, 0.1, 0.2, 0.3]) 
 			# if i == 0: axes[i][j].set_title(r"$R_\text{gal}$ = %g - %g kpc" % (
 			# 		[3, 5, 7, 9, 11][j], [5, 7, 9, 11, 13][j]), 
 			# 	fontsize = 25) 
-			if j == 0: axes[i][j].text(0.0, 21, 
+			if j == 0: axes[i][j].text(0.0, 16, 
 				r"$\left|z\right|$ = %g - %g kpc" % (
-					[1, 0.5, 0][i], [1.5, 1, 0.5][i]), 
+					[1, 0.5, 0][i], [2, 1, 0.5][i]), 
 				fontsize = 25) 
 	axes[2][2].set_xlabel("[O/Fe]") 
 	axes[1][0].set_ylabel("PDF") 
@@ -180,7 +181,7 @@ def main(name, stem):
 	out.stars["abszfinal"] = [abs(row[-1]) for row in 
 		analog_data[:out.stars.size[0]]] 
 	radii = [3, 5, 7, 9, 11, 13] 
-	z = [1.5, 1, 0.5, 0.0] 
+	z = [2.0, 1.0, 0.5, 0.0] 
 	for i in range(3): 
 		for j in range(5): 
 			plot_observed_mdfs(axes[i][j], radii[j], z[i + 1])

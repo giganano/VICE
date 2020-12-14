@@ -10,9 +10,12 @@ import math as m
 import vice 
 
 ZONE_WIDTH = 0.1 
-SFR_LIM = [3e-5, 0.3] 
-IFR_LIM = [3e-4, 3] 
-GAS_LIM = [3e5, 3e9] 
+# SFR_LIM = [3e-5, 0.3] 
+SFR_LIM = [1.1e-4, 0.3] 
+# IFR_LIM = [3e-4, 3] 
+IFR_LIM = [2.e-3, 0.3] 
+# GAS_LIM = [3e5, 3e9] 
+GAS_LIM = [3.e6, 3.e8] 
 TIME_LIM = [-1, 14] 
 RADII = [3, 5, 7, 9, 11, 13, 15] 
 COLORS = ["grey", "black", "red", "gold", "green", "blue", "darkviolet"] 
@@ -78,9 +81,9 @@ def main(static, insideout, lateburst, outerburst, stem):
 	plot_evolution([row[1] for row in axes], vice.output(insideout)) 
 	plot_evolution([row[2] for row in axes], vice.output(lateburst)) 
 	plot_evolution([row[3] for row in axes], vice.output(outerburst)) 
-	leg = axes[1][0].legend(loc = mpl_loc("upper center"), ncol = 3, 
+	leg = axes[1][0].legend(loc = mpl_loc("upper center"), ncol = 4, 
 		frameon = False, bbox_to_anchor = (0.5, 0.99), handlelength = 0, 
-		fontsize = 20) 
+		columnspacing = 0.8, fontsize = 20) 
 	for i in range(len(RADII)): 
 		leg.get_texts()[i].set_color(COLORS[i]) 
 		leg.legendHandles[i].set_visible(False) 
