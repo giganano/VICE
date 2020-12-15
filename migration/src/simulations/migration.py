@@ -33,7 +33,7 @@ class diskmigration(hydrodisk.hydrodiskstars):
 					analog_id = -1 
 				else: 
 					finalz = self.analog_data["zfinal"][self.analog_index] 
-					analog_id = self.analog_id["id"][self.analog_index] 
+					analog_id = self.analog_data["id"][self.analog_index] 
 				self._file.write("%d\t%.2f\t%d\t%.2f\n" % (zone, tform, 
 					analog_id, finalz)) 
 			else: pass 
