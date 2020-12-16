@@ -15,9 +15,10 @@ static unsigned short already_included(unsigned short *included,
 static unsigned short hydrodiskstars_import_sub(HYDRODISKSTARS *hds, 
 	char *filename, unsigned short ids_column, 
 	unsigned short birth_times_column, unsigned short birth_radii_column, 
-	unsigned short final_radii_column, unsigned short zfinal_column, 
-	unsigned short v_radcolumn, unsigned short v_phicolumn, 
-	unsigned short v_zcolumn, unsigned short decomp_column); 
+	unsigned short final_radii_column, unsigned short zform_column, 
+	unsigned short zfinal_column, unsigned short v_radcolumn, 
+	unsigned short v_phicolumn, unsigned short v_zcolumn, 
+	unsigned short decomp_column); 
 static unsigned long candidate_search(HYDRODISKSTARS hds, double birth_radius, 
 	double birth_time, unsigned long **candidates, double max_radius, 
 	double max_time); 
@@ -39,7 +40,8 @@ static unsigned short NSUBS = 30u;
  * birth_times_column: 	The column of times in Gyr each star particle was born 
  * birth_radii_column: 	The column of radii in kpc each star particle was born at 
  * final_radii_column: 	The column of radii in kpc each star particle ends at 
- * zfinal_column: 		The column of disk heights in kpc 
+ * zform_column: 		The column of disk heights of formation in kpc 
+ * zfinal_column: 		The column of present day disk heights in kpc 
  * v_radcolumn: 		The column of radial velocities in km/sec 
  * v_phicolumn: 		The column of azimuthal velocities in km/sec 
  * v_zcolumn: 			The column of vertical velocities in km/sec 
@@ -53,9 +55,10 @@ static unsigned short NSUBS = 30u;
 extern unsigned short hydrodiskstars_import(HYDRODISKSTARS *hds, 
 	unsigned long Nstars, char *filestem, unsigned short ids_column, 
 	unsigned short birth_times_column, unsigned short birth_radii_column, 
-	unsigned short final_radii_column, unsigned short zfinal_column, 
-	unsigned short v_radcolumn, unsigned short v_phicolumn, 
-	unsigned short v_zcolumn, unsigned short decomp_column) {
+	unsigned short final_radii_column, unsigned short zform_column, 
+	unsigned short zfinal_column, unsigned short v_radcolumn, 
+	unsigned short v_phicolumn, unsigned short v_zcolumn, 
+	unsigned short decomp_column) {
 
 	/* 
 	 * Bookkeeping 
@@ -80,10 +83,11 @@ extern unsigned short hydrodiskstars_import(HYDRODISKSTARS *hds,
 		
 		/* Construct the name of the file to import */ 
 		char *filename = (char *) malloc (MAX_FILENAME_SIZE * sizeof(char)); 
-		sprintf(filename, "%s_sub%u.dat", filestem, subsample); 
+		sprintf(filename, "%ssub%u.dat", filestem, subsample); 
 		status &= hydrodiskstars_import_sub(hds, filename, ids_column, 
 			birth_times_column, birth_radii_column, final_radii_column, 
-			zfinal_column, v_radcolumn, v_phicolumn, v_zcolumn, decomp_column); 
+			zform_column, zfinal_column, v_radcolumn, v_phicolumn, v_zcolumn, 
+			decomp_column); 
 		free(filename); 
 	} while ((*hds).n_stars < Nstars && status); 
 	free(included); 
@@ -141,9 +145,10 @@ static unsigned short already_included(unsigned short *included,
 static unsigned short hydrodiskstars_import_sub(HYDRODISKSTARS *hds, 
 	char *filename, unsigned short ids_column, 
 	unsigned short birth_times_column, unsigned short birth_radii_column, 
-	unsigned short final_radii_column, unsigned short zfinal_column, 
-	unsigned short v_radcolumn, unsigned short v_phicolumn, 
-	unsigned short v_zcolumn, unsigned short decomp_column) {
+	unsigned short final_radii_column, unsigned short zform_column, 
+	unsigned short zfinal_column, unsigned short v_radcolumn, 
+	unsigned short v_phicolumn, unsigned short v_zcolumn, 
+	unsigned short decomp_column) {
 
 	unsigned long n_lines = (unsigned long) (
 		line_count(filename) - header_length(filename) 
@@ -166,6 +171,7 @@ static unsigned short hydrodiskstars_import_sub(HYDRODISKSTARS *hds,
 					sizeof(double)); 
 				hds -> final_radii = (double *) malloc (n_lines * 
 					sizeof(double)); 
+				hds -> zform = (double *) malloc (n_lines * sizeof(double)); 
 				hds -> zfinal = (double *) malloc (n_lines * sizeof(double)); 
 				hds -> v_rad = (double *) malloc (n_lines * sizeof(double)); 
 				hds -> v_phi = (double *) malloc (n_lines * sizeof(double)); 
@@ -181,6 +187,8 @@ static unsigned short hydrodiskstars_import_sub(HYDRODISKSTARS *hds,
 				hds -> birth_radii = (double *) realloc (hds -> birth_radii, 
 					(*hds).n_stars * sizeof(double)); 
 				hds -> final_radii = (double *) realloc (hds -> final_radii, 
+					(*hds).n_stars * sizeof(double)); 
+				hds -> zform = (double *) realloc (hds -> zform, 
 					(*hds).n_stars * sizeof(double)); 
 				hds -> zfinal = (double *) realloc (hds -> zfinal, 
 					(*hds).n_stars * sizeof(double)); 
@@ -203,6 +211,7 @@ static unsigned short hydrodiskstars_import_sub(HYDRODISKSTARS *hds,
 				hds -> birth_times[idx] = raw[i][birth_times_column]; 
 				hds -> birth_radii[idx] = raw[i][birth_radii_column]; 
 				hds -> final_radii[idx] = raw[i][final_radii_column]; 
+				hds -> zform[idx] = raw[i][zform_column]; 
 				hds -> zfinal[idx] = raw[i][zfinal_column]; 
 				hds -> v_rad[idx] = raw[i][v_radcolumn]; 
 				hds -> v_phi[idx] = raw[i][v_phicolumn]; 
@@ -330,7 +339,7 @@ static unsigned long candidate_search(HYDRODISKSTARS hds, double birth_radius,
  * birth_time: 		The time the stellar population was born in Gyr 
  * birth_radius: 	The radius of the stellar population's birth in kpc 
  * end_time: 		The time of the end of the simulation (should always be 
- * 						12.7 for consistency w/hydrosim) 
+ * 						12.2 for consistency w/hydrosim) 
  * analog_idx: 		The index of the analog star particle 
  * 						-1 if no analog is found 
  * time: 			The intermediate time in Gyr 
@@ -409,7 +418,7 @@ extern long calczone_sudden(HYDRODISKSTARS hds, double migration_time,
  * birth_time: 		The time the stellar population was born in Gyr 
  * birth_radius: 	The radius of the stellar population's birth in kpc 
  * end_time: 		The time of the end of the simulation (should always be 
- * 						12.7 for consistency w/hydrosim) 
+ * 						12.2 for consistency w/hydrosim) 
  * analog_idx: 		The index of the analog star particle 
  * 						-1 if no analog is found 
  * time: 			The intermediate time in Gyr 

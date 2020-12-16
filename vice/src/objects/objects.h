@@ -522,6 +522,7 @@ typedef struct hydrodiskstars {
 	 * birth_radii: The radii in kpc at which each star particle was born 
 	 * final_radii: The radii in kpc at which each star particle was located 
 	 * 		at the end of the simulation. 
+	 * zform: The height above/below disk midplane in kpc at formation 
 	 * zfinal: The final height above/below disk midplane in kpc 
 	 * v_rad: Radial velocity in km/s 
 	 * v_phi: Circular velocity in km/s 
@@ -538,6 +539,7 @@ typedef struct hydrodiskstars {
 	double *birth_times; 
 	double *birth_radii; 
 	double *final_radii; 
+	double *zform; 
 	double *zfinal; 
 	double *v_rad; 
 	double *v_phi; 

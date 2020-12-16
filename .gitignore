@@ -40,3 +40,8 @@ examples/.ipynb_checkpoints/*.ipynb
 *.sublime-workspace 
 *.sublime-project
 
+# h277 source file -> too large for GitHub 
+./vice/toolkit/hydrodisk/data/h277/processor/h277_particles_150Myr.fits 
+
+
+

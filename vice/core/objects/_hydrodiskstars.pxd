@@ -7,6 +7,7 @@ cdef extern from "../../src/objects.h":
 		double *birth_times 
 		double *birth_radii 
 		double *final_radii 
+		double *zform 
 		double *zfinal 
 		double *v_rad 
 		double *v_phi 
