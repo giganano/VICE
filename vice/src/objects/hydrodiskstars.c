@@ -20,6 +20,7 @@ extern HYDRODISKSTARS *hydrodiskstars_initialize(void) {
 	hds -> birth_times = NULL; 
 	hds -> birth_radii = NULL; 
 	hds -> final_radii = NULL; 
+	hds -> zform = NULL; 
 	hds -> zfinal = NULL; 
 	hds -> v_rad = NULL; 
 	hds -> v_phi = NULL; 
@@ -63,6 +64,11 @@ extern void hydrodiskstars_free(HYDRODISKSTARS *hds) {
 		if ((*hds).final_radii != NULL) {
 			free(hds -> final_radii); 
 			hds -> final_radii = NULL; 
+		} else {} 
+
+		if ((*hds).zform != NULL) {
+			free(hds -> zform); 
+			hds -> zform = NULL; 
 		} else {} 
 
 		if ((*hds).zfinal != NULL) {

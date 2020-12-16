@@ -22,14 +22,13 @@ from ...core._cutils cimport copy_pylist
 from ...core._cutils cimport set_string 
 from . cimport _hydrodiskstars 
 
-# The end time of the simulation in Gyr (12.7 Gyr by default - hard coded) 
+# The end time of the simulation in Gyr (12.2 Gyr by default - hard coded) 
 _END_TIME_ = _hydrodiskstars.HYDRODISK_END_TIME 
 
 # The recognized hydrodiskstars migration modes 
 _RECOGNIZED_MODES_ = ["linear", "sudden", "diffusion"] 
 
 # The number of star particles in the simulation 
-# _N_STAR_PARTICLES_ = 1017612 
 _N_STAR_PARTICLES_ = 3019521 
 
 
@@ -41,17 +40,16 @@ cdef class c_hydrodiskstars:
 	""" 
 
 	def __cinit__(self, radbins, N = 1e5, mode = "linear", idcolumn = 0, 
-		tformcolumn = 1, rformcolumn = 2, rfinalcolumn = 3, zfinalcolumn = 4, 
-		v_radcolumn = 5, v_phicolumn = 6, v_zcolumn = 7, decomp_column = 8): 
+		tformcolumn = 1, rformcolumn = 2, rfinalcolumn = 3, zformcolumn = 4, 
+		zfinalcolumn = 5, v_radcolumn = 6, v_phicolumn = 7, v_zcolumn = 8, 
+		decomp_column = 9): 
 
 		# allocate memory for hydrodiskstars object in C and import the data 
 		self._hds = _hydrodiskstars.hydrodiskstars_initialize() 
-		datafilestem = "%stoolkit/hydrodisk/data/UWhydro" % (
-			_DIRECTORY_) 
+		datafilestem = "%stoolkit/hydrodisk/data/h277/" % (_DIRECTORY_) 
 		if isinstance(N, numbers.Number): 
 			if N % 1 == 0: 
 				_hydrodiskstars.seed_random() 
-				# srand(2) 
 				if N > _N_STAR_PARTICLES_: 
 					N = _N_STAR_PARTICLES_ 
 					warnings.warn("""\
@@ -66,6 +64,7 @@ will oversample these data.""" % (_N_STAR_PARTICLES_), ScienceWarning)
 					<unsigned short> tformcolumn, 
 					<unsigned short> rformcolumn, 
 					<unsigned short> rfinalcolumn, 
+					<unsigned short> zformcolumn, 
 					<unsigned short> zfinalcolumn, 
 					<unsigned short> v_radcolumn, 
 					<unsigned short> v_phicolumn, 
@@ -83,8 +82,9 @@ will oversample these data.""" % (_N_STAR_PARTICLES_), ScienceWarning)
 		self.mode = mode 
 
 	def __init__(self, radbins, N = 1e5, mode = "linear", idcolumn = 0, 
-		tformcolumn = 1, rformcolumn = 2, rfinalcolumn = 3, zfinalcolumn = 4, 
-		v_radcolumn = 5, v_phicolumn = 6, v_zcolumn = 7): 
+		tformcolumn = 1, rformcolumn = 2, rfinalcolumn = 3, zformcolumn = 4, 
+		zfinalcolumn = 5, v_radcolumn = 6, v_phicolumn = 7, v_zcolumn = 8, 
+		decomp_column = 9): 
 		
 		self._analog_idx = -1l 
 		self._analog_data = dataframe({
@@ -95,6 +95,8 @@ will oversample these data.""" % (_N_STAR_PARTICLES_), ScienceWarning)
 			"rform": 	[self._hds[0].birth_radii[i] for i in range(
 				self._hds[0].n_stars)], 
 			"rfinal": 	[self._hds[0].final_radii[i] for i in range(
+				self._hds[0].n_stars)], 
+			"zform": 	[self._hds[0].zform[i] for i in range(
 				self._hds[0].n_stars)], 
 			"zfinal": 	[self._hds[0].zfinal[i] for i in range(
 				self._hds[0].n_stars)], 
