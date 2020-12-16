@@ -29,7 +29,7 @@ _END_TIME_ = _hydrodiskstars.HYDRODISK_END_TIME
 _RECOGNIZED_MODES_ = ["linear", "sudden", "diffusion"] 
 
 # The number of star particles in the simulation 
-_N_STAR_PARTICLES_ = 3019521 
+_N_STAR_PARTICLES_ = 2983105 
 
 
 cdef class c_hydrodiskstars: 
@@ -70,7 +70,6 @@ will oversample these data.""" % (_N_STAR_PARTICLES_), ScienceWarning)
 					<unsigned short> v_phicolumn, 
 					<unsigned short> v_zcolumn, 
 					<unsigned short> decomp_column): 
-					# raise IOError("Could not read file: %s" % (datafile)) 
 					raise SystemError("Internal Error.") 
 				else: 
 					pass 
