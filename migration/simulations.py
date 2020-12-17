@@ -100,5 +100,5 @@ if __name__ == "__main__":
 	parser = parse() 
 	args = parser.parse_args() 
 	model = model(args) 
-	model.run([_ * model.dt for _ in range(round(12.7 / model.dt) + 1)], 
+	model.run([_ * model.dt for _ in range(round(12.2 / model.dt) + 1)], 
 		overwrite = args.force, pickle = False) 

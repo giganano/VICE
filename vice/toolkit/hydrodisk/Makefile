@@ -2,7 +2,7 @@
 .PHONY: clean 
 
 clean: 
-	@ echo Cleaning vice/toolkit/hydrodisk 
+	@ echo Cleaning vice/toolkit/hydrodisk/ 
 	@ rm -f *.c 
 	@ rm -f *.so 
 	@ rm -rf __pycache__ 

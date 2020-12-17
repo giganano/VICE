@@ -295,7 +295,8 @@ migration.specs. Got: %s""" % (type(value)))
 			os.system("mkdir %s.vice" % (self.name)) 
 			for i in range(self._mz[0].mig[0].n_zones): 
 				os.system("mkdir %s.vice" % (self._zones[i].name)) 
-			self.setup_migration() # used to be in self.prep
+			self.setup_migration() # used to be in self.prep 
+			start = time.time() 
 
 			# warn the user about r-process elements and bad solar calibrations 
 			self._zones[0]._singlezone__c_version.nsns_warning() 
@@ -308,11 +309,14 @@ migration.specs. Got: %s""" % (type(value)))
 			# save yield settings and attributes 
 			for i in range(self._mz[0].mig[0].n_zones): 
 				self._zones[i]._singlezone__c_version.pickle() 
+			canceled = False 
 		else: 
 			_multizone.multizone_cancel(self._mz) 
 			enrichment = 0 
+			canceled = True 
 
 		self.dealign_name_attributes() 
+		stop = time.time() 
 		if enrichment == 1: 
 			_multizone.multizone_cancel(self._mz) 
 			raise SystemError("Internal Error") 
@@ -322,10 +326,21 @@ migration.specs. Got: %s""" % (type(value)))
 zone and at least one timestep larger than 1.""") 
 		elif enrichment == 3: 
 			raise IOError("Couldn't save star particle data.") 
-		elif capture: 
-			return output(self.name) 
 		else: 
 			pass 
+
+		if self.verbose and not canceled: 
+			days, hours, minutes, seconds = _pyutils.format_time(stop - start) 
+			if days: 
+				sim_time = "%d days %02dh%02dm%02ds" % (days, hours, minutes, 
+					int(seconds)) 
+			else: 
+				sim_time = "%02dh%02dm%02ds" % (hours, minutes, int(seconds)) 
+			print("Simulation Time: %s" % (sim_time)) 
+		else: pass 
+
+		if capture: return output(self.name) 
+
 
 
 	def prep(self, output_times): 
@@ -552,14 +567,21 @@ None.""" % (self.migration.stars.mode), UserWarning)
 				else: 
 					ETA = "%02dh%02dm%02ds" % (hours, minutes, int(seconds)) 
 				sys.stdout.write("""\
-Setting up stellar populations. Progress: %.2f%% | ETA: %s    \r""" % (
+\rSetting up stellar populations. Progress: %.2f%% | ETA: %s""" % (
 	percentage, ETA)) 
 				sys.stdout.flush() 
 			else: pass 
 		if self.verbose: 
-			sys.stdout.write("\n") 
-			# sys.stdout.write("Setup time: %.2f seconds\n" % (
-			# 	time.time() - start))
+			setup_time = time.time() - start 
+			days, hours, minutes, seconds = _pyutils.format_time(setup_time) 
+			if days: 
+				setup_time = "%d days %02dh%02dm%02ds" % (days, hours, minutes, 
+					int(seconds)) 
+			else: 
+				setup_time = "%02dh%02dm%02ds" % (hours, minutes, int(seconds)) 
+			sys.stdout.write("""\
+\rSetting up stellar populations. Progress: 100.00%% | Setup Time: %s\n""" % (
+	setup_time)) 
 
 		if hasattr(self.migration.stars, "write"): 
 			# revert write attribute to False 
