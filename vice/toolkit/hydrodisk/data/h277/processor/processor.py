@@ -149,7 +149,8 @@ def all_cuts(h277, index):
 		disk_cut 
 		kinematic_cut 
 	""" 
-	cuts = [ageform_cut, tform_cut, rform_cut, disk_cut, kinematic_cut] 
+	# cuts = [ageform_cut, tform_cut, rform_cut, disk_cut, kinematic_cut] 
+	cuts = [ageform_cut, tform_cut, disk_cut, kinematic_cut] 
 	return all([cut(h277, index) for cut in cuts]) 
 
 
