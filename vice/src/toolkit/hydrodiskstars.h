@@ -41,26 +41,6 @@ extern "C" {
 #endif 
 
 /* 
- * Maximum allowed difference in birth times between a stellar population and 
- * its analog star particle in Gyr for widened analog search. 
- * 
- * Note: widened search only runs if initial search finds no candidates 
- */ 
-// #ifndef WIDENED_ANALOG_SEARCH_TIME 
-// #define WIDENED_ANALOG_SEARCH_TIME 0.600 
-// #endif /* WIDENED_ANALOG_SEARCH_TIME */ 
-
-/* 
- * Maximum allowed difference in birth radii between a stellar population and 
- * its analog star particle in kpc for widened analog search. 
- * 
- * Note: widened search only runs if initial search finds no candidates 
- */ 
-// #ifndef WIDENED_ANALOG_SEARCH_RADIUS 
-// #define WIDENED_ANALOG_SEARCH_RADIUS 0.500 
-// #endif /* WIDENED_ANALOG_SEARCH_TIME */ 
-
-/* 
  * The span of ages in Gyr of each star particle in the hydrodynamical 
  * simulationdata. 
  */ 
@@ -141,16 +121,16 @@ extern long hydrodiskstars_find_analog(HYDRODISKSTARS hds, double birth_radius,
  * end_time: 		The time of the end of the simulation (should always be 
  * 						12.2 for consistency w/hydrosim) 
  * analog_idx: 		The index of the analog star particle 
- * 						-1 if no analog is found 
  * time: 			The intermediate time in Gyr 
  * 
  * Returns 
  * =======
  * The zone number of the stellar population at the intermediate time. 
  * 
- * Note 
- * ====
- * Stars which find no analog are assumed to not migrate. 
+ * Notes 
+ * =====
+ * Although it shouldn't happen under this implementation, stellar populations 
+ * which do not find an analog are assumed to remain at their birth radius. 
  * 
  * source: hydrodiskstars.c 
  */ 
@@ -167,16 +147,16 @@ extern long calczone_linear(HYDRODISKSTARS hds, double birth_time,
  * migration_time: 	The time at which the star particle migrates 
  * birth_radius: 	The radius of the stellar population's birth 
  * analog_idx: 		The index of the analog star particle 
- * 						-1 if no analog is found 
  * time: 			The intermediate time in Gyr 
  * 
  * Returns 
  * =======
  * The zone number of the stellar population at the intermediate time. 
  * 
- * Note 
- * ==== 
- * Stars which find no analog are assumed to not migrate. 
+ * Notes 
+ * =====
+ * Although it shouldn't happen under this implementation, stellar populations 
+ * which do not find an analog are assumed to remain at their birth radius. 
  * 
  * source: hydrodiskstars.c 
  */ 
@@ -195,16 +175,16 @@ extern long calczone_sudden(HYDRODISKSTARS hds, double migration_time,
  * end_time: 		The time of the end of the simulation (should always be 
  * 						12.2 for consistency w/hydrosim) 
  * analog_idx: 		The index of the analog star particle 
- * 						-1 if no analog is found 
  * time: 			The intermediate time in Gyr 
  * 
  * Returns 
  * =======
  * The zone number of the stellar population at the intermediate time. 
  * 
- * Note 
- * ====
- * Stars which find no analog are assumed to not migrate. 
+ * Notes 
+ * =====
+ * Although it shouldn't happen under this implementation, stellar populations 
+ * which do not find an analog are assumed to remain at their birth radius. 
  * 
  * source: hydrodiskstars.c 
  */ 

@@ -22,6 +22,11 @@ static unsigned short hydrodiskstars_import_sub(HYDRODISKSTARS *hds,
 static unsigned long candidate_search(HYDRODISKSTARS hds, double birth_radius, 
 	double birth_time, unsigned long **candidates, double max_radius, 
 	double max_time); 
+static unsigned short assess_candidate(HYDRODISKSTARS hds, 
+	double birth_radius, double birth_time, double max_radius, 
+	double max_time, unsigned long index); 
+static double final_radius(HYDRODISKSTARS hds, double birth_radius, 
+	long analog_idx); 
 
 /* The number of subsample files present in the code base */ 
 static unsigned short NSUBS = 30u; 
@@ -311,8 +316,8 @@ static unsigned long candidate_search(HYDRODISKSTARS hds, double birth_radius,
 	unsigned long i, n_candidates = 0ul; 
 
 	for (i = 0ul; i < hds.n_stars; i++) {
-		if (absval(hds.birth_times[i] - birth_time) < max_time && 
-			absval(hds.birth_radii[i] - birth_radius) < max_radius) {
+		if (assess_candidate(hds, birth_radius, birth_time, max_radius, 
+			max_time, i)) { 
 			if (n_candidates) {
 				*candidates = (unsigned long *) realloc (*candidates, 
 					(n_candidates + 1ul) * sizeof(unsigned long)); 
@@ -330,6 +335,66 @@ static unsigned long candidate_search(HYDRODISKSTARS hds, double birth_radius,
 
 
 /* 
+ * Assess whether or not a given star particle passes the criteria to act as 
+ * an analog under the current candidate search - subroutine of the 
+ * hydrodiskstars_find_analog function. 
+ * 
+ * Parameters 
+ * ==========
+ * hds: 			The hydrodiskstars object containing star particle data 
+ * birth_radius: 	The radius of birth of the stellar population in kpc 
+ * birth_time: 		The time of birth of the stellar population in Gyr 
+ * max_radius: 		The maximum difference in radius of birth in kpc for this 
+ * 						candidate search. 
+ * max_time: 		The maximum difference in time of birth in Gyr for this 
+ * 						candidate search. 
+ * 
+ * Returns 
+ * =======
+ * 1u if the star particle passes all criteria, 0 otherwise. 
+ * 
+ * Notes 
+ * =====
+ * This functions assesses not only the difference in birth and final radii, 
+ * but whether or not the implied final radius by the given analog would be 
+ * within the allowed range in radii implied by the rad_bins attribute of the 
+ * hydrodiskstars object. 
+ */ 
+static unsigned short assess_candidate(HYDRODISKSTARS hds, 
+	double birth_radius, double birth_time, double max_radius, 
+	double max_time, unsigned long index) {
+
+	/* Start with a value of 1u for the test, and then &= it many times */ 
+	unsigned short assessment = 1u; 
+
+	/* 
+	 * The most stringent tests first - whether or not the star particle is 
+	 * within the allowed range of birth radius and time. 
+	 */ 
+	assessment &= absval(hds.birth_times[index] - birth_time) < max_time; 
+	assessment &= absval(hds.birth_radii[index] - birth_radius) < max_radius; 
+
+	/* 
+	 * If a star particle passes the tests so far, check the final radius 
+	 * implied by the change in radius of the star particle. It must be within 
+	 * the radial bins of the hydrodiskstars object to pass the test and be a 
+	 * candidate analog. 
+	 * 
+	 * Don't subtract 1 from hds.n_rad_bins because it's the number of bins in 
+	 * a binspace, so it's already 1 less than the length. 
+	 */ 
+	if (assessment) {
+		double rf = final_radius(hds, birth_radius, (signed) index); 
+		assessment &= rf >= hds.rad_bins[0]; 
+		assessment &= rf <= hds.rad_bins[hds.n_rad_bins]; 
+	} else {} 
+
+	return assessment; 
+
+}
+
+
+/* 
  * Determine the zone number of a stellar population at intermediate times 
  * under the linear migration assumption. 
  * 
@@ -341,30 +406,24 @@ static unsigned long candidate_search(HYDRODISKSTARS hds, double birth_radius,
  * end_time: 		The time of the end of the simulation (should always be 
  * 						12.2 for consistency w/hydrosim) 
  * analog_idx: 		The index of the analog star particle 
- * 						-1 if no analog is found 
  * time: 			The intermediate time in Gyr 
  * 
  * Returns 
  * =======
  * The zone number of the stellar population at the intermediate time. 
  * 
- * Note 
- * ====
- * Stars which find no analog are assumed to not migrate. 
+ * Notes 
+ * =====
+ * Although it shouldn't happen under this implementation, stellar populations 
+ * which do not find an analog are assumed to remain at their birth radius. 
  * 
  * header: hydrodiskstars.h 
  */ 
 extern long calczone_linear(HYDRODISKSTARS hds, double birth_time, 
 	double birth_radius, double end_time, long analog_idx, double time) {
 
-	double radius; 
-	if (analog_idx > -1l) {
-		radius = interpolate(birth_time, end_time, birth_radius, 
-			hds.final_radii[analog_idx], time); 
-	} else {
-		radius = birth_radius; 
-	}
-
+	double radius = interpolate(birth_time, end_time, birth_radius, 
+		final_radius(hds, birth_radius, analog_idx), time); 
 	return get_bin_number(hds.rad_bins, hds.n_rad_bins, radius); 
 
 }
@@ -380,16 +439,16 @@ extern long calczone_linear(HYDRODISKSTARS hds, double birth_time,
  * migration_time: 	The time at which the star particle migrates 
  * birth_radius: 	The radius of the stellar population's birth 
  * analog_idx: 		The index of the analog star particle 
- * 						-1 if no analog is found 
  * time: 			The intermediate time in Gyr 
  * 
  * Returns 
  * =======
  * The zone number of the stellar population at the intermediate time. 
  * 
- * Note 
- * ==== 
- * Stars which find no analog are assumed to not migrate. 
+ * Notes 
+ * =====
+ * Although it shouldn't happen under this implementation, stellar populations 
+ * which do not find an analog are assumed to remain at their birth radius. 
  * 
  * header: hydrodiskstars.h 
  */ 
@@ -398,7 +457,7 @@ extern long calczone_sudden(HYDRODISKSTARS hds, double migration_time,
 
 	double radius; 
 	if (analog_idx > -1l && time >= migration_time) {
-		radius = hds.final_radii[analog_idx]; 
+		radius = final_radius(hds, birth_radius, analog_idx); 
 	} else {
 		radius = birth_radius; 
 	}
@@ -420,31 +479,67 @@ extern long calczone_sudden(HYDRODISKSTARS hds, double migration_time,
  * end_time: 		The time of the end of the simulation (should always be 
  * 						12.2 for consistency w/hydrosim) 
  * analog_idx: 		The index of the analog star particle 
- * 						-1 if no analog is found 
  * time: 			The intermediate time in Gyr 
  * 
  * Returns 
  * =======
  * The zone number of the stellar population at the intermediate time. 
  * 
- * Note 
- * ====
- * Stars which find no analog are assumed to not migrate. 
+ * Notes 
+ * =====
+ * Although it shouldn't happen under this implementation, stellar populations 
+ * which do not find an analog are assumed to remain at their birth radius. 
  * 
  * header: hydrodiskstars.h 
  */ 
 extern long calczone_diffusive(HYDRODISKSTARS hds, double birth_time, 
 	double birth_radius, double end_time, long analog_idx, double time) {
 
-	double radius; 
-	if (analog_idx > -1l) {
-		radius = interpolate_sqrt(birth_time, end_time, birth_radius, 
-			hds.final_radii[analog_idx], time); 
-	} else {
-		radius = birth_radius; 
-	}
-
+	double radius = interpolate_sqrt(birth_time, end_time, birth_radius, 
+		final_radius(hds, birth_radius, analog_idx), time); 
 	return get_bin_number(hds.rad_bins, hds.n_rad_bins, radius); 
+
+}
+
+
+/* 
+ * Calculate the final radius of a stellar population according to its analog 
+ * in a hydrodiskstars object. 
+ * 
+ * Parameters 
+ * ==========
+ * hds: 			The hydrodiskstars object containing star particle data 
+ * birth_radius: 	The radius of the stellar population's birth in kpc 
+ * analog_idx: 		The index of the analog star particle 
+ * 						-1 if no analog is found. 
+ * 
+ * Returns 
+ * =======
+ * The final radius of the stellar population. 
+ * 
+ * Notes 
+ * =====
+ * Although it shouldn't happen under this implementation, this function 
+ * assumes the change in radius is zero for stellar populations which do not 
+ * find an analog as a failsafe. 
+ */ 
+static double final_radius(HYDRODISKSTARS hds, double birth_radius, 
+	long analog_idx) {
+
+	double dr; 
+	if (analog_idx > -1l) {
+		/* 
+		 * Rather than the final radius of the analog itself, take its change 
+		 * in radius. This is more reflective of the dynamical history of the 
+		 * star particle. 
+		 */ 
+		dr = hds.final_radii[analog_idx] - hds.birth_radii[analog_idx]; 
+	} else {
+		/* Although this shouldn't happen, let dr = 0 as a failsafe. */ 
+		dr = 0; 
+	} 
+
+	return birth_radius + dr; 
 
 }
 
