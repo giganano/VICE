@@ -68,12 +68,17 @@ import os
 # 	"./outputs/high-resolution/2Gyr_timedep/diffusion/insideout", 
 # 	"./figures/age_alpha_regions") 
 
+# src.plots.amr.comparison("O", 
+# 	["./outputs/high-resolution/2Gyr_timedep/diffusion/static"], 
+# 	"./figures/amr/regions/2Gyr_timedep/diffusion/static_o", 
+# 	feuillet2019 = False, legend = False, radii = [[7, 9], [11, 13]], 
+# 	labels = None, 
+# 	left = 0.15, right = 0.85, bottom = 0.18) 
+
 src.plots.amr.comparison("O", 
-	["./outputs/high-resolution/2Gyr_timedep/diffusion/static"], 
-	"./figures/amr/regions/2Gyr_timedep/diffusion/static_o", 
-	feuillet2019 = False, legend = False, radii = [[7, 9], [11, 13]], 
-	labels = None, 
-	left = 0.15, right = 0.85, bottom = 0.18) 
+	["./outputs/high-resolution/no_outer_disk/diffusion/static"], 
+	"./figures/amr/regions/2Gyr_timedep/diffusion/static_o_no_outer_disk", 
+	feuillet2019 = False, legend = False, labels = None) 
 
 # src.plots.amr.solar_annulus(
 # 	"./outputs/high-resolution/2Gyr_timedep/diffusion/insideout", 
