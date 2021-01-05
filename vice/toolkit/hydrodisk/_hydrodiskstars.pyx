@@ -119,7 +119,7 @@ will oversample these data.""" % (_N_STAR_PARTICLES_), ScienceWarning)
 					self._hds[0].rad_bins[zone + 1]) / 2 
 				if (isinstance(tform, numbers.Number) and 
 					isinstance(time, numbers.Number)): 
-					if time > _END_TIME_: warnings.warn("""\
+					if abs(time - _END_TIME_) > 1.e-12: warnings.warn("""\
 Simulations of galactic chemical evolution with the hydrodiskstars object for \
 timescales longer than %g Gyr are not supported. This is the maximum range of \
 star particle ages.""" % (_END_TIME_), ScienceWarning) 

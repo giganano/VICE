@@ -187,6 +187,11 @@ extern double interpolate_sqrt(double x1, double x2, double y1, double y2,
  * The index (zero-based) of the bin number corresponding to the given value. 
  * -1l in the case that the value does not lie in the given binspace. 
  * 
+ * Notes 
+ * =====
+ * It's assumed that the binspace is sorted from least to greatest. This should 
+ * always be the case in VICE's backend unless the code base has been altered. 
+ * 
  * source: utils.c 
  */ 
 extern long get_bin_number(double *binspace, unsigned long num_bins, 

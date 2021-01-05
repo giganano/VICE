@@ -534,7 +534,7 @@ None.""" % (self.migration.stars.mode), UserWarning)
 						Set the analog tracer particle by calling the object 
 						with the time of formation and simulation times equal. 
 						""" 
-						if i < n - _singlezone.BUFFER: 
+						if i <= n - _singlezone.BUFFER: 
 							# Don't bother resetting the analog in the buffer 
 							if takes_keyword: 
 								self.migration.stars(j, 
