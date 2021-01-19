@@ -6,11 +6,11 @@ strings and integers, allowing both indexing and calling.
 
 Derived Classes: 
 	- agb_yield_settings 
-	- builtin_elemental_data 
 	- ccsn_yield_table 
 	- elemental_settings 
 	- channel_entrainment 
 	- evolutionary_settings 
+
 	- fromfile 
 	- history 
 	- noncustomizable 
@@ -24,9 +24,6 @@ Built-in Instances:
 	- solar_z 
 	- sources 
 	- stable_isotopes 
-
-.. note:: All built-in instances are of the derived class 
-	``builtin_elemental_data``. 
 """ 
 
 from __future__ import absolute_import 
@@ -40,7 +37,6 @@ if not __VICE_SETUP__:
 	__all__ = [ 
 		"agb_yield_settings", 
 		"base", 
-		"builtin_elemental_data", 
 		"ccsn_yield_table", 
 		"channel_entrainment", 
 		"elemental_settings", 
@@ -56,8 +52,7 @@ if not __VICE_SETUP__:
 
 	from ...testing import moduletest 
 	from ._agb_yield_settings import agb_yield_settings 
-	from ._base import base 
-	from ._builtin_elemental_data import builtin_elemental_data 
+	from ._base import base  
 	from ._ccsn_yield_table import ccsn_yield_table 
 	from ._entrainment import channel_entrainment 
 	from ._elemental_settings import elemental_settings 

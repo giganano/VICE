@@ -22,6 +22,6 @@ def test_solar_z():
 				assert 0 < solar_z[i] < 1 
 		except: 
 			return False 
-		return True 
+		return 0 < sum([solar_z[i] for i in _RECOGNIZED_ELEMENTS_]) < 1 
 	return ["vice.core.dataframe._builtin_dataframes.solar_z", test] 
 
