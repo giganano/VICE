@@ -144,9 +144,8 @@ extern double IMFintegrated_fractional_yield_sampled(const unsigned long N,
 	double *dist = (double *) malloc ((prefactor * N) * sizeof(double)); 
 	unsigned long i; 
 	for (i = 0ul; i < prefactor * N; i++) {
-		// dist[i] = imf_evaluate(*IMF, (bins[i] + bins[i + 1]) / 2); 
 		dist[i] = imf_evaluate(*IMF, logcenters[i]); 
-	}
+	} 
 
 	double *progenitors = sample(dist, bins, prefactor * N, N); 
 	double *yields = (double *) malloc (N * sizeof(double)); 

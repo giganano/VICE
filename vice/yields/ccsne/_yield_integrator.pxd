@@ -20,3 +20,7 @@ cdef extern from "../../src/yields/ccsne.h":
 	extern unsigned short IMFintegrated_fractional_yield_denominator(
 		INTEGRAL *intgrl, IMF_ *imf) 
 
+
+cdef extern from "../../src/utils.h": 
+	void seed_random() 
+
