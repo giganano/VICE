@@ -91,6 +91,17 @@ cdef class elemental_settings(base):
 				type(key))) 
 
 
+	def __setitem__(self, key, value): 
+		if isinstance(key, strcomp): 
+			if key.lower() in _RECOGNIZED_ELEMENTS_: 
+				self._frame[key.lower()] = value 
+			else: 
+				raise TypeError("Unrecognized element: %s" % (key)) 
+		else: 
+			raise TypeError("""Item assignment must be done via type str. \
+Got: %s""" % (type(key))) 
+
+
 	def remove(self, key): 
 		""" 
 		This function throws a TypeError whenever called. This derived class 

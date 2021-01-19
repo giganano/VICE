@@ -126,8 +126,12 @@ _CONFIG_ = {
 			vice.dataframe.todict, 
 			vice.dataframe.remove, 
 			vice.dataframe.filter, 
+			vice.atomic_number, 
+			vice.primordial, 
+			vice.solar_z, 
+			vice.sources, 
+			vice.stable_isotopes, 
 			vice.core.dataframe.agb_yield_settings, 
-			vice.core.dataframe.builtin_elemental_data, 
 			vice.core.dataframe.ccsn_yield_table, 
 			vice.core.dataframe.channel_entrainment, 
 			vice.core.dataframe.elemental_settings, 
@@ -159,14 +163,34 @@ _CONFIG_ = {
 		"header": 		"vice.dataframe.filter", 
 		"subs": 		[] 
 	}, 
+	vice.atomic_number: {
+		"filename": 	"vice.atomic_number.rst", 
+		"header": 		"vice.atomic_number", 
+		"subs": 		[] 
+	}, 
+	vice.primordial: {
+		"filename": 	"vice.primordial.rst", 
+		"header": 		"vice.primordial", 
+		"subs": 		[] 
+	}, 
+	vice.solar_z: {
+		"filename": 	"vice.solar_z.rst", 
+		"header": 		"vice.solar_z", 
+		"subs": 		[] 
+	}, 
+	vice.sources: {
+		"filename": 	"vice.sources.rst", 
+		"header": 		"vice.sources", 
+		"subs": 		[] 
+	}, 
+	vice.stable_isotopes: {
+		"filename": 	"vice.stable_isotopes.rst", 
+		"header": 		"vice.stable_isotopes", 
+		"subs": 		[] 
+	}, 
 	vice.core.dataframe.agb_yield_settings: {
 		"filename": 	"vice.core.dataframe.agb_yield_settings.rst", 
 		"header": 		"vice.core.dataframe.agb_yield_settings", 
-		"subs": 		[] 
-	}, 
-	vice.core.dataframe.builtin_elemental_data: {
-		"filename": 	"vice.core.dataframe.builtin_elemental_data.rst", 
-		"header": 		"vice.core.dataframe.builtin_elemental_data", 
 		"subs": 		[] 
 	}, 
 	vice.core.dataframe.ccsn_yield_table: {
