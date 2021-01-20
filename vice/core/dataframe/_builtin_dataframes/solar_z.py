@@ -7,16 +7,7 @@ from ...._globals import _RECOGNIZED_ELEMENTS_
 from ...._globals import _VERSION_ERROR_ 
 from ...._globals import _DIRECTORY_ 
 from .._elemental_settings import elemental_settings 
-import math as m 
 import numbers 
-import sys 
-if sys.version_info[:2] == (2, 7): 
-	strcomp = basestring 
-elif sys.version_info[:2] >= (3, 5): 
-	strcomp = str 
-else: 
-	_VERSION_ERROR_() 
-
 
 class solar_z(elemental_settings): 
 
