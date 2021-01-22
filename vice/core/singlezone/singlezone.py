@@ -76,6 +76,7 @@ class singlezone:
 
 		- "kroupa" [1]_ 
 		- "salpeter" [2]_ 
+
 	eta : real number [default : 2.5] 
 		The mass-loading parameter: the ratio of outflow to star formation 
 		rates. This changes when the attribute ``smoothing`` is nonzero. 
@@ -125,9 +126,9 @@ class singlezone:
 		``schmidt = True``. 
 
 	m_upper : real number [default : 100] 
-		The upper mass limit on star formation in solar masses 
+		The upper mass limit on star formation in :math:`M_\odot`. 
 	m_lower : real number [default : 0.08] 
-		The lower mass limit on star formation in solar masses 
+		The lower mass limit on star formation in :math:`M_\odot`. 
 	postMS : real number [default : 0.1] 
 		The lifetime ratio of the post main sequence to main sequence phases 
 		of stellar evolution. 
@@ -155,7 +156,7 @@ class singlezone:
 	Functions 
 	--------- 
 	run : [instancemethod] 
-		Run the simulation 
+		Run the simulation. 
 	from_output : [classmethod] 
 		Obtain a ``singlezone`` object with the parameters of the one 
 		that produced an output. 
@@ -196,7 +197,7 @@ class singlezone:
 
 	.. [1] Kroupa (2001), MNRAS, 231, 322 
 	.. [2] Salpeter (1955), ApJ, 121, 161 
-	.. [3] Johnson & Weinberg (2020), arxiv:1911.02598 
+	.. [3] Johnson & Weinberg (2020), MNRAS, 498, 1364 
 	.. [4] Cristallo et al. (2011), ApJS, 197, 17 
 	.. [5] Karakas (2010), MNRAS, 403, 1413 
 	""" 
@@ -671,7 +672,7 @@ ran.""" % (i, j), UserWarning)
 		("mg", "fe", "n", c", "o") 
 
 		.. [1] Johnson (2019), Science, 363, 474 
-		.. [2] Johnson & Weinberg (2020), arxiv:1911.02598 
+		.. [2] Johnson & Weinberg (2020), MNRAS, 498, 1364  
 		""" 
 		return self.__c_version.elements 
 
@@ -1165,7 +1166,7 @@ ran.""" % (i, j), UserWarning)
 		>>> sz.smoothing = 0.5 
 		>>> sz.smoothing = 1.0 
 
-		.. [1] Johnson & Weinberg (2020), arxiv:1911.02598
+		.. [1] Johnson & Weinberg (2020), MNRAS, 498, 1364 
 		""" 
 		return self.__c_version.smoothing 
 

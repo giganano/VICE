@@ -7,8 +7,8 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 /* 
- * Maximum allowed difference in birth radii between a stellar population and 
- * its analog star particle in kpc for initial analog search. 
+ * Maximum allowed difference in birth radii in kpc between a stellar 
+ * population and its analog star particle in kpc for initial analog search. 
  */ 
 #ifndef INITIAL_ANALOG_SEARCH_RADIUS 
 #define INITIAL_ANALOG_SEARCH_RADIUS 0.250 
@@ -19,7 +19,7 @@ extern "C" {
  * its analog star particle in Gyr for initial analog search. 
  */ 
 #ifndef INITIAL_ANALOG_SEARCH_TIME 
-#define INITIAL_ANALOG_SEARCH_TIME 0.300 
+#define INITIAL_ANALOG_SEARCH_TIME 0.250 
 #endif /* INITIAL_ANALOG_SEARCH_TIME */ 
 
 /* 
@@ -37,7 +37,33 @@ extern "C" {
  * analogs.
  */ 
 #ifndef INCREMENT_ANALOG_SEARCH_TIME 
-#define INCREMENT_ANALOG_SEARCH_TIME 0.300 
+#define INCREMENT_ANALOG_SEARCH_TIME 0.250 
+#endif 
+
+/* 
+ * The maximum allowed different in birth radii in kpc between a stellar 
+ * population and its analog star particle for all searches. Until an analog is 
+ * found, the radius and time search windows will increase. The search will 
+ * fail when both limits are reached if an analog is not found, though by 
+ * default the maximum radius limit is infinite. 
+ */ 
+#ifndef MAXIMUM_ANALOG_SEARCH_RADIUS 
+	#ifdef INFINITY 
+		#define MAXIMUM_ANALOG_SEARCH_RADIUS INFINITY 
+	#else 
+		#define MAXIMUM_ANALOG_SEARCH_RADIUS 1e6 
+	#endif 
+#endif 
+
+/* 
+ * The maximum allowed difference in birth times in Gyr between a stellar 
+ * population and its analog star particle for all searches. Until an analog is 
+ * found, the radius and time search windows will increase. The search will 
+ * fail when both limits are reached if an analog is not found, though by 
+ * default the maximum radius limit is infinite. 
+ */ 
+#ifndef MAXIMUM_ANALOG_SEARCH_TIME 
+#define MAXIMUM_ANALOG_SEARCH_TIME 0.500 
 #endif 
 
 /* 

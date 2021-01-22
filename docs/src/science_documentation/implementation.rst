@@ -100,4 +100,4 @@ the integration time is mildly underpredicted for small :math:`\Delta t` and
 high :math:`N`. 
 
 
-.. [1] Johnson & Weinberg (2020), arxiv:1911.02598 
+.. [1] Johnson & Weinberg (2020), MNRAS, 498, 1364 

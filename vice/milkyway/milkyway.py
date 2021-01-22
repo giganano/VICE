@@ -1,12 +1,14 @@
 
 from __future__ import absolute_import 
 __all__ = ["milkyway"] 
-from ._globals import _RECOGNIZED_ELEMENTS_ 
-from .core.multizone import multizone 
-from .core.dataframe._builtin_dataframes import solar_z 
-from .core import _pyutils 
-from .toolkit.hydrodisk import hydrodiskstars 
-from . import yields 
+from .._globals import _RECOGNIZED_ELEMENTS_ 
+from ..core.multizone import multizone 
+from ..core.dataframe._builtin_dataframes import solar_z 
+from ..core import _pyutils 
+from ..toolkit.hydrodisk import hydrodiskstars 
+from ..toolkit.J21_sf_law import J21_sf_law 
+from .. import yields 
+from .utils import mass_from_surface_density 
 import numbers 
 import math as m 
 
@@ -19,18 +21,161 @@ class milkyway(multizone):
 
 	r""" 
 	An object designed for running chemical evolution models of Milky Way-like 
-	spiral galaxies. Inherits from vice.multizone. 
+	spiral galaxies. Inherits from ``vice.multizone``. 
 
-	**Signature**: vice.milkyway(radial_bins, name = "milkyway", n_stars = 1, 
-	simple = False, verbose = False) 
+	This object models the Milky Way as a series of concentric annuli of 
+	uniform width. A prescription for stellar migration based on the ``h277`` 
+	hydrodynamical simulation, a part of the ``g14`` simulation suite 
+	(Christensen et al. 2012 [1]_), and an observationally motivated star 
+	formation law are included by default. For details, see discussion in 
+	Johnson et al. (2021, in prep [2]_). 
+
+	**Signature**: vice.milkyway(zone_width = 0.5, name = "milkyway", 
+	n_stars = 1, simple = False, verbose = False, N = 1e5, 
+	migration_mode = "diffusion") 
+
+	.. versionadded:: 1.X.0 
+
+	.. seealso:: 
+
+		- ``vice.multizone`` 
+		- ``vice.toolkit.J21_sf_law`` 
+		- ``vice.singlezone`` 
+
+	.. note:: This is the **only** object in the current version of VICE which 
+		formulates evolutionary parameters in terms of surface densities. This 
+		is done because many physical quantities are reported as surface 
+		densities in the astronomical literature. The ``singlezone`` and 
+		``multizone`` objects, however, formulate parameters in terms of mass, 
+		out of necessity. 
+
+	Parameters 
+	----------
+	zone_width : ``float`` [default : 0.5] 
+		The radial width of each annulus in kpc. 
+	name : ``str`` [default : "milkyway"] 
+		The name of the simulation. Output will be stored in a directory under 
+		this name with a ".vice" extension. 
+	n_stars : ``int`` [default : 1] 
+		The number of simple stellar populations per zone per timestep. 
+	simple : ``bool`` [default : False] 
+		If True, VICE will run the model as a series of one-zone models. If 
+		False, information at intermediate timesteps will be taken into 
+		account. 
+	verbose : ``bool`` [default : False] 
+		Run the model with verbose output. 
+	N : ``int`` [default : 1e5] 
+		An estimate of the number of total stellar populations that will be 
+		simulated. This keyword will be passed to the ``hydrodiskstars`` 
+		object implementing the stellar migration scheme. 
+	migration_mode : ``str`` [default : "diffusion"] 
+		A string denoting the time-dependence of stellar migration. This 
+		keyword will be passed to the ``hydrodiskstars`` object implementing 
+		the stellar migration scheme. 
+
+	Attributes 
+	----------
+	annuli : ``list`` 
+		The radii representing divisions between annuli in the disk model in 
+		kpc. 
+	zone_width : ``float`` [default : 0.5] 
+		The radial width of each annulus in kpc. 
+	evolution : ``<function>`` [default : milkyway.default_evolution] 
+		A function of galactocentric radius in kpc and time in Gyr, 
+		respectively. Returns either the surface density of gas in 
+		:math:`M_\odot`, the surface density of infall, or the surface density 
+		of star formation in :math:`M_\odot yr^{-1} kpc^{-2}`. The 
+		interpretation of the return value is set by the attribute ``mode``. 
+	mode : ``str`` [case-insensitive] [default : "ifr"] 
+		The interpretation of the attribute ``evolution``. Either "sfr" for 
+		star formation rate, "ifr" for infall rate, or "gas" for the ISM 
+		gas supply. 
+	elements : ``tuple`` [elements of type str] [default : ("fe", "sr", "o")] 
+		The elements to calculate abundances for in running the model. 
+	IMF : ``str`` or ``<function>`` [default : "kroupa"] 
+		The stellar initial mass function to assume. Strings denote built-in 
+		IMFs from the literature. Functions will be interpreted as a custom 
+		distribution of zero-age main sequence masses in :math:`M_\odot`. 
+
+		Built-in IMFs: 
+
+			- "kroupa": Kroupa (2001) [3]_ 
+			- "salpeter": Salpeter (1955) [4]_ 
+
+	mass_loading : ``<function>`` [default : milkyway.default_mass_loading] 
+		The mass loading factor as a function of galactocentric radius in kpc 
+		describing the efficiency of outflows. 
+	dt : ``float`` [default : 0.01] 
+		The timestep size in Gyr to use when running the model. 
+	bins : ``list`` [default : [-3.0, -2.95, -2.9, ... , 0.9, 0.95, 1.0]] 
+		The bins within which to sort the normalized stellar metallicity 
+		distribution function in each [X/H] and [X/Y] abundance ratio 
+		measurement. 
+	delay : real number [default : 0.15] 
+		The minimum delay time in Gyr before the onset of type Ia supernovae 
+		associated with a single stellar population. 
+	RIa : ``str`` [case-insensitive] or ``<function>`` [default : "plaw"] 
+		The SN Ia delay-time distribution (DTD) to adopt. Strings denote 
+		built-in DTDs and functions must accept time in Gyr as a parameter. 
+	smoothing : ``float`` [default : 0.0] 
+		The outflow smoothing timescale in Gyr. See discussion in Johnson & 
+		Weinberg (2020) [5]_. 
+	tau_ia : ``float`` [default : 1.5] 
+		The e-folding timescale of the SN Ia DTD. Only relevant when the 
+		attribute ``RIa == "exp"``. 
+	m_upper : ``float`` [default : 100] 
+		The upper mass limit on star formation in :math:`M_\odot`. 
+	m_lower : ``float`` [default : 0.08] 
+		The lower mass limit on star formation in :math:`M_\odot`. 
+	postMS : real number [default : 0.1] 
+		The lifetime ratio of the post main sequence to main sequence phases 
+		of stellar evolution. 
+	Z_solar : real number [default : 0.14] 
+		The adopted metallicity by mass of the sun. 
+
+	Other attributes are inherited from ``vice.multizone``. 
+
+	.. note:: This object, by default, will shut off star formation at 
+		:math:`R` > 15.5 kpc by setting the star formation efficiency timescale 
+		to a very large number. This can be overridden at any time by resetting 
+		the attribute ``tau_star`` of each zone. 
+
+	Functions 
+	---------
+	run : [instancemethod] 
+		Run the simulation. 
+	default_evolution : [staticmethod] 
+		The default value of the functional attribute ``evolution``. 
+	default_mass_loading : [staticmethod] 
+		The default value of the functional attribute ``mass_loading``. 
+
+	Example Code 
+	------------
+	>>> import vice 
+	>>> import numpy as np 
+	>>> mw = vice.milkyway(name = "example", zone_width = 1) 
+	>>> mw.n_zones 
+	20 
+	>>> mw.n_stars 
+	1 
+	>>> mw.name 
+	"example" 
+	>>> mw.run(np.linspace(0, 12.2, 1221), overwrite = True) 
+
+	.. [1] Christensen et al. (2012), MNRAS, 425, 3058 
+	.. [2] Johnson et al. (2021), in prep 
+	.. [3] Kroupa (2001), MNRAS, 322, 231 
+	.. [4] Salpeter (1955), ApJ, 121, 161 
+	.. [5] Johnson & Weinberg (2020), MNRAS, 498, 1364 
 	""" 
 
 	def __new__(cls, zone_width = 0.5, **kwargs): 
 		radial_bins = _get_radial_bins(zone_width) 
 		return super().__new__(cls, n_zones = len(radial_bins) - 1) 
 
+
 	def __init__(self, zone_width = 0.5, name = "milkyway", n_stars = 1, 
-		simple = False, verbose = False, N = 1e5, migration_mode = "linear"): 
+		simple = False, verbose = False, N = 1e5, migration_mode = "diffusion"): 
 		radial_bins = _get_radial_bins(zone_width) 
 		super().__init__(name = name, n_zones = len(radial_bins) - 1, 
 			n_stars = n_stars, simple = simple, verbose = verbose) 
@@ -40,26 +185,97 @@ class milkyway(multizone):
 			mode = migration_mode) 
 		self.evolution = milkyway.default_evolution 
 		self.mass_loading = milkyway.default_mass_loading 
-		self.schmidt = True 
 		for i in range(self.n_zones): 
 			# set the entrainment to zero beyond 15.5 kpc 
 			if (self.annuli[i] + self.annuli[i + 1]) / 2 > _MAX_SF_RADIUS_: 
+				self.zones[i].tau_star = 1.e6 
 				for j in _RECOGNIZED_ELEMENTS_: 
 					self.zones[i].entrainment.agb[j] = 0 
 					self.zones[i].entrainment.ccsne[j] = 0 
 					self.zones[i].entrainment.sneia[j] = 0 
-			else: pass 
+			else: 
+				self.zones[i].tau_star = J21_sf_law(
+					m.pi * (self.annuli[i + 1]**2 - self.annuli[i]**2)
+				) 
 			# in case running in infall mode, set initial gas mass to zero 
 			self.zones[i].Mg0 = 0 
+
+
+	def __repr__(self): 
+		r""" 
+		Prints in the format: vice.singlezone{ 
+			attr1 -----------> value 
+			attribute2 ------> value 
+		}
+		""" 
+		attrs = {
+			"name": 			self.name, 
+			"n_zones": 			self.n_zones, 
+			"n_stars": 			self.n_stars, 
+			"verbose": 			self.verbose, 
+			"simple": 			self.simple, 
+			"annuli": 			self.annuli, 
+			"evolution": 		self.evolution, 
+			"mode": 			self.mode, 
+			"elements": 		self.elements, 
+			"IMF": 				self.IMF, 
+			"mass_loading": 	self.mass_loading, 
+			"dt": 				self.dt, 
+			"bins": 			self.bins, 
+			"delay": 			self.delay, 
+			"RIa": 				self.RIa, 
+			"smoothing": 		self.smoothing, 
+			"tau_ia": 			self.tau_ia, 
+			"m_upper": 			self.m_upper, 
+			"m_lower": 			self.m_lower, 
+			"postMS": 			self.postMS, 
+			"Z_solar": 			self.Z_solar 
+		} 
+		rep = "vice.milkyway{\n" 
+		for i in attrs.keys(): 
+			rep += "    %s " % (i) 
+			for j in range(15 - len(i)): 
+				rep += '-' 
+			if isinstance(attrs[i], list) and len(attrs[i]) > 10: 
+				rep += "> [%g, %g, %g, ... , %g, %g, %g]\n" % (
+					attrs[i][0], attrs[i][1], attrs[i][2], 
+					attrs[i][-1], attrs[i][-2], attrs[i][-3]) 
+			else: 
+				rep += "> %s\n" % (str(attrs[i])) 
+		rep += '}' 
+		return rep 
+
+
+	@classmethod 
+	def from_output(cls, arg): 
+		r""" 
+		This function, inherited from the ``multizone`` object, is not 
+		supported for the ``milkyway`` model. 
+		""" 
+		raise TypeError("""This function is not supported for the milkyway \
+object.""") 
+
 
 	@property 
 	def annuli(self): 
 		r""" 
-		Type : list 
+		Type : ``list`` [elements of type ``float``] 
 
 		The radii representing divisions between annuli in the disk model in 
 		kpc. This property is determined by the ``zone_width`` attribute, and 
-		can only be set at initialize of the ``milkyway`` object. 
+		cannot be modified after initialization of a ``milkyway`` object. 
+
+		.. seealso:: vice.milkyway.zone_width 
+
+		While this attribute stores the radii representing bounds between 
+		annuli, the ``singlezone`` object corresponding to each individual 
+		annulus is stored as an array in the ``zones`` attribute, inherited 
+		from the ``multizone`` class. 
+
+		By default, they will be named where "zone0" is the zero'th element of 
+		the ``zones`` attribute, corresponding to the innermost zone. The 
+		second innermost zone will be the first element of the ``zones`` 
+		attribute, and by default will be named "zone1", and so on. 
 
 		Example Code 
 		------------
@@ -79,12 +295,14 @@ class milkyway(multizone):
 	@property 
 	def zone_width(self): 
 		r""" 
-		Type : float 
+		Type : ``float`` 
 
 		Default : 0.5 
 
 		The width of each annulus in kpc. This value can only be set at 
 		initialization of the ``milkyway`` object. 
+
+		.. seealso:: vice.milkyway.annuli 
 
 		Example Code 
 		------------
@@ -98,12 +316,27 @@ class milkyway(multizone):
 	@property 
 	def evolution(self): 
 		r""" 
-		Type : function 
+		Type : ``<function>`` 
+
+		Default : vice.milkyway.default_evolution 
 
 		As a function of radius in kpc and time in Gyr, respectively, either 
 		the surface density of gas in :math:`M_\odot kpc^{-2}`, the surface 
 		density of star formation in :math:`M_\odot kpc^{-2} yr^{-1}`, or the 
 		surface density of infall in :math:`M_\odot kpc^{-2} yr^{-1}`. 
+
+		.. seealso:: vice.milkyway.default_evolution 
+
+		.. note:: This attribute will always be expected to accept radius in 
+			kpc and time in Gyr as parameters, in that order. However, surface 
+			densities of star formation and infall will always be interpreted 
+			as having units of :math:`M_\odot yr^{-1} kpc^{-2}` according to 
+			convention. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> mw = vice.milkyway(name = "example") 
 		""" 
 		return self._evolution 
 
@@ -137,7 +370,20 @@ class milkyway(multizone):
 		-------
 		value : float 
 			Always returns the value of 1.0. The interpretation of this is set 
-			by the attribute ``mode``. 
+			by the attribute ``mode``. With the default value of "ifr", this 
+			represents a uniform surface of infall of 1.0 
+			:math:`M_\odot yr^{-1} kpc^{-2}`. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> mw = vice.milkyway(name = "example") 
+		>>> mw.evolution 
+		<function vice.milkyway.milkyway.milkyway.default_evolution(radius, time)> 
+		>>> vice.milkyway.default_evolution(10, 1) 
+		1.0 
+		>>> vice.milkyway.default_evolution(5, 4) 
+		1.0 
 		""" 
 		return 1.0 
 
@@ -188,10 +434,16 @@ class milkyway(multizone):
 		for i in range(len(self.zones)): 
 			self.zones[i].mode = value 
 
+			# The star formation law needs to know the mode changed too 
+			if isinstance(self.zones[i].tau_star, J21_sf_law): 
+				# it will be a string if the previous line passed 
+				self.zones[i].tau_star._mode = value.lower() 
+			else: pass 
+
 	@property 
 	def elements(self): 
 		r""" 
-		Type : tuple [elements of type str [case-insensitive]] 
+		Type : ``tuple`` [elements of type str [case-insensitive]] 
 
 		Default : ("fe", "sr", "o") 
 
@@ -238,7 +490,7 @@ class milkyway(multizone):
 		("mg", "fe", "n", "c", "o") 
 
 		.. [1] Johnson (2019), Science, 363, 474 
-		.. [2] Johnson & Weinberg (2020), arxiv:1911.02598 
+		.. [2] Johnson & Weinberg (2020), MNRAS, 498, 1364 
 		""" 
 		return self.zones[0].elements 
 
@@ -303,7 +555,7 @@ class milkyway(multizone):
 	@property 
 	def mass_loading(self): 
 		r""" 
-		Type : <function> 
+		Type : ``<function>`` 
 
 		Default : vice.milkyway.default_mass_loading 
 
@@ -317,6 +569,14 @@ class milkyway(multizone):
 		This function must return a non-negative real number for all radii 
 		defined in the disk model. 
 
+		.. note:: This formalism assumes a time-independent mass-loading 
+			factor at each radius. To implement a time-dependent alternative, 
+			users should modify the attribute ``eta`` of the ``singlezone`` 
+			objects corresponding to each annulus in this model. See example 
+			below. 
+
+		.. seealso:: vice.singlezone.eta 
+
 		Example Code 
 		------------
 		>>> import math as m 
@@ -325,6 +585,11 @@ class milkyway(multizone):
 		>>> def f(r): 
 			return 0.5 * m.exp(r / 3) 
 		>>> mw.mass_loading = f 
+		>>> def g(t): # a time-dependent mass-loading factor 
+			return 3.0 * m.exp(-t / 3) 
+		>>> # assign each individual annulus a time-dependent value 
+		>>> for i in range(mw.n_zones): 
+		>>> 	mw.zones[i].eta = g 
 		""" 
 		return self._mass_loading 
 
@@ -358,29 +623,37 @@ object. Got: %s""" % (type(value)))
 		eta : real number 
 			The mass loading factor at that radius, defined by: 
 
-			.. math:: \eta(r) = y_\text{O}^\text{CC} / Z_\text{O}^\odot 
+			.. math:: \eta(r) = (y_\text{O}^\text{CC}) / Z_\text{O}^\odot 
 				10^{0.08(r - 4\text{ kpc}) - 0.3} - 0.6 
 
-			where :math:`C` is the corrective term, :math:`Z_\text{O}^\odot` 
-			is the solar abundance by mass of oxygen, and 
-			:math:`y_\text{O}^\text{CC}` is the IMF-averaged CCSN yield of 
-			oxygen. These values are taken from the ``vice.yields`` module at 
-			the time the ``milkyway`` object is initialized. 
+			where :math:`Z_\text{O}^\odot` is the solar abundance by mass of 
+			oxygen and :math:`y_\text{O}^\text{CC}` is the IMF-averaged CCSN 
+			yield of oxygen. While these values are customizable through 
+			``vice.solar_z`` and ``vice.yields.ccsne.settings``, this function 
+			assumes a value of :math:`Z_\text{O}^\odot` = 0.00572 (Asplund et 
+			al. 2009 [1]_) and :math:`y_\text{O}^\text{CC}` = 0.015 (Johnson & 
+			Weinberg 2020 [2]_, Johnson et al. 2021 [3]_). 
 
-		.. tip:: To reset the mass loading factor in each annulus after 
-			modifying the oxygen yield, this function can be simply 
-			reassigned. For a ``milkyway`` object ``x``: 
+		.. seealso:: vice.milkyway.mass_loading 
 
-			>>> x.mass_loading = vice.milkyway.default_mass_loading  
+		Example Code 
+		------------
+		>>> import vice 
+		>>> vice.milkyway.default_mass_loading(0) 
+		0.029064576665950193
+		>>> vice.milkyway.default_mass_loading(8) 
+		2.1459664721614495
+
+		.. [1] Asplund et al. (2009), ARA&A, 47, 481 
+		.. [2] Johnson & Weinberg (2020), MNRAS, 498, 1364 
+		.. [3] Johnson et al. (2021), in prep 
 		""" 
-		# return yields.ccsne.settings['o'] / solar_z['o'] * (
-		# 	10**(0.06 * (rgal - 4) - 0.3)) - 0.6 
-		return 0.015 / solar_z['o'] * (10**(0.08 * (rgal - 4) - 0.3)) - 0.6 
+		return 0.015 / 0.00572 * (10**(0.08 * (rgal - 4) - 0.3)) - 0.6 
 
 	@property 
 	def dt(self): 
 		r""" 
-		Type : float 
+		Type : ``float`` 
 
 		Default: 0.01 
 
@@ -407,7 +680,7 @@ object. Got: %s""" % (type(value)))
 	@property 
 	def bins(self): 
 		r""" 
-		Type : array-like [elements must be real numbers] 
+		Type : ``list`` [elements must be real numbers] 
 
 		Default: [-3, -2.95, -2.9, ... , 0.9, 0.95, 1.0] 
 
@@ -421,6 +694,8 @@ object. Got: %s""" % (type(value)))
 			The metallicity distributions reported by VICE are normalized to 
 			probability distribution functions (i.e. the integral over all 
 			bins is equal to 1). 
+
+		.. seealso:: vice.milkyway.elements 
 
 		Example Code 
 		------------
@@ -474,7 +749,7 @@ object. Got: %s""" % (type(value)))
 	@property 
 	def RIa(self): 
 		r""" 
-		Type : <function> or ``str`` [case-insensitive] 
+		Type : ``<function>`` or ``str`` [case-insensitive] 
 
 		Default: "plaw" 
 
@@ -487,7 +762,8 @@ object. Got: %s""" % (type(value)))
 		When using the exponential DTD, the e-folding timescale is set by the 
 		attribute ``tau_ia``. 
 
-		Functions must accept time in Gyr as the only parameter. 
+		Functions must accept time in Gyr as the only parameter and return the 
+		rate at that delay-time. 
 
 		.. tip:: 
 
@@ -580,7 +856,8 @@ object. Got: %s""" % (type(value)))
 		Default: 1.5 
 
 		The e-folding timescale in Gyr of an exponentially decaying delay-time 
-		distribution in type Ia supernovae. 
+		distribution in type Ia supernovae. Default value is adopted from 
+		Weinberg, Andrews & Freudenburg (2017) [1]_. 
 
 		.. note:: 
 
@@ -596,6 +873,8 @@ object. Got: %s""" % (type(value)))
 		>>> mw.tau_ia = 1.0 
 		>>> mw.tau_ia = 1.5 
 		>>> mw.tau_ia = 2.0 
+
+		.. [1] Weinberg, Andrews & Freudenburg (2017), ApJ, 837, 183 
 		""" 
 		return self.zones[0].tau_ia 
 
@@ -604,127 +883,6 @@ object. Got: %s""" % (type(value)))
 		# Let the singlezone object do the error handling 
 		for i in range(self.n_zones): 
 			self.zones[i].tau_ia = value 
-
-	@property 
-	def tau_star_mol(self): 
-		r""" 
-		Type : real number or <function> 
-
-		Default : 2.0 
-
-		The adopted depletion time of molecular hydrogen due to star formation 
-		in Gyr. If a real number, VICE will adopt the given value as a 
-		constant. Functions must accept one numerical value as the only 
-		parameter, which VICE will interpret as time in Gyr. The function is 
-		expected to return the value of the molecular gas depletion time in 
-		Gyr at that time in the simulation. 
-
-		.. note:: 
-
-			If the attribute ``schmidt`` is switched to ``False``, this 
-			attribute no longer represents the depletion time of molecular 
-			gas, instead describing the depletion time of the *total* gas 
-			supply. 
-
-		Example Code 
-		------------
-		>>> import vice 
-		>>> mw = vice.milkyway(name = "example") 
-		>>> mw.tau_star_mol = 1.5 
-		>>> def f(t): 
-			return 1.5 + 0.5 * (t / 10) 
-		>>> mw.tau_star_mol = f 
-		""" 
-		return self.zones[0].tau_star 
-
-	@tau_star_mol.setter 
-	def tau_star_mol(self, value): 
-		# Let the singlezone object do the error handling 
-		for i in range(self.n_zones): 
-			self.zones[i].tau_star = value 
-
-	@property 
-	def schmidt(self): 
-		r"""
-		Type : bool 
-
-		Default : True 
-
-		If True, the simulation will adopt a gas-dependent scaling of the 
-		star formation efficiency timescale :math:`\tau_\star`. At each 
-		timestep, :math:`\tau_\star` is determined via: 
-
-		.. math:: \tau_\star(t) = \tau_{\star,\text{specified}}(t) 
-			\left(
-			\frac{\Sigma_g}{\Sigma_{g,\text{Schmidt}}} 
-			\right)^{-\alpha} 
-
-		where :math:`\tau_{\star,\text{specified}}(t)` is the user-specififed 
-		value of the attribute ``tau_star``, :math:`\Sigma_g` is the 
-		surface density of the interstellar medium, 
-		:math:`\Sigma_{g,\text{Schmidt}}` is the normalization thereof 
-		(attribute ``Sigma_gSchmidt``), and :math:`\alpha` is the power-law 
-		index set by the attribute ``schmidt_index``. 
-
-		This is an application of the Kennicutt-Schmidt star formation law 
-		(Kennicutt 1998 [1]_; Schmidt 1959 [2]_, 1963 [3]_). 
-
-		If False, this parameter does not impact the star formation efficiency 
-		that the user has specified. 
-
-		Example Code 
-		------------
-		>>> import vice
-		>>> mw = vice.milkyway(name = "example") 
-		>>> mw.schmidt = True 
-		>>> mw.schmidt = False 
-
-		.. [1] Kennicutt (1998), ApJ, 498, 541 
-		.. [2] Schmidt (1959), ApJ, 129, 243 
-		.. [3] Schmidt (1963), ApJ, 137, 758 
-		""" 
-		return self.zones[0].schmidt 
-
-	@schmidt.setter 
-	def schmidt(self, value): 
-		# Let the singlezone object do the error handling 
-		for i in range(self.n_zones): 
-			self.zones[i].schmidt = value 
-
-	@property 
-	def schmidt_index(self): 
-		r""" 
-		Type : real number 
-
-		Default : 0.5 
-
-		The power-law index on gas-dependent star formation efficiency, if 
-		applicable: 
-
-		.. math:: \tau_\star^{-1} \sim \Sigma_g^\alpha 
-
-		.. note:: 
-
-			This number should be 1 less than the power law index which 
-			describes the scaling of star formation with the surface density 
-			of gas. 
-
-		Example Code 
-		------------
-		>>> import vice 
-		>>> mw = vice.milkyway(name = "example") 
-		>>> mw.schmidt_index = 0.5 
-		>>> mw.schmidt_index = 0.4 
-		>>> mw.schmidt_index 
-		0.4 
-		""" 
-		return self.zones[0].schmidt_index 
-
-	@schmidt_index.setter 
-	def schmidt_index(self, value): 
-		# Let the singlezone object do the error handling 
-		for i in range(self.n_zones): 
-			self.zones[i].schmidt_index = value 
 
 	@property 
 	def m_upper(self): 
@@ -818,12 +976,14 @@ object. Got: %s""" % (type(value)))
 		.. note:: 
 
 			The default value is the metallicity calculated by Asplund et al. 
-			(2009) [1]_. VICE adopts the Asplund et al. (2009) measurements 
-			on their element-by-element basis in calculating [X/H] and 
-			[X/Y] in simulations; it is thus recommended that users adopt 
+			(2009) [1]_. VICE by default adopts the Asplund et al. (2009) 
+			measurements on their element-by-element basis in calculating [X/H] 
+			and [X/Y] in simulations; it is thus recommended that users adopt 
 			these measurements as well so that the adopted solar composition 
 			is self-consistent. This however has no qualitative impact on the 
-			behavior of the simulation. 
+			behavior of the simulation. Users who wish to adopt a different 
+			model for the composition of the sun should modify **both** this 
+			value **and** the element-by-element entries in ``vice.solar_z``. 
 
 		Example Code 
 		------------
@@ -840,132 +1000,6 @@ object. Got: %s""" % (type(value)))
 		# Let the singlezone object do the error handling 
 		for i in range(self.n_zones): 
 			self.zones[i].Z_solar = value 
-
-
-
-
-class mass_from_surface_density: 
-
-	r""" 
-	An object which converts surface density in either :math:`M_\odot kpc^{-2}` 
-	or :math:`M_\odot kpc^{-2} yr^{-1}` as a function of time in Gyr to either 
-	:math:`M_\odot` or :math:`M_\odot yr^{-1}`. 
-
-	.. note:: This object is for internal usage by the ``milkyway`` object 
-		only. User access is discouraged. 
-
-	**Signature**: mass_from_surface_density(surface_density, radius, area) 
-
-	Parameters 
-	----------
-	surface_density : <function> 
-		The attribute ``surface_density``. See below. 
-	radius : float 
-		The attribute ``radius``. See below. 
-	area : float 
-		The attribute ``area``. See below. 
-
-	Attributes 
-	----------
-	surface_density : <function> 
-		As a function of galactocentric radius in kpc and time in Gyr, 
-		respectively, returns either the gas surface density in 
-		:math:`M_\odot kpc^{-2}`, the surface density of infall in 
-		:math:`M_\odot kpc^{-2} yr^{-1}`, or the surface density of star 
-		formation in :math:`M_\odot kpc^{-2} yr^{-1}`. The interpretation is 
-		set the attribute ``mode`` of the ``milkyway`` model. 
-	radius : float 
-		The exact radius in kpc that an annulus is assumed to represent. In 
-		these models, this is the arithmetic mean of the edges of an annulus. 
-		This is the radius that the attribute ``surface_density`` will be 
-		evaluated at in simulation. 
-	area : float 
-		The area of an annulus in the disk model in :math:`kpc^2`. 
-	""" 
-
-	def __init__(self, surface_density, radius, area): 
-		# Attributes not meant to be modifiable - set their values here 
-		# surface density must be a callable function of time in Gyr 
-		if callable(surface_density): 
-			try: 
-				x = surface_density(1, 0) 
-			except: 
-				raise TypeError("""Surface density as a function of radius \
-and time must accept two numerical parameters.""") 
-			if isinstance(x, numbers.Number): 
-				self._surface_density = surface_density 
-			else: 
-				raise TypeError("""Surface density as a function of radius \
-and time must return a numerical value.""") 
-		else: 
-			raise TypeError("Surface density must be a callable object.") 
-
-		# radius must be a non-negative real number 
-		if isinstance(radius, numbers.Number): 
-			if radius >= 0: 
-				self._radius = float(radius) 
-			else: raise ValueError("Radius must be non-negative. Got: %g" % (
-				radius)) 
-		else: 
-			raise TypeError("Radius must be a real number. Got: %s" % (
-				type(radius))) 
-
-		# area must be a positive real number 
-		if isinstance(area, numbers.Number): 
-			if area > 0: 
-				self._area = float(area) 
-			else: 
-				raise ValueError("Area must be positive. Got: %g" % (area)) 
-		else: 
-			raise TypeError("Area must be a real number. Got: %s" % (
-				type(area))) 
-
-	def __call__(self, time): 
-		return self.area * self.surface_density(self.radius, time) 
-
-	@property 
-	def surface_density(self): 
-		r""" 
-		Type : <function> 
-
-		The callable function of time in Gyr representing surface density. 
-		Depending on the user's model, this may be either surface density of 
-		gas in :math:`M_\odot kpc^{-2}`, surface density of infall in 
-		:math:`M_\odot kpc^{-2} yr^{-1}`, or surface of density of star 
-		formation in :math:`M_\odot kpc^{-2} yr^{-1}`. The interpretation is 
-		set by the attribute ``mode`` of the ``milkyway`` model. 
-
-		For internal use by the ``milkyway`` object only. User access of this 
-		object is discouraged. 
-		""" 
-		return self._surface_density 
-
-	@property 
-	def radius(self): 
-		r""" 
-		Type : float 
-
-		The exact radius in kpc that an annulus is assumed to represent. In 
-		these models, this is the arithmetic mean of the edges of an annulus. 
-		This is the radius that the attribute ``surface_density`` will be 
-		evaluated at in simulation. 
-
-		For internal use by the ``milkyway`` object only. User access of this 
-		object is discouraged. 
-		""" 
-		return self._radius 
-
-	@property 
-	def area(self): 
-		r""" 
-		Type : float 
-
-		The area of an annulus in the milkyway model in :math:`kpc^2`. 
-
-		For internal use by the ``milkyway`` object only. User access of this 
-		object is discouraged. 
-		""" 
-		return self._area 
 
 
 def _get_radial_bins(zone_width): 

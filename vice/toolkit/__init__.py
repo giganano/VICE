@@ -21,10 +21,11 @@ except NameError:
 
 if not __VICE_SETUP__: 
 
-	__all__ = ["hydrodisk", "repair_function", "test"] 
+	__all__ = ["hydrodisk", "repair_function", "J21_sf_law", "test"] 
 	from ..testing import moduletest 
 	from .repair_function import repair_function 
 	from .repair_function import test as test_repfunc 
+	from .J21_sf_law import J21_sf_law 
 	from . import hydrodisk 
 
 	@moduletest 

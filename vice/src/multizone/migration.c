@@ -54,11 +54,7 @@ extern unsigned short migration_matrix_sanitycheck(double ***migration_matrix,
 			 * At all times for all zones, total probability of migration out 
 			 * of the zone must be <= 1. 
 			 */ 
-			if (sum(migration_matrix[i][j], n_zones) > 1) {
-				return 1; 
-			} else {
-				continue; 
-			} 
+			if (sum(migration_matrix[i][j], n_zones) > 1) return 1; 
 		} 
 	} 
 	return 0; 

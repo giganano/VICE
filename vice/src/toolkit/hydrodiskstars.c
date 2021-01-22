@@ -278,11 +278,27 @@ extern long hydrodiskstars_find_analog(HYDRODISKSTARS hds, double birth_radius,
 			analog_idx = (signed) candidates[(unsigned long) rand_range(0, 
 				n_candidates)]; 
 		} else {
-			/* No candidates found; widen the search */ 
+			/* 
+			 * No candidates found; widen the search, but honor the limits 
+			 * imposed by the MAXIMUM_ANALOG_SEARCH_RADIUS and 
+			 * MAXIMUM_ANALOG_SEARCH_TIME macros defined in hydrodiskstars.h. 
+			 * By default, MAXIMUM_ANALOG_SEARCH_RADIUS is infinite, meaning a 
+			 * star particle should always find an analog unless these values 
+			 * are altered. 
+			 */ 
 			search_radius += INCREMENT_ANALOG_SEARCH_RADIUS; 
 			search_time += INCREMENT_ANALOG_SEARCH_TIME; 
+			if (search_radius > MAXIMUM_ANALOG_SEARCH_RADIUS) { 
+				search_radius = MAXIMUM_ANALOG_SEARCH_RADIUS; 
+			} else {} 
+			if (search_time > MAXIMUM_ANALOG_SEARCH_TIME) { 
+				search_time = MAXIMUM_ANALOG_SEARCH_TIME; 
+			} else {} 
 		} 
-	} while (!n_candidates); 
+	} while (!n_candidates && 
+		(search_radius < MAXIMUM_ANALOG_SEARCH_RADIUS || 
+		search_time < MAXIMUM_ANALOG_SEARCH_TIME) 
+		); 
 	return analog_idx; 
 
 } 

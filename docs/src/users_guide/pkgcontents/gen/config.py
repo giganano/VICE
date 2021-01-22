@@ -19,6 +19,7 @@ from vice.yields.agb import cristallo11
 from vice.yields.agb import karakas10 
 from vice.core.singlezone.entrainment import entrainment 
 from vice.toolkit.repair_function import repfunc 
+from vice.toolkit import J21_sf_law 
 
 r""" 
 Each element of the _CONFIG_ dictionary should map an object in VICE to a 
@@ -45,6 +46,7 @@ _CONFIG_ = {
 			vice.imf, 
 			vice.singlezone, 
 			vice.multizone, 
+			vice.milkyway, 
 			vice.migration, 
 			vice.history, 
 			vice.mdf, 
@@ -952,6 +954,125 @@ _CONFIG_ = {
 		"header": 		"vice.multizone.simple", 
 		"subs": 		[] 
 	}, 
+	vice.milkyway: {
+		"filename": 	"vice.milkyway.rst", 
+		"header": 		"vice.milkyway", 
+		"subs": 		[
+			vice.milkyway.annuli, 
+			vice.milkyway.zone_width, 
+			vice.milkyway.evolution, 
+			vice.milkyway.default_evolution, 
+			vice.milkyway.mode, 
+			vice.milkyway.elements, 
+			vice.milkyway.IMF, 
+			vice.milkyway.mass_loading, 
+			vice.milkyway.default_mass_loading, 
+			vice.milkyway.dt, 
+			vice.milkyway.bins, 
+			vice.milkyway.delay, 
+			vice.milkyway.RIa, 
+			vice.milkyway.smoothing, 
+			vice.milkyway.tau_ia, 
+			vice.milkyway.m_upper, 
+			vice.milkyway.m_lower, 
+			vice.milkyway.postMS, 
+			vice.milkyway.Z_solar]
+	}, 
+	vice.milkyway.annuli: {
+		"filename": 	"vice.milkyway.annuli.rst", 
+		"header": 		"vice.milkyway.annuli", 
+		"subs": 		[] 
+	}, 
+	vice.milkyway.zone_width: {
+		"filename": 	"vice.milkyway.zone_width.rst", 
+		"header": 		"vice.milkyway.zone_width", 
+		"subs": 		[] 
+	}, 
+	vice.milkyway.evolution: {
+		"filename": 	"vice.milkyway.evolution.rst", 
+		"header": 		"vice.milkyway.evolution", 
+		"subs": 		[] 
+	}, 
+	vice.milkyway.default_evolution: {
+		"filename": 	"vice.milkyway.default_evolution.rst", 
+		"header": 		"vice.milkyway.default_evolution", 
+		"subs": 		[] 
+	}, 
+	vice.milkyway.mode: {
+		"filename": 	"vice.milkyway.mode.rst", 
+		"header": 		"vice.milkyway.mode", 
+		"subs": 		[] 
+	}, 
+	vice.milkyway.elements: {
+		"filename": 	"vice.milkyway.elements.rst", 
+		"header": 		"vice.milkyway.elements", 
+		"subs": 		[] 
+	}, 
+	vice.milkyway.IMF: {
+		"filename": 	"vice.milkyway.IMF.rst", 
+		"header": 		"vice.milkyway.IMF", 
+		"subs": 		[] 
+	}, 
+	vice.milkyway.mass_loading: {
+		"filename": 	"vice.milkyway.mass_loading.rst", 
+		"header": 		"vice.milkyway.mass_loading", 
+		"subs": 		[] 
+	}, 
+	vice.milkyway.default_mass_loading: {
+		"filename": 	"vice.milkyway.default_mass_loading.rst", 
+		"header": 		"vice.milkyway.default_mass_loading", 
+		"subs": 		[] 
+	}, 
+	vice.milkyway.dt: {
+		"filename": 	"vice.milkyway.dt.rst", 
+		"header": 		"vice.milkyway.dt", 
+		"subs": 		[] 
+	}, 
+	vice.milkyway.bins: {
+		"filename": 	"vice.milkyway.bins.rst", 
+		"header": 		"vice.milkyway.bins", 
+		"subs": 		[] 
+	}, 
+	vice.milkyway.delay: {
+		"filename": 	"vice.milkyway.delay.rst", 
+		"header": 		"vice.milkyway.delay", 
+		"subs": 		[] 
+	}, 
+	vice.milkyway.RIa: {
+		"filename": 	"vice.milkyway.RIa.rst", 
+		"header": 		"vice.milkyway.RIa", 
+		"subs": 		[] 
+	}, 
+	vice.milkyway.smoothing: {
+		"filename": 	"vice.milkyway.smoothing.rst", 
+		"header": 		"vice.milkyway.smoothing", 
+		"subs": 		[] 
+	}, 
+	vice.milkyway.tau_ia: {
+		"filename": 	"vice.milkyway.tau_ia.rst", 
+		"header": 		"vice.milkyway.tau_ia", 
+		"subs": 		[] 
+	}, 
+	vice.milkyway.m_upper: {
+		"filename": 	"vice.milkyway.m_upper.rst", 
+		"header": 		"vice.milkyway.m_upper", 
+		"subs": 		[] 
+	}, 
+	vice.milkyway.m_lower: {
+		"filename": 	"vice.milkyway.m_lower.rst", 
+		"header": 		"vice.milkyway.m_lower", 
+		"subs": 		[] 
+	}, 
+	vice.milkyway.postMS: {
+		"filename": 	"vice.milkyway.postMS.rst", 
+		"header": 		"vice.milkyway.postMS", 
+		"subs": 		[] 
+	}, 
+	vice.milkyway.Z_solar: {
+		"filename": 	"vice.milkyway.Z_solar.rst", 
+		"header": 		"vice.milkyway.Z_solar", 
+		"subs": 		[] 
+	}, 
 	vice.migration: {
 		"filename": 	"vice.migration.rst", 
 		"header": 		"vice.migration", 
@@ -1118,7 +1239,8 @@ _CONFIG_ = {
 		"subs": 		[
 			vice.toolkit.repair_function, 
 			repfunc, 
-			vice.toolkit.hydrodisk 
+			vice.toolkit.hydrodisk, 
+			vice.toolkit.J21_sf_law 
 		] 
 	}, 
 	vice.toolkit.repair_function: {
@@ -1165,7 +1287,61 @@ _CONFIG_ = {
 		"filename": 	"vice.toolkit.hydrodisk.hydrodiskstars.mode.rst", 
 		"header": 		"vice.toolkit.hydrodisk.hydrodiskstars.mode", 
 		"subs": 		[] 
-	}
+	}, 
+	vice.toolkit.J21_sf_law: {
+		"filename": 	"vice.toolkit.J21_sf_law.rst", 
+		"header": 		"vice.toolkit.J21_sf_law", 
+		"subs": 		[
+			vice.toolkit.J21_sf_law.area, 
+			vice.toolkit.J21_sf_law.molecular, 
+			vice.toolkit.J21_sf_law.present_day_molecular, 
+			vice.toolkit.J21_sf_law.molecular_index, 
+			vice.toolkit.J21_sf_law.Sigma_g1, 
+			vice.toolkit.J21_sf_law.Sigma_g2, 
+			vice.toolkit.J21_sf_law.index1, 
+			vice.toolkit.J21_sf_law.index2 
+		]  
+	}, 
+	vice.toolkit.J21_sf_law.area: {
+		"filename": 	"vice.toolkit.J21_sf_law.area.rst", 
+		"header": 		"vice.toolkit.J21_sf_law.area", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.J21_sf_law.molecular: {
+		"filename": 	"vice.toolkit.J21_sf_law.molecular.rst", 
+		"header": 		"vice.toolkit.J21_sf_law.molecular", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.J21_sf_law.present_day_molecular: {
+		"filename": 	"vice.toolkit.J21_sf_law.present_day_molecular.rst", 
+		"header": 		"vice.toolkit.J21_sf_law.present_day_molecular", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.J21_sf_law.molecular_index: {
+		"filename": 	"vice.toolkit.J21_sf_law.molecular_index.rst", 
+		"header": 		"vice.toolkit.J21_sf_law.molecular_index", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.J21_sf_law.Sigma_g1: {
+		"filename": 	"vice.toolkit.J21_sf_law.Sigma_g1.rst", 
+		"header": 		"vice.toolkit.J21_sf_law.Sigma_g1", 
+		"subs": 		[]
+	}, 
+	vice.toolkit.J21_sf_law.Sigma_g2: {
+		"filename": 	"vice.toolkit.J21_sf_law.Sigma_g2.rst", 
+		"header": 		"vice.toolkit.J21_sf_law.Sigma_g2", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.J21_sf_law.index1: {
+		"filename": 	"vice.toolkit.J21_sf_law.index1.rst", 
+		"header": 		"vice.toolkit.J21_sf_law.index1", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.J21_sf_law.index2: {
+		"filename": 	"vice.toolkit.J21_sf_law.index2.rst", 
+		"header": 		"vice.toolkit.J21_sf_law.index2", 
+		"subs": 		[] 
+	} 
 
 }
 

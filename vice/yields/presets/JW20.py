@@ -1,5 +1,5 @@
 r""" 
-Johnson & Weinberg (2020), arxiv:1911.02598 Nucleosynthetic Yield Settings 
+Johnson & Weinberg (2020), MNRAS, 498, 1364 Nucleosynthetic Yield Settings 
 
 **Signature**: from vice.yields.presets import JW20 
 
@@ -90,7 +90,7 @@ def alt_cc_sr_linear(Z, Z_solar = 0.014):
 	>>> modified = lambda z: JW20.alt_cc_sr_linear(z, Z_solar = 0.018) 
 	>>> vice.yields.ccsne.settings['sr'] = modified 
 
-	.. [1] Johnson & Weinberg (2020), arxiv:1911.02598 
+	.. [1] Johnson & Weinberg (2020), MNRAS, 498, 1364 
 	.. [2] Asplund et al. (2009), ARA&A, 47, 481 
 	""" 
 	return 3.5e-08 * (Z / Z_solar) 
@@ -134,7 +134,7 @@ def alt_cc_sr_limitexp(Z, Z_solar = 0.014):
 	>>> modified = lambda z: JW20.alt_cc_sr_limitexp(z, Z_solar = 0.018) 
 	>>> vice.yields.ccsne.settings['sr'] = modified 
 
-	.. [1] Johnson & Weinberg (2020), arxiv:1911.02598 
+	.. [1] Johnson & Weinberg (2020), MNRAS, 498, 1364 
 	.. [2] Asplund et al. (2009), ARA&A, 47, 481 
 	""" 
 	return 1.0e-07 * (1 - math.exp(-10 * (Z / Z_solar))) 

@@ -180,7 +180,7 @@ Things to Avoid
 	Users installing VICE to multiple versions of python should not run the 
 	setup.py file in separate terminals simultaneously; this will cause one of 
 	the builds to fail. Likewise, users should not run the tests for multiple 
-	versions of python simultaneously; it's likely this will caues a 
+	versions of python simultaneously; it's likely this will cause a 
 	``segmentation fault``. 
 
 
@@ -386,5 +386,7 @@ Pass it to the ``rm`` command as well:
 
 If this process completed without any errors, then VICE was successfully 
 uninstalled. To double-check, rerunning ``which vice`` should now print 
-nothing. 
+nothing, and attempting to import VICE into python should result in a 
+``ModuleNotFoundError`` for python versions 3.6 and newer, and an 
+``ImportError`` for earlier versions. 
 

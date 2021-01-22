@@ -124,6 +124,7 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 			if not version.released: 
 				warnings.warn("Using un-released version of VICE", UserWarning)
 			from .milkyway import milkyway 
+			from . import milkyway 
 			from .core import * 
 			from .core.dataframe import base as dataframe 
 			from ._build_utils import * 

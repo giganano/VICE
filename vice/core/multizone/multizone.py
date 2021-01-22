@@ -99,6 +99,12 @@ class multizone(object):
 
 	Notes 
 	-----
+	This object makes use of composition. At its core, it is simply an array of 
+	``singlezone`` objects, which the user may manipulate like all other 
+	``singlezone`` objects. 
+
+	.. seealso:: ``vice.singlezone`` 
+
 	POSIX operating systems by default limit the number of files open per 
 	process, though with administrator's privileges this number can be 
 	temporarily raised. For each simulation, VICE opens two files per zone, 
@@ -157,7 +163,7 @@ Got: %s""" % (type(n_zones)))
 		self.__c_version = c_multizone(n_zones = int(n_zones), **kwargs) 
 
 	def __repr__(self): 
-		""" 
+		r""" 
 		Prints in the format: vice.singlezone{ 
 			attr1 -----------> value 
 			attribute2 ------> value 
@@ -187,18 +193,18 @@ Got: %s""" % (type(n_zones)))
 		return self.__repr__() 
 
 	def __enter__(self): 
-		""" 
+		r""" 
 		Opens a with statement 
 		""" 
 		return self 
 
 	def __exit__(self, exc_type, exc_value, exc_tb): 
-		""" 
+		r""" 
 		Raises all exceptions inside with statements 
 		""" 
 		return exc_value is None 
 
-	@classmethod  
+	@classmethod 
 	def from_output(cls, arg): 
 		r""" 
 		Obtain an instance of the ``multizone`` class given either the path 

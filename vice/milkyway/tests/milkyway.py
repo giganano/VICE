@@ -3,11 +3,14 @@ from __future__ import absolute_import
 __all__ = ["test"] 
 from ..milkyway import milkyway, mass_from_surface_density 
 from ..milkyway import _MAX_RADIUS_, _MAX_SF_RADIUS_ 
-from ..testing import moduletest 
-from ..testing import unittest 
-from ..core.singlezone._singlezone import _RECOGNIZED_MODES_ 
-from .._globals import _RECOGNIZED_ELEMENTS_ 
+from ...toolkit.J21_sf_law import J21_sf_law 
+from ...toolkit.hydrodisk import hydrodiskstars 
+from ...testing import moduletest 
+from ...testing import unittest 
+from ...core.singlezone._singlezone import _RECOGNIZED_MODES_ 
+from ..._globals import _RECOGNIZED_ELEMENTS_ 
 import math as m 
+import numbers 
 
 _TEST_NAME_ = "test" 
 _TEST_ZONE_WIDTH_ = 0.2 
@@ -33,9 +36,6 @@ def test():
 			test_RIa(), 
 			test_smoothing(), 
 			test_tau_ia(), 
-			test_tau_star_mol(), 
-			test_schmidt(), 
-			test_schmidt_index(), 
 			test_m_upper(), 
 			test_m_lower(), 
 			test_postMS(), 
@@ -57,12 +57,19 @@ def test_initialization():
 		except: 
 			return False 
 		status = isinstance(_TEST_, milkyway) 
+		status &= isinstance(_TEST_.migration.stars, hydrodiskstars) 
 		if status: 
 			for i in range(_TEST_.n_zones): 
 				status &= isinstance(_TEST_.zones[i].func, 
-					mass_from_surface_density)
+					mass_from_surface_density) 
 				status &= _TEST_.zones[i].Mg0 == 1e-12 
 				radius = (_TEST_.annuli[i] + _TEST_.annuli[i + 1]) / 2 
+				if radius <= _MAX_SF_RADIUS_: 
+					# outside 15.5 kpc, tau_star is just 1.e6 
+					status &= isinstance(_TEST_.zones[i].tau_star, J21_sf_law) 
+				else: 
+					status &= isinstance(_TEST_.zones[i].tau_star, 
+						numbers.Number) 
 				for j in _RECOGNIZED_ELEMENTS_: 
 					status &= _TEST_.zones[i].entrainment.agb[j] == 1 - (
 						radius > _MAX_SF_RADIUS_) 
@@ -305,80 +312,6 @@ def test_tau_ia():
 			if not status: break 
 		return status 
 	return ["vice.milkyway.tau_ia", test] 
-
-
-@unittest 
-def test_tau_star_mol(): 
-	r""" 
-	vice.milkyway.tau_star_mol unit test 
-	""" 
-	def test(): 
-		try: 
-			_TEST_.tau_star_mol = 1.5 
-		except: 
-			return False 
-		status = True 
-		for i in _TEST_.zones: 
-			status &= i.tau_star == 1.5 
-			if not status: break 
-		if status: 
-			def f(t): # some dummy function of time 
-				return 1.5 + 0.5 * (t / 10) 
-			try: 
-				_TEST_.tau_star_mol = f 
-			except: 
-				return False 
-			for i in _TEST_.zones: 
-				status &= i.tau_star == f 
-				if not status: break 
-		else: pass 
-		return status 
-	return ["vice.milkyway.tau_star_mol", test] 
-
-
-@unittest 
-def test_schmidt(): 
-	r""" 
-	vice.milkyway.schmidt unit test 
-	""" 
-	def test(): 
-		try: 
-			_TEST_.schmidt = True 
-		except: 
-			return False 
-		status = True 
-		for i in _TEST_.zones: 
-			status &= i.schmidt 
-			if not status: break 
-		if status: 
-			try: 
-				_TEST_.schmidt = False 
-			except: 
-				return False 
-			for i in _TEST_.zones: 
-				status &= not i.schmidt 
-				if not status: break 
-		else: pass 
-		return status 
-	return ["vice.milkyway.schmidt", test] 
-
-
-@unittest 
-def test_schmidt_index(): 
-	r""" 
-	vice.milkyway.schmidt_index unit test 
-	""" 
-	def test(): 
-		try: 
-			_TEST_.schmidt_index = 0.4 
-		except: 
-			return False 
-		status = True 
-		for i in _TEST_.zones: 
-			status &= i.schmidt_index == 0.4 
-			if not status: break 
-		return status 
-	return ["vice.milkyway.schmidt_index", test] 
 
 
 @unittest 

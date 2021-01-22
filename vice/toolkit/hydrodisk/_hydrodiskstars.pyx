@@ -29,7 +29,7 @@ _END_TIME_ = _hydrodiskstars.HYDRODISK_END_TIME
 _RECOGNIZED_MODES_ = ["linear", "sudden", "diffusion"] 
 
 # The number of star particles in the simulation 
-_N_STAR_PARTICLES_ = 2983105 
+_N_STAR_PARTICLES_ = 3000556 
 
 
 cdef class c_hydrodiskstars: 

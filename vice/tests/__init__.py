@@ -28,7 +28,7 @@ if not __VICE_SETUP__:
 	from ..testing import moduletest 
 	from . import elements 
 	from .. import core 
-	from . import milkyway 
+	from ..milkyway import test as milkyway_test 
 	from .. import modeling 
 	from .. import src 
 	from .. import toolkit 
@@ -68,7 +68,7 @@ This program will overwrite the VICE output at %s/test.vice. Proceed? \
 			[ 
 				core.test(run = False), 
 				elements.test(run = False), 
-				milkyway.test(run = False), 
+				milkyway_test(run = False), 
 				modeling.test(run = False), 
 				src.test(run = False), 
 				toolkit.test(run = False), 

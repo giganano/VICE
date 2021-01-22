@@ -18,6 +18,12 @@ class solar_z(elemental_settings):
 	values are assigned according to Asplund et al. (2009) [1]_. Stored values 
 	are of type ``float``. 
 
+	.. versionadded:: 1.X.0 
+		In versions >= 1.X.0, users may modify the values stored for each 
+		individual element. The only restriction imposed is that the values 
+		be between 0 and 1. In prior versions, the values stored by this 
+		dataframe were not modifiable. 
+
 	Indexing 
 	--------
 	- ``str`` [case-insensitive] 

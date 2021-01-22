@@ -305,7 +305,6 @@ class pickled_object:
 					warnings.warn("""\
 Could not pickle function. The following attribute will not be saved with \
 this output: %s""" % (self.name), UserWarning) 
-					os.system("rm -f %s.obj" % (self.name)) 
 					pickle.dump(None, file) 
 			else: 
 				warnings.warn("""\
@@ -315,7 +314,6 @@ output: %s""" % (self.name), UserWarning)
 				try: 
 					pickle.dump(self._default, file) 
 				except: 
-					os.system("rm -f %s.obj" % (self.name)) 
 					pickle.dump(None, file) 
 		else: 
 			try: 
@@ -323,7 +321,6 @@ output: %s""" % (self.name), UserWarning)
 			except: 
 				warnings.warn("""Could not save object %s with this VICE \
 output.""" % (self.name), UserWarning) 
-				os.system("rm -f %s.obj" % (self.name)) 
 				pickle.dump(None, file) 
 		file.close() 
 
