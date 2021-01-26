@@ -4,7 +4,7 @@ file.
 """ 
 
 from __future__ import absolute_import 
-from ....._globals import _VERSION_ERROR_ 
+from ...._globals import _VERSION_ERROR_ 
 import sys 
 import os 
 if sys.version_info[:2] == (2, 7): 

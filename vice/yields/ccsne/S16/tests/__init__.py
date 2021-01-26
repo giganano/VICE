@@ -10,7 +10,6 @@ if not __VICE_SETUP__:
 	__all__ = ["test"] 
 	from .....testing import moduletest 
 	from . import set_params 
-	from ..engines.tests import test as test_engines 
 
 	@moduletest 
 	def test(): 
@@ -19,8 +18,7 @@ if not __VICE_SETUP__:
 		""" 
 		return ["vice.yields.ccsne.S16", 
 			[ 
-				set_params.test(), 
-				test_engines(run = False) 
+				set_params.test() 
 			] 
 		] 
 

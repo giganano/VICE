@@ -4,7 +4,7 @@ mass in Msun.
 """ 
 
 from __future__ import absolute_import 
-from ....._globals import _DIRECTORY_ 
+from ...._globals import _DIRECTORY_ 
 from ._engine import engine 
 
 
@@ -30,7 +30,7 @@ class W18(engine):
 	""" 
 
 	def __init__(self): 
-		super().__init__("%syields/ccsne/S16/engines/W18.dat" % (_DIRECTORY_)) 
+		super().__init__("%syields/ccsne/engines/W18.dat" % (_DIRECTORY_)) 
 
 	def __call__(self, mass): 
 		# This is necessary for inspect.signature to find the call sign. 

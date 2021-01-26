@@ -7,7 +7,7 @@ except NameError:
 
 if not __VICE_SETUP__: 
 
-	from ......testing import moduletest 
+	from .....testing import moduletest 
 	from . import W18  
 
 	@moduletest 

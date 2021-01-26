@@ -4,7 +4,7 @@ directory.
 """ 
 
 from __future__ import absolute_import 
-from ......testing import unittest 
+from .....testing import unittest 
 from ..W18 import W18 
 import numbers 
 import random 
@@ -32,5 +32,5 @@ def test_W18():
 		except: 
 			return False 
 		return True 
-	return ["vice.yields.ccsne.S16.engines.W18", test] 
+	return ["vice.yields.ccsne.engines.W18", test] 
 
