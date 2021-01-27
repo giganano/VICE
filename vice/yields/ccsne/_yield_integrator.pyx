@@ -616,7 +616,9 @@ def initial_abundances(filename):
 		line = f.readline() 
 		while line != "": 
 			element, Z = line.split() 
-			zprog[element.lower()] = float(Z) 
+			if element.lower() in _RECOGNIZED_ELEMENTS_: 
+				zprog[element.lower()] = float(Z) 
+			else: pass 
 			line = f.readline() 
 		f.close() 
 	return zprog 
