@@ -21,37 +21,48 @@ def read(filename):
 
 	Parameters 
 	----------
-	filename : str 
+	filename : ``str`` 
 		The name of the file to read in. 
 
 	Returns 
 	-------
-	masses : list 
-		The masses on which the explodability engine is sampled. 
-	freq : list 
-		The frequency with which stars of a given mass explode. 
+	columns : ``list`` [elements of type ``list``] 
+		A 2-dimensional list containing the columns of the data file. 
+		``columns[0]`` will be the zero'th column, ``columns[1]`` the first, 
+		``columns[2]`` the second, and so on. 
 
-	Raises
+	If reading the engines from Sukhbold et al. (2016) [1]_, the return value 
+	will have two columns - progenitor zero age main sequence (ZAMS) masses and 
+	explosion frequencies. If reading the Ertl et al. (2016) [2]_ data, it 
+	will have three columns - progenitor ZAMS masses, :math:`M_4`, and 
+	:math:`\mu_4` values. 
+
+	Raises 
 	------
 	* IOError 
 		- The file is not found. 
+
+	.. [1] Sukhbold et al. (2016), ApJ, 821, 38 
+	.. [2] Ertl et al. (2016), ApJ, 818, 124 
 	""" 
 	if isinstance(filename, strcomp): 
 		if os.path.exists(filename): 
-			masses = [] 
-			freq = [] 
+			contents = [] 
 			with open(filename, 'r') as f: 
-				f.readline() 
-				line = f.readline() 
+				while True: 
+					line = f.readline() 
+					if line[0] != '#': break 
 				while line != "": 
-					line = [float(i) for i in line.split()] 
-					masses.append(line[0]) 
-					freq.append(line[1]) 
+					contents.append([float(i) for i in line.split()]) 
 					line = f.readline() 
 				f.close() 
-			return [masses, freq] 
+			columns = [] 
+			for i in range(len(contents[0])): 
+				columns.append([row[i] for row in contents]) 
+			return columns 
 		else: 
 			raise IOError("File not found: %s" % (filename)) 
 	else: 
 		raise TypeError("Must be of type str. Got: %s" % (type(filename))) 
+
 

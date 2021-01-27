@@ -10,6 +10,7 @@ if not __VICE_SETUP__:
 	__all__ = ["test"] 
 	from ....testing import moduletest 
 	from ....testing.unittest import _unittest as unittest 
+	from .. import engines 
 	from . import grid_reader 
 	from . import integrator 
 	from . import imports 
@@ -21,7 +22,8 @@ if not __VICE_SETUP__:
 		""" 
 		tests = [
 			grid_reader.test_table(), 
-			imports.test(run = False) 
+			imports.test(run = False), 
+			engines.test(run = False) 
 		] 
 		try: 
 			from .. import LC18 

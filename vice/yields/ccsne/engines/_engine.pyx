@@ -4,40 +4,125 @@ This file implements the explodability engine base class
 """ 
 
 from __future__ import absolute_import 
-from .read_engine import read 
+from ....core import _pyutils 
 import numbers 
 from libc.stdlib cimport malloc, free 
 from . cimport _engine 
+minimum_mass = float(_engine.CC_MIN_STELLAR_MASS) 
 
 
 cdef class engine: 
 
 	r""" 
-	Explodability as a function of mass. 
+	Core collapse supernova explosion engines: explodability as a function of 
+	progenitor mass in :math:`M_\odot`. 
+
+	.. tip:: These objects can be passed as the keyword argument 
+		``explodability`` to ``vice.yields.ccsne.fractional`` to calculate 
+		IMF-averaged yields assuming a particular black hole landscape. 
+
+	.. versionadded:: 1.X.0 
+
+	**Signature**: vice.yields.ccsne.engines.engine(masses, frequencies) 
 
 	Parameters 
 	----------
-	filename : str 
-		The path to the file to read the explodability table from. 
+	masses : ``list`` 
+		The attribute ``masses``. Though this isn't enforced, this is assumed 
+		to be sorted from least to greatest. See below. 
+	frequencies : ``list`` 
+		The attribute ``frequencies``. See below. 
 
-	This class can be indexed or called with a stellar mass in :math:`M_\odot` 
-	and it will interpolate between grid elements to estimate the fraction of 
-	stars of that mass which explode as a core collapse supernova. 
+	Attributes 
+	----------
+	masses : ``list`` 
+		The initial masses of core collapse supernova progenitors in 
+		:math:`M_\odot` on which the explosion engine is sampled. 
+	frequencies : ``list`` 
+		The fraction of stars at the sampled masses that explode as a core 
+		collapse supernova. Though this number may be anywhere between 0 and 1, 
+		the built-in engines in the current version are binary. 
+
+	.. note:: The attributes ``masses`` and ``frequencies`` will not be 
+		modifiable after constructing an instance of this class. 
+
+	Calling 
+	-------
+	Call this object with progenitor mass as the only argument, and the 
+	explodability as a float between 0 and 1 will be returned. 
+
+		Parameters: 
+
+			- mass : ``float`` 
+				Progenitor zero age main sequence mass in :math:`M_\odot`. 
+
+		Returns: 
+
+			- explodability : ``float`` 
+				The fraction of stars at that mass which produce a core 
+				collapse supernova event according to the given explosion 
+				engine. 
+
+	.. note:: The return value will be calculated via linear interpolation 
+		between masses and frequencies on the grid. With frequencies which are 
+		binary in the current version, non-binary explosion frequencies are 
+		only found at masses between a grid element which did explode in the 
+		supernova study and another which did not. 
+
+	Indexing 
+	--------
+	Performs the same function as `Calling`_. 
+
+	.. seealso:: Built-in instances of derived classes 
+
+		- vice.yields.ccsne.engines.S16.W18 
+		- vice.yields.ccsne.engines.S16.N20 
+		- vice.yields.ccsne.engines.E16 
+
+	Example Code 
+	------------
+	>>> from vice.yields.ccsne.engines.S16 import W18 
+	>>> W18.masses 
+	[9.0, 
+	 9.25, 
+	 9.5, 
+	 ..., 
+	 80.0, 
+	 100.0, 
+	 120.0] 
+	>>> W18.frequencies 
+	[1.0, 
+	 1.0, 
+	 1.0, 
+	 ..., 
+	 0.0, 
+	 0.0, 
+	 1.0] 
+	>>> W18(20) 
+	0.0 
+	>>> W18(20.1) 
+	1.0 
+	>>> W18(20.05) 
+	0.5 
 	""" 
 
 	# no __cinit__ because this will be subclassed in pure python with a 
 	# different call signature -> __cinit__ causes an error to be raised. 
 
-	def __init__(self, filename): 
-		# read in the file and copy it into C double pointers 
-		masses, freq = read(filename) 
-		assert len(masses) == len(freq), "Internal Error" 
-		self._n_masses = <unsigned long> len(masses) 
-		self._masses = <double *> malloc (self._n_masses * sizeof(double)) 
-		self._frequencies = <double *> malloc (self._n_masses * sizeof(double)) 
-		for i in range(self._n_masses): 
-			self._masses[i] = masses[i] 
-			self._frequencies[i] = freq[i] 
+	def __init__(self, masses, frequencies): 
+		masses = _pyutils.copy_array_like_object(masses) 
+		frequencies = _pyutils.copy_array_like_object(frequencies) 
+		if len(masses) == len(frequencies): 
+			self._n_masses = <unsigned long> len(masses)
+			self._masses = <double *> malloc (self._n_masses * sizeof(double)) 
+			self._frequencies = <double *> malloc (self._n_masses * 
+				sizeof(double)) 
+			for i in range(self._n_masses): 
+				self._masses[i] = <double> masses[i] 
+				self._frequencies[i] = <double> frequencies[i] 
+		else: 
+			raise ValueError("""Arrays must be of the same length. \
+Got: (%d, %d)""" % (len(masses), len(frequencies))) 
 
 	def __dealloc__(self): 
 		free(self._masses) 
@@ -50,7 +135,7 @@ cdef class engine:
 			if mass < _engine.CC_MIN_STELLAR_MASS: return 0. 
 			bin_ = _engine.get_bin_number(self._masses, self._n_masses, 
 				<double> mass) 
-			if bin_ == -1: 
+			if bin_ == -1l: 
 				if mass < self._masses[0]: 
 					bin_ = 0 
 				elif mass > self._masses[self._n_masses - 1l]: 
@@ -59,6 +144,7 @@ cdef class engine:
 					raise SystemError("Internal Error") 
 			else: 
 				pass 
+
 			# be careful not to return a value <0 or >1.  
 			result = _engine.interpolate(
 				self._masses[bin_], 
@@ -84,20 +170,46 @@ cdef class engine:
 	@property 
 	def masses(self): 
 		r""" 
-		Type : list 
+		Type : ``list`` 
 
 		The stellar  masses in :math:`M_\odot` on which the explosion engine 
 		is sampled. 
+
+		Example Code 
+		------------
+		>>> from vice.yields.ccsne.engines.S16 import W18 
+		>>> W18.masses 
+		[9.0, 
+		 9.25, 
+		 9.5, 
+		 ..., 
+		 80.0, 
+		 100.0, 
+		 120.0] 
 		""" 
 		return [float(self._masses[i]) for i in range(self._n_masses)] 
 
 	@property 
 	def frequencies(self): 
 		r""" 
-		Type : list 
+		Type : ``list`` 
 
-		The frequencies with which stars whose masses are given by the 
-		attribute 'masses' explode as a core collapse supernova. 
+		The frequencies with which stars of a given mass explode; the 
+		progenitor zero age main sequence masses in :math:`M_\odot` are stored 
+		in the attribute ``masses``. Though this number can be anywhere between 
+		0 and 1, in the current version they are binary. 
+
+		Example Code 
+		------------
+		>>> from vice.yields.ccsne.engines.S16 import W18 
+		>>> W18.frequencies 
+		[1.0, 
+		 1.0, 
+		 1.0, 
+		 ..., 
+		 0.0, 
+		 0.0, 
+		 1.0] 
 		""" 
 		return [float(self._frequencies[i]) for i in range(self._n_masses)] 
 
