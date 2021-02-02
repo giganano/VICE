@@ -19,6 +19,7 @@ if not __VICE_SETUP__:
 		"fromfile", 
 		"imf", 
 		"integral", 
+		"interp_scheme_1d", 
 		"ism", 
 		"mdf", 
 		"migration", 
@@ -41,11 +42,11 @@ if not __VICE_SETUP__:
 	from . import _hydrodiskstars as hydrodiskstars 
 	from . import _imf as imf 
 	from . import _integral as integral 
+	from . import _interp_scheme_1d as interp_scheme_1d 
 	from . import _ism as ism 
 	from . import _mdf as mdf 
 	from . import _migration as migration 
 	from . import _multizone as multizone 
-	from . import _repfunc as repfunc 
 	from . import _singlezone as singlezone 
 	from . import _sneia as sneia 
 	from . import _ssp as ssp 
@@ -80,6 +81,8 @@ if not __VICE_SETUP__:
 				imf.test_imf_destructor(), 
 				integral.test_integral_constructor(), 
 				integral.test_integral_destructor(), 
+				interp_scheme_1d.test_interp_scheme_1d_constructor(), 
+				interp_scheme_1d.test_interp_scheme_1d_destructor(), 
 				ism.test_ism_constructor(), 
 				ism.test_ism_destructor(), 
 				mdf.test_mdf_constructor(), 
@@ -88,8 +91,6 @@ if not __VICE_SETUP__:
 				migration.test_migration_destructor(), 
 				multizone.test_multizone_constructor(), 
 				multizone.test_multizone_destructor(), 
-				repfunc.test_repfunc_constructor(), 
-				repfunc.test_repfunc_destructor(), 
 				singlezone.test_singlezone_constructor(), 
 				singlezone.test_singlezone_destructor(), 
 				sneia.test_sneia_yield_specs_constructor(), 

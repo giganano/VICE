@@ -6,6 +6,7 @@ This file implements the explodability engine base class
 from __future__ import absolute_import 
 from ....core import _pyutils 
 import numbers 
+import cython 
 from libc.stdlib cimport malloc, free 
 from . cimport _engine 
 minimum_mass = float(_engine.CC_MIN_STELLAR_MASS) 

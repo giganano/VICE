@@ -18,8 +18,8 @@ from vice.yields.sneia import seitenzahl13
 from vice.yields.agb import cristallo11 
 from vice.yields.agb import karakas10 
 from vice.core.singlezone.entrainment import entrainment 
-from vice.toolkit.repair_function import repfunc 
 from vice.yields.ccsne.engines.cutoff import cutoff 
+from vice.toolkit import J21_sf_law 
 
 r""" 
 Each element of the _CONFIG_ dictionary should map an object in VICE to a 
@@ -1183,20 +1183,10 @@ _CONFIG_ = {
 		"filename": 	"vice.toolkit.rst", 
 		"header": 		"vice.toolkit", 
 		"subs": 		[
-			vice.toolkit.repair_function, 
-			repfunc, 
-			vice.toolkit.hydrodisk 
+			vice.toolkit.hydrodisk, 
+			vice.toolkit.interpolation, 
+			vice.toolkit.J21_sf_law 
 		] 
-	}, 
-	vice.toolkit.repair_function: {
-		"filename": 	"vice.toolkit.repair_function.rst", 
-		"header": 		"vice.toolkit.repair_function", 
-		"subs": 		[] 
-	}, 
-	repfunc: {
-		"filename": 	"vice.toolkit.repair_function.repfunc.rst", 
-		"header": 		"vice.toolkit.repair_function.repfunc", 
-		"subs": 		[] 
 	}, 
 	vice.toolkit.hydrodisk: {
 		"filename": 	"vice.toolkit.hydrodisk.rst", 
@@ -1232,7 +1222,90 @@ _CONFIG_ = {
 		"filename": 	"vice.toolkit.hydrodisk.hydrodiskstars.mode.rst", 
 		"header": 		"vice.toolkit.hydrodisk.hydrodiskstars.mode", 
 		"subs": 		[] 
-	}
+	}, 
+	vice.toolkit.interpolation: {
+		"filename": 	"vice.toolkit.interpolation.rst", 
+		"header": 		"vice.toolkit.interpolation", 
+		"subs": 		[vice.toolkit.interpolation.interp_scheme_1d] 
+	}, 
+	vice.toolkit.interpolation.interp_scheme_1d: {
+		"filename": 	"vice.toolkit.interpolation.interp_scheme_1d.rst", 
+		"header": 		"vice.toolkit.interpolation.interp_scheme_1d", 
+		"subs": 		[
+			vice.toolkit.interpolation.interp_scheme_1d.xcoords, 
+			vice.toolkit.interpolation.interp_scheme_1d.ycoords, 
+			vice.toolkit.interpolation.interp_scheme_1d.n_points
+		] 
+	}, 
+	vice.toolkit.interpolation.interp_scheme_1d.xcoords: {
+		"filename": 	"vice.toolkit.interpolation.interp_scheme_1d.xcoords.rst", 
+		"header": 		"vice.toolkit.interpolation.interp_scheme_1d.xcoords", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.interpolation.interp_scheme_1d.ycoords: {
+		"filename": 	"vice.toolkit.interpolation.interp_scheme_1d.ycoords.rst", 
+		"header": 		"vice.toolkit.interpolation.interp_scheme_1d.ycoords", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.interpolation.interp_scheme_1d.n_points: {
+		"filename": 	"vice.toolkit.interpolation.interp_scheme_1d.n_points.rst", 
+		"header": 		"vice.toolkit.interpolation.interp_scheme_1d.n_points", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.J21_sf_law: {
+		"filename": 	"vice.toolkit.J21_sf_law.rst", 
+		"header": 		"vice.toolkit.J21_sf_law", 
+		"subs": 		[
+			vice.toolkit.J21_sf_law.area, 
+			vice.toolkit.J21_sf_law.molecular, 
+			vice.toolkit.J21_sf_law.present_day_molecular, 
+			vice.toolkit.J21_sf_law.molecular_index, 
+			vice.toolkit.J21_sf_law.Sigma_g1, 
+			vice.toolkit.J21_sf_law.Sigma_g2, 
+			vice.toolkit.J21_sf_law.index1, 
+			vice.toolkit.J21_sf_law.index2 
+		]  
+	}, 
+	vice.toolkit.J21_sf_law.area: {
+		"filename": 	"vice.toolkit.J21_sf_law.area.rst", 
+		"header": 		"vice.toolkit.J21_sf_law.area", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.J21_sf_law.molecular: {
+		"filename": 	"vice.toolkit.J21_sf_law.molecular.rst", 
+		"header": 		"vice.toolkit.J21_sf_law.molecular", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.J21_sf_law.present_day_molecular: {
+		"filename": 	"vice.toolkit.J21_sf_law.present_day_molecular.rst", 
+		"header": 		"vice.toolkit.J21_sf_law.present_day_molecular", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.J21_sf_law.molecular_index: {
+		"filename": 	"vice.toolkit.J21_sf_law.molecular_index.rst", 
+		"header": 		"vice.toolkit.J21_sf_law.molecular_index", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.J21_sf_law.Sigma_g1: {
+		"filename": 	"vice.toolkit.J21_sf_law.Sigma_g1.rst", 
+		"header": 		"vice.toolkit.J21_sf_law.Sigma_g1", 
+		"subs": 		[]
+	}, 
+	vice.toolkit.J21_sf_law.Sigma_g2: {
+		"filename": 	"vice.toolkit.J21_sf_law.Sigma_g2.rst", 
+		"header": 		"vice.toolkit.J21_sf_law.Sigma_g2", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.J21_sf_law.index1: {
+		"filename": 	"vice.toolkit.J21_sf_law.index1.rst", 
+		"header": 		"vice.toolkit.J21_sf_law.index1", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.J21_sf_law.index2: {
+		"filename": 	"vice.toolkit.J21_sf_law.index2.rst", 
+		"header": 		"vice.toolkit.J21_sf_law.index2", 
+		"subs": 		[] 
+	} 
 
 }
 

@@ -2,7 +2,7 @@ r"""
 Built-in stellar radial migration schema for disk galaxies inspired by 
 hydrodynamical simulations. 
 
-.. versionadded:: 1.X.0 
+.. versionadded:: 1.2.0 
 
 Contents 
 --------

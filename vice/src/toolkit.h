@@ -7,7 +7,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include "toolkit/hydrodiskstars.h" 
-#include "toolkit/repfunc.h" 
+#include "toolkit/interp_scheme_1d.h" 
 
 #ifdef __cplusplus 
 } 

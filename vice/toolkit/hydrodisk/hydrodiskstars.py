@@ -9,7 +9,7 @@ class hydrodiskstars:
 	A stellar migration scheme inspired by a hydrodynamical zoom-in simulation 
 	of a Milky Way-like disk galaxy ran at the University of Washington. 
 
-	.. versionadded:: 1.X.0 
+	.. versionadded:: 1.2.0 
 
 	.. note:: The galaxy in the zoom-in hydrodynamical simulation does not 
 		have a bar, while the Milky Way is known to have a bar. Radial 
