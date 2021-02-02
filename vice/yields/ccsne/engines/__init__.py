@@ -39,8 +39,8 @@ if not __VICE_SETUP__:
 	__all__ = ["cutoff", "engine", "E16", "S16", "test"] 
 	from ....testing import moduletest 
 	from .cutoff import cutoff 
-	from ._engine import engine 
-	from ._E16 import E16 
+	from .engine import engine 
+	from .E16 import E16 
 	from . import S16 
 	from . import tests 
 
@@ -58,6 +58,7 @@ if not __VICE_SETUP__:
 				tests.engine.test(run = False), 
 				tests.cutoff.test(run = False), 
 				tests.E16.test(run = False), 
+				tests.usage.test(run = False), 
 				S16.test(run = False)
 			] 
 		] 

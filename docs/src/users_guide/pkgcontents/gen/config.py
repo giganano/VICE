@@ -18,8 +18,10 @@ from vice.yields.sneia import seitenzahl13
 from vice.yields.agb import cristallo11 
 from vice.yields.agb import karakas10 
 from vice.core.singlezone.entrainment import entrainment 
-from vice.yields.ccsne.engines.cutoff import cutoff 
 from vice.toolkit import J21_sf_law 
+from vice.yields.ccsne.engines.E16 import E16 
+from vice.yields.ccsne.engines.cutoff import cutoff 
+from vice.yields.ccsne.engines.S16.W18 import W18 
 
 r""" 
 Each element of the _CONFIG_ dictionary should map an object in VICE to a 
@@ -409,8 +411,8 @@ _CONFIG_ = {
 		"header": 		"vice.yields.ccsne.engines", 
 		"subs": 		[
 			vice.yields.ccsne.engines.engine, 
-			vice.yields.ccsne.engines.cutoff, 
-			vice.yields.ccsne.engines._E16.E16, 
+			cutoff, 
+			E16, 
 			vice.yields.ccsne.engines.S16
 		] 
 	}, 
@@ -432,7 +434,7 @@ _CONFIG_ = {
 		"header": 		"vice.yields.ccsne.engines.engine.frequencies", 
 		"subs": 		[] 
 	}, 
-	vice.yields.ccsne.engines.cutoff: {
+	cutoff: {
 		"filename": 	"vice.yields.ccsne.engines.cutoff.rst", 
 		"header": 		"vice.yields.ccsne.engines.cutoff", 
 		"subs": 		[cutoff.collapse_mass]  
@@ -442,32 +444,32 @@ _CONFIG_ = {
 		"header": 		"vice.yields.ccsne.engines.cutoff.collapse_mass", 
 		"subs": 		[] 
 	}, 
-	vice.yields.ccsne.engines._E16.E16: {
+	E16: {
 		"filename": 	"vice.yields.ccsne.engines.E16.rst", 
 		"header": 		"vice.yields.ccsne.engines.E16", 
 		"subs": 		[
-			vice.yields.ccsne.engines._E16.E16.m4, 
-			vice.yields.ccsne.engines._E16.E16.mu4, 
-			vice.yields.ccsne.engines._E16.E16.slope, 
-			vice.yields.ccsne.engines._E16.E16.intercept 
+			E16.m4, 
+			E16.mu4, 
+			E16.slope, 
+			E16.intercept 
 		] 
 	}, 
-	vice.yields.ccsne.engines._E16.E16.m4: {
+	E16.m4: {
 		"filename": 	"vice.yields.ccsne.engines.E16.m4.rst", 
 		"header": 		"vice.yields.ccsne.engines.E16.m4", 
 		"subs": 		[] 
 	}, 
-	vice.yields.ccsne.engines._E16.E16.mu4: {
+	E16.mu4: {
 		"filename": 	"vice.yields.ccsne.engines.E16.mu4.rst", 
 		"header": 		"vice.yields.ccsne.engines.E16.mu4", 
 		"subs": 		[] 
 	}, 
-	vice.yields.ccsne.engines._E16.E16.slope: {
+	E16.slope: {
 		"filename": 	"vice.yields.ccsne.engines.E16.slope.rst", 
 		"header": 		"vice.yields.ccsne.engines.E16.slope", 
 		"subs": 		[] 
 	}, 
-	vice.yields.ccsne.engines._E16.E16.intercept: {
+	E16.intercept: {
 		"filename": 	"vice.yields.ccsne.engines.E16.intercept.rst", 
 		"header": 		"vice.yields.ccsne.engines.E16.intercept", 
 		"subs": 		[] 
@@ -475,9 +477,9 @@ _CONFIG_ = {
 	vice.yields.ccsne.engines.S16: {
 		"filename": 	"vice.yields.ccsne.engines.S16.rst", 
 		"header": 		"vice.yields.ccsne.engines.S16", 
-		"subs": 		[vice.yields.ccsne.engines.S16.W18] 
+		"subs": 		[W18] 
 	}, 
-	vice.yields.ccsne.engines.S16.W18: {
+	W18: {
 		"filename": 	"vice.yields.ccsne.engines.S16.W18.rst", 
 		"header": 		"vice.yields.ccsne.engines.S16.W18", 
 		"subs": 		[] 

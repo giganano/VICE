@@ -1,6 +1,7 @@
 
 from __future__ import absolute_import 
 from ._interp_scheme_1d import c_interp_scheme_1d 
+import numbers 
 
 
 class interp_scheme_1d(c_interp_scheme_1d): 

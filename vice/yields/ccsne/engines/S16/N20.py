@@ -6,7 +6,7 @@ mass in solar masses.
 from __future__ import absolute_import  
 from ....._globals import _DIRECTORY_ 
 from ..read_engine import read 
-from .._engine import engine 
+from ..engine import engine 
 
 
 class N20(engine): 
@@ -35,9 +35,4 @@ class N20(engine):
 		masses, frequencies = read("%syields/ccsne/engines/S16/N20.dat" % (
 			_DIRECTORY_)) 
 		super().__init__(masses, frequencies) 
-
-
-	def __call__(self, mass): 
-		# This is necessary for inspect.signature to find the call sign. 
-		return super().__call__(mass) 
 

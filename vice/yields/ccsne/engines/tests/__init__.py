@@ -7,10 +7,11 @@ except NameError:
 
 if not __VICE_SETUP__: 
 
-	__all__ = ["cutoff", "engine", "E16"] 
+	__all__ = ["cutoff", "engine", "E16", "usage"]  
 	from . import cutoff 
 	from . import engine 
 	from . import E16 
+	from . import usage 
 
 else: 
 	pass 

@@ -3,9 +3,7 @@ Test the CCSNe yield integrator at vice/yields/ccnse/_yield_integrator.pyx
 """ 
 
 from __future__ import absolute_import 
-__all__ = [
-	"test" 
-]
+__all__ = ["test" ]
 from ...._globals import _RECOGNIZED_ELEMENTS_ 
 from .._yield_integrator import integrate as fractional 
 from ....testing import moduletest 

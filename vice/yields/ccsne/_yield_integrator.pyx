@@ -45,6 +45,7 @@ from ...core.objects cimport _imf
 from ...core._cutils cimport copy_pylist 
 from ...core._cutils cimport callback_1arg_setup 
 from . cimport _yield_integrator 
+_MINIMUM_MASS_ = float(_yield_integrator.CC_MIN_STELLAR_MASS) 
 
 
 def integrate(element, study = "LC18", MoverH = 0, rotation = 0, 

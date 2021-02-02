@@ -3,7 +3,7 @@
 from __future__ import absolute_import 
 import numbers 
 from ...core import _pyutils 
-from ...core._cutils cimport copy_pylist 
+from libc.stdlib cimport malloc 
 from . cimport _interp_scheme_1d 
 
 
@@ -23,14 +23,34 @@ cdef class c_interp_scheme_1d:
 		if len(xcoords) == len(ycoords): 
 			self._is1d = _interp_scheme_1d.interp_scheme_1d_initialize() 
 			self._is1d[0].n_points = len(xcoords) 
-			self._is1d[0].xcoords = copy_pylist(xcoords) 
-			self._is1d[0].ycoords = copy_pylist(ycoords) 
+
+			# using copy_pylist from vice/core/_cutils.pyx causes a NameError 
+			# upon import stating that the "numbers" module isn't imported 
+			# when creating the built-in instances of explodability engines in 
+			# the vice.yields.ccsne.engines module. Who knows why.... but don't 
+			# use that here because it breaks things. Implementing the memory 
+			# allocation and copying over is simple enough and works just fine. 
+			self._is1d[0].xcoords = <double *> malloc (self._is1d[0].n_points * 
+				sizeof(double)) 
+			self._is1d[0].ycoords = <double *> malloc (self._is1d[0].n_points * 
+				sizeof(double)) 
+			for i in range(self._is1d[0].n_points): 
+				if isinstance(xcoords[i], numbers.Number): 
+					self._is1d[0].xcoords[i] = <double> xcoords[i] 
+				else: 
+					raise TypeError("Non-numerical value detected.") 
+				if isinstance(ycoords[i], numbers.Number): 
+					self._is1d[0].ycoords[i] = <double> ycoords[i] 
+				else: 
+					raise TypeError("Non-numerical value detected.") 
 		else: 
 			raise ValueError("Array length mismatch. Got: (%d, %d)" % (
 				len(xcoords), len(ycoords))) 
 
+
 	def __dealloc__(self): 
 		_interp_scheme_1d.interp_scheme_1d_free(self._is1d) 
+
 
 	def __call__(self, x): 
 		if isinstance(x, numbers.Number): 
@@ -39,6 +59,7 @@ cdef class c_interp_scheme_1d:
 		else: 
 			raise TypeError("""X-coordinate to evaluate interpolation scheme \
 at must be a numerical value. Got: %s""" % (type(x))) 
+
 
 	def __getitem__(self, idx): 
 		x = self.xcoords[idx] 
@@ -50,6 +71,7 @@ at must be a numerical value. Got: %s""" % (type(x)))
 		else: 
 			raise SystemError("Internal Error.") 
 
+
 	@property 
 	def xcoords(self): 
 		r""" 
@@ -59,6 +81,7 @@ at must be a numerical value. Got: %s""" % (type(x)))
 		""" 
 		return [self._is1d[0].xcoords[_] for _ in range(self._is1d[0].n_points)] 
 
+
 	@property 
 	def ycoords(self): 
 		r""" 
@@ -67,6 +90,7 @@ at must be a numerical value. Got: %s""" % (type(x)))
 		The y-coordinates on which the function is sampled. 
 		""" 
 		return [self._is1d[0].ycoords[_] for _ in range(self._is1d[0].n_points)] 
+
 
 	@property 
 	def n_points(self): 

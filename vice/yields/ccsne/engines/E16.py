@@ -1,15 +1,18 @@
-# cython: language_level = 3, boundscheck = False 
+r""" 
+This file implements the Ertl et al. (2016) explodability engine as an instance 
+of a derived class. 
+""" 
 
 from __future__ import absolute_import 
-import numbers 
 from ...._globals import _DIRECTORY_ 
+from ....toolkit.interpolation import interp_scheme_1d 
+from .._yield_integrator import _MINIMUM_MASS_ 
 from .read_engine import read 
-from libc.stdlib cimport malloc, free 
-from . cimport _engine 
-from . cimport _E16 
+from .engine import engine 
+import numbers 
 
 
-cdef class E16: 
+class E16(engine): 
 
 	r""" 
 	Core collapse supernova explosion engine as calculated by Ertl et al. 
@@ -129,51 +132,24 @@ cdef class E16:
 	def __init__(self, slope = 0.283, intercept = 0.043): 
 		masses, m4, mu4 = read("%syields/ccsne/engines/mu4_M4.dat" % (
 			_DIRECTORY_)) 
-		self._n_masses = <unsigned long> len(masses) 
-		self._m4 = <double *> malloc (self._n_masses * sizeof(double)) 
-		self._mu4 = <double *> malloc (self._n_masses * sizeof(double)) 
+		self.__m4_interpolator = interp_scheme_1d(masses, m4) 
+		self.__mu4_interpolator = interp_scheme_1d(masses, mu4) 
 		super().__init__(masses, len(masses) * [0.]) 
 		self.slope = slope 
 		self.intercept = intercept 
-		for i in range(self._n_masses): 
-			self._m4[i] = <double> m4[i] 
-			self._mu4[i] = <double> mu4[i] 
-		for i in range(self._n_masses): 
-			self._frequencies[i] = self.__call__(self._masses[i]) 
 
 
 	def __call__(self, mass): 
 		if isinstance(mass, numbers.Number): 
-			if mass < _engine.CC_MIN_STELLAR_MASS: return 0 
-			bin_ = _engine.get_bin_number(self._masses, self._n_masses, 
-				<double> mass) 
-			if bin_ == -1l: 
-				if mass < self._masses[0]: 
-					bin_ = 0 
-				elif mass > self._masses[self._n_masses - 1l]: 
-					bin_ = self._n_masses - 2l 
-				else: 
-					raise SystemError("Internal Error.") 
-			else: pass 
-
-			m4 = _engine.interpolate(
-				self._masses[bin_], 
-				self._masses[bin_ + 1l], 
-				self._m4[bin_], 
-				self._m4[bin_ + 1l], 
-				<double> mass) 
-			mu4 = _engine.interpolate(
-				self._masses[bin_], 
-				self._masses[bin_ + 1l], 
-				self._mu4[bin_], 
-				self._mu4[bin_ + 1l], 
-				<double> mass) 
-
-			return float(mu4 <= self._slope * m4 * mu4 + self._intercept) 
-
+			if mass < _MINIMUM_MASS_: 
+				return 0. 
+			else: 
+				m4 = self.__m4_interpolator(mass) 
+				mu4 = self.__mu4_interpolator(mass) 
+				return float(mu4 <= self._slope * m4 * mu4 + self._intercept) 
 		else: 
-			raise TypeError("Must be a numerical value. Got: %s" % (
-				type(mass))) 
+			raise TypeError("Must be a numerical value. Got: %s" % (type(mass))) 
+
 
 	@property 
 	def m4(self): 
@@ -214,7 +190,8 @@ cdef class E16:
 		.. [1] Ertl et al. (2016), ApJ, 818, 124 
 		.. [2] Sukhbold et al. (2016), ApJ, 821, 38 
 		""" 
-		return [self._m4[i] for i in range(self._n_masses)] 
+		return self.__m4_interpolator.ycoords 
+
 
 	@property 
 	def mu4(self): 
@@ -257,7 +234,8 @@ cdef class E16:
 		.. [1] Ertl et al. (2016), ApJ, 818, 124 
 		.. [2] Sukhbold et al. (2016), ApJ, 821, 38 
 		""" 
-		return [self._mu4[i] for i in range(self._n_masses)] 
+		return self.__mu4_interpolator.ycoords 
+
 
 	@property 
 	def slope(self): 
@@ -293,10 +271,11 @@ cdef class E16:
 	@slope.setter 
 	def slope(self, value): 
 		if isinstance(value, numbers.Number): 
-			self._slope = <double> value 
+			self._slope = float(value) 
 		else: 
 			raise TypeError("""Attribute 'slope' must be a numerical value. \
 Got: %s.""" % (type(value))) 
+
 
 	@property 
 	def intercept(self): 
@@ -329,11 +308,43 @@ Got: %s.""" % (type(value)))
 		""" 
 		return self._intercept 
 
+
 	@intercept.setter 
 	def intercept(self, value): 
 		if isinstance(value, numbers.Number): 
-			self._intercept = <double> value 
+			self._intercept = float(value) 
 		else: 
 			raise TypeError("""Attribute 'intercept' must be a numerical \
 value. Got: %s.""" % (type(value))) 
+
+
+	@property 
+	def frequencies(self): 
+		r""" 
+		Type : ``list`` 
+
+		The frequencies with which stars of a given mass explode; the 
+		progenitor zero age main sequence masses in :math:`M_\odot` are stored 
+		in the attribute ``masses``. Though this number can be anywhere between 
+		0 and 1, in the current version they are binary. 
+
+		In this derived class, this attribute plays no role in the 
+		interpolation to determine if a star of a given progenitor mass should 
+		explode. This simply determines which of the progenitor masses explode 
+		under the current parameters by calling the instance for each element 
+		of the attribute ``masses``. 
+
+		Example Code 
+		------------
+		>>> from vice.yields.ccsne.engines import E16 
+		>>> E16.frequencies 
+		[1.0, 
+		 1.0, 
+		 1.0, 
+		 ..., 
+		 0.0, 
+		 0.0, 
+		 1.0] 
+		""" 
+		return [self.__call__(_) for _ in self.masses] 
 

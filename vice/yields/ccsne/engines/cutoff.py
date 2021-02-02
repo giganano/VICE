@@ -4,7 +4,8 @@ progenitor mass in solar masses.
 """ 
 
 from __future__ import absolute_import 
-from ._engine import engine, minimum_mass 
+from .._yield_integrator import _MINIMUM_MASS_ 
+from .engine import engine 
 import numbers 
 
 
@@ -73,7 +74,7 @@ class cutoff(engine):
 
 	def __call__(self, mass): 
 		if isinstance(mass, numbers.Number): 
-			return float(minimum_mass <= mass <= self.collapse_mass) 
+			return float(_MINIMUM_MASS_ <= mass <= self.collapse_mass) 
 		else: 
 			raise TypeError("Must be a numerical value. Got: %s" % (type(mass))) 
 

@@ -1,18 +1,14 @@
-# cython: language_level = 3, boundscheck = False 
 r""" 
 This file implements the explodability engine base class 
 """ 
 
 from __future__ import absolute_import 
-from ....core import _pyutils 
+from ....toolkit.interpolation import interp_scheme_1d 
+from .._yield_integrator import _MINIMUM_MASS_ 
 import numbers 
-import cython 
-from libc.stdlib cimport malloc, free 
-from . cimport _engine 
-minimum_mass = float(_engine.CC_MIN_STELLAR_MASS) 
 
 
-cdef class engine: 
+class engine(interp_scheme_1d): 
 
 	r""" 
 	Core collapse supernova explosion engines: explodability as a function of 
@@ -111,62 +107,29 @@ cdef class engine:
 	# different call signature -> __cinit__ causes an error to be raised. 
 
 	def __init__(self, masses, frequencies): 
-		masses = _pyutils.copy_array_like_object(masses) 
-		frequencies = _pyutils.copy_array_like_object(frequencies) 
-		if len(masses) == len(frequencies): 
-			self._n_masses = <unsigned long> len(masses)
-			self._masses = <double *> malloc (self._n_masses * sizeof(double)) 
-			self._frequencies = <double *> malloc (self._n_masses * 
-				sizeof(double)) 
-			for i in range(self._n_masses): 
-				self._masses[i] = <double> masses[i] 
-				self._frequencies[i] = <double> frequencies[i] 
-		else: 
-			raise ValueError("""Arrays must be of the same length. \
-Got: (%d, %d)""" % (len(masses), len(frequencies))) 
+		super().__init__(masses, frequencies) 
 
-	def __dealloc__(self): 
-		free(self._masses) 
-		free(self._frequencies) 
-		self._n_masses = 0l 
 
 	def __call__(self, mass): 
-		# Simple interpolation scheme with bin number finder  
 		if isinstance(mass, numbers.Number): 
-			if mass < _engine.CC_MIN_STELLAR_MASS: return 0. 
-			bin_ = _engine.get_bin_number(self._masses, self._n_masses, 
-				<double> mass) 
-			if bin_ == -1l: 
-				if mass < self._masses[0]: 
-					bin_ = 0 
-				elif mass > self._masses[self._n_masses - 1l]: 
-					bin_ = self._n_masses - 2l 
-				else: 
-					raise SystemError("Internal Error") 
-			else: 
-				pass 
-
-			# be careful not to return a value <0 or >1.  
-			result = _engine.interpolate(
-				self._masses[bin_], 
-				self._masses[bin_ + 1l], 
-				self._frequencies[bin_], 
-				self._frequencies[bin_ + 1l], 
-				<double> mass
-			) 
-			if result < 0: 
+			if mass < _MINIMUM_MASS_: 
 				return 0. 
-			elif result > 1: 
-				return 1. 
 			else: 
-				return result 
+				result = super().__call__(mass) 
+				if result < 0: 
+					return 0. 
+				elif result > 1: 
+					return 1. 
+				else: 
+					return result 
 		else: 
-			raise TypeError("Must be a numerical value. Got: %s" % (
-				type(mass))) 
+			raise TypeError("Must be a numerical value. Got: %s" % (type(mass))) 
+
 
 	def __getitem__(self, mass): 
 		# Allow indexing with the same functionality as calling 
 		return self.__call__(mass) 
+
 
 	@property 
 	def masses(self): 
@@ -188,7 +151,8 @@ Got: (%d, %d)""" % (len(masses), len(frequencies)))
 		 100.0, 
 		 120.0] 
 		""" 
-		return [float(self._masses[i]) for i in range(self._n_masses)] 
+		return super().xcoords 
+
 
 	@property 
 	def frequencies(self): 
@@ -212,5 +176,5 @@ Got: (%d, %d)""" % (len(masses), len(frequencies)))
 		 0.0, 
 		 1.0] 
 		""" 
-		return [float(self._frequencies[i]) for i in range(self._n_masses)] 
+		return super().ycoords 
 

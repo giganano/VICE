@@ -3,7 +3,8 @@ This file implements unit testing of the ``engine`` base class.
 """ 
 
 from __future__ import absolute_import 
-from .._engine import engine 
+from ..engine import engine 
+from ..._yield_integrator import _MINIMUM_MASS_ 
 from .....testing import moduletest 
 from .....testing import unittest 
 import random 
@@ -78,13 +79,13 @@ def none_explode():
 	""" 
 	def test(): 
 		try: 
-			test_ = engine([8, 100], [0, 0]) 
+			test_ = engine([_MINIMUM_MASS_, 100], [0, 0]) 
 		except: 
 			return None 
 		random.seed() 
 		status = True 
 		for i in range(100): 
-			mass = 8 + 92 * random.random() 
+			mass = _MINIMUM_MASS_ + (100 - _MINIMUM_MASS_) * random.random() 
 			status &= test_(mass) == 0.0 
 			if not status: break 
 		return status 
@@ -99,13 +100,13 @@ def all_explode():
 	""" 
 	def test(): 
 		try: 
-			test_ = engine([8, 100], [1, 1]) 
+			test_ = engine([_MINIMUM_MASS_, 100], [1, 1]) 
 		except: 
 			return None 
 		random.seed() 
 		status = True 
 		for i in range(1000): 
-			mass = 8 + 92 * random.random() 
+			mass = _MINIMUM_MASS_ + (100 - _MINIMUM_MASS_) * random.random() 
 			status &= test_(mass) == 1.0 
 			if not status: break 
 		return status 

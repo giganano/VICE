@@ -4,6 +4,7 @@ This file implements unit testing of the ``cutoff`` derived class.
 
 from __future__ import absolute_import 
 from ..cutoff import cutoff 
+from ..._yield_integrator import _MINIMUM_MASS_ 
 from .....testing import moduletest 
 from .....testing import unittest 
 import random 
@@ -52,13 +53,15 @@ def test_call():
 		random.seed() 
 		status = True 
 		for i in range(100): 
-			new_threshold = 8 + 92 * random.random() 
+			new_threshold = _MINIMUM_MASS_ + (100 - 
+				_MINIMUM_MASS_) * random.random() 
 			try: 
 				test_.collapse_mass = new_threshold 
 			except: 
 				return None 
 			for j in range(10): 
-				test_mass = 8 + 92 * random.random() 
+				test_mass = _MINIMUM_MASS_ + (100 - 
+					_MINIMUM_MASS_) * random.random() 
 				try: 
 					status &= test_(test_mass) == float(
 						test_mass <= new_threshold) 

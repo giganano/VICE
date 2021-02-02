@@ -31,7 +31,7 @@ __ src_
 
 
 .. toctree:: 
-	:maxdepth: 1 
+	:maxdepth: 2 
 
 	install 
 	getting_started 

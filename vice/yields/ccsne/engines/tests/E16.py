@@ -3,7 +3,8 @@ This file implements unit testing of the ``E16`` derived class.
 """ 
 
 from __future__ import absolute_import 
-from .._E16 import E16 
+from ..E16 import E16 
+from ..._yield_integrator import _MINIMUM_MASS_ 
 from .....testing import moduletest 
 from .....testing import unittest 
 import random 
@@ -78,7 +79,8 @@ def none_explode():
 		status = True 
 		for i in range(1000): 
 			try: 
-				x = test_(8 + 92 * random.random()) 
+				x = test_(_MINIMUM_MASS_ + (100 - _MINIMUM_MASS_) * 
+					random.random())
 			except: 
 				return None 
 			status &= x == 0.0 
@@ -104,7 +106,8 @@ def all_explode():
 		status = True 
 		for i in range(1000): 
 			try: 
-				x = test_(8 + 92 * random.random()) 
+				x = test_(_MINIMUM_MASS_ + (100 - _MINIMUM_MASS_) * 
+					random.random()) 
 			except: 
 				return None 
 			status &= x == 1.0 

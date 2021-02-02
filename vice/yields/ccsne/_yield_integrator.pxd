@@ -6,6 +6,10 @@ from ...core.objects._integral cimport INTEGRAL
 from ...core.objects._imf cimport IMF_ 
 
 
+cdef extern from "../../src/ccsne.h": 
+	double CC_MIN_STELLAR_MASS 
+
+
 cdef extern from "../../src/yields/ccsne.h": 
 	void set_testing_status(unsigned short testing) 
 	void weight_initial_by_explodability(unsigned short weight) 
