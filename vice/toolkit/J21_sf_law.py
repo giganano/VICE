@@ -28,6 +28,8 @@ class J21_sf_law:
 
 	.. seealso:: vice.milkyway 
 
+	.. versionadded:: 1.2.0 
+
 	**Signature**: vice.toolkit.J21_sf_law(area, \*\*kwargs) 
 
 	Parameters 

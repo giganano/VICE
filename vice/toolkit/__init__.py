@@ -2,15 +2,14 @@ r"""
 VICE Toolkit : General utilities to maximize VICE's computational power and 
 user-friendliness. 
 
-.. versionadded:: 1.X.0 
+.. versionadded:: 1.2.0 
 
 Contents 
 --------
-repair_function : <function> 
-	Obtain an approximation of a function which could not be pickled with a 
-	VICE output from the output itself. 
 hydrodisk : <module> 
 	Utilities for simulating migration in disk galaxies. 
+interpolation : <module> 
+	Interpolation schema. 
 """ 
 
 from __future__ import absolute_import 
@@ -21,11 +20,10 @@ except NameError:
 
 if not __VICE_SETUP__: 
 
-	__all__ = ["hydrodisk", "repair_function", "J21_sf_law", "test"] 
+	__all__ = ["hydrodisk", "interpolation", "J21_sf_law", "test"] 
 	from ..testing import moduletest 
-	from .repair_function import repair_function 
-	from .repair_function import test as test_repfunc 
 	from .J21_sf_law import J21_sf_law 
+	from . import interpolation 
 	from . import hydrodisk 
 
 	@moduletest 
@@ -36,7 +34,7 @@ if not __VICE_SETUP__:
 		return ["vice.toolkit", 
 			[
 				hydrodisk.test(run = False), 
-				test_repfunc(run = False) 
+				interpolation.test(run = False) 
 			] 
 		] 
 

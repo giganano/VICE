@@ -489,27 +489,6 @@ typedef struct fromfile {
 } FROMFILE; 
 
 
-typedef struct repaired_function {
-
-	/* 
-	 * This struct holds the necessary information for the repfunc object, 
-	 * which constructs a function of time out of an output that couldn't 
-	 * be pickled. 
-	 * 
-	 * n_points: The number of points on which the function was evaluated 
-	 * xcoords: The x-coordinates in arbitrary units 
-	 * ycoords: The y-coordinates in arbitrary units 
-	 * 
-	 * Both xcoords and ycoords pointers will always store n_points numbers 
-	 */
-
-	unsigned long n_points; 
-	double *xcoords; 
-	double *ycoords; 
-
-} REPFUNC; 
-
-
 typedef struct hydrodiskstars {
 
 	/* 
@@ -550,6 +529,30 @@ typedef struct hydrodiskstars {
 	char *mode; 
 
 } HYDRODISKSTARS; 
+
+
+typedef struct interpolation_sceme_1d {
+
+	/* 
+	 * This struct holds the necessary information for a 1-dimensional 
+	 * interpolation scheme, simply constructing a continuous function out of 
+	 * a series of (x, y) points and connecting them with lines. 
+	 * 
+	 * n_points: The number of points in the scheme. 
+	 * xcoords: The x-coordinates in arbitrary units. 
+	 * ycoords: The y-coordinates in arbitrary units. 
+	 * 
+	 * Notes 
+	 * =====
+	 * Both xcoords and ycoords pointers always store n_points numbers, and are 
+	 * assumed to be sorted from least to greatest. This is enforced in Python. 
+	 */ 
+
+	unsigned long n_points; 
+	double *xcoords; 
+	double *ycoords; 
+
+} INTERP_SCHEME_1D; 
 
 
 typedef struct dataset {
