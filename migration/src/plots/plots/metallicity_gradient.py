@@ -11,7 +11,7 @@ MAX_SF_RADIUS = 15.5
 XH_YLIM = [-0.9, 1.2] 
 OFE_YLIM = [-0.2, 0.5] 
 XLIM = [-2, 22] 
-MODELS = ["Static", "Inside-Out", "Late-Burst", "Outer-Burst"] 
+MODELS = ["Constant SFR", "Inside-Out", "Late-Burst", "Outer-Burst"] 
 
 def setup_axes(): 
 	r""" 
@@ -44,7 +44,7 @@ def setup_axes():
 	plt.subplots_adjust(hspace = 0, wspace = 0, bottom = 0.12) 
 
 	# use dummy axes to put x-axis label between left-center and right-center 
-	dummy = fig.add_subplot(111, facecolor = "white", zorder = -1)  
+	dummy = fig.add_subplot(111, facecolor = "white", zorder = -1) 
 	dummy.set_position([
 		axes[1][0].get_position().x0, 
 		axes[1][0].get_position().y0, 
@@ -96,6 +96,16 @@ def mode_stellar_metallicity(zone, mdf_key):
 		return float("nan") 
 
 
+def median_stellar_metallicity(zone, mdf_key): 
+	s = 0 
+	for i in range(len(zone.mdf["bin_edge_left"])): 
+		s += zone.mdf[mdf_key][i] * (zone.mdf["bin_edge_right"][i] - 
+			zone.mdf["bin_edge_left"][i]) 
+		if s >= 0.5: return (zone.mdf["bin_edge_left"][i] + 
+			zone.mdf["bin_edge_right"][i]) / 2. 
+	raise ArithmeticError("Median not found.") 
+
+
 def stellar_dispersion(zone, mdf_key): 
 	s = 0 
 	low = 0 
@@ -123,7 +133,30 @@ def stellar_dispersion(zone, mdf_key):
 
 def plot_stellar_metallicities(ax1, ax2, multioutput): 
 	zones = ["zone%d" % (i) for i in range(int(MAX_RADIUS / ZONE_WIDTH))] 
-	# width = 1 # kpc 
+	# width = 1. # kpc box-car width 
+	# O = len(zones) * [0.] 
+	# Fe = len(zones) * [0.] 
+	# OFe = len(zones) * [0.] 
+	# O_disp = len(zones) * [0.] 
+	# Fe_disp = len(zones) * [0.] 
+	# OFe_disp = len(zones) * [0.] 
+	# for i in range(len(zones)): 
+	# 	zones_ = list(range(i - int(width / ZONE_WIDTH / 2), 
+	# 		i + int(width / ZONE_WIDTH / 2))) 
+	# 	zones_ = list(filter(lambda x: 0 <= x < int(MAX_RADIUS / ZONE_WIDTH), 
+	# 		zones_)) 
+	# 	print(zones_) 
+	# 	zones_ = [multioutput.zones["zone%d" % (j)] for j in zones_] 
+	# 	O[i] = mode_stellar_metallicity(zones_, "dn/d[o/h]") 
+	# 	Fe[i] = mode_stellar_metallicity(zones_, "dn/d[fe/h]") 
+	# 	OFe[i] = mode_stellar_metallicity(zones_, "dn/d[o/fe]") 
+	# 	O_disp[i] = stellar_dispersion(zones_, "dn/d[o/h]") 
+	# 	Fe_disp[i] = stellar_dispersion(zones_, "dn/d[fe/h]") 
+	# 	OFe_disp[i] = stellar_dispersion(zones_, "dn/d[o/fe]") 
+
+
+	# zones = ["zone%d" % (i) for i in range(int(MAX_RADIUS / ZONE_WIDTH))] 
+	# width = 1. # kpc 
 	# O = int(MAX_RADIUS / width) * [0.] 
 	# Fe = int(MAX_RADIUS / width) * [0.] 
 	# OFe = int(MAX_RADIUS / width) * [0.] 
@@ -141,21 +174,28 @@ def plot_stellar_metallicities(ax1, ax2, multioutput):
 	# 	O_disp[i] = stellar_dispersion(zones, "dn/d[o/h]") 
 	# 	Fe_disp[i] = stellar_dispersion(zones, "dn/d[fe/h]") 
 	# 	OFe_disp[i] = stellar_dispersion(zones, "dn/d[o/fe]") 
+
 	# radii = [width * (i + 0.5) for i in range(int(MAX_RADIUS / width))] 
-	O = [mode_stellar_metallicity(multioutput.zones[i], 
+	# O = [mode_stellar_metallicity(multioutput.zones[i], 
+	# 	"dn/d[o/h]") for i in zones] 
+	O = [median_stellar_metallicity(multioutput.zones[i], 
 		"dn/d[o/h]") for i in zones] 
 	O_disp = [stellar_dispersion(multioutput.zones[i], 
 		"dn/d[o/h]") for i in zones] 
-	Fe = [mode_stellar_metallicity(multioutput.zones[i], 
+	# Fe = [mode_stellar_metallicity(multioutput.zones[i], 
+	# 	"dn/d[fe/h]") for i in zones] 
+	Fe = [median_stellar_metallicity(multioutput.zones[i], 
 		"dn/d[fe/h]") for i in zones] 
 	Fe_disp = [stellar_dispersion(multioutput.zones[i], 
 		"dn/d[fe/h]") for i in zones] 
-	OFe = [mode_stellar_metallicity(multioutput.zones[i], 
+	# OFe = [mode_stellar_metallicity(multioutput.zones[i], 
+	# 	"dn/d[o/fe]") for i in zones] 
+	OFe = [median_stellar_metallicity(multioutput.zones[i], 
 		"dn/d[o/fe]") for i in zones] 
 	OFe_disp = [stellar_dispersion(multioutput.zones[i], 
 		"dn/d[o/fe]") for i in zones] 
 	radii = [ZONE_WIDTH * (i + 0.5) for i in range(
-		len(multioutput.zones.keys()))] 
+		len(multioutput.zones.keys()))]
 	ax1.scatter(radii, O, c = named_colors()["red"], 
 		marker = markers()["star"], s = 20, zorder = 20) 
 	ax1.scatter(radii, Fe, c = named_colors()["blue"], 

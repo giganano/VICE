@@ -34,7 +34,7 @@ class milkyway(multizone):
 	n_stars = 1, simple = False, verbose = False, N = 1e5, 
 	migration_mode = "diffusion") 
 
-	.. versionadded:: 1.X.0 
+	.. versionadded:: 1.2.0 
 
 	.. seealso:: 
 
@@ -507,8 +507,8 @@ object.""")
 
 		Default : "kroupa" 
 
-		.. versionadded:: 1.X.0 
-			In version >= 1.X.0, users may construct a function of mass to 
+		.. versionadded:: 1.2.0 
+			In version >= 1.2.0, users may construct a function of mass to 
 			describe the IMF. 
 
 		The assumed stellar initial mass function (IMF). If assigned a string, 

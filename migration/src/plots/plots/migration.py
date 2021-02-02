@@ -15,7 +15,7 @@ def setup_axis():
 	ax = fig.add_subplot(111, facecolor = "white") 
 	ax.set_xlabel("Time [Gyr]") 
 	ax.set_ylabel(r"$R_\text{gal}$ [kpc]") 
-	ax.set_xlim([-1, 14]) 
+	ax.set_xlim([-1, 13]) 
 	ax.set_ylim([-2, 22]) 
 	return ax 
 
@@ -23,7 +23,7 @@ def setup_axis():
 class scheme: 
 
 	recognized_modes = ["diffusion", "linear", "post-process", "sudden"] 
-	final_time = 12.8 # Gyr 
+	final_time = 12.2 # Gyr 
 
 	def __init__(self, initial, final, birth, mode = "diffusion", 
 		sudden_migration_time = 10): 

@@ -5,18 +5,18 @@ function of simulation time for all models.
 
 from .. import env 
 from .utils import named_colors, mpl_loc, yticklabel_formatter 
+from ..._globals import ZONE_WIDTH 
 import matplotlib.pyplot as plt 
 import math as m 
 import vice 
 
-ZONE_WIDTH = 0.1 
 # SFR_LIM = [3e-5, 0.3] 
 SFR_LIM = [1.1e-4, 0.3] 
 # IFR_LIM = [3e-4, 3] 
 IFR_LIM = [2.e-3, 0.3] 
 # GAS_LIM = [3e5, 3e9] 
 GAS_LIM = [3.e6, 3.e8] 
-TIME_LIM = [-1, 14] 
+TIME_LIM = [-1, 13] 
 RADII = [3, 5, 7, 9, 11, 13, 15] 
 COLORS = ["grey", "black", "red", "gold", "green", "blue", "darkviolet"] 
 MODELS = ["Constant SFR", "Inside-Out", "Late-Burst", "Outer-Burst"] 

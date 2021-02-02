@@ -43,7 +43,7 @@ def plot_tau_sfh(ax):
 
 
 def setup_axes(): 
-	fig = plt.figure(figsize = (5, 10)) 
+	fig = plt.figure(figsize = (7, 14)) 
 	ax1 = fig.add_subplot(211, facecolor = "white") 
 	ax2 = fig.add_subplot(212, facecolor = "white") 
 	ax1.set_ylabel(r"$\eta \equiv \dot{M}_\text{out} / \dot{M}_\star$") 
@@ -51,7 +51,7 @@ def setup_axes():
 	ax2.set_xlabel(r"$R_\text{gal}$ [kpc]") 
 	plt.setp(ax1.get_xticklabels(), visible = False) 
 	for i in [ax1, ax2]: 
-		i.set_xlim([-2, 17]) 
+		i.set_xlim([-1, 17]) 
 		i.set_xticks([0, 5, 10, 15]) 
 	ax1.set_ylim([-1, 11]) 
 	ax2.set_ylim([0, 50]) 

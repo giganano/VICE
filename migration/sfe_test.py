@@ -26,7 +26,7 @@ def plot_relation(ax):
 	relation = sfe(area) 
 	sfrs = np.logspace(-5, 0, 1001).tolist() 
 	Sigma_sfrs = [_ / area for _ in sfrs] 
-	tau_stars = [relation(12.7, _) for _ in sfrs] 
+	tau_stars = [relation(12.2, _) for _ in sfrs] 
 	Sigma_gases = [1.e9 * a * b for a, b in zip(Sigma_sfrs, tau_stars)] 
 	ax.plot(Sigma_gases, Sigma_sfrs, c = named_colors()["black"]) 
 

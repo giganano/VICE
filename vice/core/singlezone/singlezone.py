@@ -148,7 +148,7 @@ class singlezone:
 		- "cristallo11" [4]_ 
 		- "karakas10" [5]_ 
 
-		.. deprecated:: 1.X.0 
+		.. deprecated:: 1.2.0 
 			Users should instead modify their AGB star yield settings through 
 			``vice.yields.agb.settings``. Users may specify either a built-in 
 			study or a function of stellar mass and metallicity. 
@@ -687,8 +687,8 @@ ran.""" % (i, j), UserWarning)
 
 		Default : "kroupa" 
 
-		.. versionadded:: 1.X
-			In versions >= 1.X.0, users may construct a function of mass to 
+		.. versionadded:: 1.2.0
+			In versions >= 1.2.0, users may construct a function of mass to 
 			describe the IMF. 
 
 		The assumed stellar initial mass function (IMF). If assigned a string, 
@@ -1222,11 +1222,13 @@ ran.""" % (i, j), UserWarning)
 		of which will always be time in Gyr. In infall and gas modes, the 
 		second parameter will always be interpreted as the gas mass in 
 		:math:`M_\odot`, but in star formation mode, it will be interpreted as 
-		the star formation rate in :math:`\odot` yr:math:`^{-1}`. 
+		the star formation rate in :math:`\odot` yr:math:`^{-1}`. This 
+		approach allows this attribute to vary with either the gas mass or the 
+		star formation rate in simulation (depending on which mode the model 
+		is ran in). 
 
-		.. versionadded:: 1.X.0 
-
-			Prior to version 1.X.0, a functional form for this attribute had 
+		.. versionadded:: 1.2.0 
+			Prior to version 1.2.0, a functional form for this attribute had 
 			to accept only one numerical parameter, always interpreted as 
 			time in Gyr. 
 
@@ -1577,7 +1579,7 @@ ran.""" % (i, j), UserWarning)
 
 		Default : None 
 
-		.. deprecated:: 1.X.0 
+		.. deprecated:: 1.2.0 
 			Users should instead use the ``vice.yields.agb.settings`` 
 			``dataframe`` to declare their yields. These allow the same 
 			keywords as this attribute as well as user-constructed functions 

@@ -5,6 +5,7 @@ between two models.
 
 from .. import env 
 from .utils import named_colors, mpl_loc, markers, yticklabel_formatter 
+from ..._globals import END_TIME 
 import matplotlib.pyplot as plt 
 import vice 
 
@@ -65,11 +66,15 @@ def plot_ticks(ax, output, times, **kwargs):
 				c = COLORS[i], **kwargs) 
 
 
-def ia_rate_proxies(zone, prefactor = 1): 
-	mir = vice.singlezone.from_output(zone) 
+def ia_rate_proxies(zone, radius, prefactor = 1): 
+	radii = [0.1 * i for i in range(201)] 
+	delay = 0.15 
+	eta = vice.milkyway.default_mass_loading(radius) 
+	# mir = vice.singlezone.from_output(zone) 
 	proxies = (len(zone.history["time"]) - 1) * [0.] 
 	for i in range(len(proxies)): 
-		if zone.history["time"][i] > mir.delay: 
+		# if zone.history["time"][i] > mir.delay: 
+		if zone.history["time"][i] > delay: 
 			proxies[i] = (
 				zone.history["mass(fe)"][i + 1] - zone.history["mass(fe)"][i] 
 			) / (
@@ -79,7 +84,8 @@ def ia_rate_proxies(zone, prefactor = 1):
 				vice.yields.ccsne.settings["fe"] * zone.history["sfr"][i] 
 			) 
 			proxies[i] += zone.history["z(fe)"][i] * zone.history["sfr"][i] * (
-				1 + mir.eta - 0.4) * 1.e9 
+				# 1 + mir.eta - 0.4) * 1.e9 
+				1 + eta - 0.4) * 1.e9 
 			proxies[i] /= zone.history["mass(fe)"][i] 
 			proxies[i] *= prefactor 
 			if proxies[i] < 0: proxies[i] = 0 
@@ -95,11 +101,11 @@ def plot_ia_rate_proxies(ax, output, linestyle = '-'):
 		} 
 		zone = int(RADII[i] / ZONE_WIDTH) 
 		ax.plot(output.zones["zone%d" % (zone)].history["time"][:-1], 
-			ia_rate_proxies(output.zones["zone%d" % (zone)], 
+			ia_rate_proxies(output.zones["zone%d" % (zone)], RADII[i], 
 				prefactor = PREFACTORS[i]), **kwargs) 
 
 
-def main(output1, output2, stem, times = [2, 4, 6, 8, 10, 12.7]): 
+def main(output1, output2, stem, times = [2, 4, 6, 8, 10, END_TIME]): 
 	axes = setup_axis() 
 	out1 = vice.output(output1) 
 	out2 = vice.output(output2) 

@@ -77,54 +77,58 @@ def subsample(stars, min_rgal, max_rgal, min_absz, max_absz, min_FeH,
 
 
 def get_pdf(stars, min_rgal, max_rgal, min_absz, max_absz, min_FeH, max_FeH, 
-	window = 0.04): 
+	window = 0.04, bins = 10): 
 	stars = subsample(stars, min_rgal, max_rgal, min_absz, max_absz, 
 		min_FeH, max_FeH) 
 	print(len(stars["mass"])) 
-	xvals = [-0.1 + 0.001 * _ for _ in range(601)] 
-	dist = len(xvals) * [0.] 
-	mass = [a * (1 - vice.cumulative_return_fraction(b)) for a, b in zip(
-		stars["mass"], stars["age"])] 
-	for i in range(len(xvals)): 
-		# which stars are in the [Fe/H] box-car window 
-		test = [xvals[i] - window / 2 <= stars["[O/Fe]"][_] <= 
-			xvals[i] + window / 2 for _ in range(len(mass))] 
-		dist[i] = sum([a * b for a, b in zip(test, mass)]) 
-	norm = sum(dist) * (xvals[1] - xvals[0]) 
-	dist = [_ / norm for _ in dist] 
+	# xvals = [-0.1 + 0.001 * _ for _ in range(601)] 
+	# dist = len(xvals) * [0.] 
+	# mass = [a * (1 - vice.cumulative_return_fraction(b)) for a, b in zip(
+	# 	stars["mass"], stars["age"])] 
+	# for i in range(len(xvals)): 
+	# 	# which stars are in the [Fe/H] box-car window 
+	# 	test = [xvals[i] - window / 2 <= stars["[O/Fe]"][_] <= 
+	# 		xvals[i] + window / 2 for _ in range(len(mass))] 
+	# 	dist[i] = sum([a * b for a, b in zip(test, mass)]) 
+	# norm = sum(dist) * (xvals[1] - xvals[0]) 
+	# dist = [_ / norm for _ in dist] 
+	# return [xvals, dist] 
+	dist, bins = np.histogram(stars["[O/Fe]"], 
+		bins = bins, weights = stars["mass"], density = True) 
+	xvals = [(a + b) / 2. for a, b in zip(bins[1:], bins[:-1])] 
 	return [xvals, dist] 
 
 
-def get_ofe_pdf(stars, min_rgal, max_rgal, min_absz, max_absz, min_FeH, 
-	max_FeH): 
-	r""" 
-	Get the PDF within the binspace 
+# def get_ofe_pdf(stars, min_rgal, max_rgal, min_absz, max_absz, min_FeH, 
+# 	max_FeH): 
+# 	r""" 
+# 	Get the PDF within the binspace 
 
-	stars : the dataframe of the stars from the VICE output 
-	min_rgal : the lower bound galactocentric radius 
-	max_rgal : the upper bound galactocentric radius 
-	minabsz : the lower bound |z| 
-	maxabsz : the upper bound |z| 
-	min_FeH : The lower bound [Fe/H] to calculate the PDF for 
-	max_FeH : The upper bound [Fe/H] to calculate the PDF for 
-	""" 
-	stars = stars.filter("zone_final", ">=", min_rgal / ZONE_WIDTH) 
-	stars = stars.filter("zone_final", "<=", 
-		(max_rgal - ZONE_WIDTH) / ZONE_WIDTH) 
-	stars = stars.filter("abszfinal", ">=", min_absz) 
-	stars = stars.filter("abszfinal", "<=", max_absz) 
-	stars = stars.filter("[Fe/H]", ">=", min_FeH) 
-	stars = stars.filter("[Fe/H]", "<=", max_FeH) 
-	if len(stars["mass"]) >= len(OFE_BINS): 
-		dist = (len(OFE_BINS) - 1) * [0.] 
-		for i in range(len(dist)): 
-			fltrd_stars = stars.filter("[O/Fe]", ">=", OFE_BINS[i]) 
-			fltrd_stars = fltrd_stars.filter("[O/Fe]", "<=", OFE_BINS[i + 1]) 
-			dist[i] = sum(fltrd_stars["mass"]) 
-		norm = sum(dist) * BIN_WIDTH 
-		return [i / norm for i in dist] 
-	else: 
-		return 
+# 	stars : the dataframe of the stars from the VICE output 
+# 	min_rgal : the lower bound galactocentric radius 
+# 	max_rgal : the upper bound galactocentric radius 
+# 	minabsz : the lower bound |z| 
+# 	maxabsz : the upper bound |z| 
+# 	min_FeH : The lower bound [Fe/H] to calculate the PDF for 
+# 	max_FeH : The upper bound [Fe/H] to calculate the PDF for 
+# 	""" 
+# 	stars = stars.filter("zone_final", ">=", min_rgal / ZONE_WIDTH) 
+# 	stars = stars.filter("zone_final", "<=", 
+# 		(max_rgal - ZONE_WIDTH) / ZONE_WIDTH) 
+# 	stars = stars.filter("abszfinal", ">=", min_absz) 
+# 	stars = stars.filter("abszfinal", "<=", max_absz) 
+# 	stars = stars.filter("[Fe/H]", ">=", min_FeH) 
+# 	stars = stars.filter("[Fe/H]", "<=", max_FeH) 
+# 	if len(stars["mass"]) >= len(OFE_BINS): 
+# 		dist = (len(OFE_BINS) - 1) * [0.] 
+# 		for i in range(len(dist)): 
+# 			fltrd_stars = stars.filter("[O/Fe]", ">=", OFE_BINS[i]) 
+# 			fltrd_stars = fltrd_stars.filter("[O/Fe]", "<=", OFE_BINS[i + 1]) 
+# 			dist[i] = sum(fltrd_stars["mass"]) 
+# 		norm = sum(dist) * BIN_WIDTH 
+# 		return [i / norm for i in dist] 
+# 	else: 
+# 		return 
 
 
 def plot_mdfs(ax, stars, min_rgal, max_rgal, min_absz, max_absz, label = False): 
@@ -138,16 +142,22 @@ def plot_mdfs(ax, stars, min_rgal, max_rgal, min_absz, max_absz, label = False):
 	minabsz : the minimum final |z| 
 	maxabsz : the maximum final |z| 
 	""" 
+	bins1 = [-0.1 + 0.04 * _ for _ in range(16)] 
+	bins2 = [-0.12 + 0.04 * _ for _ in range(17)] 
 	for i in range(len(FEH_BINS)): 
 		# dist = get_ofe_pdf(stars, min_rgal, max_rgal, min_absz, max_absz, 
 		# 	FEH_BINS[i][0], FEH_BINS[i][1]) 
 		xvals, dist = get_pdf(stars, min_rgal, max_rgal, min_absz, max_absz, 
-			FEH_BINS[i][0], FEH_BINS[i][1]) 
+			FEH_BINS[i][0], FEH_BINS[i][1], bins = bins1 if i else bins2) 
 		# if dist is not None: 
-		kwargs = {"c": named_colors()[COLORS[i]]} 
+		kwargs = {
+			"c": 		named_colors()[COLORS[i]], 
+			"where": 	"mid" 
+		} 
 		if label: kwargs["label"] = r"%g $\leq$ [Fe/H] $\leq$ %g" % (
 			FEH_BINS[i][0], FEH_BINS[i][1]) 
-		ax.plot(xvals, dist, **kwargs) 
+		# ax.plot(xvals, dist, **kwargs) 
+		ax.step(xvals, dist, **kwargs) 
 		# ax.plot([(a + b) / 2 for a, b in zip(OFE_BINS[1:], OFE_BINS[:-1])], 
 		# 	dist, **kwargs) 
 		# else: pass 
@@ -166,8 +176,27 @@ def plot_observed_mdfs(ax, min_rgal, min_absz):
 		# 	drawstyle = "steps-mid", c = named_colors()[COLORS[i]]) 
 		# ax.bar([row[-2] for row in data], yvals, width = BIN_WIDTH, 
 		# 	color = named_colors()[COLORS[i]], alpha = 0.3) 
-		ax.plot([row[-2] for row in data], yvals, 
-			c = named_colors()[COLORS[i]], linestyle = '--') 
+		kwargs = {
+			"c": 				named_colors()[COLORS[i]], 
+			"linestyle": 		':' 
+		}
+		ax.plot([row[-2] for row in data], yvals, **kwargs) 
+
+
+def model_data_legend(ax): 
+	model, = ax.plot([-10, -9], [-10, -9], linestyle = '-', 
+		c = named_colors()["black"], label = "Model") 
+	data, = ax.plot([-10, -9], [-10, -9], linestyle = ':', 
+		c = named_colors()["black"], label = "APOGEE") 
+	kwargs = {
+		"loc": 			mpl_loc("upper center"), 
+		"ncol": 		1, 
+		"frameon": 		False, 
+		"fontsize": 	20 
+	} 
+	ax.legend(**kwargs) 
+	model.remove() 
+	data.remove() 
 
 
 def main(name, stem): 
@@ -183,6 +212,7 @@ def main(name, stem):
 	radii = [3, 5, 7, 9, 11, 13] 
 	z = [2.0, 1.0, 0.5, 0.0] 
 	for i in range(3): 
+	# for i in range(1): 
 		for j in range(5): 
 			plot_observed_mdfs(axes[i][j], radii[j], z[i + 1])
 			plot_mdfs(axes[i][j], out.stars, radii[j], radii[j + 1], 
@@ -192,6 +222,7 @@ def main(name, stem):
 	for i in range(len(leg.get_texts())): 
 		leg.get_texts()[i].set_color(COLORS[i]) 
 		leg.legendHandles[i].set_visible(False) 
+	model_data_legend(axes[0][2]) 
 	plt.tight_layout() 
 	plt.subplots_adjust(wspace = 0, hspace = 0) 
 	plt.savefig("%s.pdf" % (stem)) 

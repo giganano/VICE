@@ -74,7 +74,7 @@ def setup_axes(element_x, element_y, zlabels = True):
 
 
 def feuillet2019_amr(ax, element_x, element_y, min_rgal, max_rgal, min_absz, 
-	max_absz, label = False): 
+	max_absz, label = False, **kwargs): 
 	if element_y.lower() == 'h': 
 		subdir = "./data/age_%s/" % ({"o": "oh", "fe": "mh"}[element_x.lower()]) 
 		filename = "%s/ELEM_GAUSS_AGE_%02d_%02d_%02d_%02d_%s_H.fits" % (
@@ -89,13 +89,18 @@ def feuillet2019_amr(ax, element_x, element_y, min_rgal, max_rgal, min_absz,
 		filename = "%s/ELEM_GAUSS_AGE_%02d_%02d_%02d_%02d_alpha.fits" % (
 			subdir, min_rgal, max_rgal, 10 * min_absz, 10 * max_absz) 
 	age, abundance, age_disp, abundance_disp = feuillet2019_data(filename) 
-	kwargs = {
-		"xerr": 		age_disp, 
-		"yerr": 		abundance_disp, 
-		"c": 			named_colors()["crimson"], 
-		"marker": 		markers()["triangle_up"], 
-		"linestyle": 	"None" 
-	} 
+	kwargs["xerr"] 		= age_disp 
+	kwargs["yerr"] 		= abundance_disp 
+	kwargs["c"] 		= named_colors()["crimson"] 
+	kwargs["marker"] 	= markers()["triangle_up"] 
+	kwargs["linestyle"] = "None" 
+	# kwargs = {
+	# 	"xerr": 		age_disp, 
+	# 	"yerr": 		abundance_disp, 
+	# 	"c": 			named_colors()["crimson"], 
+	# 	"marker": 		markers()["triangle_up"], 
+	# 	"linestyle": 	"None" 
+	# } 
 	if label: kwargs["label"] = "Feuillet et al. (2019)" 
 	ax.errorbar(age, abundance, **kwargs) 
 
@@ -121,7 +126,7 @@ def subsample(output, min_rgal, max_rgal, min_absz, max_absz):
 
 
 def median_ages(ax, element_x, element_y, output, min_rgal, max_rgal, 
-	min_absz, max_absz, label = False): 
+	min_absz, max_absz, label = False, **kwargs): 
 	stars = subsample(output, min_rgal, max_rgal, min_absz, max_absz)  
 	if element_y.lower() == 'h': 
 		bins = ONH_BINS[:] 
@@ -147,6 +152,11 @@ def median_ages(ax, element_x, element_y, output, min_rgal, max_rgal,
 		[ages[i] - lowers[i] for i in range(len(ages))], 
 		[uppers[i] - ages[i] for i in range(len(ages))] 
 	] 
+	kwargs["xerr"] 		= xerr 
+	kwargs["yerr"] 		= (bins[1] - bins[0]) / 2. 
+	kwargs["c"] 		= named_colors()["black"] 
+	kwargs["marker"] 	= markers()["square"] 
+	kwargs["linestyle"] = "None" 
 	kwargs = {
 		"xerr": 		xerr, 
 		"yerr": 		(bins[1] - bins[0]) / 2., 
@@ -154,10 +164,10 @@ def median_ages(ax, element_x, element_y, output, min_rgal, max_rgal,
 		"marker": 		markers()["square"], 
 		"linestyle": 	"None" 
 	} 
-	if label: kwargs["label"] = "Simulation" 
-	ax.errorbar(ages, [(a + b) / 2. for a, b in zip(bins[1:], bins[:-1])], 
-		**kwargs) 
-
+	if label: kwargs["label"] = "Model" 
+	yvals = [(a + b) / 2. for a, b in zip(bins[1:], bins[:-1])] 
+	ax.errorbar(ages, yvals, **kwargs) 
+	return [ages, yvals] 
 
 
 def main(element_x, element_y, output, stem): 
@@ -170,12 +180,19 @@ def main(element_x, element_y, output, stem):
 			print([i, j]) 
 			sc = plot_amr(axes[i][j], element_x, element_y, output, RADII[j], 
 				RADII[j + 1], HEIGHTS[i + 1], HEIGHTS[i]) 
-			median_ages(axes[i][j], element_x, element_y, output, RADII[j], 
-				RADII[j + 1], HEIGHTS[i + 1], HEIGHTS[i], 
-				label = i == 0 and j == 0)  
+			if i == 2 and j == 1: 
+				xvals, yvals = median_ages(axes[i][j], element_x, element_y, 
+					output, RADII[j], RADII[j + 1], HEIGHTS[i + 1], HEIGHTS[i]) 
+			else: 
+				median_ages(axes[i][j], element_x, element_y, output, RADII[j], 
+					RADII[j + 1], HEIGHTS[i + 1], HEIGHTS[i], 
+					label = not i and not j) 
 			feuillet2019_amr(axes[i][j], element_x, element_y, RADII[j], 
 				RADII[j + 1], HEIGHTS[i + 1], HEIGHTS[i], 
 				label = i == 0 and j == 0) 
+	for i in range(len(axes)): 
+		for j in range(len(axes[i])): 
+			axes[i][j].plot(xvals, yvals, c = named_colors()["black"]) 
 	legend_kwargs = {
 		"ncol": 		1, 
 		"frameon": 		False, 

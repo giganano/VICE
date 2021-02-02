@@ -17,6 +17,7 @@ else: pass
 from vice.yields.presets import JW20 
 from vice.toolkit import hydrodisk 
 vice.yields.sneia.settings['fe'] *= 10**0.1 
+from .._globals import END_TIME, MAX_SF_RADIUS, ZONE_WIDTH 
 from . import migration 
 from . import scalings 
 from . import models 
@@ -33,7 +34,8 @@ class diskmodel(vice.milkyway):
 		verbose = True, migration_mode = "linear", max_radius = 20, **kwargs): 
 		super().__init__(zone_width = zone_width, name = name, 
 			verbose = verbose, **kwargs) 
-		Nstars = 2 * int(15.5 / zone_width * 12.7 / self.dt * self.n_stars) 
+		Nstars = 2 * int(MAX_SF_RADIUS / zone_width * END_TIME / self.dt * 
+			self.n_stars) 
 		self.migration.stars = migration.diskmigration(self.annuli, 
 			N = Nstars, mode = migration_mode, 
 			filename = "%s_analogdata.out" % (name)) 
@@ -41,9 +43,13 @@ class diskmodel(vice.milkyway):
 			zone_width = zone_width, max_radius = max_radius) 
 		self.mode = "sfr" 
 		for i in range(self.n_zones): 
-			self.zones[i].tau_star = sfe(
-				m.pi * (self.annuli[i + 1]**2 - self.annuli[i]**2) 
-			) 
+			# if i >= int(MAX_SF_RADIUS / ZONE_WIDTH): 
+			if ZONE_WIDTH * (i + 0.5) >= MAX_SF_RADIUS: 
+				self.zones[i].tau_star = 1e6 
+			else: 
+				self.zones[i].tau_star = sfe(
+					m.pi * (self.annuli[i + 1]**2 - self.annuli[i]**2) 
+				) 
 
 	def run(self, *args, **kwargs): 
 		out = super().run(*args, **kwargs) 
@@ -99,13 +105,16 @@ class star_formation_history:
 	def __call__(self, radius, time): 
 		# The milkyway object will always call this with a radius in the 
 		# self._radii array, but this ensures a continuous function of radius 
-		idx = get_bin_number(self._radii, radius) 
-		if idx != -1: 
-			return gradient(radius) * interpolate(self._radii[idx], 
-				self._evol[idx](time), self._radii[idx + 1], 
-				self._evol[idx + 1](time), radius) 
+		if radius > MAX_SF_RADIUS: 
+			return 0 
 		else: 
-			return gradient(radius) * interpolate(self._radii[-2], 
-				self._evol[-2](time), self._radii[-1], self._evol[-1](time), 
-				radius) 
+			idx = get_bin_number(self._radii, radius) 
+			if idx != -1: 
+				return gradient(radius) * interpolate(self._radii[idx], 
+					self._evol[idx](time), self._radii[idx + 1], 
+					self._evol[idx + 1](time), radius) 
+			else: 
+				return gradient(radius) * interpolate(self._radii[-2], 
+					self._evol[-2](time), self._radii[-1], self._evol[-1](time), 
+					radius) 
 

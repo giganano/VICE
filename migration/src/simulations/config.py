@@ -45,25 +45,6 @@ Large timestep size: %g. This may cause numerical artifacts.\
 				type(value))) 
 
 	@property 
-	def output_times(self): 
-		r""" 
-		Type : list 
-
-		The output times of the simulation in Gyr. 
-		""" 
-		return [self.timestep_size * i for i in range(int(self.endtime / 
-			self.timestep_size) + 1)] 
-
-	@property 
-	def endtime(self): 
-		r""" 
-		Type : float 
-
-		The amount of time to run the simulation for in Gyr. 
-		""" 
-		return 12.7 
-
-	@property 
 	def star_particle_density(self): 
 		r""" 
 		Type : int 

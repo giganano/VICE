@@ -3,6 +3,7 @@ This file declares the time-dependence of the star formation history at a
 given radius in the lateburst model from Johnson et al. (2021). 
 """ 
 
+from ..._globals import END_TIME 
 from .utils import modified_exponential, gaussian 
 from .insideout import _TAU_RISE_, insideout
 from .normalize import normalize 
@@ -10,7 +11,7 @@ from .gradient import gradient
 import math as m 
 import os 
 
-_BURST_TIME_ = 10.8 # Gyr 
+_BURST_TIME_ = END_TIME - 2 # Gyr 
 
 
 class lateburst(modified_exponential, gaussian): 

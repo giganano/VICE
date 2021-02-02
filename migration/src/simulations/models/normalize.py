@@ -3,10 +3,8 @@ This file implements the normalization calculation in Appendix A of
 Johnson et al. (2021). 
 """ 
 
+from ..._globals import MAX_SF_RADIUS, END_TIME, M_STAR_MW 
 import math as m 
-
-# Stellar mass of Milky Way (Licquia & Newman 2015, ApJ, 806, 96) 
-M_STAR_MW = 6.08e10 
 
 
 def normalize(time_dependence, radial_gradient, radius, dt = 0.01, dr = 0.5, 
@@ -53,11 +51,11 @@ def normalize(time_dependence, radial_gradient, radius, dt = 0.01, dr = 0.5,
 	""" 
 
 	time_integral = 0 
-	for i in range(int(12.8 / dt)): 
+	for i in range(int(END_TIME / dt)): 
 		time_integral += time_dependence(i * dt) * dt * 1.e9 # yr to Gyr 
 
 	radial_integral = 0 
-	for i in range(int(15.5 / dr)): 
+	for i in range(int(MAX_SF_RADIUS / dr)): 
 		radial_integral += radial_gradient(dr * (i + 0.5)) * m.pi * (
 			(dr * (i + 1))**2 - (dr * i)**2 
 		) 

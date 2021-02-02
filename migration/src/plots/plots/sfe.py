@@ -6,20 +6,16 @@ timestamps in the simulation.
 from .. import env 
 from .utils import (named_colors, mpl_loc, dummy_background_axes, 
 	yticklabel_formatter) 
+from ..._globals import END_TIME, ZONE_WIDTH 
 import matplotlib.pyplot as plt 
 import vice 
 
-ZONE_WIDTH = 0.1 
-# MODELS = ["Constant SFR", "Inside-Out", "Late-Burst", "Outer-Burst"] 
-# TIMES = [2, 4, 6, 8, 10, 12.8] 
-# COLORS = ["red", "gold", "green", "blue", "darkviolet", "black"] 
 RGAL_LIM = [-2, 17] 
-# TSTAR_LIM = [0, 7] 
 
 
 def setup_axes(n_outputs): 
 	fig, axes = plt.subplots(ncols = n_outputs, nrows = 1, 
-		figsize = (n_outputs * 5, 5), sharey = True) 
+		figsize = (n_outputs * 7, 7), sharey = True) 
 	if n_outputs > 1: 
 		axes = axes.tolist() 
 	else: 
@@ -38,33 +34,6 @@ def setup_axes(n_outputs):
 	plt.setp(dummy.get_xticklabels(), visible = False) 
 	plt.setp(dummy.get_yticklabels(), visible = False) 
 	return axes 
-
-# def setup_axes(): 
-# 	fig = plt.figure(figsize = (20, 5)) 
-# 	axes = 4 * [None] 
-# 	for i in range(len(axes)): 
-# 		kwargs = {"facecolor": "white"} 
-# 		if i != 0: kwargs["sharey"] = axes[0] 
-# 		axes[i] = fig.add_subplot(141 + i, **kwargs) 
-# 		if i != 0: plt.setp(axes[i].get_yticklabels(), visible = False) 
-# 		axes[i].set_xlim(RGAL_LIM) 
-# 		axes[i].set_ylim(TSTAR_LIM) 
-# 		axes[i].set_yticks(range(8)) 
-# 		axes[i].set_title(MODELS[i], fontsize = 25) 
-# 	axes[0].set_ylabel(r"$\tau_\star$ [Gyr]") 
-
-# 	dummy = fig.add_subplot(111, facecolor = "white", zorder = -1) 
-# 	posd = dummy.get_position() 
-# 	posd.x0 = axes[0].get_position().x0 
-# 	posd.x1 = axes[-1].get_position().x1 
-# 	posd.y0 = axes[0].get_position().y0 
-# 	posd.y1 = axes[0].get_position().y1 
-# 	dummy.set_position(posd) 
-# 	dummy.set_xlabel(r"$R_\text{gal}$ [kpc]", labelpad = 30) 
-# 	plt.setp(dummy.get_xticklabels(), visible = False) 
-# 	plt.setp(dummy.get_yticklabels(), visible = False) 
-
-# 	return axes 
 
 
 def plot_sfe(ax, output, times, colors, label = False): 
@@ -85,28 +54,11 @@ def plot_sfe(ax, output, times, colors, label = False):
 		ax.plot(radii, tau_star, **kwargs) 
 
 
-# def main(static, insideout, lateburst, outerburst, stem): 
-# 	axes = setup_axes() 
-# 	plot_sfe(axes[0], vice.output(static), label = True) 
-# 	plot_sfe(axes[1], vice.output(insideout)) 
-# 	plot_sfe(axes[2], vice.output(lateburst)) 
-# 	plot_sfe(axes[3], vice.output(outerburst)) 
-# 	leg = axes[0].legend(loc = mpl_loc("upper left"), ncol = 2, frameon = False, 
-# 		bbox_to_anchor = (0.01, 0.99), handlelength = 0, fontsize = 20) 
-# 	for i in range(len(TIMES)): 
-# 		leg.get_texts()[i].set_color(COLORS[i]) 
-# 		leg.legendHandles[i].set_visible(False) 
-# 	plt.tight_layout() 
-# 	plt.subplots_adjust(wspace = 0, bottom = 0.2) 
-# 	plt.savefig("%s.png" % (stem)) 
-# 	plt.savefig("%s.pdf" % (stem)) 
-
 
 def main(outputs, stem, 
 	labels = ["Constant", "Inside-Out", "Late-Burst", "Outer-Burst"], 
-	times = [2, 4, 6, 8, 10, 12.7], 
+	times = [2, 4, 6, 8, 10, END_TIME], 
 	colors = ["red", "gold", "green", "blue", "darkviolet", "black"], 
-	# ylim = [-2, 17], yticks = [0, 5, 10, 15]): 
 	ylim = [0.5, 20], yticks = [1, 10]): 
 
 	axes = setup_axes(len(outputs)) 
@@ -121,7 +73,8 @@ def main(outputs, stem,
 		times, colors, label = not i) 
 	leg = axes[0].legend(loc = mpl_loc("upper left"), ncol = 1, 
 		frameon = False, bbox_to_anchor = (0.01, 0.99), handlelength = 0, 
-		fontsize = 20, labelspacing = 0.2)  
+		# fontsize = 20, labelspacing = 0.2) 
+		fontsize = 20) 
 	for i in range(len(times)): 
 		leg.get_texts()[i].set_color(colors[i]) 
 		leg.legendHandles[i].set_visible(False) 

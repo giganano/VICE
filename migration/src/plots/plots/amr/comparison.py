@@ -37,9 +37,11 @@ def setup_axes(element, nrows = 4, radii = [[5, 7], [7, 9], [9, 11], [11, 13]],
 			axes[i][j].set_xscale("log") 
 			xticklabel_formatter(axes[i][j]) 
 			axes[i][j].set_ylim({"o": OH_LIM, "fe": FEH_LIM}[element.lower()]) 
-			if not j and labels is not None: axes[i][j].text(
-				0.65, {"o": -0.75, "fe": -1.05}[element.lower()], 
-				labels[i], fontsize = 20) 
+			# if not j and labels is not None: axes[i][j].text(
+			# 	0.65, {"o": -0.75, "fe": -1.05}[element.lower()], 
+			# 	labels[i], fontsize = 20) 
+			if labels is not None and j == len(axes[i]) - 1: axes[i][j].text(
+				0.5, 0.4, labels[i], fontsize = 20) 
 
 	dummy = dummy_background_axes(axes) 
 	dummy.set_xlabel("Age [Gyr]", labelpad = 30) 
@@ -75,7 +77,8 @@ def main(element, outputs, stem, radii = [[5, 7], [7, 9], [9, 11], [11, 13]],
 			"frameon": 			False, 
 			"fontsize": 		20, 
 			"loc": 				mpl_loc("lower left"), 
-			"bbox_to_anchor": 	(0.01, 0.10) 
+			# "bbox_to_anchor": 	(0.01, 0.10) 
+			"bbox_to_anchor": 	(0.01, 0.01) 
 		} 
 		axes[0][0].legend(**legend_kwargs) 
 	else: pass 

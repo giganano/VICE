@@ -112,7 +112,7 @@ def median_ages(ax, element, output, label = False):
 		"marker": 		markers()["square"], 
 		"linestyle": 	"None" 
 	} 
-	if label: kwargs["label"] = "Simulation" 
+	if label: kwargs["label"] = "Model" 
 	ax.errorbar(ages, [(a + b) / 2. for a, b in zip(BINS[1:], BINS[:-1])], 
 		**kwargs) 
 
