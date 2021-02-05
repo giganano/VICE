@@ -72,9 +72,13 @@ class engine(interp_scheme_1d):
 
 	.. seealso:: Built-in instances of derived classes 
 
-		- vice.yields.ccsne.engines.S16.W18 
-		- vice.yields.ccsne.engines.S16.N20 
+		- vice.yields.ccsne.engines.cutoff 
 		- vice.yields.ccsne.engines.E16 
+		- vice.yields.ccsne.engines.S16.N20 
+		- vice.yields.ccsne.engines.S16.S19p8 
+		- vice.yields.ccsne.engines.S16.W15 
+		- vice.yields.ccsne.engines.S16.W18 
+		- vice.yields.ccsne.engines.S16.W20 
 
 	Example Code 
 	------------

@@ -10,10 +10,23 @@ models.
 	IMF-averaged yields assuming a particular black hole landscape. The impact 
 	of these assumptions is explored in Griffith et al. (2021, in prep) [2]_. 
 
+.. note:: For all explosion engines, progenitors with zero age main sequence 
+	masses between 9 and 12 :math:`M_\odot` proceed according to the Z9.6 
+	engine, while remaining masses explode or collapse according to the 
+	associated engine. (See: Section 2.2.2 of Sukhbold et al. 2016) 
+
 Contents 
 --------
+N20 : ``engine`` 
+	An engine characterized by the N20 explosion model. 
+S19p8 : ``engine`` 
+	An engine characterized by the S19p8 explosion model. 
+W15 : ``engine`` 
+	An engine characterized by the W15 explosion model. 
 W18 : ``engine`` 
 	An engine characterized by the W18 explosion model. 
+W20 : ``engine`` 
+	An engine characterized by the W20 explosion model. 
 
 .. [1] Sukhbold et al. (2016), ApJ, 821, 38 
 .. [2] Griffith et al. (2021), in prep 
