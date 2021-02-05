@@ -27,14 +27,20 @@ except NameError:
 
 if not __VICE_SETUP__: 
 
-	__all__ = ["W18", "test"]  
-	# from .N20 import N20 
+	__all__ = ["N20", "S19p8", "W15", "W18", "W20", "test"]  
+	from .N20 import N20 
+	from .S19p8 import S19p8 
+	from .W15 import W15 
 	from .W18 import W18 
+	from .W20 import W20 
 	from .tests import test 
 
 	# Instances of derived classes rather than derived classes themselves 
-	# N20 = N20() 
+	N20 = N20() 
+	S19p8 = S19p8() 
+	W15 = W15() 
 	W18 = W18() 
+	W20 = W20() 
 
 else: pass 
 
