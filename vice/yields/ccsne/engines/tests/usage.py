@@ -8,7 +8,11 @@ from __future__ import absolute_import
 __all__ = ["test"] 
 from ..E16 import E16 
 from ..cutoff import cutoff 
+from ..S16.N20 import N20 
+from ..S16.S19p8 import S19p8 
+from ..S16.W15 import W15 
 from ..S16.W18 import W18 
+from ..S16.W20 import W20 
 from ..._yield_integrator import integrate as fractional 
 from .....testing import moduletest 
 from .....testing import unittest 
@@ -21,63 +25,31 @@ def test():
 	""" 
 	return ["vice.yields.ccsne.engines usage tests", 
 		[ 
-			test_cutoff(), 
-			test_E16(), 
-			test_W18() 
+			test_engine(cutoff, "cutoff"), 
+			test_engine(E16, "E16"), 
+			test_engine(N20, "S16.N20"), 
+			test_engine(S19p8, "S16.S19p8"), 
+			test_engine(W15, "S16.W15"), 
+			test_engine(W18, "S16.W18"), 
+			test_engine(W20, "S16.W20") 
 		] 
 	] 
 
 
 @unittest 
-def test_cutoff(): 
+def test_engine(obj, name): 
 	r""" 
-	vice.yields.ccsne.engines.cutoff usage test 
+	vice.yields.ccsne.engines derived class usage test 
 	""" 
 	def test(): 
 		try: 
-			cutoff_ = cutoff() 
+			test_ = obj() 
 		except: 
 			return None 
 		try: 
-			fractional('o', explodability = cutoff_) 
+			fractional('o', explodability = test_) 
 		except: 
 			return False 
 		return True 
-	return ["vice.yields.ccsne.engines.cutoff", test] 
-
-
-@unittest 
-def test_E16(): 
-	r""" 
-	vice.yields.ccsne.engines.E16 usage test 
-	""" 
-	def test(): 
-		try: 
-			E16_ = E16() 
-		except: 
-			return None 
-		try: 
-			fractional('o', explodability = E16_) 
-		except: 
-			return False 
-		return True 
-	return ["vice.yields.ccsne.engines.E16", test] 
-
-
-@unittest 
-def test_W18(): 
-	r""" 
-	vice.yields.ccsne.engines.S16.W18 usage test 
-	""" 
-	def test(): 
-		try: 
-			W18_ = W18() 
-		except: 
-			return None 
-		try: 
-			fractional('o', explodability = W18_) 
-		except: 
-			return False 
-		return True 
-	return ["vice.yields.ccsne.engines.S16.W18", test] 
+	return ["vice.yields.ccsne.engines.%s" % (name), test] 
 

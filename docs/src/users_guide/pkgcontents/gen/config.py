@@ -21,7 +21,11 @@ from vice.core.singlezone.entrainment import entrainment
 from vice.toolkit import J21_sf_law 
 from vice.yields.ccsne.engines.E16 import E16 
 from vice.yields.ccsne.engines.cutoff import cutoff 
+from vice.yields.ccsne.engines.S16.N20 import N20 
+from vice.yields.ccsne.engines.S16.S19p8 import S19p8 
+from vice.yields.ccsne.engines.S16.W15 import W15 
 from vice.yields.ccsne.engines.S16.W18 import W18 
+from vice.yields.ccsne.engines.S16.W20 import W20 
 
 r""" 
 Each element of the _CONFIG_ dictionary should map an object in VICE to a 
@@ -477,11 +481,37 @@ _CONFIG_ = {
 	vice.yields.ccsne.engines.S16: {
 		"filename": 	"vice.yields.ccsne.engines.S16.rst", 
 		"header": 		"vice.yields.ccsne.engines.S16", 
-		"subs": 		[W18] 
+		"subs": 		[
+			N20, 
+			S19p8, 
+			W15, 
+			W18, 
+			W20 
+		]  
+	}, 
+	N20: {
+		"filename": 	"vice.yields.ccsne.engines.S16.N20.rst", 
+		"header": 		"vice.yields.ccsne.engines.S16.N20", 
+		"subs": 		[] 
+	}, 
+	S19p8: {
+		"filename": 	"vice.yields.ccsne.engines.S16.S19p8.rst", 
+		"header": 		"vice.yields.ccsne.engines.S16.S19p8", 
+		"subs": 		[] 
+	}, 
+	W15: {
+		"filename": 	"vice.yields.ccsne.engines.S16.W15.rst", 
+		"header": 		"vice.yields.ccsne.engines.S16.W15", 
+		"subs": 		[] 
 	}, 
 	W18: {
 		"filename": 	"vice.yields.ccsne.engines.S16.W18.rst", 
 		"header": 		"vice.yields.ccsne.engines.S16.W18", 
+		"subs": 		[] 
+	}, 
+	W20: {
+		"filename": 	"vice.yields.ccsne.engines.S16.W20.rst", 
+		"header": 		"vice.yields.ccsne.engines.S16.W20", 
 		"subs": 		[] 
 	}, 
 	vice.yields.ccsne.WW95: {
