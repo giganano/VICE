@@ -7,7 +7,9 @@ Johnson et al. (2021) Models
 Here we provide instructions for running the Johnson et al. (2021) chemical 
 evolution models for the Milky Way disk, producing the figures which appear in 
 the corresponding paper, and accessing the observational sample used in the 
-comparison. 
+comparison. The instructions herein assume that you as the user are already 
+familiar with the nature of the Johnson et al. (2021) models; this information 
+can be found in the associated journal publication. 
 
 .. 	|feuillet2018| image:: https://img.shields.io/badge/NASA%20ADS-Feuillet%20et%20al.%20(2018)-red 
 	:target: feuillet2018_ 
@@ -58,15 +60,14 @@ Unless you'd like to modify the parameters of the models, you can run them from
 this directory in your terminal on your personal computer without modifying 
 the source code. No cluster computing necessary! 
 
-Although VICE itself has no runtime dependencies, producing any of the 
-figures included in Johnson et al. (2021) requires ``matplotlib >= 2.0.0`` and 
-``numpy >= 1.17.0``. This is only relevant if you plan on making use of the 
-``figures.py`` script. 
+Although VICE itself has no runtime dependencies, the code base for the 
+Johnson et al. (2021) models requires ``matplotlib >= 2.0.0`` and 
+``numpy >= 1.17.0``. 
 
 Maximum Number of Open File Descriptors 
 ---------------------------------------
-Computers enforce a limit on the number of open file descriptors at a given 
-time by a single application. VICE will open two file descriptors per annulus. 
+Computers enforce a limit on the number of open file descriptors at one 
+time by a single application; VICE will open two file descriptors per annulus. 
 With sufficiently narrow annuli, the user may exceed their system's limit for 
 the number of simultaneously open files. To view the current limit of your 
 system, run the following line in your ``Unix`` terminal: 
@@ -77,7 +78,7 @@ system, run the following line in your ``Unix`` terminal:
 
 The default number varies from system to system; on Mac OS X, it is 256, and on 
 a computer running CentOS 7.4 (a Linux operating system), it is 1024. With a 
-limit of ``n``, the user can run a model with only ``n/2`` annuli without 
+limit of ``n``, the user can run a model with at most ``n/2`` annuli without 
 producing a system error. If necessary, you can modify these limits using 
 ``launchctl`` on Mac OS X and ``sysctl`` on Linux operating systems. These 
 commands are used to configure kernel parameters at runtime, and must be ran as 
@@ -118,9 +119,9 @@ as the number of annuli you intend on using in the model.
 Recommended: Screen Sessions 
 ----------------------------
 If you haven't used the ``screen`` command before, it is a utility which allows 
-you to create a new terminal session within your current one, then subsequently 
-detach from it while some process with a long CPU-time may be running.  Many 
-systems now come with ``screen`` pre-installed; 
+you to create a new terminal session from within your current one, then 
+subsequently detach from it while some process with a long CPU-time may be 
+running.  Many systems now come with ``screen`` pre-installed; 
 to check if it is, simply run ``screen --help``. On Mac OS X, ``screen`` can be 
 installed easily with Homebrew_ via ``brew install screen``. On Linux, ``admin`` 
 privileges are necessary. If you are not the administrator of your system, you 
@@ -137,10 +138,12 @@ on which distribution you're using:
 
 .. _Homebrew: https://brew.sh/
 
-To start a screen session, run ``screen -S [name]``; to then detach from the 
+To start a ``screen`` session, run ``screen -S [name]``, and give your new 
+session some name descriptive of its purpose; to then detach from the 
 session, simply press ``Ctrl+A`` followed by ``Ctrl+D``. To reattach to a 
 previous session, run ``screen -r [name]``. Terminating a ``screen`` session 
-can be done by simply running ``exit`` from within the session. 
+can be done by simply running ``exit`` from within the session, or killing the 
+process using the ``screen`` session's ``pid``. 
 
 Runnings the Models 
 ===================
@@ -198,7 +201,7 @@ table of the allowed values for each parameter:
 | evolution                  | Must be a string.          | 
 |                            | "static", "insideout",     | 
 |                            | "lateburst", or            | 
-|                            | "outer-burst"              | 
+|                            | "outerburst"               | 
 +----------------------------+----------------------------+ 
 | dt                         | Must be a float. Must be   | 
 |                            | positive.                  | 
@@ -223,9 +226,9 @@ table of the allowed values for each parameter:
 |                            | positive.                  | 
 +----------------------------+----------------------------+ 
 
-For a mathematical definition of the allowed strings for the ``migration`` and 
-``evolution`` parameters, see the Johnson et al. (2021) paper. The Johnson et 
-al. (2021) models as they appear in the associated paper should be ran with the 
+Mathematical definitions of the recognized models for the ``migration`` and 
+``evolution`` parameters can be found in the Johnson et al. (2021) paper. The 
+Johnson et al. (2021) models as they appear in the paper should be ran with the 
 following set of commands: 
 
 :: 
@@ -250,7 +253,7 @@ above.
 
 Producing the Figures 
 =====================
-All of the figures in Johnson et al. (2021) can be produces via the 
+All of the figures in Johnson et al. (2021) can be produced via the 
 ``figures.py`` script. Running ``python figures.py --help`` produces the 
 following help message: 
 
@@ -291,21 +294,21 @@ For example, ``python figures.py --fig9`` will produce only Fig. 9 of
 Johnson et al. (2021), where as ``python figures.py --fig9 --fig10`` will 
 produces Figs. 9 and 10. 
 
-.. warning:: In order for this script to work properly, the outputs of each of 
-	the Johnson et al. (2021) models need to be at the following locations: 
+**WARNING**: In order for this script to work properly, the outputs of each of 
+the Johnson et al. (2021) models need to be at the following locations: 
 
-	| ``./outputs/diffusion/static`` 
-	| ``./outputs/diffusion/insideout`` 
-	| ``./outputs/diffusion/lateburst`` 
-	| ``./outputs/diffusion/outerburst`` 
-	| ``./outputs/linear/insideout`` 
-	| ``./outputs/sudden/insideout`` 
-	| ``./outputs/post-process/insideout`` 
+| ``./outputs/diffusion/static`` 
+| ``./outputs/diffusion/insideout`` 
+| ``./outputs/diffusion/lateburst`` 
+| ``./outputs/diffusion/outerburst`` 
+| ``./outputs/linear/insideout`` 
+| ``./outputs/sudden/insideout`` 
+| ``./outputs/post-process/insideout`` 
 
-	where the directory names simply specify the stellar migration and star 
-	formation history of the model, respectively. If the outputs are not in 
-	these locations, it's likely the ``figures.py`` script will produce an 
-	error message stating that an output is not found. 
+where the directory names simply specify the stellar migration and star 
+formation history of the model, respectively. If the outputs are not in these 
+locations, it's likely the ``figures.py`` script will produce an error message 
+stating that an output is not found. 
 
 
 Accessing the Observational Sample 
@@ -376,9 +379,9 @@ surface gravities, galactocentric radii in kpc, height above the disk midplane
 in kpc, and signal-to-noise ratios for each stars that passes the following 
 cuts: 
 
-	- 4000 K :math:`\leq T_\text{eff} \leq` 4600 K 
-	- 1.0 :math:`\leq \log g \leq` 2.5 
-	- SNR :math:`\geq` 100 
+	- Effective temperatures between 4000 and 4600 K 
+	- Surface gravities (log g) between 1.0 and 2.5 
+	- Signal-to-Noise ratios larger than 100 
 
 These cuts ensure that the sample consists of stars on the upper red giant 
 branch, safely excluding red clump stars to avoid obvious systematics in the 

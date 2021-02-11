@@ -29,7 +29,7 @@ extern "C" {
  */ 
 #ifndef INCREMENT_ANALOG_SEARCH_RADIUS 
 #define INCREMENT_ANALOG_SEARCH_RADIUS 0.250 
-#endif 
+#endif /* INCREMENT_ANALOG_SEARCH_RADIUS */ 
 
 /* 
  * The amount of time in Gyr to increment the difference in birth times until 
@@ -38,33 +38,29 @@ extern "C" {
  */ 
 #ifndef INCREMENT_ANALOG_SEARCH_TIME 
 #define INCREMENT_ANALOG_SEARCH_TIME 0.250 
-#endif 
+#endif /* INCREMENT_ANALOG_SEARCH_TIME */ 
 
 /* 
  * The maximum allowed different in birth radii in kpc between a stellar 
  * population and its analog star particle for all searches. Until an analog is 
  * found, the radius and time search windows will increase. The search will 
- * fail when both limits are reached if an analog is not found, though by 
- * default the maximum radius limit is infinite. 
+ * fail when both limits are reached if an analog is not found, at which point 
+ * the algorithm assigns the one with the smallest difference in birth radius. 
  */ 
 #ifndef MAXIMUM_ANALOG_SEARCH_RADIUS 
-	#ifdef INFINITY 
-		#define MAXIMUM_ANALOG_SEARCH_RADIUS INFINITY 
-	#else 
-		#define MAXIMUM_ANALOG_SEARCH_RADIUS 1e6 
-	#endif 
-#endif 
+#define MAXIMUM_ANALOG_SEARCH_RADIUS 0.500 
+#endif /* MAXIMUM_ANALOG_SEARCH_RADIUS */ 
 
 /* 
  * The maximum allowed difference in birth times in Gyr between a stellar 
  * population and its analog star particle for all searches. Until an analog is 
  * found, the radius and time search windows will increase. The search will 
- * fail when both limits are reached if an analog is not found, though by 
- * default the maximum radius limit is infinite. 
+ * fail when both limits are reached if an analog is not found, at which point 
+ * the algorithm assigns the one with the smallest difference in birth radius. 
  */ 
 #ifndef MAXIMUM_ANALOG_SEARCH_TIME 
 #define MAXIMUM_ANALOG_SEARCH_TIME 0.500 
-#endif 
+#endif /* MAXIMUM_ANALOG_SEARCH_TIME */ 
 
 /* 
  * The span of ages in Gyr of each star particle in the hydrodynamical 
@@ -126,9 +122,10 @@ extern unsigned short hydrodiskstars_import(HYDRODISKSTARS *hds,
  * Notes
  * =====
  * This function first searches for star particles born with R +/- 250 pc and 
- * T +/- 300 Myr. If no candidate analog is found, it widens it to R +/- 500 pc 
- * and T +/- 600 Myr. It continues this process of widening the search by 
- * dR = 250 pc and dT = 300 Myr until an analog is found. 
+ * T +/- 250 Myr. If no candidate analog is found, it widens it to R +/- 500 pc 
+ * and T +/- 500 Myr. If no analog is found in this widened search, it assigns 
+ * the one with the smallest change in birth radius that still satisfies the 
+ * T +/- 500 Myr criterion. 
  * 
  * source: hydrodiskstars.c 
  */ 

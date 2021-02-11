@@ -25,6 +25,8 @@ static unsigned long candidate_search(HYDRODISKSTARS hds, double birth_radius,
 static unsigned short assess_candidate(HYDRODISKSTARS hds, 
 	double birth_radius, double birth_time, double max_radius, 
 	double max_time, unsigned long index); 
+static long assign_analog_min_radius(HYDRODISKSTARS hds, 
+	double birth_radius, double birth_time); 
 static double final_radius(HYDRODISKSTARS hds, double birth_radius, 
 	long analog_idx); 
 
@@ -255,9 +257,10 @@ static unsigned short hydrodiskstars_import_sub(HYDRODISKSTARS *hds,
  * Notes
  * =====
  * This function first searches for star particles born with R +/- 250 pc and 
- * T +/- 300 Myr. If no candidate analog is found, it widens it to R +/- 500 pc 
- * and T +/- 600 Myr. It continues this process of widening the search by 
- * dR = 250 pc and dT = 300 Myr until an analog is found. 
+ * T +/- 250 Myr. If no candidate analog is found, it widens it to R +/- 500 pc 
+ * and T +/- 500 Myr. If no analog is found in this widened search, it assigns 
+ * the one with the smallest change in birth radius that still satisfies the 
+ * T +/- 500 Myr criterion. 
  * 
  * header: hydrodiskstars.h 
  */ 
@@ -282,9 +285,6 @@ extern long hydrodiskstars_find_analog(HYDRODISKSTARS hds, double birth_radius,
 			 * No candidates found; widen the search, but honor the limits 
 			 * imposed by the MAXIMUM_ANALOG_SEARCH_RADIUS and 
 			 * MAXIMUM_ANALOG_SEARCH_TIME macros defined in hydrodiskstars.h. 
-			 * By default, MAXIMUM_ANALOG_SEARCH_RADIUS is infinite, meaning a 
-			 * star particle should always find an analog unless these values 
-			 * are altered. 
 			 */ 
 			search_radius += INCREMENT_ANALOG_SEARCH_RADIUS; 
 			search_time += INCREMENT_ANALOG_SEARCH_TIME; 
@@ -299,6 +299,15 @@ extern long hydrodiskstars_find_analog(HYDRODISKSTARS hds, double birth_radius,
 		(search_radius < MAXIMUM_ANALOG_SEARCH_RADIUS || 
 		search_time < MAXIMUM_ANALOG_SEARCH_TIME) 
 		); 
+
+	if (analog_idx == -1l) {
+		/* 
+		 * No candidate found which satisfies the criteria so far. Take the one 
+		 * with the smallest difference in birth radius. 
+		 */ 
+		analog_idx = assign_analog_min_radius(hds, birth_radius, birth_time); 
+	} else {} 
+
 	return analog_idx; 
 
 } 
@@ -364,6 +373,7 @@ static unsigned long candidate_search(HYDRODISKSTARS hds, double birth_radius,
  * 						candidate search. 
  * max_time: 		The maximum difference in time of birth in Gyr for this 
  * 						candidate search. 
+ * index: 			The index of the star particle in the data to test. 
  * 
  * Returns 
  * =======
@@ -406,6 +416,67 @@ static unsigned short assess_candidate(HYDRODISKSTARS hds,
 	} else {} 
 
 	return assessment; 
+
+}
+
+
+/* 
+ * Finds the star particle which has the smallest difference in birth radius 
+ * while still passing the MAXIMUM_ANALOG_SEARCH_TIME criterion. 
+ * 
+ * Parameters 
+ * ==========
+ * hds: 			The hydrodiskstars object containing star particle data. 
+ * birth_radius: 	The radius of birth of the stellar population in kpc. 
+ * birth_time: 		The time of birth of the stellar population in Gyr. 
+ * 
+ * Returns 
+ * =======
+ * The index of the star particle that was a) born in the time interval 
+ * implied by birth_time and MAXIMUM_ANALOG_SEARCH_TIME, and b) has the 
+ * smallest difference in birth radius. 
+ */ 
+static long assign_analog_min_radius(HYDRODISKSTARS hds, 
+	double birth_radius, double birth_time) {
+
+	/* 
+	 * This function is called only when the initial search within 
+	 * MAXIMUM_ANALOG_SEARCH_TIME and MAXIMUM_ANALOG_SEARCH_RADIUS fail to 
+	 * find a candidate analog star particle. Therefore start with an analog 
+	 * index of -1. 
+	 */ 
+	unsigned long i; 
+	long analog_idx = -1l; 
+	for (i = 0ul; i < hds.n_stars; i++) { 
+		/* 
+		 * For each star particle in the data, check if it's birth radius is 
+		 * closer than the one with the current minimum. If there is no analog 
+		 * yet, take the current minimum to be infinity. 
+		 */ 
+		double current_candidate_dr; 
+		if (analog_idx == -1l) {
+			/* Linux distributions don't have INFINITY defined */ 
+			#ifdef INFINITY 
+				current_candidate_dr = INFINITY; 
+			#else 
+				current_candidate_dr = 1e6; 
+			#endif 
+		} else {
+			current_candidate_dr = absval(
+				hds.birth_radii[analog_idx] - birth_radius 
+			); 
+		} 
+		if (assess_candidate(hds, birth_radius, birth_time, 
+			current_candidate_dr, MAXIMUM_ANALOG_SEARCH_TIME, i)) {
+			/* 
+			 * If this star particle passes this call to assess_candidate, 
+			 * take it as the new candidate analog. 
+			 */ 
+			analog_idx = (signed) i; 
+		} else {} 
+	} 
+
+	return analog_idx; 
 
 }
 

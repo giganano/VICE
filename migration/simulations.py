@@ -95,9 +95,9 @@ def main():
 	""" 
 	parser = parse() 
 	args = parser.parse_args() 
-	model = model(args) 
-	model.run([_ * model.dt for _ in range(round(
-		src._globals.END_TIME / model.dt) + 1)], 
+	model_ = model(args) 
+	model_.run([_ * model_.dt for _ in range(round(
+		src._globals.END_TIME / model_.dt) + 1)], 
 		overwrite = args.force, pickle = False) 
 
 
