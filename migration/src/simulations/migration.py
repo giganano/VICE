@@ -5,11 +5,35 @@ from vice.toolkit import hydrodisk
 class diskmigration(hydrodisk.hydrodiskstars): 
 
 	r""" 
-	Subclassed hydrodiskstars object to write extra analog star particle data 
-	to an output file. 
+	A ``hydrodiskstars`` object which writes extra analog star particle data to 
+	an output file. 
+
+	Parameters 
+	----------
+	radbins : array-like 
+		The bins in galactocentric radius in kpc corresponding to each annulus. 
+	mode : ``str`` [default : "linear"] 
+		A keyword denoting the time-dependence of stellar migration. 
+		Allowed values: 
+
+		- "diffusion" 
+		- "linear" 
+		- "sudden" 
+		- "post-process" 
+
+	filename : ``str`` [default : "stars.out"] 
+		The name of the file to write the extra star particle data to. 
+
+	Attributes 
+	----------
+	write : ``bool`` [default : False] 	
+		A boolean describing whether or not to write to an output file when 
+		the object is called. The ``multizone`` object, and by extension the 
+		``milkyway`` object, automatically switch this attribute to True at the 
+		correct time to record extra data. 
 	""" 
 
-	def __init__(self, radbins, mode = "linear", filename = "stars.out", 
+	def __init__(self, radbins, mode = "diffusion", filename = "stars.out", 
 		**kwargs): 
 		super().__init__(radbins, mode = mode, **kwargs) 
 		if isinstance(filename, str): 

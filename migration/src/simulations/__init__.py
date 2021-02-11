@@ -1,6 +1,4 @@
 
-__all__ = ["config", "diskmodel", "suite", "sfe"] 
+__all__ = ["config", "diskmodel"] 
 from .config import config 
 from .disks import diskmodel 
-from .suite import suite 
-from .sfe import sfe 

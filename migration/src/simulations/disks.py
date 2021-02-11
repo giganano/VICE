@@ -19,19 +19,53 @@ from vice.toolkit import hydrodisk
 vice.yields.sneia.settings['fe'] *= 10**0.1 
 from .._globals import END_TIME, MAX_SF_RADIUS, ZONE_WIDTH 
 from . import migration 
-from . import scalings 
 from . import models 
 from .models.utils import get_bin_number, interpolate 
 from .models.gradient import gradient 
-from .sfe import sfe 
 import math as m 
 import sys 
 
 
 class diskmodel(vice.milkyway): 
 
+	r""" 
+	A milkyway object tuned to the Johnson et al. (2021) models specifically. 
+
+	Parameters 
+	----------
+	zone_width : ``float`` [default : 0.1] 
+		The width of each annulus in kpc. 
+	name : ``str`` [default : "diskmodel"] 
+		The name of the model; the output will be stored in a directory under 
+		this name with a ".vice" extension. 
+	spec : ``str`` [default : "static"] 
+		A keyword denoting the time-dependence of the star formation history. 
+		Allowed values: 
+
+		- "static" 
+		- "insideout" 
+		- "lateburst" 
+		- "outerburst" 
+
+	verbose : ``bool`` [default : True] 
+		Whether or not the run the models with verbose output. 
+	migration_mode : ``str`` [default : "diffusion"] 
+		A keyword denoting the time-dependence of stellar migration. 
+		Allowed values: 
+
+		- "diffusion" 
+		- "linear" 
+		- "sudden" 
+		- "post-process" 
+
+	kwargs : varying types 
+		Other keyword arguments to pass ``vice.milkyway``. 
+
+	Attributes and functionality are inherited from ``vice.milkyway``. 
+	""" 
+
 	def __init__(self, zone_width = 0.1, name = "diskmodel", spec = "static", 
-		verbose = True, migration_mode = "linear", max_radius = 20, **kwargs): 
+		verbose = True, migration_mode = "diffusion", **kwargs): 
 		super().__init__(zone_width = zone_width, name = name, 
 			verbose = verbose, **kwargs) 
 		Nstars = 2 * int(MAX_SF_RADIUS / zone_width * END_TIME / self.dt * 
@@ -40,16 +74,9 @@ class diskmodel(vice.milkyway):
 			N = Nstars, mode = migration_mode, 
 			filename = "%s_analogdata.out" % (name)) 
 		self.evolution = star_formation_history(spec = spec, 
-			zone_width = zone_width, max_radius = max_radius) 
+			zone_width = zone_width) 
 		self.mode = "sfr" 
-		for i in range(self.n_zones): 
-			# if i >= int(MAX_SF_RADIUS / ZONE_WIDTH): 
-			if ZONE_WIDTH * (i + 0.5) >= MAX_SF_RADIUS: 
-				self.zones[i].tau_star = 1e6 
-			else: 
-				self.zones[i].tau_star = sfe(
-					m.pi * (self.annuli[i + 1]**2 - self.annuli[i]**2) 
-				) 
+
 
 	def run(self, *args, **kwargs): 
 		out = super().run(*args, **kwargs) 
@@ -77,8 +104,7 @@ class diskmodel(vice.milkyway):
 		model : ``diskmodel`` 
 			The ``diskmodel`` object with the proper settings. 
 		""" 
-		model = cls(zone_width = config.zone_width, 
-			max_radius = config.max_radius, **kwargs) 
+		model = cls(zone_width = config.zone_width, **kwargs) 
 		model.dt = config.timestep_size 
 		model.n_stars = config.star_particle_density 
 		model.bins = config.bins 
@@ -88,10 +114,32 @@ class diskmodel(vice.milkyway):
 
 class star_formation_history: 
 
-	def __init__(self, spec = "static", zone_width = 0.1, max_radius = 20): 
+	r""" 
+	The star formation history (SFH) of the model galaxy. This object will be 
+	used as the ``evolution`` attribute of the ``diskmodel``. 
+
+	Parameters 
+	----------
+	spec : ``str`` [default : "static"] 
+		A keyword denoting the time-dependence of the SFH. 
+	zone_width : ``float`` [default : 0.1] 
+		The width of each annulus in kpc. 
+
+	Calling 
+	-------
+	- Parameters 
+
+		radius : ``float`` 
+			Galactocentric radius in kpc. 
+		time : ``float`` 
+			Simulation time in Gyr. 
+	""" 
+
+	def __init__(self, spec = "static", zone_width = 0.1): 
 		self._radii = [] 
 		self._evol = [] 
 		i = 0 
+		max_radius = 20 # kpc, defined by ``vice.milkyway`` object. 
 		while (i + 1) * zone_width < max_radius: 
 			self._radii.append((i + 0.5) * zone_width) 
 			self._evol.append({

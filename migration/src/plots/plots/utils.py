@@ -89,7 +89,7 @@ def mpl_loc(label):
 
 
 def markers():
-	"""
+	r"""
 	Returns a dictionary of terms to matplotlib marker characters.
 
 	Recognized markers:

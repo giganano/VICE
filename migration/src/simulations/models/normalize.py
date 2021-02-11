@@ -43,11 +43,11 @@ def normalize(time_dependence, radial_gradient, radius, dt = 0.01, dr = 0.5,
 
 	Notes 
 	-----
-	This function adopts :math:`6.08\times10^10 M_\odot` as the stellar mass 
-	of the Milky Way (Licquia & Newman 2015 [2]_). 
+	This function automatically adopts the desired maximum radius of star 
+	formation, end time of the model, and total stellar mass declared in 
+	``src/_globals.py``. 
 
 	.. [1] Kroupa (2001), MNRAS, 322, 231 
-	.. [2] Licquia & Newman (2015), ApJ, 806, 96 
 	""" 
 
 	time_integral = 0 

@@ -1,7 +1,10 @@
 r""" 
 Produces a plot of the migration schema implemented in Johnson et al. (2021). 
+This is an artistic diagram which doesn't represent physical quantities, only 
+qualitative trends. 
 """ 
 
+from ..._globals import END_TIME 
 from .. import env 
 import matplotlib.pyplot as plt 
 from .utils import named_colors, mpl_loc 
@@ -10,20 +13,146 @@ import numbers
 import random 
 
 
-def setup_axis(): 
-	fig = plt.figure(figsize = (7, 7)) 
-	ax = fig.add_subplot(111, facecolor = "white") 
-	ax.set_xlabel("Time [Gyr]") 
-	ax.set_ylabel(r"$R_\text{gal}$ [kpc]") 
-	ax.set_xlim([-1, 13]) 
-	ax.set_ylim([-2, 22]) 
-	return ax 
+def main(stem): 
+	r""" 
+	Produces a plot of the migration scheme implemented in Johnson et al. 
+	(2021), illustrated in their Fig. 2. This is an artistic diagram which 
+	doesn't represent physical quantities, only the qualitative trends of their 
+	models. 
+
+	Parameters 
+	----------
+	stem : ``str`` 
+		The relative or absolute path to the output image, with no extension. 
+		This function will save the figure in both PDF and PNG formats. 
+	""" 
+	ax = setup_axis() 
+	initial = [1, 14] # birth radii in kpc 
+	final = [9, 10] # final radii in kpc 
+	birth = [3, 5] # birth times in Gyr 
+	sudden = [9.1, 6.8] # times for sudden migration 
+	for i in range(len(initial)): 
+		for j in scheme.recognized_modes: 
+			plot_scheme(ax, initial[i], final[i], birth[i], label = not i, 
+				mode = j, sudden_migration_time = sudden[i]) 
+	leg = ax.legend(loc = mpl_loc("upper left"), ncol = 1, frameon = False, 
+		bbox_to_anchor = (0.02, 0.98), fontsize = 20) 
+	plt.tight_layout() 
+	plt.savefig("%s.pdf" % (stem)) 
+	plt.savefig("%s.png" % (stem)) 
+	plt.close() 
+
+
+def plot_scheme(ax, initial, final, birth, mode = "diffusion", label = False, 
+	sudden_migration_time = 10): 
+	r""" 
+	Plot a migration scheme as a function of simulation time. 
+
+	Parameters 
+	----------
+	ax : ``axes`` 
+		The matplotlib subplot to plot on. 
+	initial : ``float`` 
+		Galactocentric radius of birth in kpc. 
+	final : ``float`` 
+		Present-day galactocentric radius in kpc. 
+	birth : ``float`` 
+		Simulation time of birth in Gyr. 
+	mode : ``str`` [case-insensitive] [default : "diffusion"] 
+		A keyword denoting the time-dependence of migration from birth to 
+		present-day radii. 
+	label : ``bool`` [default : False] 
+		Whether or not to produce a legend handle for the line plotted. 
+	sudden_migration_time : ``float`` [default : 10] 
+		The time of instantaneous migration if ``mode == "sudden"``. 
+	""" 
+	scheme_ = scheme(initial, final, birth, mode = mode, 
+		sudden_migration_time = sudden_migration_time) 
+	times = [birth + 0.01 * i for i in range(
+		int((scheme.final_time - birth) / 0.01) + 2)] 
+	radii = [scheme_(i) for i in times] 
+	colors = {
+		"diffusion": 		"crimson", 
+		"linear": 			"lime", 
+		"sudden": 			"blue", 
+		"post-process": 	"black" 
+	} 
+	linestyles = {
+		"diffusion": 		"-", 
+		"linear": 			"-.", 
+		"sudden": 			"--", 
+		"post-process": 	":" 
+	} 
+	kwargs = {
+		"c": 			colors[mode.lower()], 
+		"linestyle": 	linestyles[mode.lower()] 
+	} 
+	if label: kwargs["label"] = mode.capitalize() 
+	ax.plot(times, radii, **kwargs) 
 
 
 class scheme: 
 
+	r""" 
+	A callable object for the generic migration schema implemented in 
+	Johnson et al. (2021). 
+
+	Parameters 
+	----------
+	initial : ``float`` 
+		The attribute ``initial``. See below. 
+	final : ``float`` 
+		The attribute ``final``. See below. 
+	birth : ``float`` 
+		The attribute ``birth``. See below. 
+	mode : ``str`` 
+		The attribute ``mode``. See below. 
+	sudden_migration_time : ``float`` 
+		The attribute ``sudden_migration_time``. See below. 
+
+	Attributes 
+	----------
+	initial : ``float`` 
+		The galactocentric radius of birth in kpc. 
+	final : ``float`` 
+		The galactocentric radius at the present day in kpc. 
+	birth : ``float`` 
+		The time of birth of a stellar population in Gyr. 
+	mode : ``str`` [case-insensitive] [default : "diffusion"] 
+		The mode of migration from initial to final radii, denoting the 
+		time-dependence. Allowed values: 
+
+		- "diffusion" 
+		- "linear" 
+		- "post-process" 
+		- "sudden" 
+
+		.. note:: For a definition of these models, see the Johnson et al. 
+			(2021) paper. 
+
+	sudden_migration_time : ``float`` [default : 10] 
+		The time of migration in Gyr if ``mode == "sudden"``. Must be between 
+		0 and 12.2 Gyr. 
+
+	Calling 
+	-------
+	Call this object to determine the radius at times between a star's birth 
+	and the present day. 
+
+		- Parameters 
+
+			time : ``float`` 
+				Simulation time in Gyr. 
+
+		- Returns 
+
+			radius : ``float`` 
+				Galactocentric radius in kpc inferred from the adopted 
+				migration model. 
+	"""  
+
 	recognized_modes = ["diffusion", "linear", "post-process", "sudden"] 
-	final_time = 12.2 # Gyr 
+	final_time = END_TIME 
 
 	def __init__(self, initial, final, birth, mode = "diffusion", 
 		sudden_migration_time = 10): 
@@ -61,6 +190,11 @@ class scheme:
 
 	@property 
 	def initial(self): 
+		r""" 
+		Type : ``float`` 
+
+		Galactocentric radius of birth in kpc. 
+		""" 
 		return self._initial 
 
 	@initial.setter 
@@ -76,6 +210,11 @@ class scheme:
 
 	@property 
 	def final(self): 
+		r""" 
+		Type : ``float`` 
+
+		Present-day galactocentric radius in kpc. 
+		""" 
 		return self._final 
 
 	@final.setter 
@@ -91,6 +230,11 @@ class scheme:
 
 	@property 
 	def birth(self): 
+		r""" 
+		Type : ``float`` 
+
+		Simulation time of birth in Gyr. 
+		""" 
 		return self._birth 
 
 	@birth.setter 
@@ -106,6 +250,20 @@ class scheme:
 
 	@property 
 	def mode(self): 
+		r""" 
+		Type : ``str`` [case-insensitive] [default : "diffusion"] 
+
+		A keyword denoting the time-dependence of migration from birth to 
+		present-day radii. Allowed values: 
+
+			- "diffusion" 
+			- "linear" 
+			- "sudden" 
+			- "post-process" 
+
+		For a mathematical definition of each of these migration modes, see 
+		the Johnson et al. (2021) paper. 
+		""" 
 		return self._mode 
 
 	@mode.setter 
@@ -120,6 +278,11 @@ class scheme:
 
 	@property 
 	def sudden_migration_time(self): 
+		r""" 
+		Type : ``float`` 
+
+		The time of instantaneous migration if ``self.mode == "sudden"``. 
+		""" 
 		return self._sudden_migration_time 
 
 	@sudden_migration_time.setter 
@@ -134,44 +297,15 @@ class scheme:
 				type(value))) 
 
 
-def plot_scheme(ax, initial, final, birth, label = False, **kwargs): 
-	scheme_ = scheme(initial, final, birth, **kwargs) 
-	times = [birth + 0.01 * i for i in range(
-		int((scheme.final_time - birth) / 0.01) + 2)] 
-	radii = [scheme_(i) for i in times] 
-	mode = kwargs["mode"] 
-	kwargs = {
-		"c": 			named_colors()[{
-			"diffusion": 		"crimson", 
-			"linear": 			"lime", 
-			"sudden": 			"blue", 
-			"post-process": 	"black" 
-		}[mode.lower()]], 
-		"linestyle": 	{
-			"diffusion": 		"-", 
-			"linear": 			"-.", 
-			"sudden": 			"--", 
-			"post-process": 	":" 
-		}[mode.lower()] 
-	} 
-	if label: kwargs["label"] = mode.capitalize() 
-	ax.plot(times, radii, **kwargs) 
-
-
-def main(stem, seed = 66): 
-	ax = setup_axis() 
-	initial = [1, 14, 4] # birth radii in kpc 
-	final = [9, 10, 17] # final radii in kpc 
-	birth = [3, 5, 7] # birth times in Gyr 
-	sudden = [9.1, 6.8, 11] # times for sudden migration 
-	for i in range(2): 
-		for j in scheme.recognized_modes: 
-			plot_scheme(ax, initial[i], final[i], birth[i], label = not i, 
-				mode = j, sudden_migration_time = sudden[i]) 
-	leg = ax.legend(loc = mpl_loc("upper left"), ncol = 1, frameon = False, 
-		bbox_to_anchor = (0.02, 0.98), fontsize = 20) 
-	plt.tight_layout() 
-	plt.savefig("%s.pdf" % (stem)) 
-	plt.savefig("%s.png" % (stem)) 
-	plt.close() 
+def setup_axis(): 
+	r""" 
+	Sets up the single suplot and returns it. 
+	""" 
+	fig = plt.figure(figsize = (7, 7), facecolor = "white") 
+	ax = fig.add_subplot(111) 
+	ax.set_xlabel("Time [Gyr]") 
+	ax.set_ylabel(r"$R_\text{gal}$ [kpc]") 
+	ax.set_xlim([-1, 13]) 
+	ax.set_ylim([-2, 22]) 
+	return ax 
 

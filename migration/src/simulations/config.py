@@ -1,3 +1,7 @@
+r""" 
+This file implements the config object, which is used to store the user's 
+model parameters before creating a ``diskmodel`` object from them. 
+""" 
 
 from vice import ScienceWarning 
 from vice import milkyway 
@@ -5,6 +9,30 @@ import warnings
 import numbers 
 
 class config: 
+
+	r""" 
+	Stores model parameters before creation of a ``diskmodel`` object. 
+
+	Parameters 
+	----------
+	kwargs : varying types 
+		Attributes can be initialized via keyword arguments. See below. 
+
+	Attributes 
+	----------
+	timestep_size : float [default : 0.01] 
+		The timestep size of the model in Gyr. 
+	star_particle_density : int [default : 2] 
+		The number of stellar populations per zone per timestep in the model. 
+	zone_width : float [default : 0.1] 
+		The width of each annulus in kpc in the model. Must be positive. 
+	elements : list [default : ["fe", "o"]] 
+		The elements to calculate the enrichment for. Components must be of 
+		type ``str`` and correspond to elements recognized by VICE. 
+	bins : list [default : [-3, -2.99, -2.98, ... , 2.98, 2.99, 3.00]] 
+		The bins within which to sort the dN/d[X/Y] abundance distributions 
+		into. 
+	""" 
 
 	def __init__(self, **kwargs): 
 		defaults = {
@@ -84,14 +112,14 @@ Star particle density must be an integer. Got: %s""" % (type(value)))
 			raise TypeError("Zone width must be a real number. Got: %s" % (
 				type(value))) 
 
-	@property 
-	def max_radius(self): 
-		r""" 
-		Type : real number 
+	# @property 
+	# def max_radius(self): 
+	# 	r""" 
+	# 	Type : real number 
 
-		The maximum radius in kpc of the disk model. 
-		""" 
-		return 20. 
+	# 	The maximum radius in kpc of the disk model. 
+	# 	""" 
+	# 	return 20. 
 
 	@property 
 	def elements(self): 

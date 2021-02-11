@@ -1,3 +1,8 @@
+r""" 
+This script runs the models in Johnson et al. (2021). 
+
+Run ``python simulations.py --help`` for more info. 
+""" 
 
 import argparse 
 import src 
@@ -27,17 +32,6 @@ def parse():
 		help = "The evolutionary history to assume (Default: insideout)", 
 		type = str, 
 		default = "insideout") 
-
-# 	parser.add_argument("--SFEmolecular", 
-# 		help = "SFE timescale of molecular gas at the present day (Default: 2)", 
-# 		type = float, 
-# 		default = 2.0) 
-
-# 	parser.add_argument("--SFEindex", 
-# 		help = """Power-law index on molecular gas SFE timescale with \
-# simulation time. (Default: 0.5)""", 
-# 		type = float, 
-# 		default = 0.5) 
 
 	parser.add_argument("--dt", 
 		help = "Timestep size in Gyr. (Default: 0.01)", 
@@ -95,10 +89,17 @@ def model(args):
 	return src.simulations.diskmodel.from_config(config, **kwargs) 
 
 
-
-if __name__ == "__main__": 
+def main(): 
+	r""" 
+	Runs the script. 
+	""" 
 	parser = parse() 
 	args = parser.parse_args() 
 	model = model(args) 
-	model.run([_ * model.dt for _ in range(round(12.2 / model.dt) + 1)], 
+	model.run([_ * model.dt for _ in range(round(
+		src._globals.END_TIME / model.dt) + 1)], 
 		overwrite = args.force, pickle = False) 
+
+
+if __name__ == "__main__": main() 
+
