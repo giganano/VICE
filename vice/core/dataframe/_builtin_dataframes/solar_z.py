@@ -14,9 +14,11 @@ class solar_z(elemental_settings):
 	r""" 
 	The VICE dataframe: solar composition 
 
-	Stores the abundance by mass of all recognized elements in the sun. Default 
-	values are assigned according to Asplund et al. (2009) [1]_. Stored values 
-	are of type ``float``. 
+	Stores the abundance by mass of all recognized elements in the sun. Stored 
+	values are of type ``float``; defaults are assigned according to the 
+	Asplund et al. (2009) [1]_ photospheric measurements. For elements where 
+	the photospheric measurements were not feasible, this object adopts the 
+	meteoritic measurements. 
 
 	.. versionadded:: 1.2.0 
 		In versions >= 1.2.0, users may modify the values stored for each 
@@ -32,13 +34,21 @@ class solar_z(elemental_settings):
 	Item Assignment 
 	---------------
 	- ``float`` 
-		The new abundance by mass for a given element. Must be between 0 and 1. 
+		The new abundance by mass (i.e. the mass fraction) of a given element 
+		within the sun. Must be between 0 and 1. 
 
 	Notes 
 	-----
 	Changes to the values stored by this object will be reflected in any 
 	chemical evolution simulations ran by VICE. However, these values will 
 	reset every time the python interpreter is restarted. 
+
+	Default values are calculated with ``vice.solar_z.epsilon_to_z_conversion``. 
+	For details, see the associated documentation. 
+
+	For helium ('he'), the default value is modified from the photospheric 
+	abundance of He as measured by Asplund et al. (2009) (Y = 0.2485) to their 
+	recommended bulk abundance (Y = 0.2703) (see their section 3.12). 
 	
 	Functions 
 	---------
@@ -69,9 +79,10 @@ class solar_z(elemental_settings):
 				_DIRECTORY_)) 
 		data = {} 
 		for elem in _RECOGNIZED_ELEMENTS_: 
-			data[elem] = float("%.3g" % (solar_z._epsilon_to_z_conversion(
+			data[elem] = float("%.3g" % (solar_z.epsilon_to_z_conversion(
 				asplund09[elem], molecular_weights[elem]))) 
 		super().__init__(data) 
+		self.__setitem__("he", 0.2703) # correction of photospheric measurements 
 
 
 	def __setitem__(self, key, value): 
@@ -85,25 +96,25 @@ class solar_z(elemental_settings):
 
 
 	@staticmethod 
-	def _epsilon_to_z_conversion(epsilon, mu, Xsun = 0.73): 
+	def epsilon_to_z_conversion(epsilon, mu, Xsun = 0.73): 
 		r""" 
 		Convert an element's abundance in the sun according to the definition 
 
 		.. math:: \epsilon_x = \log_{10}(N_x / N_H) + 12 
 
 		as reported by Asplund et al. (2009) [1]_ to a metallicity by mass 
-		:math:`Z_x`. 
+		:math:`Z_x = M_x / M_\odot`. 
 
 		Parameters 
 		----------
 		epsilon : float 
-			The value reported by Asplund et al. (2009) [1]_. 
+			The value reported by Asplund et al. (2009). 
 		mu : float 
 			The mean molecular weight of the element. VICE's internal data 
 			stores these values taken from a standard periodic table of the 
 			elements. 
 		Xsun : float [default : 0.73] 
-			The hydrogren mass fraction of the sun. 
+			The hydrogren mass fraction of the solar photosphere. 
 
 		Returns 
 		-------
@@ -114,7 +125,8 @@ class solar_z(elemental_settings):
 		Notes 
 		-----
 		The values returned by this function are calculated according to the 
-		following conversion: 
+		following conversion, which can be derived from the definition of 
+		:math:`\epsilon_x` and :math:`Z_x` above:  
 
 		.. math:: Z_x = X_\odot \mu_x 10^{\epsilon_x - 12} 
 
@@ -123,7 +135,7 @@ class solar_z(elemental_settings):
 		if all([isinstance(_, numbers.Number) for _ in [epsilon, mu, Xsun]]): 
 			return Xsun * mu * 10**(epsilon - 12) 
 		else: 
-			raise SystemError("Internal Error.") 
+			raise TypeError("Must be a numerical value.")  
 
 
 def _read_builtin_datafile(filename): 

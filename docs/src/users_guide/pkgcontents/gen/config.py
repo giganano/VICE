@@ -79,31 +79,6 @@ _CONFIG_ = {
 		"header": 		"vice.VisibleDeprecationWarning", 
 		"subs": 		[] 
 	}, 
-	vice.atomic_number: {
-		"filename": 	"vice.atomic_number.rst", 
-		"header": 		"vice.atomic_number", 
-		"subs": 		[] 
-	}, 
-	vice.primordial: {
-		"filename": 	"vice.primordial.rst", 
-		"header": 		"vice.primordial", 
-		"subs": 		[] 
-	}, 
-	vice.solar_z: {
-		"filename": 	"vice.solar_z.rst", 
-		"header": 		"vice.solar_z", 
-		"subs": 		[] 
-	}, 
-	vice.sources: {
-		"filename": 	"vice.sources.rst", 
-		"header": 		"vice.sources", 
-		"subs": 		[] 
-	}, 
-	vice.stable_isotopes: {
-		"filename": 	"vice.stable_isotopes.rst", 
-		"header": 		"vice.stable_isotopes", 
-		"subs": 		[] 
-	}, 
 	vice.cumulative_return_fraction: {
 		"filename": 	"vice.cumulative_return_fraction.rst", 
 		"header": 		"vice.cumulative_return_fraction", 
@@ -177,6 +152,11 @@ _CONFIG_ = {
 	vice.solar_z: {
 		"filename": 	"vice.solar_z.rst", 
 		"header": 		"vice.solar_z", 
+		"subs": 		[vice.solar_z.epsilon_to_z_conversion]  
+	}, 
+	vice.solar_z.epsilon_to_z_conversion: {
+		"filename": 	"vice.solar_z.epsilon_to_z_conversion.rst", 
+		"header": 		"vice.solar_z.epsilon_to_z_conversion", 
 		"subs": 		[] 
 	}, 
 	vice.sources: {
