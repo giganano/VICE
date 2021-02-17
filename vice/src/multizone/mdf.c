@@ -39,6 +39,7 @@ extern void tracers_MDF(MULTIZONE *mz) {
 		if ((*mz).verbose) {
 			printf("\rProgress: %.1f%%", 
 				i * 100.0 / (*(*mz).mig).tracer_count); 
+			fflush(stdout); 
 		} else {} 
 	} 
 	if ((*mz).verbose) printf("\n"); 

@@ -1,4 +1,4 @@
-# cython: language_level = 3, boundscheck = False 
+# cython: language_level = 3, boundscheck = False, binding = True 
 
 from __future__ import absolute_import 
 from ....._globals import _VERSION_ERROR_ 
@@ -25,9 +25,15 @@ def tau_star_inf():
 	""" 
 	return [
 		"vice.core.singlezone edge case : quiescence [tau_star = infinity]", 
-		quiescence_test(tau_star = lambda t: float("inf"), 
-			smoothing = 10) 
+		quiescence_test(tau_star = tau_star, smoothing = 10) 
 	] 
+
+
+def tau_star(t): 
+	r""" 
+	Returns infinity always. 
+	""" 
+	return float("inf") 
 
 
 def quiescence_test(**kwargs): 

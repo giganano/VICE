@@ -9,8 +9,8 @@ The Gas Supply
 Inflows, Star Formation, and Efficiency 
 ---------------------------------------
 Like the :ref:`enrichment equation <enr_eq>`, the time derivative of the mass 
-of the gas in the interstellar medium (ISM) :math:`M_g` is a simple sum of 
-source and sink terms. For an infall rate (IFR) :math:`\dot{M}_\text{in}`, 
+of the gas in the interstellar medium (ISM) :math:`M_\text{g}` is a simple sum 
+of source and sink terms. For an infall rate (IFR) :math:`\dot{M}_\text{in}`, 
 star formation rate (SFR) :math:`\dot{M}_\star`, and outflow rate (OFR) 
 :math:`\dot{M}_\text{out}`: 
 
@@ -26,19 +26,21 @@ implemented with a Forward Euler solution, this equation is evaluated via:
 	\Delta t + \dot{M}_\text{r}\Delta t 
 
 By construction, VICE operates such that the user specifies either an infall 
-history (:math:`\dot{M}_\text{in}` as a function of time), a star formation 
-history (:math:`\dot{M}_\star` as a function of time), or the gas history 
-(:math:`\dot{M}_\text{gas}` as a function of time). The user also specifies a 
-star formation efficiency timescale [1]_: 
+history (:math:`\dot{M}_\text{in}` in :math:`M_\odot yr^{-1}` as a function of 
+time), a star formation history (:math:`\dot{M}_\star` in :math:`M_\odot 
+yr^{-1}` as a function of time), or the gas history (:math:`M_\text{g}` in 
+:math:`M_\odot` as a function of time). The user also specifies a star 
+formation efficiency timescale [1]_: 
 
 .. math:: \tau_\star \equiv \frac{M_g}{\dot{M}_\star} 
 
 Users may specify an arbitrary function of time in Gyr to describe 
 :math:`\tau_\star`, whose units are assumed to be Gyr. With one of either 
-:math:`\dot{M}_\text{in}`, :math:`\dot{M}_\star`, or :math:`\dot{M}_g` 
+:math:`\dot{M}_\text{in}`, :math:`\dot{M}_\star`, or :math:`M_\text{g}` 
 specified by the user, :math:`\tau_\star`,  and the implementation of 
 :math:`\dot{M}_\text{out}` and :math:`\dot{M}_\text{r}` discussed in this 
-section, the solution to :math:`M_g` as a function of time is unique. 
+section, the solutions to :math:`\dot{M}_\text{in}`, :math:`\dot{M}_\star`, 
+and :math:`M_g` as functions of time are unique. 
 
 VICE also allows users to adopt a formulation of :math:`\tau_\star` that 
 depends on the gas supply; this is an application of the Kennicutt-Schmidt 
@@ -50,17 +52,29 @@ relation to the single-zone approximation. This is implemented as a power-law:
 where :math:`M_{g,\text{Schmidt}}` is a normalizing gas supply and 
 :math:`\tau_{\star,\text{spec}}` is the user-specified :math:`\tau_\star`. 
 The ``singlezone`` object will employ this scaling when the attribute 
-``schmidt = True``. 
+``schmidt = True``. Users may also enforce a minimum value of 
+:math:`\tau_\star` by specifying a "critical" gas supply, above which the 
+value of :math:`\tau_\star` is constant, given by: 
+
+.. math:: \tau_\star^{-1} = \tau_{\star,\text{spec}}^{-1} 
+	\left(\frac{M_{g,\text{crit}}}{M_{g,\text{Schmidt}}}\right)^\alpha 
+	\; (M_g > M_{g,\text{crit}}) 
+
+The value of :math:`M_{g,\text{crit}}` is an attribute of the ``singlezone`` 
+object, and is only relevant when the attribute ``schmidt = True``. By default 
+it is infinite, implying a scaling of :math:`\tau_\star` with :math:`M_g` that 
+is a power-law always. The minimum value of :math:`\tau_\star` can be achieved 
+by simply assigning :math:`M_{g,\text{crit}}` to a finite value. 
 
 Relevant Source Code: 
 
 	- ``vice/src/singlezone/ism.c`` 
 
-.. [1] In the astronomical literature, this quantity is often referred to as 
-	the "depletion time" rather than star formation efficiency. In the 
-	chemical evolution literature, it quantifies the fractioanl rate at which 
-	gas is converted into stars, and is thus referred to as star formation 
-	efficiency. This is the 
+.. [1] In the interstellar medium literature, this quantity is often referred 
+	to as the "depletion time" due to star formation. In the galactic 
+	archaeology literature, it quantifies the fractional rate at which gas 
+	forms stars, and is thus often refered to in terms of star formation 
+	efficiency. We retain this nomenclature here. 
 
 .. _gas_outflows: 
 

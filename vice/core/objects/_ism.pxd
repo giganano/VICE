@@ -1,5 +1,8 @@
 # cython: language_level = 3, boundscheck = False 
 
+from __future__ import absolute_import 
+from ._callback_2arg cimport CALLBACK_2ARG 
+
 cdef extern from "../../src/objects.h": 
 	ctypedef struct ISM: 
 		char *mode 
@@ -11,6 +14,7 @@ cdef extern from "../../src/objects.h":
 		double *eta 
 		double *enh 
 		double *tau_star 
+		CALLBACK_2ARG *functional_tau_star 
 		double schmidt_index 
 		double mgschmidt 
 		double smoothing_time 

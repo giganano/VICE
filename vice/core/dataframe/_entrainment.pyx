@@ -84,16 +84,11 @@ cdef class channel_entrainment(elemental_settings):
 		super().__init__(frame) 
 
 	def __setitem__(self, key, value): 
-		from ...modeling.singlechain import parameter 
 		if isinstance(key, strcomp): 
 			if key.lower() in _RECOGNIZED_ELEMENTS_: 
 				if isinstance(value, numbers.Number): 
 					if 0 <= value <= 1: 
-						# allow fitting parameters 
-						if isinstance(value, parameter): 
-							self._frame[key.lower()] = value 
-						else: 
-							self._frame[key.lower()] = float(value) 
+						self._frame[key.lower()] = float(value) 
 					else: 
 						raise ValueError("""Entrainment fraction must be \
 between 0 and 1. Got: %g""" % (value)) 

@@ -1,22 +1,42 @@
 r""" 
-Sets up the matplotlib environment for producing the Johnson et al. (2021) 
-migration plots. 
+Ensures runtime dependencies are satisfied for producing figures in Johnson et 
+al. (2021). 
+
+Dependencies: 
+
+	- matplotlib >= 2.0.0 
+	- NumPy >= 1.17.0 
 """ 
 
 try: 
 	ModuleNotFoundError 
 except NameError: 
 	ModuleNotFoundError = ImportError 
+
+# Enforce matplotlib >= 2.0.0 or else RuntimeError 
 try: 
 	import matplotlib as mpl 
 except (ModuleNotFoundError, ImportError): 
 	raise ModuleNotFoundError("Matplotlib not found.") 
-if tuple([int(i) for i in matplotlib.__version__.split('.')])[:2] <= (2, 0): 
+if tuple([int(i) for i in mpl.__version__.split('.')])[:2] < (2, 0): 
 	raise RuntimeError("""Matplotlib version >= 2.0.0 required for producing \
-Johnson et al. (2021) figures. Current: %s""" % (matplotlib.__version__)) 
+Johnson et al. (2021) figures. Current: %s""" % (mpl.__version__)) 
+else: pass 
+
+# Enforce NumPy >= 1.17.0 or else RuntimeError 
+try: 
+	import numpy as np 
+except (ModuleNotFoundError, ImportError): 
+	raise ModuleNotFoundError("NumPy not found.") 
+if tuple([int(i) for i in np.__version__.split('.')])[:2] < (1, 17): 
+	raise RuntimeError("""NumPy version >= 1.17.0 required for producing \
+Johnson et al. (2021) figures. Current: %s""" % (np.__version__)) 
 else: pass 
 
 
+# by setting matplotlib rcParams here, all plots will be automatically 
+# formatted since this file will be imported everywhere to ensure dependencies 
+# are met anyway. 
 mpl.rcParams["font.family"] = "serif"
 mpl.rcParams["text.usetex"] = True 
 mpl.rcParams["text.latex.preamble"] = [r"\usepackage{amsmath}"]

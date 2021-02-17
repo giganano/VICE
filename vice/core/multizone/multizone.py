@@ -2,6 +2,7 @@
 from __future__ import absolute_import 
 from ..._globals import _VERSION_ERROR_ 
 from ._multizone import c_multizone 
+from ..singlezone import singlezone 
 from ..outputs._output_utils import _check_singlezone_output 
 from ..outputs._output_utils import _is_multizone 
 from ..outputs._output_utils import _get_name 
@@ -11,6 +12,7 @@ from .. import pickles
 import warnings 
 import numbers 
 import sys 
+import os 
 if sys.version_info[:2] == (2, 7): 
 	strcomp = basestring 
 elif sys.version_info[:2] >= (3, 5): 
@@ -95,6 +97,28 @@ class multizone(object):
 		Obtain a ``multizone`` object with the parameters of one that produced 
 		an output. 
 
+	Notes 
+	-----
+	This object makes use of composition. At its core, it is simply an array of 
+	``singlezone`` objects, which the user may manipulate like all other 
+	``singlezone`` objects. 
+
+	.. seealso:: ``vice.singlezone`` 
+
+	POSIX operating systems by default limit the number of files open per 
+	process, though with administrator's privileges this number can be 
+	temporarily raised. For each simulation, VICE opens two files per zone, 
+	plus one to write the star particle information to, in addition to the 
+	python files it must import for overhead. Simulations with a particularly 
+	high number of zones will therefore require a relatively high number of 
+	files to be opened. The maximum number of files per process can be 
+	accessed by running ``ulimit -n`` in a bash terminal; users should be 
+	careful to ensure that this number is significantly higher than what is 
+	required for a given simulation. It is recommended that users run a coarse 
+	timestep, low star particle per timestep per zone version of higher 
+	resolution simulations before letting them run to ensure that errors like 
+	this do not arise when integration times are long. 
+
 	Example Code 
 	------------
 	>>> import vice 
@@ -130,7 +154,7 @@ class multizone(object):
 					raise ValueError("""Attribute 'n_zones' must be of type \
 int. Got: %g""" % (n_zones)) 
 			else: 
-				raise ValueError("Attribute 'n_zones' must be non-negative.") 
+				raise ValueError("Attribute 'n_zones' must be positive.") 
 		else: 
 			raise TypeError("""Attribute 'n_zones' must be of type int. \
 Got: %s""" % (type(n_zones))) 
@@ -139,7 +163,7 @@ Got: %s""" % (type(n_zones)))
 		self.__c_version = c_multizone(n_zones = int(n_zones), **kwargs) 
 
 	def __repr__(self): 
-		""" 
+		r""" 
 		Prints in the format: vice.singlezone{ 
 			attr1 -----------> value 
 			attribute2 ------> value 
@@ -169,18 +193,18 @@ Got: %s""" % (type(n_zones)))
 		return self.__repr__() 
 
 	def __enter__(self): 
-		""" 
+		r""" 
 		Opens a with statement 
 		""" 
 		return self 
 
 	def __exit__(self, exc_type, exc_value, exc_tb): 
-		""" 
+		r""" 
 		Raises all exceptions inside with statements 
 		""" 
 		return exc_value is None 
 
-	@classmethod  
+	@classmethod 
 	def from_output(cls, arg): 
 		r""" 
 		Obtain an instance of the ``multizone`` class given either the path 
@@ -202,12 +226,25 @@ Got: %s""" % (type(n_zones)))
 			A ``multizone`` object with the same parameters as the one which 
 			produced the output. 
 
+			.. note:: 
+
+				``multizone`` simulations by default save a copy of their 
+				attributes with their output, a feature which makes this 
+				function possible. If the user calls the ``run`` function with 
+				the keyword argument ``pickle = False``, the necessary files 
+				to reconstruct the simulation will not be produced. In this 
+				case, this function will return a ``multizone`` object with 
+				the default parameters. 
+
 		Raises 
 		------
 		* TypeError 
 			- ``arg`` is neither a ``multioutput`` object nor a string. 
 		* IOError [Only occurs if the output has been altered] 
 			- The output is missing files 
+		* UserWarning 
+			- Attributes were not saved with the output at user's request, and 
+			  the default ``multizone`` object will be returned. 
 
 		Notes 
 		-----
@@ -268,36 +305,45 @@ Got: %s""" % (type(n_zones)))
 Got: %s""" % (type(arg))) 
 
 		from ..singlezone import singlezone 
-		attrs = pickles.jar.open("%s/attributes" % (dirname)) 
-		mz = cls(n_zones = attrs["n_zones"]) 
-		mz.name = attrs["name"] 
-		mz.n_stars = attrs["n_stars"] 
-		mz.simple = attrs["simple"] 
-		mz.verbose = attrs["verbose"] 
-		for i in range(mz.n_zones): 
-			mz.zones[i] = singlezone.from_output("%s/%s.vice" % (dirname, 
-				attrs["zones"][i])) 
-			mz.zones[i].name = attrs["zones"][i] 
-		
-		stars = pickles.jar.open("%s/migration" % (dirname))["stars"] 
-		if stars is None: 
+		if os.path.exists("%s/attributes" % (dirname)): 
+			# if-else block due to ``pickle`` option to ``run`` function 
+			attrs = pickles.jar.open("%s/attributes" % (dirname)) 
+			mz = cls(n_zones = attrs["n_zones"]) 
+			mz.name = attrs["name"] 
+			mz.n_stars = attrs["n_stars"] 
+			mz.simple = attrs["simple"] 
+			mz.verbose = attrs["verbose"] 
+			for i in range(mz.n_zones): 
+				mz.zones[i] = singlezone.from_output("%s/%s.vice" % (dirname, 
+					attrs["zones"][i])) 
+				mz.zones[i].name = attrs["zones"][i] 
+		else: 
 			warnings.warn("""\
+Attributes not saved with multizone output. Initializing multizone object with \
+default parameters.""", UserWarning) 
+			mz = cls() 
+		
+		if os.path.exists("%s/migration" % (dirname)): 
+			stars = pickles.jar.open("%s/migration" % (dirname))["stars"] 
+			if stars is None: 
+				warnings.warn("""\
 Attribute not encoded with output: migration.stars. Assuming default value, \
 which may not reflect the value of this attribute at the time the simulation \
 was ran.""", UserWarning) 
-		else: 
-			mz.migration.stars = stars 
+			else: 
+				mz.migration.stars = stars 
 
-		for i in range(mz.n_zones): 
-			attrs = pickles.jar.open("%s/migration/gas%d" % (dirname, i)) 
-			for j in range(mz.n_zones): 
-				if attrs[str(j)] is None: 
-					warnings.warn("""\
+			for i in range(mz.n_zones): 
+				attrs = pickles.jar.open("%s/migration/gas%d" % (dirname, i)) 
+				for j in range(mz.n_zones): 
+					if attrs[str(j)] is None: 
+						warnings.warn("""\
 Attribute not encoded with output: migration.gas[%d][%d]. Assuming default \
 value, which may not reflect the value of this attribute at the time the \
 simulation was ran.""" % (i, j), UserWarning) 
-				else: 
-					mz.migration.gas[i][j] = attrs[str(j)]  
+					else: 
+						mz.migration.gas[i][j] = attrs[str(j)] 
+		else: pass # Warning already raised 
 
 		return mz 
 
@@ -573,7 +619,8 @@ simulation was ran.""" % (i, j), UserWarning)
 	def simple(self, value): 
 		self.__c_version.simple = value 
 
-	def run(self, output_times, capture = False, overwrite = False): 
+	def run(self, output_times, capture = False, overwrite = False, 
+		pickle = True): 
 		r""" 
 		Run the simulation. 
 
@@ -592,6 +639,9 @@ simulation was ran.""" % (i, j), UserWarning)
 		overwrite : ``bool`` [default : False] 
 			If ``True``, will force overwrite any files with the same name as 
 			the simulation output files. 
+		pickle : ``bool`` [default : True] 
+			If ``True``, VICE will save the attributes of this object with the 
+			output. See note below. 
 
 		Returns 
 		-------
@@ -645,6 +695,19 @@ simulation was ran.""" % (i, j), UserWarning)
 			simulation. This may be one timestep beyond the last element of 
 			the specified ``output_times`` array. 
 
+		.. note:: 
+
+			If the keyword argument ``pickle == True``, VICE will attempt to 
+			save a pickle of each attribute of this class. VICE may not be 
+			able to save some attributes, in particular those that are 
+			themselves instances of another class, especially if they have 
+			data or C-extensions attached to them. 
+
+			These data make up a significant fraction of the disk usage of 
+			output files. Therefore, if many multizone models are to be ran, 
+			users are recommended to specify ``pickle = False`` to lower the 
+			storage space required. 
+
 		Example Code 
 		------------
 		>>> import numpy as np 
@@ -654,5 +717,5 @@ simulation was ran.""" % (i, j), UserWarning)
 		>>> mz.run(outtimes) 
 		""" 
 		return self.__c_version.run(output_times, capture = capture, 
-			overwrite = overwrite) 
+			overwrite = overwrite, pickle = pickle)  
 

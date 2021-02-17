@@ -21,6 +21,7 @@ from .entrainment import entrainment
 from ..callback import callback1_nan_inf_positive 
 from ..callback import callback1_nan_inf 
 from ..callback import callback2_nan_inf 
+from ..callback import callback2_nan_positive 
 from ..dataframe import evolutionary_settings 
 from ..dataframe import atomic_number 
 from ..dataframe import primordial 
@@ -907,7 +908,11 @@ value. Got: %s""" % (type(value)))
 	@property
 	def tau_star(self): 
 		# docstring in python version 
-		return self._tau_star 
+		if isinstance(self._tau_star, callback2_nan_positive): 
+			return self._tau_star.function 
+		else: 
+			return self._tau_star 
+		# return self._tau_star 
 
 	@tau_star.setter 
 	def tau_star(self, value): 
@@ -930,10 +935,19 @@ value. Got: %s""" % (type(value)))
 				raise ValueError("""Attribute 'tau_star' must be positive. \
 Got: %g""" % (value)) 
 		elif callable(value): 
+			# Can take one or two parameters 
+			arg_count = _pyutils.arg_count(value) 
+			if arg_count == 1: 
+				self._tau_star = value 
+			elif arg_count == 2: 
+				self._tau_star = callback2_nan_positive(value) 
+			else: 
+				raise TypeError("""Attribute 'tau_star', when callable, must \
+take one or two numerical parameters. Got: %d""" % (arg_count)) 
 			# make sure it takes only one parameter 
-			_pyutils.args(value, """Attribute 'tau_star', when callable, must \
-take only one numerical parameter.""") 
-			self._tau_star = value 
+# 			_pyutils.args(value, """Attribute 'tau_star', when callable, must \
+# take only one numerical parameter.""") 
+# 			self._tau_star = value 
 		else: 
 			raise TypeError("""Attribute 'tau_star' must be either a \
 numerical value or a callable function.""") 
@@ -1259,7 +1273,7 @@ All elemental yields in the current simulation will be set to the table of \
 		else: 
 			self._agb_model = None 
 
-####### DEPRECATED IN DEVELOPMENT REPO AFTER RELEASE OF VERSION 1.0.0 #######
+####### DEPRECATED ON DEVELOPMENT BRANCH AFTER RELEASE OF VERSION 1.1.0 #######
 # 		if isinstance(value, strcomp): 
 # 			if value.lower() in agb._grid_reader._RECOGNIZED_STUDIES_: 
 # 				if (any(map(lambda x: atomic_number[x] > 28, self.elements)) 
@@ -1404,10 +1418,16 @@ attribute '%s' evaluated to inf or NaN for at least one timestep.""" % (name))
 		self._sz[0].ism[0].eta = copy_pylist(mapper(self._eta, "eta"))  
 		self._sz[0].ism[0].enh = copy_pylist(mapper(
 			self._enhancement, "enhancement")) 
-		# Allow inf for tau_star if in infall or gas mode, but not sfr mode 
-		self._sz[0].ism[0].tau_star = copy_pylist(mapper(
-			self._tau_star, "tau_star", 
-			allow_inf = self.mode in ["ifr", "gas"]))  
+		if isinstance(self._tau_star, callback2_nan_positive): 
+			# tau_star function of time and gas mass -> don't map across time, 
+			# instead setup callback object. 
+			callback_2arg_setup(self._sz[0].ism[0].functional_tau_star, 
+				self._tau_star) 
+		else: 
+			# Allow inf for tau_star if in infall or gas mode, but not sfr mode 
+			self._sz[0].ism[0].tau_star = copy_pylist(mapper(
+				self._tau_star, "tau_star", 
+				allow_inf = self.mode in ["ifr", "gas"]))  
 		if self.mode == "gas": 
 			self._sz[0].ism[0].specified = copy_pylist(mapper(
 				self._func, "func"))  

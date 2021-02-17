@@ -9,11 +9,13 @@ cdef extern from "../../src/objects/hydrodiskstars.h":
 
 
 cdef extern from "../../src/toolkit/hydrodiskstars.h": 
-	unsigned short hydrodiskstars_import(HYDRODISKSTARS *hds, char *filename, 
-		unsigned short ids_column, unsigned short birth_times_column, 
-		unsigned short birth_radii_column, unsigned short final_radii_column, 
+	unsigned short hydrodiskstars_import(HYDRODISKSTARS *hds, 
+		unsigned long Nstars, char *filestem, unsigned short ids_column, 
+		unsigned short birth_times_column, unsigned short birth_radii_column, 
+		unsigned short final_radii_column, unsigned short zformcolumn, 
 		unsigned short zfinal_column, unsigned short v_radcolumn, 
-		unsigned short v_phicolumn, unsigned short v_zcolumn)
+		unsigned short v_phicolumn, unsigned short v_zcolumn, 
+		unsigned short decomp_column) 
 	long hydrodiskstars_find_analog(HYDRODISKSTARS hds, double birth_radius, 
 		double birth_time) 
 	double calczone_linear(HYDRODISKSTARS hds, double birth_time, 
@@ -22,6 +24,7 @@ cdef extern from "../../src/toolkit/hydrodiskstars.h":
 		double birth_radius, long analog_idx, double time) 
 	double calczone_diffusive(HYDRODISKSTARS hds, double birth_time, 
 		double birth_radius, double end_time, long analog_idx, double time) 
+	double HYDRODISK_END_TIME 
 
 
 cdef extern from "../../src/utils.h": 
@@ -33,5 +36,4 @@ cdef class c_hydrodiskstars:
 	cdef HYDRODISKSTARS *_hds 
 	cdef long _analog_idx 
 	cdef double _migration_time 
-	cdef char *_mode 
 	cdef object _analog_data 

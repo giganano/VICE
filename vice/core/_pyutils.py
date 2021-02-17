@@ -162,11 +162,26 @@ def range_(start, stop, dx):
 	elif not isinstance(dx, numbers.Number): 
 		raise TypeError("Must be a numerical value. Got: %s" % (type(dx))) 
 	else: 
-		arr = int(((stop - start) / dx) + 1) * [0.] 
-		for i in range(len(arr)): 
-			arr[i] = start + i * dx 
-		return arr 
-
+		r""" 
+		Use recursion to force the algorithm to always run in increasing order 
+		with a positive dx. 
+		""" 
+		if dx < 0: 
+			return range_(start, stop, -dx) 
+		elif stop < start: 
+			return range_(stop, start, dx) 
+		elif stop == start: 
+			return [start] 
+		else: 
+			r""" 
+			Using an append approach causes floating point round-off errors 
+			here, causing the test to fail 
+			""" 
+			arr = int(((stop - start) / dx) + 1) * [0.] 
+			for i in range(len(arr)): 
+				arr[i] = start + i * dx 
+			if arr[-1] < stop: arr.append(len(arr) * dx) 
+			return arr  
 
 def args(func, errmsg): 
 	r"""
@@ -257,4 +272,36 @@ def is_ascii(pystr):
 		return all([ord(c) < 128 for c in pystr]) 
 	else: 
 		raise TypeError("Must be of type str. Got: %s" % (type(pystr))) 
+
+
+def format_time(seconds): 
+	r""" 
+	Convert a time in seconds into days, hours, minutes, and seconds. 
+
+	Parameters 
+	----------
+	seconds : float 
+		An amount of time in seconds. 
+
+	Returns 
+	-------
+	days : int 
+		The number of days in the specified time interval. 
+	hours : int 
+		The number of hours in excess of the number of days. 
+	minutes : int 
+		The number of minutes in excess of the number of hours. 
+	seconds : int 
+		The number of seconds in excess of the number of minutes. 
+	""" 
+	if isinstance(seconds, numbers.Number): 
+		days = seconds // (24 * 3600) 
+		seconds %= 24 * 3600 
+		hours = seconds // 3600 
+		seconds %= 3600 
+		minutes = seconds // 60 
+		seconds %= 60 
+		return [int(days), int(hours), int(minutes), int(seconds)] 
+	else: 
+		raise TypeError("Must be a real number. Got: %s" % (type(seconds))) 
 

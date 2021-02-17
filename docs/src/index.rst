@@ -2,7 +2,7 @@
 
 VICE: Versatile Integrator for Chemical Evolution 
 =================================================
-| **Version 1.5.0** 
+| **Version 1.2.0** 
 | James W. Johnson 
 |	Primary Author 
 | 	Email: giganano9@gmail.com 
@@ -10,15 +10,12 @@ VICE: Versatile Integrator for Chemical Evolution
 | 	*140 W. 18th Ave., Columbus, OH, 43204* 
 
 Welcome to VICE's documentation! Source code and more resources can found in 
-the `git repository`__. To cite this version of VICE, please reference 
-`Johnson & Weinberg (2020)`__. Any modifications to the source code will 
+the `git repository`__. Any modifications to the source code will 
 require `rebuilding VICE from source`__ for the change to take effect. 
 
 __ src_ 
-__ paper1_ 
 __ install_ 
 .. _src: https://github.com/giganano/VICE.git 
-.. _paper1: https://arxiv.org/abs/1911.02598 
 .. _install: https://github.com/giganano/VICE/blob/master/docs/src/install.rst
 
 First-time users should familiarize themselves with VICE's API by going 
@@ -31,7 +28,7 @@ __ src_
 
 
 .. toctree:: 
-	:maxdepth: 1 
+	:maxdepth: 2 
 
 	install 
 	getting_started 

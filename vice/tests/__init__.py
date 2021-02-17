@@ -18,7 +18,7 @@ if not __VICE_SETUP__:
 	__all__ = [ 
 		"core", 
 		"elements", 
-		"modeling", 
+		"milkyway", 
 		"src", 
 		"yields", 
 		"test" 
@@ -27,7 +27,7 @@ if not __VICE_SETUP__:
 	from ..testing import moduletest 
 	from . import elements 
 	from .. import core 
-	from .. import modeling 
+	from ..milkyway import test as milkyway_test 
 	from .. import src 
 	from .. import toolkit 
 	from .. import yields 
@@ -66,7 +66,7 @@ This program will overwrite the VICE output at %s/test.vice. Proceed? \
 			[ 
 				core.test(run = False), 
 				elements.test(run = False), 
-				modeling.test(run = False), 
+				milkyway_test(run = False), 
 				src.test(run = False), 
 				toolkit.test(run = False), 
 				yields.test(run = False) 

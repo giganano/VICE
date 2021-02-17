@@ -29,6 +29,7 @@ extern unsigned short test_hydrodiskstars_initialize(void) {
 	status &= (*test).v_phi == NULL; 
 	status &= (*test).v_z == NULL; 
 	status &= (*test).rad_bins == NULL; 
+	status &= (*test).decomp == NULL; 
 	status &= (*test).n_rad_bins == 0u; 
 	hydrodiskstars_free(test); 
 	return status; 

@@ -3,87 +3,69 @@ This file implements the primordial built-in dataframe
 """ 
 
 from __future__ import absolute_import 
-from .._builtin_elemental_data import builtin_elemental_data 
+from ...._globals import _RECOGNIZED_ELEMENTS_ 
+from .._elemental_settings import elemental_settings 
 
 
-# --------------------- PRIMORDIAL ABUNDANCES DATAFRAME --------------------- # 
-primordial = builtin_elemental_data({
-	"he": 		0.24672, 
-	"c":		0, 
-	"n":		0, 
-	"o":		0, 
-	"f":		0, 
-	"ne":		0, 
-	"na": 		0, 
-	"mg":		0, 
-	"al": 		0, 
-	"si":		0, 
-	"p": 		0, 
-	"s":		0, 
-	"cl": 		0, 
-	"ar":		0, 
-	"k": 		0, 
-	"ca": 		0, 
-	"sc":		0, 
-	"ti": 		0, 
-	"v": 		0, 
-	"cr": 		0, 
-	"mn": 		0, 
-	"fe":		0, 
-	"co": 		0, 
-	"ni": 		0, 
-	"cu": 		0, 
-	"zn": 		0, 
-	"ga": 		0, 
-	"ge": 		0, 
-	"as": 		0, 
-	"se": 		0, 
-	"br": 		0, 
-	"kr": 		0, 
-	"rb": 		0, 
-	"sr":		0, 
-	"y":		0, 
-	"zr": 		0, 
-	"nb": 		0, 
-	"mo": 		0, 
-	"ru": 		0, 
-	"rh": 		0, 
-	"pd": 		0, 
-	"ag": 		0, 
-	"cd": 		0, 
-	"in": 		0, 
-	"sn": 		0, 
-	"sb": 		0, 
-	"te": 		0, 
-	"i": 		0, 
-	"xe": 		0, 
-	"cs": 		0, 
-	"ba":		0, 
-	"la":		0, 
-	"ce": 		0, 
-	"pr": 		0, 
-	"nd": 		0, 
-	"sm": 		0, 
-	"eu":		0, 
-	"gd": 		0, 
-	"tb": 		0, 
-	"dy": 		0, 
-	"ho": 		0, 
-	"er": 		0, 
-	"tm": 		0, 
-	"yb": 		0, 
-	"lu": 		0, 
-	"hf": 		0, 
-	"ta": 		0, 
-	"w": 		0, 
-	"re": 		0, 
-	"os": 		0, 
-	"ir": 		0, 
-	"pt": 		0, 
-	"au": 		0, 
-	"hg": 		0, 
-	"tl":  		0, 
-	"pb": 		0, 
-	"bi": 		0 
-}, "primordial abundance")
+class primordial(elemental_settings): 
+
+	r""" 
+	The VICE dataframe: primordial abundances 
+
+	Stores the abundance by mass of each element following big bang 
+	nucleosynthesis. Stored values are of type ``float``, and are zero for all 
+	elements with the exception of helium, which is assigned the standard model 
+	value of :math:`Y_\text{p} = 0.24672 \pm 0.00017` [1]_ [2]_ [3]_. 
+
+	.. versionadded:: 1.1.0 
+
+	Indexing 
+	-------- 
+	- ``str`` [case-insensitive] 
+		The symbol of a chemical element as it appears on the periodic table. 
+
+	Item Assignment 
+	---------------
+	This instance of the VICE dataframe does not support item assignment. 
+
+	Functions 
+	---------
+	- keys 
+	- todict 
+
+	Example Code 
+	------------
+	>>> import vice 
+	>>> vice.primordial['o'] 
+	0.0 
+	>>> vice.primordial['he'] 
+	0.24672 
+	>>> vice.primordial['c'] 
+	0.0 
+
+	.. [1] Planck Collaboration et al. (2016), A&A, 594, A13 
+	.. [2] Pitrou et al. (2018), Phys. Rep., 754, 1 
+	.. [3] Pattie et al. (2018), Science, 360, 627 
+	""" 
+
+	def __init__(self): 
+		data = {} 
+		for elem in _RECOGNIZED_ELEMENTS_: 
+			if elem == "he": 
+				value = 0.24672 
+			else: 
+				value = 0.0 
+			data[elem] = value 
+		super().__init__(data) 
+
+
+	def __setitem__(self, key, value): 
+		r""" 
+		Override the __setitem__ function to throw a TypeError whenever this 
+		function is called. 
+		""" 
+		raise TypeError("This dataframe does not support item assignment.") 
+
+
+primordial = primordial() 
 

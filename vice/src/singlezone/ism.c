@@ -6,6 +6,7 @@
 #include <stdlib.h> 
 #include <math.h> 
 #include "../singlezone.h" 
+#include "../callback.h" 
 #include "../ssp.h" 
 #include "../ism.h" 
 #include "../utils.h" 
@@ -186,10 +187,15 @@ extern double get_SFE_timescale(SINGLEZONE sz, unsigned short setup) {
 	 * SFE timescale at the next timestep 
 	 */ 
 	setup = 1 - setup; 
-	if ((*sz.ism).schmidt) { 
+	if ((*(*sz.ism).functional_tau_star).user_func != NULL) {
+		/* User-specified function of time and gas mass, in that order. */ 
+		return callback_2arg_evaluate(*(*sz.ism).functional_tau_star, 
+			sz.current_time, (*sz.ism).mass); 
+	} else if ((*sz.ism).schmidt) { 
 		/* Single-zone implementation of Kennicutt-Schmidt Law */ 
-		return ((*sz.ism).tau_star[sz.timestep + setup] * pow((*sz.ism).mass / 
-			(*sz.ism).mgschmidt, -(*sz.ism).schmidt_index)); 
+		return ((*sz.ism).tau_star[sz.timestep + setup] * 
+			pow((*sz.ism).mass / (*sz.ism).mgschmidt, 
+				-(*sz.ism).schmidt_index)); 
 	} else { 
 		/* Instantaneous star formation efficiency */ 
 		return (*sz.ism).tau_star[sz.timestep + setup]; 
@@ -227,16 +233,36 @@ extern double get_ism_mass_SFRmode(SINGLEZONE sz, unsigned short setup) {
 	 */ 
 
 	setup = 1 - setup; 
-	if ((*sz.ism).schmidt) { 
-		return pow( 
-			(*sz.ism).star_formation_rate * 
-			(*sz.ism).tau_star[sz.timestep + setup] * 
-			pow((*sz.ism).mgschmidt, (*sz.ism).schmidt_index), 
-			1 / (1 + (*sz.ism).schmidt_index)); 
+	double tau_star; 
+	if ((*(*sz.ism).functional_tau_star).user_func != NULL) { 
+		/* 
+		 * User-specified function of time and star formation rate, in that 
+		 * order. Users specify star formation rate in Msun/yr, however, while 
+		 * this code records in Msun/Gyr, so add factor of 1e-9 for 
+		 * consistency. 
+		 */ 
+		tau_star = callback_2arg_evaluate(*(*sz.ism).functional_tau_star, 
+			sz.current_time, 1e-9 * (*sz.ism).star_formation_rate); 
+	} else if ((*sz.ism).schmidt) { 
+		if ((*sz.ism).star_formation_rate) { 
+			/* The value implied by the current star formation rate */ 
+			tau_star = (
+				pow(
+					(*sz.ism).tau_star[sz.timestep + setup], 
+					1 / (1 + (*sz.ism).schmidt_index)
+				) * pow(
+					(*sz.ism).star_formation_rate / (*sz.ism).mgschmidt, 
+					-(*sz.ism).schmidt_index / (1 + (*sz.ism).schmidt_index) 
+				) 
+			); 
+		} else { 
+			tau_star = 0; 
+		}
 	} else {
-		return ((*sz.ism).star_formation_rate * 
-			(*sz.ism).tau_star[sz.timestep + setup]); 
-	}
+		tau_star = (*sz.ism).tau_star[sz.timestep + setup]; 
+	} 
+
+	return (*sz.ism).star_formation_rate * tau_star; 
 
 }
 

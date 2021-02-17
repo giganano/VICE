@@ -1,4 +1,4 @@
-# cython: language_level = 3, boundscheck = False 
+# cython: language_level = 3, boundscheck = False, binding = True 
 
 from __future__ import absolute_import  
 __all__ = ["test"] 
@@ -60,6 +60,20 @@ def test():
 			_TEST_.test_pickle() 
 		]
 	] 
+
+
+def _timedep_tau_star(t): 
+	r""" 
+	A dummy function to act as a time-dependent SFE timescale. 
+	""" 
+	return 2.0 * t / 10.0 
+
+
+def _time_and_gasdep_tau_star(t, m): 
+	r""" 
+	A dummy function to act as a time- and gas-dependent SFE timescale. 
+	""" 
+	return 2.0 * t / 10.0 * (m / 6.0e9)**0.5 
 
 
 cdef class singlezone_tester: 
@@ -457,14 +471,15 @@ cdef class singlezone_tester:
 			1 on success, 0 on failure 
 			""" 
 			try: 
-				custom = lambda t: 2 + 0.01 * t 
-				self.tau_star = custom 
-				x = self.tau_star == custom 
+				self.tau_star = _timedep_tau_star 
+				x = self.tau_star == _timedep_tau_star 
+				self.tau_star = _time_and_gasdep_tau_star 
+				y = self.tau_star == _time_and_gasdep_tau_star 
 				self.tau_star = 2
-				y = self.tau_star == 2 
+				z = self.tau_star == 2 
 			except: 
 				return False 
-			return x and y 
+			return x and y and z 
 		return ["vice.core.singlezone.tau_star.setter", test] 
 
 
@@ -512,7 +527,7 @@ cdef class singlezone_tester:
 	def test_mgschmidt_setter(self): 
 		def test(): 
 			""" 
-			Tests the mgschnidt.setter function 
+			Tests the mgschmidt.setter function 
 
 			Returns 
 			======= 

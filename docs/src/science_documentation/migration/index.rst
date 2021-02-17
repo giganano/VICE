@@ -3,12 +3,15 @@
 
 Migration 
 =========
-The fundamental contrast between singlezone and multizone models is that gas 
-and stars migrate between zones in multizone models. In nature, migration 
-is expected to vary on a galaxy-by-galaxy basis. In keeping with VICE's 
-philosophy of making as few assumptions as possible to maximize the user's 
-power over their simulations, VICE is implemented with an agnostic approach 
-to the migration prescription in a multizone model. 
+The fundamental contrast between singlezone and multizone models of chemical 
+evolution is the variation of parameters between zones. However, these models 
+often involve some sort of prescription for how stars mix between zones in 
+order to mimic the changes in a stars' locations over time. In nature, the 
+details of this component of evolution likely varies on a galaxy-by-galaxy 
+basis. In keeping with VICE's philosophy of making as few assumptions as 
+possible to maximize the user's power over their simulations, VICE is 
+implemented with an agnostic approach to the migration prescription in a 
+multizone model. 
 
 In multizone models, VICE knows nothing of the spatial configuration of the 
 zones the user is operating under. The only piece of information identifying 
@@ -19,10 +22,14 @@ allows the construction of 1-, 2-, and 3-dimensional zone configurations with
 an arbitrary migration prescription. 
 
 .. _migration_stars: 
-
 .. include:: stars.rst 
 
 .. _migration_gas: 
-
 .. include:: gas.rst 
+
+.. _migration_milkyway: 
+.. include:: milkyway.rst 
+
+.. _fig_migration_milkyway: 
+.. include:: milkyway.fig.rst 
 

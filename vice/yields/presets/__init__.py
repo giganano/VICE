@@ -23,7 +23,7 @@ remove : <function>
 JW20 : yield preset 
 	The yield presets associated with Johnson & Weinberg (2020) [1]_. 
 
-.. [1] Johnson & Weinberg (2020), arxiv:1911.02598 
+.. [1] Johnson & Weinberg (2020), MNRAS, 498, 1364 
 """ 
 
 from __future__ import absolute_import 

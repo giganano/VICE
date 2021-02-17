@@ -90,20 +90,20 @@ extern unsigned short separation_test_multizone_stellar_mass(MULTIZONE *mz) {
 	double *actual = multizone_stellar_mass(*mz); 
 	if (actual != NULL) {
 		/* 
-		 * There will be three rather than one timestep worth of tracer 
+		 * There will be two rather than one timestep's worth of tracer 
 		 * particles in the star forming zone. This has to do with when tracer 
 		 * particles are injected and migrated -> the stars that just formed 
 		 * and the stars that are forming will, at the end of a timestep, 
-		 * still be in the star forming zone. inject_tracers is also called 
-		 * at the end of the evolution to account for the final timestamp, 
-		 * accounting for the third timestep. 
+		 * still be in the star forming zone. They will also be one timestep 
+		 * older due to the timestep number being incremented after the call 
+		 * to inject_tracers. 
 		 */ 
 		unsigned short status = log10(actual[1]) - log10(actual[0]) > 1; 
 		double expected = (
 			(*(*(*mz).zones[0]).ism).star_formation_rate * 
 			(*(*mz).zones[0]).dt * (
 				(1 - (*(*(*mz).zones[0]).ssp).crf[1]) + 
-				(1 - (*(*(*mz).zones[0]).ssp).crf[2]) + 1 
+				(1 - (*(*(*mz).zones[0]).ssp).crf[2]) 
 			)  
 		); 
 		double percent_difference = absval( 

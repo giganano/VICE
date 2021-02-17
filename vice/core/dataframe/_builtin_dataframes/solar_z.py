@@ -3,87 +3,164 @@ This file implements the solar_z built-in dataframe
 """ 
 
 from __future__ import absolute_import 
-from .._builtin_elemental_data import builtin_elemental_data 
+from ...._globals import _RECOGNIZED_ELEMENTS_ 
+from ...._globals import _VERSION_ERROR_ 
+from ...._globals import _DIRECTORY_ 
+from .._elemental_settings import elemental_settings 
+import numbers 
+
+class solar_z(elemental_settings): 
+
+	r""" 
+	The VICE dataframe: solar composition 
+
+	Stores the abundance by mass of all recognized elements in the sun. Stored 
+	values are of type ``float``; defaults are assigned according to the 
+	Asplund et al. (2009) [1]_ photospheric measurements. For elements where 
+	the photospheric measurements were not feasible, this object adopts the 
+	meteoritic measurements. 
+
+	.. versionadded:: 1.2.0 
+		In versions >= 1.2.0, users may modify the values stored for each 
+		individual element. The only restriction imposed is that the values 
+		be between 0 and 1. In prior versions, the values stored by this 
+		dataframe were not modifiable. 
+
+	Indexing 
+	--------
+	- ``str`` [case-insensitive] 
+		The symbol of a chemical element as it appears on the periodic table. 
+
+	Item Assignment 
+	---------------
+	- ``float`` 
+		The new abundance by mass (i.e. the mass fraction) of a given element 
+		within the sun. Must be between 0 and 1. 
+
+	Notes 
+	-----
+	Changes to the values stored by this object will be reflected in any 
+	chemical evolution simulations ran by VICE. However, these values will 
+	reset every time the python interpreter is restarted. 
+
+	Default values are calculated with ``vice.solar_z.epsilon_to_z_conversion``. 
+	For details, see the associated documentation. 
+
+	For helium ('he'), the default value is modified from the photospheric 
+	abundance of He as measured by Asplund et al. (2009) (Y = 0.2485) to their 
+	recommended bulk abundance (Y = 0.2703) (see their section 3.12). 
+	
+	Functions 
+	---------
+	- keys 
+	- todict 
+
+	Example Code 
+	------------
+	>>> import vice 
+	>>> vice.solar_z['o'] 
+	0.00572 
+	>>> vice.solar_z['o'] = 0.005 
+	>>> vice.solar_z['o'] 
+	0.005 
+	>>> vice.solar_z['c'] 
+	0.00236 
+	>>> vice.solar_z['c'] *= 1.1 # increase by 10 percent 
+	0.0025960000000000002 
+
+	.. [1] Asplund et al. (2009), ARA&A, 47, 481 
+	""" 
+	def __init__(self): 
+		asplund09 = _read_builtin_datafile(
+			"%score/dataframe/_builtin_dataframes/asplund09.dat" % (
+				_DIRECTORY_)) 
+		molecular_weights = _read_builtin_datafile(
+			"%score/dataframe/_builtin_dataframes/mean_molecular_weights.dat" % (
+				_DIRECTORY_)) 
+		data = {} 
+		for elem in _RECOGNIZED_ELEMENTS_: 
+			data[elem] = float("%.3g" % (solar_z.epsilon_to_z_conversion(
+				asplund09[elem], molecular_weights[elem]))) 
+		super().__init__(data) 
+		self.__setitem__("he", 0.2703) # correction of photospheric measurements 
 
 
-#------------------------- SOLAR ABUNDANCE DATAFRAME -------------------------# 
-solar_z = builtin_elemental_data({
-	"he": 		0.272, 
-	"c":		2.36e-3,  
-	"n":		6.91e-4,  
-	"o":		5.72e-3,  
-	"f":		5.04e-7, 
-	"ne":		1.25e-3, 
-	"na": 		2.92e-5, 
-	"mg":		7.06e-4, 
-	"al": 		5.55e-5, 
-	"si":		6.63e-4, 
-	"p": 		5.81e-6, 
-	"s":		3.09e-4, 
-	"cl": 		8.18e-6, 
-	"ar":		7.33e-5, 
-	"k": 		3.06e-6, 
-	"ca": 		6.40e-5, 
-	"sc":		4.64e-8, 
-	"ti": 		3.11e-6, 
-	"v": 		3.17e-7, 
-	"cr": 		1.66e-5, 
-	"mn": 		1.08e-5, 
-	"fe":		1.29e-3, 
-	"co": 		4.20e-6, 
-	"ni": 		7.11e-5, 
-	"cu": 		7.18e-7, 
-	"zn": 		1.73e-6, 
-	"ga": 		5.58e-8, 
-	"ge": 		2.37e-7, 
-	"as": 		5.47e-11, 
-	"se": 		5.76e-11, 
-	"br": 		5.83e-11, 
-	"kr": 		1.09e-7, 
-	"rb": 		2.07e-8, 
-	"sr":		4.74e-8, 
-	"y":		1.05e-8, 
-	"zr": 		2.53e-8, 
-	"nb": 		1.96e-9, 
-	"mo": 		5.31e-9, 
-	"ru": 		4.15e-9, 
-	"rh": 		6.11e-10, 
-	"pd": 		2.89e-9, 
-	"ag": 		6.86e-10, 
-	"cd": 		8.21e-11, 
-	"in": 		5.29e-10, 
-	"sn": 		9.50e-9, 
-	"sb": 		8.89e-11, 
-	"te": 		9.31e-11, 
-	"i": 		9.26e-11,  
-	"xe": 		1.67e-8, 
-	"cs": 		9.70e-11, 
-	"ba":		1.52e-8, 
-	"la":		1.28e-9, 
-	"ce": 		3.89e-9, 
-	"pr": 		5.40e-10, 
-	"nd": 		2.77e-9, 
-	"sm": 		1.00e-9, 
-	"eu":		3.67e-10, 
-	"gd": 		1.35e-9, 
-	"tb": 		2.31e-10, 
-	"dy": 		1.49e-9, 
-	"ho": 		3.64e-10, 
-	"er": 		1.02e-9, 
-	"tm": 		1.55e-10, 
-	"yb": 		8.74e-10, 
-	"lu": 		1.61e-10, 
-	"hf": 		9.22e-10, 
-	"ta": 		1.32e-10, 
-	"w": 		9.50e-10, 
-	"re": 		1.36e-10, 
-	"os": 		3.49e-9, 
-	"ir": 		3.37e-9, 
-	"pt": 		1.42e-10, 
-	"au": 		1.20e-9, 
-	"hg": 		1.46e-10, 
-	"tl":  		1.19e-9, 
-	"pb": 		8.51e-9, 
-	"bi": 		1.53e-10 
-}, "solar metallicity")  
+	def __setitem__(self, key, value): 
+		if isinstance(value, numbers.Number): 
+			if 0 < value < 1: 
+				super().__setitem__(key, float(value)) 
+			else: 
+				raise ValueError("Must be between 0 and 1. Got: %g" % (value)) 
+		else: raise TypeError("Must be a numerical value. Got: %s" % (
+			type(value))) 
+
+
+	@staticmethod 
+	def epsilon_to_z_conversion(epsilon, mu, Xsun = 0.73): 
+		r""" 
+		Convert an element's abundance in the sun according to the definition 
+
+		.. math:: \epsilon_x = \log_{10}(N_x / N_H) + 12 
+
+		as reported by Asplund et al. (2009) [1]_ to a metallicity by mass 
+		:math:`Z_x = M_x / M_\odot`. 
+
+		Parameters 
+		----------
+		epsilon : float 
+			The value reported by Asplund et al. (2009). 
+		mu : float 
+			The mean molecular weight of the element. VICE's internal data 
+			stores these values taken from a standard periodic table of the 
+			elements. 
+		Xsun : float [default : 0.73] 
+			The hydrogren mass fraction of the solar photosphere. 
+
+		Returns 
+		-------
+		Zsun : float 
+			The abundance by mass of the element :math:`x` in the sun, 
+			:math:`M_x / M_\odot`. 
+
+		Notes 
+		-----
+		The values returned by this function are calculated according to the 
+		following conversion, which can be derived from the definition of 
+		:math:`\epsilon_x` and :math:`Z_x` above:  
+
+		.. math:: Z_x = X_\odot \mu_x 10^{\epsilon_x - 12} 
+
+		.. [1] Asplund et al. (2009), ARA&A, 47, 481 
+		""" 
+		if all([isinstance(_, numbers.Number) for _ in [epsilon, mu, Xsun]]): 
+			return Xsun * mu * 10**(epsilon - 12) 
+		else: 
+			raise TypeError("Must be a numerical value.")  
+
+
+def _read_builtin_datafile(filename): 
+	r""" 
+	Read a file which stores data pertaining to each individual element. 
+	""" 
+	data = {} 
+	with open(filename, 'r') as in_: 
+
+		# read past the header 
+		while True: 
+			line = in_.readline() 
+			if line[0] != '#': break 
+
+		# read each element's data in 
+		while line != "": 
+			line = line.split() 
+			if line[0].lower() in _RECOGNIZED_ELEMENTS_: 
+				data[line[0].lower()] = float(line[1]) 
+			else: pass 
+			line = in_.readline() 
+
+		in_.close() 
+	return data 
+
+
+solar_z = solar_z() 
 

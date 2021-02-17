@@ -15,17 +15,21 @@ elif sys.version_info[:2] >= (3, 5):
 	strcomp = str 
 else: 
 	_VERSION_ERROR_() 
+# from libc.stdlib cimport srand 
 from libc.stdlib cimport malloc, free 
 from libc.string cimport strcpy, strcmp, strlen 
 from ...core._cutils cimport copy_pylist 
 from ...core._cutils cimport set_string 
 from . cimport _hydrodiskstars 
 
-# The end time of the simulation in Gyr 
-_END_TIME_ = 12.8 
+# The end time of the simulation in Gyr (12.2 Gyr by default - hard coded) 
+_END_TIME_ = _hydrodiskstars.HYDRODISK_END_TIME 
 
 # The recognized hydrodiskstars migration modes 
 _RECOGNIZED_MODES_ = ["linear", "sudden", "diffusion"] 
+
+# The number of star particles in the simulation 
+_N_STAR_PARTICLES_ = 3000556 
 
 
 cdef class c_hydrodiskstars: 
@@ -35,35 +39,53 @@ cdef class c_hydrodiskstars:
 	documentation. 
 	""" 
 
-	def __cinit__(self, radbins, idcolumn = 0, tformcolumn = 1, 
-		rformcolumn = 2, rfinalcolumn = 4, zfinalcolumn = 5, 
-		v_radcolumn = 6, v_phicolumn = 7, v_zcolumn = 8): 
+	def __cinit__(self, radbins, N = 1e5, mode = "linear", idcolumn = 0, 
+		tformcolumn = 1, rformcolumn = 2, rfinalcolumn = 3, zformcolumn = 4, 
+		zfinalcolumn = 5, v_radcolumn = 6, v_phicolumn = 7, v_zcolumn = 8, 
+		decomp_column = 9): 
 
 		# allocate memory for hydrodiskstars object in C and import the data 
 		self._hds = _hydrodiskstars.hydrodiskstars_initialize() 
-		datafile = "%stoolkit/hydrodisk/data/UWhydro.dat" % (_DIRECTORY_) 
-		if not _hydrodiskstars.hydrodiskstars_import(self._hds, 
-			datafile.encode("latin-1"), 
-			<unsigned short> idcolumn, 
-			<unsigned short> tformcolumn, 
-			<unsigned short> rformcolumn, 
-			<unsigned short> rfinalcolumn, 
-			<unsigned short> zfinalcolumn, 
-			<unsigned short> v_radcolumn, 
-			<unsigned short> v_phicolumn, 
-			<unsigned short> v_zcolumn): 
-			raise IOError("Could not read file: %s" % (datafile)) 
+		datafilestem = "%stoolkit/hydrodisk/data/h277/" % (_DIRECTORY_) 
+		if isinstance(N, numbers.Number): 
+			if N % 1 == 0: 
+				_hydrodiskstars.seed_random() 
+				if N > _N_STAR_PARTICLES_: 
+					N = _N_STAR_PARTICLES_ 
+					warnings.warn("""\
+There are only %d star particles from the hydrodynamical simulation available \
+for this object. Running a multizone model with this many stellar populations \
+will oversample these data.""" % (_N_STAR_PARTICLES_), ScienceWarning) 
+				else: pass 
+				if not _hydrodiskstars.hydrodiskstars_import(self._hds, 
+					<unsigned long> N, 
+					datafilestem.encode("latin-1"), 
+					<unsigned short> idcolumn, 
+					<unsigned short> tformcolumn, 
+					<unsigned short> rformcolumn, 
+					<unsigned short> rfinalcolumn, 
+					<unsigned short> zformcolumn, 
+					<unsigned short> zfinalcolumn, 
+					<unsigned short> v_radcolumn, 
+					<unsigned short> v_phicolumn, 
+					<unsigned short> v_zcolumn, 
+					<unsigned short> decomp_column): 
+					raise SystemError("Internal Error.") 
+				else: 
+					pass 
+			else: 
+				raise ValueError("Keyword arg 'N' must be an integer.") 
 		else: 
-			pass 
+			raise TypeError("Keyword arg 'N' must be an integer.") 
 		self.radial_bins = radbins 
-		self._mode = <char *> malloc (12 * sizeof(char)) 
+		self.mode = mode 
 
-	def __init__(self, radbins, idcolumn = 0, tformcolumn = 1, 
-		rformcolumn = 2, rfinalcolumn = 4, zfinalcolumn = 5, 
-		v_radcolumn = 6, v_phicolumn = 7, v_zcolumn = 8): 
+	def __init__(self, radbins, N = 1e5, mode = "linear", idcolumn = 0, 
+		tformcolumn = 1, rformcolumn = 2, rfinalcolumn = 3, zformcolumn = 4, 
+		zfinalcolumn = 5, v_radcolumn = 6, v_phicolumn = 7, v_zcolumn = 8, 
+		decomp_column = 9): 
 		
 		self._analog_idx = -1l 
-		_hydrodiskstars.seed_random() 
 		self._analog_data = dataframe({
 			"id": 		[self._hds[0].ids[i] for i in range(
 				self._hds[0].n_stars)], 
@@ -73,6 +95,8 @@ cdef class c_hydrodiskstars:
 				self._hds[0].n_stars)], 
 			"rfinal": 	[self._hds[0].final_radii[i] for i in range(
 				self._hds[0].n_stars)], 
+			"zform": 	[self._hds[0].zform[i] for i in range(
+				self._hds[0].n_stars)], 
 			"zfinal": 	[self._hds[0].zfinal[i] for i in range(
 				self._hds[0].n_stars)], 
 			"vrad": 	[self._hds[0].v_rad[i] for i in range(
@@ -80,12 +104,13 @@ cdef class c_hydrodiskstars:
 			"vphi": 	[self._hds[0].v_phi[i] for i in range(
 				self._hds[0].n_stars)], 
 			"vz": 		[self._hds[0].v_z[i] for i in range(
+				self._hds[0].n_stars)], 
+			"decomp": 	[self._hds[0].decomp[i] for i in range(
 				self._hds[0].n_stars)] 
 		}) 
 
 	def __dealloc__(self): 
 		_hydrodiskstars.hydrodiskstars_free(self._hds) 
-		free(self._mode) 
 
 	def __call__(self, zone, tform, time): 
 		if isinstance(zone, int): 
@@ -94,10 +119,10 @@ cdef class c_hydrodiskstars:
 					self._hds[0].rad_bins[zone + 1]) / 2 
 				if (isinstance(tform, numbers.Number) and 
 					isinstance(time, numbers.Number)): 
-					if time > _END_TIME_: warnings.warn("""\
-Simulations of galactic chemical evolution with this object for timescales \
-longer than %g Gyr are not supported. This is the maximum range of star \
-particle ages.""" % (_END_TIME_), ScienceWarning) 
+					if abs(time - _END_TIME_) > 1.e-12: warnings.warn("""\
+Simulations of galactic chemical evolution with the hydrodiskstars object for \
+timescales longer than %g Gyr are not supported. This is the maximum range of \
+star particle ages.""" % (_END_TIME_), ScienceWarning) 
 					if tform == time: 
 						self._analog_idx = (
 							_hydrodiskstars.hydrodiskstars_find_analog(
@@ -123,7 +148,14 @@ particle ages.""" % (_END_TIME_), ScienceWarning)
 						if bin_ != -1: 
 							return bin_ 
 						else: 
-							raise ValueError("Radius out of bin range.") 
+							raise ValueError("""\
+Radius out of bin range. Relevant information: 
+Analog ID: %d 
+Zone of formation: %d 
+Time of formation: %.4e Gyr 
+Time in simulation: %.4e Gyr""" % (self.analog_data["id"][self.analog_index], 
+								zone, tform, time))
+							# raise ValueError("Radius out of bin range.")  
 				else: 
 					raise TypeError("""Time parameters must be numerical \
 values. Got: (%s, %s)""" % (type(tform), type(time))) 
@@ -131,6 +163,12 @@ values. Got: (%s, %s)""" % (type(tform), type(time)))
 				raise ValueError("Zone out of range: %d" % (zone)) 
 		else: 
 			raise TypeError("Zone must be of type int. Got: %s" % (type(zone))) 
+
+	def object_address(self): 
+		""" 
+		Returns the memory address of the HYDRODISKSTARS object in C. 
+		""" 
+		return <long> (<void *> self._hds) 
 
 	@property 
 	def radial_bins(self): 
@@ -144,8 +182,8 @@ values. Got: (%s, %s)""" % (type(tform), type(time)))
 		_pyutils.numeric_check(value, TypeError, 
 			"Non-numerical value detected.") 
 		value = sorted(value) 
-		if not value[-1] >= 30: raise ValueError("""\
-Maximum radius must be at least 30 kpc. Got: %g""" % (value[-1])) 
+		if not value[-1] >= 20: raise ValueError("""\
+Maximum radius must be at least 20 kpc. Got: %g""" % (value[-1])) 
 		if value[0] != 0: raise ValueError("""\
 Minimum radius must be zero. Got: %g kpc.""" % (value[0])) 
 		self._hds[0].n_rad_bins = len(value) - 1 
@@ -165,16 +203,30 @@ Minimum radius must be zero. Got: %g kpc.""" % (value[0]))
 	@property 
 	def mode(self): 
 		# docstring in python version 
-		return "".join([chr(self._mode[i]) for i in range(strlen(self._mode))]) 
+		if self._hds[0].mode is NULL: 
+			return None 
+		else: 
+			return "".join([chr(self._hds[0].mode[i]) for i in range(strlen(
+				self._hds[0].mode))]) 
 
 	@mode.setter 
 	def mode(self, value): 
+		""" 
+		Enforcement of only subclasses having mode = None handled in python 
+		as necessary. 
+		""" 
 		if isinstance(value, strcomp): 
 			if value.lower() in _RECOGNIZED_MODES_: 
-				set_string(self._mode, value.lower()) 
+				if self._hds[0].mode is NULL: 
+					self._hds[0].mode = <char *> malloc (12 * sizeof(char)) 
+				else: pass 
+				set_string(self._hds[0].mode, value.lower()) 
 			else: 
 				raise ValueError("Unrecognized mode: %s" % (value)) 
+		elif value is None: 
+			if self._hds[0].mode is not NULL: free(self._hds[0].mode) 
+			self._hds[0].mode = NULL 
 		else: 
-			raise TypeError("Attirbute 'mode' must be of type str. Got: %s" % (
-				type(value))) 
+			raise TypeError("""Attribute 'mode' must be either a string or 
+None. Got: %s""" % (type(value))) 
 

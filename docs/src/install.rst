@@ -113,16 +113,16 @@ To install VICE, then run:
 :: 
 
 	$ make 
-	$ python setup.py build -j 4 install 
+	$ python setup.py build -j 2 install 
 
-This will compile VICE on 4 CPUs in parallel and subsequently install. Users 
+This will compile VICE on 2 CPUs in parallel and subsequently install. Users 
 installing VICE on a system on which they do not have adminstrator's 
 privileges should perform a local installation. This can be achieved with the 
 ``--user`` command-line argument: 
 
 :: 
 
-	$ python setup.py build -j 4 install --user 
+	$ python setup.py build -j 2 install --user 
 
 Please note that users installing VICE to multiple versions of python will 
 likely have to run ``make clean`` between runs of the setup.py file. 
@@ -180,7 +180,7 @@ Things to Avoid
 	Users installing VICE to multiple versions of python should not run the 
 	setup.py file in separate terminals simultaneously; this will cause one of 
 	the builds to fail. Likewise, users should not run the tests for multiple 
-	versions of python simultaneously; it's likely this will caues a 
+	versions of python simultaneously; it's likely this will cause a 
 	``segmentation fault``. 
 
 
@@ -191,13 +191,13 @@ off, run a quiet installation:
 
 :: 
 
-	$ python setup.py build -j 4 install -q 
+	$ python setup.py build -j 2 install -q 
 
 or 
 
 :: 
 
-	$ python setup.py build -j 4 install --quiet 
+	$ python setup.py build -j 2 install --quiet 
 
 To change the number of cores used to compile VICE: 
 
@@ -255,28 +255,53 @@ __ issues_
 
 VICE Isn't Running from the Command Line 
 ----------------------------------------
-In this case, it is likely that the required files were copied somewhere that 
-is not on your PATH. If re-installing VICE does not solve the problem, 
-these files can simply be copied to a given directory. For example: 
+If ``vice`` doesn't run from the terminal after installing, first check that 
+``python3 -m vice`` runs; the two have the same functionality. If neither 
+work, then it's likely there was an issue with the installation, and we 
+recommend rerunning the install process, making sure that the instructions are 
+followed as closely as possible. If this still does not work, please open an 
+issue `here`__. 
+
+__ issues_ 
+
+If ``python3 -m vice`` works, but ``vice`` does not, then it's likely that 
+that command line entry was copied to a directory not on your ``PATH``. The 
+simplest patch for this issue is to create an alias for ``vice`` mapping it to 
+the longer command. This can be done by adding the following line to your 
+``~/.bash_profile``: 
 
 :: 
 
-	$ cp ./bin/* ~/.local/bin/ 
+	alias vice="python3 -m vice" 
 
-Will place both command line entries in the ``~/.local/bin/`` directory. This 
-can be permanently added to your path by adding 
+Then either run ``source ~/.bash_profile`` or restart your terminal for the 
+alias to take effect. 
+
+Alternatively, the proper file can simply be copied to any given directory in 
+your computer. If this directory is not on your ``PATH``, then your ``PATH`` 
+must be modified to contain this file's new location. For example: 
+
+:: 
+
+	$ cp ./bin/vice ~/.local/bin 
+
+This will place the command line entry in the ``~/.local/bin/`` directory, 
+which can be permanently added to your path by adding 
 
 :: 
 
 	export PATH=$HOME/.local/bin:$PATH 
 
-to ``~/.bash_profile``. This will require ``source ~/.bash_profile`` to be 
-ran from the terminal before ``vice`` can be ran from the 
-command line. 
+to your ``~/.bash_profile``. As with the alias solution, this will require 
+either running ``source ~/.bash_profile`` or restarting your terminal to 
+take effect. 
 
 **Note**: If you have installed VICE with the ``--user`` option, it is likely 
-that VICE has automatically modified your PATH, and that 
-``source ~/.bash_profile`` is all that needs ran. 
+that VICE has automatically made the above modification to your ``PATH``, and 
+that either running ``source ~/.bash_profile`` or restarting your terminal is 
+all that is required after copying the file to ``~/.local/bin``. If you have 
+copied the file to a different directory, VICE will not have added that file 
+to your ``PATH``. 
 
 More information on modifying your PATH can be found `here`__. 
 
@@ -285,6 +310,9 @@ If this does not fix the issue, please open an issue `here`__.
 .. _pathvariables: https://unix.stackexchange.com/questions/26047/how-to-correctly-add-a-path-to-path
 __ pathvariables_ 
 __ issues_ 
+
+An alternative workaround to this issue is to create an alias for ``vice`` by 
+adding the following line to 
 
 
 Compiler Failure 
@@ -358,5 +386,7 @@ Pass it to the ``rm`` command as well:
 
 If this process completed without any errors, then VICE was successfully 
 uninstalled. To double-check, rerunning ``which vice`` should now print 
-nothing. 
+nothing, and attempting to import VICE into python should result in a 
+``ModuleNotFoundError`` for python versions 3.6 and newer, and an 
+``ImportError`` for earlier versions. 
 

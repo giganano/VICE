@@ -10,6 +10,7 @@ __all__ = [
 	"test_pseudorandom_generator", 
 	"test_1D_interpolation", 
 	"test_2D_interpolation", 
+	"test_sqrtx_interpolation", 
 	"test_bin_number_finder", 
 	"test_binspace_generator", 
 	"test_bin_center_calculator", 
@@ -36,6 +37,7 @@ def test():
 			test_pseudorandom_generator(), 
 			test_1D_interpolation(), 
 			test_2D_interpolation(), 
+			test_sqrtx_interpolation(), 
 			test_bin_number_finder(), 
 			test_binspace_generator(), 
 			test_bin_center_calculator(), 
@@ -100,6 +102,14 @@ def test_2D_interpolation():
 	Tests the 2D interpolation function at vice/src/utils.h 
 	""" 
 	return ["vice.src.utils.interpolate2D", _utils.test_interpolate2D] 
+
+
+@unittest 
+def test_sqrtx_interpolation(): 
+	""" 
+	Tests the sqrt(x) interpolation function at vice/src/utils.h 
+	""" 
+	return ["vice.src.utils.interpolate_sqrt", _utils.test_interpolate_sqrt] 
 
 
 @unittest 

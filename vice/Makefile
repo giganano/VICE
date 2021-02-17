@@ -14,9 +14,9 @@ clean:
 	@ rm -rf __pycache__ 
 	@ $(MAKE) -C _build_utils/ clean 
 	@ $(MAKE) -C core/ clean 
-	@ $(MAKE) -C modeling/ clean 
-	@ $(MAKE) -C yields/ clean 
+	@ $(MAKE) -C milkyway/ clean 
 	@ $(MAKE) -C src/ clean 
 	@ $(MAKE) -C toolkit/ clean 
 	@ $(MAKE) -C tests/ clean 
 	@ $(MAKE) -C testing/ clean 
+	@ $(MAKE) -C yields/ clean 

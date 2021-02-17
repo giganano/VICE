@@ -228,6 +228,7 @@ typedef struct interstellar_medium {
 	double *eta; 
 	double *enh; 
 	double *tau_star; 
+	CALLBACK_2ARG *functional_tau_star; 
 	double schmidt_index; 
 	double mgschmidt; 
 	double smoothing_time; 
@@ -386,7 +387,7 @@ typedef struct tracer {
 	int *zone_history; 
 	unsigned int zone_origin; 
 	unsigned int zone_current; 
-	unsigned int timestep_origin; 
+	unsigned long timestep_origin; 
 
 } TRACER; 
 
@@ -488,27 +489,6 @@ typedef struct fromfile {
 } FROMFILE; 
 
 
-typedef struct repaired_function {
-
-	/* 
-	 * This struct holds the necessary information for the repfunc object, 
-	 * which constructs a function of time out of an output that couldn't 
-	 * be pickled. 
-	 * 
-	 * n_points: The number of points on which the function was evaluated 
-	 * xcoords: The x-coordinates in arbitrary units 
-	 * ycoords: The y-coordinates in arbitrary units 
-	 * 
-	 * Both xcoords and ycoords pointers will always store n_points numbers 
-	 */
-
-	unsigned long n_points; 
-	double *xcoords; 
-	double *ycoords; 
-
-} REPFUNC; 
-
-
 typedef struct hydrodiskstars {
 
 	/* 
@@ -516,11 +496,21 @@ typedef struct hydrodiskstars {
 	 * simulation for construction of migration schemes. 
 	 * 
 	 * n_stars: the number of star particles in the data 
+	 * ids: The ID of each star particle 
 	 * birth_times: The times in Gyr at which each star particle was born 
 	 * birth_radii: The radii in kpc at which each star particle was born 
 	 * final_radii: The radii in kpc at which each star particle was located 
 	 * 		at the end of the simulation. 
+	 * zform: The height above/below disk midplane in kpc at formation 
+	 * zfinal: The final height above/below disk midplane in kpc 
+	 * v_rad: Radial velocity in km/s 
+	 * v_phi: Circular velocity in km/s 
+	 * v_z: Vertical velocity in km/s 
 	 * rad_bins: The radial bins in kpc which discretize the disk 
+	 * decomp: An integer index assigning star particles to thin/thick disk, 
+	 * 		bulge, or pseudobulge 
+	 * n_rad_bins: The number of radial bins 
+	 * mode: The mode of stellar migration 
 	 */ 
 
 	unsigned long n_stars; 
@@ -528,14 +518,41 @@ typedef struct hydrodiskstars {
 	double *birth_times; 
 	double *birth_radii; 
 	double *final_radii; 
+	double *zform; 
 	double *zfinal; 
 	double *v_rad; 
 	double *v_phi; 
 	double *v_z; 
 	double *rad_bins; 
+	unsigned short *decomp; 
 	unsigned short n_rad_bins; 
+	char *mode; 
 
 } HYDRODISKSTARS; 
+
+
+typedef struct interpolation_sceme_1d {
+
+	/* 
+	 * This struct holds the necessary information for a 1-dimensional 
+	 * interpolation scheme, simply constructing a continuous function out of 
+	 * a series of (x, y) points and connecting them with lines. 
+	 * 
+	 * n_points: The number of points in the scheme. 
+	 * xcoords: The x-coordinates in arbitrary units. 
+	 * ycoords: The y-coordinates in arbitrary units. 
+	 * 
+	 * Notes 
+	 * =====
+	 * Both xcoords and ycoords pointers always store n_points numbers, and are 
+	 * assumed to be sorted from least to greatest. This is enforced in Python. 
+	 */ 
+
+	unsigned long n_points; 
+	double *xcoords; 
+	double *ycoords; 
+
+} INTERP_SCHEME_1D; 
 
 
 typedef struct dataset {

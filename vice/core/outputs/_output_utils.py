@@ -104,13 +104,12 @@ def _is_multizone(filename):
 			zones = list(filter(lambda x: x.endswith(".vice"), 
 				os.listdir(filename))) 
 			expected_files = [
-				"attributes", 
-				"migration", 
+				# "attributes", # removed for ``pickle`` keyword funcitonality 
+				# "migration", 
 				"tracers.out" 
 			]
 			return (len(zones) >= 2 and 
-				# "zone_numbers.config" in os.listdir(filename)) 
-				all(map(lambda x: x in os.listdir(filename), expected_files))) 
+				all([i in os.listdir(filename) for i in expected_files])) 
 		else: 
 			return False 
 	else: 

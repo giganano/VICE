@@ -1,3 +1,4 @@
 
-__all__ = ["simulations"] 
+__all__ = ["plots", "simulations"] 
+from . import plots 
 from . import simulations 

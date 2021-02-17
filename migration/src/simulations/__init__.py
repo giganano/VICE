@@ -1,3 +1,4 @@
 
-__all__ = ["models"] 
-from . import models 
+__all__ = ["config", "diskmodel"] 
+from .config import config 
+from .disks import diskmodel 

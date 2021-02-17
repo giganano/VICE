@@ -52,7 +52,7 @@ def test_element():
 				assert isinstance(test.sources, list) 
 				assert all(map(lambda x: isinstance(x, strcomp), test.sources)) 
 				assert isinstance(test.stable_isotopes, list) 
-				assert  all(map(lambda x: isinstance(x, int), 
+				assert all(map(lambda x: isinstance(x, int), 
 					test.stable_isotopes)) 
 		except: 
 			return False 

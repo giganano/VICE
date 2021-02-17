@@ -235,6 +235,32 @@ extern double interpolate2D(double x[2], double y[2], double f[2][2],
 
 
 /* 
+ * Interpolation with a sqrt(x) dependence. 
+ * 
+ * Parameters 
+ * ========== 
+ * x1: 		The x-coordinate of the first point 
+ * x2: 		The x-coordinate of the second point 
+ * y1: 		The y-coordinate of the first point 
+ * y2: 		The y-coordinate of the second point 
+ * x: 		The x-coordinate of the point whose y-value is to be interpolated 
+ * 
+ * Returns 
+ * ======= 
+ * The value y defined such that (x, y) lies on a sqrt(x) curve defined by 
+ * (x1, y1) and (x2, y2) 
+ * 
+ * header: utils.h 
+ */ 
+extern double interpolate_sqrt(double x1, double x2, double y1, double y2, 
+	double x) {
+
+	return (y2 - y1) * sqrt( (x - x1) / (x2 - x1) ) + y1; 
+
+}
+
+
+/* 
  * Gets the bin number for a given value in a specified array of bin edges. 
  * 
  * Parameters 
@@ -249,31 +275,41 @@ extern double interpolate2D(double x[2], double y[2], double f[2][2],
  * The index (zero-based) of the bin number corresponding to the given value. 
  * -1l in the case that the value does not lie in the given binspace. 
  * 
+ * Notes 
+ * =====
+ * It's assumed that the binspace is sorted from least to greatest. This should 
+ * always be the case in VICE's backend unless the code base has been altered. 
+ * 
  * header: utils.h 
  */ 
 extern long get_bin_number(double *binspace, unsigned long num_bins, 
-	double value) {
-
-	unsigned long i; 
-	for (i = 0l; i < num_bins; i++) {
-		if (binspace[i] <= value && value <= binspace[i + 1l]) { 
-			/* 
-			 * If the value lies between two consecutive bin edges, send that 
-			 * index back. 
-			 */ 
-			return (signed) i; 
-		} else {
-			continue; 
-		} 
-	} 
+	double value) { 
 
 	/* 
-	 * If the code gets here, it didn't find a bin number for the given value, 
-	 * meaning that it isn't on the binspace. Send back -1l. 
+	 * Notes 
+	 * =====
+	 * This function used to search based on an if statement which checked if 
+	 * the lower edge was less than the value and that the value was less than 
+	 * the upper edge. This was embedded in a for-loop which returned -1l if it 
+	 * reached the end of the loop. Allowing the comparison to be done based 
+	 * on the upper edge alone (as implemented below) resulted in a ~20% 
+	 * increase in speed for values known to be within a given binspace. 
 	 */ 
-	return -1l; 
 
-} 
+	if (value < binspace[0] || value > binspace[num_bins]) { 
+		/* If the value does not lie within the given binspace */ 
+		return -1l; 
+	} else { 
+		/* 
+		 * Increment the index by 1 until the next element is larger than the 
+		 * value. When that's true, the index is the bin number. 
+		 */ 
+		unsigned long idx = 0ul; 
+		while (binspace[idx + 1ul] < value) idx++; 
+		return (signed) idx; 
+	} 
+
+}
 
 
 /* 

@@ -129,6 +129,7 @@ def test_range_():
 		while status and n < len(test_): 
 			status &= test_[n] == n * 0.1 
 			n += 1 
+		status &= test_[-1] >= 100 
 		return status 
 	return ["vice.core._pyutils.range_", test] 
 

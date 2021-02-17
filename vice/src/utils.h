@@ -152,6 +152,27 @@ extern double interpolate2D(double x[2], double y[2], double f[2][2], double x0,
 	double y0); 
 
 /* 
+ * Interpolation with a sqrt(x) dependence. 
+ * 
+ * Parameters 
+ * ========== 
+ * x1: 		The x-coordinate of the first point 
+ * x2: 		The x-coordinate of the second point 
+ * y1: 		The y-coordinate of the first point 
+ * y2: 		The y-coordinate of the second point 
+ * x: 		The x-coordinate of the point whose y-value is to be interpolated 
+ * 
+ * Returns 
+ * ======= 
+ * The value y defined such that (x, y) lies on a sqrt(x) curve defined by 
+ * (x1, y1) and (x2, y2) 
+ * 
+ * source: utils.c 
+ */ 
+extern double interpolate_sqrt(double x1, double x2, double y1, double y2, 
+	double x); 
+
+/* 
  * Gets the bin number for a given value in a specified array of bin edges. 
  * 
  * Parameters 
@@ -165,6 +186,11 @@ extern double interpolate2D(double x[2], double y[2], double f[2][2], double x0,
  * ======= 
  * The index (zero-based) of the bin number corresponding to the given value. 
  * -1l in the case that the value does not lie in the given binspace. 
+ * 
+ * Notes 
+ * =====
+ * It's assumed that the binspace is sorted from least to greatest. This should 
+ * always be the case in VICE's backend unless the code base has been altered. 
  * 
  * source: utils.c 
  */ 

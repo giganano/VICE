@@ -9,6 +9,7 @@ __all__ = [
 ]
 from ....testing import moduletest 
 from ....testing import unittest 
+from ...outputs import output 
 from ..singlezone import singlezone 
 import math 
 try: 
@@ -36,7 +37,9 @@ _ZIN_ = [0, 1.0e-8, lambda t: 1.0e-8 * (t / 10.0), {
 }] 
 _RECYCLING_ = ["continuous", 0.4] 
 _RIA_ = ["plaw", "exp", lambda t: t**-1.5] 
-_TAU_STAR_ = [2.0, lambda t: 2.0 + t / 10.0] 
+_TAU_STAR_ = [2.0, 
+	lambda t: 2.0 + t / 10.0, 
+	lambda t, m: 2.0 * (m / 3.0)**0.5] 
 _SCHMIDT_ = [False, True] 
 
 
@@ -49,13 +52,22 @@ class generator:
 
 	def __init__(self, **kwargs): 
 		self._sz = singlezone(name = "test", dt = 0.05, **kwargs) 
+		if self._sz.schmidt: self._sz.MgCrit = self._sz.MgSchmidt 
 
 	def __call__(self): 
 		try: 
 			self._sz.run(_OUTTIMES_, overwrite = True) 
 		except: 
 			return False 
-		return True 
+		status = True 
+		if self._sz.schmidt: 
+			out = output("test") 
+			tau_star = list(map(
+				lambda x, y: 1.e-9 * x / y if y else float('inf'), 
+				out.history["mgas"], out.history["sfr"])) 
+			status &= all(map(lambda x: x >= self._sz.tau_star, tau_star)) 
+		else: pass 
+		return status 
 
 
 @moduletest 
