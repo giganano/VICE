@@ -19,7 +19,6 @@ if not __VICE_SETUP__:
 		"core", 
 		"elements", 
 		"milkyway", 
-		"modeling", 
 		"src", 
 		"yields", 
 		"test" 
@@ -29,7 +28,6 @@ if not __VICE_SETUP__:
 	from . import elements 
 	from .. import core 
 	from ..milkyway import test as milkyway_test 
-	from .. import modeling 
 	from .. import src 
 	from .. import toolkit 
 	from .. import yields 
@@ -69,7 +67,6 @@ This program will overwrite the VICE output at %s/test.vice. Proceed? \
 				core.test(run = False), 
 				elements.test(run = False), 
 				milkyway_test(run = False), 
-				modeling.test(run = False), 
 				src.test(run = False), 
 				toolkit.test(run = False), 
 				yields.test(run = False) 

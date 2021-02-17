@@ -100,15 +100,10 @@ value or a callable function accepting one numerical parameter. Got: %s""" % (
 					self._name, type(self._frame[i.lower()]))) 
 
 	def __setitem__(self, key, value): 
-		from ...modeling.singlechain import parameter 
 		if isinstance(key, strcomp): 
 			if key.lower() in _RECOGNIZED_ELEMENTS_: 
 				if isinstance(value, numbers.Number): 
-					# allow fitting parameters 
-					if isinstance(value, parameter): 
-						self._frame[key.lower()] = value 
-					else: 
-						self._frame[key.lower()] = float(value) 
+					self._frame[key.lower()] = float(value) 
 				elif callable(value): 
 					_pyutils.args(value, """Functional %s setting must \
 accept only one numerical parameter.""" % (self._name)) 

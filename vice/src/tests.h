@@ -8,7 +8,6 @@ extern "C" {
 
 #include "dataframe/tests.h" 
 #include "io/tests.h" 
-#include "modeling/tests.h" 
 #include "multizone/tests.h" 
 #include "objects/tests.h" 
 #include "singlezone/tests.h" 
