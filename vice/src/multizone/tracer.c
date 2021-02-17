@@ -21,20 +21,42 @@
  */ 
 extern void inject_tracers(MULTIZONE *mz) { 
 
-	unsigned long i, timestep = (*(*mz).zones[0]).timestep; 
-	MIGRATION *mig = mz -> mig; 
-	for (i = (*mig).tracer_count; 
-		i < (*mig).tracer_count + (*mig).n_tracers * (*mig).n_zones; 
-		i++) {
+	// if ((*(*mz).zones[0]).current_time <= 
+	// 	(*(*mz).zones[0]).output_times[(*(*mz).zones[0]).n_outputs - 1l]) { 
 
-		SINGLEZONE sz = *(*mz).zones[(*(*mig).tracers[i]).zone_origin]; 
-		TRACER *t = mz -> mig -> tracers[i]; 
-		t -> mass = (*sz.ism).star_formation_rate * sz.dt / (*mig).n_tracers; 
-		t -> zone_current = (unsigned) (
-			(*(*mig).tracers[i]).zone_history[timestep + 1l]); 
+	if ((*(*mz).zones[0]).current_time <= 
+		(*(*mz).zones[0]).output_times[(*(*mz).zones[0]).n_outputs - 1l]) { 
 
-	}
-	mig -> tracer_count += (*mig).n_tracers * (*mig).n_zones; 
+		unsigned long i, timestep = (*(*mz).zones[0]).timestep; 
+		MIGRATION *mig = mz -> mig; 
+		for (i = (*mig).tracer_count; 
+			i < (*mig).tracer_count + (*mig).n_tracers * (*mig).n_zones; 
+			i++) {
+
+			SINGLEZONE sz = *(*mz).zones[(*(*mig).tracers[i]).zone_origin]; 
+			TRACER *t = mz -> mig -> tracers[i]; 
+			t -> mass = (*sz.ism).star_formation_rate * sz.dt / (*mig).n_tracers; 
+			t -> zone_current = (unsigned) (
+				(*(*mig).tracers[i]).zone_history[timestep + 1l]); 
+		} 
+
+		mig -> tracer_count += (*mig).n_tracers * (*mig).n_zones; 
+
+	} else {} 
+
+	/* 
+	 * Update the tracer count, but if the new tracer particles formed after 
+	 * the final output time, decrement it back down. This'll ensure that 
+	 * superfluous tracer particles are left out of the output and distribution 
+	 * function calculations. 
+	 */ 
+	// unsigned long dn = (*mig).n_tracers * (*mig).n_zones; 
+	// mig -> tracer_count += dn; 
+	// if (((*(*mig).tracers[(*mig).tracer_count - 1l]).timestep_origin) * 
+	// 	(*(*mz).zones[0]).dt > 
+	// 	(*(*mz).zones[0]).output_times[(*(*mz).zones[0]).n_outputs - 1l]) {
+	// 	mig -> tracer_count -= dn; 
+	// } else {} 
 
 } 
 

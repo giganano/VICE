@@ -319,8 +319,8 @@ Got: %s""" % (type(arg)))
 				mz.zones[i].name = attrs["zones"][i] 
 		else: 
 			warnings.warn("""\
-Attributes not saved with multizone output. Initialization multizone object \
-with default parameters.""", UserWarning) 
+Attributes not saved with multizone output. Initializing multizone object with \
+default parameters.""", UserWarning) 
 			mz = cls() 
 		
 		if os.path.exists("%s/migration" % (dirname)): 

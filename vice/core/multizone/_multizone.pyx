@@ -306,7 +306,7 @@ migration.specs. Got: %s""" % (type(value)))
 			enrichment = _multizone.multizone_evolve(self._mz) 
 			if pickle: self.pickle() 
 
-			# save yield settings and attributes 
+			# save yield settings and attributes always 
 			for i in range(self._mz[0].mig[0].n_zones): 
 				self._zones[i]._singlezone__c_version.pickle() 
 			canceled = False 
@@ -534,7 +534,7 @@ None.""" % (self.migration.stars.mode), UserWarning)
 						Set the analog tracer particle by calling the object 
 						with the time of formation and simulation times equal. 
 						""" 
-						if i <= n - _singlezone.BUFFER: 
+						if i <= n - _singlezone.BUFFER + 1: 
 							# Don't bother resetting the analog in the buffer 
 							if takes_keyword: 
 								self.migration.stars(j, 
@@ -558,7 +558,7 @@ None.""" % (self.migration.stars.mode), UserWarning)
 						takes_keyword = takes_keyword) 
 			if self.verbose: 
 				# Estimate an ETA by linear extrapolation 
-				percentage = 100 * (i + 1) / n  
+				percentage = 100 * (i + 1) / n 
 				ETA = (100 - percentage) / percentage * (time.time() - start) 
 				days, hours, minutes, seconds = _pyutils.format_time(ETA) 
 				if days: 
@@ -645,25 +645,22 @@ None.""" % (self.migration.stars.mode), UserWarning)
 		kwargs = {} 
 		if takes_keyword: kwargs["n"] = n 
 		zone_history = n_timesteps * [zone] 
-		if timestep <= n_timesteps - _singlezone.BUFFER: 
+		if timestep <= n_timesteps - _singlezone.BUFFER + 1: 
 			if self.simple: 
 				""" 
-				This will set the analog star particle as necessary if using 
-				the hydrodiskstars object, then simply set the final zone 
-				number at the index that the copy_zone_history function 
-				assigns as the current zone number. Calling it with time of 
-				formation and simulation time equal also allows users to 
-				retain ability to write additional data to an output file. 
+				As in the hydrodiskstars object, calling the migration 
+				prescription with the two time parameters equal may be 
+				important. 
 				""" 
 				self.migration.stars(zone, timestep * self.zones[zone].dt, 
 					timestep * self.zones[zone].dt, **kwargs) 
 				final = self.migration.stars(zone, 
 					timestep * self.zones[zone].dt, 
-					(n_timesteps - _singlezone.BUFFER) * self.zones[zone].dt, 
+					(n_timesteps - _singlezone.BUFFER + 1) * self.zones[zone].dt, 
 					**kwargs) 
 				if isinstance(final, numbers.Number): 
 					if final % 1 == 0: 
-						zone_history[n_timesteps - _singlezone.BUFFER] = int(
+						zone_history[n_timesteps - _singlezone.BUFFER + 1] = int(
 							final) 
 					else: 
 						raise ValueError("""\
@@ -676,21 +673,20 @@ Zone number must always be an integer. Got: %s""" % (type(final)))
 				For each timestep outside the buffer, set the zone number 
 				according to the user specification at that time. 
 				""" 
-				zone_history[timestep:(n_timesteps - _singlezone.BUFFER)] = [
+				zone_history[timestep:(n_timesteps - _singlezone.BUFFER + 1)] = [
 					self.migration.stars(zone, 
 						timestep * self._mz[0].zones[0][0].dt, 
 						l * self._mz[0].zones[0][0].dt) for l in 
-					range(timestep, n_timesteps - _singlezone.BUFFER) 
+					range(timestep, n_timesteps - _singlezone.BUFFER + 1) 
 				]
 
 				""" 
 				For each timestep inside the buffer, the set the zone number 
 				according to the user specification at the final timestep. 
 				""" 
-				zone_history[-_singlezone.BUFFER:] = (_singlezone.BUFFER) * [
-					zone_history[-(_singlezone.BUFFER + 1)] 
-				] 
-		else: 
+				zone_history[-_singlezone.BUFFER + 1:] = (
+					_singlezone.BUFFER - 1) * [zone_history[-_singlezone.BUFFER]] 
+		else:  
 			pass 
 
 		return zone_history 
@@ -760,7 +756,7 @@ its time of formation, must equal its zone of origin.""")
 			zones[formation_timestep])
 		if self.simple: 
 			self._mz[0].mig[0].tracers[idx][0].zone_current = int(
-				zones[n_timesteps - _singlezone.BUFFER]) 
+				zones[n_timesteps - _singlezone.BUFFER + 1]) 
 		else: 
 			self._mz[0].mig[0].tracers[idx][0].zone_current = int(
 				zones[formation_timestep])

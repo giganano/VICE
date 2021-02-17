@@ -22,12 +22,21 @@
  */ 
 extern unsigned short generic_test_inject_tracers(MULTIZONE *mz) {
 
-	/* +2l takes into account injection before and after evolution */ 
-	return (*(*mz).mig).tracer_count == (
-		((*(*mz).zones[0]).timestep + 2l) * 
-		(*(*mz).mig).n_zones * 
-		(*(*mz).mig).n_tracers 
+	/* 
+	 * There will always be two timesteps worth of tracer particles beyond the 
+	 * final timestep - the first comes from the call to inject_tracers at 
+	 * the beginning of each model, and the second comes from the fact that 
+	 * inject_tracers at each timestep is called before the current time is 
+	 * modified (the current time is the criterion for deciding whether or not 
+	 * they should be injected). 
+	 */ 
+	unsigned long n_timesteps = 2ul + (unsigned long) (
+		(*(*mz).zones[0]).output_times[(*(*mz).zones[0]).n_outputs - 1l] / 
+		(*(*mz).zones[0]).dt 
 	); 
+	unsigned long correct = (n_timesteps * (*(*mz).mig).n_zones * 
+		(*(*mz).mig).n_tracers); 
+	return (*(*mz).mig).tracer_count == correct; 
 
 } 
 

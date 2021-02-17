@@ -27,11 +27,21 @@
 extern unsigned short no_migration_test_recycle_metals_from_tracers(
 	MULTIZONE *mz) {
 
+	/* 
+	 * This test ensures that the mass recycled in each zone matches that 
+	 * expected from a one-zone model. However, because multizone simulations 
+	 * leave out accidental populations that formed after the last output, 
+	 * there is one timestep that needs removed. This function decrements the 
+	 * timestep number, then re-increments it at the end to achieve its 
+	 * purposes.
+	 */ 
+
 	/* First take a copy of each element's mass in each zone, ... */ 
 	double **actual = (double **) malloc (
 		(*(*mz).mig).n_zones * sizeof(double *)); 
 	unsigned int i, j; 
 	for (i = 0u; i < (*(*mz).mig).n_zones; i++) {
+		mz -> zones[i] -> timestep--; 
 		actual[i] = (double *) malloc (
 			(*(*mz).zones[i]).n_elements * sizeof(double)); 
 		for (j = 0u; j < (*(*mz).zones[i]).n_elements; j++) {
@@ -69,6 +79,9 @@ extern unsigned short no_migration_test_recycle_metals_from_tracers(
 		if (!status) break; 
 	} 
 	free(actual); 
+	for (i = 0u; i < (*(*mz).mig).n_zones; i++) {
+		mz -> zones[i] -> timestep++; /* see comment at top */ 
+	}
 	return status; 
 
 } 
@@ -149,13 +162,20 @@ extern unsigned short no_migration_test_gas_recycled_in_zones(MULTIZONE *mz) {
 
 	/* 
 	 * The gas mass recycled in each zone should always match that expected in 
-	 * a singlezone simulation if stars aren't migrating. 
+	 * a singlezone simulation if stars aren't migrating. However, because 
+	 * multizone simulations leave out accidental populations that formed after 
+	 * the last output, there is one timestep that needs removed. This function 
+	 * decrements the timestep number, then re-increments it at the end to 
+	 * achieve its purposes.
 	 * 
 	 * This test typically passes with %-differences on the order of 1e-12. 
 	 */ 
+	unsigned short i, status = 1u; 
+	for (i = 0u; i < (*(*mz).mig).n_zones; i++) {
+		mz -> zones[i] -> timestep--; 
+	}
 	double *actual = gas_recycled_in_zones(*mz); 
 	if (actual != NULL) {
-		unsigned short i, status = 1u; 
 		for (i = 0u; i < (*(*mz).mig).n_zones; i++) {
 			double expected = mass_recycled(*(*mz).zones[i], NULL); 
 			double percent_difference = absval(
@@ -164,10 +184,14 @@ extern unsigned short no_migration_test_gas_recycled_in_zones(MULTIZONE *mz) {
 			status &= percent_difference < 1e-3; 
 			if (!status) break; 
 		} 
-		return status; 
 	} else {
-		return 0u; 
+		status = 0u; 
 	}
+	for (i = 0u; i < (*(*mz).mig).n_zones; i++) {
+		mz -> zones[i] -> timestep++; /* see comment at top */ 
+	}
+
+	return status; 
 
 }
 

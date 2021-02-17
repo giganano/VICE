@@ -43,8 +43,8 @@ extern unsigned short separation_test_tracers_MDF(MULTIZONE *mz) {
 	for (i = 0u; i < choose((*(*mz).zones[0]).n_elements, 2); i++) {
 		/* 
 		 * Can't make any claims about a non-zero width abundance ratio 
-		 * distribution in the quiescent zone -> default Sr and Fe yields 
-		 * produce a zero-width distribution with default yields. 
+		 * distribution in the quiescent zone -> Sr and Fe produce a zero-width 
+		 * distribution with default yields and parameters. 
 		 */ 
 		status &= all_nan_or_single_nonzero(
 			(*(*(*mz).zones[0]).mdf).ratio_distributions[i], 
@@ -56,7 +56,7 @@ extern unsigned short separation_test_tracers_MDF(MULTIZONE *mz) {
 
 	return status; 
 
-}
+} 
 
 
 /* 
