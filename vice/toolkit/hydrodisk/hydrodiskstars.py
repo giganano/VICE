@@ -58,7 +58,7 @@ class hydrodiskstars:
 	mode : str or ``None`` 
 		The mode of stellar migration, describing the approximation of how 
 		stars move from birth to final radii. Either "linear", "sudden", or 
-		"diffusion". 
+		"diffusion". See property docstring for more details. 
 
 		.. note:: Only subclasses may set this attribute ``None``, in which 
 			case it is assumed that a custom migration approximation is 
