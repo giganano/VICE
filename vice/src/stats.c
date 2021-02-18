@@ -1,8 +1,141 @@
+/* 
+ * This file implements simple statistical functions, namely sampling from a 
+ * gaussian distribution via the Box-Muller transform, sampling from a generic 
+ * distribution via inverse transform sampling, conversion of a distribution 
+ * to a CDF, and conversion of a distribution to a PDF. 
+ */ 
 
 #include <stdlib.h> 
 #include <math.h> 
 #include "stats.h" 
 #include "utils.h" 
+
+
+/* 
+ * Generate a pseudo-random number from a normal distribution. This function 
+ * makes use of the Box-Muller tranformation to do so. 
+ * 
+ * Parameters 
+ * ========== 
+ * mean: 		The mean of the distribution 
+ * sigma: 		The standard deviation of the distribution 
+ * 
+ * Returns 
+ * ======= 
+ * A psuedo-random number drawn from a guassian distribution with specified 
+ * mean and standard deviation. 
+ * 
+ * header: stats.h 
+ */ 
+extern double normal(double mean, double sigma) { 
+ 
+	/* Start with two random numbers between 0 and 1 */ 
+	double r1 = (double) rand() / RAND_MAX; 
+	double r2 = (double) rand() / RAND_MAX; 
+
+	/* The Box-Muller Transformation */ 
+	double z1 = sqrt(-2 * log(r1)) * cos(2 * PI * r2); 
+	double z2 = sqrt(-2 * log(r1)) * sin(2 * PI * r2); 
+
+	/* 
+	 * Box-Muller give two pseudo-random numbers generated according to a 
+	 * normal distribution with mean 0 and standard deviation 1. Decide which 
+	 * one to take via coin flip, let z1/z2 denote how many standard deviations 
+	 * to offset by, add the mean and return. 
+	 */ 
+	if ((double) rand() / RAND_MAX >= 0.5) { 
+		return mean + z1 * sigma; 
+	} else { 
+		return mean + z2 * sigma; 
+	}
+
+} 
+
+
+/* 
+ * Draw a given number of samples from a known distribution. 
+ * 
+ * Parameters 
+ * ========== 
+ * dist: 		The distribution itself, assumed to be unnormalized 
+ * bins: 		The bin edges on which the distribution is sampled 
+ * n_bins: 		The number of bins in the distribution. This is always 1 less 
+ * 				than the number of bin edges. 
+ * n: 			The number of samples to draw 
+ * 
+ * Returns 
+ * ======= 
+ * A double pointer to an n-element array of values drawn from the given 
+ * distribution. 
+ * 
+ * Notes 
+ * =====
+ * This function implements inverse transform sampling from a discrete 
+ * distribution. 
+ * 
+ * This function does NOT seed the random number generator. 
+ * 
+ * header: stats.h 
+ */ 
+extern double *sample(double *dist, double *bins, unsigned long n_bins, 
+	unsigned long n) {
+
+	double *cdf = convert_to_CDF(dist, bins, n_bins); 
+	double *values = (double *) malloc (n * sizeof(double)); 
+
+	unsigned long i; 
+	for (i = 0ul; i < n; i++) {
+		double x = rand_range(0, 1); 
+		long bin = get_bin_number(cdf, n_bins, x); 
+
+		/* 
+		 * If bin == -1, x is between 0 and cdf[0] -> zero'th bin 
+		 * If bin == 0, x is between cdf[0] and cdf[1] -> first bin 
+		 * If bin == 1, x is between cdf[1] and cdf[2] -> second bin 
+		 * 
+		 * ... and so on, hence the addition of one in the bin index. 
+		 */ 
+		values[i] = rand_range(bins[bin + 1l], bins[bin + 2l]); 
+	} 
+
+	free(cdf); 
+	return values; 
+
+}
+
+
+/* 
+ * Convert a distribution to a cumulative distribution function (CDF). 
+ * 
+ * Parameters 
+ * ========== 
+ * dist: 		The values of the distribution itself in each bin 
+ * bins: 		The bin edges on which the distribution is sampled 
+ * n_bins: 		The number of bins in the distribution. This is always 1 less 
+ * 				than the number of bin edges. 
+ * 
+ * Returns 
+ * ======= 
+ * A distribution whose values represent the fraction of values with bin 
+ * numbers <= N. 
+ * 
+ * header: stats.h 
+ */ 
+extern double *convert_to_CDF(double *dist, double *bins, 
+	unsigned long n_bins) { 
+
+	/* The CDF is defined as the area under the PDF up to a value x */ 
+	unsigned long i; 
+	double *pdf = convert_to_PDF(dist, bins, n_bins); 
+	double *cdf = (double *) malloc (n_bins * sizeof(double)); 
+	cdf[0] = pdf[0] * (bins[1] - bins[0]); 
+	for (i = 1ul; i < n_bins; i++) {
+		cdf[i] = cdf[i - 1ul] + pdf[i] * (bins[i + 1ul] - bins[i]); 
+	} 
+
+	return cdf; 
+
+}
 
 
 /* 

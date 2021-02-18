@@ -46,6 +46,23 @@ static IMF_ *IMF = NULL;
 static CALLBACK_1ARG *EXPLODABILITY = NULL; 
 static double Z_PROGENITOR; 
 static unsigned short WEIGHT_INITIAL; 
+static unsigned short TESTING = 0u; 
+
+
+/* 
+ * Set the global testing status. 
+ * 
+ * Parameters 
+ * ========== 
+ * testing: 	A boolean int describing whether or not testing is being ran. 
+ * 
+ * header: ccsne.h 
+ */ 
+extern void set_testing_status(unsigned short testing) {
+
+	TESTING = testing; 
+
+}
 
 
 /* 
@@ -79,6 +96,88 @@ extern void weight_initial_by_explodability(unsigned short weight) {
 extern void set_Z_progenitor(double Z) {
 
 	Z_PROGENITOR = Z; 
+
+}
+
+
+/* 
+ * Calculate an IMF integrated fractional yield by sampling the IMF and 
+ * summing up the yields and ZAMS masses as opposed to analytically 
+ * evaluating the solution. 
+ * 
+ * Parameters 
+ * ==========
+ * N: 				The number of stars to sample from the IMF 
+ * m_lower: 		The lower mass limit on star formation in Msun 
+ * m_upper: 		The upper mass limit on star formation in Msun 
+ * imf: 			The associated IMF object 
+ * explodability: 	Stellar explodability as a function of mass 
+ * path: 			The name of the data file containing the grid 
+ * wind: 			Boolean int describing whether or not to include winds 
+ * element: 		The symbol of the element 
+ * 
+ * Returns 
+ * =======
+ * The value of the IMF integrated fractional yield via stochastic sampling. 
+ * 
+ * header: ccsne.h 
+ */ 
+extern double IMFintegrated_fractional_yield_sampled(const unsigned long N, 
+	double m_lower, double m_upper, IMF_ *imf, CALLBACK_1ARG *explodability, 
+	char *path, const unsigned short wind, char *element) {
+
+	/* 
+	 * Bookkeeping 
+	 * ===========
+	 * prefactor: 	10 times as many bins as progenitors 
+	 * bins: 		Bin-edges in stellar mass 
+	 * dist: 		The mass distribution in the sampled bins 
+	 * progenitors: Progenitor ZAMS masses sampled from the IMF 
+	 * yields: 		The interpolated yields of each progenitor star 
+	 * 
+	 * IMFintegrated_yield is the value this function sets out to calculate 
+	 */ 
+	setup_calculation(imf, explodability, path, wind, element); 
+	unsigned short prefactor = 20u; 
+	double *bins = logbinspace(m_lower, m_upper, prefactor * N); 
+	double *logcenters = logbin_centers(bins, prefactor * N); 
+	double *dist = (double *) malloc ((prefactor * N) * sizeof(double)); 
+	unsigned long i; 
+	for (i = 0ul; i < prefactor * N; i++) {
+		dist[i] = imf_evaluate(*IMF, logcenters[i]); 
+	} 
+
+	double *progenitors = sample(dist, bins, prefactor * N, N); 
+	double *yields = (double *) malloc (N * sizeof(double)); 
+	for (i = 0ul; i < N; i++) {
+		yields[i] = interpolate_yield(progenitors[i]); 
+	} 
+
+	if (TESTING) {
+		/* 
+		 * If tests are being ran, write the progenitor masses and their 
+		 * determined yields to an output file. 
+		 */ 
+		FILE *out = fopen("test.out", "w"); 
+		if (out != NULL) { 
+			fprintf(out, "# Progenitor Mass [Msun]\tMass Yield [Msun]\n"); 
+			for (i = 0ul; i < N; i++) {
+				fprintf(out, "%.3f\t%.5e\n", progenitors[i], yields[i]); 
+			} 
+			fclose(out); 
+		} else {
+			printf("Could not produce output test file!\n"); 
+			printf("\tvice/src/yields/ccsne.c\n"); 
+			printf("\tIMFintegrated_fractional_yield_sampled\n"); 
+		} 
+	} else {} 
+
+	double IMFintegrated_yield = sum(yields, N) / sum(progenitors, N); 
+	free(bins); 
+	free(dist); 
+	free(progenitors); 
+	free(yields); 
+	return IMFintegrated_yield; 
 
 }
 

@@ -33,6 +33,8 @@ else:
 	_VERSION_ERROR_() 
 
 # C Functions 
+from libc.stdlib cimport free, srand 
+from libc.limits cimport UINT_MAX 
 from ...core.objects._imf cimport imf_object 
 from ...core.objects._callback_1arg cimport CALLBACK_1ARG 
 from ...core.objects._callback_1arg cimport callback_1arg_initialize 
@@ -48,8 +50,8 @@ _MINIMUM_MASS_ = float(_yield_integrator.CC_MIN_STELLAR_MASS)
 
 def integrate(element, study = "LC18", MoverH = 0, rotation = 0, 
 	explodability = None, wind = True, net = False, IMF = "kroupa", 
-	method = "simpson", m_lower = 0.08, m_upper = 100, 
-	tolerance = 1e-3, Nmin = 64, Nmax = 2e8): 
+	sample = 0, method = "simpson", m_lower = 0.08, m_upper = 100, 
+	tolerance = 1e-3, Nmin = 64, Nmax = 2e8, seed = None): 
 	
 	r""" 
 	Calculate an IMF-integrated fractional nucleosynthetic yield of a 
@@ -57,8 +59,8 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 
 	**Signature**: vice.yields.ccsne.fractional(element, study = "LC18", 
 	MoverH = 0, rotation = 0, explodability = None, wind = True, net = True, 
-	IMF = "kroupa", method = "simpson", m_lower = 0.08, m_upper = 100, 
-	tolerance = 1e-3, Nmin = 64, Nmax = 2.0e+08) 
+	IMF = "kroupa", sample = 0, method = "simpson", m_lower = 0.08, 
+	m_upper = 100, tolerance = 1e-3, Nmin = 64, Nmax = 2.0e+08, seed = None) 
 
 	Parameters 
 	----------
@@ -142,6 +144,26 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			Prior to version 1.X.0, functions of mass as custom stellar IMF 
 			were not supported. 
 
+	sample : int [default : 0] 
+		The number of stars to sample from the IMF. If zero, VICE will proceed 
+		with the analytic calculation defined below. If nonzero, VICE will 
+		stochastically sample the IMF the specified number of times, and 
+		report the yield as the sum of the mass yield of the given element 
+		from the progenitors divided by the sum of the progenitor masses. 
+
+		.. versionadded:: 1.X.0 
+
+		.. note:: When this value is nonzero, the following keyword arguments 
+			play no role in the calculation: 
+
+				- method 
+				- tolerance 
+				- Nmin 
+				- Nmax 
+
+		.. note:: When this value is nonzero, the returned error will always 
+			be a NaN. 
+
 	method : ``str`` [case-insensitive] [default : "simpson"] 
 		The method of quadrature. 
 
@@ -168,13 +190,28 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	Nmax : real number [default : 2.0e+08] 
 		The maximum number of bins in quadrature. Included as a failsafe 
 		against solutions that din't converge numerically. 
+	seed : integer or ``None`` [default : ``None``] 
+		The seed to the random number generator. Only relevant when the 
+		keyword argument ``sample`` is nonzero. If ``None``, VICE will call 
+		its internal random number seed algorithm. If an integer, its value 
+		must be between 0 and :math:`2^{32} - 1` (inclusive). 
+
+		.. versionadded:: 1.X.0 
+
+		.. note:: VICE's internal random number seed algorithm is based on the 
+			current time of day, and can be reseeded every 25 microseconds. 
+			Because this is much shorter than the time required for this 
+			function to run once, yield calculations that require the same 
+			set of progenitor stellar masses should be ran with the same 
+			random number seed. 
 
 	Returns 
 	-------
 	y : real number 
 		The numerically calculated yield. 
 	error : real number 
-		The estimated numerical error. 
+		The estimated numerical error. NaN if keyword argument ``sample`` is 
+		nonzero. 
 
 	Raises 
 	------
@@ -205,10 +242,13 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		- 	``wind = False`` and ``study`` is anything other than 
 			LC18 or S16. These are the only studies for which wind yields were 
 			reported separate from explosive yields. 
+		- 	``sample`` is nonzero but less than 100. In this case, numerical 
+			artifacts may be introduced by coarse sampling of the IMF. 
 
 	Notes 
 	-----
-	This function evaluates the solution to the following equation: 
+	If the keyword argument ``sample`` is zero, this function evaluates the 
+	solution to the following equation: 
 
 	.. math:: y_x^\text{CC} = \frac{
 		\int_8^u (E(m)m_x + w_x - Z_{x,\text{prog}}m) \frac{dN}{dm} dm 
@@ -236,6 +276,18 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		nucleosynthesis from radioactive decay products, then the values 
 		returned from this function should be interpreted as lower bounds 
 		rather than estimates of the true nucleosynthetic yield. 
+
+	If the keyword argument ``sample`` is nonzero, this function instead 
+	evaluates the solution to the following: 
+
+	.. math:: y_x^\text{CC} = \frac{
+		\sum_i (E(m)m_x + w_x - Z_{x,\text{prog}}m) \frac{dN}{dm} dm 
+		}{
+		\sum_i m \frac{dN}{dm} dm 
+		} 
+
+	where the index :math:`i` denotes the i'th progenitor mass sampled from 
+	the IMF, and the sum is taken over all progenitors. 
 
 	Example Code 
 	------------
@@ -282,6 +334,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		string_check(method, "method") 
 		numeric_check(MoverH, "MoverH") 
 		numeric_check(rotation, "rotation") 
+		numeric_check(sample, "sample") 
 		numeric_check(m_lower, "m_lower") 
 		numeric_check(m_upper, "m_upper") 
 		numeric_check(tolerance, "tolerance") 
@@ -306,6 +359,10 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		study.upper(), MoverHstr, rotation)): 
 		raise LookupError("""The %s study did not report yields for v = %d \
 km/s and [M/H] = %g""" % (study, rotation, MoverH)) 
+	elif sample < 0: 
+		raise ValueError("Sample must be positive. Got: %g" % (sample)) 
+	elif sample % 1: 
+		raise ValueError("Sample must be an integer. Got: %g" % (sample)) 
 	elif tolerance < 0 or tolerance > 1: 
 		raise ValueError("Tolerance must be between 0 and 1.") 
 	elif m_lower >= m_upper: 
@@ -315,6 +372,20 @@ km/s and [M/H] = %g""" % (study, rotation, MoverH))
 	elif Nmin >= Nmax: 
 		raise ValueError("""Minimum number of bins in quadrature must be \
 smaller than maximum number of bins.""") 
+	elif seed is not None: 
+		if isinstance(seed, numbers.Number): 
+			if seed % 1 == 0: 
+				seed = int(seed) 
+				if seed < 0 or seed > UINT_MAX: 
+					raise ValueError("""Keyword arg 'seed' out of range. Must \
+be between 0 and %d. Got: %d""" % (UINT_MAX, seed)) 
+				else: pass 
+			else: 
+				raise TypeError("""Keyword arg 'seed' must be an integer. \
+Got: %g""" % (seed)) 
+		else: 
+			raise TypeError("Keyword arg 'seed' must be an integer. Got: %s" % (
+				type(seed))) 
 	else: pass 
 
 	""" 
@@ -376,7 +447,6 @@ callable object. Got: %s""" % (type(explodability)))
 	"""
 	upper_mass_limits = {
 		"LC18":		120, 
-		"LC18M":		120,
 		"CL13": 	120, 
 		"CL04": 	35, 
 		"WW95": 	40, 
@@ -420,7 +490,7 @@ wind and the explosion, publishing only the total yields from both. For this \
 reason, this calculation can only run including the wind yield.""" % (
 			_NAMES_[study.upper()]), ScienceWarning) 
 	else: 
-		pass
+		pass 
 
 	path = "%syields/ccsne/%s/FeH%s/v%d/" % (_DIRECTORY_, 
 		study.upper(), 
@@ -455,6 +525,22 @@ own discretion by modifying their CCSN yield settings directly.""" % (
 	else: 
 		_yield_integrator.set_Z_progenitor(0) 
 		_yield_integrator.weight_initial_by_explodability(0) 
+
+	# compute the yield via sampling if instructed to do so 
+	if sample: 
+		if sample < 100: warnings.warn("""\
+Small number of progenitor stars for computing yield: %d. Beware that this \
+may introduce numerical artifacts.""" % (sample), ScienceWarning) 
+		if seed is None: 
+			_yield_integrator.seed_random() 
+		else: 
+			srand(<unsigned int> seed) 
+		yield_ = _yield_integrator.IMFintegrated_fractional_yield_sampled(
+			<unsigned long> sample, <double> m_lower, <double> m_upper, 
+			imf_obj, explodability_cb, path.encode("latin-1"), int(wind), 
+			element.lower().encode("latin-1")) 
+		return [yield_, float("nan")] 
+	else: pass 
 
 	# Compute the yield 
 	cdef INTEGRAL *num = _integral.integral_initialize() 
@@ -537,4 +623,17 @@ def initial_abundances(filename):
 			line = f.readline() 
 		f.close() 
 	return zprog 
+
+
+def _set_testing_status(testing = False): 
+	r""" 
+	Set the internal testing status of the CCSN yield calculations. When True, 
+	output files by the name "test.out" may be produced/overwritten. 
+
+	Parameters 
+	----------
+	testing : bool [default : False] 
+		The testing status. True if running tests, False otherwise. 
+	""" 
+	_yield_integrator.set_testing_status(<unsigned short> testing) 
 
