@@ -11,6 +11,24 @@ extern "C" {
 #endif /* PI */ 
 
 /* 
+ * Generate a pseudo-random number from a normal distribution. This function 
+ * makes use of the Box-Muller tranformation to do so. 
+ * 
+ * Parameters 
+ * ========== 
+ * mean: 		The mean of the distribution 
+ * sigma: 		The standard deviation of the distribution 
+ * 
+ * Returns 
+ * ======= 
+ * A psuedo-random number drawn from a guassian distribution with specified 
+ * mean and standard deviation. 
+ * 
+ * header: stats.h 
+ */ 
+extern double normal(double mean, double sigma); 
+
+/* 
  * Convert a distribution in a given binspace to a probability distribution 
  * function (PDF). 
  * 
