@@ -28,12 +28,19 @@ Raises
 	- The name of the extension to reinstall is invalid 
 """ 
 
+# this version requires python >= 3.6.0 
+MIN_PYTHON_VERSION = "3.6.0" 
+import sys 
+import os 
+if sys.version_info[:] < tuple(
+	[int(_) for _ in MIN_PYTHON_VERSION.split('.')]): 
+	raise RuntimeError("""This version of VICE requires python >= %s. \
+Current version: %d.%d.%d.""" % (MIN_PYTHON_VERSION, sys.version_info.major, 
+	sys.version_info.minor, sys.version_info.micro)) 
 try: 
 	ModuleNotFoundError 
 except NameError: 
 	ModuleNotFoundError = ImportError 
-import sys 
-import os 
 if "distutils" in sys.argv: 
 	from distutils.core import setup, Extension 
 	sys.argv.remove("distutils") 
@@ -42,19 +49,15 @@ else:
 		from setuptools import setup, Extension 
 	except (ImportError, ModuleNotFoundError): 
 		from distutils.core import setup, Extension 
-if sys.version_info[:2] < (3, 5): 
-	raise RuntimeError("""This version of VICE requires python >= 3.5. \
-Current version: %d.%d.%d.""" % (sys.version_info.major, 
-		sys.version_info.minor, sys.version_info.micro)) 
-else: pass  
 
 # partial import 
 import builtins 
 builtins.__VICE_SETUP__ = True 
 import vice 
 
-_CYTHON_MINIMUM_ = "0.28.0" 
-vice._check_cython(_CYTHON_MINIMUM_) 
+# From-source build of this version requires Cython >= 0.29.0 
+MIN_CYTHON_VERSION = "0.29.0" 
+vice._check_cython(MIN_CYTHON_VERSION) 
 import Cython
 from Cython.Build import cythonize 
 
@@ -73,10 +76,10 @@ Programming Language :: C
 Programming Language :: Cython 
 Programming Language :: Python 
 Programming Language :: Python :: 3  
-Programming Language :: Python :: 3.5 
 Programming Language :: Python :: 3.6 
 Programming Language :: Python :: 3.7 
 Programming Language :: Python :: 3.8 
+Programming Language :: Python :: 3.9 
 Programming Language :: Python :: 3 :: Only 
 Programming Language :: Python :: Implementation :: CPython 
 Topic :: Scientific/Engineering
@@ -110,7 +113,7 @@ def find_extensions(path = './vice'):
 	Returns 
 	-------
 	exts : list 
-		A list of strings denoting the names of the extensions to install. 
+		A list of ``Extension`` objects to build. 
 
 	Raises 
 	------
@@ -120,7 +123,7 @@ def find_extensions(path = './vice'):
 	specified = list(filter(lambda x: x.startswith("ext="), sys.argv)) 
 	extensions = [] 
 	if len(specified): 
-		# The user has specified a specific extension 
+		# The user has specified a specific extension(s) 
 		for i in specified: 
 			ext = i.split('=')[1] 
 			src = "./%s.pyx" % (ext.replace('.', '/')) 
@@ -192,7 +195,6 @@ def find_package_data():
 		dictionary containing version info of build dependencies 
 	.so : shared object 
 	.o : compiled C code 
-	.pdf : documentation 
 
 	VICE's C extensions are compiled individually and wrapped into a 
 	shared object using make. All of this output is moved to the install 
@@ -201,7 +203,7 @@ def find_package_data():
 	""" 
 	packages = find_packages()
 	data = {}
-	data_extensions = [".dat", ".so", ".obj", ".o", ".pdf"]  
+	data_extensions = [".dat", ".so", ".obj", ".o"]  
 	for i in packages: 
 		data[i] = [] 
 		for j in os.listdir(i.replace('.', '/')): 
@@ -232,7 +234,8 @@ MAJOR = %(major)d
 MINOR = %(minor)d 
 MICRO = %(micro)d 
 BUILD = %(build)d 
-RELEASED = %(isreleased)s
+RELEASED = %(isreleased)s 
+MIN_PYTHON_VERSION = \"%(minversion)s\" 
 """
 	with open(filename, 'w') as f: 
 		try:
@@ -242,7 +245,8 @@ RELEASED = %(isreleased)s
 					"minor": 		MINOR, 
 					"micro": 		MICRO, 
 					"build": 		BUILD, 
-					"isreleased": 	str(ISRELEASED)
+					"isreleased": 	str(ISRELEASED), 
+					"minversion": 	MIN_PYTHON_VERSION 
 				})
 		finally: 
 			f.close()
@@ -301,7 +305,7 @@ def setup_package():
 		package_data = find_package_data(), 
 		scripts = ["bin/%s" % (i) for i in os.listdir("./bin/")], 
 		ext_modules = cythonize(find_extensions()), 
-		python_requires=">=3.5.*, <4", 
+		python_requires=">=3.6.*, <4", 
 		zip_safe = False, 
 		verbose = "-q" not in sys.argv and "--quiet" not in sys.argv 
 	)
