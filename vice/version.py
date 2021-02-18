@@ -4,6 +4,14 @@ This file implements the version_info class.
 
 from __future__ import absolute_import 
 from . import version_breakdown 
+import sys 
+if sys.version_info[:] < tuple(
+	[int(_) for _ in version_breakdown.MIN_PYTHON_VERSION.split('.')]): 
+	raise RuntimeError("""This version of VICE requires python >= %s. \
+Current version: %d.%d.%d""" % (version_breakdown.MIN_PYTHON_VERSION, 
+		sys.version_info.major, sys.version_info.minor, 
+		sys.version_info.micro)) 
+else: pass 
 
 
 class version_info: 
