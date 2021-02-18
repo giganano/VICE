@@ -22,37 +22,30 @@ else:
 
 # Recognized methods of numerical quadrature and yield studies 
 _RECOGNIZED_METHODS_ = tuple(["simpson", "midpoint", "trapezoid", "euler"]) 
-_RECOGNIZED_STUDIES_ = tuple(["WW95", "LC18", "CL13", "CL04", "NKT13", 
-	"S16/W18"]) 
+_RECOGNIZED_STUDIES_ = tuple(["WW95", "LC18", "CL13", "CL04"]) 
 
 # Keywords and their associated studies 
 _NAMES_ = { 
 	"LC18": 	"Limongi & Chieffi (2018), ApJS, 237, 13", 
 	"CL13": 	"Chieffi & Limongi (2013), ApJ, 764, 21 ", 
-	"NKT13":	"Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457", 
 	"CL04": 	"Chieffi & Limongi (2004), ApJ, 608, 405", 
 	"WW95": 	"Woosley & Weaver (1995) ApJ, 101, 181", 
-	"S16/W18": 	"Sukhbold et al. (2016), ApJ, 821, 38" 
 } 
 
 # Keywords and their associated metallicities 
 _MOVERH_ = { 
 	"LC18": 		[-3, -2, -1, 0], 
 	"CL13": 		[0], 
-	"NKT13": 		[-float("inf"), -1.15, -0.54, -0.24, 0.15, 0.55], 
 	"CL04": 		[-float("inf"), -4, -2, -1, -0.37, 0.15], 
 	"WW95": 		[-float("inf"), -4, -2, -1, 0], 
-	"S16/W18": 			[0] 
 } 
 
 # Keywords and their associated rotational velocities 
 _ROTATION_ = { 
 	"LC18": 		[0, 150, 300], 
 	"CL13": 		[0, 300], 
-	"NKT13": 		[0], 
 	"CL04": 		[0], 
 	"WW95": 		[0], 
-	"S16/W18": 		[0] 
 } 
 
 

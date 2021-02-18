@@ -27,14 +27,11 @@ static double y_cc_denominator(double m);
  * GRID: 			The stellar mass - element yield itself 
  * GRIDSIZE:		The number of stellar masses on which the yield grid is 
  * 					sampled 
- * MASS_RANGES: 	Stellar initial mass ranges passed from the user for 
- * 					stellar explodability prescription 
- * EXPLODABILITY: 	The fractions of stars that explode in those mass ranges 
+ * IMF: 			The assumed stellar IMF's corresponding object 
  */
 static double **GRID; 
 static unsigned int GRIDSIZE = 0; 
 static IMF_ *IMF = NULL; 
-static CALLBACK_1ARG *EXPLODABILITY = NULL; 
 
 
 /* 
@@ -45,7 +42,6 @@ static CALLBACK_1ARG *EXPLODABILITY = NULL;
  * ========== 
  * intgrl: 			The integral object for the numerator of the yield 
  * imf:				The associated IMF object
- * explodability: 	Stellar explodability as a function of mass 
  * file:			The nme of the data file containing the grid 
  * 
  * Returns 
@@ -56,8 +52,7 @@ static CALLBACK_1ARG *EXPLODABILITY = NULL;
  * header: ccsne.h 
  */ 
 extern unsigned short IMFintegrated_fractional_yield_numerator(
-	INTEGRAL *intgrl, IMF_ *imf, CALLBACK_1ARG *explodability, 
-	char *file) { 
+	INTEGRAL *intgrl, IMF_ *imf, char *file) { 
 
 	/* 
 	 * Initialize these variables globally. This is such that the function 
@@ -67,7 +62,6 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
 	GRIDSIZE = line_count(file) - header_length(file); 
 	GRID = cc_yield_grid(file); 
 	IMF = imf; 
-	EXPLODABILITY = explodability; 
 
 	intgrl -> func = &y_cc_numerator; 
 	int x = quad(intgrl); 
@@ -75,7 +69,6 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
 	intgrl -> func = NULL; 
 	GRIDSIZE = 0; 
 	IMF = NULL; 
-	EXPLODABILITY = NULL; 
 	return x; 
 
 }
@@ -128,11 +121,10 @@ static double interpolate_yield(double m) {
 		return 0; 
 	} else { 
 		unsigned int i; 
-		// double explosion_fraction = get_explodability_fraction(m); 
 		for (i = 0; i < GRIDSIZE; i++) {
 			/* if the mass itself is on the grid, just return that yield */ 
 			if (m == GRID[i][0]) {
-				return callback_1arg_evaluate(*EXPLODABILITY, m) * GRID[i][1]; 
+				return GRID[i][1]; 
 			} else { 
 				continue; 
 			} 
@@ -143,9 +135,8 @@ static double interpolate_yield(double m) {
 		 */
 		for (i = 0; i < GRIDSIZE - 1; i++) {
 			if (GRID[i][0] < m && m < GRID[i + 1][0]) {
-				return callback_1arg_evaluate(*EXPLODABILITY, m) * 
-					interpolate(GRID[i][0], 
-						GRID[i + 1][0], GRID[i][1], GRID[i + 1][1], m); 
+				return interpolate(GRID[i][0], 
+					GRID[i + 1][0], GRID[i][1], GRID[i + 1][1], m); 
 			} else { 
 				continue; 
 			} 
@@ -156,7 +147,7 @@ static double interpolate_yield(double m) {
 		 * case, python will raise a warning, and we automatically extrapolate 
 		 * yield linearly from the bottom two elements on the grid. 
 		 */ 
-		return callback_1arg_evaluate(*EXPLODABILITY, m) * interpolate(
+		return interpolate(
 			GRID[GRIDSIZE - 2][0], 
 			GRID[GRIDSIZE - 1][0], GRID[GRIDSIZE - 2][1], 
 			GRID[GRIDSIZE - 1][1], m); 

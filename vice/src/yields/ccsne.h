@@ -26,8 +26,7 @@ extern "C" {
  * source: ccsne.c 
  */ 
 extern unsigned short IMFintegrated_fractional_yield_numerator(
-	INTEGRAL *intgrl, IMF_ *imf, CALLBACK_1ARG *explodability, 
-	char *file); 
+	INTEGRAL *intgrl, IMF_ *imf, char *file); 
 
 /* 
  * Determine the value of the integrated IMF weighted by stellar mass, up to 

@@ -21,8 +21,6 @@ def test():
 			test_CL13_import(), 
 			test_CL04_import(), 
 			test_WW95_import(), 
-			test_NKT13_import(), 
-			test_S16_import() 
 		] 
 	] 
 
@@ -81,32 +79,4 @@ def test_WW95_import():
 			return False 
 		return True 
 	return ["vice.yields.ccsne.WW95", test] 
-
-
-@unittest 
-def test_NKT13_import(): 
-	r""" 
-	from vice.yields.ccsne import NKT13 unit test 
-	""" 
-	def test(): 
-		try: 
-			from .. import NKT13 
-		except: 
-			return False 
-		return True 
-	return ["vice.yields.ccsne.NKT13", test] 
-
-
-@unittest 
-def test_S16_import(): 
-	r""" 
-	from vice.yields.ccsne import S16 unit test 
-	""" 
-	def test(): 
-		try: 
-			from .. import S16 
-		except: 
-			return False 
-		return True 
-	return ["vice.yields.ccsne.S16", test] 
 

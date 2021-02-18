@@ -8,11 +8,9 @@ warnings.filterwarnings("ignore")
 import vice 
 from vice.yields.presets import JW20 
 from vice.yields.ccsne import LC18 
-from vice.yields.ccsne import NKT13 
 from vice.yields.ccsne import CL13 
 from vice.yields.ccsne import CL04 
 from vice.yields.ccsne import WW95 
-from vice.yields.ccsne import S16 
 from vice.yields.sneia import iwamoto99 
 from vice.yields.sneia import seitenzahl13 
 from vice.yields.agb import cristallo11 
@@ -108,7 +106,6 @@ _CONFIG_ = {
 			vice.sources, 
 			vice.stable_isotopes, 
 			vice.core.dataframe.agb_yield_settings, 
-			vice.core.dataframe.ccsn_yield_table, 
 			vice.core.dataframe.channel_entrainment, 
 			vice.core.dataframe.elemental_settings, 
 			vice.core.dataframe.evolutionary_settings, 
@@ -172,24 +169,6 @@ _CONFIG_ = {
 	vice.core.dataframe.agb_yield_settings: {
 		"filename": 	"vice.core.dataframe.agb_yield_settings.rst", 
 		"header": 		"vice.core.dataframe.agb_yield_settings", 
-		"subs": 		[] 
-	}, 
-	vice.core.dataframe.ccsn_yield_table: {
-		"filename": 	"vice.core.dataframe.ccsn_yield_table.rst", 
-		"header": 		"vice.core.dataframe.ccsn_yield_table", 
-		"subs": 		[
-			vice.core.dataframe.ccsn_yield_table.masses, 
-			vice.core.dataframe.ccsn_yield_table.isotopes 
-		] 
-	}, 
-	vice.core.dataframe.ccsn_yield_table.masses: {
-		"filename": 	"vice.core.dataframe.ccsn_yield_table.masses.rst", 
-		"header": 		"vice.core.dataframe.ccsn_yield_table.masses", 
-		"subs": 		[] 
-	}, 
-	vice.core.dataframe.ccsn_yield_table.isotopes: {
-		"filename": 	"vice.core.dataframe.ccsn_yield_table.isotopes.rst", 
-		"header": 		"vice.core.dataframe.ccsn_yield_table.isotopes", 
 		"subs": 		[] 
 	}, 
 	vice.core.dataframe.channel_entrainment: {
@@ -327,24 +306,16 @@ _CONFIG_ = {
 		"header": 		"vice.yields.ccsne", 
 		"subs": 		[
 			vice.yields.ccsne.fractional, 
-			vice.yields.ccsne.table, 
 			vice.yields.ccsne.settings, 
 			vice.yields.ccsne.WW95, 
 			vice.yields.ccsne.CL04, 
 			vice.yields.ccsne.CL13, 
-			vice.yields.ccsne.NKT13, 
-			vice.yields.ccsne.S16, 
 			vice.yields.ccsne.LC18 
 		]  
 	}, 
 	vice.yields.ccsne.fractional: {
 		"filename": 	"vice.yields.ccsne.fractional.rst", 
 		"header": 		"vice.yields.ccsne.fractional", 
-		"subs": 		[] 
-	}, 
-	vice.yields.ccsne.table: {
-		"filename": 	"vice.yields.ccsne.table.rst", 
-		"header": 		"vice.yields.ccsne.table", 
 		"subs": 		[] 
 	}, 
 	vice.yields.ccsne.settings: {
@@ -403,16 +374,6 @@ _CONFIG_ = {
 		"header": 		"vice.yields.ccsne.CL04.set_params", 
 		"subs": 		[] 
 	}, 
-	vice.yields.ccsne.NKT13: {
-		"filename": 	"vice.yields.ccsne.NKT13.rst", 
-		"header": 		"vice.yields.ccsne.NKT13", 
-		"subs": 		[vice.yields.ccsne.NKT13.set_params] 
-	}, 
-	vice.yields.ccsne.NKT13.set_params: {
-		"filename": 	"vice.yields.ccsne.NKT13.set_params.rst", 
-		"header": 		"vice.yields.ccsne.NKT13.set_params", 
-		"subs": 		[] 
-	}, 
 	vice.yields.ccsne.CL13: {
 		"filename": 	"vice.yields.ccsne.CL13.rst", 
 		"header": 		"vice.yields.ccsne.CL13", 
@@ -422,29 +383,6 @@ _CONFIG_ = {
 		"filename": 	"vice.yields.ccsne.CL13.set_params.rst", 
 		"header": 		"vice.yields.ccsne.CL13.set_params", 
 		"subs": 		[] 
-	}, 
-	vice.yields.ccsne.S16: {
-		"filename": 	"vice.yields.ccsne.S16.rst", 
-		"header": 		"vice.yields.ccsne.S16", 
-		"subs": 		[
-			vice.yields.ccsne.S16.set_params, 
-			vice.yields.ccsne.S16.engines 
-		] 
-	}, 
-	vice.yields.ccsne.S16.set_params: {
-		"filename": 	"vice.yields.ccsne.S16.set_params.rst", 
-		"header": 		"vice.yields.ccsne.S16.set_params", 
-		"subs": 		[] 
-	}, 
-	vice.yields.ccsne.S16.engines: {
-		"filename": 	"vice.yields.ccsne.S16.engines.rst", 
-		"header": 		"vice.yields.ccsne.S16.engines", 
-		"subs": 		[vice.yields.ccsne.S16.engines.W18] 
-	}, 
-	vice.yields.ccsne.S16.engines.W18: {
-		"filename": 	"vice.yields.ccsne.S16.engines.W18.rst", 
-		"header": 		"vice.yields.ccsne.S16.engines.W18", 
-		"subs": 		[]  
 	}, 
 	vice.yields.ccsne.LC18: {
 		"filename": 	"vice.yields.ccsne.LC18.rst", 
