@@ -3,15 +3,15 @@ sudo: required
 os: linux 
 dist: xenial    # required for python >= 3.7  
 python: 
-  - 3.5 
   - 3.6 
-  - 3.7
-  - 3.8   
+  - 3.7 
+  - 3.8 
+  - 3.9 
 env: 
   - COMPILER=gcc CYTHON_VERSION=0.28.6 
-  - COMPILER=gcc CYTHON_VERSION=0.29.13 
+  - COMPILER=gcc CYTHON_VERSION=0.29.21 
   - COMPILER=clang CYTHON_VERSION=0.28.6 
-  - COMPILER=clang CYTHON_VERSION=0.29.13 
+  - COMPILER=clang CYTHON_VERSION=0.29.21 
 
 matrix: 
   fast_finish: true 
@@ -47,11 +47,7 @@ script:
 
 branches: 
   only: 
-    - master 
-    - development 
-    - v1.2.0 
-    - v1.3.0 
-    - v1.4.0 
-    - experimental 
+    - gh-pages 
+    - /.*/ 
     
     
