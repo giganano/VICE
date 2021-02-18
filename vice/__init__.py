@@ -28,10 +28,18 @@ http://github.com/giganano/VICE.
 
 Contents 
 --------
-singlezone : ``type`` 
+singlezone : ``object`` 
 	Simulate a single-zone galactic chemical evolution model 
-output : ``type`` 
-	Read and store output from single- and multi-zone simulations. 
+multizone : ``object`` 
+	Simulate a multi-zone galactic chemical evolution model 
+milkyway : ``object`` 
+	A ``multizone`` object optimized for modeling the Milky Way. 
+output : ``object`` 
+	Read and store output from ``singlezone`` simulations. 
+multioutput : ``object`` 
+	Read and store output from ``multizone`` simulations. 
+migration : <module> 
+	Utilities for mixing prescriptions in multizone simulations. 
 single_stellar_population : <function> 
 	Simulate enrichment from a single conatal star cluster 
 cumulative_return_fraction : <function> 
@@ -47,12 +55,16 @@ elements : <module>
 	Access, and declare nucleosynthetic yield settings for use in simulations. 
 	Access other relevant information for each element such as the solar 
 	abundance or atomic number. 
-dataframe : ``type`` 
-	An extension to the Python type ``dict`` to allow case-insensitivity. 
+dataframe : ``object`` 
+	A dictionary-like object with case-insensitive lookup and data storage. 
 history : <function> 
 	Reads in time-evolution of interstellar medium from singlezone simulation. 
 mdf : <function> 
 	Reads in stellar metallicity distribution from singlezone simulation. 
+stars : <function> 
+	Read in stellar population abundances from a multizone simulation output. 
+toolkit : <module> 
+	Generally useful utilities. 
 
 Built-In Dataframes 
 -------------------
@@ -76,11 +88,6 @@ from __future__ import absolute_import
 import warnings 
 import sys
 import os
-if sys.version_info[:2] < (3, 5): 
-	raise RuntimeError("""This version of VICE requires python >= 3.5. \
-Current version: %d.%d.%d.""" % (sys.version_info.major, 
-		sys.version_info.minor, sys.version_info.micro)) 
-else: pass 
 
 try: 
 	__VICE_SETUP__ 
