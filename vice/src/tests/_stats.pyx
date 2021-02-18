@@ -18,18 +18,9 @@ def test():
 	""" 
 	return ["vice.src.stats", 
 		[
-			test_gaussian_sampler(), 
 			test_conversion_to_pdf(), 
 		] 
 	] 
-
-
-@unittest 
-def test_gaussian_sampler(): 
-	""" 
-	Test the gaussian sampler at vice/src/stats.h 
-	""" 
-	return ["vice.src.stats.normal", _stats.test_normal] 
 
 
 @unittest 

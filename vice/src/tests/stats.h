@@ -7,17 +7,6 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 /* 
- * Test the normal distribution sampler at vice/src/stats.h 
- * 
- * Returns 
- * ======= 
- * 1 on success, 0 on failure 
- * 
- * source: stats.c 
- */ 
-extern unsigned short test_normal(void); 
-
-/* 
  * Test the convert to PDF function at vice/src/stats.h 
  * 
  * Returns 
