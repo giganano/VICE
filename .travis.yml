@@ -8,9 +8,7 @@ python:
   - 3.8 
   - 3.9 
 env: 
-  - COMPILER=gcc CYTHON_VERSION=0.28.6 
   - COMPILER=gcc CYTHON_VERSION=0.29.21 
-  - COMPILER=clang CYTHON_VERSION=0.28.6 
   - COMPILER=clang CYTHON_VERSION=0.29.21 
 
 matrix: 
