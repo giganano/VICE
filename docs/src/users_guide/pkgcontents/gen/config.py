@@ -1259,7 +1259,10 @@ _CONFIG_ = {
 	vice.toolkit.interpolation: {
 		"filename": 	"vice.toolkit.interpolation.rst", 
 		"header": 		"vice.toolkit.interpolation", 
-		"subs": 		[vice.toolkit.interpolation.interp_scheme_1d] 
+		"subs": 		[
+			vice.toolkit.interpolation.interp_scheme_1d, 
+			vice.toolkit.interpolation.interp_scheme_2d 
+		]  
 	}, 
 	vice.toolkit.interpolation.interp_scheme_1d: {
 		"filename": 	"vice.toolkit.interpolation.interp_scheme_1d.rst", 
@@ -1283,6 +1286,42 @@ _CONFIG_ = {
 	vice.toolkit.interpolation.interp_scheme_1d.n_points: {
 		"filename": 	"vice.toolkit.interpolation.interp_scheme_1d.n_points.rst", 
 		"header": 		"vice.toolkit.interpolation.interp_scheme_1d.n_points", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.interpolation.interp_scheme_2d: {
+		"filename": 	"vice.toolkit.interpolation.interp_scheme_2d.rst", 
+		"header": 		"vice.toolkit.interpolation.interp_scheme_2d", 
+		"subs": 		[
+			vice.toolkit.interpolation.interp_scheme_2d.xcoords, 
+			vice.toolkit.interpolation.interp_scheme_2d.ycoords, 
+			vice.toolkit.interpolation.interp_scheme_2d.zcoords, 
+			vice.toolkit.interpolation.interp_scheme_2d.n_x_values, 
+			vice.toolkit.interpolation.interp_scheme_2d.n_y_values 
+		] 
+	}, 
+	vice.toolkit.interpolation.interp_scheme_2d.xcoords: {
+		"filename": 	"vice.toolkit.interpolation.interp_scheme_2d.xcoords.rst", 
+		"header": 		"vice.toolkit.interpolation.interp_scheme_2d.xcoords", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.interpolation.interp_scheme_2d.ycoords: {
+		"filename": 	"vice.toolkit.interpolation.interp_scheme_2d.ycoords.rst", 
+		"header": 		"vice.toolkit.interpolation.interp_scheme_2d.ycoords", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.interpolation.interp_scheme_2d.zcoords: {
+		"filename": 	"vice.toolkit.interpolation.interp_scheme_2d.zcoords.rst", 
+		"header": 		"vice.toolkit.interpolation.interp_scheme_2d.zcoords", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.interpolation.interp_scheme_2d.n_x_values: {
+		"filename": 	"vice.toolkit.interpolation.interp_scheme_2d.n_x_values.rst", 
+		"header": 		"vice.toolkit.interpolation.interp_scheme_2d.n_x_values", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.interpolation.interp_scheme_2d.n_y_values: {
+		"filename": 	"vice.toolkit.interpolation.interp_scheme_2d.n_y_values.rst", 
+		"header": 		"vice.toolkit.interpolation.interp_scheme_2d.n_y_values", 
 		"subs": 		[] 
 	}, 
 	vice.toolkit.J21_sf_law: {

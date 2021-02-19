@@ -17,8 +17,9 @@ except NameError:
 
 if not __VICE_SETUP__: 
 
-	__all__ = ["interp_scheme_1d", "test"] 
+	__all__ = ["interp_scheme_1d", "interp_scheme_2d", "test"] 
 	from .interp_scheme_1d import interp_scheme_1d 
+	from .interp_scheme_2d import interp_scheme_2d 
 	from .tests import test 
 
 else: pass 
