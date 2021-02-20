@@ -26,11 +26,6 @@ extern "C" {
 #define SPEC_CHARP_SIZE 100 
 #endif /* SPEC_CHARP_SIZE */ 
 
-/* The stepsize taken in sampling a functional IMF */ 
-#ifndef IMF_STEPSIZE 
-#define IMF_STEPSIZE 1e-3 
-#endif /* IMF_STEPSIZE */ 
-
 #include "objects.h" 
 #include "objects/imf.h" 
 

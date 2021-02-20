@@ -20,9 +20,7 @@ _TIMES_ = [0.01 * i for i in range(1001)]
 cdef class generic: 
 
 	r""" 
-	A class intended to run unit tests for quiescent cases. These are cases 
-	which should always produce no star formation and thus no elemental 
-	production. 
+	A class intended to run unit tests for default parameters. 
 	""" 
 
 	def __init__(self, **kwargs): 
