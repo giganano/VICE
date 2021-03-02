@@ -40,8 +40,8 @@ examples/.ipynb_checkpoints/*.ipynb
 *.sublime-workspace 
 *.sublime-project
 
-# h277 source file -> too large for GitHub 
-vice/toolkit/hydrodisk/data/h277/processor/h277_particles_150Myr.fits 
+# h277 source files -> too large for GitHub 
+vice/toolkit/hydrodisk/data/h277/processor/*.fits 
 
 # Temporary h277 files 
 vice/toolkit/hydrodisk/data/h277/no_outer_disk/*.dat 
