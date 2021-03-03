@@ -160,7 +160,7 @@ class milkyway(multizone):
 	1 
 	>>> mw.name 
 	"example" 
-	>>> mw.run(np.linspace(0, 12.2, 1221), overwrite = True) 
+	>>> mw.run(np.linspace(0, 13.2, 1321), overwrite = True) 
 
 	.. [1] Christensen et al. (2012), MNRAS, 425, 3058 
 	.. [2] Johnson et al. (2021), in prep 

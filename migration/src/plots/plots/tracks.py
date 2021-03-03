@@ -32,7 +32,7 @@ def main(output1, output2, stem, times = [2, 4, 6, 8, 10, END_TIME]):
 		The relative or absolute path to the output image, with no extension. 
 		This function will save the figure in both PDF and PNG formats. 
 	times : ``list`` [elements of type ``float``] 
-		[default : [2, 4, 6, 8, 10, 12.2]] 
+		[default : [2, 4, 6, 8, 10, 13.2]] 
 		The times in Gyr at which to mark the positions of the [O/Fe]-[Fe/H] 
 		tracks of the two models. 
 	""" 
