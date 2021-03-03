@@ -72,6 +72,5 @@ if not __VICE_SETUP__:
 
 	set_params() 
 
-else: 
-	pass 
+else: pass 
 
