@@ -300,12 +300,12 @@ _CONFIG_ = {
 	}, 
 	vice.yields.agb.interpolator.metallicities: {
 		"filename": 	"vice.yields.agb.interpolator.metallicities.rst", 
-		"header": 		"vice.yields.agb.interpolator", 
+		"header": 		"vice.yields.agb.interpolator.metallicities", 
 		"subs": 		[] 
 	}, 
 	vice.yields.agb.interpolator.yields: {
 		"filename": 	"vice.yields.agb.interpolator.yields.rst", 
-		"header": 		"vice.yields.agb.interpolator", 
+		"header": 		"vice.yields.agb.interpolator.yields", 
 		"subs": 		[] 
 	}, 
 	vice.yields.agb.settings: {
