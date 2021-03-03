@@ -26,10 +26,11 @@ except NameError:
 	__VICE_SETUP__ = False 
 
 if not __VICE_SETUP__: 
-	__all__ = ["grid", "settings", "test"] 
+	__all__ = ["grid", "interpolator", "settings", "test"] 
 	__all__ = [str(i) for i in __all__] 	# appease python 2 strings 
 
 	from ._grid_reader import yield_grid as grid 
+	from .interpolator import interpolator 
 	from ...core.dataframe import agb_yield_settings 
 	from .tests import test 
 
