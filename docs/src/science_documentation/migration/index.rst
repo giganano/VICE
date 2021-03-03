@@ -27,9 +27,3 @@ an arbitrary migration prescription.
 .. _migration_gas: 
 .. include:: gas.rst 
 
-.. _migration_milkyway: 
-.. include:: milkyway.rst 
-
-.. _fig_migration_milkyway: 
-.. include:: milkyway.fig.rst 
-

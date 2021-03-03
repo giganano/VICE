@@ -50,6 +50,7 @@ general sense.
 	enrichment/index 
 	yields/index 
 	migration/index 
+	milkyway/index 
 	z_calibration 
 	stellar_mdfs 
 
