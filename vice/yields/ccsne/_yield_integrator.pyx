@@ -11,6 +11,7 @@ from ..._globals import _RECOGNIZED_IMFS_
 from ..._globals import _VERSION_ERROR_ 
 from ..._globals import ScienceWarning 
 from ...core.dataframe._builtin_dataframes import atomic_number 
+from ...core.dataframe import elemental_settings 
 from ...core.callback import callback1_nan_inf_positive 
 from ...core.callback import callback1_nan_inf 
 from ...core import _pyutils 
@@ -32,7 +33,6 @@ else:
 	_VERSION_ERROR_() 
 
 # C Functions 
-from libc.stdlib cimport free 
 from ...core.objects._imf cimport imf_object 
 from ...core.objects._callback_1arg cimport CALLBACK_1ARG 
 from ...core.objects._callback_1arg cimport callback_1arg_initialize 
@@ -43,20 +43,22 @@ from ...core.objects cimport _imf
 from ...core._cutils cimport copy_pylist 
 from ...core._cutils cimport callback_1arg_setup 
 from . cimport _yield_integrator 
+_MINIMUM_MASS_ = float(_yield_integrator.CC_MIN_STELLAR_MASS) 
 
 
 def integrate(element, study = "LC18", MoverH = 0, rotation = 0, 
-	explodability = None, IMF = "kroupa", method = "simpson", m_lower = 0.08, 
-	m_upper = 100, tolerance = 1e-3, Nmin = 64, Nmax = 2e8): 
+	explodability = None, wind = True, net = False, IMF = "kroupa", 
+	method = "simpson", m_lower = 0.08, m_upper = 100, 
+	tolerance = 1e-3, Nmin = 64, Nmax = 2e8): 
 	
 	r""" 
-	Calculate an IMF-integrated fractional net nucleosynthetic yield of a 
+	Calculate an IMF-integrated fractional nucleosynthetic yield of a 
 	given element from core-collapse supernovae. 
 
 	**Signature**: vice.yields.ccsne.fractional(element, study = "LC18", 
-	MoverH = 0, rotation = 0, explodability = None, IMF = "kroupa", 
-	method = "simpson", m_lower = 0.08, m_upper = 100, tolerance = 1.0e-03, 
-	Nmin = 64, Nmax = 2.0e+08) 
+	MoverH = 0, rotation = 0, explodability = None, wind = True, net = True, 
+	IMF = "kroupa", method = "simpson", m_lower = 0.08, m_upper = 100, 
+	tolerance = 1e-3, Nmin = 64, Nmax = 2.0e+08) 
 
 	Parameters 
 	----------
@@ -69,11 +71,13 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		Keywords and their Associated Studies: 
 
 			- "LC18": Limongi & Chieffi (2018) [1]_ 
-			- "CL13": Chieffi & Limongi (2013) [2]_ 
-			- "NKT13": Nomoto, Kobayashi & Tominaga (2013) [3]_ 
-			- "CL04": Chieffi & Limongi (2004) [4]_ 
-			- "WW95": Woosley & Weaver (1995) [5]_ 
-			- "S16/W18": Sukhbold et al. (2016) [6]_ (W18 explosion engine) 
+			- "S16/W18": Sukhbold et al. (2016) [2]_ (W18 explosion engine) 
+			- "S16/W18": Sukhbold et al. (2016) (W18 engine, forced explosions) 
+			- "S16/N20": Sukhbold et al. (2016) (N20 explosion engine) 
+			- "CL13": Chieffi & Limongi (2013) [3]_ 
+			- "NKT13": Nomoto, Kobayashi & Tominaga (2013) [4]_ 
+			- "CL04": Chieffi & Limongi (2004) [5]_ 
+			- "WW95": Woosley & Weaver (1995) [6]_ 
 
 	MoverH : real number [default : 0] 
 		The total metallicity [M/H] of the exploding stars. There are only a 
@@ -82,11 +86,11 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		Keywords and their Associated Metallicities: 
 
 			- "LC18": [M/H] = -3, -2, -1, 0 
+			- "S16/\*": [M/H] = 0 
 			- "CL13": [M/H] = 0 
 			- "NKT13": [M/H] = -inf, -1.15, -0.54, -0.24, 0.15, 0.55 
 			- "CL04": [M/H] = -inf, -4, -2, -1, -0.37, 0.15 
 			- "WW95": [M/H] = -inf, -4, -2, -1, 0 
-			- "S16/W18": [M/H] = 0 
 
 	rotation : real number [default : 0] 
 		The rotational velocity of the exploding stars in km/s. There are only 
@@ -95,20 +99,39 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		Keywords and their Associated Rotational Velocities: 
 
 			- "LC18": v = 0, 150, 300 
+			- "S16/\*": v = 0 
 			- "CL13": v = 0, 300 
 			- "NKT13": v = 0 
 			- "CL04": v = 0 
 			- "WW95": v = 0 
-			- "S16/W18": v = 0 
 
-	explodability: <function> or ``None`` [default : ``None``] 
+	explodability : <function> or ``None`` [default : ``None``] 
 		Stellar explodability as a function of mass. This function is expected 
 		to take stellar mass in :math:`M_\odot` as the only numberical 
 		parameter, and to return a number between 0 and 1 denoting the 
 		fraction of stars at that mass which explode as a CCSN. 
 
-		.. tip:: The S16 CCSN yield modules provides explosion engines as a 
+		.. tip:: The S16 CCSN yield module provides explosion engines as a 
 			function of mass as published in the Sukhbold et al. (2016) study. 
+
+	wind : bool [default : ``True``] 
+		If True, the stellar wind contribution to the yield will be included 
+		in the yield calculation. If False, the calculation will run 
+		considering only the supernova explosion yield. 
+
+		.. note:: Wind and explosive yields are only separated for the 
+			Limongi & Chieffi (2018) and Sukhbold et al. (2016) studies. Wind 
+			yields are not separable from explosive yields for other studies 
+			supported by this function. 
+
+		.. versionadded:: 1.X.0 
+
+	net : bool [default : ``True``] 
+		If True, the initial abundance of each simulated CCSN progenitor star 
+		will be subtracted from the gross yield to convert the reported value 
+		to a net yield. 
+
+		.. versionadded:: 1.X.0 
 
 	IMF : ``str`` [case-insensitive] or <function> [default : "kroupa"] 
 		The stellar initial mass function (IMF) to assume. Strings denote 
@@ -116,6 +139,11 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		Functions must accept stellar mass in :math:`M_\odot` as the only 
 		numerical paraneter and will be interpreted as a custom, arbitrary 
 		stellar IMF. 
+
+		.. versionadded:: 1.X.0 
+			Prior to version 1.X.0, functions of mass as custom stellar IMF 
+			were not supported. 
+
 	method : ``str`` [case-insensitive] [default : "simpson"] 
 		The method of quadrature. 
 
@@ -157,7 +185,6 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		- 	The study is not built into VICE 
 		- 	The tolerance is not between 0 and 1 
 		- 	m_lower > m_upper 
-		- 	Explodability settings does not accept exactly 1 position argument 
 		- 	Custom IMF does not accept exactly 1 positional argument 
 		- 	Built-in IMF is not recognized 
 		- 	The method of quadrature is not built into VICE 
@@ -176,20 +203,27 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			of allowed quadrature bins to within the specified tolerance. 
 		- 	Explodability criteria specified in combination with either the 
 			Limongi & Chieffi (2018) or Sukhbold et al. (2016) study. 
+		- 	``wind = False`` and ``study`` is anything other than 
+			LC18 or S16. These are the only studies for which wind yields were 
+			reported separate from explosive yields. 
 
 	Notes 
 	-----
-	This function evaluates the solution to the following equation. 
+	This function evaluates the solution to the following equation: 
 
 	.. math:: y_x^\text{CC} = \frac{
-		\int_8^u E(m)m_x \frac{dN}{dm} dm 
+		\int_8^u (E(m)m_x + w_x - Z_{x,\text{prog}}m) \frac{dN}{dm} dm 
 		}{
-		\int_l^u m_x \frac{dN}{dm} dm 
+		\int_l^u m \frac{dN}{dm} dm 
 		}
 
-	where :math:`E(m)` is the stellar explodability for progenitors of iitial 
-	mass :math:`m`, :math:`m_x` is the mass of the element :math:`x` present 
-	in the ejecta, and :math:`dN/dm` is the assumed stellar IMF. 
+	where :math:`E(m)` is the stellar explodability for progenitors of initial 
+	mass :math:`m`, :math:`m_x` is the mass of the element :math:`x` produced 
+	in the explosion, :math:`w_x` is the mass of the element :math:`x` ejected 
+	in the wind, :math:`dN/dm` is the assumed stellar IMF, and 
+	:math:`Z_{x,\text{prog}}` is the abundance by mass of the element :math:`x` 
+	in the CCSN progenitor stars. If the keyword arg ``net = False``, 
+	:math:`Z_{x,\text{prog}}` is simply set to zero to calculate a gross yield. 
 
 	.. note:: Explodability criteria will be overspecified when calculating 
 		yields from the Limongi & Chieffi (2018) study, in which stars above 
@@ -214,26 +248,13 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	>>> y, err = vice.yields.ccsne.fractional("mg", study = "CL13") 
 	>>> y 
 		0.0009939371276697314
-	>>> def expl(m): 
-		if 12 <= m <= 15: 
-			return 0.1 
-		elif 20 <= m <= 30: 
-			return 0.1 
-		elif m >= 40: 
-			return 0.1 
-		else: 
-			return 1 
-	>>> y, err = vice.yields.ccsne.fractional("mg", study = "CL13", 
-		explodability = expl) 
-	>>> y  
-		0.00039911211487501523 
 
 	.. [1] Limongi & Chieffi (2018), ApJS, 237, 13 
-	.. [2] Chieffi & Limongi (2013), ApJ, 764, 21 
-	.. [3] Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457 
-	.. [4] Chieffi & Limongi (2004), ApJ, 608, 405 
-	.. [5] Woosley & Weaver (1995), ApJ, 101, 181 
-	.. [6] Sukhbold et al. (2016), ApJ, 821, 38 
+	.. [2] Sukhbold et al. (2016), ApJ, 821, 38 
+	.. [3] Chieffi & Limongi (2013), ApJ, 764, 21 
+	.. [4] Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457 
+	.. [5] Chieffi & Limongi (2004), ApJ, 608, 405 
+	.. [6] Woosley & Weaver (1995), ApJ, 101, 181 
 	.. [7] Kroupa (2001), MNRAS, 231, 322 
 	.. [8] Salpeter (1955), ApJ, 121, 161 
 	.. [9] Press, Teukolsky, Vetterling & Flannery (2007), Numerical Recipes, 
@@ -282,11 +303,10 @@ km/s and [M/H] = %g""" % (study, rotation, MoverH))
 	elif Nmin >= Nmax: 
 		raise ValueError("""Minimum number of bins in quadrature must be \
 smaller than maximum number of bins.""") 
-	else: 
-		pass 
+	else: pass 
 
 	""" 
-	Explodability is either None or a callable function with one parameter. 
+	Explodability is either None of a callable function with one parameter. 
 	""" 
 	cdef CALLBACK_1ARG *explodability_cb = callback_1arg_initialize() 
 	if explodability is None: 
@@ -299,13 +319,13 @@ smaller than maximum number of bins.""")
 		exp_cb = callback1_nan_inf(explodability) 
 		callback_1arg_setup(explodability_cb, exp_cb) 
 	else: 
-		raise TypeError("""Explodabiilty must be either a numerical value or a \
-callable object. Got: %s""" % (type(explodability))) 
+		raise TypeError("""Explodability must be either NoneType or a callable \
+object. Got: %s""" % (type(explodability))) 
+
 
 	""" 
-	The IMF is either None or a callable function with one parameter, like the 
-	stellar explodability. However, it must be placed in an IMF_ object, 
-	unlike the stellar explodability prescription. 
+	The IMF is either None or a callable function with one parameter. However, 
+	it must be placed in an IMF_ object. 
 	""" 
 	if callable(IMF): 
 		imf_cb = callback1_nan_inf_positive(IMF) 
@@ -336,14 +356,21 @@ callable object. Got: %s""" % (type(explodability)))
 	Limongi & Chieffi (2018) or Sukhbold et al. (2016) yields, the 
 	explodability is over-specified. The yields reported by these studies are 
 	already masked by stellar explodability. 
+
+	5) If the user wants to separate the wind yields from explosive yields for 
+	anything other than Limongi & Chieffi (2018) or Sukhbold et al. (2016), 
+	that can't be done, because these are the only studies that published 
+	separate wind and explosive yields. 
 	"""
 	upper_mass_limits = {
-		"LC18":		120, 
-		"CL13": 	120, 
-		"CL04": 	35, 
-		"WW95": 	40, 
-		"NKT13": 	300 if MoverH == -float("inf") else 40, 
-		"S16/W18": 	120 
+		"LC18":			120, 
+		"CL13": 		120, 
+		"CL04": 		35, 
+		"WW95": 		40, 
+		"NKT13": 		300 if MoverH == -float("inf") else 40, 
+		"S16/W18": 		120,
+		"S16/W18F": 	120,
+		"S16/N20":		120
 	} 
 
 	if m_upper > upper_mass_limits[study.upper()]: 
@@ -370,8 +397,20 @@ these yields of iron peak elements.""" % (_NAMES_[study.upper()]),
 		warnings.warn("""The %s study published yields already masked by \
 stellar explodability (i.e. only wind yields are reported for stars that do \
 not explode under their explosion physics). Stellar explodability is \
-overspecified in this calculation""" % (_NAMES_[study.upper()]), 
-			ScienceWarning) 
+overspecified in this calculation""" % (_NAMES_[study.upper()]), ScienceWarning) 
+
+	if not wind and study.upper() not in ["LC18", "S16/W18"]: 
+		warnings.warn("""The %s study did not separate the yields from the \
+wind and the explosion, publishing only the total yields from both. For this \
+reason, this calculation can only run including the wind yield.""" % (
+			_NAMES_[study.upper()]), ScienceWarning) 
+	else: 
+		pass
+
+	path = "%syields/ccsne/%s/FeH%s/v%d/" % (_DIRECTORY_, 
+		study.upper(), 
+		MoverHstr, 
+		rotation) 
 
 	"""
 	VICE includes yields for every element that these studies reported. 
@@ -379,12 +418,7 @@ overspecified in this calculation""" % (_NAMES_[study.upper()]),
 	would suggest that the element is not produced in significant amounts by 
 	CCSNe, so we can safely return a 0 and raise a ScienceWarning. 
 	""" 
-	filename = "%syields/ccsne/%s/FeH%s/v%d/%s.dat" % (_DIRECTORY_, 
-		study.upper(), 
-		MoverHstr, 
-		rotation, 
-		element.lower()) 
-	if not os.path.exists(filename): 
+	if not os.path.exists("%sexplosive/%s.dat" % (path, element.lower())): 
 		warnings.warn("""The %s study did not report yields for the element \
 %s. If adopting these yields for simulation, it is likely that this yield \
 can be approximated as zero at this metallicity. Users may exercise their \
@@ -394,6 +428,18 @@ own discretion by modifying their CCSN yield settings directly.""" % (
 	else: 
 		pass 
 
+	if net: 
+		zprog = initial_abundances(
+			"%syields/ccsne/%s/FeH%s/birth_composition.dat" % (
+				_DIRECTORY_, study.upper(), MoverHstr)) 
+		_yield_integrator.set_Z_progenitor(zprog[element.lower()]) 
+		if study.upper() not in ["S16/W18", "S16/W18F", "S16/W18I", "LC18"]: 
+			_yield_integrator.weight_initial_by_explodability(1) 
+		else: 
+			_yield_integrator.weight_initial_by_explodability(0) 
+	else: 
+		_yield_integrator.set_Z_progenitor(0) 
+		_yield_integrator.weight_initial_by_explodability(0) 
 
 	# Compute the yield 
 	cdef INTEGRAL *num = _integral.integral_initialize() 
@@ -405,7 +451,8 @@ own discretion by modifying their CCSN yield settings directly.""" % (
 	num[0].Nmin = <unsigned long> Nmin 
 	try: 
 		x = _yield_integrator.IMFintegrated_fractional_yield_numerator(num, 
-			imf_obj, explodability_cb, filename.encode("latin-1")) 
+			imf_obj, explodability_cb, path.encode("latin-1"), 
+			int(wind), element.lower().encode("latin-1")) 
 		if x == 1: 
 			warnings.warn("""Yield-weighted IMF integration did not converge. \
 Estimated fractional error: %.2e""" % (num[0].error), ScienceWarning) 
@@ -416,7 +463,7 @@ Estimated fractional error: %.2e""" % (num[0].error), ScienceWarning)
 	finally: 
 		numerator = [num[0].result, num[0].error, num[0].iters] 
 		_integral.integral_free(num) 
-		callback_1arg_free(explodability_cb) 
+		callback_1arg_free(explodability_cb)  
 
 
 	cdef INTEGRAL *den = _integral.integral_initialize() 
@@ -448,4 +495,31 @@ Estimated fractional error: %.2e""" % (den[0].error), ScienceWarning)
 		denominator[0]**4 * errden**2) 
 
 	return [y, err] 
+
+
+def initial_abundances(filename): 
+	r""" 
+	Read in the table containing the initial abundances of each element. 
+
+	Parameters 
+	----------
+	filename : str 
+		The full path to the file containing the initial abundances 
+
+	Returns 
+	-------
+	zprog : elemental_settings 
+		A dataframe mapping elemental symbols to the initial abundance. 
+	""" 
+	zprog = elemental_settings({}) 
+	with open(filename, 'r') as f: 
+		line = f.readline() 
+		while line != "": 
+			element, Z = line.split() 
+			if element.lower() in _RECOGNIZED_ELEMENTS_: 
+				zprog[element.lower()] = float(Z) 
+			else: pass 
+			line = f.readline() 
+		f.close() 
+	return zprog 
 
