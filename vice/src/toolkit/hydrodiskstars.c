@@ -491,7 +491,7 @@ static long assign_analog_min_radius(HYDRODISKSTARS hds,
  * birth_time: 		The time the stellar population was born in Gyr 
  * birth_radius: 	The radius of the stellar population's birth in kpc 
  * end_time: 		The time of the end of the simulation (should always be 
- * 						12.2 for consistency w/hydrosim) 
+ * 						13.2 for consistency w/hydrosim) 
  * analog_idx: 		The index of the analog star particle 
  * time: 			The intermediate time in Gyr 
  * 
@@ -564,7 +564,7 @@ extern long calczone_sudden(HYDRODISKSTARS hds, double migration_time,
  * birth_time: 		The time the stellar population was born in Gyr 
  * birth_radius: 	The radius of the stellar population's birth in kpc 
  * end_time: 		The time of the end of the simulation (should always be 
- * 						12.2 for consistency w/hydrosim) 
+ * 						13.2 for consistency w/hydrosim) 
  * analog_idx: 		The index of the analog star particle 
  * time: 			The intermediate time in Gyr 
  * 

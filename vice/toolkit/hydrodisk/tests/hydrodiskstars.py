@@ -50,7 +50,7 @@ def test_import():
 	""" 
 	def test(): 
 		try: 
-			# _END_TIME_ = 12.2, and max tform is 12.23xyz... so the +0.04 
+			# _END_TIME_ = 13.2, and max tform is 13.23xyz... so the +0.04 
 			# merely accounts for the trailing digits on the max tform. 
 			assert all([0 <= i <= _END_TIME_ + 0.04 for i in 
 				_TEST_.analog_data["tform"]]) 
