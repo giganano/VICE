@@ -19,6 +19,13 @@ from vice.yields.agb import cristallo11
 from vice.yields.agb import karakas10 
 from vice.core.singlezone.entrainment import entrainment 
 from vice.toolkit import J21_sf_law 
+from vice.yields.ccsne.engines.E16 import E16 
+from vice.yields.ccsne.engines.cutoff import cutoff 
+from vice.yields.ccsne.engines.S16.N20 import N20 
+from vice.yields.ccsne.engines.S16.S19p8 import S19p8 
+from vice.yields.ccsne.engines.S16.W15 import W15 
+from vice.yields.ccsne.engines.S16.W18 import W18 
+from vice.yields.ccsne.engines.S16.W20 import W20 
 
 r""" 
 Each element of the _CONFIG_ dictionary should map an object in VICE to a 
@@ -177,10 +184,10 @@ _CONFIG_ = {
 	vice.core.dataframe.ccsn_yield_table: {
 		"filename": 	"vice.core.dataframe.ccsn_yield_table.rst", 
 		"header": 		"vice.core.dataframe.ccsn_yield_table", 
-		"subs": 		[
+		"subs": 		[ 
 			vice.core.dataframe.ccsn_yield_table.masses, 
 			vice.core.dataframe.ccsn_yield_table.isotopes 
-		] 
+		]  
 	}, 
 	vice.core.dataframe.ccsn_yield_table.masses: {
 		"filename": 	"vice.core.dataframe.ccsn_yield_table.masses.rst", 
@@ -266,6 +273,7 @@ _CONFIG_ = {
 		"header": 		"vice.yields.agb", 
 		"subs": 		[
 			vice.yields.agb.grid, 
+			vice.yields.agb.interpolator, 
 			vice.yields.agb.settings, 
 			vice.yields.agb.cristallo11, 
 			vice.yields.agb.karakas10 
@@ -274,6 +282,30 @@ _CONFIG_ = {
 	vice.yields.agb.grid: {
 		"filename": 	"vice.yields.agb.grid.rst", 
 		"header": 		"vice.yields.agb.grid", 
+		"subs": 		[] 
+	}, 
+	vice.yields.agb.interpolator: {
+		"filename": 	"vice.yields.agb.interpolator.rst", 
+		"header": 		"vice.yields.agb.interpolator", 
+		"subs": 		[ 
+			vice.yields.agb.interpolator.masses, 
+			vice.yields.agb.interpolator.metallicities, 
+			vice.yields.agb.interpolator.yields 
+		] 
+	}, 
+	vice.yields.agb.interpolator.masses: {
+		"filename": 	"vice.yields.agb.interpolator.masses.rst", 
+		"header": 		"vice.yields.agb.interpolator.masses", 
+		"subs": 		[] 
+	}, 
+	vice.yields.agb.interpolator.metallicities: {
+		"filename": 	"vice.yields.agb.interpolator.metallicities.rst", 
+		"header": 		"vice.yields.agb.interpolator", 
+		"subs": 		[] 
+	}, 
+	vice.yields.agb.interpolator.yields: {
+		"filename": 	"vice.yields.agb.interpolator.yields.rst", 
+		"header": 		"vice.yields.agb.interpolator", 
 		"subs": 		[] 
 	}, 
 	vice.yields.agb.settings: {
@@ -329,6 +361,7 @@ _CONFIG_ = {
 			vice.yields.ccsne.fractional, 
 			vice.yields.ccsne.table, 
 			vice.yields.ccsne.settings, 
+			vice.yields.ccsne.engines, 
 			vice.yields.ccsne.WW95, 
 			vice.yields.ccsne.CL04, 
 			vice.yields.ccsne.CL13, 
@@ -383,6 +416,110 @@ _CONFIG_ = {
 		"header": 		"vice.yields.ccsne.settings.save_defaults", 
 		"subs": 		[] 
 	}, 
+	vice.yields.ccsne.engines: {
+		"filename": 	"vice.yields.ccsne.engines.rst", 
+		"header": 		"vice.yields.ccsne.engines", 
+		"subs": 		[
+			vice.yields.ccsne.engines.engine, 
+			cutoff, 
+			E16, 
+			vice.yields.ccsne.engines.S16
+		] 
+	}, 
+	vice.yields.ccsne.engines.engine: {
+		"filename": 	"vice.yields.ccsne.engines.engine.rst", 
+		"header": 		"vice.yields.ccsne.engines.engine", 
+		"subs": 		[
+			vice.yields.ccsne.engines.engine.masses, 
+			vice.yields.ccsne.engines.engine.frequencies 
+			] 
+	}, 
+	vice.yields.ccsne.engines.engine.masses: {
+		"filename": 	"vice.yields.ccsne.engines.engine.masses.rst", 
+		"header": 		"vice.yields.ccsne.engines.engine.masses", 
+		"subs": 		[] 
+	}, 
+	vice.yields.ccsne.engines.engine.frequencies: {
+		"filename": 	"vice.yields.ccsne.engines.engine.frequencies.rst", 
+		"header": 		"vice.yields.ccsne.engines.engine.frequencies", 
+		"subs": 		[] 
+	}, 
+	cutoff: {
+		"filename": 	"vice.yields.ccsne.engines.cutoff.rst", 
+		"header": 		"vice.yields.ccsne.engines.cutoff", 
+		"subs": 		[cutoff.collapse_mass]  
+	}, 
+	cutoff.collapse_mass: {
+		"filename": 	"vice.yields.ccsne.engines.cutoff.collapse_mass.rst", 
+		"header": 		"vice.yields.ccsne.engines.cutoff.collapse_mass", 
+		"subs": 		[] 
+	}, 
+	E16: {
+		"filename": 	"vice.yields.ccsne.engines.E16.rst", 
+		"header": 		"vice.yields.ccsne.engines.E16", 
+		"subs": 		[
+			E16.m4, 
+			E16.mu4, 
+			E16.slope, 
+			E16.intercept 
+		] 
+	}, 
+	E16.m4: {
+		"filename": 	"vice.yields.ccsne.engines.E16.m4.rst", 
+		"header": 		"vice.yields.ccsne.engines.E16.m4", 
+		"subs": 		[] 
+	}, 
+	E16.mu4: {
+		"filename": 	"vice.yields.ccsne.engines.E16.mu4.rst", 
+		"header": 		"vice.yields.ccsne.engines.E16.mu4", 
+		"subs": 		[] 
+	}, 
+	E16.slope: {
+		"filename": 	"vice.yields.ccsne.engines.E16.slope.rst", 
+		"header": 		"vice.yields.ccsne.engines.E16.slope", 
+		"subs": 		[] 
+	}, 
+	E16.intercept: {
+		"filename": 	"vice.yields.ccsne.engines.E16.intercept.rst", 
+		"header": 		"vice.yields.ccsne.engines.E16.intercept", 
+		"subs": 		[] 
+	}, 
+	vice.yields.ccsne.engines.S16: {
+		"filename": 	"vice.yields.ccsne.engines.S16.rst", 
+		"header": 		"vice.yields.ccsne.engines.S16", 
+		"subs": 		[
+			N20, 
+			S19p8, 
+			W15, 
+			W18, 
+			W20 
+		]  
+	}, 
+	N20: {
+		"filename": 	"vice.yields.ccsne.engines.S16.N20.rst", 
+		"header": 		"vice.yields.ccsne.engines.S16.N20", 
+		"subs": 		[] 
+	}, 
+	S19p8: {
+		"filename": 	"vice.yields.ccsne.engines.S16.S19p8.rst", 
+		"header": 		"vice.yields.ccsne.engines.S16.S19p8", 
+		"subs": 		[] 
+	}, 
+	W15: {
+		"filename": 	"vice.yields.ccsne.engines.S16.W15.rst", 
+		"header": 		"vice.yields.ccsne.engines.S16.W15", 
+		"subs": 		[] 
+	}, 
+	W18: {
+		"filename": 	"vice.yields.ccsne.engines.S16.W18.rst", 
+		"header": 		"vice.yields.ccsne.engines.S16.W18", 
+		"subs": 		[] 
+	}, 
+	W20: {
+		"filename": 	"vice.yields.ccsne.engines.S16.W20.rst", 
+		"header": 		"vice.yields.ccsne.engines.S16.W20", 
+		"subs": 		[] 
+	}, 
 	vice.yields.ccsne.WW95: {
 		"filename": 	"vice.yields.ccsne.WW95.rst", 
 		"header": 		"vice.yields.ccsne.WW95", 
@@ -406,7 +543,7 @@ _CONFIG_ = {
 	vice.yields.ccsne.NKT13: {
 		"filename": 	"vice.yields.ccsne.NKT13.rst", 
 		"header": 		"vice.yields.ccsne.NKT13", 
-		"subs": 		[vice.yields.ccsne.NKT13.set_params] 
+		"subs": 		[vice.yields.ccsne.NKT13.set_params]  
 	}, 
 	vice.yields.ccsne.NKT13.set_params: {
 		"filename": 	"vice.yields.ccsne.NKT13.set_params.rst", 
@@ -426,25 +563,12 @@ _CONFIG_ = {
 	vice.yields.ccsne.S16: {
 		"filename": 	"vice.yields.ccsne.S16.rst", 
 		"header": 		"vice.yields.ccsne.S16", 
-		"subs": 		[
-			vice.yields.ccsne.S16.set_params, 
-			vice.yields.ccsne.S16.engines 
-		] 
+		"subs": 		[vice.yields.ccsne.S16.set_params] 
 	}, 
 	vice.yields.ccsne.S16.set_params: {
 		"filename": 	"vice.yields.ccsne.S16.set_params.rst", 
 		"header": 		"vice.yields.ccsne.S16.set_params", 
 		"subs": 		[] 
-	}, 
-	vice.yields.ccsne.S16.engines: {
-		"filename": 	"vice.yields.ccsne.S16.engines.rst", 
-		"header": 		"vice.yields.ccsne.S16.engines", 
-		"subs": 		[vice.yields.ccsne.S16.engines.W18] 
-	}, 
-	vice.yields.ccsne.S16.engines.W18: {
-		"filename": 	"vice.yields.ccsne.S16.engines.W18.rst", 
-		"header": 		"vice.yields.ccsne.S16.engines.W18", 
-		"subs": 		[]  
 	}, 
 	vice.yields.ccsne.LC18: {
 		"filename": 	"vice.yields.ccsne.LC18.rst", 

@@ -17,9 +17,6 @@ Contents
 -------- 
 set_params : <function> 
 	Update the parameters with which the yields are calculated. 
-engines : module 
-	Stellar explodability as a function of stellar mass under various 
-	explosion engines as determined by the Sukhbold et al. (2016) study. 
 """ 
 
 from __future__ import absolute_import 
@@ -30,11 +27,10 @@ except NameError:
 
 if not __VICE_SETUP__: 
 
-	__all__ = ["engines", "set_params", "test"]  
+	__all__ = ["set_params", "test"]  
 	from ...._globals import _RECOGNIZED_ELEMENTS_ 
 	from .. import fractional as __fractional 
 	from .. import settings as __settings 
-	from . import engines 
 	from .tests import test 
 
 	def set_params(**kwargs): 

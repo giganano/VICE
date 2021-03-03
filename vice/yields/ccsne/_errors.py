@@ -23,16 +23,18 @@ else:
 # Recognized methods of numerical quadrature and yield studies 
 _RECOGNIZED_METHODS_ = tuple(["simpson", "midpoint", "trapezoid", "euler"]) 
 _RECOGNIZED_STUDIES_ = tuple(["WW95", "LC18", "CL13", "CL04", "NKT13", 
-	"S16/W18"]) 
+	"S16/W18", "S16/W18F", "S16/N20"]) 
 
 # Keywords and their associated studies 
 _NAMES_ = { 
 	"LC18": 	"Limongi & Chieffi (2018), ApJS, 237, 13", 
 	"CL13": 	"Chieffi & Limongi (2013), ApJ, 764, 21 ", 
-	"NKT13":	"Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457", 
+	"NKT13": 	"Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457", 
 	"CL04": 	"Chieffi & Limongi (2004), ApJ, 608, 405", 
 	"WW95": 	"Woosley & Weaver (1995) ApJ, 101, 181", 
-	"S16/W18": 	"Sukhbold et al. (2016), ApJ, 821, 38" 
+	"S16/W18": 	"Sukhbold et al. (2016), ApJ, 821, 38",
+	"S16/W18F": "Sukhbold et al. (2016), ApJ, 821, 38 (forced explosions)",
+	"S16/N20": 	"Sukhbold et al. (2016), ApJ, 821, 38" 
 } 
 
 # Keywords and their associated metallicities 
@@ -42,7 +44,9 @@ _MOVERH_ = {
 	"NKT13": 		[-float("inf"), -1.15, -0.54, -0.24, 0.15, 0.55], 
 	"CL04": 		[-float("inf"), -4, -2, -1, -0.37, 0.15], 
 	"WW95": 		[-float("inf"), -4, -2, -1, 0], 
-	"S16/W18": 			[0] 
+	"S16/W18": 		[0],
+	"S16/W18F": 	[0],
+	"S16/N20":		[0] 
 } 
 
 # Keywords and their associated rotational velocities 
@@ -52,7 +56,9 @@ _ROTATION_ = {
 	"NKT13": 		[0], 
 	"CL04": 		[0], 
 	"WW95": 		[0], 
-	"S16/W18": 		[0] 
+	"S16/W18": 		[0],
+	"S16/W18F": 	[0],
+	"S16/N20":		[0] 
 } 
 
 
@@ -102,30 +108,34 @@ def string_check(param, name):
 		pass 
 
 
-def find_yield_file(study, MoverH, rotation, element): 
+def find_yield_file(study, MoverH, rotation, which, element): 
 	""" 
 	Find the yield file associated with the given study, metallicity, 
 	rotational velocity, and element 
 
 	Parameters 
-	========== 
-	study :: str [case-insensitive] 
+	----------
+	study : str [case-insensitive] 
 		The study to pull the yields from 
-	MoverH :: real number 
+	MoverH : real number 
 		The adopted metallicity 
-	rotation :: real number 
+	rotation : real number 
 		The adopted rotational velocity in km/s 
-	element :: str [case-insensitive] 
+	which : str 
+		Either "wind" or "explosive", denoting which set of mass yields to 
+		take from. 
+	element : str [case-insensitive] 
 		The element to look up the yield for 
 	""" 
 	if MoverH % 1: 
 		MoverHstr = ("%.2f" % (MoverH)).replace('.', 'p') 
 	else: 
 		MoverHstr = "%d" % (int(MoverH)) 
-	return "%syields/ccsne/%s/FeH%s/v%d/%s.dat" % (
+	return "%syields/ccsne/%s/FeH%s/v%d/%s/%s.dat" % (
 		_DIRECTORY_, 
 		study.upper(), 
 		MoverHstr, 
 		rotation, 
+		which, 
 		element.lower()) 
 
