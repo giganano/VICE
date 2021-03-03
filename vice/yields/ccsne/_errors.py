@@ -29,11 +29,10 @@ _RECOGNIZED_STUDIES_ = tuple(["WW95", "LC18", "CL13", "CL04", "NKT13",
 _NAMES_ = { 
 	"LC18": 	"Limongi & Chieffi (2018), ApJS, 237, 13", 
 	"CL13": 	"Chieffi & Limongi (2013), ApJ, 764, 21 ", 
-	"NKT13":	"Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457", 
+	"NKT13": 	"Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457", 
 	"CL04": 	"Chieffi & Limongi (2004), ApJ, 608, 405", 
 	"WW95": 	"Woosley & Weaver (1995) ApJ, 101, 181", 
 	"S16/W18": 	"Sukhbold et al. (2016), ApJ, 821, 38",
-	"S16/W18I": "Sukhbold et al. (2016), ApJ, 821, 38 (interpolated)",
 	"S16/W18F": "Sukhbold et al. (2016), ApJ, 821, 38 (forced explosions)",
 	"S16/N20": 	"Sukhbold et al. (2016), ApJ, 821, 38" 
 } 

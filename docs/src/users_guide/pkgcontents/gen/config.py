@@ -184,10 +184,10 @@ _CONFIG_ = {
 	vice.core.dataframe.ccsn_yield_table: {
 		"filename": 	"vice.core.dataframe.ccsn_yield_table.rst", 
 		"header": 		"vice.core.dataframe.ccsn_yield_table", 
-		"subs": 		[
+		"subs": 		[ 
 			vice.core.dataframe.ccsn_yield_table.masses, 
 			vice.core.dataframe.ccsn_yield_table.isotopes 
-		] 
+		]  
 	}, 
 	vice.core.dataframe.ccsn_yield_table.masses: {
 		"filename": 	"vice.core.dataframe.ccsn_yield_table.masses.rst", 
@@ -518,7 +518,7 @@ _CONFIG_ = {
 	vice.yields.ccsne.NKT13: {
 		"filename": 	"vice.yields.ccsne.NKT13.rst", 
 		"header": 		"vice.yields.ccsne.NKT13", 
-		"subs": 		[vice.yields.ccsne.NKT13.set_params] 
+		"subs": 		[vice.yields.ccsne.NKT13.set_params]  
 	}, 
 	vice.yields.ccsne.NKT13.set_params: {
 		"filename": 	"vice.yields.ccsne.NKT13.set_params.rst", 

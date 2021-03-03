@@ -71,11 +71,13 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		Keywords and their Associated Studies: 
 
 			- "LC18": Limongi & Chieffi (2018) [1]_ 
-			- "CL13": Chieffi & Limongi (2013) [2]_ 
-			- "NKT13": Nomoto, Kobayashi & Tominaga (2013) [3]_ 
-			- "CL04": Chieffi & Limongi (2004) [4]_ 
-			- "WW95": Woosley & Weaver (1995) [5]_ 
-			- "S16/W18": Sukhbold et al. (2016) [6]_ (W18 explosion engine) 
+			- "S16/W18": Sukhbold et al. (2016) [2]_ (W18 explosion engine) 
+			- "S16/W18": Sukhbold et al. (2016) (W18 engine, forced explosions) 
+			- "S16/N20": Sukhbold et al. (2016) (N20 explosion engine) 
+			- "CL13": Chieffi & Limongi (2013) [3]_ 
+			- "NKT13": Nomoto, Kobayashi & Tominaga (2013) [4]_ 
+			- "CL04": Chieffi & Limongi (2004) [5]_ 
+			- "WW95": Woosley & Weaver (1995) [6]_ 
 
 	MoverH : real number [default : 0] 
 		The total metallicity [M/H] of the exploding stars. There are only a 
@@ -84,11 +86,11 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		Keywords and their Associated Metallicities: 
 
 			- "LC18": [M/H] = -3, -2, -1, 0 
+			- "S16/*": [M/H] = 0 
 			- "CL13": [M/H] = 0 
 			- "NKT13": [M/H] = -inf, -1.15, -0.54, -0.24, 0.15, 0.55 
 			- "CL04": [M/H] = -inf, -4, -2, -1, -0.37, 0.15 
 			- "WW95": [M/H] = -inf, -4, -2, -1, 0 
-			- "S16/W18": [M/H] = 0 
 
 	rotation : real number [default : 0] 
 		The rotational velocity of the exploding stars in km/s. There are only 
@@ -97,11 +99,11 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		Keywords and their Associated Rotational Velocities: 
 
 			- "LC18": v = 0, 150, 300 
+			- "S16/*": v = 0 
 			- "CL13": v = 0, 300 
 			- "NKT13": v = 0 
 			- "CL04": v = 0 
 			- "WW95": v = 0 
-			- "S16/W18": v = 0 
 
 	explodability : <function> or ``None`` [default : ``None``] 
 		Stellar explodability as a function of mass. This function is expected 
@@ -183,7 +185,6 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		- 	The study is not built into VICE 
 		- 	The tolerance is not between 0 and 1 
 		- 	m_lower > m_upper 
-		- 	Explodability settings does not accept exactly 1 position argument 
 		- 	Custom IMF does not accept exactly 1 positional argument 
 		- 	Built-in IMF is not recognized 
 		- 	The method of quadrature is not built into VICE 
@@ -247,26 +248,13 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	>>> y, err = vice.yields.ccsne.fractional("mg", study = "CL13") 
 	>>> y 
 		0.0009939371276697314
-	>>> def expl(m): 
-		if 12 <= m <= 15: 
-			return 0.1 
-		elif 20 <= m <= 30: 
-			return 0.1 
-		elif m >= 40: 
-			return 0.1 
-		else: 
-			return 1 
-	>>> y, err = vice.yields.ccsne.fractional("mg", study = "CL13", 
-		explodability = expl) 
-	>>> y  
-		0.00039911211487501523 
 
 	.. [1] Limongi & Chieffi (2018), ApJS, 237, 13 
-	.. [2] Chieffi & Limongi (2013), ApJ, 764, 21 
-	.. [3] Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457 
-	.. [4] Chieffi & Limongi (2004), ApJ, 608, 405 
-	.. [5] Woosley & Weaver (1995), ApJ, 101, 181 
-	.. [6] Sukhbold et al. (2016), ApJ, 821, 38 
+	.. [2] Sukhbold et al. (2016), ApJ, 821, 38 
+	.. [3] Chieffi & Limongi (2013), ApJ, 764, 21 
+	.. [4] Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457 
+	.. [5] Chieffi & Limongi (2004), ApJ, 608, 405 
+	.. [6] Woosley & Weaver (1995), ApJ, 101, 181 
 	.. [7] Kroupa (2001), MNRAS, 231, 322 
 	.. [8] Salpeter (1955), ApJ, 121, 161 
 	.. [9] Press, Teukolsky, Vetterling & Flannery (2007), Numerical Recipes, 
@@ -318,7 +306,7 @@ smaller than maximum number of bins.""")
 	else: pass 
 
 	""" 
-	Explodability is either None or a callable function with one parameter. 
+	Explodability is either None of a callable function with one parameter. 
 	""" 
 	cdef CALLBACK_1ARG *explodability_cb = callback_1arg_initialize() 
 	if explodability is None: 
@@ -331,13 +319,13 @@ smaller than maximum number of bins.""")
 		exp_cb = callback1_nan_inf(explodability) 
 		callback_1arg_setup(explodability_cb, exp_cb) 
 	else: 
-		raise TypeError("""Explodabiilty must be either a numerical value or a \
-callable object. Got: %s""" % (type(explodability))) 
+		raise TypeError("""Explodability must be either NoneType or a callable \
+object. Got: %s""" % (type(explodability))) 
+
 
 	""" 
-	The IMF is either None or a callable function with one parameter, like the 
-	stellar explodability. However, it must be placed in an IMF_ object, 
-	unlike the stellar explodability prescription. 
+	The IMF is either None or a callable function with one parameter. However, 
+	it must be placed in an IMF_ object. 
 	""" 
 	if callable(IMF): 
 		imf_cb = callback1_nan_inf_positive(IMF) 
@@ -375,17 +363,14 @@ callable object. Got: %s""" % (type(explodability)))
 	separate wind and explosive yields. 
 	"""
 	upper_mass_limits = {
-		"LC18":		120, 
-		"LC18M":		120,
-		"CL13": 	120, 
-		"CL04": 	35, 
-		"WW95": 	40, 
-		"NKT13": 	300 if MoverH == -float("inf") else 40, 
-		"S16/W18": 	120,
-		"S16/W18I": 	120,
+		"LC18":			120, 
+		"CL13": 		120, 
+		"CL04": 		35, 
+		"WW95": 		40, 
+		"NKT13": 		300 if MoverH == -float("inf") else 40, 
+		"S16/W18": 		120,
 		"S16/W18F": 	120,
-		"S16/N20":	120
-
+		"S16/N20":		120
 	} 
 
 	if m_upper > upper_mass_limits[study.upper()]: 

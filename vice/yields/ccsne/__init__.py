@@ -55,7 +55,6 @@ if not __VICE_SETUP__:
 	__all__ = ["engines", "fractional", "settings", "table", "test"] 
 	from . import engines 
 	from ._yield_integrator import integrate as fractional 
-	from .grid_reader import table 
 	from ...core.dataframe import yield_settings 
 	from .tests import test 
 

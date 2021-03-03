@@ -107,37 +107,6 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
 	INTEGRAL *intgrl, IMF_ *imf, CALLBACK_1ARG *explodability, 
 	char *path, const unsigned short wind, char *element) { 
 
-	#if 0 
-	/* 
-	 * Initialize these variables globally. This is such that the function 
-	 * which execute numerical quadrature can accept only one parameter - the 
-	 * stellar mass. 
-	 */ 
-	char *file = (char *) malloc (MAX_FILENAME_SIZE * sizeof(char)); 
-	strcpy(file, path); 
-	strcat(file, "explosive/"); 
-	strcat(file, element); 
-	strcat(file, ".dat"); 
-
-	GRIDSIZE = line_count(file) - header_length(file); 
-	GRID = cc_yield_grid(file); 
-
-	if (wind) {
-		char *wind = (char *) malloc (MAX_FILENAME_SIZE * sizeof(char)); 
-		strcpy(wind, path); 
-		strcat(wind, "wind/"); 
-		strcat(wind, element); 
-		strcat(wind, ".dat"); 
-		WIND = cc_yield_grid(wind); 
-		free(wind); 
-	} else {
-		zero_wind_yield_grid(); 
-	}
-
-	IMF = imf; 
-	EXPLODABILITY = explodability; 
-	#endif 
-
 	setup_calculation(imf, explodability, path, wind, element); 
 	intgrl -> func = &y_cc_numerator; 
 	int x = quad(intgrl); 
@@ -146,7 +115,6 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
 	intgrl -> func = NULL; 
 	GRIDSIZE = 0; 
 	IMF = NULL; 
-	EXPLODABILITY = NULL; 
 	return x; 
 
 } 

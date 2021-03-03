@@ -32,10 +32,20 @@ if not __VICE_SETUP__:
 			# Creates a unittest with a "skipped" message 
 			tests.append(unittest("vice.yields.ccsne.LC18", lambda: None)) 
 		try: 
+			from .. import S16 
+			tests.append(S16.test(run = False)) 
+		except: 
+			tests.append(unittest("vice.yields.ccsne.S16"), lambda: None) 
+		try: 
 			from .. import CL13 
 			tests.append(CL13.test(run = False)) 
 		except: 
 			tests.append(unittest("vice.yields.ccsne.CL13", lambda: None)) 
+		try: 
+			from .. import NKT13 
+			tests.append(NKT13.test(run = False)) 
+		except: 
+			tests.append(unittest("vice.yields.ccsne.NKT13"), lambda: None) 
 		try: 
 			from .. import CL04 
 			tests.append(CL04.test(run = False)) 
@@ -46,16 +56,6 @@ if not __VICE_SETUP__:
 			tests.append(WW95.test(run = False)) 
 		except: 
 			tests.append(unittest("vice.yields.ccsne.WW95", lambda: None)) 
-		try: 
-			from .. import NKT13 
-			tests.append(NKT13.test(run = False)) 
-		except: 
-			tests.append(unittest("vice.yields.ccsne.NKT13", lambda: None)) 
-		try: 
-			from .. import S16 
-			tests.append(S16.test(run = False)) 
-		except: 
-			tests.append(unittest("vice.yields.ccsne.S16", lambda: None)) 
 		tests.append(integrator.test(run = False)) 
 		return ["vice.yields.ccsne", tests] 
 

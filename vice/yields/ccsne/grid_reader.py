@@ -44,11 +44,13 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 		Keywords and their Associated Studies: 
 
 			- "LC18": Limongi & Chieffi (2018) [1]_ 
-			- "CL13": Chieffi & Limongi (2013) [2]_ 
-			- "NKT13": Nomoto, Kobayashi & Tominaga (2013) [3]_ 
-			- "CL04": Chieffi & Limongi (2004) [4]_ 
-			- "WW95": Woosley & Weaver (1995) [5]_ 
-			- "S16/W18": Sukhbold et al. (2016) [6]_ (W18 explosion engine) 
+			- "S16/W18": Sukhbold et al. (2016) [2]_ (W18 explosion engine) 
+			- "S16/W18F": Sukhbold et al. (2016) (W18 engine, forced explosions) 
+			- "S16/N20": Sukhbold et al. (2016) (N20 explosion engine) 
+			- "CL13": Chieffi & Limongi (2013) [3]_ 
+			- "NKT13": Nomoto, Kobayashi & Tominaga (2013) [4]_ 
+			- "CL04": Chieffi & Limongi (2004) [5]_ 
+			- "WW95": Woosley & Weaver (1995) [6]_ 
 
 	MoverH : real number [default : 0] 
 		The total metallicity [M/H] of the exploding stars. There are only a 
@@ -57,11 +59,11 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 		Keywords and their Associated Metallicities: 
 
 			- "LC18": [M/H] = -3, -2, -1, 0 
+			- "S16/*": [M/H] = 0 
 			- "CL13": [M/H] = 0 
 			- "NKT13": [M/H] = -inf, -1.15, -0.54, -0.24, 0.15, 0.55 
 			- "CL04": [M/H] = -inf, -4, -2, -1, -0.37, 0.15 
 			- "WW95": [M/H] = -inf, -4, -2, -1, 0 
-			- "S16/W18": [M/H] = 0 
 
 	rotation : real number [default : 0] 
 		The rotational velocity of the exploding stars in km/s. There are only 
@@ -70,11 +72,11 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 		Keywords and their Associated Rotational Velocities: 
 
 			- "LC18": v = 0, 150, 300 
+			- "S16/*": v = 0 
 			- "CL13": v = 0, 300 
 			- "NKT13": v = 0 
 			- "CL04": v = 0 
 			- "WW95": v = 0 
-			- "S16/W18": v = 0 
 
 	wind : bool [default : ``True``] 
 		If True, the stellar wind contribution to the yield will be included 
@@ -152,11 +154,11 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 	} 
 
 	.. [1] Limongi & Chieffi (2018), ApJS, 237, 13 
-	.. [2] Chieffi & Limongi (2013), ApJ, 764, 21 
-	.. [3] Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457 
-	.. [4] Chieffi & Limongi (2004), ApJ, 608, 405 
-	.. [5] Woosley & Weaver (1995), ApJ, 101, 181 
-	.. [6] Sukhbold et al. (2016), ApJ, 821, 38 
+	.. [2] Sukhbold et al. (2016), ApJ, 821, 38 
+	.. [3] Chieffi & Limongi (2013), ApJ, 764, 21 
+	.. [4] Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457 
+	.. [5] Chieffi & Limongi (2004), ApJ, 608, 405 
+	.. [6] Woosley & Weaver (1995), ApJ, 101, 181 
 	""" 
 
 	if not isinstance(element, strcomp): 
