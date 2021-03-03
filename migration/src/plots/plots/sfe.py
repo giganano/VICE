@@ -41,7 +41,7 @@ def main(outputs, stem,
 		at least as many elements as ``outputs``. If ``None``, no labels will 
 		be included. 
 	times : array-like [elements of type ``float``] 
-		[default : [2, 4, 6, 8, 10, 12.2]] 
+		[default : [2, 4, 6, 8, 10, 13.2]] 
 		The time-stamps at which to plot the SFE timescale as a function of 
 		radius. 
 	colors : array-like [elements of type ``str``] 

@@ -124,7 +124,7 @@ class J21_sf_law:
 	where :math:`t_0` is the age of the universe today, :math:`t` is the age of 
 	the universe at some simulation time, and :math:`\tau_{\text{mol},0}` is 
 	:math:`\tau_\text{mol}` at the present day. Because the ``milkyway`` model 
-	only supports lookback times up to 12.2 Gyr, the relation between age of 
+	only supports lookback times up to 13.2 Gyr, the relation between age of 
 	the universe and simulation time is a simple linear translation: 
 
 	.. math:: t = t_\text{sim} + 1.5\ \text{Gyr}  
@@ -282,7 +282,7 @@ class J21_sf_law:
 		0.6617825960083583
 		>>> mw.zones[0].tau_star.molecular(5) 
 		1.3776103291490314
-		>>> mw.zones[0].tau_star.molecular(12.2) 
+		>>> mw.zones[0].tau_star.molecular(13.2) 
 		2.0 
 
 		.. [1] Johnson et al. (2021, in prep) 

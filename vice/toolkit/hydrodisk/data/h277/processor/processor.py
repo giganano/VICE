@@ -21,7 +21,7 @@ import sys
 import os 
 
 # Name of the input file in this directory 
-INPUT_FILE = "h277_particles_150Myr.fits" 
+INPUT_FILE = "h277_star_particles_150Myr.fits" 
 
 # maximum age at first snapshot in Myr; cannot get larger than 150 Myr, as the 
 # source file does not include those at >150 Myr anyway. 
@@ -40,6 +40,10 @@ DECOMP_REASSIGN = {
 	3: 3, # bulge 
 	5: 4  # pseudobulge 
 } 
+
+# The amount of time subtracted from ages. Hydrodisk models place the onset of 
+# star formation some time following T = 0 in h277. 
+AGE_SHIFT = 0.5 
 
 ##################### 
 
@@ -106,7 +110,7 @@ def write_star(outfile, h277, index):
 	""" 
 	if all_cuts(h277, index): 
 		outfile.write("%d " % (h277[1].data["iord"][index])) 
-		outfile.write("%.4f " % (h277[1].data["tform"][index] - 1.5)) 
+		outfile.write("%.4f " % (h277[1].data["tform"][index] - AGE_SHIFT)) 
 		outfile.write("%.4f " % (h277[1].data["Rform"][index])) 
 		outfile.write("%.4f " % (h277[1].data["Rfinal"][index])) 
 		outfile.write("%.4f " % (h277[1].data["Zform"][index])) 
@@ -199,16 +203,19 @@ def tform_cut(h277, index):
 	Returns 
 	-------
 	test : bool 
-		True if the star particle was born at a simulation time >= 1.5 Gyr. 
+		True if the star particle was born at a simulation time >= 0.5 Gyr. 
 		False otherwise. 
 
 	Notes 
 	-----
-	Star particles born prior to 1.5 Gyr into the h277 are not included in the 
+	Star particles born prior to 0.5 Gyr into the h277 are not included in the 
 	final sample. This is a much better estimate of the onset of star 
 	formation in this galaxy than the beginning of that simulation. 
+
+	The exact time value can be adjusted via the AGE_SHIFT global variable in 
+	this file. 
 	""" 
-	return h277[1].data["tform"][index] >= 1.5 
+	return h277[1].data["tform"][index] >= AGE_SHIFT 
 
 
 def rform_cut(h277, index): 

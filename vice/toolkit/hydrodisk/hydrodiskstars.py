@@ -18,8 +18,8 @@ class hydrodiskstars:
 		bar. 
 
 	.. note:: Simulations which adopt this model that run for longer than 
-		12.2 Gyr are not supported. Stellar populations in the built-in 
-		hydrodynamical simulation data span 12.2 Gyr of ages. 
+		13.2 Gyr are not supported. Stellar populations in the built-in 
+		hydrodynamical simulation data span 13.2 Gyr of ages. 
 
 	**Signature**: vice.toolkit.hydrodisk.hydrodiskstars(radial_bins, N = 1e5, 
 	mode = "linear") 
@@ -91,7 +91,7 @@ class hydrodiskstars:
 		- Minimum radius does not equal zero 
 		- Maximum radius < 20 
 	* ScienceWarning 
-		- This object is called with a time larger than 12.2 Gyr 
+		- This object is called with a time larger than 13.2 Gyr 
 		- The number of analog star particles requested is larger than the 
 		  number available from the hydrodynamical simulation (1,017,612) 
 
@@ -288,17 +288,17 @@ class hydrodiskstars:
 		multizone simulations under each approximation. 
 
 		- "linear" 
-			Orbital radii at times between birth and 12.2 Gyr are assigned via 
+			Orbital radii at times between birth and 13.2 Gyr are assigned via 
 			linear interpolation. Stellar populations therefore spiral 
 			uniformly inward or outward from birth to final radii. 
 		- "sudden" 
 			The time of migration is randomly drawn from a uniform distribution 
-			between when a stellar population is born and 12.2 Gyr. At times 
+			between when a stellar population is born and 13.2 Gyr. At times 
 			prior to this, it is at its radius of birth; at subsequent times, 
 			it is at its final radius. Stellar populations therefore spend no 
 			time at intermediate radii. 
 		- "diffusion" 
-			The orbital radius at times between birth and 12.2 Gyr are assigned 
+			The orbital radius at times between birth and 13.2 Gyr are assigned 
 			via a sqrt(time) dependence, approximating a random-walk motion. 
 			Stellar populations spiral inward or outward, but slightly faster 
 			than the linear approximation when they are young. 

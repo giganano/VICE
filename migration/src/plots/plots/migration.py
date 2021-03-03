@@ -132,7 +132,7 @@ class scheme:
 
 	sudden_migration_time : ``float`` [default : 10] 
 		The time of migration in Gyr if ``mode == "sudden"``. Must be between 
-		0 and 12.2 Gyr. 
+		0 and 13.2 Gyr. 
 
 	Calling 
 	-------
