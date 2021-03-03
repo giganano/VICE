@@ -555,6 +555,37 @@ typedef struct interpolation_sceme_1d {
 } INTERP_SCHEME_1D; 
 
 
+typedef struct interpolation_scheme_2d {
+
+	/* 
+	 * This struct holds the necessary information for a 2-dimensional 
+	 * interpolation scheme, simply constructing a continuous function out of 
+	 * a series of (x, y, z) points and linearly interpolating between them. 
+	 * 
+	 * n_x_points: The number of x-coordinates in the scheme. 
+	 * n_y_points: The number of y-coordinates in the scheme. 
+	 * xcoords: The x-coordinates in arbitrary units. 
+	 * ycoords: The y-coordinates in arbitrary units. 
+	 * zcoords: The z-coordinates in arbitrary units. 
+	 * 
+	 * Notes 
+	 * =====
+	 * Both xcoords and ycoords are assumed to be sorted from least to greatest, 
+	 * and this is enforced in Python. The zcoords array will have the 
+	 * x-coordinate as the first axis, and is thus n_x_points-by-n_y_points. 
+	 * This object as a result stores n_x_points times n_y_points total 
+	 * (x, y, z) coordinate combinations. 
+	 */ 
+
+	unsigned long n_x_values; 
+	unsigned long n_y_values; 
+	double *xcoords; 
+	double *ycoords; 
+	double **zcoords; 
+
+} INTERP_SCHEME_2D; 
+
+
 typedef struct dataset {
 
 	double **data; 
