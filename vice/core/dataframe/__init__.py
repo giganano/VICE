@@ -10,7 +10,6 @@ Derived Classes:
 	- elemental_settings 
 	- channel_entrainment 
 	- evolutionary_settings 
-
 	- fromfile 
 	- history 
 	- noncustomizable 
