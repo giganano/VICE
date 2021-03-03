@@ -67,7 +67,7 @@ extern "C" {
  * simulationdata. 
  */ 
 #ifndef HYDRODISK_END_TIME 
-#define HYDRODISK_END_TIME 12.2 
+#define HYDRODISK_END_TIME 13.2 
 #endif /* HYDRODISK_END_TIME */ 
 
 #include "../objects.h" 
@@ -142,7 +142,7 @@ extern long hydrodiskstars_find_analog(HYDRODISKSTARS hds, double birth_radius,
  * birth_time: 		The time the stellar population was born in Gyr 
  * birth_radius: 	The radius of the stellar population's birth in kpc 
  * end_time: 		The time of the end of the simulation (should always be 
- * 						12.2 for consistency w/hydrosim) 
+ * 						13.2 for consistency w/hydrosim) 
  * analog_idx: 		The index of the analog star particle 
  * time: 			The intermediate time in Gyr 
  * 
@@ -196,7 +196,7 @@ extern long calczone_sudden(HYDRODISKSTARS hds, double migration_time,
  * birth_time: 		The time the stellar population was born in Gyr 
  * birth_radius: 	The radius of the stellar population's birth in kpc 
  * end_time: 		The time of the end of the simulation (should always be 
- * 						12.2 for consistency w/hydrosim) 
+ * 						13.2 for consistency w/hydrosim) 
  * analog_idx: 		The index of the analog star particle 
  * time: 			The intermediate time in Gyr 
  * 

@@ -2,7 +2,7 @@ r"""
 Global variables to the migration simulations and plot analysis. 
 """ 
 
-END_TIME = 12.2 # total simulation time in Gyr 
+END_TIME = 13.2 # total simulation time in Gyr 
 
 # Width of each annulus in kpc 
 # This needs modified *only* if running the plotting scripts. 
