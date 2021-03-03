@@ -86,7 +86,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		Keywords and their Associated Metallicities: 
 
 			- "LC18": [M/H] = -3, -2, -1, 0 
-			- "S16/*": [M/H] = 0 
+			- "S16/\*": [M/H] = 0 
 			- "CL13": [M/H] = 0 
 			- "NKT13": [M/H] = -inf, -1.15, -0.54, -0.24, 0.15, 0.55 
 			- "CL04": [M/H] = -inf, -4, -2, -1, -0.37, 0.15 
@@ -99,7 +99,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		Keywords and their Associated Rotational Velocities: 
 
 			- "LC18": v = 0, 150, 300 
-			- "S16/*": v = 0 
+			- "S16/\*": v = 0 
 			- "CL13": v = 0, 300 
 			- "NKT13": v = 0 
 			- "CL04": v = 0 
