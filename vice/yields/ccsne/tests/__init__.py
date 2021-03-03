@@ -10,6 +10,8 @@ if not __VICE_SETUP__:
 	__all__ = ["test"] 
 	from ....testing import moduletest 
 	from ....testing.unittest import _unittest as unittest 
+	from .. import engines 
+	from . import grid_reader 
 	from . import integrator 
 	from . import imports 
 
@@ -19,7 +21,9 @@ if not __VICE_SETUP__:
 		Run unit tests on this module 
 		""" 
 		tests = [
-			imports.test(run = False) 
+			grid_reader.test_table(), 
+			imports.test(run = False), 
+			engines.test(run = False) 
 		] 
 		try: 
 			from .. import LC18 
@@ -28,10 +32,20 @@ if not __VICE_SETUP__:
 			# Creates a unittest with a "skipped" message 
 			tests.append(unittest("vice.yields.ccsne.LC18", lambda: None)) 
 		try: 
+			from .. import S16 
+			tests.append(S16.test(run = False)) 
+		except: 
+			tests.append(unittest("vice.yields.ccsne.S16"), lambda: None) 
+		try: 
 			from .. import CL13 
 			tests.append(CL13.test(run = False)) 
 		except: 
 			tests.append(unittest("vice.yields.ccsne.CL13", lambda: None)) 
+		try: 
+			from .. import NKT13 
+			tests.append(NKT13.test(run = False)) 
+		except: 
+			tests.append(unittest("vice.yields.ccsne.NKT13"), lambda: None) 
 		try: 
 			from .. import CL04 
 			tests.append(CL04.test(run = False)) 

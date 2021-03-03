@@ -3,9 +3,7 @@ Test the CCSNe yield integrator at vice/yields/ccnse/_yield_integrator.pyx
 """ 
 
 from __future__ import absolute_import 
-__all__ = [
-	"test" 
-]
+__all__ = ["test" ]
 from ...._globals import _RECOGNIZED_ELEMENTS_ 
 from .._yield_integrator import integrate as fractional 
 from .._errors import _RECOGNIZED_STUDIES_ as _STUDY_ 
@@ -21,8 +19,12 @@ import math
 _UPPER_ = {
 	"LC18":			120, 
 	"CL13": 		120, 
+	"NKT13": 		40, 
 	"CL04": 		35, 
 	"WW95": 		40, 
+	"S16/W18": 		120, 
+	"S16/W18F": 	120, 
+	"S16/N20": 		120 
 }
 
 # IMFs to test the integrations on 
@@ -39,11 +41,16 @@ class generator:
 		success = True 
 		for elem in _RECOGNIZED_ELEMENTS_: 
 			try: 
-				yield_, err = fractional(elem, **self._kwargs) 
-				assert 0 <= yield_ < 1 
-				if yield_ == 0: assert math.isnan(err) 
+				with_wind, err1 = fractional(elem, wind = True, **self._kwargs) 
+				no_wind, err2 = fractional(elem, wind = False, **self._kwargs)
 			except: 
 				success = False 
+				break 
+			success &= no_wind <= with_wind < 1 
+			success &= 0 <= no_wind <= with_wind
+			if with_wind == 0: success &= math.isnan(err1) 
+			if no_wind == 0: success &= math.isnan(err2) 
+			if not success: break 
 		return success 
 
 

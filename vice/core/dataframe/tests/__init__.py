@@ -11,6 +11,7 @@ if not __VICE_SETUP__:
 	from ....testing import moduletest 
 	from . import agb_yield_settings 
 	from . import base 
+	from . import ccsn_yield_table 
 	from . import elemental_settings 
 	from . import entrainment 
 	from . import evolutionary_settings 
@@ -30,6 +31,7 @@ if not __VICE_SETUP__:
 			[ 
 				agb_yield_settings.test(run = False), 
 				base.test(run = False), 
+				ccsn_yield_table.test(run = False), 
 				elemental_settings.test(run = False), 
 				entrainment.test(run = False), 
 				evolutionary_settings.test(run = False), 
