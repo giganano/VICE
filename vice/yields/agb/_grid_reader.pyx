@@ -145,15 +145,17 @@ heavier than nickel (atomic number 28).""" % (studies["karakas10"]))
 	else: 
 		try: 
 			# copy over the yields, masses, and metallicities 
-			yields = e[0].agb_grid[0].n_m * [None] 
-			for i in range(e[0].agb_grid[0].n_m): 
-				yields[i] = e[0].agb_grid[0].n_z * [0.0] 
-				for j in range(e[0].agb_grid[0].n_z): 
-					yields[i][j] = e[0].agb_grid[0].grid[i][j] 
-			masses = [e[0].agb_grid[0].m[i] for i in range(
-				e[0].agb_grid[0].n_m)] 
-			metallicities = [e[0].agb_grid[0].z[i] for i in range(
-				e[0].agb_grid[0].n_z)] 
+			yields = e[0].agb_grid[0].interpolator[0].n_x_values * [None] 
+			for i in range(e[0].agb_grid[0].interpolator[0].n_x_values): 
+				yields[i] = e[0].agb_grid[0].interpolator[0].n_y_values * [0.] 
+				for j in range(e[0].agb_grid[0].interpolator[0].n_y_values): 
+					yields[i][j] = e[0].agb_grid[0].interpolator[0].zcoords[i][j] 
+			masses = [
+				e[0].agb_grid[0].interpolator[0].xcoords[i] for i in range(
+					e[0].agb_grid[0].interpolator[0].n_x_values)] 
+			metallicities = [
+				e[0].agb_grid[0].interpolator[0].ycoords[i] for i in range(
+					e[0].agb_grid[0].interpolator[0].n_y_values)] 
 		finally: 
 			_element.element_free(e) 
 

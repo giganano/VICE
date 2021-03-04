@@ -710,15 +710,18 @@ cdef class singlezone_tester:
 						x = False 
 						break 
 					else: pass 
-					if <void *> e[i][0].agb_grid[0].grid is NULL: 
+					if (<void *> e[i][0].agb_grid[0].interpolator[0].xcoords is 
+						NULL): 
 						x = False 
 						break 
 					else: pass 
-					if <void *> e[i][0].agb_grid[0].m is NULL: 
+					if (<void *> e[i][0].agb_grid[0].interpolator[0].ycoords is 
+						NULL): 
 						x = False 
 						break 
 					else: pass 
-					if <void *> e[i][0].agb_grid[0].z is NULL: 
+					if (<void *> e[i][0].agb_grid[0].interpolator[0].zcoords is 
+						NULL): 
 						x = False 
 						break 
 					else: pass 
