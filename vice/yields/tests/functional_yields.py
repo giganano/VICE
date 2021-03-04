@@ -68,7 +68,7 @@ def equivalence_test():
 					out1.history["mass(o)"][i]) 
 			else: 
 				percent_diff = abs(out2.history["mass(o)"][i]) 
-			status &= percent_diff <= 2.e-4 
+			status &= percent_diff <= 1.e-6 
 			if not status: break 
 		return status 
 	return ["vice.yields edge case : functional equivalence", test] 
