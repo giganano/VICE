@@ -120,13 +120,13 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 
 	Notes 
 	-----
-	.. note:: The nucleosynthetic yield tables built into VICE do not include 
-		any treatment of radioactive isotopes. The yield tables returned from 
-		this function will not include what the specified study reported for 
-		radioactive isotopes. In the case of elements with a significant 
-		nucleosynthetic contribution from radioactive decay products, the 
-		values returned from this function should be interpreted as lower 
-		bounds rather than estimates of the true yield. 
+	The yield tables returned by this function include a treatment for only two 
+	radioactive isotopes. The mass of nickel-56 in all cases is added to the 
+	iron-56 yield, and the mass of aluminum-26 is added to the magnesium-26 
+	yield always. In this regard, if there are other elements with a 
+	significant nucleosynthetic contribution from the radioactive decay of CCSN 
+	products, the values returned by this function should be interpreted as 
+	lower bounds rather than estimates of the true nucleosynthetic yield. 
 
 	Example Code 
 	------------

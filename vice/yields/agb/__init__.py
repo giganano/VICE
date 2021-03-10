@@ -18,6 +18,13 @@ interpolator : ``object``
 settings : ``dataframe`` 
 	Stores current settings for these yields 
 
+Notes 
+-----
+The data stored in this module are reported for each corresponding study 
+*as published*. With the exception of converting the values to *fractional* 
+yields (i.e. by dividing by progenitor initial mass), they were not modified in 
+any way. 
+
 .. [1] Cristallo et al. (2011), ApJS, 197, 17 
 .. [2] Karakas (2010), MNRAS, 403, 1413 
 """

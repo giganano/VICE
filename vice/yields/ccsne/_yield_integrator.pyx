@@ -258,14 +258,14 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	data. If the keyword arg ``net = False``, :math:`Z_{x,\text{prog}}` is 
 	simply set to zero to calculate a gross yield. 
 
-	The yield tables built into VICE include a treatment for only two 
+	The yield tables employed by this function include a treatment for only two 
 	radioactive isotopes. The mass of nickel-56 in all cases is added to the 
 	iron-56 yield, and the mass of aluminum-26 is added to the magnesium-26 
-	yield always. Furthermore, the above equation is evaluated directly from 
-	the total mass yield of stable isotopes only. In this regard, yields 
-	computed by this function for any other elements with significant 
-	contributions to its nucleosynthesis from radioactive decay products should 
-	be interpreted as lower bounds rather than estimates of the true 
+	yield always. The above equation is then evaluated directly from the total 
+	mass yield of stable isotopes only. In this regard, if there are other 
+	elements with a significant nucleosynthetic contribution from the 
+	radioactive decay of CCSN products, the values returned by this function 
+	should be interpreted as lower bounds rather than estimates of the true 
 	nucleosynthetic yield. 
 
 	Example Code 

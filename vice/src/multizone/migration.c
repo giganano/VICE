@@ -180,6 +180,15 @@ static unsigned short normalize_migration_element(MULTIZONE mz,
 		migration_matrix[i][row][column] /= NORMALIZATION_TIME_INTERVAL; 
 		if (migration_matrix[i][row][column] < 0 || 
 			migration_matrix[i][row][column] > 1) return 1; 
+		// if (migration_matrix[i][row][column] < 0 || 
+		// 	migration_matrix[i][row][column] > 1) {
+		// 	printf("%ld\n", i); 
+		// 	printf("%u\n", row); 
+		// 	printf("%u\n", column); 
+		// 	printf("%.15f\n", migration_matrix[i][row][column]); 
+		// 	printf("%.5e\n", migration_matrix[i][row][column] - 1); 
+		// 	return 1; 
+		// }
 	} 
 	return 0; 
 

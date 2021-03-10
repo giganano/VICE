@@ -74,14 +74,12 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 
 	Notes 
 	-----
-	The yield tables built into VICE include a treatment for only two 
-	radioactive isotopes. The mass of nickel-56 in all cases is added to the 
-	iron-56 yield, and the mass of aluminum-26 is added to the magnesium-26 
-	yield always. Otherwise, the mass yield of the given element will be 
-	reported as the sum of stable isotopes only. In the case of other elements 
-	with a significant nucleosynthetic contribution from radioactive decay 
-	products, the values returned from this function should be interpreted as 
-	lower bounds rather than estimates of the true yield. 
+	The data stored in this module are reported for each corresponding study 
+	*as published*. The Seitenzahl et al. (2013) model reported mass yields 
+	after complete decay of all radioactive nuclides with half-lives less than 
+	2 Gyr, and the Iwamoto et al. (1999) study fully decayed *all* unstable 
+	isotopes; any additional treatment for radioactive isotopes is thus 
+	unnecessary. 
 
 	Example Code 
 	------------
@@ -223,14 +221,12 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 	where :math:`M_x` is the value returned by vice.yields.sneia.single, and 
 	:math:`N_\text{Ia}/M_\star` is specified by the parameter ``n``. 
 
-	The yield tables built into VICE include a treatment for only two 
-	radioactive isotopes. The mass of nickel-56 in all cases is added to the 
-	iron-56 yield, and the mass of aluminum-26 is added to the magnesium-26 
-	yield always. Otherwise, the mass yield of the given element will be 
-	reported as the sum of stable isotopes only. In the case of other elements 
-	with a significant nucleosynthetic contribution from radioactive decay 
-	products, the values returned from this function should be interpreted as 
-	lower bounds rather than estimates of the true yield. 
+	The data stored in this module are reported for each corresponding study 
+	*as published*. The Seitenzahl et al. (2013) model reported mass yields 
+	after complete decay of all radioactive nuclides with half-lives less than 
+	2 Gyr, and the Iwamoto et al. (1999) study fully decayed *all* unstable 
+	isotopes; any additional treatment for radioactive isotopes is thus 
+	unnecessary. 
 
 	Example Code 
 	------------

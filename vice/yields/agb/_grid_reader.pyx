@@ -74,13 +74,10 @@ def yield_grid(element, study = "cristallo11"):
 
 	Notes 
 	-----
-	.. note:: The nucleosynthetic yield tables built into VICE do not include 
-		any treatment of radioactive isotopes. The yield tables returned by 
-		this function will not include what the specified study reported for 
-		radioactive isotopes. In the case of elements with a significant 
-		nucleosynthetic contribution from radioactive decay products, the 
-		values returned from this function should be interpreted as lower 
-		bounds rather than estimates of the true yield. 
+	The AGB star yields stored by VICE are reported *as published* by each 
+	corresponding study. With the exception of converting the values to 
+	*fractional* yields (i.e. by dividing by progenitor initial mass), they 
+	were not modified in any way. 
 
 	Example Code 
 	------------

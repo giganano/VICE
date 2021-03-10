@@ -21,15 +21,11 @@ test : <function>
 
 Notes 
 -----
-The yield tables built into VICE include a treatment for only two radioactive 
-isotopes. The mass of nickel-56 in all cases is added to the iron-56 yield, and 
-the mass of aluminum-26 is added to the magnesium-26 yield always. VICE does 
-not include a treatment for other radioactive isotopes; equations are evaluated 
-and tables returned couting only the total mass yield of stable isotopes. In 
-the case of other elements with a significant nucleosynthetic contribution from 
-radioactive decay products, the values returned from the functions in this 
-module should be interpreted as lower bounds rather than estimates of the true 
-yield. 
+All yields built into VICE reflect stable isotopes *only*. The built-in tables 
+reflect data which assume all important radioactive nuclides have fully 
+decayed. Further details can be found in the ``agb``, ``ccsne``, and ``sneia`` 
+modules and in the journal publications in which the data were originally 
+published. 
 """
 
 from __future__ import absolute_import 

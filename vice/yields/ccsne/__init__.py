@@ -37,6 +37,14 @@ CL04 : module
 WW95 : module 
 	Sets yields according to the Woosley & Weaver (1995) study. 
 
+Notes 
+-----
+The yield tables built into this module reflect a post-processing treatment for 
+two radioactive nuclides. For all studies, the mass yields of nickel-56 have 
+been added to that of iron-56, and the yields of aluminum-26 have been added to 
+that of magnesium-26. The data for remaining elements are included 
+*as published*. 
+
 .. [1] Limongi & Chieffi (2018), ApJS, 237, 13 
 .. [2] Sukhbold et al. (2016), ApJ, 821, 38 
 .. [3] Chieffi & Limongi (2013), ApJ, 764, 21 

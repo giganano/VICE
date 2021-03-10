@@ -442,7 +442,9 @@ leaving only the results of the current simulation.\nOutput directory: \
 		) 
 		eval_times = [i * self._mz[0].zones[0].dt for i in range(length)] 
 		errmsg = """Migration probability must be between 0 and 1 at all \
-timesteps.""" 
+timesteps. Note that your migration matrix entries will be multiplied by the \
+timestep size and divided by 10 Myr; this ensures that migration does not \
+proceed faster or slower as a function of the timestep size."""  
 
 		for i in range(self._mz[0].mig[0].n_zones): 
 			for j in range(self._mz[0].mig[0].n_zones): 
