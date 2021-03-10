@@ -4,6 +4,8 @@ yields
 
 **Signature**: from vice.yields.ccsne import NKT13 
 
+.. versionadded:: 1.2.0 
+
 Importing this module will automatically set the CCSN yield settings for all 
 elements to the IMF-averaged yields calculated with the Nomoto, Kobayashi & 
 Tominaga (2013) yield table for [M/H] = 0.15 stars. This will adopt an upper 

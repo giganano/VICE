@@ -8,15 +8,15 @@ except NameError:
 if not __VICE_SETUP__: 
 
 	__all__ = ["test"] 
-	from .....testing import moduletest 
+	from ......testing import moduletest 
 	from . import set_params 
 
 	@moduletest 
 	def test(): 
 		r""" 
-		Run the unit tests on this moudle 
+		Run the unit tests on this module. 
 		""" 
-		return ["vice.yields.ccsne.S16", 
+		return ["vice.yields.ccsne.S16.W18", 
 			[ 
 				set_params.test() 
 			] 

@@ -67,7 +67,7 @@ class multizone(object):
 	----------
 	name : ``str`` [default : "multizonemodel"] 
 		The name of the simulation. Output will be stored in a directory under 
-		this name. 
+		this name with a ".vice" extension. 
 	zones : ``zone_array`` [default : always ``singlezone`` objects] 
 		An array-like object of ``singlezone`` objects, detailing the 
 		evolutionary parameters of each zone. 
@@ -78,14 +78,14 @@ class multizone(object):
 		
 		.. note:: This cannot be changed after creation of the object. 
 
-		.. note:: If this is equal to 1, a ``singlezone`` object is created 
-			with the default parameters. 
+		.. note:: If this is equal to 1, VICE will construct a ``singlezone`` 
+			object rather than a ``multizone`` object. 
 
 	n_stars : ``int`` [default : 1] 
-		The number of star particles per zone per timestep. 
+		The number of star particles forming in each zone at each timestep. 
 	simple : ``bool`` [default : False] 
-		If True, the positions of stars at intermediate times will be ignored. 
-		That is, mixing is taken into account at only the final timestep. 
+		If True, each individual zone will be simulated as a one-zone model, 
+		ignoring all migration prescriptions. 
 	verbose : ``bool`` [default : False] 
 		Whether or not to print to the console as the simulation runs. 
 
@@ -212,7 +212,7 @@ Got: %s""" % (type(n_zones)))
 
 		**Signature**: vice.multizone.from_output(arg) 
 
-		.. versionadded:: 1.1.0 
+		.. versionadded:: 1.2.0 
 
 		Parameters 
 		----------
@@ -596,10 +596,10 @@ simulation was ran.""" % (i, j), UserWarning)
 		final timestep. If ``False``, this information will be taken into 
 		account as the simulation evolves. 
 
-		.. warning:: Johnson et al. (2020, in prep) argues that the positions 
-			of stars as they migrate is necessary information to accurately 
-			model galactic chemical evolution. This suggests that this 
-			attribute should be always be ``False``. 
+		.. warning:: Simulating all zones as a one-zone model will neglect all 
+			time-dependent migration prescriptions built into this model, with 
+			migration being a purely post-processing prescription in these 
+			cases.  
 
 		Raises 
 		------
@@ -641,7 +641,7 @@ simulation was ran.""" % (i, j), UserWarning)
 			the simulation output files. 
 		pickle : ``bool`` [default : True] 
 			If ``True``, VICE will save the attributes of this object with the 
-			output. See note below. 
+			output. See below. 
 
 		Returns 
 		-------
@@ -659,8 +659,7 @@ simulation was ran.""" % (i, j), UserWarning)
 			-	Any of the attributes ``IMF``, ``recycling``, ``delay``, 
 				``RIa``, ``schmidt``, ``schmidt_index``, ``MgSchmidt``, 
 				``m_upper``, ``m_lower``, or ``Z_solar`` aren't uniform across 
-				all zones. Realistically these attributes would be, but this 
-				is not required for the simulation to run properly. 
+				all zones. 
 
 		Other exceptions are raised by ``vice.singlezone.run``. 
 
@@ -706,7 +705,8 @@ simulation was ran.""" % (i, j), UserWarning)
 			These data make up a significant fraction of the disk usage of 
 			output files. Therefore, if many multizone models are to be ran, 
 			users are recommended to specify ``pickle = False`` to lower the 
-			storage space required. 
+			storage space required. This will, however, render the 
+			vice.multizone.from_output function useless for that output. 
 
 		Example Code 
 		------------

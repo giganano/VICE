@@ -11,7 +11,6 @@ from ..._globals import _RECOGNIZED_IMFS_
 from ..._globals import _VERSION_ERROR_ 
 from ..._globals import ScienceWarning 
 from ...core.dataframe._builtin_dataframes import atomic_number 
-from ...core.dataframe import elemental_settings 
 from ...core.callback import callback1_nan_inf_positive 
 from ...core.callback import callback1_nan_inf 
 from ...core import _pyutils 
@@ -47,7 +46,7 @@ _MINIMUM_MASS_ = float(_yield_integrator.CC_MIN_STELLAR_MASS)
 
 
 def integrate(element, study = "LC18", MoverH = 0, rotation = 0, 
-	explodability = None, wind = True, net = False, IMF = "kroupa", 
+	explodability = None, wind = True, net = True, IMF = "kroupa", 
 	method = "simpson", m_lower = 0.08, m_upper = 100, 
 	tolerance = 1e-3, Nmin = 64, Nmax = 2e8): 
 	
@@ -72,7 +71,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 
 			- "LC18": Limongi & Chieffi (2018) [1]_ 
 			- "S16/W18": Sukhbold et al. (2016) [2]_ (W18 explosion engine) 
-			- "S16/W18": Sukhbold et al. (2016) (W18 engine, forced explosions) 
+			- "S16/W18F": Sukhbold et al. (2016) (W18 engine, forced explosions) 
 			- "S16/N20": Sukhbold et al. (2016) (N20 explosion engine) 
 			- "CL13": Chieffi & Limongi (2013) [3]_ 
 			- "NKT13": Nomoto, Kobayashi & Tominaga (2013) [4]_ 
@@ -80,8 +79,9 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			- "WW95": Woosley & Weaver (1995) [6]_ 
 
 	MoverH : real number [default : 0] 
-		The total metallicity [M/H] of the exploding stars. There are only a 
-		handful of metallicities recognized by each study. 
+		The total metallicity [M/H] = :math:`\log_{10}(Z/Z_\odot)` of the 
+		exploding stars. There are only a handful of metallicities recognized 
+		by each study. 
 
 		Keywords and their Associated Metallicities: 
 
@@ -111,8 +111,11 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		parameter, and to return a number between 0 and 1 denoting the 
 		fraction of stars at that mass which explode as a CCSN. 
 
-		.. tip:: The S16 CCSN yield module provides explosion engines as a 
-			function of mass as published in the Sukhbold et al. (2016) study. 
+		.. versionadded:: 1.2.0 
+
+		.. tip:: The vice.yields.ccsne.engines module provides a number of 
+			popular mathematical forms for the black hole landscape, both 
+			simple and complex. 
 
 	wind : bool [default : ``True``] 
 		If True, the stellar wind contribution to the yield will be included 
@@ -124,14 +127,14 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			yields are not separable from explosive yields for other studies 
 			supported by this function. 
 
-		.. versionadded:: 1.X.0 
+		.. versionadded:: 1.2.0 
 
 	net : bool [default : ``True``] 
 		If True, the initial abundance of each simulated CCSN progenitor star 
 		will be subtracted from the gross yield to convert the reported value 
 		to a net yield. 
 
-		.. versionadded:: 1.X.0 
+		.. versionadded:: 1.2.0 
 
 	IMF : ``str`` [case-insensitive] or <function> [default : "kroupa"] 
 		The stellar initial mass function (IMF) to assume. Strings denote 
@@ -140,9 +143,9 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		numerical paraneter and will be interpreted as a custom, arbitrary 
 		stellar IMF. 
 
-		.. versionadded:: 1.X.0 
-			Prior to version 1.X.0, functions of mass as custom stellar IMF 
-			were not supported. 
+		.. versionadded:: 1.2.0 
+			Prior to version 1.2.0, only the built-in Kroupa and Salpeter 
+			IMFs were supported. 
 
 	method : ``str`` [case-insensitive] [default : "simpson"] 
 		The method of quadrature. 
@@ -203,9 +206,21 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			of allowed quadrature bins to within the specified tolerance. 
 		- 	Explodability criteria specified in combination with either the 
 			Limongi & Chieffi (2018) or Sukhbold et al. (2016) study. 
+		- 	``explodability`` is not ``None`` and ``study == "LC18"``, 
+			``"S16/N20"``, ``"S16/W18"``, or ``"S16/W18F"``. The mass yields 
+			these studies report are already under a given model for the black 
+			hole landscape. 
 		- 	``wind = False`` and ``study`` is anything other than 
 			LC18 or S16. These are the only studies for which wind yields were 
 			reported separate from explosive yields. 
+		- 	``net == True`` and ``study == "WW95"``. The Woosley & Weaver (1995) 
+			study did not report a detailed initial composition of their model 
+			CCSN progenitors; VICE can only calculate gross yields in this 
+			instance. 
+		- 	``net == False`` and ``study == NKT13``. The Nomoto, Kobayashi & 
+			Tominaga (2013) study reported net yields in their model core 
+			collapse supernova ejeta. VICE can only calculate net yields in 
+			this instance. 
 
 	Notes 
 	-----
@@ -222,21 +237,27 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	in the explosion, :math:`w_x` is the mass of the element :math:`x` ejected 
 	in the wind, :math:`dN/dm` is the assumed stellar IMF, and 
 	:math:`Z_{x,\text{prog}}` is the abundance by mass of the element :math:`x` 
-	in the CCSN progenitor stars. If the keyword arg ``net = False``, 
-	:math:`Z_{x,\text{prog}}` is simply set to zero to calculate a gross yield. 
+	in the CCSN progenitor stars, whose values are stored in VICE's internal 
+	data. If the keyword arg ``net = False``, :math:`Z_{x,\text{prog}}` is 
+	simply set to zero to calculate a gross yield. 
 
 	.. note:: Explodability criteria will be overspecified when calculating 
 		yields from the Limongi & Chieffi (2018) study, in which stars above 
 		25 :math:`M_\odot` were not forced to explode. The yields they report 
-		at these masses are only that ejected in the wind. 
+		at these masses are only that ejected in the wind. The same applies to 
+		the W18 and N20 yield sets from the Sukhbold et al. (2016) study, for 
+		which the reported yields already reflect the more complicated black 
+		hole landscape predicted by the explosion engine. 
 
-	.. note:: The nucleosynthetic yield tables built into VICE do not include 
-		any treatment of radioactive isotopes. The above equation is evaluated 
-		directly from the total mass yield of stable isotopes only. In this 
-		regard, if any element has a significant contribution to its 
-		nucleosynthesis from radioactive decay products, then the values 
-		returned from this function should be interpreted as lower bounds 
-		rather than estimates of the true nucleosynthetic yield. 
+	.. note:: The yield tables built into VICE include a treatment for only 
+		two radioactive isotopes. The mass of nickel-56 in all cases is added 
+		to the iron-56 yield, and the mass of aluminum-26 is added to the 
+		magnesium-26 yield always. Furthermore, the above equation is 
+		evaluated directly from the total mass yield of stable isotopes only. 
+		In this regard, yields computed by this function for any other elements 
+		with significant contributions to its nucleosynthesis from radioactive 
+		decay products should be interpreted as lower bounds rather than 
+		estimates of the true nucleosynthetic yield. 
 
 	Example Code 
 	------------
@@ -318,6 +339,12 @@ smaller than maximum number of bins.""")
 	elif callable(explodability): 
 		exp_cb = callback1_nan_inf(explodability) 
 		callback_1arg_setup(explodability_cb, exp_cb) 
+		if study.upper() in ["LC18", "S16/N20", "S16/W18", "S16/W18F"]: 
+			warnings.warn("""\
+Limongi & Chieffi (2018) and Sukhbold et al. (2016) yields are already \
+reported under a given black hole landscape. Stellar explodability is \
+over-specified in this calculation.""", ScienceWarning) 
+		else: pass 
 	else: 
 		raise TypeError("""Explodability must be either NoneType or a callable \
 object. Got: %s""" % (type(explodability))) 
@@ -399,7 +426,8 @@ stellar explodability (i.e. only wind yields are reported for stars that do \
 not explode under their explosion physics). Stellar explodability is \
 overspecified in this calculation""" % (_NAMES_[study.upper()]), ScienceWarning) 
 
-	if not wind and study.upper() not in ["LC18", "S16/W18"]: 
+	if (not wind and 
+		study.upper() not in ["LC18", "S16/N20", "S16/W18", "S16/W18F"]): 
 		warnings.warn("""The %s study did not separate the yields from the \
 wind and the explosion, publishing only the total yields from both. For this \
 reason, this calculation can only run including the wind yield.""" % (
@@ -429,17 +457,25 @@ own discretion by modifying their CCSN yield settings directly.""" % (
 		pass 
 
 	if net: 
-		zprog = initial_abundances(
+		zprog = initial_abundance(
 			"%syields/ccsne/%s/FeH%s/birth_composition.dat" % (
-				_DIRECTORY_, study.upper(), MoverHstr)) 
-		_yield_integrator.set_Z_progenitor(zprog[element.lower()]) 
+				_DIRECTORY_, study.upper(), MoverHstr), element.lower()) 
+		_yield_integrator.set_Z_progenitor(zprog) 
 		if study.upper() not in ["S16/W18", "S16/W18F", "S16/W18I", "LC18"]: 
 			_yield_integrator.weight_initial_by_explodability(1) 
 		else: 
 			_yield_integrator.weight_initial_by_explodability(0) 
+		if study.upper() == "WW95": warnings.warn("""\
+Woosley & Weaver (1995) did not report their birth abundances. VICE cannot \
+compute net yields for this study, only reporting gross yields.""", 
+			ScienceWarning)  
 	else: 
 		_yield_integrator.set_Z_progenitor(0) 
 		_yield_integrator.weight_initial_by_explodability(0) 
+		if study.upper() == "NKT13": warnings.warn("""\
+Nomoto, Kobayashi & Tominaga (2013) reported net mass yields in their model \
+core collapse supernova ejecta. VICE cannot compute gross yields for this \
+study, only reporting net yields.""") 
 
 	# Compute the yield 
 	cdef INTEGRAL *num = _integral.integral_initialize() 
@@ -497,7 +533,7 @@ Estimated fractional error: %.2e""" % (den[0].error), ScienceWarning)
 	return [y, err] 
 
 
-def initial_abundances(filename): 
+def initial_abundance(filename, element): 
 	r""" 
 	Read in the table containing the initial abundances of each element. 
 
@@ -505,21 +541,26 @@ def initial_abundances(filename):
 	----------
 	filename : str 
 		The full path to the file containing the initial abundances 
+	element : str 
+		The name of the element to find the initial abundance for. 
 
 	Returns 
 	-------
 	zprog : elemental_settings 
 		A dataframe mapping elemental symbols to the initial abundance. 
 	""" 
-	zprog = elemental_settings({}) 
 	with open(filename, 'r') as f: 
-		line = f.readline() 
-		while line != "": 
-			element, Z = line.split() 
-			if element.lower() in _RECOGNIZED_ELEMENTS_: 
-				zprog[element.lower()] = float(Z) 
-			else: pass 
+		while True: 
 			line = f.readline() 
+			element_, Z = line.split() 
+			if element_.lower() == element.lower(): 
+				f.close() 
+				return float(Z) 
+			elif line == "": 
+				break 
+			else: 
+				continue 
 		f.close() 
-	return zprog 
+	raise SystemError("Internal Error.") 
+
 

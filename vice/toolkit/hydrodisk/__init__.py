@@ -7,11 +7,16 @@ hydrodynamical simulations.
 Contents 
 --------
 hydrodiskstars : object 
-	A stellar migration scheme inspired by a cosmological zoom-in simulation 
-	of a Milky Way-like galaxy ran at the University of Washington. Stellar 
-	populations can migrate according to a handful of assumptions about the 
-	time dependence of their orbital radius between birth and the end of the 
-	simulation. 
+	A stellar migration scheme informed by the ``h277`` simulation, a zoom-in 
+	hydrodynamic simulation of a Milky Way like galaxy ran from cosmological 
+	initial conditions (a part of the ``g14`` simulation suite, Christensen et 
+	al 2012 [1]_). Stellar migrations can migrate according to a handful of 
+	assumptions about the time dependence of their orbital radius between 
+	birth and the end of the simulation. For discussion, see section 2 of 
+	Johnson et al. (2021) [2]_. 
+
+.. [1] Christensen et al. (2012), MNRAS, 425, 3058 
+.. [2] Johnson et al. (2021), in prep 
 """ 
 
 from __future__ import absolute_import 

@@ -50,6 +50,7 @@ The rate of enrichment from all previous episodes of star formation can be
 derived by integrating this equation over all ages: 
 
 .. math:: \dot{M}_x^\text{Ia} = 
+	\epsilon_x^\text{Ia} 
 	y_x^\text{Ia}(Z)\frac{
 	\int_0^t \dot{M}_*(t')R_\text{Ia}(t - t')dt'
 	}{
@@ -60,8 +61,8 @@ This can also be expressed as the star formation history up to a time :math:`t`
 weighted by the SN Ia rate. VICE approximates this equation as: 
 
 .. math:: \dot{M}_x^\text{Ia} \approx \frac{
-	\sum_i y_x^\text{Ia}(Z_\text{ISM}(i\Delta t)) \dot{M}_*(i\Delta t) 
-	R_\text{Ia}(t - i\Delta t) \Delta t 
+	\sum_i \epsilon_x^\text{Ia} y_x^\text{Ia}(Z_\text{ISM}(i\Delta t)) 
+	\dot{M}_*(i\Delta t) R_\text{Ia}(t - i\Delta t) \Delta t 
 	}{
 	\sum_i^{T_\text{Ia}} R_\text{Ia}(i\Delta t) \Delta t 
 	} 
@@ -93,8 +94,8 @@ Inserting the normalized rate into the equation for
 :math:`\dot{M}_x^\text{Ia}`: 
 
 .. math:: \dot{M}_x^\text{Ia} \approx 
-	\sum_i y_x^\text{Ia}(Z_\text{ISM}(i\Delta t)) \dot{M}_*(i\Delta t) 
-	R_\text{Ia}(t - i\Delta t) 
+	\sum_i \epsilon_x^\text{Ia} y_x^\text{Ia}(Z_\text{ISM}(i\Delta t)) 
+	\dot{M}_*(i\Delta t) R_\text{Ia}(t - i\Delta t) 
 
 VICE implements this normalization of :math:`R_\text{Ia}` at the beginning of 
 simulations due to the simplification of this expression introduced in doing 
@@ -133,7 +134,7 @@ over the star formation history, but as a summation over the stellar
 populations present in the zone: 
 
 .. math:: \dot{M}_x^\text{Ia} \approx \sum_i 
-	y_x^\text{Ia}(Z_i) M_i R_\text{Ia}(\tau_i) 
+	\epsilon_x^\text{Ia} y_x^\text{Ia}(Z_i) M_i R_\text{Ia}(\tau_i) 
 
 where :math:`(Z_i)`, :math:`M_i`, and :math:`\tau_i` are the metallicity, 
 initial mass, and age, respectively, of the :math:`i`'th star particle in a 

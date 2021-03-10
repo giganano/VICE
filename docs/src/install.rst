@@ -2,7 +2,7 @@
 Installing VICE 
 +++++++++++++++
 
-Binary installers of the latest version of VICE for python versions 3.5-3.8 
+Binary installers of the latest version of VICE for python versions 3.6-3.9 
 on Mac OS X and Linux operating systems can be found on PyPI_. We recommend 
 that VICE be installed in this manner by running ``pip install vice [--user]`` 
 from a bash terminal. Users should add the ``--user`` flag if they do not have 
@@ -23,7 +23,7 @@ __ `Installing from Source`_
 
 Users who have or would like to modify VICE's source code should conduct a 
 `from source installation`__; this also applies to users who would like to 
-install for a development version of python, such as 3.9. Installing from 
+install for a development version of python, such as 3.10. Installing from 
 source is also an alternative in the event that the PyPI_ installation fails 
 for some reason. If you have already installed VICE and would like help 
 getting started, usage guidelines and tutorials can be found 
@@ -84,7 +84,7 @@ are as follows:
 
 1. Cython_ >= 0.28.0 
 
-2. Python_ >= 3.5 
+2. Python_ >= 3.6 
 
 3. Make_ >= 3.81 
 
@@ -134,9 +134,9 @@ Following the installation, to run the tests and clean the source tree:
 	$ make clean 
 
 Please also note that ``make tests`` runs VICE's tests in the user's default 
-version of python. To force the tests to run in python 3, run 
-``make tests3``. Alternatively, the tests can be ran from within python 
-itself: 
+version of python. If your machine is defaulting to another version of 
+python, ``make tests3`` will run them in python 3 always. Alternatively, the 
+tests can be ran from within python itself: 
 
 .. code:: python 
 
@@ -387,6 +387,5 @@ Pass it to the ``rm`` command as well:
 If this process completed without any errors, then VICE was successfully 
 uninstalled. To double-check, rerunning ``which vice`` should now print 
 nothing, and attempting to import VICE into python should result in a 
-``ModuleNotFoundError`` for python versions 3.6 and newer, and an 
-``ImportError`` for earlier versions. 
+``ModuleNotFoundError``. 
 

@@ -5,7 +5,7 @@ functional yield attributes which return the same value as a numerical setting
 predict numerically similar results. 
 
 In practice, this tests passes with a percent difference in the predicted 
-masses of a few times 10^-4. 
+masses of less than a part per million. 
 """ 
 
 from ...core import singlezone 
@@ -39,6 +39,7 @@ def equivalence_test():
 	equivalence test for functional yields. 
 	""" 
 	def test(): 
+		agb.settings['o'] = "cristallo11" 
 		attrs = {
 			"name": 		"test", 
 			"elements": 	['o'], 

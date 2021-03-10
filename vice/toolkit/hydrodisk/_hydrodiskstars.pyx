@@ -40,7 +40,7 @@ cdef class c_hydrodiskstars:
 	documentation. 
 	""" 
 
-	def __cinit__(self, radbins, N = 1e5, mode = "linear", idcolumn = 0, 
+	def __cinit__(self, radbins, N = 1e5, mode = "diffusion", idcolumn = 0, 
 		tformcolumn = 1, rformcolumn = 2, rfinalcolumn = 3, zformcolumn = 4, 
 		zfinalcolumn = 5, v_radcolumn = 6, v_phicolumn = 7, v_zcolumn = 8, 
 		decomp_column = 9): 
@@ -120,7 +120,7 @@ will oversample these data.""" % (_N_STAR_PARTICLES_), ScienceWarning)
 					self._hds[0].rad_bins[zone + 1]) / 2 
 				if (isinstance(tform, numbers.Number) and 
 					isinstance(time, numbers.Number)): 
-					if abs(time - _END_TIME_) > 1.e-12: warnings.warn("""\
+					if time - _END_TIME_ > 1.e-12: warnings.warn("""\
 Simulations of galactic chemical evolution with the hydrodiskstars object for \
 timescales longer than %g Gyr are not supported. This is the maximum range of \
 star particle ages.""" % (_END_TIME_), ScienceWarning) 
@@ -156,7 +156,6 @@ Zone of formation: %d
 Time of formation: %.4e Gyr 
 Time in simulation: %.4e Gyr""" % (self.analog_data["id"][self.analog_index], 
 								zone, tform, time))
-							# raise ValueError("Radius out of bin range.")  
 				else: 
 					raise TypeError("""Time parameters must be numerical \
 values. Got: (%s, %s)""" % (type(tform), type(time))) 

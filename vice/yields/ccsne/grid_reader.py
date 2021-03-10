@@ -34,6 +34,8 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 	**Signature**: vice.yields.ccsne.table(element, study = "LC18", MoverH = 0, 
 	rotation = 0, wind = True, isotopic = False) 
 
+	.. versionadded:: 1.2.0 
+
 	Parameters 
 	----------
 	element : ``str`` [case-insensitive] 
@@ -53,8 +55,9 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 			- "WW95": Woosley & Weaver (1995) [6]_ 
 
 	MoverH : real number [default : 0] 
-		The total metallicity [M/H] of the exploding stars. There are only a 
-		handful of metallicities recognized by each study. 
+		The total metallicity [M/H] = :math:`\log_{10}(Z/Z_\odot)` of the 
+		exploding stars. There are only a handful of metallicities recognized 
+		by each study. 
 
 		Keywords and their Associated Metallicities: 
 
@@ -128,7 +131,8 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 	Example Code 
 	------------
 	>>> import vice 
-	>>> vice.yields.ccsne.table('o') 
+	>>> example = vice.yields.ccsne.table('o') 
+	>>> example 
 	vice.dataframe{
 		13.0 -----------> 0.247071034
 		15.0 -----------> 0.585730308
@@ -140,6 +144,20 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 		80.0 -----------> 0.24224373600000002
 		120.0 ----------> 0.368598602
 	} 
+	>>> example.masses 
+	(13.0, 15.0, 20.0, 25.0, 30.0, 40.0, 60.0, 80.0, 120.0) 
+	>>> example[20.0] 
+	1.256452301 
+	>>> [example[i] for i in example.masses] 
+	[0.2470691117,
+	 0.5857306186,
+	 1.256464291,
+	 2.476488843,
+	 0.073968147,
+	 0.087475695,
+	 0.149385561,
+	 0.24224373600000002,
+	 0.368598602]
 	>>> vice.yields.ccsne.table('o', isotopic = True) 
 	vice.dataframe{
 		13 -------------> {'o16': 0.24337, 'o17': 5.5634e-05, 'o18': 0.0036454}
@@ -152,6 +170,26 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 		80 -------------> {'o16': 0.24192, 'o17': 6.1316e-05, 'o18': 0.00026242}
 		120 ------------> {'o16': 0.36819, 'o17': 7.9192e-05, 'o18': 0.00032941}
 	} 
+	>>> example[20] 
+	vice.dataframe{
+	    o16 ------------> 1.250112
+	    o17 ------------> 4.6201e-05
+	    o18 ------------> 0.0063060899999999994
+	}
+	>>> example[20]['o16'] 
+	1.250112 
+	>>> example['o16'] 
+	vice.dataframe{
+	    13.0 -----------> 0.2433681
+	    15.0 -----------> 0.5823402999999999
+	    20.0 -----------> 1.250112
+	    25.0 -----------> 2.472433
+	    30.0 -----------> 0.073782
+	    40.0 -----------> 0.087253
+	    60.0 -----------> 0.1491
+	    80.0 -----------> 0.24192
+	    120.0 ----------> 0.36819
+	}
 
 	.. [1] Limongi & Chieffi (2018), ApJS, 237, 13 
 	.. [2] Sukhbold et al. (2016), ApJ, 821, 38 

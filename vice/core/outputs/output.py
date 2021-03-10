@@ -290,7 +290,11 @@ class output:
 
 		The asymptotic giant branch star yields employed in the simulation. 
 
-		.. note:: This dataframe is not be customizable. 
+		.. versionadded:: 1.2.0 
+			Prior to version 1.2.0, the ``singlezone`` object required an 
+			attribute ``agb_model``, denoting which table of yields to adopt. 
+
+		.. note:: This dataframe is not customizable. 
 
 		.. seealso:: vice.yields.agb.settings 
 
@@ -314,7 +318,7 @@ class output:
 
 		The core-collapse supernova yields employed in the simulation. 
 
-		.. note:: This dataframe will not be customizable 
+		.. note:: This dataframe is not customizable 
 
 		.. seealso:: vice.yields.ccsne.settings 
 
@@ -338,7 +342,7 @@ class output:
 
 		The type Ia supernova yields employed in the simulation. 
 
-		.. note:: This dataframe will not be customizable. 
+		.. note:: This dataframe is not customizable. 
 
 		.. seealso:: vice.yields.sneia.settings 
 
@@ -394,8 +398,8 @@ class output:
 		-----
 		This function is **NOT** intended to generate publication quality 
 		plots for users. It is included purely as a convenience function to 
-		allow visualization and inspection of simulation output immediately 
-		with only one line of code. 
+		allow "quick and dirty" data visualization and inspection of simulation 
+		outputs immediately with only one line of code. 
 
 		Example Code 
 		------------

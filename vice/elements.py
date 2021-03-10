@@ -329,8 +329,6 @@ class element:
 		The one- or two-letter symbol of this element as it appears on the 
 		periodic table. 
 
-		.. versionadded:: 1.1.0 
-
 		Example Code 
 		------------
 		>>> import vice 
@@ -359,8 +357,6 @@ Got: %s""" % (type(value)))
 
 		The full name of the element in English. 
 
-		.. versionadded:: 1.1.0 
-
 		Example Code 
 		------------
 		>>> import vice 
@@ -379,8 +375,6 @@ Got: %s""" % (type(value)))
 		The current yield settings from core collapse and type Ia supernovae 
 		and asymptotic giant branch stars. See ach attribute's docstring for 
 		more information. 
-
-		.. versionadded:: 1.1.0 
 
 		Attributes 
 		----------
@@ -409,7 +403,13 @@ Got: %s""" % (type(value)))
 
 		The atomic number (protons only) of the element. 
 
-		.. versionadded:: 1.1.0 
+		Example Code 
+		------------
+		>>> import vice 
+		>>> vice.elements.Fe.atomic_number 
+			26 
+		>>> vice.elements.Sr.atomic_number 
+			38 
 		""" 
 		return atomic_number[self._symbol] 
 
@@ -422,8 +422,6 @@ Got: %s""" % (type(value)))
 		nucleosynthesis, according to the standard model [1]_ [2]_ [3]_. This 
 		is zero for all elements with the exception of helium, for which it is 
 		0.24672. 
-
-		.. versionadded:: 1.1.0 
 
 		Example Code 
 		------------
@@ -447,8 +445,6 @@ Got: %s""" % (type(value)))
 		The abundance by mass of this element in the sun as reported by 
 		Asplund et al. (2009) [1]_. 
 
-		.. versionadded:: 1.1.0 
-
 		Example Code 
 		------------
 		>>> import vice 
@@ -468,8 +464,6 @@ Got: %s""" % (type(value)))
 
 		Strings denoting the dominant sources of enrichment for this 
 		element as reported by Johnson (2019) [1]_. 
-
-		.. versionadded:: 1.1.0 
 
 		Example Code 
 		------------
@@ -561,6 +555,10 @@ class yields:
 		Type : ``str`` [case-insensitive] or <function> 
 
 		.. versionadded:: 1.2.0 
+			Prior to version 1.2.0, individual functions and objects required 
+			an attribute or keyword argument ``agb_model``. With version 1.2.0, 
+			this was changed to a global yield setting like the supernova 
+			yields. 
 
 		The current yield setting for asymptotic giant branch stars. If this 
 		is a string, it will be interpreted as a keyword denoting the built-in 
@@ -607,8 +605,6 @@ class yields:
 		metallicity-independent yield. If it is a function, it must accept 
 		the metallicity by mass :math:`Z` as the only parameter. 
 
-		.. versionadded:: 1.1.0 
-
 		These values can be calculated by calling vice.yields.ccsne.fractional. 
 
 		.. note:: Modifying yield settings here is equivalent to modifying 
@@ -641,8 +637,6 @@ class yields:
 		a real number, it will be interpreted as a constant, 
 		metallicity-independent yield. If it is a function, it must accept 
 		the metallicity by mass :math:`Z` as the only parameter. 
-
-		.. versionadded:: 1.1.0 
 
 		These values can be calculated by calling vice.yields.sneia.fractional. 
 

@@ -74,13 +74,14 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 
 	Notes 
 	-----
-	.. note:: The nucleosynthetic yield tables built into VICE do not include 
-		any treatment of radioactive isotopes. The mass yield of the given 
-		element will be reported as the sum of stable isotopes only. In the 
-		case of elements with a significant nucleosynthetic contribution from 
-		radioactive decay products, the values returned from this function 
-		should be interpreted as lower bounds rather than estimates of the 
-		true yield. 
+	The yield tables built into VICE include a treatment for only two 
+	radioactive isotopes. The mass of nickel-56 in all cases is added to the 
+	iron-56 yield, and the mass of aluminum-26 is added to the magnesium-26 
+	yield always. Otherwise, the mass yield of the given element will be 
+	reported as the sum of stable isotopes only. In the case of other elements 
+	with a significant nucleosynthetic contribution from radioactive decay 
+	products, the values returned from this function should be interpreted as 
+	lower bounds rather than estimates of the true yield. 
 
 	Example Code 
 	------------
@@ -222,13 +223,14 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 	where :math:`M_x` is the value returned by vice.yields.sneia.single, and 
 	:math:`N_\text{Ia}/M_\star` is specified by the parameter ``n``. 
 
-	.. note:: The nucleosynthetic yield tables built into VICE do not include 
-		any treatment of radioactive isotopes. This function evaluates the 
-		solution to the above equation given the total mass yield of stable 
-		isotopes only. In the case of elements with a significant 
-		nucleosynthetic contribution from radioactive decay products, the 
-		values returned from this function should be interpreted as lower 
-		bounds rather than estimates of the true yield. 
+	The yield tables built into VICE include a treatment for only two 
+	radioactive isotopes. The mass of nickel-56 in all cases is added to the 
+	iron-56 yield, and the mass of aluminum-26 is added to the magnesium-26 
+	yield always. Otherwise, the mass yield of the given element will be 
+	reported as the sum of stable isotopes only. In the case of other elements 
+	with a significant nucleosynthetic contribution from radioactive decay 
+	products, the values returned from this function should be interpreted as 
+	lower bounds rather than estimates of the true yield. 
 
 	Example Code 
 	------------

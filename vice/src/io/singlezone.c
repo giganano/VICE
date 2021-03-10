@@ -136,66 +136,6 @@ extern void write_history_header(SINGLEZONE sz) {
  */ 
 extern void write_singlezone_history(SINGLEZONE sz) {
 
-	#if 0 
-	/* 
-	 * Change Notes 
-	 * ============ 
-	 * Calculation of ISM metallicities now moved to output handling functions. 
-	 * The primary motivation for this was to remove overhead from calculating 
-	 * and recording every [X/Y] combination of abundance ratios. VICE still 
-	 * does this automatically, but from the output instead of during 
-	 * simulation. This significantly improves the speed of simulations with 
-	 * high n_elements. 
-	 */ 
-
-	/* 
-	 * Write the evolutionary parameters 
-	 * 
-	 * Notes 
-	 * ===== 
-	 * Factor of 1e9 on star formation rate, infall rate, and outflow rate 
-	 * converts from Msun/Gyr to Msun/yr to report quantities in conventional 
-	 * units. 
-	 * 
-	 * mass_recycled expected a second argument of type ELEMENT *, but 
-	 * determines the total ISM mass recycled in the case of NULL. 
-	 */ 
-	fprintf(sz.history_writer, "%e\t", sz.current_time); 
-	fprintf(sz.history_writer, "%e\t", (*sz.ism).mass); 
-	fprintf(sz.history_writer, "%e\t", singlezone_stellar_mass(sz)); 
-	fprintf(sz.history_writer, "%e\t", (*sz.ism).star_formation_rate / 1e9); 
-	fprintf(sz.history_writer, "%e\t", (*sz.ism).infall_rate / 1e9); 
-	fprintf(sz.history_writer, "%e\t", get_outflow_rate(sz) / 1e9); 
-	fprintf(sz.history_writer, "%e\t", (*sz.ism).eta[sz.timestep]); 
-	if ((*sz.ssp).continuous) { 
-		/* effective recycling factor in case of continuous recycling */ 
-		fprintf(sz.history_writer, "%e\t", mass_recycled(sz, NULL) / 
-			((*sz.ism).star_formation_rate * sz.dt)); 
-	} else { 
-		/* instantaneous recycling parameter otherwise */ 
-		fprintf(sz.history_writer, "%e\t", (*sz.ssp).R0); 
-	} 
-	unsigned int i;
-	for (i = 0; i < sz.n_elements; i++) {
-		/* infall metallicity */ 
-		fprintf(sz.history_writer, "%e\t", (*sz.elements[i]).Zin[sz.timestep]); 
-	} 
-	double *unretained = singlezone_unretained(sz); 
-	for (i = 0; i < sz.n_elements; i++) { 
-		/* outflow metallicity = enhancement factor x ISM metallicity */ 
-		fprintf(sz.history_writer, "%e\t", 
-			// (*sz.ism).enh[sz.timestep] * (*sz.elements[i]).Z[sz.timestep]); 
-			(*sz.ism).enh[sz.timestep] * (*sz.elements[i]).Z[sz.timestep] + 
-			unretained[i] / get_outflow_rate(sz)); 
-	} 
-	free(unretained); 
-	for (i = 0; i < sz.n_elements; i++) {
-		/* total ISM mass of each element */ 
-		fprintf(sz.history_writer, "%e\t", (*sz.elements[i]).mass); 
-	} 
-	fprintf(sz.history_writer, "\n"); 
-	#endif 
-
 	double *unretained = singlezone_unretained(sz); 
 	write_zone_history(sz, singlezone_stellar_mass(sz), mass_recycled(sz, NULL), 
 		unretained); 
@@ -229,6 +169,11 @@ extern void write_zone_history(SINGLEZONE sz, double mstar,
 	 * does this automatically, but from the output instead of during 
 	 * simulation. This significantly improves the speed of simulations with 
 	 * high n_elements. 
+	 * 
+	 * This function has been generalized to write the output for a given zone 
+	 * in both singlezone and multizone models. The parameters which may be 
+	 * different between the two not already accessible via their structs are 
+	 * accepted as parameters here. 
 	 */ 
 
 	/* 
@@ -239,47 +184,52 @@ extern void write_zone_history(SINGLEZONE sz, double mstar,
 	 * Factor of 1e9 on star formation rate, infall rate, and outflow rate 
 	 * converts from Msun/Gyr to Msun/yr to report quantities in conventional 
 	 * units. 
-	 * 
-	 * mass_recycled expected a second argument of type ELEMENT *, but 
-	 * determines the total ISM mass recycled in the case of NULL. 
 	 */ 
 
-	fprintf(sz.history_writer, "%e\t", sz.current_time); 
-	fprintf(sz.history_writer, "%e\t", (*sz.ism).mass); 
-	fprintf(sz.history_writer, "%e\t", mstar); 
-	fprintf(sz.history_writer, "%e\t", (*sz.ism).star_formation_rate / 1e9); 
-	fprintf(sz.history_writer, "%e\t", (*sz.ism).infall_rate / 1e9); 
-	fprintf(sz.history_writer, "%e\t", 
-		(get_outflow_rate(sz) + sum(unretained, sz.n_elements)) / 1e9); 
-	fprintf(sz.history_writer, "%e\t", (*sz.ism).eta[sz.timestep]); 
-	if ((*sz.ssp).continuous) { 
-		/* effective recycling factor in case of continuous recycling */ 
-		fprintf(sz.history_writer, "%e\t", mass_recycled / 
-			((*sz.ism).star_formation_rate * sz.dt)); 
-	} else { 
-		/* instantaneous recycling parameter otherwise */ 
-		fprintf(sz.history_writer, "%e\t", (*sz.ssp).R0); 
-	} 
-	unsigned int i;
-	for (i = 0; i < sz.n_elements; i++) {
-		/* infall metallicity */ 
-		fprintf(sz.history_writer, "%e\t", (*sz.elements[i]).Zin[sz.timestep]); 
-	} 
-	for (i = 0; i < sz.n_elements; i++) { 
-		/* outflow metallicity = enhancement factor x ISM metallicity */ 
+	if (sz.current_time <= sz.output_times[sz.n_outputs - 1l]) {
+
+		/* 
+		 * Only write output if the time is actually in the window the user 
+		 * specified. Although it's a minor issue, this will prevent extra 
+		 * timesteps from being written to the output file. 
+		 */ 
+
+		fprintf(sz.history_writer, "%e\t", sz.current_time); 
+		fprintf(sz.history_writer, "%e\t", (*sz.ism).mass); 
+		fprintf(sz.history_writer, "%e\t", mstar); 
+		fprintf(sz.history_writer, "%e\t", (*sz.ism).star_formation_rate / 1e9); 
+		fprintf(sz.history_writer, "%e\t", (*sz.ism).infall_rate / 1e9); 
 		fprintf(sz.history_writer, "%e\t", 
-			((*sz.ism).enh[sz.timestep] * (*sz.elements[i]).Z[sz.timestep] * 
-				get_outflow_rate(sz) + unretained[i]) / 
-			(get_outflow_rate(sz) + sum(unretained, sz.n_elements))); 
-			// (*sz.ism).enh[sz.timestep] * (*sz.elements[i]).Z[sz.timestep]); 
-			// (*sz.ism).enh[sz.timestep] * (*sz.elements[i]).Z[sz.timestep] + 
-			// unretained[i] / get_outflow_rate(sz)); 
-	} 
-	for (i = 0; i < sz.n_elements; i++) {
-		/* total ISM mass of each element */ 
-		fprintf(sz.history_writer, "%e\t", (*sz.elements[i]).mass); 
-	} 
-	fprintf(sz.history_writer, "\n"); 
+			(get_outflow_rate(sz) + sum(unretained, sz.n_elements)) / 1e9); 
+		fprintf(sz.history_writer, "%e\t", (*sz.ism).eta[sz.timestep]); 
+		if ((*sz.ssp).continuous) { 
+			/* effective recycling factor in case of continuous recycling */ 
+			fprintf(sz.history_writer, "%e\t", mass_recycled / 
+				((*sz.ism).star_formation_rate * sz.dt)); 
+		} else { 
+			/* instantaneous recycling parameter otherwise */ 
+			fprintf(sz.history_writer, "%e\t", (*sz.ssp).R0); 
+		} 
+		unsigned int i;
+		for (i = 0; i < sz.n_elements; i++) {
+			/* infall metallicity */ 
+			fprintf(sz.history_writer, "%e\t", 
+				(*sz.elements[i]).Zin[sz.timestep]); 
+		} 
+		for (i = 0; i < sz.n_elements; i++) { 
+			/* outflow metallicity = enhancement factor x ISM metallicity */ 
+			fprintf(sz.history_writer, "%e\t", 
+				((*sz.ism).enh[sz.timestep] * (*sz.elements[i]).Z[sz.timestep] * 
+					get_outflow_rate(sz) + unretained[i]) / 
+				(get_outflow_rate(sz) + sum(unretained, sz.n_elements))); 
+		} 
+		for (i = 0; i < sz.n_elements; i++) {
+			/* total ISM mass of each element */ 
+			fprintf(sz.history_writer, "%e\t", (*sz.elements[i]).mass); 
+		} 
+		fprintf(sz.history_writer, "\n"); 
+
+	} else {} 
 
 }
 

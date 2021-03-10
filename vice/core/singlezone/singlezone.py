@@ -77,6 +77,10 @@ class singlezone:
 		- "kroupa" [1]_ 
 		- "salpeter" [2]_ 
 
+		.. versionadded:: 1.2.0 
+			Prior to version 1.2.0, only the built-in Kroupa and Salpeter IMFs 
+			were supported. 
+
 	eta : real number [default : 2.5] 
 		The mass-loading parameter: the ratio of outflow to star formation 
 		rates. This changes when the attribute ``smoothing`` is nonzero. 
@@ -112,19 +116,31 @@ class singlezone:
 	tau_star : real number or ``<function>`` [default : 2.0] 
 		The star formation rate per unit gas mass in the galaxy in Gyr. This 
 		can be either a number which will be treated as a constant, or a 
-		function of time in Gyr. This changes when the attribute 
-		``schmidt`` == True. 
+		function of time in Gyr, whose behavior can be modified when the 
+		attribute ``schmidt == True``. Can also be a function which accepts a 
+		second parameter in addition to time in Gyr; when ``mode == "ifr"`` or 
+		``"gas"``, this will be interpreted as the gas mass in :math:`M_\odot`, 
+		and when ``mode == "sfr"``, it will be interpreted as the star 
+		formation rate in :math:`M_\odot/yr`. 
+
+		.. versionadded:: 1.2.0 
+			Prior to version 1.2.0, functions could only accept time in Gyr as 
+			the new parameter. 
+
 	dt : real number [default : 0.01] 
 		The timestep size in Gyr. 
 	schmidt : ``bool`` [default : False] 
 		A boolean describing whether or not to implement a gas-dependent star 
-		formation efficiency. 
+		formation efficiency. Overridden when the attribute ``tau_star`` is a 
+		function of two variables. 
 	schmidt_index : real number [default : 0.5] 
 		The power-law index of gas-dependent star formation efficiency. 
+		Overridden when the attribute ``tau_star`` is a function of two 
+		variables. 
 	MgSchmidt : real umber [default : 6.0e+09] 
 		The normalization of the gas-supply when the attribute 
-		``schmidt = True``. 
-
+		``schmidt = True``. Overridden when the attribute ``tau_star`` is a 
+		function of two variables. 
 	m_upper : real number [default : 100] 
 		The upper mass limit on star formation in :math:`M_\odot`. 
 	m_lower : real number [default : 0.08] 
@@ -659,7 +675,8 @@ ran.""" % (i, j), UserWarning)
 			the absolute abundances of these elements. However, if these 
 			nuclei are assumed to be produced promptly following the formation 
 			of a single stellar population, the yield can be added to the 
-			yield from core collapse supernovae [2]_. 
+			yield from core collapse supernovae, which in theory can describe 
+			the total yield from all prompt sources [2]_. 
 
 		Example Code 
 		------------
@@ -1114,7 +1131,7 @@ ran.""" % (i, j), UserWarning)
 
 			This parameter only matters when the simulation is ran in infall 
 			mode (i.e. ``mode`` == "ifr"). In gas mode, ``func(0)`` specifies 
-			the initla gas supply, and in star formation mode, it is 
+			the initial gas supply, and in star formation mode, it is 
 			``func(0) * tau_star(0)`` (modulo the prefactors imposed by 
 			gas-dependent star formation efficiency, if applicable). 
 
@@ -1138,8 +1155,8 @@ ran.""" % (i, j), UserWarning)
 
 		Default : 0.0 
 
-		The outflow smoothing in Gyr (Johnson & Weinberg 2020 [1]_). This is 
-		the timescale on which the star formation rate is time-averaged 
+		The outflow smoothing timescale in Gyr (Johnson & Weinberg 2020 [1]_). 
+		This is the timescale on which the star formation rate is time-averaged 
 		before determining the outflow rate via the mass loading factor 
 		(attribute ``eta``). For an outflow rate :math:`\dot{M}_\text{out}` 
 		and a star formation rate :math:`\dot{M}_\star` with a smoothing time 
@@ -1222,10 +1239,9 @@ ran.""" % (i, j), UserWarning)
 		of which will always be time in Gyr. In infall and gas modes, the 
 		second parameter will always be interpreted as the gas mass in 
 		:math:`M_\odot`, but in star formation mode, it will be interpreted as 
-		the star formation rate in :math:`\odot` yr:math:`^{-1}`. This 
-		approach allows this attribute to vary with either the gas mass or the 
-		star formation rate in simulation (depending on which mode the model 
-		is ran in). 
+		the star formation rate in :math:`M_\odot/yr`. This approach allows 
+		this attribute to vary with either the gas mass or the star formation 
+		rate in simulation (depending on which mode the model is ran in). 
 
 		.. versionadded:: 1.2.0 
 			Prior to version 1.2.0, a functional form for this attribute had 
@@ -1366,6 +1382,9 @@ ran.""" % (i, j), UserWarning)
 		If False, this parameter does not impact the star formation efficiency 
 		that the user has specified. 
 
+		.. note:: This attribute is irrelevant when the attribute ``tau_star`` 
+			is a function of two variables. 
+
 		.. seealso:: 
 			- vice.singlezone.tau_star 
 			- vice.singlezone.schmidt_index 
@@ -1403,13 +1422,16 @@ ran.""" % (i, j), UserWarning)
 
 		where :math:`\alpha` is specified by the attribute ``schmidt_index``. 
 
+		.. note:: This attribute is irrelevant when the attribute ``tau_star`` 
+			is a function of two variables. 
+
 		.. tip:: 
 
 			In practice, this quantity should be comparable to a typical gas 
 			supply of the simulated zone so that the actual star formation 
 			efficiency at a given timestep is near the user-specified value. 
 
-		.. seealso:: `
+		.. seealso:: 
 			- vice.singlezone.tau_star 
 			- vice.singlezone.schmidt 
 			- vice.singlezone.schmidt_index 
@@ -1437,6 +1459,9 @@ ran.""" % (i, j), UserWarning)
 		applicable: 
 
 		.. math:: \tau_\star^{-1} \sim M_g^{\alpha} 
+
+		.. note:: This attribute is irrelevant when the attribute ``tau_star`` 
+			is a function of two variables. 
 
 		.. note:: 
 
@@ -1549,12 +1574,11 @@ ran.""" % (i, j), UserWarning)
 		.. note:: 
 
 			The default value is the metallicity calculated by Asplund et al. 
-			(2009) [1]_. VICE adopts the Asplund et al. (2009) measurements 
-			on their element-by-element basis in calculating [X/H] and 
-			[X/Y] in simulations; it is thus recommended that users adopt 
-			these measurements as well so that the adopted solar composition 
-			is self-consistent. This however has no qualitative impact on the 
-			behavior of the simulation. 
+			(2009) [1]_; VICE by default adopts the Asplund et al. (2009) 
+			measurements on their element-by-element basis in calculating [X/H] 
+			and [X/Y] in simulations. Users who wish to adopt a different model 
+			for the composition of the sun should modify **both** this value 
+			**and** the element-by-element entires in ``vice.solar_z``. 
 
 		Example Code 
 		------------

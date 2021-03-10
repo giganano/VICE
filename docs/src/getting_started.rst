@@ -1,8 +1,9 @@
 
 Getting Started 
 ===============
-Any questions regarding usage of VICE or its implementation can be directed 
-to the primary author (James W. Johnson: giganano9@gmail.com). 
+VICE's core developers are happy to consult with scientists looking to 
+incorporate it into their research. Any questions users may have can be 
+emailed to the primary author (James W. Johnson: giganano9@gmail.com). 
 
 Tutorial 
 --------

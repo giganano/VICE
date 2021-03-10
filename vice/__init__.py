@@ -3,10 +3,10 @@ VICE: Versatile Integrator for Chemical Evolution
 
 Provides
 --------
-- A dataframe object meant for case-insensitive lookup 
-- Simulations of galactic chemical evolution models 
+- Simulations of one-zone and multi-zone galactic chemical evolution models 
 - Simulations of nucleosynthesis from single stellar populations 
 - Built-in yield tables from nucleosynthesis studies 
+- A dataframe object meant for case-insensitive lookup 
 
 How to Access the Documentation: 
 --------------------------------
@@ -21,10 +21,8 @@ in the default web browser.
 
 First time users should go through VICE's QuickStartTutorial jupyter notebook, 
 available under examples/ in the git repository. This can be launched from 
-the command line by running ``vice --tutorial``. 
-
-Example scripts can be found under examples/ in the git repository at 
-http://github.com/giganano/VICE. 
+the command line by running ``vice --tutorial``. Other example scripts can 
+be found there as well. 
 
 Contents 
 --------

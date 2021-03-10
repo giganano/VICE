@@ -1,5 +1,5 @@
 r"""
-Seitenzahl et al. (2013), MNRAS, 429, 1156 typa Ia supernova (SN Ia) yields 
+Seitenzahl et al. (2013), MNRAS, 429, 1156 Type Ia supernova (SN Ia) yields 
 
 **Signature**: from vice.yields.sneia import seitenzahl13 
 

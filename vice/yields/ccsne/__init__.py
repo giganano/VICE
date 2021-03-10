@@ -5,9 +5,9 @@ Calculate IMF-averaged yields and modify yield settings for use in simulations.
 This package provides tables from the following nucleosynthetic yield studies: 
 
 	- Limongi & Chieffi (2018) [1]_ 
-	- Sukhbold et al. (2016), [2]_ 
+	- Sukhbold et al. (2016) [2]_ 
 	- Chieffi & Limongi (2013) [3]_ 
-	- Nomoto, Kobayashi & Tominaga (2013), ARA&A [4]_ 
+	- Nomoto, Kobayashi & Tominaga (2013) [4]_ 
 	- Chieffi & Limongi (2004) [5]_ 
 	- Woosley & Weaver (1995) [6]_ 
 
@@ -23,17 +23,18 @@ settings : ``dataframe``
 engines : module 
 	Models for massive star explodability as a function of progenitor mass for 
 	use in yield calculations. 
-LC18 : yield preset 
+LC18 : module 
 	Sets yields according to the Limongi & Chieffi (2018) study. 
-S16 : yield preset 
-	Sets the yields according to the Sukhbold et al. (2016) study. 
-CL13 : yield preset 
+S16 : module 
+	Sets the yields according to one of the explosion engines in the 
+	Sukhbold et al. (2016) study. 
+CL13 : module 
 	Sets yields according to the Chieffi & Limongi (2013) study. 
-NKT13 : yield preset 
+NKT13 : module 
 	Sets yields according to the Nomoto, Kobayashi & Tominaga (2013) study. 
-CL04 : yield preset 
+CL04 : module 
 	Sets yields according to the Chieffi & Limongi (2004) study. 
-WW95 : yield preset 
+WW95 : module 
 	Sets yields according to the Woosley & Weaver (1995) study. 
 
 .. [1] Limongi & Chieffi (2018), ApJS, 237, 13 

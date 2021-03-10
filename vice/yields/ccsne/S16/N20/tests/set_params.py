@@ -1,20 +1,20 @@
 
 from __future__ import absolute_import 
-from ....._globals import _RECOGNIZED_ELEMENTS_ 
-from .....testing import unittest 
-from ... import fractional 
-from ... import settings 
+from ......_globals import _RECOGNIZED_ELEMENTS_ 
+from ......testing import unittest 
+from .... import fractional 
+from .... import settings 
 
 
 @unittest 
 def test(): 
 	r""" 
-	Run the unit test on the set_params function in this module 
+	Run the unit test on the set_params function in this module. 
 	""" 
 	def test_set_params(): 
 		kwargs = {
 			"m_lower": 		0.3, 
-			"m_upper": 		80, 
+			"m_upper":		80, 
 			"IMF": 			"salpeter" 
 		} 
 		try: 
@@ -24,9 +24,9 @@ def test():
 			return False 
 		status = True 
 		for i in _RECOGNIZED_ELEMENTS_: 
-			status &= settings[i] == fractional(i, study = "S16/W18", 
+			status &= settings[i] == fractional(i, study = "S16/N20", 
 				**kwargs)[0] 
 			if not status: break 
 		return status 
-	return ["vice.yields.ccsne.S16.set_params", test_set_params] 
+	return ["vice.yields.ccsne.S16.N20.set_params", test_set_params] 
 
