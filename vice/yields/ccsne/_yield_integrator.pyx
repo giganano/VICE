@@ -78,6 +78,16 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			- "CL04": Chieffi & Limongi (2004) [5]_ 
 			- "WW95": Woosley & Weaver (1995) [6]_ 
 
+		.. note:: The S16/W18F yields force a supernova explosion in the 
+			progenitors which otherwise did not explode in the S16/W18 set, 
+			producing a yield sample for which all progenitors explode. This 
+			allows new black hole landscapes to be used in computing yields 
+			under similar explosion physics; the IMF-averaged S16/W18 yields 
+			are similar to what is computed with the S16/W18F yields and 
+			S16/W18 explodability function (see below). 
+			For details on the forced explosion models, see discussion in 
+			Griffith et al. (2021) [7]_. 
+
 	MoverH : real number [default : 0] 
 		The total metallicity [M/H] = :math:`\log_{10}(Z/Z_\odot)` of the 
 		exploding stars. There are only a handful of metallicities recognized 
@@ -117,6 +127,14 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			popular mathematical forms for the black hole landscape, both 
 			simple and complex. 
 
+		.. note:: Explodability criteria will be overspecified when calculating 
+			yields from the Limongi & Chieffi (2018) study, in which stars 
+			above 25 :math:`M_\odot` were not forced to explode. The same 
+			applies to the W18 and N20 yield sets from the Sukhbold et al. 
+			(2016) study, for which the reported yields already reflect the 
+			more complicated black hole landscape predicted by the explosion 
+			engine. 
+
 	wind : bool [default : ``True``] 
 		If True, the stellar wind contribution to the yield will be included 
 		in the yield calculation. If False, the calculation will run 
@@ -138,7 +156,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 
 	IMF : ``str`` [case-insensitive] or <function> [default : "kroupa"] 
 		The stellar initial mass function (IMF) to assume. Strings denote 
-		built-in IMFs, which must be either "Kroupa" [7]_ or "Salpeter" [8]_. 
+		built-in IMFs, which must be either "Kroupa" [8]_ or "Salpeter" [9]_. 
 		Functions must accept stellar mass in :math:`M_\odot` as the only 
 		numerical paraneter and will be interpreted as a custom, arbitrary 
 		stellar IMF. 
@@ -158,7 +176,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			- "euler" 
 
 		.. note:: These methods of quadrature are implemented according to 
-			Chapter 4 of Press, Teukolsky, Vetterling & Flannery (2007) [9]_. 
+			Chapter 4 of Press, Teukolsky, Vetterling & Flannery (2007) [10]_. 
 
 	m_lower : real number [default : 0.08] 
 		The lower mass limit on star formation in :math:`M_\odot`. 
@@ -172,7 +190,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		The minimum number of bins in quadrature. 
 	Nmax : real number [default : 2.0e+08] 
 		The maximum number of bins in quadrature. Included as a failsafe 
-		against solutions that din't converge numerically. 
+		against solutions that don't converge numerically. 
 
 	Returns 
 	-------
@@ -207,9 +225,8 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		- 	Explodability criteria specified in combination with either the 
 			Limongi & Chieffi (2018) or Sukhbold et al. (2016) study. 
 		- 	``explodability`` is not ``None`` and ``study == "LC18"``, 
-			``"S16/N20"``, ``"S16/W18"``, or ``"S16/W18F"``. The mass yields 
-			these studies report are already under a given model for the black 
-			hole landscape. 
+			``"S16/N20"``, ``"S16/W18"``. The mass yields these studies report 
+			are already under a given model for the black hole landscape. 
 		- 	``wind = False`` and ``study`` is anything other than 
 			LC18 or S16. These are the only studies for which wind yields were 
 			reported separate from explosive yields. 
@@ -241,23 +258,15 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	data. If the keyword arg ``net = False``, :math:`Z_{x,\text{prog}}` is 
 	simply set to zero to calculate a gross yield. 
 
-	.. note:: Explodability criteria will be overspecified when calculating 
-		yields from the Limongi & Chieffi (2018) study, in which stars above 
-		25 :math:`M_\odot` were not forced to explode. The yields they report 
-		at these masses are only that ejected in the wind. The same applies to 
-		the W18 and N20 yield sets from the Sukhbold et al. (2016) study, for 
-		which the reported yields already reflect the more complicated black 
-		hole landscape predicted by the explosion engine. 
-
-	.. note:: The yield tables built into VICE include a treatment for only 
-		two radioactive isotopes. The mass of nickel-56 in all cases is added 
-		to the iron-56 yield, and the mass of aluminum-26 is added to the 
-		magnesium-26 yield always. Furthermore, the above equation is 
-		evaluated directly from the total mass yield of stable isotopes only. 
-		In this regard, yields computed by this function for any other elements 
-		with significant contributions to its nucleosynthesis from radioactive 
-		decay products should be interpreted as lower bounds rather than 
-		estimates of the true nucleosynthetic yield. 
+	The yield tables built into VICE include a treatment for only two 
+	radioactive isotopes. The mass of nickel-56 in all cases is added to the 
+	iron-56 yield, and the mass of aluminum-26 is added to the magnesium-26 
+	yield always. Furthermore, the above equation is evaluated directly from 
+	the total mass yield of stable isotopes only. In this regard, yields 
+	computed by this function for any other elements with significant 
+	contributions to its nucleosynthesis from radioactive decay products should 
+	be interpreted as lower bounds rather than estimates of the true 
+	nucleosynthetic yield. 
 
 	Example Code 
 	------------
@@ -276,9 +285,10 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	.. [4] Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457 
 	.. [5] Chieffi & Limongi (2004), ApJ, 608, 405 
 	.. [6] Woosley & Weaver (1995), ApJ, 101, 181 
-	.. [7] Kroupa (2001), MNRAS, 231, 322 
-	.. [8] Salpeter (1955), ApJ, 121, 161 
-	.. [9] Press, Teukolsky, Vetterling & Flannery (2007), Numerical Recipes, 
+	.. [7] Griffith et al. (2021), in prep 
+	.. [8] Kroupa (2001), MNRAS, 231, 322 
+	.. [9] Salpeter (1955), ApJ, 121, 161 
+	.. [10] Press, Teukolsky, Vetterling & Flannery (2007), Numerical Recipes, 
 		Cambridge University Press 
 	""" 
 
@@ -339,12 +349,10 @@ smaller than maximum number of bins.""")
 	elif callable(explodability): 
 		exp_cb = callback1_nan_inf(explodability) 
 		callback_1arg_setup(explodability_cb, exp_cb) 
-		if study.upper() in ["LC18", "S16/N20", "S16/W18", "S16/W18F"]: 
-			warnings.warn("""\
-Limongi & Chieffi (2018) and Sukhbold et al. (2016) yields are already \
-reported under a given black hole landscape. Stellar explodability is \
-over-specified in this calculation.""", ScienceWarning) 
-		else: pass 
+		if study.upper() in ["LC18", "S16/N20", "S16/W18"]: warnings.warn("""\
+The %s yields are already reported under a given black hole landscape. Stellar \
+explodability is over-specified in this calculation.""" % (
+			_NAMES_[study.upper()]), ScienceWarning) 
 	else: 
 		raise TypeError("""Explodability must be either NoneType or a callable \
 object. Got: %s""" % (type(explodability))) 
@@ -420,12 +428,6 @@ these yields of iron peak elements.""" % (_NAMES_[study.upper()]),
 	else: 
 		pass 
 
-	if explodability is not None and study.upper() in ["LC18", "S16/W18"]: 
-		warnings.warn("""The %s study published yields already masked by \
-stellar explodability (i.e. only wind yields are reported for stars that do \
-not explode under their explosion physics). Stellar explodability is \
-overspecified in this calculation""" % (_NAMES_[study.upper()]), ScienceWarning) 
-
 	if (not wind and 
 		study.upper() not in ["LC18", "S16/N20", "S16/W18", "S16/W18F"]): 
 		warnings.warn("""The %s study did not separate the yields from the \
@@ -490,8 +492,9 @@ study, only reporting net yields.""")
 			imf_obj, explodability_cb, path.encode("latin-1"), 
 			int(wind), element.lower().encode("latin-1")) 
 		if x == 1: 
-			warnings.warn("""Yield-weighted IMF integration did not converge. \
-Estimated fractional error: %.2e""" % (num[0].error), ScienceWarning) 
+			warnings.warn("""Yield-weighted IMF integration did not converge \
+for element: %s. Estimated fractional error: %.2e""" % (element.lower(), 
+				num[0].error), ScienceWarning) 
 		elif x: 
 			raise SystemError("Internal Error") 
 		else: 
@@ -561,6 +564,7 @@ def initial_abundance(filename, element):
 			else: 
 				continue 
 		f.close() 
+	# integrator should return 0 before this function is called in this case. 
 	raise SystemError("Internal Error.") 
 
 

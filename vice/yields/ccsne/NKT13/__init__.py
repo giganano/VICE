@@ -19,6 +19,12 @@ mass limit of 40 :math:`M_\odot`.
 
 .. note:: This module is not imported with a simple ``import vice`` statement. 
 
+.. note:: When this module is imported, the yields will be updated with a 
+	maximum of 10^5 bins in quadrature to decrease computational overhead. For 
+	some elements, the yield calculation may not converge. To rerun the yield 
+	calculation with higher numerical precision, simply call ``set_params`` 
+	with a new value for the keyword ``Nmax`` (see below). 
+
 Contents 
 --------
 set_params : <function> 
@@ -77,7 +83,7 @@ if not __VICE_SETUP__:
 			for i in _RECOGNIZED_ELEMENTS_: 
 				__settings[i] = __fractional(i, study = "NKT13", **kwargs)[0] 
 
-	set_params(m_upper = 40, MoverH = 0.15) 
+	set_params(m_upper = 40, MoverH = 0.15, Nmax = 1e5) 
 
 else: 
 	pass 
