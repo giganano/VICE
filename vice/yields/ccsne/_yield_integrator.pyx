@@ -140,12 +140,12 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		in the yield calculation. If False, the calculation will run 
 		considering only the supernova explosion yield. 
 
+		.. versionadded:: 1.2.0 
+
 		.. note:: Wind and explosive yields are only separated for the 
 			Limongi & Chieffi (2018) and Sukhbold et al. (2016) studies. Wind 
 			yields are not separable from explosive yields for other studies 
 			supported by this function. 
-
-		.. versionadded:: 1.2.0 
 
 	net : bool [default : ``True``] 
 		If True, the initial abundance of each simulated CCSN progenitor star 
