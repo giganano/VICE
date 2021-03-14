@@ -41,7 +41,7 @@ examples/.ipynb_checkpoints/*.ipynb
 *.sublime-project
 
 # pyenv local files 
-*/.python-version 
+.python-version 
 
 # h277 source files -> too large for GitHub 
 vice/toolkit/hydrodisk/data/h277/processor/*.fits 
