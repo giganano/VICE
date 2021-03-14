@@ -15,6 +15,12 @@ extern "C" {
  * ========== 
  * mz: 		A pointer to the multizone object for this simulation 
  * 
+ * Notes
+ * =====
+ * This function updates the tracer count only if the new tracer particles 
+ * formed before the final output time. This'll ensure that superfluous tracer 
+ * particles are left out of the output and distribution function calculations. 
+ * 
  * source: tracer.c 
  */ 
 extern void inject_tracers(MULTIZONE *mz); 

@@ -445,6 +445,10 @@ Got: %s""" % (type(value)))
 		The abundance by mass of this element in the sun as reported by 
 		Asplund et al. (2009) [1]_. 
 
+		.. versionadded:: 1.2.0 
+			As of version 1.2.0, users can modify the assumed solar chemical 
+			composition. 
+
 		Example Code 
 		------------
 		>>> import vice 
@@ -456,6 +460,11 @@ Got: %s""" % (type(value)))
 		.. [1] Asplund et al. (2009), ARA&A, 47, 481 
 		""" 
 		return solar_z[self._symbol] 
+
+	@solar_z.setter 
+	def solar_z(self, value): 
+		# let the solar_z dataframe do the error handling. 
+		solar_z[self._symbol] = value 
 
 	@property 
 	def sources(self): 

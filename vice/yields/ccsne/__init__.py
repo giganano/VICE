@@ -40,10 +40,13 @@ WW95 : module
 Notes 
 -----
 The yield tables built into this module reflect a post-processing treatment for 
-two radioactive nuclides. For all studies, the mass yields of nickel-56 have 
-been added to that of iron-56, and the yields of aluminum-26 have been added to 
-that of magnesium-26. The data for remaining elements are included 
-*as published*. 
+two radioactive nuclides. For the Limongi & Chieffi (2018), Sukhbold et al. 
+(2016), and Chieffi & Limongi (2013) tables, we add the nickel-56 yield to the 
+iron yields and the aluminum-26 yield to the magnesium yields. We also add 
+the aluminum-26 yield to the magnesium yields for the Woosley & Weaver (1995) 
+study. Otherwise, the data are included *as published*. The Chieffi & Limongi 
+(2013) and Nomoto, Kobayashi & Tominaga (2013) yields report yields after 
+radioactive isotopes have been decayed, so no further treatment is necessary. 
 
 .. [1] Limongi & Chieffi (2018), ApJS, 237, 13 
 .. [2] Sukhbold et al. (2016), ApJ, 821, 38 

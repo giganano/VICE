@@ -595,7 +595,7 @@ typedef struct dataset {
 
 #ifdef __cplusplus 
 } 
-#endif /* __cplusplus*/ 
+#endif /* __cplusplus */ 
 
 #endif /* OBJECTS_OBJECTS_H */ 
 

@@ -81,6 +81,9 @@ class multizone(object):
 		.. note:: If this is equal to 1, VICE will construct a ``singlezone`` 
 			object rather than a ``multizone`` object. 
 
+		.. note:: See below on your system's maximum number of open file 
+			descriptors. 
+
 	n_stars : ``int`` [default : 1] 
 		The number of star particles forming in each zone at each timestep. 
 	simple : ``bool`` [default : False] 
@@ -97,27 +100,62 @@ class multizone(object):
 		Obtain a ``multizone`` object with the parameters of one that produced 
 		an output. 
 
+	.. role:: raw-html(raw) 
+		:format: html 
+
 	Notes 
 	-----
+	**Implementation** :raw-html:`<br />` 
+	VICE uses a forward Euler approach to handle its timestepping. Although 
+	this isn't the highest numerical resolution timestepping method, the 
+	dominant source of error in VICE is not in the numerics but in the 
+	approximations built into the model itself. Solutions in which the 
+	numerical error is adequately small can be achieved with reasonable 
+	timestep sizes. Furthermore, the forward Euler approach allows VICE to 
+	treat the discretization of timesteps to correspond directly to a 
+	discretization of stellar populations, simplifying its implementation and 
+	allowing fast numerical solutions. The exact timestamps at which functions 
+	of time describing evolutionary parameters will be evaluated is also a 
+	simple calculation as a result, since they will all be integer multiples of 
+	the timestep size. For further details, see VICE's science documentation: 
+	https://vice-astro.readthedocs.io/en/latest/science_documentation/index.html 
+	
+	**Maximum Number of Open File Descriptors** :raw-html:`<br />` 
+	All operating systems by default limit the number of open file descriptors 
+	per process, though with administrator's privileges this number can be 
+	temporarily raised. For each simulation, VICE must open two files per zone, 
+	plus one to write the star particle information to. Simulations with a 
+	particularly high number of zones will therefore require a relatively high 
+	number of files to be opened. The system-enforced maximum number of open 
+	file descriptors can be accessed by running ``ulimit -n`` in a ``Unix`` 
+	terminal. Users should be careful to ensure that this number is higher than 
+	what is required for a given simulation at runtime. Users on machines for 
+	which they don't have administrator's privileges should speak with their 
+	administrator about raising their limit if their models require more zones 
+	than their current settings will allow. 
+
+	**Computational Overhead** :raw-html:`<br />` 
+	The number of zone indeces that VICE must keep track of scales with the 
+	product of the number of timesteps, number of zones, and the attribute 
+	``nstars``. The computational overhead can, in theory, be arbitarily large 
+	as long as the system has the required space. This is in addition to the 
+	abundance information at all timesteps required for calculating 
+	metallicity-dependent yields and recycling rates from previous stellar 
+	populations. In practice, the ``milkyway`` object (a built-in subclass of 
+	this one) using 200 zones, 1,321 timesteps, and 8 stellar populations per 
+	zone per timestep with two elements can require up to ~2 GB of RAM at any 
+	given moment, processing nearly 30 GB worth of data in total with otherwise 
+	default parameters. These models can take up to ~5 hours to fully integrate 
+	on a single CPU. For comparison, the same model with 1 stellar population 
+	per zone per timestep and 256 timesteps, but still 200 zones, requires up 
+	to ~800 MB of RAM and requires only ~2.5 minutes to fully integrate over 
+	~8.5 GB of data. Using 40 zones instead of 200 then requires ~250 MB of RAM 
+	and fully integrates inover ~7 GB of total data in ~11 seconds. 
+
+	**Relationship to ``vice.singlezone``** :raw-html:`<br />` 
 	This object makes use of composition. At its core, it is simply an array of 
 	``singlezone`` objects, which the user may manipulate like all other 
 	``singlezone`` objects. 
-
-	.. seealso:: ``vice.singlezone`` 
-
-	POSIX operating systems by default limit the number of files open per 
-	process, though with administrator's privileges this number can be 
-	temporarily raised. For each simulation, VICE opens two files per zone, 
-	plus one to write the star particle information to, in addition to the 
-	python files it must import for overhead. Simulations with a particularly 
-	high number of zones will therefore require a relatively high number of 
-	files to be opened. The maximum number of files per process can be 
-	accessed by running ``ulimit -n`` in a bash terminal; users should be 
-	careful to ensure that this number is significantly higher than what is 
-	required for a given simulation. It is recommended that users run a coarse 
-	timestep, low star particle per timestep per zone version of higher 
-	resolution simulations before letting them run to ensure that errors like 
-	this do not arise when integration times are long. 
 
 	Example Code 
 	------------

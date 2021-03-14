@@ -26,12 +26,13 @@ Users who have or would like to modify VICE's source code should conduct a
 install for a development version of python, such as 3.10. Installing from 
 source is also an alternative in the event that the PyPI_ installation fails 
 for some reason. If you have already installed VICE and would like help 
-getting started, usage guidelines and tutorials can be found 
-`here`__. 
+getting started, we recommend checking out VICE's tutorial_. Further usage 
+guidelines can be found `here`__. 
 
 __ `Installing from Source`_ 
 __ usage_ 
 .. _usage: https://github.com/giganano/VICE/blob/master/docs/src/getting_started.rst
+.. _tutorial: https://github.com/giganano/VICE/blob/master/examples/QuickStartTutorial.ipynb
 
 .. Contents:: 
 
@@ -61,15 +62,14 @@ dependencies are as follows:
 .. _dill: https://pypi.org/project/dill/ 
 .. _matplotlib: https://pypi.org/project/matplotlib/ 
 .. _NumPy: https://pypi.org/project/numpy/ 
-.. _tutorial: https://github.com/giganano/VICE/blob/master/examples/QuickStartTutorial.ipynb
 
 A Note on Implementation 
 ------------------------
 VICE is implemented in ANSI/ISO C and is wrapped using only standard library 
 Python_ and Cython_. It is thus independent of the user's version of Anaconda_ 
-(or lackthereof). It is numpy_- and pandas_-compatible, but neither numpy_- 
-nor pandas_-dependent. That is, it will recognized user input from both numpy_ 
-and pandas_ data types such as the numpy_ array or the pandas_ dataframe, but 
+(or lackthereof). It is NumPy_- and pandas_-compatible, but neither NumPy_- 
+nor pandas_-dependent. That is, it will recognize user input from both NumPy_ 
+and pandas_ data types such as the NumPy_ array or the pandas_ dataframe, but 
 is designed to run independently of them. 
 
 .. _Anaconda: https://www.anaconda.com/ 
@@ -82,7 +82,7 @@ While VICE does not have any primary runtime dependencies, there are several
 compile-time dependencies that must be satisfied to install from source. They 
 are as follows: 
 
-1. Cython_ >= 0.28.0 
+1. Cython_ >= 0.29.0 
 
 2. Python_ >= 3.6 
 
@@ -157,7 +157,7 @@ Things to Avoid
 
 1. conda Environments
 	VICE should **never** be installed from source within a conda environment. 
-	This only applies to from source installations; a binary installation from 
+	This only applies to source installations; a binary installation from 
 	PyPI_ should run properly within any conda environment provided the 
 	version of python is supported. When installing from source in a conda 
 	environment, the installation process will run without errors, but the 

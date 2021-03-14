@@ -82,6 +82,11 @@ class hydrodiskstars:
 		acting as the analog, and the data for the corresponding star particle 
 		can then be accessed via the attribute ``analog_index``. 
 
+	Functions 
+	---------
+	decomp_filter : [instancemethod] 
+		Filter the star particles based on their kinematic decomposition. 
+
 	Raises 
 	------
 	* ValueError 
@@ -218,14 +223,19 @@ class hydrodiskstars:
 			- tform:   	The time the star particle formed in Gyr 
 			- rform:   	The radius the star particle formed at in kpc 
 			- rfinal:  	The radius the star particle ended up at in kpc 
-			- zfinal:  	The height above the disk midplane in kpc at the end 
-			  of the simulation 
+			- zform: 	The disk midplane distance in kpc at the time of 
+			  formation. 
+			- zfinal:  	The disk midplane distance in kpc at the end of the 
+			  simulation 
 			- vrad:     The radial velocity of the star particle at the end of 
 			  the simulation in km/sec 
 			- vphi:     The azimuthal velocity of the star particle at the end 
 			  of the simulation in km/sec 
 			- vz: 		The velocity perpendicular to the disk midplane at the 
 			  end of the simulation in km/sec 
+			- decomp: 	An integer denoting which kinematic subclass the star 
+			  particle belongs to (1: thin disk, 2: thick disk, 3: bulge, 
+			  4: pseudobulge, 5: halo). 
 
 		Example Code 
 		------------
@@ -344,4 +354,50 @@ class hydrodiskstars:
 supported for subclasses of hydrodiskstars object.""") 
 		else: 
 			self.__c_version.mode = value 
+
+
+	def decomp_filter(self, values): 
+		r""" 
+		Filter the star particles from the hydrodynamic simulation based on 
+		the kinematic decomposition. 
+
+		Parameters 
+		----------
+		values : ``list`` [elements of type ``int``] 
+			The integer values of the "decomp" column in the ``analog_data`` 
+			attribute to base the filter on. Those with a decomposition tag 
+			equal to one of the values in this list will pass the filter and 
+			remain in the sample. 
+
+			.. note:: The integer values mean that an individual star particle 
+				has kinematics associated with the following sub-populations: 
+				
+					- 1: thin disk 
+					- 2: thick disk 
+					- 3: bulge 
+					- 4: pseudobulge 
+					- 5: halo 
+
+		Example Code 
+		------------
+		>>> from vice.toolkit.hydrodisk import hydrodiskstars
+		>>> import numpy as np 
+		>>> example = hydrodiskstars(np.linspace(0, 20, 81)) 
+		>>> len(example.analog_data['id']) 
+		102857 
+		>>> example.decomp_filter([1, 2]) # disk stars only 
+		>>> len(example.analog_data['id']) 
+		57915 
+		>>> all([i in [1, 2] for i in example.analog_data['decomp']]) 
+		True 
+		>>> example = hydrodiskstars(np.linspace(0, 20, 81)) 
+		>>> len(example.analog_data['id']) 
+		102857 
+		>>> example.decomp_filter([3, 4]) # bulge stars only 
+		>>> len(example.analog_data['id']) 
+		44942 
+		>>> all([i in [3, 4] for i in example.analog_data['decomp']]) 
+		True 
+		""" 
+		self.__c_version.decomp_filter(values) 
 

@@ -42,14 +42,8 @@ class milkyway(multizone):
 
 		- ``vice.multizone`` 
 		- ``vice.toolkit.J21_sf_law`` 
+		- ``vice.toolkit.hydrodisk.hydrodiskstars`` 
 		- ``vice.singlezone`` 
-
-	.. note:: This is the **only** object in the current version of VICE which 
-		formulates evolutionary parameters in terms of surface densities. This 
-		is done because many physical quantities are reported as surface 
-		densities in the astronomical literature. The ``singlezone`` and 
-		``multizone`` objects, however, formulate parameters in terms of mass, 
-		out of necessity. 
 
 	Parameters 
 	----------
@@ -88,6 +82,15 @@ class milkyway(multizone):
 		:math:`M_\odot`, the surface density of infall, or the surface density 
 		of star formation in :math:`M_\odot yr^{-1} kpc^{-2}`. The 
 		interpretation of the return value is set by the attribute ``mode``. 
+
+		.. note:: This is the **only** object in the current version of VICE 
+			which formulates an evolutionary parameter in terms of surface 
+			densities. This is done because many physical quantities are 
+			reported as surface densities in the astronomical literature. The 
+			``singlezone`` and ``multizone`` objects, however, formulate 
+			parameters in terms of mass, out of necessity for the 
+			implementation. 
+
 	mode : ``str`` [case-insensitive] [default : "ifr"] 
 		The interpretation of the attribute ``evolution``. Either "sfr" for 
 		star formation rate, "ifr" for infall rate, or "gas" for the ISM 
@@ -141,6 +144,13 @@ class milkyway(multizone):
 		:math:`R` > 15.5 kpc by setting the star formation efficiency timescale 
 		to a very large number. This can be overridden at any time by resetting 
 		the attribute ``tau_star`` of each zone. 
+
+	.. note:: See documentation of ``vice.multizone`` base class for 
+		information on the implementation and required computational overhead 
+		of this and other applications of VICE's multizone capabilities. In 
+		the data involved can be arbitrarily large provied the system has the 
+		space, but coarse versions of finely sampled models often require only 
+		minutes to fully integrate, simplifying the debugging process. 
 
 	Functions 
 	---------
@@ -336,6 +346,14 @@ object.""")
 			densities of star formation and infall will always be interpreted 
 			as having units of :math:`M_\odot yr^{-1} kpc^{-2}` according to 
 			convention. 
+
+		.. note:: This is the **only** object in the current version of VICE 
+			which formulates an evolutionary parameter in terms of surface 
+			densities. This is done because many physical quantities are 
+			reported as surface densities in the astronomical literature. The 
+			``singlezone`` and ``multizone`` objects, however, formulate 
+			parameters in terms of mass, out of necessity for the 
+			implementation. 
 
 		Example Code 
 		------------

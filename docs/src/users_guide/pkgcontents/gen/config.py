@@ -112,11 +112,6 @@ _CONFIG_ = {
 			vice.dataframe.todict, 
 			vice.dataframe.remove, 
 			vice.dataframe.filter, 
-			vice.atomic_number, 
-			vice.primordial, 
-			vice.solar_z, 
-			vice.sources, 
-			vice.stable_isotopes, 
 			vice.core.dataframe.agb_yield_settings, 
 			vice.core.dataframe.ccsn_yield_table, 
 			vice.core.dataframe.channel_entrainment, 
@@ -1388,7 +1383,8 @@ _CONFIG_ = {
 			vice.toolkit.hydrodisk.hydrodiskstars.radial_bins, 
 			vice.toolkit.hydrodisk.hydrodiskstars.analog_data, 
 			vice.toolkit.hydrodisk.hydrodiskstars.analog_index, 
-			vice.toolkit.hydrodisk.hydrodiskstars.mode 
+			vice.toolkit.hydrodisk.hydrodiskstars.mode, 
+			vice.toolkit.hydrodisk.hydrodiskstars.decomp_filter 
 		] 
 	}, 
 	vice.toolkit.hydrodisk.hydrodiskstars.radial_bins: {
@@ -1409,6 +1405,11 @@ _CONFIG_ = {
 	vice.toolkit.hydrodisk.hydrodiskstars.mode: {
 		"filename": 	"vice.toolkit.hydrodisk.hydrodiskstars.mode.rst", 
 		"header": 		"vice.toolkit.hydrodisk.hydrodiskstars.mode", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.hydrodisk.hydrodiskstars.decomp_filter: {
+		"filename": 	"vice.toolkit.hydrodisk.hydrodiskstars.decomp_filter.rst", 
+		"header": 		"vice.toolkit.hydrodisk.hydrodiskstars.decomp_filter", 
 		"subs": 		[] 
 	}, 
 	vice.toolkit.interpolation: {

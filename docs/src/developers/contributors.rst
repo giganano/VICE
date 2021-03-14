@@ -14,7 +14,7 @@ Emily J. Griffith
 -----------------
 | Contributing Author 
 | Email: griffith.802@buckeyemail.osu.edu 
-| Website: https://astronomy.osu.edu/people/griffith.802 
+| Website: https://www.emilyjgriffith.com 
 | The Ohio State University Department of Astronomy 
 | 140 W. 18th Ave., Columbus, OH, 43204 
 

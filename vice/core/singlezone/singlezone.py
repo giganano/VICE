@@ -177,6 +177,39 @@ class singlezone:
 		Obtain a ``singlezone`` object with the parameters of the one 
 		that produced an output. 
 
+	.. role:: raw-html(raw) 
+		:format: html 
+
+	Notes 
+	-----
+	**Implementation** :raw-html:`<br />` 
+	VICE uses a forward Euler approach to handle its timestepping. Although 
+	this isn't the highest numerical resolution timestepping method, the 
+	dominant source of error in VICE is not in the numerics but in the 
+	approximations built into the model itself. Solutions in which the 
+	numerical error is adequately small can be achieved with reasonable 
+	timestep sizes. Furthermore, the forward Euler approach allows VICE to 
+	treat the discretization of timesteps to correspond directly to a 
+	discretization of stellar populations, simplifying its implementation and 
+	allowing fast numerical solutions. The exact timestamps at which functions 
+	of time describing evolutionary parameters will be evaluated is also a 
+	simple calculation as a result, since they will all be integer multiples of 
+	the timestep size. For further details, see VICE's science documentation: 
+	https://vice-astro.readthedocs.io/en/latest/science_documentation/index.html 
+
+	**Computational Overhead** :raw-html:`<br />` 
+	In general, the ``singlezone`` object is not memory limited, requiring 
+	only ~700 MB of RAM and ~20 seconds to compute abundances for 3 elements 
+	across 10,000 timesteps with default parameters. With 1,000 timesteps, it 
+	takes only 500 MB of RAM and finishes in ~1/4 second. For quantified 
+	measurements of the ``singlezone`` object's required integration time, 
+	see "Timed Runs" under VICE's science documentation: 
+	https://vice-astro.readthedocs.io/en/latest/science_documentation/implementation.html#timed-runs 
+
+	**Relationship to ``vice.multizone``** :raw-html:`<br />` 
+	The ``multizone`` object makes use of composition. At its core, it is an 
+	array of ``singlezone`` objects. 
+
 	Example Code 
 	------------
 	>>> import vice 

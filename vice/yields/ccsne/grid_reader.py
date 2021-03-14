@@ -120,13 +120,10 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 
 	Notes 
 	-----
-	The yield tables returned by this function include a treatment for only two 
-	radioactive isotopes. The mass of nickel-56 in all cases is added to the 
-	iron-56 yield, and the mass of aluminum-26 is added to the magnesium-26 
-	yield always. In this regard, if there are other elements with a 
-	significant nucleosynthetic contribution from the radioactive decay of CCSN 
-	products, the values returned by this function should be interpreted as 
-	lower bounds rather than estimates of the true nucleosynthetic yield. 
+	The tables returned by this function will include stable isotopes *only*. 
+	See the notes in the ``vice.yields.ccsne`` docstring for details on the 
+	studies to which VICE applies a treatment of radioactive isotopes in its 
+	built-in tables. 
 
 	Example Code 
 	------------
@@ -246,7 +243,7 @@ their own discretion by modifying their CCSN yield settings directly.""" % (
 		for i in range(len(grid)): 
 			for j in range(1, len(grid[i])): 
 				grid[i][j] += wind_grid[i][j] 
-	elif study.upper() not in ["LC18", "S16/W18"]: 
+	elif study.upper() not in ["LC18", "S16/W18", "S16/N20", "S16/W18F"]: 
 		warnings.warn("""The %s study did not separate the yields from the \
 wind and the explosion, publishing only the total yields from both. For this \
 reason, this function cannot separate the wind yields from this table.""" % (
@@ -261,8 +258,7 @@ reason, this function cannot separate the wind yields from this table.""" % (
 
 	if isotopic: 
 		return ccsn_yield_table(masses, tuple(isotopic_yields), 
-			isotopes = ["%s%d" % (element.lower(), 
-				i) for i in stable_isotopes[element]]) 
+			isotopes = get_isotopes(filename)) 
 	else: 
 		mass_yields = len(masses) * [0.] 
 		for i in range(len(mass_yields)): 
@@ -295,4 +291,29 @@ def read_grid(filename):
 			line = f.readline() 
 		f.close() 
 	return contents 
+
+
+def get_isotopes(filename): 
+	r""" 
+	Pulls the individual isotopes of a given element from the yield file. 
+
+	Parameters 
+	----------
+	filename : str 
+		The path to the file containing the yields. 
+
+	isotopes : list 
+		A list of strings denoting the isotopes of each element in the file. 
+	""" 
+	with open(filename, 'r') as f: 
+		while True: 
+			line = f.readline() 
+			if line[0] != '#': 
+				raise SystemError("Internal Error.") 
+			elif line.split()[1] == "M_init": 
+				f.close() 
+				return [_.lower() for _ in line.split()[2:]] 
+			else: continue 
+		f.close() 
+	raise SystemError("Internal Error.") 
 

@@ -144,8 +144,8 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 
 		.. note:: Wind and explosive yields are only separated for the 
 			Limongi & Chieffi (2018) and Sukhbold et al. (2016) studies. Wind 
-			yields are not separable from explosive yields for other studies 
-			supported by this function. 
+			yields are not separable from explosive yields or are not included 
+			for other studies supported by this function. 
 
 	net : bool [default : ``True``] 
 		If True, the initial abundance of each simulated CCSN progenitor star 
@@ -153,6 +153,12 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		to a net yield. 
 
 		.. versionadded:: 1.2.0 
+
+		.. note:: Net yields cannot be calculated for the Woosley & Weaver 
+			(1995) study as they do not report birth abundances. Conversely, 
+			gross yields cannot be calculated for the Nomoto, Kobayashi & 
+			Tominaga (2013) study, because their data is already reported as 
+			net yields for each individual progenitor. 
 
 	IMF : ``str`` [case-insensitive] or <function> [default : "kroupa"] 
 		The stellar initial mass function (IMF) to assume. Strings denote 
@@ -217,13 +223,21 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	* ScienceWarning 
 		- 	m_upper is larger than the largest mass on the grid reported by the 
 			specified study. VICE extrapolates to high masses in this case. 
+			
+			The upper mass limits of each study: 
+
+				- Limongi & Chiefii (2018) : 120 :math:`M_\odot` 
+				- Sukhbold et al (2016) : 120 :math:`M_\odot` 
+				- Nomoto, Kobayash & Tominaga (2013) : 40 :math:`M_\odot` 
+				- Chieffi & Limongi (2013) : 120 :math:`M_\odot` 
+				- Chieffi & Limongi (2004) : 35 :math:`M_\odot` 
+				- Woosley & Weaver (1995) : 40 :math:`M_\odot` 
+
 		- 	study is either "CL04" or "CL13" and the atomic number of the 
 			element is between 24 and 28 (inclusive). VICE warns against 
 			adopting these yields for iron peak elements. 
 		- 	Numerical quadrature did not converge within the maximum number 
 			of allowed quadrature bins to within the specified tolerance. 
-		- 	Explodability criteria specified in combination with either the 
-			Limongi & Chieffi (2018) or Sukhbold et al. (2016) study. 
 		- 	``explodability`` is not ``None`` and ``study == "LC18"``, 
 			``"S16/N20"``, ``"S16/W18"``. The mass yields these studies report 
 			are already under a given model for the black hole landscape. 
@@ -258,15 +272,23 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	data. If the keyword arg ``net = False``, :math:`Z_{x,\text{prog}}` is 
 	simply set to zero to calculate a gross yield. 
 
-	The yield tables employed by this function include a treatment for only two 
-	radioactive isotopes. The mass of nickel-56 in all cases is added to the 
-	iron-56 yield, and the mass of aluminum-26 is added to the magnesium-26 
-	yield always. The above equation is then evaluated directly from the total 
-	mass yield of stable isotopes only. In this regard, if there are other 
-	elements with a significant nucleosynthetic contribution from the 
-	radioactive decay of CCSN products, the values returned by this function 
-	should be interpreted as lower bounds rather than estimates of the true 
-	nucleosynthetic yield. 
+	If a study does not report wind yields, or doesn't separate them from the 
+	explosive yields (i.e. anything other than LC18 or S16/* yield sets), then 
+	:math:`w_x` = 0 everywhere by definition. In these cases, VICE weights the 
+	term correcting for the birth abundance :math:`Z_{x,\text{prog}}m` by the 
+	explodability :math:`E(m)` for net yield calculations. Because high mass 
+	stars tend to return their birth abundance with the wind yield (see 
+	discussion in Griffith et al. 2021), :math:`w_x` = 0 is unrealistic in 
+	these cases. Weighting :math:`Z_{x,\text{prog}}m` by :math:`E(m)` prevents 
+	this function from returning very negative net yields in this scenario, 
+	approximately correcting for the neglected return of the birth abundance in 
+	the wind. For gross yield calculations, this is unnecessary because VICE 
+	simply sets :math:`Z_{x,\text{prog}}m` = 0 anyway. 
+
+	The above equation is evaluated always for stable isotopes *only*. See the 
+	notes in the ``vice.yields.ccsne`` docstring for details on the studies to 
+	which VICE applies a treatment of radioactive isotopes in its built-in 
+	tables. 
 
 	Example Code 
 	------------
@@ -418,7 +440,7 @@ Got: %g Msun""" % (
 	else: 
 		pass 
 
-	if ( study.upper() in ["CL04", "CL13"] and 
+	if ( study.upper() in ["CL04", "CL13", "LC18"] and 
 		24 <= atomic_number[element.lower()] <= 28 ): 
 		warnings.warn("""The %s study published only the results which \
 adopted a fixed yield of nickel-56, and these are the yields which are 
@@ -430,9 +452,9 @@ these yields of iron peak elements.""" % (_NAMES_[study.upper()]),
 
 	if (not wind and 
 		study.upper() not in ["LC18", "S16/N20", "S16/W18", "S16/W18F"]): 
-		warnings.warn("""The %s study did not separate the yields from the \
-wind and the explosion, publishing only the total yields from both. For this \
-reason, this calculation can only run including the wind yield.""" % (
+		warnings.warn("""The %s study did not separate wind and explosive \
+yields (or did not report wind yields), publishing only the total yields. \
+For this reason, this calculation can only run including the wind yield.""" % (
 			_NAMES_[study.upper()]), ScienceWarning) 
 	else: 
 		pass
@@ -463,14 +485,14 @@ own discretion by modifying their CCSN yield settings directly.""" % (
 			"%syields/ccsne/%s/FeH%s/birth_composition.dat" % (
 				_DIRECTORY_, study.upper(), MoverHstr), element.lower()) 
 		_yield_integrator.set_Z_progenitor(zprog) 
-		if study.upper() not in ["S16/W18", "S16/W18F", "S16/W18I", "LC18"]: 
+		if study.upper() not in ["S16/W18", "S16/W18F", "S16/N20", "LC18"]: 
 			_yield_integrator.weight_initial_by_explodability(1) 
 		else: 
 			_yield_integrator.weight_initial_by_explodability(0) 
 		if study.upper() == "WW95": warnings.warn("""\
 Woosley & Weaver (1995) did not report their birth abundances. VICE cannot \
 compute net yields for this study, only reporting gross yields.""", 
-			ScienceWarning)  
+			ScienceWarning) 
 	else: 
 		_yield_integrator.set_Z_progenitor(0) 
 		_yield_integrator.weight_initial_by_explodability(0) 
