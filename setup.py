@@ -92,7 +92,7 @@ MAJOR 			= 1
 MINOR 			= 2 
 MICRO 			= 0 
 BUILD 			= 0 
-ISRELEASED		= False   
+ISRELEASED		= True 
 VERSION  		= "%d.%d.%d" % (MAJOR, MINOR, MICRO) 
 if BUILD: VERSION += ".%d" % (BUILD) 
 
