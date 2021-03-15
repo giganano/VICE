@@ -24,6 +24,19 @@ Zolotov [6]_; Bird et al. 2021 [7]_). Although ``h277`` is currently the only
 simulation whose data is available to the ``hydrodiskstars`` object, it's 
 implementation could be extended to include others. 
 
+.. note:: The ``h277`` star particle data is not included in VICE's default 
+	distribution, but is available in its GitHub repository at 
+	vice/toolkit/hydrodisk/data. VICE will download these files automatically 
+	when a ``milkyway`` or ``hydrodiskstars`` object is created for the first 
+	time. With a decent internet connection, this process takes about one 
+	minute to complete, and does not need repeated. If this process fails, it 
+	may be due to not having administrator's privileges; users in this 
+	situation should speak with their administrator, who would then be able to 
+	download these data with the following few lines in ``python``: 
+
+	>>> import vice 
+	>>> vice.toolkit.hydrodisk.data.download() 
+
 The Sample of Star Particles 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The ``hydrodiskstars`` object, the default stellar migration prescription for 
