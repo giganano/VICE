@@ -341,7 +341,14 @@ Uninstalling VICE
 =================
 If you have installed VICE from PyPI_, it can be uninstalled from the terminal 
 via ``pip uninstall vice``. When prompted, simply confirm that you would like 
-the files removed. 
+the files removed. If this command fails, it may be due to the presence of 
+VICE's supplementary data. Running the following should remove these data, 
+allowing the ``pip uninstall vice`` command thereafter: 
+
+.. code:: python 
+
+	import vice 
+	vice.toolkit.hydrodisk.data._h277_remove() 
 
 If you have installed from source, uninstalling requires a couple of steps. 
 First, you must find the path to the directory that it was installed to. This 

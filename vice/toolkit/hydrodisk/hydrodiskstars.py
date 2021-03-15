@@ -100,9 +100,9 @@ class hydrodiskstars:
 
 	Notes 
 	-----
-	This object requires VICE's supplementary data sample, available online at: 
-	https://drive.google.com/drive/u/0/folders/1eka-fr5jyXFHtRoYrkRV1T-FQ8m8D5qK. 
-	The first time one of these objects is constructed, VICE will download 
+	This object requires VICE's supplementary data sample, available in its 
+	GitHub repository at ./vice/toolkit/hydrodisk/data.  The first time a 
+	``hydrodiskstars`` object is constructed, VICE will download 
 	the additional data automatically. If this process fails, it may be due to 
 	not having administrator's privileges on your system; in this event, users 
 	should speak with their administrator, who would then be able to download 

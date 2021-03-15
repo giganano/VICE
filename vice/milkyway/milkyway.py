@@ -140,6 +140,19 @@ class milkyway(multizone):
 
 	Other attributes are inherited from ``vice.multizone``. 
 
+	.. note:: The ``h277`` data is not included in VICE's distribution, but is 
+		available in its GitHub repository. When users first create a 
+		``milkyway`` object, it will download the data automatically and store 
+		it internally for future use. With a good internet connection, this 
+		process takes about 1 minute to complete, and need not be repeated. 
+		If the download fails, it's likely it has to do with not having 
+		administrator's privileges over your system. Users in this situation 
+		should speak with their administrator, who would then be able to 
+		download their data by running the following on their system: 
+
+		>>> import vice 
+		>>> vice.toolkit.hydrodisk.data.download() 
+
 	.. note:: This object, by default, will shut off star formation at 
 		:math:`R` > 15.5 kpc by setting the star formation efficiency timescale 
 		to a very large number. This can be overridden at any time by resetting 

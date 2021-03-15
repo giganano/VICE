@@ -18,6 +18,7 @@ if not __VICE_SETUP__:
 	__all__ = [ 
 		"core", 
 		"elements", 
+		"toolkit", 
 		"milkyway", 
 		"src", 
 		"yields", 
