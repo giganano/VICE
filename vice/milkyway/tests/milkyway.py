@@ -5,6 +5,7 @@ from ..milkyway import milkyway, mass_from_surface_density
 from ..milkyway import _MAX_RADIUS_, _MAX_SF_RADIUS_ 
 from ...toolkit.J21_sf_law import J21_sf_law 
 from ...toolkit.hydrodisk import hydrodiskstars 
+from ...toolkit.hydrodisk.data.download import _h277_exists 
 from ...testing import moduletest 
 from ...testing import unittest 
 from ...core.singlezone._singlezone import _RECOGNIZED_MODES_ 
@@ -50,6 +51,7 @@ def test_initialization():
 	vice.milkyway.__init__ unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		global _TEST_ 
 		try: 
 			_TEST_ = milkyway(name = _TEST_NAME_, 
@@ -90,6 +92,7 @@ def test_annuli():
 	vice.milkyway.annuli unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		status = True 
 		for i in range(_TEST_.n_zones - 1): 
 			# floating point errors cause this to fail with an == comparison 
@@ -108,6 +111,7 @@ def test_zone_width():
 	vice.milkyway.zone_width unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		return _TEST_.zone_width == _TEST_ZONE_WIDTH_ 
 	return ["vice.milkyway.zone_width", test] 
 
@@ -118,6 +122,7 @@ def test_mode():
 	vice.milkyway.mode unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		status = True 
 		for i in _RECOGNIZED_MODES_: 
 			try: 
@@ -138,6 +143,7 @@ def test_elements():
 	vice.milkyway.elements unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		elements = ('n', 'c', 'o') 
 		try: 
 			_TEST_.elements = elements 
@@ -157,6 +163,7 @@ def test_IMF():
 	vice.milkyway.IMF unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		try: 
 			_TEST_.IMF = "salpeter" 
 		except: 
@@ -175,6 +182,7 @@ def test_mass_loading():
 	vice.milkyway.mass_loading unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		def testfunc(rgal): # dummy function for testing 
 			return rgal 
 		try: 
@@ -196,6 +204,7 @@ def test_dt():
 	vice.milkyway.dt unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		test_size = 0.02 
 		try: 
 			_TEST_.dt = test_size 
@@ -215,6 +224,7 @@ def test_bins():
 	vice.milkyway.bins unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		bins = [-2 + 0.005 * i for i in range(801)] 
 		try: 
 			_TEST_.bins = bins 
@@ -234,6 +244,7 @@ def test_delay():
 	vice.milkyway.delay unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		try: 
 			_TEST_.delay = 0.05 
 		except: 
@@ -252,6 +263,7 @@ def test_RIa():
 	vice.milkyway.RIa unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		try: 
 			_TEST_.RIa = "exp" 
 		except: 
@@ -284,6 +296,7 @@ def test_smoothing():
 	vice.milkyway.smoothing unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		try: 
 			_TEST_.smoothing = 0.5 
 		except: 
@@ -302,6 +315,7 @@ def test_tau_ia():
 	vice.milkyway.tau_ia unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		try: 
 			_TEST_.tau_ia = 1.0 
 		except: 
@@ -320,6 +334,7 @@ def test_m_upper():
 	vice.milkyway.m_upper unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		try: 
 			_TEST_.m_upper = 120 
 		except: 
@@ -338,6 +353,7 @@ def test_m_lower():
 	vice.milkyway.m_lower unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		try: 
 			_TEST_.m_lower = 0.1 
 		except: 
@@ -356,6 +372,7 @@ def test_postMS():
 	vice.milkyway.postMS unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		try: 
 			_TEST_.postMS = 0.12 
 		except: 
@@ -374,6 +391,7 @@ def test_Z_solar():
 	vice.milkyway.Z_solar unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		try: 
 			_TEST_.Z_solar = 0.012 
 		except: 
