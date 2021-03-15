@@ -50,6 +50,8 @@ class multizone(object):
 	**Signature**: vice.multizone(name = "multizonemodel", n_zones = 10, 
 	n_stars = 1, simple = False, verbose = False) 
 
+	.. versionadded:: 1.2.0 
+
 	Parameters 
 	----------
 	name : ``str`` [default : "multizonemodel"] 

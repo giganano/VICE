@@ -19,6 +19,8 @@ cdef class mig_specs:
 
 	**Signature**: vice.migration.specs(n) 
 
+	.. versionadded:: 1.2.0 
+
 	Parameters 
 	----------
 	n : ``int`` 
@@ -255,6 +257,8 @@ cdef class mig_matrix:
 
 	**Signature**: vice.migration.migration_matrix(size) 
 
+	.. versionadded:: 1.2.0 
+
 	Parameters 
 	----------
 	size : ``int`` 
@@ -484,6 +488,8 @@ cdef class mig_matrix_row:
 		object only has use in the ``migration_matrix`` object, and it is 
 		recommended that users let that class generate instances of this 
 		class automatically. 
+
+	.. versionadded:: 1.2.0 
 
 	Attributes 
 	----------
