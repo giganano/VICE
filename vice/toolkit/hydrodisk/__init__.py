@@ -6,7 +6,7 @@ hydrodynamical simulations.
 
 Contents 
 --------
-hydrodiskstars : object 
+hydrodiskstars : ``object`` 
 	A stellar migration scheme informed by the ``h277`` simulation, a zoom-in 
 	hydrodynamic simulation of a Milky Way like galaxy ran from cosmological 
 	initial conditions (a part of the ``g14`` simulation suite, Christensen et 
@@ -14,6 +14,10 @@ hydrodiskstars : object
 	assumptions about the time dependence of their orbital radius between 
 	birth and the end of the simulation. For discussion, see section 2 of 
 	Johnson et al. (2021) [2]_. 
+data : ``module`` 
+	Manages VICE's supplementary data containing the ``h277`` star particle 
+	subsamples. Executes a download upon first creation of a ``hydrodiskstars`` 
+	object. 
 
 .. [1] Christensen et al. (2012), MNRAS, 425, 3058 
 .. [2] Johnson et al. (2021), in prep 
@@ -27,8 +31,9 @@ except NameError:
 
 if not __VICE_SETUP__: 
 
-	__all__ = ["hydrodiskstars", "test"]  
+	__all__ = ["data", "hydrodiskstars", "test"] 
 	from .hydrodiskstars import hydrodiskstars 
+	from . import data 
 	from .tests import test 
 
 else: 

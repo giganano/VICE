@@ -3,6 +3,7 @@ from __future__ import absolute_import
 __all__ = ["test"] 
 from ..hydrodiskstars import hydrodiskstars 
 from .._hydrodiskstars import _END_TIME_ 
+from ..data.download import _h277_exists 
 from ....testing import moduletest 
 from ....testing import unittest 
 import sys 
@@ -16,17 +17,21 @@ def test():
 	r""" 
 	The hydrodiskstars object module test 
 	""" 
-	return ["vice.toolkit.hydrodisk.hydrodiskstars", 
-		[ 
-			test_initialize(), 
-			test_import(), 
-			test_radial_bins_setter(), 
-			test_call("linear"), 
-			test_call("sudden"), 
-			test_call("diffusion"), 
-			test_decomp_filter() 
+	name = "vice.toolkit.hydrodisk.hydrodiskstars" 
+	if _h277_exists(): 
+		return [name, 
+			[ 
+				test_initialize(), 
+				test_import(), 
+				test_radial_bins_setter(), 
+				test_call("linear"), 
+				test_call("sudden"), 
+				test_call("diffusion"), 
+				test_decomp_filter() 
+			] 
 		] 
-	] 
+	else: 
+		return [name, None] 
 
 
 @unittest 

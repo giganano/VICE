@@ -1,6 +1,7 @@
 
 from __future__ import absolute_import 
 from ._hydrodiskstars import c_hydrodiskstars 
+from . import data 
 
 
 class hydrodiskstars: 
@@ -99,9 +100,16 @@ class hydrodiskstars:
 
 	Notes 
 	-----
-	The ``h277`` galaxy had a weak and transient bar, but does not have one at 
-	the present day. This is one notable difference between it and the Milky 
-	Way. 
+	This object requires VICE's supplementary data sample, available online at: 
+	https://drive.google.com/drive/u/0/folders/1eka-fr5jyXFHtRoYrkRV1T-FQ8m8D5qK. 
+	The first time one of these objects is constructed, VICE will download 
+	the additional data automatically. If this process fails, it may be due to 
+	not having administrator's privileges on your system; in this event, users 
+	should speak with their administrator, who would then be able to download 
+	their data by running the following on their system: 
+
+	>>> import vice 
+	>>> vice.toolkit.hydrodisk.data.download() 
 
 	This migration scheme works by assigning each stellar population in the 
 	simulation an analog star particle from the hydrodynamical simulation. The 
@@ -126,6 +134,10 @@ class hydrodiskstars:
 	requirement is not satisfied, multizone simulations will **still** use the 
 	approximation denoted by the ``mode`` attribute, **not** their overridden 
 	``__call__`` function. 
+
+	The ``h277`` galaxy had a weak and transient bar, but does not have one at 
+	the present day. This is one notable difference between it and the Milky 
+	Way. 
 
 	Example Code 
 	------------
@@ -157,6 +169,11 @@ class hydrodiskstars:
 	""" 
 
 	def __init__(self, rad_bins, N = 1e5, mode = "diffusion"): 
+		if not data._h277_exists(): 
+			print("VICE supplementary data required, downloading now.") 
+			print("You will not need to repeat this process.") 
+			data.download() 
+		else: pass 
 		self.__c_version = c_hydrodiskstars(rad_bins, N = N, mode = mode) 
 
 	def __call__(self, zone, tform, time): 
