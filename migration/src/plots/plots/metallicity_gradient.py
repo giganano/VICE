@@ -64,9 +64,10 @@ def main(farleft, midleft, midright, farright, stem,
 	# lateburst = vice.multioutput(lateburst) 
 	# outerburst = vice.multioutput(outerburst) 
 	for i in range(4): 
-		plot_stellar_metallicities(axes[0][i], axes[1][i], outputs[i]) 
+		plot_stellar_metallicities(axes[0][i], axes[1][i], outputs[i], 
+			symbols_legend = not i)  
 		plot_gas_phase_metallicity(axes[0][i], axes[1][i], outputs[i], 
-			label = not i) 
+			label = not i, symbols_legend = not i) 
 		plot_target_gradient(axes[0][i]) 
 
 	# plot_stellar_metallicities(axes[0][0], axes[1][0], static)  
@@ -85,11 +86,15 @@ def main(farleft, midleft, midright, farright, stem,
 		leg.get_texts()[i].set_color(["blue", "red"][i]) 
 		leg.legendHandles[i].set_visible(False) 
 
+	axes[1][0].legend(loc = mpl_loc("upper center"), frameon = False, 
+		ncol = 1, bbox_to_anchor = (0.50, 0.99), fontsize = 18) 
+
 	plt.savefig("%s.png" % (stem)) 
 	plt.savefig("%s.pdf" % (stem)) 
 
 
-def plot_gas_phase_metallicity(ax1, ax2, out, label = False): 
+def plot_gas_phase_metallicity(ax1, ax2, out, label = False, 
+	symbols_legend = False): 
 	r""" 
 	Plot the present-day gas-phase gradient in [O/H], [Fe/H], and [O/Fe] 
 	predicted by a given model. 
@@ -105,6 +110,9 @@ def plot_gas_phase_metallicity(ax1, ax2, out, label = False):
 		abundances. 
 	label : ``bool`` [default : False] 
 		Whether or not to attach a legend handle to plotted lines. 
+	symbols_legend : ``bool`` [default : False] 
+		Whether or not to label the line in ax2 as corresponding to the 
+		present-day gas-phase abundances. 
 	""" 
 	zones = ["zone%d" % (i) for i in range(int(MAX_SF_RADIUS / ZONE_WIDTH))] 
 	O = [out.zones[i].history["[o/h]"][-1] for i in zones] 
@@ -117,10 +125,14 @@ def plot_gas_phase_metallicity(ax1, ax2, out, label = False):
 	else: 
 		ax1.plot(radii, Fe, c = named_colors()["blue"]) 
 		ax1.plot(radii, O, c = named_colors()["red"]) 
-	ax2.plot(radii, OFe, c = named_colors()["black"]) 
+	if symbols_legend: 
+		ax2.plot(radii, OFe, c = named_colors()["black"], 
+			label = "Gas (Present Day)") 
+	else: 
+		ax2.plot(radii, OFe, c = named_colors()["black"]) 
 
 
-def plot_stellar_metallicities(ax1, ax2, multioutput): 
+def plot_stellar_metallicities(ax1, ax2, multioutput, symbols_legend = False): 
 	r""" 
 	Plot the stellar metallicity gradients in [O/H], [Fe/H], and [O/Fe] 
 	predicted by a ``milkyway`` model. 
@@ -134,6 +146,10 @@ def plot_stellar_metallicities(ax1, ax2, multioutput):
 	multioutput : ``vice.multioutput`` 
 		The output data from VICE's calculations containing the model-predicted 
 		abundance distributions. 
+	symbols_legend : ``bool`` [default : False]	
+		Whether or not to label the points and shaded region in ax2 as 
+		corresponding to the median stellar abundance and dispersion in the 
+		stars, respectively. 
 	""" 
 	zones = ["zone%d" % (i) for i in range(int(MAX_RADIUS / ZONE_WIDTH))] 
 	O = [median_stellar_metallicity(multioutput.zones[i], 
@@ -150,21 +166,41 @@ def plot_stellar_metallicities(ax1, ax2, multioutput):
 		"dn/d[o/fe]") for i in zones] 
 	radii = [ZONE_WIDTH * (i + 0.5) for i in range(
 		len(multioutput.zones.keys()))]
-	ax1.scatter(radii, O, c = named_colors()["red"], 
-		marker = markers()["star"], s = 20, zorder = 20) 
-	ax1.scatter(radii, Fe, c = named_colors()["blue"], 
-		marker = markers()["star"], s = 20, zorder = 20) 
-	ax2.scatter(radii, OFe, c = named_colors()["black"], 
-		marker = markers()["star"], s = 20, zorder = 20) 
+	kwargs = {
+		"s": 		50, 
+		"zorder": 	20, 
+		"marker": 	markers()["point"] 
+	} 
+	# ax1.scatter(radii, O, c = named_colors()["red"], 
+	# 	marker = markers()["point"], s = 20, zorder = 20) 
+	# ax1.scatter(radii, Fe, c = named_colors()["blue"], 
+	# 	marker = markers()["point"], s = 20, zorder = 20) 
+	# ax2.scatter(radii, OFe, c = named_colors()["black"], 
+	# 	marker = markers()["point"], s = 20, zorder = 20) 
+	ax1.scatter(radii, O, c = named_colors()["red"], **kwargs) 
+	ax1.scatter(radii, Fe, c = named_colors()["blue"], **kwargs) 
+	if symbols_legend: kwargs["label"] = "Stars (median)" 
+	ax2.scatter(radii, OFe, c = named_colors()["black"], **kwargs) 
+	kwargs = {
+		"alpha": 		0.2, 
+		"zorder": 		0 
+	}
+	# ax1.fill_between(radii, [row[0] for row in O_disp], 
+	# 	[row[1] for row in O_disp], alpha = 0.3, zorder = 0, 
+	# 	color = named_colors()["red"]) 
+	# ax1.fill_between(radii, [row[0] for row in Fe_disp], 
+	# 	[row[1] for row in Fe_disp], alpha = 0.3, zorder = 0, 
+	# 	color = named_colors()["blue"]) 
+	# ax2.fill_between(radii, [row[0] for row in OFe_disp], 
+	# 	[row[1] for row in OFe_disp], alpha = 0.3, zorder = 0, 
+	# 	color = named_colors()["black"]) 
 	ax1.fill_between(radii, [row[0] for row in O_disp], 
-		[row[1] for row in O_disp], alpha = 0.3, zorder = 0, 
-		color = named_colors()["red"]) 
+		[row[1] for row in O_disp], color = named_colors()["red"], **kwargs)  
 	ax1.fill_between(radii, [row[0] for row in Fe_disp], 
-		[row[1] for row in Fe_disp], alpha = 0.3, zorder = 0, 
-		color = named_colors()["blue"]) 
+		[row[1] for row in Fe_disp], color = named_colors()["blue"], **kwargs) 
+	if symbols_legend: kwargs["label"] = r"Stars (16\% - 84\%)" 
 	ax2.fill_between(radii, [row[0] for row in OFe_disp], 
-		[row[1] for row in OFe_disp], alpha = 0.3, zorder = 0, 
-		color = named_colors()["black"]) 
+		[row[1] for row in OFe_disp], color = named_colors()["black"], **kwargs) 
 
 
 def median_stellar_metallicity(zone, mdf_key): 

@@ -36,7 +36,8 @@ def main(stem, age_bins = [[0, 2], [2, 4], [4, 6], [6, 8], [8, 10]],
 		many elements as ``age_bins``. 
 	""" 
 	axes = setup_axes(n_columns = len(radial_bins))  
-	h277 = hydrodiskstars([0.1 * _ for _ in range(201)], N = 1e10) 
+	h277 = hydrodiskstars([0.1 * _ for _ in range(201)], N = 3102519) 
+	h277.decomp_filter([1, 2]) 
 	h277.analog_data["age"] = [END_TIME - _ for _ in h277.analog_data["tform"]] 
 	for i in range(len(axes[0])): 
 		# note the radial bin both in text and vertical black dotted lines 
@@ -210,6 +211,8 @@ def setup_axes(n_columns = 4):
 			axes[i][j].set_xticks([0, 5, 10, 15, 20])
 	dummy = dummy_background_axes(axes) 
 	dummy.set_xlabel(r"$R_\text{gal}$ [kpc]", labelpad = 30) 
-	dummy.set_ylabel("PDF", labelpad = 30) 
+	# dummy.set_ylabel("PDF", labelpad = 30) 
+	axes[0][0].set_ylabel(r"PDF($R_\text{Final}|R_\text{Birth}$)") 
+	axes[1][0].set_ylabel(r"PDF($R_\text{Birth}|R_\text{Final}$)") 
 	return axes 
 
