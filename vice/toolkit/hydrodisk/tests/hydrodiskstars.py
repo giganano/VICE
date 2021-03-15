@@ -17,21 +17,17 @@ def test():
 	r""" 
 	The hydrodiskstars object module test 
 	""" 
-	name = "vice.toolkit.hydrodisk.hydrodiskstars" 
-	if _h277_exists(): 
-		return [name, 
-			[ 
-				test_initialize(), 
-				test_import(), 
-				test_radial_bins_setter(), 
-				test_call("linear"), 
-				test_call("sudden"), 
-				test_call("diffusion"), 
-				test_decomp_filter() 
-			] 
+	return ["vice.toolkit.hydrodisk.hydrodiskstars", 
+		[ 
+			test_initialize(), 
+			test_import(), 
+			test_radial_bins_setter(), 
+			test_call("linear"), 
+			test_call("sudden"), 
+			test_call("diffusion"), 
+			test_decomp_filter() 
 		] 
-	else: 
-		return [name, None] 
+	] 
 
 
 @unittest 
@@ -40,6 +36,7 @@ def test_initialize():
 	The initialization unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		global _TEST_ 
 		try: 
 			_TEST_ = hydrodiskstars(_RAD_BINS_) 
@@ -55,6 +52,7 @@ def test_import():
 	The hydrodata import test function 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		try: 
 			# _END_TIME_ = 13.2, and max tform is 13.23xyz... so the +0.04 
 			# merely accounts for the trailing digits on the max tform. 
@@ -90,6 +88,7 @@ def test_radial_bins_setter():
 	The radial_bins.setter unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		try: 
 			test1 = [0.5 * i for i in range(61)] 
 			_TEST_.radial_bins = test1 
@@ -117,6 +116,7 @@ def test_call(mode):
 	""" 
 	msg = "vice.toolkit.hydrodisk.hydrodiskstars.call [%s]" % (mode) 
 	def test(): 
+		if not _h277_exists(): return None 
 		try: 
 			_TEST_.mode = mode 
 		except: 
@@ -152,6 +152,7 @@ def test_decomp_filter():
 	re-importing after each call. 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		status = True 
 		cases = [[1], [2], [3], [4], [1, 2], [3, 4], [2, 3], [1, 4], [1, 3, 4]] 
 		for i in range(len(cases)): 

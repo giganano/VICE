@@ -64,11 +64,11 @@ This program will overwrite the VICE output at %s/test.vice. Proceed? \
 		warnings.filterwarnings("ignore") 
 		return ["", 
 			[ 
+				toolkit.test(run = False), 
 				core.test(run = False), 
 				elements.test(run = False), 
 				milkyway_test(run = False), 
 				src.test(run = False), 
-				toolkit.test(run = False), 
 				yields.test(run = False) 
 			] 
 		] 
