@@ -12,7 +12,8 @@ VICE: Versatile Integrator for Chemical Evolution
 Welcome to VICE's documentation! Source code and supplementary material can be 
 found in the `git repository`__. First time users should familiarize themselves 
 with VICE's API by going through the `tutorial`__, also available in the 
-`git repository`__. 
+`git repository`__. VICE's core developers are also happy to consult with 
+scientists looking to incorporate it into their research. 
 
 __ src_ 
 __ tutorial_ 
@@ -20,10 +21,6 @@ __ src_
 
 .. _src: https://github.com/giganano/VICE.git 
 .. _tutorial: https://github.com/giganano/VICE/blob/master/examples/QuickStartTutorial.ipynb 
-
-VICE's core developers are happy to consult with scientists looking to 
-incorporate it into their research. Any questions users may have can be 
-emailed to the primary author. 
 
 
 .. toctree:: 

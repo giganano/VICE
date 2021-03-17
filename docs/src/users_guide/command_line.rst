@@ -1,21 +1,21 @@
 
 From the Command Line 
 =====================
-Included with VICE is a command line entry which runs simple simulations from 
-a terminal. This feature allows the parameters of a onezone model to be 
-specified as command-line arguments; run ``python3 -m vice --help`` from a 
-terminal after installing VICE (from any directory except the source tree). 
+Included with VICE is a command line entry which runs simple one-zone models 
+from a terminal. This feature allows the parameters of the model to be 
+specified as command-line arguments; for usage guidelines, run 
+``python3 -m vice --help`` from a terminal after installing VICE (from any 
+directory except the source tree, if installed from source). 
 While these command-line capabilities are useful for their ease, VICE is 
 severaly limited in capability when ran from the command-line in comparison 
-to when ran from the Python_ interpreter. 
+to when ran from the python_ interpreter. 
 
-VICE also includes a command-line entry for automatically accessing the 
-documentation. Simply run ``python3 -m vice --docs`` from any directory 
-except the source tree, and the documentation will be opened by the default 
-web browser. 
+This same command-line entry can be used for automatic access to the tutorial 
+and the documentation. The commands are ``python3 -m vice --docs`` and 
+``python3 -m vice --tutorial``. 
 
 These features can also be accessed via the simpler command ``vice`` (e.g. 
 ``python3 -m vice --docs`` should do the same thing as ``vice --docs``). 
 
-.. _Python: https://www.python.org/ 
+.. _python: https://www.python.org/ 
 
