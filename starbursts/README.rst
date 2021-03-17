@@ -35,3 +35,5 @@ here in an ascii text format at ``data/kirby2010processed.dat``.
 __ k10_ 
 __ jw20_ 
 .. _k10: https://ui.adsabs.harvard.edu/abs/2010ApJS..191..352K/abstract
+
+The code provided here will run with any publicly available version of VICE. 
