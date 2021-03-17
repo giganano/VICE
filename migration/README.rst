@@ -2,7 +2,7 @@
 Johnson et al. (2021) Models
 ++++++++++++++++++++++++++++
 
-|feuillet2018| |feuillet2019| |ahumada2020| |vincenzo2021| 
+|apogeedr16| |feuillet2018| |feuillet2019| |vincenzo2021| 
 
 Here we provide instructions for running the Johnson et al. (2021) chemical 
 evolution models for the Milky Way disk, producing the figures which appear in 
@@ -10,6 +10,10 @@ the corresponding paper, and accessing the observational sample used in the
 comparison. The instructions herein assume that you as the user are already 
 familiar with the nature of the Johnson et al. (2021) models; this information 
 can be found in the associated journal publication. 
+
+.. 	|apogeedr16| image:: https://img.shields.io/badge/NASA%20ADS-APOGEE%20DR16-red 
+	:target: apogeedr16_ 
+	:alt: apogeedr16 
 
 .. 	|feuillet2018| image:: https://img.shields.io/badge/NASA%20ADS-Feuillet%20et%20al.%20(2018)-red 
 	:target: feuillet2018_ 
@@ -19,20 +23,17 @@ can be found in the associated journal publication.
 	:target: feuillet2019_ 
 	:alt: feuillet2019 
 
-.. 	|ahumada2020| image:: https://img.shields.io/badge/NASA%20ADS-Ahumada%20et%20al.%20(2020)-red 
-	:target: ahumada2020_ 
-	:alt: ahumada2020 
-
 .. 	|vincenzo2021| image:: https://img.shields.io/badge/NASA%20ADS-Vincenzo%20et%20al.%20(2021)-red 
 	:target: vincenzo2021_ 
 	:alt: vincenzo2021 
 
 .. _feuillet2018: https://ui.adsabs.harvard.edu/abs/2018MNRAS.477.2326F/abstract 
 .. _feuillet2019: https://ui.adsabs.harvard.edu/abs/2019MNRAS.489.1742F/abstract 
-.. _ahumada2020: https://ui.adsabs.harvard.edu/abs/2020ApJS..249....3A/abstract 
+.. _apogeedr16: https://ui.adsabs.harvard.edu/abs/2020ApJS..249....3A/abstract 
 .. _vincenzo2021: https://ui.adsabs.harvard.edu/abs/2021arXiv210104488V/abstract 
 
 .. Contents:: 
+
 
 Requirements 
 ============
@@ -41,7 +42,7 @@ To run these models, you must first `install the latest version of VICE`__,
 version of these models, you can achieve this with a simple ``pip install vice`` 
 command in a ``Unix`` terminal. VICE 1.2.0 is the earliest version that 
 includes the necessary functionality with which to handle stellar migration. 
-In turn, VICE 1.2.0 requires Python >= 3.5.0. 
+In turn, VICE 1.2.0 requires Python >= 3.6.0. 
 
 __ install_ 
 .. _install: https://vice-astro.readthedocs.io/en/latest/install.html 
@@ -61,14 +62,20 @@ this directory in your terminal on your personal computer without modifying
 the source code. No cluster computing necessary! 
 
 Although VICE itself has no runtime dependencies, the code base for the 
-Johnson et al. (2021) models requires ``matplotlib >= 2.0.0`` and 
-``numpy >= 1.17.0``. 
+Johnson et al. (2021) models requires matplotlib_ >= 2.0.0 and 
+NumPy_ >= 1.17.0. 
+
+.. _matplotlib: https://pypi.org/project/matplotlib/ 
+.. _NumPy: https://pypi.org/project/numpy/ 
+
 
 Maximum Number of Open File Descriptors 
 ---------------------------------------
 Computers enforce a limit on the number of open file descriptors at one 
-time by a single application; VICE will open two file descriptors per annulus. 
-With sufficiently narrow annuli, the user may exceed their system's limit for 
+time by a single application; VICE will open two file descriptors per ring in 
+the Johnson et al. (2021) models, plus one for the abundances of individual 
+stellar populations. 
+With sufficiently narrow rings, the user may exceed their system's limit for 
 the number of simultaneously open files. To view the current limit of your 
 system, run the following line in your ``Unix`` terminal: 
 
@@ -76,13 +83,14 @@ system, run the following line in your ``Unix`` terminal:
 
 	$ ulimit -n 
 
-The default number varies from system to system; on Mac OS X, it is 256, and on 
-a computer running CentOS 7.4 (a Linux operating system), it is 1024. With a 
-limit of ``n``, the user can run a model with at most ``n/2`` annuli without 
-producing a system error. If necessary, you can modify these limits using 
-``launchctl`` on Mac OS X and ``sysctl`` on Linux operating systems. These 
-commands are used to configure kernel parameters at runtime, and must be ran as 
-``root``; as such, doing so requires ``admin`` privileges over your computer. 
+The default number varies from system to system; on Mac OS X, it is 256, and 
+it's 1024 on some Linux distributions. 
+With a limit of ``n``, the user can run a model with at most ``n/2 - 1`` annuli 
+without producing a system error. If necessary, you can modify these limits 
+using ``launchctl`` on Mac OS X and ``sysctl`` on Linux operating systems. 
+These commands are used to configure kernel parameters at runtime, and must be 
+ran as ``root``; as such, doing so requires ``admin`` privileges over your 
+computer. 
 If you do not have such capabilities and need to increase this limit for your 
 research, you'll need to speak with your administrator about increasing the 
 maximum number of open file descriptors on your system. 
@@ -95,8 +103,8 @@ following set of lines:
 	$ sudo launchctl limit maxfiles <N> 
 	$ ulimit -n <N> 
 
-where ``<N>`` should be replaced with a number at least twice as large as the 
-number of annuli you intend on using in the model. If your administrator has 
+where ``<N>`` should be replaced with a number more than twice as large as the 
+number of rings you intend on using in the model. If your administrator has 
 increased your limit, you should only run the second line; the presence of a 
 ``sudo`` command will produce a ``permission denied`` error if you do. If you 
 are the administrator, however, the first line is necessary for the second to 
@@ -113,7 +121,7 @@ concepts as the Mac OS X procedure apply, but with slightly different syntax:
 	$ sudo sysctl -w fs.file-max=<N> 
 	$ ulimit -n <N> 
 
-where ``<N>`` should again be replaced with a number at least twice as large 
+where ``<N>`` should again be replaced with a number more than twice as large 
 as the number of annuli you intend on using in the model. 
 
 Recommended: Screen Sessions 
@@ -151,9 +159,10 @@ Before running the Johnson et al. (2021) models, you should ensure that you've
 satisfied all `Requirements`_, particularly the 
 `Maximum Number of Open File Descriptors`_. 
 
-All of the models can be ran via the ``simulations.py`` script in this 
-directory. Running ``python simulations.py --help`` produces the following 
-help message regarding the parameters which can be specified at runtime: 
+Unless you'd like to modify the source code for the models, they can all 
+be ran via the ``simulations.py`` script in this directory. 
+Running ``python simulations.py --help`` produces the following help message 
+regarding the parameters which can be specified at runtime: 
 
 :: 
 
@@ -201,7 +210,9 @@ table of the allowed values for each parameter:
 | evolution                  | Must be a string.          | 
 |                            | "static", "insideout",     | 
 |                            | "lateburst", or            | 
-|                            | "outerburst"               | 
+|                            | "outerburst". "static"     | 
+|                            | corresponds to a constant  | 
+|                            | star formation rate.       | 
 +----------------------------+----------------------------+ 
 | dt                         | Must be a float. Must be   | 
 |                            | positive.                  | 
@@ -238,17 +249,23 @@ following set of commands:
 	$ mkdir outputs/linear 
 	$ mkdir outputs/sudden 
 	$ mkdir outputs/post-processing 
-	$ python simulations.py -f --nstars=9 --name=./outputs/diffusion/insideout 
-	$ python simulations.py -f --nstars=9 --evolution=static --name=./outputs/diffusion/static 
-	$ python simulations.py -f --nstars=9 --evolution=lateburst --name=./outputs/diffusion/lateburst 
-	$ python simulations.py -f --nstars=9 --evolution=outerburst --name=./outputs/diffusion/outerburst 
-	$ python simulations.py -f --nstars=9 --migration=linear --name=./outputs/linear/insideout 
-	$ python simulations.py -f --nstars=9 --migration=sudden --name=./outputs/sudden/insideout 
-	$ python simulations.py -f --nstars=9 --migration=post-process --name=./outputs/post-process/insideout 
+	$ python simulations.py -f --nstars=8 --name=./outputs/diffusion/insideout 
+	$ python simulations.py -f --nstars=8 --evolution=static --name=./outputs/diffusion/static 
+	$ python simulations.py -f --nstars=8 --evolution=lateburst --name=./outputs/diffusion/lateburst 
+	$ python simulations.py -f --nstars=8 --evolution=outerburst --name=./outputs/diffusion/outerburst 
+	$ python simulations.py -f --nstars=8 --migration=linear --name=./outputs/linear/insideout 
+	$ python simulations.py -f --nstars=8 --migration=sudden --name=./outputs/sudden/insideout 
+	$ python simulations.py -f --nstars=8 --migration=post-process --name=./outputs/post-process/insideout 
 
-If desired, each individual call to ``simulations.py`` can be ran separately in 
-a ``screen`` session following a single run of each of the ``mkdir`` commands 
-above. 
+**Note**: These models are computationally expensive. At any given moment 
+during the integration, they can require up to ~3 GB of RAM each. 
+Users running these models on systems which would be strained by such demand 
+should therefore run lower resolution versions by specifying lower numbers to 
+``nstars`` and larger numbers to ``zonewidth``. 
+
+If your system has adequate space to do so, each individual call to 
+``simulations.py`` can be ran separately in a ``screen`` session following a 
+single run of each of the ``mkdir`` commands above. 
 
 
 Producing the Figures 
@@ -264,7 +281,7 @@ following help message:
 	usage: figures.py [-h] [--fig1] [--fig2] [--fig3] [--fig4] [--fig5] [--fig6]
 	                  [--fig7] [--fig8] [--fig9] [--fig10] [--fig11] [--fig12]
 	                  [--fig13a] [--fig13b] [--fig14] [--fig15] [--fig16]
-	                  [--fig17]
+	                  [--fig17] [--fig18]
 
 	Produce the figures in Johnson et al. (2021).
 
@@ -288,6 +305,7 @@ following help message:
 	  --fig15     Produce Fig. 15.
 	  --fig16     Produce Fig. 16.
 	  --fig17     Produce Fig. 17.
+	  --fig18     Produce Fig. 18. 
 
 These parameters simply tell the script which figure(s) you'd like produced. 
 For example, ``python figures.py --fig9`` will produce only Fig. 9 of 
@@ -321,7 +339,36 @@ Point Observatory Galaxy Evolution Experiment (APOGEE; `Ahumada et al. 2020`__).
 __ feuillet2018_ 
 __ feuillet2019_ 
 __ vincenzo2021_ 
-__ ahumada2020_ 
+__ apogeedr16_ 
+
+APOGEE DR16
+-----------
+
+|apogeedr16| 
+
+The sample of stars from APOGEE DR16 employed in the Johnson et al. (2021) 
+comparison can be found at ``./data/dr16stars.dat``. This is a plain ascii 
+text file containing APOGEE IDs, an identifier tagging stars as either high- or 
+low-alpha sequence, [Mg/H], [O/H], [Fe/H], [Mg/Fe], effective temperatures, 
+surface gravities, galactocentric radii in kpc, height above the disk midplane 
+in kpc, and signal-to-noise ratios for each star that passes the following 
+cuts: 
+
+	- Effective temperatures between 4000 and 4600 K 
+	- Surface gravities (log g) between 1.0 and 2.5 
+	- Signal-to-Noise ratios larger than 100 
+
+These cuts ensure that the sample consists of stars on the upper red giant 
+branch, which are luminous enough to sample a wide range of galactocentric 
+radius. 
+This also safely excludes red clump stars to avoid potential systematic 
+differences in the abundances between the two spectral classes. 
+
+The rest of the APOGEE DR16 data can be accessed through the 
+`Sloan Digital Sky Survey`__. 
+
+__ sdss_ 
+.. _sdss: https://www.sdss.org/dr16/
 
 Feuillet et al. (2018) 
 ----------------------
@@ -330,12 +377,13 @@ Feuillet et al. (2018)
 
 The `Feuillet et al. (2018)`__ sample can be found at ``./data/feuillet2018``. 
 In this directory are three files: ``age_alpha.dat``, ``age_mh.dat``, and 
-``age_oh.dat``, corresponding to the age-[:math:`\alpha`/Fe] relation, the 
-age-[M/H] relation, and the age-[O/H] relation. Each of these files contains 
-four columns, the first two of which are the minimum and maximum of a bin in 
-[:math:`\alpha`/Fe], [O/H], or [M/H], depending on the file. The third and 
-fourth are the mean and standard deviation of a gaussian in log-age fit to the 
-data in each abundance bin. 
+``age_oh.dat``, corresponding to the age-[alpha/Fe] relation, the 
+age-[M/H] relation, and the age-[O/H] relation, respectively. 
+Each of these files stores ascii text containing four columns, the first two of 
+which are the minimum and maximum of a bin in [alpha/Fe], [O/H], or 
+[M/H], depending on the file. 
+The third and fourth are the mean and standard deviation of a gaussian in 
+log age fit to the data in each abundance bin. 
 
 __ feuillet2018_ 
 
@@ -346,12 +394,12 @@ Feuillet et al. (2019)
 
 The `Feuillet et al. (2019)`__ sample can be found at ``./data/age_alpha``, 
 ``./data/age_mh``, and ``./data/age_oh``, each directory containing the 
-reported age-[:math:`\alpha`/Fe], age-[M/H], and age-[O/H] relations, 
+reported age-[alpha/Fe], age-[M/H], and age-[O/H] relations, 
 respectively. The file names in each directory are of the format 
 ``ELEM_GAUSS_AGE_A_B_C_D_X.fits``, where ``A`` and ``B`` denote the minimum 
 and maximum galactocentric radius in kpc, and ``C`` and ``D`` the minimum and 
-maximum heights above/below the galaxy disk midplane :math:`\left|z\right|` of 
-the sample. In each of the fits files, the following columns are used in the 
+maximum disk midplane distances |z| of the sample. 
+In each of the fits files, the following columns are used in the 
 Johnson et al. (2021) comparison: 
 
 	- ``BIN_AB`` : The minimum of the bin in abundance 
@@ -366,33 +414,6 @@ Although there are other quantities stored in these files, only these columns
 are relevant to Johnson et al. (2021). 
 
 
-Ahumada et al. (2020) 
----------------------
-
-|ahumada2020| 
-
-The sample of stars from APOGEE DR16 employed in the Johnson et al. (2021) 
-comparison can be found at ``./data/dr16stars.dat``. This is a plain ascii 
-text file containing APOGEE IDs, an identifier tagging stars as either high- or 
-low-alpha sequence, [Mg/H], [O/H], [Fe/H], [Mg/Fe], effective temperatures, 
-surface gravities, galactocentric radii in kpc, height above the disk midplane 
-in kpc, and signal-to-noise ratios for each stars that passes the following 
-cuts: 
-
-	- Effective temperatures between 4000 and 4600 K 
-	- Surface gravities (log g) between 1.0 and 2.5 
-	- Signal-to-Noise ratios larger than 100 
-
-These cuts ensure that the sample consists of stars on the upper red giant 
-branch, safely excluding red clump stars to avoid obvious systematics in the 
-abundance distributions. 
-
-The rest of the APOGEE DR16 data can be accessed through the 
-`Sloan Digital Sky Survey`__. 
-
-__ sdss_ 
-.. _sdss: https://www.sdss.org/dr16/
-
 Vincenzo et al. (2021) 
 ----------------------
 
@@ -401,10 +422,10 @@ Vincenzo et al. (2021)
 The `Vincenzo et al. (2021)`__ sample is located at ``./data/ofe_mdfs``. The 
 files names in this directory are of the format 
 ``RminA_hminB_FeHminC.dat``. ``A`` denotes the minimum galactocentric radius in 
-kpc of the correspond 2-kpc wide bin. ``B`` denotes the minimum height 
-above/below the disk midplane in kpc of the corresponding region (either 
+kpc of the corresponding 2-kpc wide bin. ``B`` denotes the minimum disk 
+midplane distance in kpc of the corresponding region (either 
 0 - 0.5 kpc, 0.5 - 1 kpc, or 1 - 2 kpc). ``C`` denotes the minimum [Fe/H] of 
-the metallicity bin with width :math:`\Delta` [Fe/H] = 0.2. These are plain 
+the metallicity bin with width [Fe/H] = 0.2. These are plain 
 ascii text files, where the final two columns contain the value of [O/Fe] and 
 the value of the distribution, respectively. 
 
