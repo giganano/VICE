@@ -49,7 +49,6 @@ _CONFIG_ = {
 			vice.cumulative_return_fraction, 
 			vice.main_sequence_mass_fraction, 
 			vice.single_stellar_population, 
-			vice.dataframe, 
 			vice.yields, 
 			vice.elements, 
 			vice.imf, 
@@ -64,6 +63,7 @@ _CONFIG_ = {
 			vice.stars, 
 			vice.mirror, 
 			vice.toolkit, 
+			vice.dataframe, 
 			vice.ScienceWarning, 
 			vice.VisibleRuntimeWarning, 
 			vice.VisibleDeprecationWarning, 
@@ -793,7 +793,7 @@ _CONFIG_ = {
 	}, 
 	vice.elements.yields.agb: {
 		"filename": 	"vice.elements.yields.agb.rst", 
-		"header": 		"vice.elements.yield.agb", 
+		"header": 		"vice.elements.yields.agb", 
 		"subs": 		[] 
 	}, 
 	vice.elements.yields.ccsne: {
