@@ -34,18 +34,18 @@ Versatile Integrator for Chemical Evolution
 VICE is a user-friendly python_ package designed to model chemical enrichment 
 in galaxies. 
 
-| * 77 elements on the periodic table 
-| * Fast integration of one-zone models 
-| * Enrichment from single stellar populations 
-| * Highly flexible nucleosynthetic yield calculations 
-| * User-defined mathematical forms describing: 
-| 	- Nucleosynthetic yields in simulations 
-| 	- Mixing processes in multi-zone models 
-| 	- Infall and star formation histories 
-| 	- The stellar initial mass function 
-| 	- The star formation law 
-| 	- Element-by-element infall metallicities 
-| 	- Type Ia supernova delay-time distributions 
+* 77 elements on the periodic table 
+* Fast integration of one-zone models 
+* Enrichment from single stellar populations 
+* Highly flexible nucleosynthetic yield calculations 
+* User-defined mathematical forms describing: 
+	- Nucleosynthetic yields in simulations 
+	- Mixing processes in multi-zone models 
+	- Infall and star formation histories 
+	- The stellar initial mass function 
+	- The star formation law 
+	- Element-by-element infall metallicities 
+	- Type Ia supernova delay-time distributions 
 
 .. _python: https://www.python.org/ 
 
