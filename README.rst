@@ -34,18 +34,18 @@ Versatile Integrator for Chemical Evolution
 VICE is a user-friendly python_ package designed to model chemical enrichment 
 in galaxies. 
 
-* 77 elements on the periodic table 
-* Fast integration of one-zone models 
-* Enrichment from single stellar populations 
-* Highly flexible nucleosynthetic yield calculations 
-* User-defined mathematical forms describing: 
-	- Nucleosynthetic yields in simulations 
-	- Mixing processes in multi-zone models 
-	- Infall and star formation histories 
-	- The stellar initial mass function 
-	- The star formation law 
-	- Element-by-element infall metallicities 
-	- Type Ia supernova delay-time distributions 
+| * 77 elements on the periodic table 
+| * Fast integration of one-zone models 
+| * Enrichment from single stellar populations 
+| * Highly flexible nucleosynthetic yield calculations 
+| * User-defined mathematical forms describing: 
+| 	- Nucleosynthetic yields in simulations 
+| 	- Mixing processes in multi-zone models 
+| 	- Infall and star formation histories 
+| 	- The stellar initial mass function 
+| 	- The star formation law 
+| 	- Element-by-element infall metallicities 
+| 	- Type Ia supernova delay-time distributions 
 
 .. _python: https://www.python.org/ 
 
@@ -101,12 +101,13 @@ __ license_
 
 Journal Related Features 
 ========================
-We provide `here`__ the python_ code which runs the simulations and produces 
-the figures in `Johnson & Weinberg (2020)`__. After running ``make starburst`` 
-in this directory, the figures will be located here under starbursts_.  
+Under starbursts_, we provide the python_ code which runs the simulations and 
+produces the figures in `Johnson & Weinberg (2020)`__. Under migration_, we 
+provide the same for Johnson et al. (2021). 
 
-__ starbursts_ 
-__ jw20_ 
 .. _starbursts: https://github.com/giganano/VICE/tree/master/starbursts 
-.. _jw20: https://ui.adsabs.harvard.edu/abs/2020MNRAS.498.1364J/abstract 
+.. _migration: https://github.com/giganano/VICE/tree/master/migration 
+__ jw20_ 
+.. _jw20:  https://ui.adsabs.harvard.edu/abs/2020MNRAS.498.1364J/abstract 
+
 
