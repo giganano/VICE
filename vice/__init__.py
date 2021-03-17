@@ -1,12 +1,18 @@
 r"""
 VICE: Versatile Integrator for Chemical Evolution 
 
-Provides
---------
-- Simulations of one-zone and multi-zone galactic chemical evolution models 
-- Simulations of nucleosynthesis from single stellar populations 
-- Built-in yield tables from nucleosynthesis studies 
-- A dataframe object meant for case-insensitive lookup 
+* 77 elements on the periodic table 
+* Fast integration of one-zone models 
+* Enrichment from single stellar populations 
+* Highly flexible nucleosynthetic yield calculations 
+* User-defined mathematical forms describing: 
+	- Nucleosynthetic yields in simulations 
+	- Mixing processes in multi-zone models 
+	- Infall and star formation histories 
+	- The stellar initial mass function 
+	- The star formation law 
+	- Element-by-element infall metallicities 
+	- Type Ia supernova delay-time distributions 
 
 How to Access the Documentation: 
 --------------------------------
