@@ -2,7 +2,7 @@
 VICE Example Code 
 +++++++++++++++++
 
-First time users of VICE should first go through the `quick start tutorial`__ 
+First time users of VICE should first go through the `tutorial`__ 
 to familiarize themselves with how to use VICE's basic features. 
 
 __ tutorial_ 
@@ -11,15 +11,28 @@ __ tutorial_
 Here we also provide example scripts to help users further familiarize 
 themselves with VICE. 
 
-1. `A Simple Example`__: Run a simple onezone model and plot the results 
+1. `A Simple Example`__: Run a simple one-zone model and plot the results 
 2. **yields.py**: Modify nucleosynthetic yield settings 
 3. **yield_import.py**: Import nucleosynthetic yield settings from another file 
 4. **generate_functions.py**: Generate functions for use in simulations 
 
 __ example_ 
 
+Journal Related Examples 
+========================
+Included in VICE's source tree is code which runs the simulations and produces 
+the figures in `Johnson & Weinberg (2020)`__ and Johnson et al. (2021). 
+While not located in this directory, users are welcome to use these scripts as 
+examples of how to use VICE. 
+
+__ jw20_ 
+.. _jw20: https://ui.adsabs.harvard.edu/abs/2020MNRAS.498.1364J/abstract
+
+*Note*: Links to the Johnson et al. (2021) paper will be added here following 
+its announcement. 
+
 Johnson & Weinberg (2020) Starbursts Paper Code 
-===============================================
+-----------------------------------------------
 
 |paper1| 
 
@@ -27,21 +40,34 @@ Johnson & Weinberg (2020) Starbursts Paper Code
 	:target: https://ui.adsabs.harvard.edu/abs/2019arXiv191102598J/abstract 
 	:alt: paper1 
 
-Included in VICE's source tree is the `code`__ which runs the simulations and 
-produces all of the figures in `Johnson & Weinberg (2020)`__. While not 
-located in this directory, users are welcome to use it as examples of how to 
-use VICE. This code can also be ran by running ``make starburst`` from VICE's 
-source directory. 
+Code for the `Johnson & Weinberg (2020)`__ models is available `here`__, in 
+VICE's GitHub repository under ``starbursts``. 
+These models focus on the effects of bursty star formation histories in 
+one-zone models. 
 
-__ starbursts_ 
 __ jw20_ 
+__ starbursts_ 
 .. _starbursts: https://github.com/giganano/VICE/tree/master/starbursts 
-.. _jw20: https://ui.adsabs.harvard.edu/abs/2019arXiv191102598J/abstract 
 
 .. _example: 
 
+Johnson et al. (2021) Migration Paper Code 
+------------------------------------------
+Code for the Johnson et al. (2021) models is available `here`__, in VICE's 
+GitHub repository under ``migration``. 
+These models focus on the effects of stellar migration on the enrichment 
+history of the Milky Way. 
+
+__ migration_ 
+.. _migration: https://github.com/giganano/VICE/tree/master/migration
+
+
 A Simple Example: A Simulation of a Galaxy with Known Star Formation History 
 ============================================================================
+Below is a simple example of how to run a one-zone model of a galaxy where 
+VICE is ran in star formation mode (i.e. the user specifies the star 
+formation history). 
+
 .. code:: python 
 
 	import matplotlib.pyplot as plt 

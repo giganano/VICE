@@ -311,6 +311,9 @@ These parameters simply tell the script which figure(s) you'd like produced.
 For example, ``python figures.py --fig9`` will produce only Fig. 9 of 
 Johnson et al. (2021), where as ``python figures.py --fig9 --fig10`` will 
 produces Figs. 9 and 10. 
+This script saves figures here under a directory named ``figures``; users 
+should therefore be careful to run ``mkdir figures`` prior to running 
+the ``figures.py`` script. 
 
 **WARNING**: In order for this script to work properly, the outputs of each of 
 the Johnson et al. (2021) models need to be at the following locations: 
