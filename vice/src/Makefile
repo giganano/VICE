@@ -1,62 +1,41 @@
 
-CC = gcc 
-CFLAGS = -fPIC -Wsign-conversion -Wsign-compare 
-SOURCES = $(wildcard *.c) 
-OBJECTS = $(SOURCES:.c=.o) 
-EXTS = dataframe/*.o io/*.o multizone/*.o objects/*.o singlezone/*.o ssp/*.o \
-	toolkit/*.o yields/*.o 
+CC 			:= gcc 
+CFLAGS 		:= -fPIC -Wsign-conversion -Wsign-compare 
+SOURCES 	:= $(wildcard *.c) 
+HEADERS 	:= $(wildcard *.h) 
+OBJECTS 	:= $(SOURCES:.c=.o) 
+SUBDIRS 	:= $(wildcard */) 
 
 all: print_message vice.so 
-.PHONY: print_message clean clibclean  
 
+.PHONY: print_message 
 print_message: 
 	@ echo Compiling VICE C Library 
 	@ echo C Compiler: $(CC) 
 	@ echo CFLAGS: $(CFLAGS) 
 	@ echo Compiling vice/src/ 
 
-vice.so: $(OBJECTS) 
-	@ $(MAKE) -C dataframe/ 
-	@ $(MAKE) -C io/ 
-	@ $(MAKE) -C multizone/ 
-	@ $(MAKE) -C objects/ 
-	@ $(MAKE) -C singlezone/ 
-	@ $(MAKE) -C ssp/ 
-	@ $(MAKE) -C toolkit/ 
-	@ $(MAKE) -C yields/ 
-	@ $(MAKE) -C tests/ 
-	@ $(CC) *.o $(EXTS) -shared -o $@ 
+vice.so: $(OBJECTS) $(SUBDIRS) 
+	@ $(CC) $(shell find . -name "*.o") -shared -o $@ 
 
-%.o: %.c *.h 
+%.o: %.c $(HEADERS) 
 	@ $(CC) $(CFLAGS) -c $< -o $@ 
 
-clibclean: 
-	@ echo Cleaning C Library 
-	@ echo vice/src/ 
-	@ rm -f vice.so  
-	@ rm -f *.o 
-	@ $(MAKE) -C dataframe/ clibclean 
-	@ $(MAKE) -C io/ clibclean 
-	@ $(MAKE) -C multizone/ clibclean 
-	@ $(MAKE) -C objects/ clibclean 
-	@ $(MAKE) -C singlezone/ clibclean 
-	@ $(MAKE) -C ssp/ clibclean 
-	@ $(MAKE) -C toolkit/ clibclean 
-	@ $(MAKE) -C yields/ clibclean 
-	@ $(MAKE) -C tests/ clibclean 
+.PHONY: $(SUBDIRS) 
+$(SUBDIRS): 
+	@ $(MAKE) -C $@ 
 
+.PHONY: clean 
 clean: 
 	@ echo Cleaning vice/src/ 
-	@ rm -f *.o 
 	@ rm -f *.so 
-	@ rm -rf __pycache__ 
-	@ $(MAKE) -C dataframe/ clean 
-	@ $(MAKE) -C io/ clean 
-	@ $(MAKE) -C multizone/ clean 
-	@ $(MAKE) -C objects/ clean 
-	@ $(MAKE) -C singlezone/ clean 
-	@ $(MAKE) -C ssp/ clean 
-	@ $(MAKE) -C toolkit/ clean 
-	@ $(MAKE) -C yields/ clean 
-	@ $(MAKE) -C tests/ clean 
+	@ if [ -d "__pycache__" ] ; then \
+		rm -rf __pycache__ ; \
+	fi 
+	@ for i in $(OBJECTS) ; do \
+		rm -f $$i ; \
+	done 
+	@ for i in $(SUBDIRS) ; do \
+		$(MAKE) -C $$i clean ; \
+	done 
 

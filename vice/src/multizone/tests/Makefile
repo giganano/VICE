@@ -1,29 +1,33 @@
 
-CC = gcc 
-CFLAGS = -fPIC -Wsign-conversion -Wsign-compare 
-SOURCES = $(wildcard *.c) 
-OBJECTS = $(SOURCES:.c=.o) 
-CYTHON_SOURCES = $(wildcard *.pyx) 
-CYTHON_OUTPUTS = $(CYTHON_SOURCES:.pyx=.c) 
+CC 			:= gcc 
+CFLAGS 		:= -fPIC -Wsign-conversion -Wsign-compare 
+SOURCES 	:= $(wildcard *.c) 
+HEADERS 	:= $(wildcard *.h) 
+OBJECTS 	:= $(SOURCES:.c=.o) 
+SUBDIRS 	:= $(wildcard */) 
 
-all: print_message $(OBJECTS) 
-.PHONY: print_message clean clibclean 
+all: print_message $(OBJECTS) $(SUBDIRS) 
 
+.PHONY: print_message 
 print_message: 
 	@ echo Compiling vice/src/multizone/tests/ 
 
-%.o: %.c *.h 
+%.o: %.c $(HEADERS) 
 	@ $(CC) $(CFLAGS) -c $< -o $@ 
 
-clibclean: 
-	@ echo vice/src/multizone/tests/ 
-	@ rm -f *.o 
+.PHONY: $(SUBDIRS) 
+$(SUBDIRS): 
+	@ $(MAKE) -C $@ 
 
+.PHONY: clean 
 clean: 
 	@ echo Cleaning vice/src/multizone/tests/ 
-	@ rm -f *.o 
-	@ for i in $(CYTHON_OUTPUTS) ; do \
+	@ if [ -d "__pycache__" ] ; then \
+		rm -rf __pycache__ ; \
+	fi 
+	@ for i in $(OBJECTS) ; do \
 		rm -f $$i ; \
 	done 
-	@ rm -rf __pycache__ 
-	@ $(MAKE) -C cases/ clean 
+	@ for i in $(SUBDIRS) ; do \
+		$(MAKE) -C $$i clean ; \
+	done 

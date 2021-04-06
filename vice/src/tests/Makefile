@@ -1,30 +1,40 @@
 
-CC = gcc 
-CFLAGS = -fPIC -Wsign-conversion -Wsign-compare 
-SOURCES = $(filter-out $(wildcard _*.c), $(wildcard *.c)) 
-OBJECTS = $(SOURCES:.c=.o) 
-CYTHON_SOURCES = $(wildcard *.pyx) 
-CYTHON_OUTPUTS = $(CYTHON_SOURCES:.pyx=.c) 
+CC 					:= gcc 
+CFLAGS 				:= -fPIC -Wsign-conversion -Wsign-compare 
+SOURCES 			:= $(wildcard *.c) 
+HEADERS 			:= $(wildcard *.h) 
+OBJECTS 			:= $(SOURCES:.c=.o) 
+CYTHON_SOURCES 		:= $(wildcard *.pyx) 
+CYTHON_OUTPUTS 		:= $(CYTHON_SOURCES:.pyx=.c) 
+SUBDIRS 			:= $(wildcard */) 
 
-all: print_message $(OBJECTS)  
-.PHONY: print_message clean clibclean 
+all: print_message $(OBJECTS) $(SUBDIRS) 
 
+.PHONY: print_message 
 print_message: 
 	@ echo Compiling vice/src/tests/ 
 
-%.o: %.c *.h 
+%.o: %.c $(HEADERS) 
 	@ $(CC) $(CFLAGS) -c $< -o $@ 
 
-clibclean: 
-	@ echo vice/src/tests/ 
-	@ rm -f *.o 
+.PHONY: $(SUBDIRS) 
+$(SUBDIRS): 
+	@ $(MAKE) -C $@ 
 
+.PHONY: clean 
 clean: 
 	@ echo Cleaning vice/src/tests/ 
-	@ rm -f *.o 
 	@ rm -f *.so 
+	@ if [ -d "__pycache__" ] ; then \
+		rm -rf __pycache__ ; \
+	fi 
+	@ for i in $(OBJECTS) ; do \
+		rm -f $$i ; \
+	done 
 	@ for i in $(CYTHON_OUTPUTS) ; do \
 		rm -f $$i ; \
 	done 
-	@ rm -rf __pycache__ 
+	@ for i in $(SUBDIRS) ; do \
+		$(MAKE) -C $$i clean ; \
+	done 
 

@@ -1,29 +1,34 @@
 
-CC = gcc 
-CFLAGS = -fPIC -Wsign-conversion -Wsign-compare 
-SOURCES = $(wildcard *.c) 
-OBJECTS = $(SOURCES:.c=.o) 
+CC 			:= gcc 
+CFLAGS 		:= -fPIC -Wsign-conversion -Wsign-compare 
+SOURCES 	:= $(wildcard *.c) 
+HEADERS 	:= $(wildcard *.h) 
+OBJECTS 	:= $(SOURCES:.c=.o) 
+SUBDIRS 	:= $(wildcard */) 
 
-all: print_message $(OBJECTS) tests 
-.PHONY: print_message tests clean clibclean 
+all: print_message $(OBJECTS) $(SUBDIRS) 
 
+.PHONY: print_message 
 print_message: 
 	@ echo Compiling vice/src/io/ 
 
-%.o: %.c *.h 
+%.o: %.c $(HEADERS) 
 	@ $(CC) $(CFLAGS) -c $< -o $@ 
 
-tests: 
-	@ $(MAKE) -C tests/ 
+.PHONY: $(SUBDIRS) 
+$(SUBDIRS): 
+	@ $(MAKE) -C $@ 
 
-clibclean: 
-	@ echo vice/src/io/ 
-	@ rm -f *.o 
-	@ $(MAKE) -C tests/ clibclean 
-
+.PHONY: clean 
 clean: 
 	@ echo Cleaning vice/src/io/ 
-	@ rm -f *.o 
-	@ rm -rf __pycache__ 
-	@ $(MAKE) -C tests/ clean 
+	@ if [ -d "__pycache__" ] ; then \
+		rm -rf __pycache__ ; \
+	fi 
+	@ for i in $(OBJECTS) ; do \
+		rm -f $$i ; \
+	done 
+	@ for i in $(SUBDIRS) ; do \
+		$(MAKE) -C $$i clean ; \
+	done 
 
