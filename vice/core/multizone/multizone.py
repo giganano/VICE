@@ -50,6 +50,8 @@ class multizone(object):
 	**Signature**: vice.multizone(name = "multizonemodel", n_zones = 10, 
 	n_stars = 1, simple = False, verbose = False) 
 
+	.. versionadded:: 1.2.0 
+
 	Parameters 
 	----------
 	name : ``str`` [default : "multizonemodel"] 
@@ -67,7 +69,7 @@ class multizone(object):
 	----------
 	name : ``str`` [default : "multizonemodel"] 
 		The name of the simulation. Output will be stored in a directory under 
-		this name. 
+		this name with a ".vice" extension. 
 	zones : ``zone_array`` [default : always ``singlezone`` objects] 
 		An array-like object of ``singlezone`` objects, detailing the 
 		evolutionary parameters of each zone. 
@@ -78,14 +80,17 @@ class multizone(object):
 		
 		.. note:: This cannot be changed after creation of the object. 
 
-		.. note:: If this is equal to 1, a ``singlezone`` object is created 
-			with the default parameters. 
+		.. note:: If this is equal to 1, VICE will construct a ``singlezone`` 
+			object rather than a ``multizone`` object. 
+
+		.. note:: See below on your system's maximum number of open file 
+			descriptors. 
 
 	n_stars : ``int`` [default : 1] 
-		The number of star particles per zone per timestep. 
+		The number of star particles forming in each zone at each timestep. 
 	simple : ``bool`` [default : False] 
-		If True, the positions of stars at intermediate times will be ignored. 
-		That is, mixing is taken into account at only the final timestep. 
+		If True, each individual zone will be simulated as a one-zone model, 
+		ignoring all migration prescriptions. 
 	verbose : ``bool`` [default : False] 
 		Whether or not to print to the console as the simulation runs. 
 
@@ -97,27 +102,62 @@ class multizone(object):
 		Obtain a ``multizone`` object with the parameters of one that produced 
 		an output. 
 
+	.. role:: raw-html(raw) 
+		:format: html 
+
 	Notes 
 	-----
+	**Implementation** :raw-html:`<br />` 
+	VICE uses a forward Euler approach to handle its timestepping. Although 
+	this isn't the highest numerical resolution timestepping method, the 
+	dominant source of error in VICE is not in the numerics but in the 
+	approximations built into the model itself. Solutions in which the 
+	numerical error is adequately small can be achieved with reasonable 
+	timestep sizes. Furthermore, the forward Euler approach allows VICE to 
+	treat the discretization of timesteps to correspond directly to a 
+	discretization of stellar populations, simplifying its implementation and 
+	allowing fast numerical solutions. The exact timestamps at which functions 
+	of time describing evolutionary parameters will be evaluated is also a 
+	simple calculation as a result, since they will all be integer multiples of 
+	the timestep size. For further details, see VICE's science documentation: 
+	https://vice-astro.readthedocs.io/en/latest/science_documentation/index.html 
+	
+	**Maximum Number of Open File Descriptors** :raw-html:`<br />` 
+	All operating systems by default limit the number of open file descriptors 
+	per process, though with administrator's privileges this number can be 
+	temporarily raised. For each simulation, VICE must open two files per zone, 
+	plus one to write the star particle information to. Simulations with a 
+	particularly high number of zones will therefore require a relatively high 
+	number of files to be opened. The system-enforced maximum number of open 
+	file descriptors can be accessed by running ``ulimit -n`` in a ``Unix`` 
+	terminal. Users should be careful to ensure that this number is higher than 
+	what is required for a given simulation at runtime. Users on machines for 
+	which they don't have administrator's privileges should speak with their 
+	administrator about raising their limit if their models require more zones 
+	than their current settings will allow. 
+
+	**Computational Overhead** :raw-html:`<br />` 
+	The number of zone indeces that VICE must keep track of scales with the 
+	product of the number of timesteps, number of zones, and the attribute 
+	``nstars``. The computational overhead can, in theory, be arbitarily large 
+	as long as the system has the required space. This is in addition to the 
+	abundance information at all timesteps required for calculating 
+	metallicity-dependent yields and recycling rates from previous stellar 
+	populations. In practice, the ``milkyway`` object (a built-in subclass of 
+	this one) using 200 zones, 1,321 timesteps, and 8 stellar populations per 
+	zone per timestep with two elements can require up to ~2 GB of RAM at any 
+	given moment, processing nearly 30 GB worth of data in total with otherwise 
+	default parameters. These models can take up to ~5 hours to fully integrate 
+	on a single CPU. For comparison, the same model with 1 stellar population 
+	per zone per timestep and 256 timesteps, but still 200 zones, requires up 
+	to ~800 MB of RAM and requires only ~2.5 minutes to fully integrate over 
+	~8.5 GB of data. Using 40 zones instead of 200 then requires ~250 MB of RAM 
+	and fully integrates inover ~7 GB of total data in ~11 seconds. 
+
+	**Relationship to ``vice.singlezone``** :raw-html:`<br />` 
 	This object makes use of composition. At its core, it is simply an array of 
 	``singlezone`` objects, which the user may manipulate like all other 
 	``singlezone`` objects. 
-
-	.. seealso:: ``vice.singlezone`` 
-
-	POSIX operating systems by default limit the number of files open per 
-	process, though with administrator's privileges this number can be 
-	temporarily raised. For each simulation, VICE opens two files per zone, 
-	plus one to write the star particle information to, in addition to the 
-	python files it must import for overhead. Simulations with a particularly 
-	high number of zones will therefore require a relatively high number of 
-	files to be opened. The maximum number of files per process can be 
-	accessed by running ``ulimit -n`` in a bash terminal; users should be 
-	careful to ensure that this number is significantly higher than what is 
-	required for a given simulation. It is recommended that users run a coarse 
-	timestep, low star particle per timestep per zone version of higher 
-	resolution simulations before letting them run to ensure that errors like 
-	this do not arise when integration times are long. 
 
 	Example Code 
 	------------
@@ -212,7 +252,7 @@ Got: %s""" % (type(n_zones)))
 
 		**Signature**: vice.multizone.from_output(arg) 
 
-		.. versionadded:: 1.1.0 
+		.. versionadded:: 1.2.0 
 
 		Parameters 
 		----------
@@ -596,10 +636,10 @@ simulation was ran.""" % (i, j), UserWarning)
 		final timestep. If ``False``, this information will be taken into 
 		account as the simulation evolves. 
 
-		.. warning:: Johnson et al. (2020, in prep) argues that the positions 
-			of stars as they migrate is necessary information to accurately 
-			model galactic chemical evolution. This suggests that this 
-			attribute should be always be ``False``. 
+		.. warning:: Simulating all zones as a one-zone model will neglect all 
+			time-dependent migration prescriptions built into this model, with 
+			migration being a purely post-processing prescription in these 
+			cases.  
 
 		Raises 
 		------
@@ -641,7 +681,7 @@ simulation was ran.""" % (i, j), UserWarning)
 			the simulation output files. 
 		pickle : ``bool`` [default : True] 
 			If ``True``, VICE will save the attributes of this object with the 
-			output. See note below. 
+			output. See below. 
 
 		Returns 
 		-------
@@ -659,8 +699,7 @@ simulation was ran.""" % (i, j), UserWarning)
 			-	Any of the attributes ``IMF``, ``recycling``, ``delay``, 
 				``RIa``, ``schmidt``, ``schmidt_index``, ``MgSchmidt``, 
 				``m_upper``, ``m_lower``, or ``Z_solar`` aren't uniform across 
-				all zones. Realistically these attributes would be, but this 
-				is not required for the simulation to run properly. 
+				all zones. 
 
 		Other exceptions are raised by ``vice.singlezone.run``. 
 
@@ -706,7 +745,8 @@ simulation was ran.""" % (i, j), UserWarning)
 			These data make up a significant fraction of the disk usage of 
 			output files. Therefore, if many multizone models are to be ran, 
 			users are recommended to specify ``pickle = False`` to lower the 
-			storage space required. 
+			storage space required. This will, however, render the 
+			vice.multizone.from_output function useless for that output. 
 
 		Example Code 
 		------------

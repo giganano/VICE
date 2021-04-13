@@ -1273,7 +1273,7 @@ All elemental yields in the current simulation will be set to the table of \
 		else: 
 			self._agb_model = None 
 
-####### DEPRECATED ON DEVELOPMENT BRANCH AFTER RELEASE OF VERSION 1.1.0 #######
+####### DEPRECATED #######
 # 		if isinstance(value, strcomp): 
 # 			if value.lower() in agb._grid_reader._RECOGNIZED_STUDIES_: 
 # 				if (any(map(lambda x: atomic_number[x] > 28, self.elements)) 
@@ -1559,31 +1559,20 @@ Invalid path: could not create output directory from name: %s.vice/""" % (
 		""" 
 		if overwrite: 
 			return True 
+		elif os.path.exists("%s.vice" % (self.name)): 
+			
+			answer = input("""Output directory already exists. Overwriting \
+will delete all of its contents, leaving only the results of the current \
+simulation.\nOutput directory: %s.vice\nOverwite? (y | n) """ % (self.name)) 
+
+			# be emphatic about it 
+			while answer.lower() not in ["yes", "y", "no", "n"]: 
+				answer = input("Please enter either 'y' or 'n': ") 
+			return answer.lower() in ["yes", "y"] 
+
 		else: 
-			outfiles = ["%s.vice/%s" % (self.name, 
-				i) for i in ["history.out", "mdf.out", "ccsne_yields.config", 
-					"sneia_yields.config", "params.config"]] 
-			if os.path.exists("%s.vice" % (self.name)): 
-				""" 
-				If the user didn't specify to overwrite, see if any of the 
-				output files will overwrite anything. 
-				""" 
-				if any(map(os.path.exists, outfiles)): 
-					answer = input("""At least one of the output files \
-already exists. If you continue with the integration, their contents will \
-be lost.\nOutput directory: %s.vice\nOverwrite? (y | n) """ % (self.name)) 
-					
-					# be emphatic about it 
-					while answer.lower() not in ["yes", "y", "no", "n"]: 
-						answer = input("Please enter either 'y' or 'n': ") 
-					# Return whether or not the user said overwrite 
-					return answer.lower() in ["y", "yes"] 
-				else: 
-					# None of the output files exist anyway 
-					return True 
-			else: 
-				# output directory doesn't even exist yet 
-				return True 
+			# output directory doesn't even exist yet 
+			return True 
 
 
 	def setup_elements(self): 

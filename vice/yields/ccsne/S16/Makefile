@@ -4,5 +4,6 @@
 clean: 
 	@ echo Cleaning vice/yields/ccsne/S16/ 
 	@ rm -rf __pycache__ 
-	@ $(MAKE) -C engines/ clean 
-	@ $(MAKE) -C tests/ clean 
+	@ $(MAKE) -C N20/ clean 
+	@ $(MAKE) -C W18/ clean 
+	@ $(MAKE) -C W18F/ clean 

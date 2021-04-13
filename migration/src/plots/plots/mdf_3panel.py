@@ -18,7 +18,7 @@ import vice
 def main(element, outputs, stem, radial_bins = [3, 5, 7, 9, 11, 13, 15], 
 	z_bins = [0.0, 0.5, 1.0, 2.0], 
 	labels = ["Inside-Out", "Late-Burst", "Outer-Burst"], 
-	apogee = False, 
+	# apogee = False, 
 	colors = ["black", "red", "gold", "green", "blue", "darkviolet"]): 
 	r""" 
 	For some element X, plot the metallicity distribution functions (MDFs) in 
@@ -63,6 +63,7 @@ def main(element, outputs, stem, radial_bins = [3, 5, 7, 9, 11, 13, 15],
 	.. note:: The distributions will be normalized such that the area over 
 		their extent is equal to one. 
 	""" 
+	apogee = True # used to be keyword argument 
 
 	# finish setting up the subplots 
 	axes = setup_axes(element, ncols = len(outputs) + int(apogee), 
@@ -89,28 +90,41 @@ def main(element, outputs, stem, radial_bins = [3, 5, 7, 9, 11, 13, 15],
 			for k in range(len(radial_bins) - 1): 
 				plot_predicted_mdf(axes[i][j], element, outputs[j].stars, 
 					radial_bins[k], radial_bins[k + 1], z_bins[i + 1], 
-					z_bins[i], colors[k], 
-					label = k in [2 * i, 2 * i + 1] and not j) 
+					z_bins[i], colors[k]) 
+					# label = k in [2 * i, 2 * i + 1] and not j) 
 		if apogee: 
 			for k in range(len(radial_bins) - 1): 
 				plot_apogee_distributions(axes[i][-1], element, radial_bins[k], 
-					radial_bins[k + 1], z_bins[i + 1], z_bins[i], colors[k]) 
+					radial_bins[k + 1], z_bins[i + 1], z_bins[i], colors[k], 
+					label = not i)  
 		else: pass 
 
 	# plot the legends and save the figure 
+	# legend_kwargs = {
+	# 	"loc": 				mpl_loc("upper left"), 
+	# 	"ncol": 			1, 
+	# 	"fontsize": 		20, 
+	# 	"frameon": 			False, 
+	# 	"bbox_to_anchor": 	(0.01, 0.99), 
+	# 	"handlelength": 	0 
+	# }
+	# for i in range(len(z_bins) - 1): 
+	# 	leg = axes[i][0].legend(**legend_kwargs) 
+	# 	for j in range(len(leg.legendHandles)): 
+	# 		leg.get_texts()[j].set_color(colors[len(leg.legendHandles) * i + j])  
+	# 		leg.legendHandles[j].set_visible(False) 
 	legend_kwargs = {
-		"loc": 				mpl_loc("upper left"), 
+		"loc": 				mpl_loc("upper right"), 
 		"ncol": 			1, 
-		"fontsize": 		20, 
+		"fontsize": 		18, 
 		"frameon": 			False, 
-		"bbox_to_anchor": 	(0.01, 0.99), 
+		"bbox_to_anchor": 	(0.99, 0.99), 
 		"handlelength": 	0 
-	}
-	for i in range(len(z_bins) - 1): 
-		leg = axes[i][0].legend(**legend_kwargs) 
-		for j in range(len(leg.legendHandles)): 
-			leg.get_texts()[j].set_color(colors[len(leg.legendHandles) * i + j])  
-			leg.legendHandles[j].set_visible(False) 
+	} 
+	axes[0][1].legend(**legend_kwargs) 
+	for i in range(len(radial_bins) - 1): 
+		leg.get_texts()[i].set_color(colors[i]) 
+		leg.legendHandles[i].set_visible(False) 
 	plt.tight_layout() 
 	plt.subplots_adjust(wspace = 0, hspace = 0, bottom = 0.1, left = 0.08) 
 	plt.savefig("%s.png" % (stem)) 
@@ -155,7 +169,7 @@ def plot_predicted_mdf(ax, element, stars, min_rgal, max_rgal, min_absz,
 
 
 def plot_apogee_distributions(ax, element, min_rgal, max_rgal, min_absz, 
-	max_absz, color): 
+	max_absz, color, label = False): 
 	r""" 
 	Plots the APOGEE DR16 distributions in a given galactic region for a 
 	specific element. 
@@ -183,6 +197,7 @@ def plot_apogee_distributions(ax, element, min_rgal, max_rgal, min_absz,
 	xvals, mdf = get_mdf(element, apogee_data(), min_rgal, max_rgal, min_absz, 
 		max_absz) 
 	kwargs = {"c": named_colors()[color]} 
+	if label: kwargs["label"] = "%g - %g kpc" % (min_rgal, max_rgal) 
 	ax.plot(xvals, mdf, **kwargs) 
 
 

@@ -2,17 +2,14 @@
 
 from __future__ import absolute_import 
 from ._callback_2arg cimport CALLBACK_2ARG 
+from ._interp_scheme_2d cimport INTERP_SCHEME_2D 
 from ._element cimport ELEMENT 
 
 
 cdef extern from "../../src/objects.h": 
 	ctypedef struct AGB_YIELD_GRID: 
 		CALLBACK_2ARG *custom_yield 
-		double **grid
-		double *m
-		double *z
-		unsigned long n_m
-		unsigned long n_z 
+		INTERP_SCHEME_2D *interpolator 
 		double entrainment 
 
 

@@ -18,6 +18,7 @@ if not __VICE_SETUP__:
 	__all__ = [ 
 		"core", 
 		"elements", 
+		"toolkit", 
 		"milkyway", 
 		"src", 
 		"yields", 
@@ -66,9 +67,9 @@ This program will overwrite the VICE output at %s/test.vice. Proceed? \
 			[ 
 				core.test(run = False), 
 				elements.test(run = False), 
+				toolkit.test(run = False), 
 				milkyway_test(run = False), 
 				src.test(run = False), 
-				toolkit.test(run = False), 
 				yields.test(run = False) 
 			] 
 		] 

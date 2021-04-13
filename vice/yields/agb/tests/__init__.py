@@ -11,6 +11,7 @@ if not __VICE_SETUP__:
 	from ....testing import moduletest 
 	from . import lookup 
 	from . import imports 
+	from . import interpolator 
 
 	@moduletest 
 	def test(): 
@@ -20,7 +21,8 @@ if not __VICE_SETUP__:
 		return ["vice.yields.agb", 
 			[ 
 				lookup.test(run = False), 
-				imports.test(run = False) 
+				imports.test(run = False), 
+				interpolator.test() 
 			] 
 		] 
 

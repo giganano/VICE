@@ -1,13 +1,21 @@
 
 Citing VICE 
 ===========
-Usage of VICE's multizone chemical evolution features in research should 
-cite Johnson et al. (2021, in prep). A ``BibTeX`` entry will be added here once 
-this paper is announced. 
+Usage of VICE in research publications should cite 
+`Johnson & Weinberg (2020)`__. If your work makes use of any of the 
+following capabilities, please also cite the indicated paper: 
 
-If you've made use of any other features, please also cite 
-`Johnson & Weinberg (2020)`__. The following ``BibTeX`` entry can be added to 
-your ``.bib`` file: 
+__ paper1_ 
+.. _paper1: https://ui.adsabs.harvard.edu/abs/2020MNRAS.498.1364J/abstract 
+
+- Multi-zone chemical evolution models: Johnson et al. (2021), in prep 
+
+- Core collapse supernova yield calculations: Griffith et al. (2021), in prep 
+
+If you're compiling your references with ``BibTeX``, the following entries can 
+be added to your ``.bib`` file: 
+
+`Johnson & Weinberg (2020)`__: 
 
 :: 
 
@@ -29,6 +37,11 @@ your ``.bib`` file:
 	      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 	}
 
-
 __ paper1_ 
-.. _paper1: https://ui.adsabs.harvard.edu/abs/2020MNRAS.498.1364J/abstract 
+
+A ``BibTeX`` entry for Johnson et al. (2021, in prep) will be added when the 
+paper is announced. 
+
+A ``BibTeX`` entry for Griffith et al. (2021, in prep) will be added when the 
+paper is announced. 
+

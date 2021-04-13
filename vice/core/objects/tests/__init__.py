@@ -20,6 +20,7 @@ if not __VICE_SETUP__:
 		"imf", 
 		"integral", 
 		"interp_scheme_1d", 
+		"interp_scheme_2d", 
 		"ism", 
 		"mdf", 
 		"migration", 
@@ -43,6 +44,7 @@ if not __VICE_SETUP__:
 	from . import _imf as imf 
 	from . import _integral as integral 
 	from . import _interp_scheme_1d as interp_scheme_1d 
+	from . import _interp_scheme_2d as interp_scheme_2d 
 	from . import _ism as ism 
 	from . import _mdf as mdf 
 	from . import _migration as migration 
@@ -83,6 +85,8 @@ if not __VICE_SETUP__:
 				integral.test_integral_destructor(), 
 				interp_scheme_1d.test_interp_scheme_1d_constructor(), 
 				interp_scheme_1d.test_interp_scheme_1d_destructor(), 
+				interp_scheme_2d.test_interp_scheme_2d_constructor(), 
+				interp_scheme_2d.test_interp_scheme_2d_destructor(), 
 				ism.test_ism_constructor(), 
 				ism.test_ism_destructor(), 
 				mdf.test_mdf_constructor(), 

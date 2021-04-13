@@ -13,6 +13,12 @@ elements to the IMF-averaged yields calculated with the Limongi & Chieffi
 
 .. note:: This module is not imported with a simple ``import vice`` statement. 
 
+.. note:: When this module is imported, the yields will be updated with a 
+	maximum of 10^5 bins in quadrature to decrease computational overhead. For 
+	some elements, the yield calculation may not converge. To rerun the yield 
+	calculation with higher numerical precision, simply call ``set_params`` 
+	with a new value for the keyword ``Nmax`` (see below). 
+
 Contents 
 --------
 set_params : <function> 
@@ -70,8 +76,7 @@ if not __VICE_SETUP__:
 				__settings[_RECOGNIZED_ELEMENTS_[i]] = __fractional(
 					_RECOGNIZED_ELEMENTS_[i], study = "LC18", **kwargs)[0] 
 
-	set_params() 
+	set_params(Nmax = 1e5) 
 
-else: 
-	pass 
+else: pass 
 

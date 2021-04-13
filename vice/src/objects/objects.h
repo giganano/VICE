@@ -62,6 +62,61 @@ typedef struct callback_2arg {
 } CALLBACK_2ARG; 
 
 
+typedef struct interpolation_sceme_1d {
+
+	/* 
+	 * This struct holds the necessary information for a 1-dimensional 
+	 * interpolation scheme, simply constructing a continuous function out of 
+	 * a series of (x, y) points and connecting them with lines. 
+	 * 
+	 * n_points: The number of points in the scheme. 
+	 * xcoords: The x-coordinates in arbitrary units. 
+	 * ycoords: The y-coordinates in arbitrary units. 
+	 * 
+	 * Notes 
+	 * =====
+	 * Both xcoords and ycoords pointers always store n_points numbers, and are 
+	 * assumed to be sorted from least to greatest. This is enforced in Python. 
+	 */ 
+
+	unsigned long n_points; 
+	double *xcoords; 
+	double *ycoords; 
+
+} INTERP_SCHEME_1D; 
+
+
+typedef struct interpolation_scheme_2d {
+
+	/* 
+	 * This struct holds the necessary information for a 2-dimensional 
+	 * interpolation scheme, simply constructing a continuous function out of 
+	 * a series of (x, y, z) points and linearly interpolating between them. 
+	 * 
+	 * n_x_points: The number of x-coordinates in the scheme. 
+	 * n_y_points: The number of y-coordinates in the scheme. 
+	 * xcoords: The x-coordinates in arbitrary units. 
+	 * ycoords: The y-coordinates in arbitrary units. 
+	 * zcoords: The z-coordinates in arbitrary units. 
+	 * 
+	 * Notes 
+	 * =====
+	 * Both xcoords and ycoords are assumed to be sorted from least to greatest, 
+	 * and this is enforced in Python. The zcoords array will have the 
+	 * x-coordinate as the first axis, and is thus n_x_points-by-n_y_points. 
+	 * This object as a result stores n_x_points times n_y_points total 
+	 * (x, y, z) coordinate combinations. 
+	 */ 
+
+	unsigned long n_x_values; 
+	unsigned long n_y_values; 
+	double *xcoords; 
+	double *ycoords; 
+	double **zcoords; 
+
+} INTERP_SCHEME_2D; 
+
+
 typedef struct asymptotic_giant_branch_star_yield_grid { 
 
 	/* 
@@ -70,19 +125,13 @@ typedef struct asymptotic_giant_branch_star_yield_grid {
 	 * 
 	 * custom_yield: A callback object for a function of mass and metallicity 
 	 * 		Z that the user constructed in python. 
-	 * grid: The grid itself, indexed by grid[mass_index][z_index] 
-	 * m: The masses on which the grid is sampled 
-	 * z: The metallicities on which the grid is sampled 
-	 * n_m: The number of masses on which the grid is sampled 
-	 * n_z: The number of metallicities on which the grid is sampled 
+	 * interpolator: The mass-metallicity interpolation grid 
+	 * entrainment: The fraction of this element's yields that get mixed 
+	 * 		with the ISM. 
 	 */ 
 
 	CALLBACK_2ARG *custom_yield; 
-	double **grid; 
-	double *m; 
-	double *z; 
-	unsigned long n_m; 
-	unsigned long n_z; 
+	INTERP_SCHEME_2D *interpolator; 
 	double entrainment; 
 
 } AGB_YIELD_GRID; 
@@ -528,30 +577,6 @@ typedef struct hydrodiskstars {
 } HYDRODISKSTARS; 
 
 
-typedef struct interpolation_sceme_1d {
-
-	/* 
-	 * This struct holds the necessary information for a 1-dimensional 
-	 * interpolation scheme, simply constructing a continuous function out of 
-	 * a series of (x, y) points and connecting them with lines. 
-	 * 
-	 * n_points: The number of points in the scheme. 
-	 * xcoords: The x-coordinates in arbitrary units. 
-	 * ycoords: The y-coordinates in arbitrary units. 
-	 * 
-	 * Notes 
-	 * =====
-	 * Both xcoords and ycoords pointers always store n_points numbers, and are 
-	 * assumed to be sorted from least to greatest. This is enforced in Python. 
-	 */ 
-
-	unsigned long n_points; 
-	double *xcoords; 
-	double *ycoords; 
-
-} INTERP_SCHEME_1D; 
-
-
 typedef struct dataset {
 
 	double **data; 
@@ -567,7 +592,7 @@ typedef struct dataset {
 
 #ifdef __cplusplus 
 } 
-#endif /* __cplusplus*/ 
+#endif /* __cplusplus */ 
 
 #endif /* OBJECTS_OBJECTS_H */ 
 

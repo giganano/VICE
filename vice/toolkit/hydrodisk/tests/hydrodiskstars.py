@@ -3,6 +3,7 @@ from __future__ import absolute_import
 __all__ = ["test"] 
 from ..hydrodiskstars import hydrodiskstars 
 from .._hydrodiskstars import _END_TIME_ 
+from ..data.download import _h277_exists 
 from ....testing import moduletest 
 from ....testing import unittest 
 import sys 
@@ -23,7 +24,8 @@ def test():
 			test_radial_bins_setter(), 
 			test_call("linear"), 
 			test_call("sudden"), 
-			test_call("diffusion") 
+			test_call("diffusion"), 
+			test_decomp_filter() 
 		] 
 	] 
 
@@ -34,6 +36,7 @@ def test_initialize():
 	The initialization unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		global _TEST_ 
 		try: 
 			_TEST_ = hydrodiskstars(_RAD_BINS_) 
@@ -49,6 +52,7 @@ def test_import():
 	The hydrodata import test function 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		try: 
 			# _END_TIME_ = 13.2, and max tform is 13.23xyz... so the +0.04 
 			# merely accounts for the trailing digits on the max tform. 
@@ -71,7 +75,7 @@ def test_import():
 				_TEST_.analog_data["vz"]]) 
 			assert all([isinstance(_, int) for _ in 
 				_TEST_.analog_data["decomp"]]) 
-			assert all([_ in [1, 2, 3, 4] for _ in _TEST_.analog_data["decomp"]]) 
+			assert all([1 <= _ <= 5 for _ in _TEST_.analog_data["decomp"]]) 
 		except: 
 			return False 
 		return True 
@@ -84,6 +88,7 @@ def test_radial_bins_setter():
 	The radial_bins.setter unit test 
 	""" 
 	def test(): 
+		if not _h277_exists(): return None 
 		try: 
 			test1 = [0.5 * i for i in range(61)] 
 			_TEST_.radial_bins = test1 
@@ -111,6 +116,7 @@ def test_call(mode):
 	""" 
 	msg = "vice.toolkit.hydrodisk.hydrodiskstars.call [%s]" % (mode) 
 	def test(): 
+		if not _h277_exists(): return None 
 		try: 
 			_TEST_.mode = mode 
 		except: 
@@ -126,15 +132,9 @@ def test_call(mode):
 						x = _TEST_(i, _TEST_TIMES_[j], _TEST_TIMES_[k]) 
 						status &= isinstance(x, int) 
 						status &= 0 <= x < len(_RAD_BINS_) 
-						if not status: 
-							print('a') 
-							break 
-					if not status: 
-						print('b') 
-						break 
-				if not status: 
-					print('c') 
-					break 
+						if not status: break 
+					if not status: break 
+				if not status: break 
 				sys.stdout.write("\r\t%s :: Progress: %.2f%%" % (msg, 
 					100 * (i + 1) / (len(_RAD_BINS_) - 1))) 
 			sys.stdout.write("\r\t%s ::                      " % (msg)) 
@@ -143,4 +143,31 @@ def test_call(mode):
 			return False 
 		return True 
 	return [msg, test] 
+
+
+@unittest 
+def test_decomp_filter(): 
+	r""" 
+	Tests the decomposition filter by calling it for a range of values, 
+	re-importing after each call. 
+	""" 
+	def test(): 
+		if not _h277_exists(): return None 
+		status = True 
+		cases = [[1], [2], [3], [4], [1, 2], [3, 4], [2, 3], [1, 4], [1, 3, 4]] 
+		for i in range(len(cases)): 
+			try: 
+				_TEST_ = hydrodiskstars(_RAD_BINS_, N = 1e6) 
+			except: 
+				return None 
+			initial_length = len(_TEST_.analog_data['id']) 
+			try: 
+				_TEST_.decomp_filter(cases[i]) 
+			except: 
+				return False 
+			status &= len(_TEST_.analog_data['id']) < initial_length 
+			status &= all([_ in cases[i] for _ in _TEST_.analog_data["decomp"]]) 
+			if not status: break 
+		return status 
+	return ["vice.toolkit.hydrodisk.hydrodiskstars.decomp_filter", test] 
 

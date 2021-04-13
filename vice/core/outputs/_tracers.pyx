@@ -17,6 +17,8 @@ def tracers(name):
 
 	**Signature**: vice.stars(name) 
 
+	.. versionadded:: 1.2.0 
+
 	Parameters 
 	----------
 	name : ``str`` 

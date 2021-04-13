@@ -61,11 +61,11 @@ extern unsigned short import_agb_grid(ELEMENT *e, char *file) {
 		return 5; 
 	} else {} 
 
-	e -> agb_grid -> n_z = 0l; 		/* start counting metallicities */ 
+	e -> agb_grid -> interpolator -> n_y_values = 0l; /* count metallicities */ 
 	do {
 		if (fscanf(in, "%lf %lf %lf", &line[0], &line[1], &line[2])) { 
 			/* Count metallicities while the mass stays the same */ 
-			e -> agb_grid -> n_z++; 
+			e -> agb_grid -> interpolator -> n_y_values++; 
 			continue; 
 		} else {
 			fclose(in); 
@@ -92,41 +92,48 @@ extern unsigned short import_agb_grid(ELEMENT *e, char *file) {
 	 * with the line number. These lines are explicitly designed to read in 
 	 * that format. 
 	 */ 
-	switch ( (unsigned) length % (*(*e).agb_grid).n_z ) { 
-		unsigned int i, j; 
+	switch( (unsigned) length % (*(*(*e).agb_grid).interpolator).n_y_values ) { 
+		unsigned long i, j; 
 
 		case 0: 
 			/* 
 			 * The switch must be equal to zero, or else the data file has 
 			 * been tampered with. 
 			 */ 
-			e -> agb_grid -> n_m = (unsigned) length / (*(*e).agb_grid).n_z; 
+			e -> agb_grid -> interpolator -> n_x_values = (unsigned) (
+				length) / (*(*(*e).agb_grid).interpolator).n_y_values; 
+
+			unsigned long n_x_values = (
+				*(*(*e).agb_grid).interpolator).n_x_values; 
+			unsigned long n_y_values = (
+				*(*(*e).agb_grid).interpolator).n_y_values; 
+
 			in = fopen(file, "r"); 
 			if (in == NULL) return 1; 
-			e -> agb_grid -> m = (double *) malloc (
-				(*(*e).agb_grid).n_m * sizeof(double)); 
-			e -> agb_grid -> z = (double *) malloc (
-				(*(*e).agb_grid).n_z * sizeof(double)); 
-			e -> agb_grid -> grid = (double **) malloc (
-				(*(*e).agb_grid).n_m * sizeof(double)); 
-			for (i = 0; i < (*(*e).agb_grid).n_m; i++) { 
-				e -> agb_grid -> grid[i] = (double *) malloc (
-					(*(*e).agb_grid).n_z * sizeof(double)); 
-				for (j = 0; j < (*(*e).agb_grid).n_z; j++) {
+			e -> agb_grid -> interpolator -> xcoords = (double *) malloc (
+				n_x_values * sizeof(double)); 
+			e -> agb_grid -> interpolator -> ycoords = (double *) malloc (
+				n_y_values * sizeof(double)); 
+			e -> agb_grid -> interpolator -> zcoords = (double **) malloc (
+				n_x_values * sizeof(double *)); 
+			for (i = 0ul; i < n_x_values; i++) {
+				e -> agb_grid -> interpolator -> zcoords[i] = (double *) malloc (
+					n_y_values * sizeof(double)); 
+				for (j = 0ul; j < n_y_values; j++) {
 					if (fscanf(
 						in, "%lf %lf %lf", 
-						&(e -> agb_grid -> m[i]), 
-						&(e -> agb_grid -> z[j]), 
-						&(e -> agb_grid -> grid[i][j])
+						&(e -> agb_grid -> interpolator -> xcoords[i]), 
+						&(e -> agb_grid -> interpolator -> ycoords[j]), 
+						&(e -> agb_grid -> interpolator -> zcoords[i][j]) 
 					)) {
 						continue; 
 					} else {
-						free(e -> agb_grid -> grid); 
-						free(e -> agb_grid -> m); 
-						free(e -> agb_grid -> z); 
+						free(e -> agb_grid -> interpolator -> xcoords); 
+						free(e -> agb_grid -> interpolator -> ycoords); 
+						free(e -> agb_grid -> interpolator -> zcoords); 
 						fclose(in); 
 						return 7; 
-					}
+					} 
 				} 
 			} 
 			fclose(in); 

@@ -3,50 +3,33 @@ Test the CCSNe yield integrator at vice/yields/ccnse/_yield_integrator.pyx
 """ 
 
 from __future__ import absolute_import 
-__all__ = [
-	"test" 
-]
+__all__ = ["test" ]
 from ...._globals import _RECOGNIZED_ELEMENTS_ 
 from .._yield_integrator import integrate as fractional 
+from .._errors import _RECOGNIZED_STUDIES_ as _STUDY_ 
+from .._errors import _NAMES_ 
+from .._errors import _MOVERH_ 
+from .._errors import _ROTATION_ 
 from ....testing import moduletest 
 from ....testing import unittest 
 import warnings 
+import random 
+random.seed() 
 import math 
 
-
-_STUDY_ = ["LC18", "CL13", "CL04", "WW95", "NKT13", "S16/W18"]  
-_NAMES_ = {
-	"LC18": 		"Limongi & Chieffi (2018)", 
-	"CL13": 		"Chieffi & Limongi (2013)", 
-	"CL04": 		"Chieffi & Limongi (2004)", 
-	"WW95": 		"Woosley & Weaver (1995)", 
-	"NKT13": 		"Nomoto, Kobayashi & Tominaga (2013)", 
-	"S16/W18": 		"Sukhbold et al. (2016)" 
-}
-_MOVERH_ = {
-	"LC18":			[-3, -2, -1, 0], 
-	"CL13": 		[0], 
-	"CL04":			[-float("inf"), -4, -2, -1, -0.37, 0.15], 
-	"WW95":			[-float("inf"), -4, -2, -1, 0], 
-	"NKT13": 		[-float("inf"), -1.15, -0.54, -0.24, 0.15, 0.55], 
-	"S16/W18": 		[0] 
-}
-_ROTATION_ = {
-	"LC18":			[0, 150, 300], 
-	"CL13":			[0, 300], 
-	"CL04":			[0], 
-	"WW95":			[0], 
-	"NKT13": 		[0], 
-	"S16/W18": 		[0] 
-}
+# upper mass cutoff of each study 
 _UPPER_ = {
 	"LC18":			120, 
 	"CL13": 		120, 
+	"NKT13": 		40, 
 	"CL04": 		35, 
 	"WW95": 		40, 
-	"NKT13": 		40, 
-	"S16/W18": 		120 
+	"S16/W18": 		120, 
+	"S16/W18F": 	120, 
+	"S16/N20": 		120 
 }
+
+# IMFs to test the integrations on 
 _IMF_ = ["kroupa", "salpeter", lambda m: m**-2] 
 
 
@@ -55,16 +38,32 @@ class generator:
 	def __init__(self, **kwargs): 
 		self._kwargs = kwargs 
 
-
 	def __call__(self): 
 		success = True 
-		for elem in _RECOGNIZED_ELEMENTS_: 
+		# Conduct the assertions for 10 randomly drawn elements 
+		for i in range(10): 
+			idx = int(random.random() * len(_RECOGNIZED_ELEMENTS_)) 
+			elem = _RECOGNIZED_ELEMENTS_[idx] 
 			try: 
-				yield_, err = fractional(elem, **self._kwargs) 
-				assert 0 <= yield_ < 1 
-				if yield_ == 0: assert math.isnan(err) 
+				net_with_wind, err_net_with_wind = fractional(elem, 
+					wind = True, net = True, **self._kwargs) 
+				gross_with_wind, err_gross_with_wind = fractional(elem, 
+					wind = True, net = False, **self._kwargs) 
+				net_no_wind, err_net_no_wind = fractional(elem, 
+					wind = False, net = True, **self._kwargs) 
+				gross_no_wind, err_gross_no_wind = fractional(elem, 
+					wind = False, net = False, **self._kwargs) 
 			except: 
-				success = False 
+				return False 
+			if net_with_wind == 0: success &= math.isnan(err_net_with_wind) 
+			if gross_with_wind == 0: success &= math.isnan(err_gross_with_wind) 
+			if net_no_wind == 0: success &= math.isnan(err_net_no_wind) 
+			if gross_no_wind == 0: success &= math.isnan(err_gross_no_wind) 
+			success &= 0 <= gross_no_wind <= gross_with_wind <= 1 
+			success &= net_no_wind <= net_with_wind <= 1 
+			success &= net_no_wind <= gross_no_wind 
+			success &= net_with_wind <= gross_with_wind 
+			if not success: break 
 		return success 
 
 

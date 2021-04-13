@@ -6,6 +6,7 @@
 #include <stdlib.h> 
 #include "../agb.h" 
 #include "callback_2arg.h" 
+#include "interp_scheme_2d.h" 
 #include "objects.h" 
 #include "agb.h" 
 
@@ -22,11 +23,7 @@ extern AGB_YIELD_GRID *agb_yield_grid_initialize(void) {
 		AGB_YIELD_GRID)); 
 
 	agb_grid -> custom_yield = callback_2arg_initialize(); 
-	agb_grid -> grid = NULL; 
-	agb_grid -> m = NULL; 
-	agb_grid -> z = NULL; 
-	agb_grid -> n_m = 0ul; 
-	agb_grid -> n_z = 0ul; 
+	agb_grid -> interpolator = interp_scheme_2d_initialize(); 
 	agb_grid -> entrainment = 1; 
 
 	return agb_grid; 
@@ -48,19 +45,9 @@ extern void agb_yield_grid_free(AGB_YIELD_GRID *agb_grid) {
 			agb_grid -> custom_yield = NULL; 
 		} else {} 
 
-		if ((*agb_grid).grid != NULL) {
-			free(agb_grid -> grid); 
-			agb_grid -> grid = NULL; 
-		} else {} 
-
-		if ((*agb_grid).m != NULL) {
-			free(agb_grid -> m); 
-			agb_grid -> m = NULL; 
-		} else {} 
-
-		if ((*agb_grid).z != NULL) {
-			free(agb_grid -> z); 
-			agb_grid -> z = NULL; 
+		if ((*agb_grid).interpolator != NULL) {
+			interp_scheme_2d_free(agb_grid -> interpolator); 
+			agb_grid -> interpolator = NULL; 
 		} else {} 
 
 		free(agb_grid); 
