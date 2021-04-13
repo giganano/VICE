@@ -22,11 +22,7 @@ extern unsigned short test_agb_yield_grid_initialize(void) {
 	AGB_YIELD_GRID *test = agb_yield_grid_initialize(); 
 	unsigned short result = (test != NULL && 
 		(*test).custom_yield != NULL && 
-		(*test).grid == NULL && 
-		(*test).m == NULL && 
-		(*test).z == NULL && 
-		(*test).n_m == 0ul && 
-		(*test).n_z == 0ul && 
+		(*test).interpolator != NULL && 
 		(*test).entrainment == 1 
 	); 
 	agb_yield_grid_free(test); 
@@ -65,30 +61,37 @@ extern AGB_YIELD_GRID *agb_yield_grid_test_instance(void) {
 
 	AGB_YIELD_GRID *test = agb_yield_grid_initialize(); 
 
-	test -> n_m = 7ul; 
-	test -> n_z = 15ul; 
-	test -> m = (double *) malloc ((*test).n_m * sizeof(double)); 
-	test -> z = (double *) malloc ((*test).n_z * sizeof(double)); 
+	test -> interpolator -> n_x_values = 7ul; 
+	test -> interpolator -> n_y_values = 15ul; 
+	test -> interpolator -> xcoords = (double *) malloc (
+		(*(*test).interpolator).n_x_values * sizeof(double)); 
+	test -> interpolator -> ycoords = (double *) malloc (
+		(*(*test).interpolator).n_y_values * sizeof(double)); 
 
 	unsigned short i, j; 
-	for (i = 0u; i < (*test).n_m; i++) { 
+	for (i = 0u; i < (*(*test).interpolator).n_x_values; i++) {
 		/* masses are 1 - 7 */ 
-		test -> m[i] = 1 + i; 
+		test -> interpolator -> xcoords[i] = 1 + i; 
 	} 
-	for (i = 0u; i < (*test).n_z; i++) { 
+	for (i = 0u; i < (*(*test).interpolator).n_y_values; i++) {
 		/* metallicities are 0 - 0.014, in steps of 0.001 */ 
-		test -> z[i] = 0.001 * i; 
+		test -> interpolator -> ycoords[i] = 0.001 * i; 
 	} 
 
-	test -> grid = (double **) malloc ((*test).n_m * sizeof(double *)); 
-	for (i = 0u; i < (*test).n_m; i++) {
-		test -> grid[i] = (double *) malloc ((*test).n_z * sizeof(double)); 
-		for (j = 0u; j < (*test).n_z; j++) {
+	test -> interpolator -> zcoords = (double **) malloc (
+		(*(*test).interpolator).n_x_values * sizeof(double)); 
+	for (i = 0u; i < (*(*test).interpolator).n_x_values; i++) {
+		test -> interpolator -> zcoords[i] = (double *) malloc (
+			(*(*test).interpolator).n_y_values * sizeof(double)); 
+		for (j = 0u; j < (*(*test).interpolator).n_y_values; j++) {
 			/* 
 			 * Fractional yield at a mass and metallicity is equal to the mass 
 			 * in units of the sun's mass times the metallicity. 
 			 */ 
-			test -> grid[i][j] = (*test).m[i] * (*test).z[j]; 
+			test -> interpolator -> zcoords[i][j] = (
+				(*(*test).interpolator).xcoords[i] * 
+				(*(*test).interpolator).ycoords[j] 
+			); 
 		} 
 	} 
 

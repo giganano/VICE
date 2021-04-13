@@ -52,27 +52,24 @@ relation to the single-zone approximation. This is implemented as a power-law:
 where :math:`M_{g,\text{Schmidt}}` is a normalizing gas supply and 
 :math:`\tau_{\star,\text{spec}}` is the user-specified :math:`\tau_\star`. 
 The ``singlezone`` object will employ this scaling when the attribute 
-``schmidt = True``. Users may also enforce a minimum value of 
-:math:`\tau_\star` by specifying a "critical" gas supply, above which the 
-value of :math:`\tau_\star` is constant, given by: 
+``schmidt = True``. 
 
-.. math:: \tau_\star^{-1} = \tau_{\star,\text{spec}}^{-1} 
-	\left(\frac{M_{g,\text{crit}}}{M_{g,\text{Schmidt}}}\right)^\alpha 
-	\; (M_g > M_{g,\text{crit}}) 
-
-The value of :math:`M_{g,\text{crit}}` is an attribute of the ``singlezone`` 
-object, and is only relevant when the attribute ``schmidt = True``. By default 
-it is infinite, implying a scaling of :math:`\tau_\star` with :math:`M_g` that 
-is a power-law always. The minimum value of :math:`\tau_\star` can be achieved 
-by simply assigning :math:`M_{g,\text{crit}}` to a finite value. 
+Users may also allow :math:`\tau_\star` to vary with the gas supply in a 
+customized way by specifying a function which accepts a second parameter in 
+addition to time in Gyr. In infall and gas modes, VICE will interpret the 
+second parameter as the gas mass in :math:`M_\odot`; in star formation mode, 
+VICE will interpret it as the star formation rate in :math:`M_\odot/yr`. 
+While such an approach also allows the single power-law solution, such a model 
+has a well-defined solution implemented in VICE's C library, allowing them to 
+not suffer from a decrease in computational speed. 
 
 Relevant Source Code: 
 
 	- ``vice/src/singlezone/ism.c`` 
 
 .. [1] In the interstellar medium literature, this quantity is often referred 
-	to as the "depletion time" due to star formation. In the galactic 
-	archaeology literature, it quantifies the fractional rate at which gas 
+	to as the "depletion time" due to star formation. In the chemical 
+	evolution literature, it quantifies the fractional rate at which gas 
 	forms stars, and is thus often refered to in terms of star formation 
 	efficiency. We retain this nomenclature here. 
 

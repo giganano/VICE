@@ -19,6 +19,8 @@ cdef class mig_specs:
 
 	**Signature**: vice.migration.specs(n) 
 
+	.. versionadded:: 1.2.0 
+
 	Parameters 
 	----------
 	n : ``int`` 
@@ -76,7 +78,7 @@ cdef class mig_specs:
 		rep = "Stars: %s\n" % (str(self._stars)) 
 		for i in range(22): 
 			rep += ' '
-		rep += "ISM: " 
+		rep += "Gas: " 
 		for i in str(self._gas).split('\n'): 
 			rep += "    %s\n" % (i) 
 		return rep 
@@ -125,7 +127,7 @@ cdef class mig_specs:
 		The mass fraction of interstellar gas that migration from zone 
 		:math:`i` to zone :math:`j` at a time :math:`t` is calculated via 
 
-		.. math:: f_{ij} = G_{ij}(t) \frac{\Delta t}{\text{10 Myr}} 
+		.. math:: f_{ij}(t) = G_{ij}(t) \frac{\Delta t}{\text{10 Myr}} 
 
 		The mass that migrates is then given by :math:`M_{g,i} f_{ij}(t)`, 
 		where :math:`M_{g,i}` is the total mass of the interstellar medium in 
@@ -191,16 +193,15 @@ Got: %d. Required: %d.""" % (value.size, self._gas.size))
 		particle in question. 
 
 		This function will never be called with a third parameter that is 
-		larger than the second parameter. These are times at which star 
+		smaller than the second parameter. These are times at which star 
 		particles have not formed yet. 
 
 		.. tip:: If users wish to write extra data for star particles to an 
 			output file, they should set up this attribute as an instance of 
-			a class (see the final tip below). If this class has an attribute 
-			``write``, VICE will switch it's value to ``True`` when setting 
-			up star particles for simulation. The lines which write to the 
-			output file can then be wrapped in an ``if self.write:`` 
-			statement. 
+			a class. If this class has an attribute ``write``, VICE will switch 
+			it's value to ``True`` when setting up star particles for 
+			simulation. The lines which write to the output file can then be 
+			wrapped in an ``if self.write`` statement. 
 
 		.. tip:: If a multizone simulation will form multiple star particles 
 			per zone per timestep, they can be assigned different zone 
@@ -209,14 +210,6 @@ Got: %d. Required: %d.""" % (value.size, self._gas.size))
 			VICE will then call this function with ``n = 0``, ``n = 1``, 
 			``n = 2``, and so on up to ``n = n_stars - 1``, where ``n_stars`` 
 			is the number of star particles per zone per timestep. 
-
-		.. tip:: These functions need not be produced via ``def`` statements. 
-			They may also be instances of classes with a ``__call__`` 
-			function. An example of such a technique can be found in VICE's 
-			`git repository`__. 
-
-			__ git_repo_ 
-			.. _git_repo: https://github.com/giganano/VICE.git 
 
 		Example Code 
 		------------
@@ -264,6 +257,8 @@ cdef class mig_matrix:
 
 	**Signature**: vice.migration.migration_matrix(size) 
 
+	.. versionadded:: 1.2.0 
+
 	Parameters 
 	----------
 	size : ``int`` 
@@ -281,6 +276,7 @@ cdef class mig_matrix:
 		:math:`G_{ij}` does not vary with time, and is given by this value. 
 	* <function> 
 		:math:`G_{ij}` varies with time, and is described by this function. 
+		Time in Gyr is the only parameter the function takes. 
 
 	Indexing 
 	--------
@@ -425,7 +421,7 @@ Got: %s""" % (type(key)))
 		Returns 
 		-------
 		copy : ``list`` 
-			A list comprehension of all values in this matrix. 
+			A list of all values in this matrix. 
 
 		Example Code 
 		------------
@@ -438,7 +434,7 @@ Got: %s""" % (type(key)))
 
 	def tonumpyarray(self): 
 		r""" 
-		Obtain a copy of this migration matrix as a `NumPy`__ matrix. 
+		Obtain a copy of this migration matrix as a `NumPy`__ array. 
 
 		**Signature**: x.tonumpyarray() 
 
@@ -492,6 +488,8 @@ cdef class mig_matrix_row:
 		object only has use in the ``migration_matrix`` object, and it is 
 		recommended that users let that class generate instances of this 
 		class automatically. 
+
+	.. versionadded:: 1.2.0 
 
 	Attributes 
 	----------

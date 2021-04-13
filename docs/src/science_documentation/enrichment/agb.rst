@@ -73,13 +73,13 @@ For continuous star formation, the enrichment rate can be expressed as this
 quantity integrated over the star formation history: 
 
 .. math:: \dot{M}_x^\text{AGB} = 
-	-\int_0^t y_x^\text{AGB}(m_\text{postMS}(t - t'), Z_\text{ISM}(t')) 
-	\dot{M}_\star(t') \dot{h}(t - t') dt 
+	-\int_0^t \epsilon_x^\text{AGB} y_x^\text{AGB}(m_\text{postMS}(t - t'), 
+	Z_\text{ISM}(t')) \dot{M}_\star(t') \dot{h}(t - t') dt 
 
 This expression is approximated numerically as: 
 
 .. math:: \dot{M}_x^\text{AGB} \approx 
-	\sum_i y_x^\text{AGB}(m_\text{postMS}(t - i\Delta t), 
+	\sum_i \epsilon_x^\text{AGB} y_x^\text{AGB}(m_\text{postMS}(t - i\Delta t), 
 	Z_\text{ISM}(i\Delta t)) \dot{M}_\star(i\Delta t) 
 	\left[h((i + 1)\Delta t) - h(i\Delta t)\right] 
 
@@ -122,7 +122,7 @@ integral over the star formation history, but as a summation over the stellar
 populations present in the zone: 
 
 .. math:: \dot{M}_x^\text{AGB} \approx \sum_i 
-	y_x^\text{AGB}(m_\text{postMS}(\tau_i), Z_i) M_i 
+	\epsilon_x^\text{AGB} y_x^\text{AGB}(m_\text{postMS}(\tau_i), Z_i) M_i 
 	[h(\tau_i) - h(\tau_i + \Delta t)] 
 
 where :math:`Z_i`, :math:`M_i`, and :math:`\tau_i` are the metallicity, 

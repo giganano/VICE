@@ -13,6 +13,9 @@ from vice.yields.ccsne import CL13
 from vice.yields.ccsne import CL04 
 from vice.yields.ccsne import WW95 
 from vice.yields.ccsne import S16 
+from vice.yields.ccsne.S16 import N20 
+from vice.yields.ccsne.S16 import W18 
+from vice.yields.ccsne.S16 import W18F 
 from vice.yields.sneia import iwamoto99 
 from vice.yields.sneia import seitenzahl13 
 from vice.yields.agb import cristallo11 
@@ -46,7 +49,6 @@ _CONFIG_ = {
 			vice.cumulative_return_fraction, 
 			vice.main_sequence_mass_fraction, 
 			vice.single_stellar_population, 
-			vice.dataframe, 
 			vice.yields, 
 			vice.elements, 
 			vice.imf, 
@@ -61,6 +63,7 @@ _CONFIG_ = {
 			vice.stars, 
 			vice.mirror, 
 			vice.toolkit, 
+			vice.dataframe, 
 			vice.ScienceWarning, 
 			vice.VisibleRuntimeWarning, 
 			vice.VisibleDeprecationWarning, 
@@ -109,11 +112,6 @@ _CONFIG_ = {
 			vice.dataframe.todict, 
 			vice.dataframe.remove, 
 			vice.dataframe.filter, 
-			vice.atomic_number, 
-			vice.primordial, 
-			vice.solar_z, 
-			vice.sources, 
-			vice.stable_isotopes, 
 			vice.core.dataframe.agb_yield_settings, 
 			vice.core.dataframe.ccsn_yield_table, 
 			vice.core.dataframe.channel_entrainment, 
@@ -563,11 +561,39 @@ _CONFIG_ = {
 	vice.yields.ccsne.S16: {
 		"filename": 	"vice.yields.ccsne.S16.rst", 
 		"header": 		"vice.yields.ccsne.S16", 
-		"subs": 		[vice.yields.ccsne.S16.set_params] 
+		"subs": 		[
+			vice.yields.ccsne.S16.N20, 
+			vice.yields.ccsne.S16.W18, 
+			vice.yields.ccsne.S16.W18F] 
 	}, 
-	vice.yields.ccsne.S16.set_params: {
-		"filename": 	"vice.yields.ccsne.S16.set_params.rst", 
-		"header": 		"vice.yields.ccsne.S16.set_params", 
+	vice.yields.ccsne.S16.N20: {
+		"filename": 	"vice.yields.ccsne.S16.N20.rst", 
+		"header": 		"vice.yields.ccsne.S16.N20", 
+		"subs": 		[vice.yields.ccsne.S16.N20.set_params] 
+	}, 
+	vice.yields.ccsne.S16.N20.set_params: {
+		"filename": 	"vice.yields.ccsne.S16.N20.set_params.rst", 
+		"header": 		"vice.yields.ccsne.S16.N20.set_params", 
+		"subs": 		[] 
+	}, 
+	vice.yields.ccsne.S16.W18: {
+		"filename": 	"vice.yields.ccsne.S16.W18.rst", 
+		"header": 		"vice.yields.ccsne.S16.W18", 
+		"subs": 		[vice.yields.ccsne.S16.W18.set_params] 
+	}, 
+	vice.yields.ccsne.S16.W18.set_params: {
+		"filename": 	"vice.yields.ccsne.S16.W18.set_params.rst", 
+		"header": 		"vice.yields.ccsne.S16.W18.set_params", 
+		"subs": 		[] 
+	}, 
+	vice.yields.ccsne.S16.W18F: {
+		"filename": 	"vice.yields.ccsne.S16.W18F.rst", 
+		"header": 		"vice.yields.ccsne.S16.W18F", 
+		"subs": 		[vice.yields.ccsne.S16.W18F.set_params] 
+	}, 
+	vice.yields.ccsne.S16.W18F.set_params: {
+		"filename": 	"vice.yields.ccsne.S16.W18F.set_params.rst", 
+		"header": 		"vice.yields.ccsne.S16.W18F.set_params", 
 		"subs": 		[] 
 	}, 
 	vice.yields.ccsne.LC18: {
@@ -767,7 +793,7 @@ _CONFIG_ = {
 	}, 
 	vice.elements.yields.agb: {
 		"filename": 	"vice.elements.yields.agb.rst", 
-		"header": 		"vice.elements.yield.agb", 
+		"header": 		"vice.elements.yields.agb", 
 		"subs": 		[] 
 	}, 
 	vice.elements.yields.ccsne: {
@@ -1357,7 +1383,8 @@ _CONFIG_ = {
 			vice.toolkit.hydrodisk.hydrodiskstars.radial_bins, 
 			vice.toolkit.hydrodisk.hydrodiskstars.analog_data, 
 			vice.toolkit.hydrodisk.hydrodiskstars.analog_index, 
-			vice.toolkit.hydrodisk.hydrodiskstars.mode 
+			vice.toolkit.hydrodisk.hydrodiskstars.mode, 
+			vice.toolkit.hydrodisk.hydrodiskstars.decomp_filter 
 		] 
 	}, 
 	vice.toolkit.hydrodisk.hydrodiskstars.radial_bins: {
@@ -1378,6 +1405,11 @@ _CONFIG_ = {
 	vice.toolkit.hydrodisk.hydrodiskstars.mode: {
 		"filename": 	"vice.toolkit.hydrodisk.hydrodiskstars.mode.rst", 
 		"header": 		"vice.toolkit.hydrodisk.hydrodiskstars.mode", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.hydrodisk.hydrodiskstars.decomp_filter: {
+		"filename": 	"vice.toolkit.hydrodisk.hydrodiskstars.decomp_filter.rst", 
+		"header": 		"vice.toolkit.hydrodisk.hydrodiskstars.decomp_filter", 
 		"subs": 		[] 
 	}, 
 	vice.toolkit.interpolation: {

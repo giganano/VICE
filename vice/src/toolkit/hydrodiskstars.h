@@ -106,6 +106,26 @@ extern unsigned short hydrodiskstars_import(HYDRODISKSTARS *hds,
 	unsigned short decomp_column); 
 
 /* 
+ * Filter the hydrodiskstars data sample based on the kinematic decomposition 
+ * tags. 
+ * 
+ * Parameters 
+ * ==========
+ * hds: 				The hydrodiskstars object to filter data from 
+ * decomp_values: 		The values of the "decomp" attribute that will remain 
+ * 						after the filter
+ * n_decomp_values: 	The number of entries in the "decomp_values" array 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * source: hydrodiskstars.c 
+ */ 
+extern unsigned short hydrodiskstars_decomp_filter(HYDRODISKSTARS *hds, 
+	unsigned short *decomp_values, unsigned short n_decomp_values); 
+
+/* 
  * Find an analog star particle from the hydrodynamical simulation given a 
  * birth radius and time of a stellar population in a multizone simulation. 
  * 

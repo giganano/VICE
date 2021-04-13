@@ -68,8 +68,11 @@ class diskmodel(vice.milkyway):
 		verbose = True, migration_mode = "diffusion", **kwargs): 
 		super().__init__(zone_width = zone_width, name = name, 
 			verbose = verbose, **kwargs) 
-		Nstars = 2 * int(MAX_SF_RADIUS / zone_width * END_TIME / self.dt * 
-			self.n_stars) 
+		if self.zone_width <= 0.2 and self.dt <= 0.02 and self.n_stars >= 6: 
+			Nstars = 3102519 
+		else: 
+			Nstars = 2 * int(MAX_SF_RADIUS / zone_width * END_TIME / self.dt * 
+				self.n_stars) 
 		self.migration.stars = migration.diskmigration(self.annuli, 
 			N = Nstars, mode = migration_mode, 
 			filename = "%s_analogdata.out" % (name)) 

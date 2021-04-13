@@ -17,12 +17,15 @@
  * ========== 
  * mz: 		A pointer to the multizone object for this simulation 
  * 
+ * Notes
+ * =====
+ * This function updates the tracer count only if the new tracer particles 
+ * formed before the final output time. This'll ensure that superfluous tracer 
+ * particles are left out of the output and distribution function calculations. 
+ * 
  * header: tracer.h 
  */ 
 extern void inject_tracers(MULTIZONE *mz) { 
-
-	// if ((*(*mz).zones[0]).current_time <= 
-	// 	(*(*mz).zones[0]).output_times[(*(*mz).zones[0]).n_outputs - 1l]) { 
 
 	if ((*(*mz).zones[0]).current_time <= 
 		(*(*mz).zones[0]).output_times[(*(*mz).zones[0]).n_outputs - 1l]) { 
@@ -43,20 +46,6 @@ extern void inject_tracers(MULTIZONE *mz) {
 		mig -> tracer_count += (*mig).n_tracers * (*mig).n_zones; 
 
 	} else {} 
-
-	/* 
-	 * Update the tracer count, but if the new tracer particles formed after 
-	 * the final output time, decrement it back down. This'll ensure that 
-	 * superfluous tracer particles are left out of the output and distribution 
-	 * function calculations. 
-	 */ 
-	// unsigned long dn = (*mig).n_tracers * (*mig).n_zones; 
-	// mig -> tracer_count += dn; 
-	// if (((*(*mig).tracers[(*mig).tracer_count - 1l]).timestep_origin) * 
-	// 	(*(*mz).zones[0]).dt > 
-	// 	(*(*mz).zones[0]).output_times[(*(*mz).zones[0]).n_outputs - 1l]) {
-	// 	mig -> tracer_count -= dn; 
-	// } else {} 
 
 } 
 

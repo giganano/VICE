@@ -20,11 +20,11 @@ class E16(engine):
 
 	**Signature**: from vice.yields.ccsne.engines import E16 
 
+	.. versionadded:: 1.2.0 
+
 	.. tip:: This object can be passed as the keyword argument ``explodability`` 
 		to ``vice.yields.ccsne.fractional`` to calculate IMF-averaged yields 
 		assuming this black hole landscape. 
-
-	.. versionadded:: 1.X.0 
 
 	Attributes 
 	----------
@@ -47,8 +47,10 @@ class E16(engine):
 		progenitors which explode and collapse. 
 	frequencies : ``list`` 
 		The fraction of stars at the sampled masses that explode as a core 
-		collapse supernova. Though this number may be anywhere between 0 and 1, 
-		the built-in engines in the current version are binary. 
+		collapse supernova. Though this attribute has meaning for other 
+		``engine`` objects, here it simply returns the binary 0 or 1 describing 
+		whether or not each element of the attribute ``masses`` explodes under 
+		the current parameters. 
 
 	Calling 
 	-------
@@ -282,7 +284,7 @@ Got: %s.""" % (type(value)))
 		r""" 
 		Type : ``float`` [default : 0.043] 
 
-		The slope of the line in :math:`\mu_4-M_4\mu_4` space dividing 
+		The intercept of the line in :math:`\mu_4-M_4\mu_4` space dividing 
 		progenitors which explode and collapse. Ertl et al. (2016) [1]_ argue 
 		that the quantities :math:`M_4` and :math:`\mu_4` can predict whether 
 		or not a massive star will produce a core collapse supernova based on 

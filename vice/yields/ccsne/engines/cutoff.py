@@ -18,11 +18,17 @@ class cutoff(engine):
 
 	**Signature**: from vice.yields.ccsne.engines import cutoff 
 
+	.. versionadded:: 1.2.0 
+
 	.. tip:: This object can be passed as the keyword argument ``explodability`` 
 		to ``vice.yields.ccsne.fractional`` to calculate the IMF-averaged 
 		yields assuming this black hole landscape. 
 
-	.. versionadded:: 1.X.0 
+
+	Explosion models such as these have been explored by recent supernova 
+	nucleosynthesis studies (e.g. Limongi & Chieffi 2018 [1]_), and were 
+	compared to more sophisticated explosion models (e.g. Ertl et al. 2016 [2]_; 
+	Sukhbold et al. 2016 [3]_) by Griffith et al. (2021, in prep) [4]_. 
 
 	Attributes 
 	----------
@@ -44,11 +50,6 @@ class cutoff(engine):
 
 			- explodability : ``float`` 
 				1 if 8 <= ``mass`` <= ``collapse_mass``. 0 otherwise. 
-
-	Explosion models such as these have been explored by recent supernova 
-	nucleosynthesis studies (e.g. Limongi & Chieffi 2018 [1]_), and were 
-	compared to more sophisticated explosion models (e.g. Ertl et al. 2016 [2]_; 
-	Sukhbold et al. 2016 [3]_) by Griffith et al. (2021, in prep) [4]_. 
 
 	Example Code 
 	------------

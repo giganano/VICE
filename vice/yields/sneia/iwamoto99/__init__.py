@@ -1,5 +1,5 @@
 r"""
-Iwamoto et al. (1999), ApJ, 124, 439 type Ia supernova (SN Ia) yields 
+Iwamoto et al. (1999), ApJ, 124, 439 Type Ia supernova (SN Ia) yields 
 
 **Signature**: from vice.yields.sneia import iwamoto99 
 

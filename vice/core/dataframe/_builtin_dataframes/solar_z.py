@@ -102,17 +102,20 @@ class solar_z(elemental_settings):
 
 		.. math:: \epsilon_x = \log_{10}(N_x / N_H) + 12 
 
-		as reported by Asplund et al. (2009) [1]_ to a metallicity by mass 
-		:math:`Z_x = M_x / M_\odot`. 
+		to a metallicity by mass :math:`Z_x = M_x / M_\odot`. 
+
+		**Signature**: vice.solar_z.epsilon_to_z_conversion(epsilon, mu, 
+		Xsun = 0.73) 
+
+		.. versionadded:: 1.2.0 
 
 		Parameters 
 		----------
 		epsilon : float 
-			The value reported by Asplund et al. (2009). 
+			The log-scaled number density relative to hydrogen defined above 
+			for a particular element. 
 		mu : float 
-			The mean molecular weight of the element. VICE's internal data 
-			stores these values taken from a standard periodic table of the 
-			elements. 
+			The mean molecular weight of the element. 
 		Xsun : float [default : 0.73] 
 			The hydrogren mass fraction of the solar photosphere. 
 
@@ -130,12 +133,16 @@ class solar_z(elemental_settings):
 
 		.. math:: Z_x = X_\odot \mu_x 10^{\epsilon_x - 12} 
 
+		VICE uses this function to compute the default solar composition based 
+		on internal data storing the Asplund et al. (2009) [1]_ photospheric 
+		measurements. 
+
 		.. [1] Asplund et al. (2009), ARA&A, 47, 481 
 		""" 
 		if all([isinstance(_, numbers.Number) for _ in [epsilon, mu, Xsun]]): 
 			return Xsun * mu * 10**(epsilon - 12) 
 		else: 
-			raise TypeError("Must be a numerical value.")  
+			raise TypeError("Must be a numerical value.") 
 
 
 def _read_builtin_datafile(filename): 

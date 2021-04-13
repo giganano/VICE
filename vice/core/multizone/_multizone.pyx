@@ -243,10 +243,8 @@ a boolean. Got: %s""" % (type(value)))
 		if isinstance(value, numbers.Number) or isinstance(value, bool): 
 			if value: 
 				warnings.warn("""\
-Mixture models in which the positions of stars at intermediate times are not \
-taken into account have been shown to oversimply age-abundance relations \
-(Johnson et al. 2020, in prep). More accurate simulations arise when this \
-attribute is False.""", ScienceWarning) 
+Simulating all zones as one-zone models will neglect all time-dependent \
+migration prescriptions built into this model. """, ScienceWarning) 
 				self._mz[0].simple = 1 
 			else: 
 				self._mz[0].simple = 0 
@@ -444,7 +442,9 @@ leaving only the results of the current simulation.\nOutput directory: \
 		) 
 		eval_times = [i * self._mz[0].zones[0].dt for i in range(length)] 
 		errmsg = """Migration probability must be between 0 and 1 at all \
-timesteps.""" 
+timesteps. Note that your migration matrix entries will be multiplied by the \
+timestep size and divided by 10 Myr; this ensures that migration does not \
+proceed faster or slower as a function of the timestep size."""  
 
 		for i in range(self._mz[0].mig[0].n_zones): 
 			for j in range(self._mz[0].mig[0].n_zones): 
@@ -844,9 +844,8 @@ its time of formation, must equal its zone of origin.""")
 			Detects any non-uniformity across zones and raises ScienceWarning 
 			""" 
 			if len(list(dict.fromkeys(attrs[key]))) > 1: 
-				warnings.warn("""\
-Attribute '%s' is not uniform across zones. This will introduce numerical \
-artifacts.""" % (key), ScienceWarning)  
+				warnings.warn("Attribute '%s' is not uniform across zones." % (
+					key), ScienceWarning)  
 			else: 
 				pass 
 

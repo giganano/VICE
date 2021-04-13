@@ -13,6 +13,8 @@ from .._errors import _ROTATION_
 from ....testing import moduletest 
 from ....testing import unittest 
 import warnings 
+import random 
+random.seed() 
 import math 
 
 # upper mass cutoff of each study 
@@ -36,20 +38,31 @@ class generator:
 	def __init__(self, **kwargs): 
 		self._kwargs = kwargs 
 
-
 	def __call__(self): 
 		success = True 
-		for elem in _RECOGNIZED_ELEMENTS_: 
+		# Conduct the assertions for 10 randomly drawn elements 
+		for i in range(10): 
+			idx = int(random.random() * len(_RECOGNIZED_ELEMENTS_)) 
+			elem = _RECOGNIZED_ELEMENTS_[idx] 
 			try: 
-				with_wind, err1 = fractional(elem, wind = True, **self._kwargs) 
-				no_wind, err2 = fractional(elem, wind = False, **self._kwargs)
+				net_with_wind, err_net_with_wind = fractional(elem, 
+					wind = True, net = True, **self._kwargs) 
+				gross_with_wind, err_gross_with_wind = fractional(elem, 
+					wind = True, net = False, **self._kwargs) 
+				net_no_wind, err_net_no_wind = fractional(elem, 
+					wind = False, net = True, **self._kwargs) 
+				gross_no_wind, err_gross_no_wind = fractional(elem, 
+					wind = False, net = False, **self._kwargs) 
 			except: 
-				success = False 
-				break 
-			success &= no_wind <= with_wind < 1 
-			success &= 0 <= no_wind <= with_wind
-			if with_wind == 0: success &= math.isnan(err1) 
-			if no_wind == 0: success &= math.isnan(err2) 
+				return False 
+			if net_with_wind == 0: success &= math.isnan(err_net_with_wind) 
+			if gross_with_wind == 0: success &= math.isnan(err_gross_with_wind) 
+			if net_no_wind == 0: success &= math.isnan(err_net_no_wind) 
+			if gross_no_wind == 0: success &= math.isnan(err_gross_no_wind) 
+			success &= 0 <= gross_no_wind <= gross_with_wind <= 1 
+			success &= net_no_wind <= net_with_wind <= 1 
+			success &= net_no_wind <= gross_no_wind 
+			success &= net_with_wind <= gross_with_wind 
 			if not success: break 
 		return success 
 

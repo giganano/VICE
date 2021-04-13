@@ -21,7 +21,7 @@ extern unsigned short test_interp_scheme_2d_initialize(void) {
 	unsigned short status = test != NULL; 
 	if (status) {
 		status &= (*test).n_x_values == 0ul; 
-		status &= (*test).n_y_values = 0ul; 
+		status &= (*test).n_y_values == 0ul; 
 		status &= (*test).xcoords == NULL; 
 		status &= (*test).ycoords == NULL; 
 		status &= (*test).zcoords == NULL; 
