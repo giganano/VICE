@@ -15,6 +15,8 @@ class interpolator(interp_scheme_2d):
 
 	**Signature**: vice.yields.agb.interpolator(element, study = "cristallo11") 
 
+	.. versionadded:: 1.2.0 
+
 	Parameters 
 	----------
 	element : ``str`` [case-insensitive] 

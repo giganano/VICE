@@ -10,9 +10,9 @@ class interp_scheme_1d(c_interp_scheme_1d):
 	and y-coordinates of the same length and constructs a continuous function 
 	by connecting the points with straight lines. 
 
-	.. versionadded:: 1.X.0 
-
 	**Signature**: vice.toolkit.interpolation.interp_scheme_1d(xcoords, ycoords) 
+
+	.. versionadded:: 1.2.0 
 
 	Parameters 
 	----------
@@ -63,9 +63,9 @@ class interp_scheme_1d(c_interp_scheme_1d):
 
 	Indexing 
 	--------
-	Index this object as you would a list, and it will return the (x, y) 
-	coordinates of the sampled points from the attributes ``xcoords`` and 
-	``ycoords``. 
+	Index this object as you would an array-like object, and it will return the 
+	(x, y) coordinates of the sampled points from the attributes ``xcoords`` 
+	and ``ycoords``. 
 
 	Example Code 
 	------------

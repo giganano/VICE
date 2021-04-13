@@ -1,4 +1,179 @@
 
+1.2.0 
+=====
+- ``vice.solar_z`` : ``dataframe`` 
+	Users may now modify their adopted solar composition. 
+
+	- ``vice.solar_z.epsilon_to_z_conversion`` : ``staticmethod`` 
+		New in this version. 
+		Converts number density relative to hydrogen to a mass fraction within 
+		the sun. 
+
+	- ``vice.elements.element.solar_z`` 
+		Now allows assignment. 
+		Accesing and modifying a given element's solar abundance via 
+		``vice.solar_z`` is equivalent to going through the ``vice.elements`` 
+		module. 
+
+	- ``vice.elements.yield.agb`` 
+		New in this version. 
+		Accessing and modifying a given element's asymptotic giant branch star 
+		yield via ``vice.yields.agb.settings`` is equivalent to going through 
+		the ``vice.elements`` module. 
+
+- ``vice.single_stellar_population`` : ``function`` 
+	Keyword argument ``"agb_model"`` **deprecated**, instead adopts the global 
+	asymptotic giant branch star yield. 
+
+- ``vice.yields.agb.settings`` : ``dataframe`` 
+	New in this version. 
+	Users modify their adopted AGB star yields through a global setting, 
+	similar to their supernova yields, rather than specifying keyword arguments 
+	to functions and objects. 
+	Entries can be a function of progenitor stellar mass and metallicity, in 
+	that order, or a keyword denoting a built-in table of yields as in previous 
+	versions. 
+
+- ``vice.yields.agb.interpolator`` : ``object`` 
+	New in this version. 
+	Conducts bi-linear interpolation of the asymptotic giant branch star 
+	yields sampled on a grid of masses and metallicities reported by a given 
+	study. Can be adopted as the global yield setting. 
+	
+- ``vice.yields.ccsne.fractional`` : ``function`` 
+	Keyword ``"IMF"`` can now be a user-defined function of stellar mass. 
+	New keyword arguments: ``"explodability"``, ``"wind"``, ``"net"``: 
+
+		- ``"explodability"`` : The fraction of stars which produce a core 
+		  collapse supernova event as a function of progenitor zero age main 
+		  sequence mass. 
+		- ``"wind"`` : Whether or not to include stellar winds in the yield 
+		  calculation. 
+		- ``"net"`` : Whether or not to compute a net yield, otherwise 
+		  computing gross yields. 
+
+- ``vice.yields.ccsne.table`` : ``function`` 
+	New in this version. 
+	Reads in the table of progenitor masses and mass yields published in a 
+	given nucleosynthesis study. Will return the full isotopic breakdown if 
+	requested. 
+
+- ``vice.yields.ccsne.engines`` : ``module`` 
+	New in this version. 
+	Contains popular built-in forms of black hole landscapes, both simple and 
+	complex. They can be adopted as the keyword argument ``"explodability"`` to 
+	the ``vice.yields.ccsne.fractional`` function. 
+
+	- ``vice.yields.ccsne.engines.engine`` : ``object`` 
+		Base class. 
+	- ``vice.yields.ccsne.engines.cutoff`` : ``engine`` 
+		Only stars up to some user-defined progenitor mass explode. 
+	- ``vice.yields.ccsne.engines.E16`` : ``engine`` 
+		Implements the Ertl et al. (2016) black hole landscape and variations 
+		thereof. 
+	- ``vice.yields.ccsne.engines.S16`` : ``module`` 
+		Module containing black hole landscapes computed in Sukhbold et al. 
+		(2016). The engines "N20", "S19p8", "W15", "W18", and "W20" are 
+		included with the same name as in the journal publication, with 
+		``"S19p8"`` being an adaptation of "S19.8": 
+
+		- ``vice.yields.ccsne.engines.S16.N20`` : ``engine`` 
+		- ``vice.yields.ccsne.engines.S16.S19p8`` : ``engine`` 
+		- ``vice.yields.ccsne.engines.S16.W15`` : ``engine`` 
+		- ``vice.yields.ccsne.engines.S16.W18`` : ``engine`` 
+		- ``vice.yields.ccsne.engines.S16.W20`` : ``engine`` 
+
+- ``vice.yields.ccsne.NKT13`` : ``module`` 
+	New in this version. 
+	Nomoto, Kobayashi & Tominaga (2013) core collapse supernova yield tables. 
+
+- ``vice.yields.ccsne.S16`` : ``module`` 
+	New in this version. 
+	Sukhbold et al. (2016) nucleosynthetic yield tables. 
+
+	- ``vice.yields.ccsne.S16.N20`` : ``module`` 
+		Sukhbold et al. (2016) mass yield tables computed under the N20 
+		explosion engine. 
+
+	- ``vice.yields.ccsne.S16.W18`` : ``module`` 
+		Sukhbold et al. (2016) mass yield tables computed under the W18 
+		explosion engine. 
+
+	- ``vice.yields.ccsne.S16.W18F`` : ``module`` 
+		Sukhbold et al. (2016) mass yield tables computed under the W18 
+		explosion engine, forcing explosions in the model stars which otherwise 
+		would not have done so. 
+
+- ``vice.yields.sneia.settings`` : ``dataframe`` 
+	Now allows entries to be a function of progenitor metallicity. 
+
+- ``vice.singlezone.IMF`` : ``property`` 
+	Now allows functions of stellar mass. 
+
+- ``vice.singlezone.tau_star`` : ``property`` 
+	Now allows functions accepting two parameters as well as those accepting 
+	only one. 
+
+- ``vice.singlezone.agb_model`` : ``property`` 
+	**Deprecated** in this version. 
+
+- ``vice.multizone`` : ``object`` 
+	New in this version. 
+	Runs multi-zone GCE simulations within a highly flexible framework. 
+
+- ``vice.milkyway`` : ``multizone`` 
+	New in this version. 
+	A subclass of the ``multizone`` object optimized for modeling 
+	Milky Way-like galaxies. 
+
+- ``vice.migration`` : ``module`` 
+	New in this version. 
+	Provides a means with which to declare migration prescriptions for use in 
+	``multizone`` models. 
+
+- ``vice.output.agb_yields`` : ``property`` 
+	New in this version. 
+	Provides a snapshot of the global AGB star yield settings at the time an 
+	output was computed from a ``singlezone`` object. 
+
+- ``vice.multioutput`` : ``object`` 
+	New in this version. 
+	Handles output from the ``multizone`` object. 
+
+- ``vice.stars`` : ``function`` 
+	New in this version. 
+	Reads in the data containing the masses, abundances, and initial and final 
+	zone numbers of individual stellar populations from a ``multizone`` 
+	object's output. 
+
+- ``vice.toolkit`` : ``module`` 
+	New in this version. 
+	Generally useful utilities. 
+
+	- ``vice.toolkit.hydrodisk`` : ``module`` 
+		Built-in stellar radial migration schema informed by hydrodynamical 
+		simulations. 
+
+		- ``vice.toolkit.hydrodisk.hydrodiskstars`` : ``object`` 
+			A stellar migration prescription based on star particles from a 
+			hydrodynamical simulation. 
+			Requires supplemental data available online which VICE will 
+			download automatically. 
+
+	- ``vice.toolkit.J21_sf_law`` : ``object`` 
+		A star formation law which implements the observationally motivated 
+		parameterization in Johnson et al. (2021) and variations thereof. 
+
+	- ``vice.toolkit.interpolation`` : ``module`` 
+		Interpolation schema. 
+
+		- ``vice.toolkit.interpolation.interp_scheme_1d`` : ``object`` 
+			1-dimensional interpolation scheme. 
+
+		- ``vice.toolkit.interpolation.interp_scheme_2d`` : ``object`` 
+			2-dimensional interpolation scheme. 
+
+
 1.1.0 
 =====
 

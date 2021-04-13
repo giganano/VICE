@@ -78,26 +78,29 @@ def surface_densities(ax, output):
 			gas[i] = float("nan") 
 	ax.plot(radii, [target_gradient(i) for i in radii], 
 		c = named_colors()["black"], 
-		label = r"B-H \& G (2016)") 
+		# label = r"B-H \& G (2016)") 
+		label = "Stars (Milky Way)") 
 	ax.plot(radii, [thin_disk(i) for i in radii], 
 		c = named_colors()["black"], linestyle = ':') 
 	ax.plot(radii, [thick_disk(i) for i in radii], 
 		c = named_colors()["black"], linestyle = ':') 
-	ax.plot(radii, stars, c = named_colors()["red"], label = "Stars") 
-	ax.plot(radii, gas, c = named_colors()["blue"], label = "Gas") 
+	# ax.plot(radii, stars, c = named_colors()["red"], label = "Stars") 
+	ax.plot(radii, stars, c = named_colors()["red"], label = "Stars (Model)") 
+	# ax.plot(radii, gas, c = named_colors()["blue"], label = "Gas") 
+	ax.plot(radii, gas, c = named_colors()["blue"], label = "Gas (Model)") 
 
 	# plot the legend, and right-align the text. By default, it's left-aligned 
 	# and it just doesn't look as nice for this figure. 
 	leg = ax.legend(loc = mpl_loc("upper right"), ncol = 1, frameon = False, 
 		bbox_to_anchor = (0.95, 0.99), handlelength = 0) 
-	renderer = plt.gcf().canvas.get_renderer() 
-	widths = [i.get_window_extent(renderer).width for i in leg.get_texts()] 
-	shift = max(widths) - min(widths) 
+	# renderer = plt.gcf().canvas.get_renderer() 
+	# widths = [i.get_window_extent(renderer).width for i in leg.get_texts()] 
+	# shift = max(widths) - min(widths) 
 	for i in range(3): 
 		leg.get_texts()[i].set_color(["black", "red", "blue"][i]) 
 		leg.legendHandles[i].set_visible(False) 
-		leg.get_texts()[i].set_ha("right") 
-		leg.get_texts()[i].set_position((shift, 0)) 
+		# leg.get_texts()[i].set_ha("right") 
+		# leg.get_texts()[i].set_position((shift, 0)) 
 	
 
 def target_gradient(radius): 
@@ -153,7 +156,8 @@ def thin_disk(radius):
 	.. [1] Bland-Hawthorn & Gerhard (2016), ARA&A, 56, 529 
 	.. [2] Licquia & Newman (2015), ApJ, 806, 96 
 	""" 
-	sigma_0 = 1311e6 
+	# sigma_0 = 1311e6 
+	sigma_0 = 1115e6 
 	rs = 2.5 
 	return sigma_0 * m.exp(-radius / rs) 
 
@@ -183,7 +187,8 @@ def thick_disk(radius):
 	.. [1] Bland-Hawthorn & Gerhard (2016), ARA&A, 56, 529 
 	.. [2] Licquia & Newman (2015), ApJ, 806, 96 
 	""" 
-	sigma_0 = 353e6 
+	# sigma_0 = 353e6 
+	sigma_0 = 300e6 
 	rs = 2.0 
 	return sigma_0 * m.exp(-radius / rs) 
 

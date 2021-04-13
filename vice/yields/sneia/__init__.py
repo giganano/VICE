@@ -21,6 +21,14 @@ seitenzahl13 : yield preset
 iwamoto99 : yield preset 
 	Sets the yields according to the Iwamoto et al. (1999) study. 
 
+Notes 
+-----
+The data stored in this module are reported for each corresponding study 
+*as published*. The Seitenzahl et al. (2013) model reported mass yields after 
+complete decay of all radioactive nuclides with half-lives less than 2 Gyr, and 
+the Iwamoto et al. (1999) study fully decayed *all* unstable isotopes; any 
+additional treatment for radioactive isotopes is thus unnecessary. 
+
 .. [1] Seitenzahl et al. (2013), MNRAS, 429, 1156 
 .. [2] Iwamoto et al. (1999), ApJ, 124, 439 
 """

@@ -1,12 +1,18 @@
 r"""
 VICE: Versatile Integrator for Chemical Evolution 
 
-Provides
---------
-- A dataframe object meant for case-insensitive lookup 
-- Simulations of galactic chemical evolution models 
-- Simulations of nucleosynthesis from single stellar populations 
-- Built-in yield tables from nucleosynthesis studies 
+* 77 elements on the periodic table 
+* Fast integration of one-zone models 
+* Enrichment from single stellar populations 
+* Highly flexible nucleosynthetic yield calculations 
+* User-defined mathematical forms describing: 
+	- Nucleosynthetic yields in simulations 
+	- Mixing processes in multi-zone models 
+	- Infall and star formation histories 
+	- The stellar initial mass function 
+	- The star formation law 
+	- Element-by-element infall metallicities 
+	- Type Ia supernova delay-time distributions 
 
 How to Access the Documentation: 
 --------------------------------
@@ -21,10 +27,8 @@ in the default web browser.
 
 First time users should go through VICE's QuickStartTutorial jupyter notebook, 
 available under examples/ in the git repository. This can be launched from 
-the command line by running ``vice --tutorial``. 
-
-Example scripts can be found under examples/ in the git repository at 
-http://github.com/giganano/VICE. 
+the command line by running ``vice --tutorial``. Other example scripts can 
+be found there as well. 
 
 Contents 
 --------

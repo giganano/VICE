@@ -80,7 +80,7 @@ def save(filename):
 modifying VICE's internal file structure. Please choose an alternate \
 name.""" % (filename.split('/')[-1])) 
 		elif filename.split('/')[-1] == "JW20.py": 
-			raise RuntimeError("""Cannot overwrite Johnson & Weinberg (2020) 
+			raise RuntimeError("""Cannot overwrite Johnson & Weinberg (2020) \
 yield presets. Please choose an alternate name.""") 
 		elif os.path.exists(filename): 
 			src_path = os.path.dirname(os.path.abspath(filename)) 
@@ -146,7 +146,7 @@ def remove(name, force = False):
 	""" 
 
 	if isinstance(name, strcomp): 
-		forbidden_names = ["__init__.py", "_presets.py"] 
+		forbidden_names = ["__init__.py", "_presets.py", "tests", "__pycache__"] 
 		if name in forbidden_names: 
 			""" 
 			A little smoke and mirrors to not allow the user to break this 

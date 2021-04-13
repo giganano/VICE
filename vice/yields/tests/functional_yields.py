@@ -5,7 +5,7 @@ functional yield attributes which return the same value as a numerical setting
 predict numerically similar results. 
 
 In practice, this tests passes with a percent difference in the predicted 
-masses of a few times 10^-4. 
+masses of less than a part per million. 
 """ 
 
 from ...core import singlezone 
@@ -15,22 +15,51 @@ from .. import ccsne
 from .. import sneia 
 
 _OUTTIMES_ = [0.05 * i for i in range(201)] 
-_CCSN_YIELD_ = ccsne.settings['o'] 
-_SNIA_YIELD_ = sneia.settings['o'] 
+
+_CCSN_YIELD_O_ = ccsne.settings['o'] 
+_CCSN_YIELD_FE_ = ccsne.settings['fe'] 
+_CCSN_YIELD_SR_ = ccsne.settings['sr'] 
+
+_SNIA_YIELD_O_ = sneia.settings['o'] 
+_SNIA_YIELD_FE_ = sneia.settings['fe'] 
+_SNIA_YIELD_SR_ = sneia.settings['sr'] 
 
 
-def ccsn_yield(z): 
+def ccsn_yield_o(z): 
 	r""" 
-	Returns the current CCSN yield setting 
+	Returns the current CCSN yield setting for oxygen 
 	""" 
-	return _CCSN_YIELD_ 
+	return _CCSN_YIELD_O_ 
 
-
-def snia_yield(z): 
+def ccsn_yield_fe(z): 
 	r""" 
-	Returns the current SN Ia yield setting 
+	Returns the current CCSN yield setting for iron 
 	""" 
-	return _SNIA_YIELD_ 
+	return _CCSN_YIELD_FE_ 
+
+def ccsn_yield_sr(z): 
+	r""" 
+	Returns the current CCSN yield setting for strontium 
+	""" 
+	return _CCSN_YIELD_SR_ 
+
+def snia_yield_o(z): 
+	r""" 
+	Returns the current SN Ia yield setting for oxygen 
+	""" 
+	return _SNIA_YIELD_O_ 
+
+def snia_yield_fe(z): 
+	r""" 
+	Returns the current SN Ia yield setting for iron 
+	""" 
+	return _SNIA_YIELD_FE_ 
+
+def snia_yield_sr(z): 
+	r""" 
+	Returns the current SN Ia yield setting for strontium 
+	""" 
+	return _SNIA_YIELD_SR_ 
 
 
 @unittest 
@@ -39,9 +68,12 @@ def equivalence_test():
 	equivalence test for functional yields. 
 	""" 
 	def test(): 
+		agb.settings['o'] = "cristallo11" 
+		agb.settings['fe'] = "cristallo11" 
+		agb.settings['sr'] = "cristallo11" 
 		attrs = {
 			"name": 		"test", 
-			"elements": 	['o'], 
+			"elements": 	["fe", "sr", "o"], 
 			"dt": 			0.05 
 		}
 		try: 
@@ -50,9 +82,15 @@ def equivalence_test():
 		except: 
 			return None 
 		try: 
-			ccsne.settings['o'] = ccsn_yield 
-			sneia.settings['o'] = snia_yield 
+			ccsne.settings['o'] = ccsn_yield_o 
+			ccsne.settings['fe'] = ccsn_yield_fe 
+			ccsne.settings['sr'] = ccsn_yield_sr 
+			sneia.settings['o'] = snia_yield_o 
+			sneia.settings['fe'] = snia_yield_fe 
+			sneia.settings['sr'] = snia_yield_sr 
 			agb.settings['o'] = agb.interpolator('o') 
+			agb.settings['fe'] = agb.interpolator('fe') 
+			agb.settings['sr'] = agb.interpolator('sr') 
 		except: 
 			return None 
 		try: 
@@ -62,13 +100,16 @@ def equivalence_test():
 			return None 
 		status = True 
 		for i in range(len(out1.history["time"])): 
-			if out1.history["mass(o)"][i]: 
-				percent_diff = abs(
-					(out1.history["mass(o)"][i] - out2.history["mass(o)"][i]) / 
-					out1.history["mass(o)"][i]) 
-			else: 
-				percent_diff = abs(out2.history["mass(o)"][i]) 
-			status &= percent_diff <= 1.e-6 
+			for elem in ["fe", "sr", "o"]: 
+				col = "mass(%s)" % (elem) 
+				if out1.history[col][i]: 
+					percent_diff = abs(
+						(out1.history[col][i] - out2.history[col][i]) / 
+						out1.history[col][i]) 
+				else: 
+					percent_diff = abs(out2.history[col][i]) 
+				status &= percent_diff <= 1.e-6 
+				if not status: break 
 			if not status: break 
 		return status 
 	return ["vice.yields edge case : functional equivalence", test] 

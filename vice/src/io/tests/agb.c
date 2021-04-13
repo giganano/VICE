@@ -43,7 +43,7 @@ extern unsigned short test_import_agb_grid(void) {
 				if (is2d.n_x_values == TEST_N_M && 
 					is2d.n_y_values == TEST_N_Z && 
 					is2d.xcoords != NULL && 
-					is2d.ycoords != NULL & 
+					is2d.ycoords != NULL && 
 					is2d.zcoords != NULL) {
 
 					unsigned short i, j, result = 1u; 

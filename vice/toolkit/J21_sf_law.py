@@ -20,17 +20,15 @@ class J21_sf_law:
 	or gas supply as second arguments. By default, it implements the star 
 	formation law adopted in Johnson et al. (2021, in prep) [1]_. 
 
+	**Signature**: vice.toolkit.J21_sf_law(area, \*\*kwargs) 
+
+	.. versionadded:: 1.2.0 
+
 	.. warning:: In a ``milkyway`` object, every zone has an instance of this 
 		class as its ``tau_star`` attribute. Any modifications to the attributes 
 		of this class should be made for **every zone**; if this is not 
 		ensured, the star formation law will not be consistent across all 
 		zones. 
-
-	.. seealso:: vice.milkyway 
-
-	.. versionadded:: 1.2.0 
-
-	**Signature**: vice.toolkit.J21_sf_law(area, \*\*kwargs) 
 
 	Parameters 
 	----------
@@ -69,22 +67,26 @@ class J21_sf_law:
 	-------
 	Calling this object will calculate the star formation efficiency timescale 
 	:math:`\tau_\star` according to the parameters of the star formation law 
-	entered as attributes of this object. As throughout VICE, this timescale is 
-	the gas supply per unit star formation in Gyr. 
+	entered as attributes of this object. As in the ``singlezone`` object, this 
+	timescale is the gas supply per unit star formation in Gyr. 
 
-	time : real number 
-		Simulation time in Gyr. Postive definite. 
-	arg2 : real number 
-		Either the gas supply in :math:`M_\odot` or the star formation rate in 
-		:math:`M_\odot Gyr^{-1}`. Will be called by VICE directly. With the 
-		attribute ``area``, the surface density of the corresponding quantity 
-		is known. Positive definite. 
+	Parameters: 
 
-	The return value: 
+			- time : real number 
+				Simulation time in Gyr. Postive definite. 
+			- arg2 : real number 
+				Either the gas supply in :math:`M_\odot` or the star formation 
+				rate in :math:`M_\odot Gyr^{-1}`. Will be called by VICE 
+				directly. With the attribute ``area``, the surface density of 
+				the corresponding quantity is known. Positive definite. 
 
-	tau_star : real number 
-		The star formation efficiency timescale given that simulation time and 
-		star formation rate/gas supply, in Gyr (as necessary). 
+	Returns: 
+
+			- tau_star : real number 
+				The star formation efficiency timescale given that simulation 
+				time and star formation rate/gas supply, in Gyr (as necessary). 
+
+	.. seealso:: vice.milkyway 
 
 	Notes 
 	-----
@@ -127,10 +129,10 @@ class J21_sf_law:
 	only supports lookback times up to 13.2 Gyr, the relation between age of 
 	the universe and simulation time is a simple linear translation: 
 
-	.. math:: t = t_\text{sim} + 1.5\ \text{Gyr}  
+	.. math:: t = t_\text{sim} + 0.5\ \text{Gyr} 
 
-	This class assumed :math:`t_0` = 13.7 Gyr as the age of the universe at the 
-	present day. 
+	with the assumption that :math:`t_0` = 13.7 Gyr is the age of the universe 
+	at the present day. 
 
 	.. [1] Johnson et al. (2021, in prep) 
 	""" 
@@ -260,14 +262,14 @@ class J21_sf_law:
 			molecular gas only (:math:`\tau_\text{mol}`), defined accordingly: 
 
 			.. math:: \tau_\text{mol} = \tau_{\text{mol},0} 
-				\left(\frac{1.5 + t}{t_0}\right)^\gamma 
+				\left(\frac{0.5 + t}{t_0}\right)^\gamma 
 
 			where :math:`\tau_{\text{mol},0}` is the value of 
 			:math:`\tau_\text{mol}` at the present day, :math:`t_0` is the 
 			present-day age of the universe (assumed to be 13.7 Gyr), 
 			:math:`\gamma` is the power-law index, and :math:`t` is the 
-			parameter ``time`` passed to this function. A value of 1.5 is added, 
-			beacuse the onset of star formation is assumed to occur 1.5 Gyr 
+			parameter ``time`` passed to this function. A value of 0.5 is added, 
+			beacuse the onset of star formation is assumed to occur 0.5 Gyr 
 			following the big bang in the Johnson et al. (2021) models [1]_. 
 
 			The values of :math:`\tau_{\text{mol},0}` and :math:`\gamma` are 

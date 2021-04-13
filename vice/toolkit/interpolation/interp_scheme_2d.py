@@ -10,10 +10,10 @@ class interp_scheme_2d(c_interp_scheme_2d):
 	z-coordinates of the appropriate lengths and constructs a continuous 
 	function by connecting the points with bilinear interpolation. 
 
-	.. versionadded:: 1.X.0 
-
 	**Signature**: vice.toolkit.interpolation.interp_scheme_2d(xcoords, ycoords, 
 	zcoords) 
+	
+	.. versionadded:: 1.2.0 
 
 	Parameters 
 	----------
@@ -77,10 +77,10 @@ class interp_scheme_2d(c_interp_scheme_2d):
 				the points defining the four corners of the box in x-y space 
 				bouding the point (``x``, ``y``). 
 
-				The interpolation is such that the values of :math:`(x_1, y)` 
-				and :math:`(x_2, y)` are determined via linear interpolation in 
+				The interpolation is such that the values of :math:`f(x_1, y)` 
+				and :math:`f(x_2, y)` are determined via linear interpolation in 
 				one-dimension at constant :math:`x`, then the value of 
-				:math:`(x, y)` is calculated similarly at constant :math:`y`. 
+				:math:`f(x, y)` is calculated similarly at constant :math:`y`. 
 
 	Example Code 
 	------------

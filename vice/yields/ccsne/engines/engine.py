@@ -14,13 +14,13 @@ class engine(interp_scheme_1d):
 	Core collapse supernova explosion engines: explodability as a function of 
 	progenitor mass in :math:`M_\odot`. 
 
+	**Signature**: vice.yields.ccsne.engines.engine(masses, frequencies)
+
+	.. versionadded:: 1.2.0 
+
 	.. tip:: These objects can be passed as the keyword argument 
 		``explodability`` to ``vice.yields.ccsne.fractional`` to calculate 
 		IMF-averaged yields assuming a particular black hole landscape. 
-
-	.. versionadded:: 1.X.0 
-
-	**Signature**: vice.yields.ccsne.engines.engine(masses, frequencies) 
 
 	Parameters 
 	----------
