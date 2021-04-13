@@ -17,11 +17,11 @@ class S19p8(engine):
 
 	**Signature**: from vice.yields.ccsne.engines.S16 import S19p8 
 
+	.. versionadded:: 1.2.0 
+
 	.. tip:: This object can be passed as the keyword argument ``explodability`` 
 		to ``vice.yields.ccsne.fractional`` to calculate IMF-averaged yields 
 		assuming this black hole landscape. 
-
-	.. versionadded:: 1.X.0 
 
 	This object inherits its functionality from the base class 
 	``vice.yields.ccsne.engines.engine`` with the attribute ``frequencies`` 

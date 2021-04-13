@@ -12,6 +12,8 @@ class multioutput:
 
 	**Signature**: vice.multioutput(name) 
 
+	.. versionadded:: 1.2.0 
+
 	Parameters 
 	----------
 	name : ``str`` 

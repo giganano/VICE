@@ -75,7 +75,6 @@ extern unsigned short multizone_evolve(MULTIZONE *mz) {
 	 * timestep after the user's specified ending time, and will mess up 
 	 * age calculations from the output. 
 	 */ 
-	// mz -> mig -> tracer_count -= (*(*mz).mig).n_tracers * (*(*mz).mig).n_zones; 
 	if ((*mz).verbose) printf("Computing distribution functions....\n"); 
 	tracers_MDF(mz); 
 	write_multizone_mdf(*mz); 
@@ -121,10 +120,11 @@ extern void multizone_evolve_simple(MULTIZONE *mz) {
 	/* 
 	 * Set the tracer count to the proper value for computing the MDF 
 	 * 
-	 * Note: +2l accounts for time = 0 and the final timestep
+	 * Note: +1l accounts for time = 0 or final timestep populations, 
+	 * depending on which one is viewed as the "extra" set. 
 	 */ 
 	mz -> mig -> tracer_count = (
-		(n_timesteps(*(*mz).zones[0]) - BUFFER + 2l) * 
+		(n_timesteps(*(*mz).zones[0]) - BUFFER + 1l) * 
 		(*(*mz).mig).n_zones * 
 		(*(*mz).mig).n_tracers 
 	); 

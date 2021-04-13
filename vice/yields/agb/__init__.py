@@ -12,8 +12,18 @@ Contents
 grid : <function> 
 	Return the stellar mass-metallicity grid of fractional nucleosynthetic 
 	yields for given element and study 
+interpolator : ``object`` 
+	Linearly interpolates on the stellar mass-metallicity grid of yields for 
+	use in the global yield settings. 
 settings : ``dataframe`` 
 	Stores current settings for these yields 
+
+Notes 
+-----
+The data stored in this module are reported for each corresponding study 
+*as published*. With the exception of converting the values to *fractional* 
+yields (i.e. by dividing by progenitor initial mass), they were not modified in 
+any way. 
 
 .. [1] Cristallo et al. (2011), ApJS, 197, 17 
 .. [2] Karakas (2010), MNRAS, 403, 1413 

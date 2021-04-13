@@ -74,13 +74,10 @@ def yield_grid(element, study = "cristallo11"):
 
 	Notes 
 	-----
-	.. note:: The nucleosynthetic yield tables built into VICE do not include 
-		any treatment of radioactive isotopes. The yield tables returned by 
-		this function will not include what the specified study reported for 
-		radioactive isotopes. In the case of elements with a significant 
-		nucleosynthetic contribution from radioactive decay products, the 
-		values returned from this function should be interpreted as lower 
-		bounds rather than estimates of the true yield. 
+	The AGB star yields stored by VICE are reported *as published* by each 
+	corresponding study. With the exception of converting the values to 
+	*fractional* yields (i.e. by dividing by progenitor initial mass), they 
+	were not modified in any way. 
 
 	Example Code 
 	------------
@@ -145,15 +142,17 @@ heavier than nickel (atomic number 28).""" % (studies["karakas10"]))
 	else: 
 		try: 
 			# copy over the yields, masses, and metallicities 
-			yields = e[0].agb_grid[0].n_m * [None] 
-			for i in range(e[0].agb_grid[0].n_m): 
-				yields[i] = e[0].agb_grid[0].n_z * [0.0] 
-				for j in range(e[0].agb_grid[0].n_z): 
-					yields[i][j] = e[0].agb_grid[0].grid[i][j] 
-			masses = [e[0].agb_grid[0].m[i] for i in range(
-				e[0].agb_grid[0].n_m)] 
-			metallicities = [e[0].agb_grid[0].z[i] for i in range(
-				e[0].agb_grid[0].n_z)] 
+			yields = e[0].agb_grid[0].interpolator[0].n_x_values * [None] 
+			for i in range(e[0].agb_grid[0].interpolator[0].n_x_values): 
+				yields[i] = e[0].agb_grid[0].interpolator[0].n_y_values * [0.] 
+				for j in range(e[0].agb_grid[0].interpolator[0].n_y_values): 
+					yields[i][j] = e[0].agb_grid[0].interpolator[0].zcoords[i][j] 
+			masses = [
+				e[0].agb_grid[0].interpolator[0].xcoords[i] for i in range(
+					e[0].agb_grid[0].interpolator[0].n_x_values)] 
+			metallicities = [
+				e[0].agb_grid[0].interpolator[0].ycoords[i] for i in range(
+					e[0].agb_grid[0].interpolator[0].n_y_values)] 
 		finally: 
 			_element.element_free(e) 
 

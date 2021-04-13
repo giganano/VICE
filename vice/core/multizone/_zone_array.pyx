@@ -12,6 +12,8 @@ cdef class zone_array:
 	An object indexable by integers which only allows singlezone objects to be 
 	stored. These objects will only be created automatically upon 
 	initialization of a multizone object. 
+
+	.. versionadded:: 1.2.0 
 	""" 
 
 	def __init__(self, n): 

@@ -32,9 +32,9 @@ _NAMES_ = {
 	"NKT13": 	"Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457", 
 	"CL04": 	"Chieffi & Limongi (2004), ApJ, 608, 405", 
 	"WW95": 	"Woosley & Weaver (1995) ApJ, 101, 181", 
-	"S16/W18": 	"Sukhbold et al. (2016), ApJ, 821, 38",
-	"S16/W18F": "Sukhbold et al. (2016), ApJ, 821, 38 (forced explosions)",
-	"S16/N20": 	"Sukhbold et al. (2016), ApJ, 821, 38" 
+	"S16/W18": 	"Sukhbold et al. (2016), ApJ, 821, 38 (W18 explosion engine)", 
+	"S16/W18F": "Sukhbold et al. (2016), ApJ, 821, 38 (W18 engine, forced)", 
+	"S16/N20": 	"Sukhbold et al. (2016), ApJ, 821, 38 (N20 explosion engine)" 
 } 
 
 # Keywords and their associated metallicities 

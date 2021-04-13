@@ -5,6 +5,8 @@ models.
 
 **Signature**: from vice.yields.ccsne.engines import S16 
 
+.. versionadded:: 1.2.0 
+
 .. tip:: Instances of the ``engine`` class can be passed the keyword argument 
 	``explodability`` to ``vice.yields.ccsne.fractional`` to calculate 
 	IMF-averaged yields assuming a particular black hole landscape. The impact 

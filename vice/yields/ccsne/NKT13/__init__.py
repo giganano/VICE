@@ -4,6 +4,8 @@ yields
 
 **Signature**: from vice.yields.ccsne import NKT13 
 
+.. versionadded:: 1.2.0 
+
 Importing this module will automatically set the CCSN yield settings for all 
 elements to the IMF-averaged yields calculated with the Nomoto, Kobayashi & 
 Tominaga (2013) yield table for [M/H] = 0.15 stars. This will adopt an upper 
@@ -16,6 +18,12 @@ mass limit of 40 :math:`M_\odot`.
 	Z = 0.014 (Asplund et al. 2009) [1]_. 
 
 .. note:: This module is not imported with a simple ``import vice`` statement. 
+
+.. note:: When this module is imported, the yields will be updated with a 
+	maximum of 10^5 bins in quadrature to decrease computational overhead. For 
+	some elements, the yield calculation may not converge. To rerun the yield 
+	calculation with higher numerical precision, simply call ``set_params`` 
+	with a new value for the keyword ``Nmax`` (see below). 
 
 Contents 
 --------
@@ -75,7 +83,7 @@ if not __VICE_SETUP__:
 			for i in _RECOGNIZED_ELEMENTS_: 
 				__settings[i] = __fractional(i, study = "NKT13", **kwargs)[0] 
 
-	set_params(m_upper = 40, MoverH = 0.15) 
+	set_params(m_upper = 40, MoverH = 0.15, Nmax = 1e5) 
 
 else: 
 	pass 

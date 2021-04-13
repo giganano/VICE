@@ -12,6 +12,7 @@ if not __VICE_SETUP__:
 	from ._generic import generic_test 
 	from ._no_migration import no_migration_test 
 	from ._separation import separation_test 
+	from .bifurcation import bifurcation_test 
 
 	@moduletest 
 	def test(): 
@@ -22,7 +23,8 @@ if not __VICE_SETUP__:
 			[ 
 				generic_test(run = False), 
 				no_migration_test(run = False), 
-				separation_test(run = False) 
+				separation_test(run = False), 
+				bifurcation_test(run = False) 
 			] 
 		] 
 

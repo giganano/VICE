@@ -50,8 +50,8 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	Simulate the nucleosynthesis of a given element from a single star cluster 
 	of given mass and metallicity. This does not take into account galactic 
 	evolution - whether or not it is depleted from inflows or ejected in winds 
-	is not considered. Only the mass of the given element produced by the star 
-	cluster is calculated. 
+	is not considered. Only the net mass of the given element produced by the 
+	star cluster is calculated. 
 
 	**Signature**: vice.single_stellar_population(element, mstar = 1.0e+06, 
 	Z = 0.014, time = 10, dt = 0.01, m_upper = 100, m_lower = 0.08, 
@@ -66,9 +66,9 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 	Z : real number [default : 0.014] 
 		The metallicity by mass of the stars in the cluster. 
 	time : real number [default : 10] 
-		The amount of time in Gyr to run the simulation for 
+		The amount of time in Gyr to run the simulation for. 
 	dt : real number [default : 0.01] 
-		The size of each timestep in Gyr 
+		The size of each timestep in Gyr. 
 	m_upper : real number [default : 100] 
 		The upper mass limit on star formation in solar masses. 
 	m_lower : real number [default : 0.08] 
@@ -78,6 +78,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 		lifetime. 
 
 		.. versionadded:: 1.1.0 
+			Prior to version 1.1.0, VICE approximated postMS = 0. 
 
 	IMF : ``str`` [case-insensitive] or ``<function>`` [default : "kroupa"] 
 		The stellar initial mass function (IMF) to assume. Strings denote 
@@ -106,7 +107,7 @@ def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10,
 
 		.. note:: 
 			Functions do not need to return 0 at times smaller than the SN Ia 
-			minimum delay time. 
+			minimum delay time. VICE will take care of this automatically. 
 
 		.. note:: 
 			Functions do not need to be normalized. VICE will take care of this 

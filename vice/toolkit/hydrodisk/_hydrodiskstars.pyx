@@ -29,8 +29,8 @@ _END_TIME_ = _hydrodiskstars.HYDRODISK_END_TIME
 _RECOGNIZED_MODES_ = ["linear", "sudden", "diffusion"] 
 
 # The number of star particles in the simulation 
-# _N_STAR_PARTICLES_ = 3000556 
-_N_STAR_PARTICLES_ = 3102519 
+# _N_STAR_PARTICLES_ = 3102519 
+_N_STAR_PARTICLES_ = 3152211 
 
 
 cdef class c_hydrodiskstars: 
@@ -40,7 +40,7 @@ cdef class c_hydrodiskstars:
 	documentation. 
 	""" 
 
-	def __cinit__(self, radbins, N = 1e5, mode = "linear", idcolumn = 0, 
+	def __cinit__(self, radbins, N = 1e5, mode = "diffusion", idcolumn = 0, 
 		tformcolumn = 1, rformcolumn = 2, rfinalcolumn = 3, zformcolumn = 4, 
 		zfinalcolumn = 5, v_radcolumn = 6, v_phicolumn = 7, v_zcolumn = 8, 
 		decomp_column = 9): 
@@ -87,28 +87,7 @@ will oversample these data.""" % (_N_STAR_PARTICLES_), ScienceWarning)
 		decomp_column = 9): 
 		
 		self._analog_idx = -1l 
-		self._analog_data = dataframe({
-			"id": 		[self._hds[0].ids[i] for i in range(
-				self._hds[0].n_stars)], 
-			"tform":	[self._hds[0].birth_times[i] for i in range(
-				self._hds[0].n_stars)], 
-			"rform": 	[self._hds[0].birth_radii[i] for i in range(
-				self._hds[0].n_stars)], 
-			"rfinal": 	[self._hds[0].final_radii[i] for i in range(
-				self._hds[0].n_stars)], 
-			"zform": 	[self._hds[0].zform[i] for i in range(
-				self._hds[0].n_stars)], 
-			"zfinal": 	[self._hds[0].zfinal[i] for i in range(
-				self._hds[0].n_stars)], 
-			"vrad": 	[self._hds[0].v_rad[i] for i in range(
-				self._hds[0].n_stars)], 
-			"vphi": 	[self._hds[0].v_phi[i] for i in range(
-				self._hds[0].n_stars)], 
-			"vz": 		[self._hds[0].v_z[i] for i in range(
-				self._hds[0].n_stars)], 
-			"decomp": 	[self._hds[0].decomp[i] for i in range(
-				self._hds[0].n_stars)] 
-		}) 
+		self.__update_analog_data() 
 
 	def __dealloc__(self): 
 		_hydrodiskstars.hydrodiskstars_free(self._hds) 
@@ -120,7 +99,7 @@ will oversample these data.""" % (_N_STAR_PARTICLES_), ScienceWarning)
 					self._hds[0].rad_bins[zone + 1]) / 2 
 				if (isinstance(tform, numbers.Number) and 
 					isinstance(time, numbers.Number)): 
-					if abs(time - _END_TIME_) > 1.e-12: warnings.warn("""\
+					if time - _END_TIME_ > 1.e-12: warnings.warn("""\
 Simulations of galactic chemical evolution with the hydrodiskstars object for \
 timescales longer than %g Gyr are not supported. This is the maximum range of \
 star particle ages.""" % (_END_TIME_), ScienceWarning) 
@@ -156,7 +135,6 @@ Zone of formation: %d
 Time of formation: %.4e Gyr 
 Time in simulation: %.4e Gyr""" % (self.analog_data["id"][self.analog_index], 
 								zone, tform, time))
-							# raise ValueError("Radius out of bin range.")  
 				else: 
 					raise TypeError("""Time parameters must be numerical \
 values. Got: (%s, %s)""" % (type(tform), type(time))) 
@@ -164,6 +142,30 @@ values. Got: (%s, %s)""" % (type(tform), type(time)))
 				raise ValueError("Zone out of range: %d" % (zone)) 
 		else: 
 			raise TypeError("Zone must be of type int. Got: %s" % (type(zone))) 
+
+	def __update_analog_data(self): 
+		self._analog_data = dataframe({
+			"id": 		[self._hds[0].ids[i] for i in range(
+				self._hds[0].n_stars)], 
+			"tform":	[self._hds[0].birth_times[i] for i in range(
+				self._hds[0].n_stars)], 
+			"rform": 	[self._hds[0].birth_radii[i] for i in range(
+				self._hds[0].n_stars)], 
+			"rfinal": 	[self._hds[0].final_radii[i] for i in range(
+				self._hds[0].n_stars)], 
+			"zform": 	[self._hds[0].zform[i] for i in range(
+				self._hds[0].n_stars)], 
+			"zfinal": 	[self._hds[0].zfinal[i] for i in range(
+				self._hds[0].n_stars)], 
+			"vrad": 	[self._hds[0].v_rad[i] for i in range(
+				self._hds[0].n_stars)], 
+			"vphi": 	[self._hds[0].v_phi[i] for i in range(
+				self._hds[0].n_stars)], 
+			"vz": 		[self._hds[0].v_z[i] for i in range(
+				self._hds[0].n_stars)], 
+			"decomp": 	[self._hds[0].decomp[i] for i in range(
+				self._hds[0].n_stars)] 
+		}) 
 
 	def object_address(self): 
 		""" 
@@ -230,4 +232,20 @@ Minimum radius must be zero. Got: %g kpc.""" % (value[0]))
 		else: 
 			raise TypeError("""Attribute 'mode' must be either a string or 
 None. Got: %s""" % (type(value))) 
+
+
+	def decomp_filter(self, values): 
+		values = _pyutils.copy_array_like_object(values) 
+		if all([_ % 1 == 0 for _ in values]): 
+			values = [int(_) for _ in values] 
+			copy = <unsigned short *> malloc (len(values) * 
+				sizeof(unsigned short)) 
+			for i in range(len(values)): copy[i] = <unsigned short> values[i] 
+			if not _hydrodiskstars.hydrodiskstars_decomp_filter(self._hds, 
+				copy, <unsigned short> len(values)): 
+				raise SystemError("Internal Error.") 
+			else: 
+				self.__update_analog_data() 
+		else: 
+			raise TypeError("Must contain only integers.") 
 

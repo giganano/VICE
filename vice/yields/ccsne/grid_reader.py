@@ -34,6 +34,8 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 	**Signature**: vice.yields.ccsne.table(element, study = "LC18", MoverH = 0, 
 	rotation = 0, wind = True, isotopic = False) 
 
+	.. versionadded:: 1.2.0 
+
 	Parameters 
 	----------
 	element : ``str`` [case-insensitive] 
@@ -53,8 +55,9 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 			- "WW95": Woosley & Weaver (1995) [6]_ 
 
 	MoverH : real number [default : 0] 
-		The total metallicity [M/H] of the exploding stars. There are only a 
-		handful of metallicities recognized by each study. 
+		The total metallicity [M/H] = :math:`\log_{10}(Z/Z_\odot)` of the 
+		exploding stars. There are only a handful of metallicities recognized 
+		by each study. 
 
 		Keywords and their Associated Metallicities: 
 
@@ -117,18 +120,16 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 
 	Notes 
 	-----
-	.. note:: The nucleosynthetic yield tables built into VICE do not include 
-		any treatment of radioactive isotopes. The yield tables returned from 
-		this function will not include what the specified study reported for 
-		radioactive isotopes. In the case of elements with a significant 
-		nucleosynthetic contribution from radioactive decay products, the 
-		values returned from this function should be interpreted as lower 
-		bounds rather than estimates of the true yield. 
+	The tables returned by this function will include stable isotopes *only*. 
+	See the notes in the ``vice.yields.ccsne`` docstring for details on the 
+	studies to which VICE applies a treatment of radioactive isotopes in its 
+	built-in tables. 
 
 	Example Code 
 	------------
 	>>> import vice 
-	>>> vice.yields.ccsne.table('o') 
+	>>> example = vice.yields.ccsne.table('o') 
+	>>> example 
 	vice.dataframe{
 		13.0 -----------> 0.247071034
 		15.0 -----------> 0.585730308
@@ -140,6 +141,20 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 		80.0 -----------> 0.24224373600000002
 		120.0 ----------> 0.368598602
 	} 
+	>>> example.masses 
+	(13.0, 15.0, 20.0, 25.0, 30.0, 40.0, 60.0, 80.0, 120.0) 
+	>>> example[20.0] 
+	1.256452301 
+	>>> [example[i] for i in example.masses] 
+	[0.2470691117,
+	 0.5857306186,
+	 1.256464291,
+	 2.476488843,
+	 0.073968147,
+	 0.087475695,
+	 0.149385561,
+	 0.24224373600000002,
+	 0.368598602]
 	>>> vice.yields.ccsne.table('o', isotopic = True) 
 	vice.dataframe{
 		13 -------------> {'o16': 0.24337, 'o17': 5.5634e-05, 'o18': 0.0036454}
@@ -152,6 +167,26 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 		80 -------------> {'o16': 0.24192, 'o17': 6.1316e-05, 'o18': 0.00026242}
 		120 ------------> {'o16': 0.36819, 'o17': 7.9192e-05, 'o18': 0.00032941}
 	} 
+	>>> example[20] 
+	vice.dataframe{
+	    o16 ------------> 1.250112
+	    o17 ------------> 4.6201e-05
+	    o18 ------------> 0.0063060899999999994
+	}
+	>>> example[20]['o16'] 
+	1.250112 
+	>>> example['o16'] 
+	vice.dataframe{
+	    13.0 -----------> 0.2433681
+	    15.0 -----------> 0.5823402999999999
+	    20.0 -----------> 1.250112
+	    25.0 -----------> 2.472433
+	    30.0 -----------> 0.073782
+	    40.0 -----------> 0.087253
+	    60.0 -----------> 0.1491
+	    80.0 -----------> 0.24192
+	    120.0 ----------> 0.36819
+	}
 
 	.. [1] Limongi & Chieffi (2018), ApJS, 237, 13 
 	.. [2] Sukhbold et al. (2016), ApJ, 821, 38 
@@ -208,7 +243,7 @@ their own discretion by modifying their CCSN yield settings directly.""" % (
 		for i in range(len(grid)): 
 			for j in range(1, len(grid[i])): 
 				grid[i][j] += wind_grid[i][j] 
-	elif study.upper() not in ["LC18", "S16/W18"]: 
+	elif study.upper() not in ["LC18", "S16/W18", "S16/N20", "S16/W18F"]: 
 		warnings.warn("""The %s study did not separate the yields from the \
 wind and the explosion, publishing only the total yields from both. For this \
 reason, this function cannot separate the wind yields from this table.""" % (
@@ -223,8 +258,7 @@ reason, this function cannot separate the wind yields from this table.""" % (
 
 	if isotopic: 
 		return ccsn_yield_table(masses, tuple(isotopic_yields), 
-			isotopes = ["%s%d" % (element.lower(), 
-				i) for i in stable_isotopes[element]]) 
+			isotopes = get_isotopes(filename)) 
 	else: 
 		mass_yields = len(masses) * [0.] 
 		for i in range(len(mass_yields)): 
@@ -257,4 +291,29 @@ def read_grid(filename):
 			line = f.readline() 
 		f.close() 
 	return contents 
+
+
+def get_isotopes(filename): 
+	r""" 
+	Pulls the individual isotopes of a given element from the yield file. 
+
+	Parameters 
+	----------
+	filename : str 
+		The path to the file containing the yields. 
+
+	isotopes : list 
+		A list of strings denoting the isotopes of each element in the file. 
+	""" 
+	with open(filename, 'r') as f: 
+		while True: 
+			line = f.readline() 
+			if line[0] != '#': 
+				raise SystemError("Internal Error.") 
+			elif line.split()[1] == "M_init": 
+				f.close() 
+				return [_.lower() for _ in line.split()[2:]] 
+			else: continue 
+		f.close() 
+	raise SystemError("Internal Error.") 
 

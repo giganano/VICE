@@ -26,7 +26,6 @@ starburst:
 
 .PHONY: tutorial 
 tutorial: 
-	@ echo Launching tutorial 
 	@ $(MAKE) -C examples/ tutorial
 
 .PHONY: clean 

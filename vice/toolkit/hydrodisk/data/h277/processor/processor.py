@@ -38,7 +38,8 @@ DECOMP_REASSIGN = {
 	1: 1, # thin disk 
 	4: 2, # thick disk 
 	3: 3, # bulge 
-	5: 4  # pseudobulge 
+	5: 4, # pseudobulge 
+	2: 5  # halo 
 } 
 
 # The amount of time subtracted from ages. Hydrodisk models place the onset of 
@@ -153,8 +154,8 @@ def all_cuts(h277, index):
 		disk_cut 
 		kinematic_cut 
 	""" 
-	# cuts = [ageform_cut, tform_cut, rform_cut, disk_cut, kinematic_cut] 
-	cuts = [ageform_cut, tform_cut, disk_cut, kinematic_cut] 
+	# cuts = [ageform_cut, tform_cut, disk_cut, kinematic_cut] 
+	cuts = [ageform_cut, tform_cut, disk_cut] 
 	return all([cut(h277, index) for cut in cuts]) 
 
 
@@ -216,38 +217,6 @@ def tform_cut(h277, index):
 	this file. 
 	""" 
 	return h277[1].data["tform"][index] >= AGE_SHIFT 
-
-
-def rform_cut(h277, index): 
-	r""" 
-	Determines if a star has a radius of formation such that it can be 
-	reasonably described as "in-situ" given its formation radius. 
-
-	Parameters 
-	----------
-	h277 : astropy.io.fits.hdu.hdulist.HDUList 
-		The fits file object opened by calling astropy.io.fits with the 
-		input file name. 
-	index : int 
-		The list index of the star particle in ``h277[1].data``. 
-
-	Returns 
-	-------
-	test : bool 
-		True if the star particle passes the cut. False otherwise. 
-
-	Notes 
-	-----
-	This cut implements the following equation: 
-
-	.. math:: \frac{R_\text{form}}{\text{kpc}} \leq 
-		1.4 * \frac{T_\text{form}}{\text{Gyr}} + 2 
-
-	.. seealso:: Appendix X of Johnson et al. (2021, in prep) 
-	""" 
-	return (
-		h277[1].data["Rform"][index] <= 1.4 * h277[1].data["tform"][index] + 2 
-	) 
 
 
 def disk_cut(h277, index): 
