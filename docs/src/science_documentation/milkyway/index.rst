@@ -37,7 +37,6 @@ implementation could be extended to include others.
 	>>> import vice 
 	>>> vice.toolkit.hydrodisk.data.download() 
 
-
 The Sample of Star Particles 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The ``hydrodiskstars`` object, the default stellar migration prescription for 
@@ -149,7 +148,6 @@ Between :math:`5\times10^6 M_\odot~kpc^{-2}` and
 :math:`2\times10^7 M_\odot~kpc^{-2}`, it scales as 
 :math:`\dot{\Sigma}_\star \propto \Sigma_\text{g}^{3.6}`. Above 
 :math:`2\times10^7 M_\odot~kpc^{-2}`, the relation becomes linear. 
-
 
 The ``J21_sf_law`` calculates the star formation efficiency timescale 
 :math:`\tau_\star` (usually referred to as a "depletion time" in the star 
