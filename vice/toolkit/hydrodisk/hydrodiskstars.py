@@ -1,34 +1,33 @@
 
 from __future__ import absolute_import 
 from ._hydrodiskstars import c_hydrodiskstars 
+from . import data 
 
 
 class hydrodiskstars: 
 
 	r""" 
-	A stellar migration scheme inspired by a hydrodynamical zoom-in simulation 
-	of a Milky Way-like disk galaxy ran at the University of Washington. 
+	A stellar migration scheme informed by the ``h277`` simulation, a zoom-in 
+	hydrodynamic simulation of a Milky Way like galaxy ran from cosmological 
+	initial conditions (a part of the ``g14`` simulation suite, Christensen et 
+	al 2012 [1]_). 
+
+	**Signature**: vice.toolkit.hydrodisk.hydrodiskstars(radial_bins, N = 1e5, 
+	mode = "diffusion") 
 
 	.. versionadded:: 1.2.0 
 
-	.. note:: The galaxy in the zoom-in hydrodynamical simulation does not 
-		have a bar, while the Milky Way is known to have a bar. Radial 
-		migration is then driven by resonant interactions with spiral arms, 
-		other star particles, etc. rather than dynamical interactions with the 
-		bar. 
-
-	.. note:: Simulations which adopt this model that run for longer than 
+	.. warning:: Simulations which adopt this model that run for longer than 
 		13.2 Gyr are not supported. Stellar populations in the built-in 
-		hydrodynamical simulation data span 13.2 Gyr of ages. 
-
-	**Signature**: vice.toolkit.hydrodisk.hydrodiskstars(radial_bins, N = 1e5, 
-	mode = "linear") 
+		hydrodynamical simulation data span 13.2 Gyr of ages; simulations on 
+		longer timescales are highly likely to produce a 
+		``segmentation fault``. 
 
 	Parameters 
 	----------
 	radial_bins : array-like [elements must be positive real numbers] 
 		The bins in galactocentric radius in kpc describing the disk model. 
-		This must extend from 0 to at least 20 kpc. Need not be sorted in any 
+		This must extend from 0 to at least 20. Need not be sorted in any 
 		way. Will be stored as an attribute. 
 	N : int [default : 1e5] 
 		An approximate number of star particles from the hydrodynamical 
@@ -38,11 +37,11 @@ class hydrodiskstars:
 		In practice, this number should be slightly larger than the number of 
 		(relevant) stellar populations simulated by a multizone model. 
 
-		.. note:: There are 1,017,612 star particles available for this 
+		.. note:: There are 3,102,519 star particles available for this 
 			object. Any more stellar populations than this would oversample 
 			these data. 
 
-	mode : str [case-insensitive] or ``None`` [default : "linear"] 
+	mode : str [case-insensitive] or ``None`` [default : "diffusion"] 
 		The attribute 'mode', initialized via keyword argument. 
 
 	Attributes 
@@ -53,12 +52,11 @@ class hydrodiskstars:
 		The raw star particle data from the hydrodynamical simulation. 
 	analog_index : int 
 		The index of the star particle acting as the current analog. -1 if the 
-		analog has not yet been set (see note below under `Calling`_) or if 
-		no analog is found. 
+		analog has not yet been set (see note below under `Calling`_). 
 	mode : str or ``None`` 
 		The mode of stellar migration, describing the approximation of how 
-		stars move from birth to final radii. Either "linear", "sudden", or 
-		"diffusion". See property docstring for more details. 
+		stars move from birth to final radii. Either "diffusion", "sudden", or 
+		"linear". See property docstring for more details. 
 
 		.. note:: Only subclasses may set this attribute ``None``, in which 
 			case it is assumed that a custom migration approximation is 
@@ -85,6 +83,11 @@ class hydrodiskstars:
 		acting as the analog, and the data for the corresponding star particle 
 		can then be accessed via the attribute ``analog_index``. 
 
+	Functions 
+	---------
+	decomp_filter : [instancemethod] 
+		Filter the star particles based on their kinematic decomposition. 
+
 	Raises 
 	------
 	* ValueError 
@@ -93,23 +96,37 @@ class hydrodiskstars:
 	* ScienceWarning 
 		- This object is called with a time larger than 13.2 Gyr 
 		- The number of analog star particles requested is larger than the 
-		  number available from the hydrodynamical simulation (1,017,612) 
+		  number available from the hydrodynamical simulation (3,102,519) 
 
 	Notes 
 	-----
+	This object requires VICE's supplementary data sample, available in its 
+	GitHub repository at ./vice/toolkit/hydrodisk/data.  The first time a 
+	``hydrodiskstars`` object is constructed, VICE will download 
+	the additional data automatically. If this process fails, it may be due to 
+	not having administrator's privileges on your system; in this event, users 
+	should speak with their administrator, who would then be able to download 
+	their data by running the following on their system: 
+
+	>>> import vice 
+	>>> vice.toolkit.hydrodisk.data.download() 
+
 	This migration scheme works by assigning each stellar population in the 
 	simulation an analog star particle from the hydrodynamical simulation. The 
 	analog is randomly drawn from a sample of star particles which formed at 
 	a similar radius and time, and the stellar population then assumes the 
-	final orbital radius of its analog. Stellar populations that do not find 
-	an analog stay at their radius of birth. In modeling a Milky Way-like disk, 
-	the vast majority of stellar populations will find an analog. 
+	change in orbital radius of its analog. 
 
-	If no analogs which formed within 300 pc of the stellar population in 
-	radius and 250 Myr in formation time, then the search is widened to star 
-	particles forming within 600 pc in radius and 500 Myr in formation time. 
-	These constants are declared in vice/src/toolkit/hydrodiskstars.h in the 
-	VICE source tree. 
+	VICE first searches for analogs in the ``h277`` data for star particles 
+	which formed at a radius of :math:`R \pm` 250 pc and at a time of 
+	:math:`T \pm` 250 Myr. If no analogs are found that satisfy this 
+	requirement, the search is widened to :math:`R \pm` 500 pc and 
+	:math:`T \pm` 500 Myr. If still no analog is found, then the time 
+	restriction of :math:`T \pm` 500 Myr is maintained, and VICE finds the star 
+	particle with the smallest difference in birth radius, assigning it as the 
+	analog. These values parameterizing this search algorithm are declared in 
+	``vice/src/toolkit/hydrodiskstars.h`` in the VICE source tree. For further 
+	details, see "Milky Way-Like Galaxies" under VICE's science documentation. 
 
 	This object can be subclassed to implement a customized migration 
 	approximation by overriding the ``__call__`` function. However, in this 
@@ -118,11 +135,15 @@ class hydrodiskstars:
 	approximation denoted by the ``mode`` attribute, **not** their overridden 
 	``__call__`` function. 
 
+	The ``h277`` galaxy had a weak and transient bar, but does not have one at 
+	the present day. This is one notable difference between it and the Milky 
+	Way. 
+
 	Example Code 
 	------------
 	>>> from vice.toolkit.hydrodisk import hydrodiskstars 
 	>>> import numpy as np 
-	>>> example = hydrodiskstars(np.linspace(0, 20, 81)) 
+	>>> example = hydrodiskstars(np.linspace(0, 20, 81), N = 5e5) 
 	>>> example.radial_bins 
 	[0.0, 
 	 0.25, 
@@ -142,10 +163,17 @@ class hydrodiskstars:
 	>>> example.analog_data["vrad"][example.analog_index] 
 	5.6577 
 	>>> example.mode 
-	"linear" 
+	"diffusion" 
+
+	.. [1] Christensen et al. (2012), MNRAS, 425, 3058 
 	""" 
 
-	def __init__(self, rad_bins, N = 1e5, mode = "linear"): 
+	def __init__(self, rad_bins, N = 1e5, mode = "diffusion"): 
+		if not data._h277_exists(): 
+			print("VICE supplementary data required, downloading now.") 
+			print("You will not need to repeat this process.") 
+			data.download() 
+		else: pass 
 		self.__c_version = c_hydrodiskstars(rad_bins, N = N, mode = mode) 
 
 	def __call__(self, zone, tform, time): 
@@ -212,14 +240,19 @@ class hydrodiskstars:
 			- tform:   	The time the star particle formed in Gyr 
 			- rform:   	The radius the star particle formed at in kpc 
 			- rfinal:  	The radius the star particle ended up at in kpc 
-			- zfinal:  	The height above the disk midplane in kpc at the end 
-						of the simulation 
+			- zform: 	The disk midplane distance in kpc at the time of 
+			  formation. 
+			- zfinal:  	The disk midplane distance in kpc at the end of the 
+			  simulation 
 			- vrad:     The radial velocity of the star particle at the end of 
-						the simulation in km/sec 
+			  the simulation in km/sec 
 			- vphi:     The azimuthal velocity of the star particle at the end 
-						of the simulation in km/sec 
+			  of the simulation in km/sec 
 			- vz: 		The velocity perpendicular to the disk midplane at the 
-						end of the simulation in km/sec 
+			  end of the simulation in km/sec 
+			- decomp: 	An integer denoting which kinematic subclass the star 
+			  particle belongs to (1: thin disk, 2: thick disk, 3: bulge, 
+			  4: pseudobulge, 5: halo). 
 
 		Example Code 
 		------------
@@ -248,8 +281,7 @@ class hydrodiskstars:
 		Type : int 
 
 		The index of the analog in the hydrodynamical simulation star particle 
-		data. -1 if no analog is found for a star particle born at a given 
-		radius and time. 
+		data. -1 if it has not yet been assigned. 
 
 		.. note:: Calling this object at a given zone with the formation time 
 			and the simulation time equal resets the star particle acting as 
@@ -280,34 +312,40 @@ class hydrodiskstars:
 		r""" 
 		Type : str [case-insensitive] or ``None`` 
 
-		Default : "linear" 
+		Default : "diffusion" 
 
 		Recognized Values 
 		-----------------
 		The following is a breakdown of how stellar populations migrate in 
 		multizone simulations under each approximation. 
 
+		- "diffusion" 
+			The orbital radius at times between birth and 13.2 Gyr are assigned 
+			via a sqrt(time) dependence, the mean displacement if stars 
+			migrated according to a random walk. Stellar populations spiral 
+			inward or outward with a smooth time dependence in this model. 
 		- "linear" 
 			Orbital radii at times between birth and 13.2 Gyr are assigned via 
 			linear interpolation. Stellar populations therefore spiral 
-			uniformly inward or outward from birth to final radii. 
+			uniformly inward or outward from birth to final radii, with orbital 
+			radius changing more slowly for young stars than in the diffusion 
+			model, but more quickly for old stars. 
 		- "sudden" 
 			The time of migration is randomly drawn from a uniform distribution 
 			between when a stellar population is born and 13.2 Gyr. At times 
 			prior to this, it is at its radius of birth; at subsequent times, 
 			it is at its final radius. Stellar populations therefore spend no 
 			time at intermediate radii. 
-		- "diffusion" 
-			The orbital radius at times between birth and 13.2 Gyr are assigned 
-			via a sqrt(time) dependence, approximating a random-walk motion. 
-			Stellar populations spiral inward or outward, but slightly faster 
-			than the linear approximation when they are young. 
 		- ``None`` 
 			Only supported for subclasses of the hydrodiskstars object, this 
 			should be used when the user intends to override the built-in 
 			migration assumptions and implement a different one. In these 
 			cases, the ``__call__`` method should be overridden in addition to 
-			this attribute being set to ``None``. If the ``
+			this attribute being set to ``None``. 
+
+		.. note:: The "post-processing" model from Johnson et al. (2021) [1]_ 
+			corresponds to setting the attribute ``simple = True`` in the 
+			``milkyway`` object, inherited from the base class ``multizone``. 
 
 		Example Code 
 		------------
@@ -315,9 +353,11 @@ class hydrodiskstars:
 		>>> import numpy as np 
 		>>> example = hydrodiskstars(np.linspace(0, 20, 81)) 
 		>>> example.mode 
-		'linear' 
+		'diffusion' 
 		>>> example.mode = "sudden" 
-		>>> example.mode = "diffusion" 
+		>>> example.mode = "linear" 
+
+		.. [1] Johnson et al. (2021), in prep 
 		""" 
 		return self.__c_version.mode 
 
@@ -331,4 +371,50 @@ class hydrodiskstars:
 supported for subclasses of hydrodiskstars object.""") 
 		else: 
 			self.__c_version.mode = value 
+
+
+	def decomp_filter(self, values): 
+		r""" 
+		Filter the star particles from the hydrodynamic simulation based on 
+		the kinematic decomposition. 
+
+		Parameters 
+		----------
+		values : ``list`` [elements of type ``int``] 
+			The integer values of the "decomp" column in the ``analog_data`` 
+			attribute to base the filter on. Those with a decomposition tag 
+			equal to one of the values in this list will pass the filter and 
+			remain in the sample. 
+
+			.. note:: The integer values mean that an individual star particle 
+				has kinematics associated with the following sub-populations: 
+				
+					- 1: thin disk 
+					- 2: thick disk 
+					- 3: bulge 
+					- 4: pseudobulge 
+					- 5: halo 
+
+		Example Code 
+		------------
+		>>> from vice.toolkit.hydrodisk import hydrodiskstars
+		>>> import numpy as np 
+		>>> example = hydrodiskstars(np.linspace(0, 20, 81)) 
+		>>> len(example.analog_data['id']) 
+		102857 
+		>>> example.decomp_filter([1, 2]) # disk stars only 
+		>>> len(example.analog_data['id']) 
+		57915 
+		>>> all([i in [1, 2] for i in example.analog_data['decomp']]) 
+		True 
+		>>> example = hydrodiskstars(np.linspace(0, 20, 81)) 
+		>>> len(example.analog_data['id']) 
+		102857 
+		>>> example.decomp_filter([3, 4]) # bulge stars only 
+		>>> len(example.analog_data['id']) 
+		44942 
+		>>> all([i in [3, 4] for i in example.analog_data['decomp']]) 
+		True 
+		""" 
+		self.__c_version.decomp_filter(values) 
 
