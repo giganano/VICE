@@ -21,10 +21,8 @@ else:
 
 # C imports 
 from libc.stdlib cimport malloc, free 
-from ...core.objects._agb cimport AGB_YIELD_GRID 
-from ...core.objects._element cimport ELEMENT 
-from ...core.objects cimport _element 
-from ...core.objects cimport _agb 
+from ._grid_reader cimport ELEMENT 
+from . cimport _grid_reader 
 
 _RECOGNIZED_STUDIES_ = tuple(["cristallo11", "karakas10"]) 
 
@@ -135,9 +133,9 @@ heavier than nickel (atomic number 28).""" % (studies["karakas10"]))
 	else: 
 		pass 
 
-	cdef ELEMENT *e = _element.element_initialize() 
-	if _agb.import_agb_grid(e, filename.encode("latin-1")): 
-		_element.element_free(e) 
+	cdef ELEMENT *e = _grid_reader.element_initialize() 
+	if _grid_reader.import_agb_grid(e, filename.encode("latin-1")): 
+		_grid_reader.element_free(e) 
 		raise SystemError("Internal Error: couldn't read yield file.")  
 	else: 
 		try: 
@@ -154,7 +152,7 @@ heavier than nickel (atomic number 28).""" % (studies["karakas10"]))
 				e[0].agb_grid[0].interpolator[0].ycoords[i] for i in range(
 					e[0].agb_grid[0].interpolator[0].n_y_values)] 
 		finally: 
-			_element.element_free(e) 
+			_grid_reader.element_free(e) 
 
 		return [tuple(i) for i in [[tuple(j) for j in yields], masses, 
 			metallicities]] 

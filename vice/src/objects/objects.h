@@ -321,9 +321,6 @@ typedef struct initial_mass_function {
 	 * 		"salpeter", or "custom" 
 	 * m_lower: The lower mass limit on star formation 
 	 * m_upper: The upper mass limit on star formation 
-	 * mass_distribution: The un-normalized value of the IMF at stellar masses 
-	 * 		in steps of IMF_STEPSIZE (declared in imf.h) from m_lower to 
-	 *		m_upper. 
 	 * 
 	 * Notes 
 	 * ===== 
