@@ -1,5 +1,5 @@
 
-.. figure:: ./migration.png 
+.. figure:: migration.png 
 	:align: center 
 
 	The four models for the time-dependence of radial migration adopted by 
