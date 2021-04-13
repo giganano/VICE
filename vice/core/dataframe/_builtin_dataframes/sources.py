@@ -16,21 +16,22 @@ class sources(elemental_settings):
 	type ``list``, elements of which are of type ``str``. 
 
 		- "BBN": Big Bang Nucleosynthesis 
-			A portion of this element's present-day abundances was present 
-			prior to the onset of star formation in the universe. 
+			A statistically significant portion of this element's present-day 
+			abundances was present prior to the onset of star formation in the 
+			universe. 
 		- "CCSNE": Core Collapse Supernovae 
-			A portion of this element's present-day abundances is due to 
-			massive star explosions. 
+			A statistically significant portion of this element's present-day 
+			abundances is due to massive star explosions. 
 		- "SNEIA": Type Ia Supernovae 
-			A portion of this element's present-day abundances is due to 
-			white dwarf explosions. 
+			A statistically significant portion of this element's present-day 
+			abundances is due to white dwarf explosions. 
 		- "AGB": Asymptotic Giant Branch Stars 
-			A portion of this element's present-day abundances is due to 
-			synthesis in AGB stars. 
+			A statistically significant portion of this element's present-day 
+			abundances is due to synthesis in AGB stars. 
 		- "NSNS": Neutron Star Mergers, R-process Nucleosynthesis 
-			A portion of this element's present-day abundances is due to 
-			neutron star mergers, or other astrophysical sites of r-process 
-			nucleosynthesis. 
+			A statistically significant portion of this element's present-day 
+			abundances is due to neutron star mergers, or other astrophysical 
+			sites of r-process nucleosynthesis. 
 
 	Indexing 
 	--------

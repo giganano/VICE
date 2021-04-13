@@ -8,6 +8,7 @@ extern "C" {
 
 #include "toolkit/hydrodiskstars.h" 
 #include "toolkit/interp_scheme_1d.h" 
+#include "toolkit/interp_scheme_2d.h" 
 
 #ifdef __cplusplus 
 } 

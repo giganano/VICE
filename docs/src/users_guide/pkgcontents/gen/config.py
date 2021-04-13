@@ -13,6 +13,9 @@ from vice.yields.ccsne import CL13
 from vice.yields.ccsne import CL04 
 from vice.yields.ccsne import WW95 
 from vice.yields.ccsne import S16 
+from vice.yields.ccsne.S16 import N20 
+from vice.yields.ccsne.S16 import W18 
+from vice.yields.ccsne.S16 import W18F 
 from vice.yields.sneia import iwamoto99 
 from vice.yields.sneia import seitenzahl13 
 from vice.yields.agb import cristallo11 
@@ -46,7 +49,6 @@ _CONFIG_ = {
 			vice.cumulative_return_fraction, 
 			vice.main_sequence_mass_fraction, 
 			vice.single_stellar_population, 
-			vice.dataframe, 
 			vice.yields, 
 			vice.elements, 
 			vice.imf, 
@@ -61,6 +63,7 @@ _CONFIG_ = {
 			vice.stars, 
 			vice.mirror, 
 			vice.toolkit, 
+			vice.dataframe, 
 			vice.ScienceWarning, 
 			vice.VisibleRuntimeWarning, 
 			vice.VisibleDeprecationWarning, 
@@ -109,11 +112,6 @@ _CONFIG_ = {
 			vice.dataframe.todict, 
 			vice.dataframe.remove, 
 			vice.dataframe.filter, 
-			vice.atomic_number, 
-			vice.primordial, 
-			vice.solar_z, 
-			vice.sources, 
-			vice.stable_isotopes, 
 			vice.core.dataframe.agb_yield_settings, 
 			vice.core.dataframe.ccsn_yield_table, 
 			vice.core.dataframe.channel_entrainment, 
@@ -184,10 +182,10 @@ _CONFIG_ = {
 	vice.core.dataframe.ccsn_yield_table: {
 		"filename": 	"vice.core.dataframe.ccsn_yield_table.rst", 
 		"header": 		"vice.core.dataframe.ccsn_yield_table", 
-		"subs": 		[
+		"subs": 		[ 
 			vice.core.dataframe.ccsn_yield_table.masses, 
 			vice.core.dataframe.ccsn_yield_table.isotopes 
-		] 
+		]  
 	}, 
 	vice.core.dataframe.ccsn_yield_table.masses: {
 		"filename": 	"vice.core.dataframe.ccsn_yield_table.masses.rst", 
@@ -273,6 +271,7 @@ _CONFIG_ = {
 		"header": 		"vice.yields.agb", 
 		"subs": 		[
 			vice.yields.agb.grid, 
+			vice.yields.agb.interpolator, 
 			vice.yields.agb.settings, 
 			vice.yields.agb.cristallo11, 
 			vice.yields.agb.karakas10 
@@ -281,6 +280,30 @@ _CONFIG_ = {
 	vice.yields.agb.grid: {
 		"filename": 	"vice.yields.agb.grid.rst", 
 		"header": 		"vice.yields.agb.grid", 
+		"subs": 		[] 
+	}, 
+	vice.yields.agb.interpolator: {
+		"filename": 	"vice.yields.agb.interpolator.rst", 
+		"header": 		"vice.yields.agb.interpolator", 
+		"subs": 		[ 
+			vice.yields.agb.interpolator.masses, 
+			vice.yields.agb.interpolator.metallicities, 
+			vice.yields.agb.interpolator.yields 
+		] 
+	}, 
+	vice.yields.agb.interpolator.masses: {
+		"filename": 	"vice.yields.agb.interpolator.masses.rst", 
+		"header": 		"vice.yields.agb.interpolator.masses", 
+		"subs": 		[] 
+	}, 
+	vice.yields.agb.interpolator.metallicities: {
+		"filename": 	"vice.yields.agb.interpolator.metallicities.rst", 
+		"header": 		"vice.yields.agb.interpolator.metallicities", 
+		"subs": 		[] 
+	}, 
+	vice.yields.agb.interpolator.yields: {
+		"filename": 	"vice.yields.agb.interpolator.yields.rst", 
+		"header": 		"vice.yields.agb.interpolator.yields", 
 		"subs": 		[] 
 	}, 
 	vice.yields.agb.settings: {
@@ -518,7 +541,7 @@ _CONFIG_ = {
 	vice.yields.ccsne.NKT13: {
 		"filename": 	"vice.yields.ccsne.NKT13.rst", 
 		"header": 		"vice.yields.ccsne.NKT13", 
-		"subs": 		[vice.yields.ccsne.NKT13.set_params] 
+		"subs": 		[vice.yields.ccsne.NKT13.set_params]  
 	}, 
 	vice.yields.ccsne.NKT13.set_params: {
 		"filename": 	"vice.yields.ccsne.NKT13.set_params.rst", 
@@ -538,11 +561,39 @@ _CONFIG_ = {
 	vice.yields.ccsne.S16: {
 		"filename": 	"vice.yields.ccsne.S16.rst", 
 		"header": 		"vice.yields.ccsne.S16", 
-		"subs": 		[vice.yields.ccsne.S16.set_params] 
+		"subs": 		[
+			vice.yields.ccsne.S16.N20, 
+			vice.yields.ccsne.S16.W18, 
+			vice.yields.ccsne.S16.W18F] 
 	}, 
-	vice.yields.ccsne.S16.set_params: {
-		"filename": 	"vice.yields.ccsne.S16.set_params.rst", 
-		"header": 		"vice.yields.ccsne.S16.set_params", 
+	vice.yields.ccsne.S16.N20: {
+		"filename": 	"vice.yields.ccsne.S16.N20.rst", 
+		"header": 		"vice.yields.ccsne.S16.N20", 
+		"subs": 		[vice.yields.ccsne.S16.N20.set_params] 
+	}, 
+	vice.yields.ccsne.S16.N20.set_params: {
+		"filename": 	"vice.yields.ccsne.S16.N20.set_params.rst", 
+		"header": 		"vice.yields.ccsne.S16.N20.set_params", 
+		"subs": 		[] 
+	}, 
+	vice.yields.ccsne.S16.W18: {
+		"filename": 	"vice.yields.ccsne.S16.W18.rst", 
+		"header": 		"vice.yields.ccsne.S16.W18", 
+		"subs": 		[vice.yields.ccsne.S16.W18.set_params] 
+	}, 
+	vice.yields.ccsne.S16.W18.set_params: {
+		"filename": 	"vice.yields.ccsne.S16.W18.set_params.rst", 
+		"header": 		"vice.yields.ccsne.S16.W18.set_params", 
+		"subs": 		[] 
+	}, 
+	vice.yields.ccsne.S16.W18F: {
+		"filename": 	"vice.yields.ccsne.S16.W18F.rst", 
+		"header": 		"vice.yields.ccsne.S16.W18F", 
+		"subs": 		[vice.yields.ccsne.S16.W18F.set_params] 
+	}, 
+	vice.yields.ccsne.S16.W18F.set_params: {
+		"filename": 	"vice.yields.ccsne.S16.W18F.set_params.rst", 
+		"header": 		"vice.yields.ccsne.S16.W18F.set_params", 
 		"subs": 		[] 
 	}, 
 	vice.yields.ccsne.LC18: {
@@ -742,7 +793,7 @@ _CONFIG_ = {
 	}, 
 	vice.elements.yields.agb: {
 		"filename": 	"vice.elements.yields.agb.rst", 
-		"header": 		"vice.elements.yield.agb", 
+		"header": 		"vice.elements.yields.agb", 
 		"subs": 		[] 
 	}, 
 	vice.elements.yields.ccsne: {
@@ -1332,7 +1383,8 @@ _CONFIG_ = {
 			vice.toolkit.hydrodisk.hydrodiskstars.radial_bins, 
 			vice.toolkit.hydrodisk.hydrodiskstars.analog_data, 
 			vice.toolkit.hydrodisk.hydrodiskstars.analog_index, 
-			vice.toolkit.hydrodisk.hydrodiskstars.mode 
+			vice.toolkit.hydrodisk.hydrodiskstars.mode, 
+			vice.toolkit.hydrodisk.hydrodiskstars.decomp_filter 
 		] 
 	}, 
 	vice.toolkit.hydrodisk.hydrodiskstars.radial_bins: {
@@ -1355,10 +1407,18 @@ _CONFIG_ = {
 		"header": 		"vice.toolkit.hydrodisk.hydrodiskstars.mode", 
 		"subs": 		[] 
 	}, 
+	vice.toolkit.hydrodisk.hydrodiskstars.decomp_filter: {
+		"filename": 	"vice.toolkit.hydrodisk.hydrodiskstars.decomp_filter.rst", 
+		"header": 		"vice.toolkit.hydrodisk.hydrodiskstars.decomp_filter", 
+		"subs": 		[] 
+	}, 
 	vice.toolkit.interpolation: {
 		"filename": 	"vice.toolkit.interpolation.rst", 
 		"header": 		"vice.toolkit.interpolation", 
-		"subs": 		[vice.toolkit.interpolation.interp_scheme_1d] 
+		"subs": 		[
+			vice.toolkit.interpolation.interp_scheme_1d, 
+			vice.toolkit.interpolation.interp_scheme_2d 
+		]  
 	}, 
 	vice.toolkit.interpolation.interp_scheme_1d: {
 		"filename": 	"vice.toolkit.interpolation.interp_scheme_1d.rst", 
@@ -1382,6 +1442,42 @@ _CONFIG_ = {
 	vice.toolkit.interpolation.interp_scheme_1d.n_points: {
 		"filename": 	"vice.toolkit.interpolation.interp_scheme_1d.n_points.rst", 
 		"header": 		"vice.toolkit.interpolation.interp_scheme_1d.n_points", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.interpolation.interp_scheme_2d: {
+		"filename": 	"vice.toolkit.interpolation.interp_scheme_2d.rst", 
+		"header": 		"vice.toolkit.interpolation.interp_scheme_2d", 
+		"subs": 		[
+			vice.toolkit.interpolation.interp_scheme_2d.xcoords, 
+			vice.toolkit.interpolation.interp_scheme_2d.ycoords, 
+			vice.toolkit.interpolation.interp_scheme_2d.zcoords, 
+			vice.toolkit.interpolation.interp_scheme_2d.n_x_values, 
+			vice.toolkit.interpolation.interp_scheme_2d.n_y_values 
+		] 
+	}, 
+	vice.toolkit.interpolation.interp_scheme_2d.xcoords: {
+		"filename": 	"vice.toolkit.interpolation.interp_scheme_2d.xcoords.rst", 
+		"header": 		"vice.toolkit.interpolation.interp_scheme_2d.xcoords", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.interpolation.interp_scheme_2d.ycoords: {
+		"filename": 	"vice.toolkit.interpolation.interp_scheme_2d.ycoords.rst", 
+		"header": 		"vice.toolkit.interpolation.interp_scheme_2d.ycoords", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.interpolation.interp_scheme_2d.zcoords: {
+		"filename": 	"vice.toolkit.interpolation.interp_scheme_2d.zcoords.rst", 
+		"header": 		"vice.toolkit.interpolation.interp_scheme_2d.zcoords", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.interpolation.interp_scheme_2d.n_x_values: {
+		"filename": 	"vice.toolkit.interpolation.interp_scheme_2d.n_x_values.rst", 
+		"header": 		"vice.toolkit.interpolation.interp_scheme_2d.n_x_values", 
+		"subs": 		[] 
+	}, 
+	vice.toolkit.interpolation.interp_scheme_2d.n_y_values: {
+		"filename": 	"vice.toolkit.interpolation.interp_scheme_2d.n_y_values.rst", 
+		"header": 		"vice.toolkit.interpolation.interp_scheme_2d.n_y_values", 
 		"subs": 		[] 
 	}, 
 	vice.toolkit.J21_sf_law: {

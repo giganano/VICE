@@ -10,6 +10,12 @@ hydrodisk : <module>
 	Utilities for simulating migration in disk galaxies. 
 interpolation : <module> 
 	Interpolation schema. 
+J21_sf_law : <module> 
+	The observationally motivated star formation law from Johnson et al. (2021) 
+	[1]_, intended for use as the attribute ``tau_star`` of the ``singlezone`` 
+	class. 
+
+.. [1] Johnson et al. (2021), in prep 
 """ 
 
 from __future__ import absolute_import 

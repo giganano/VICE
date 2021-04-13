@@ -39,37 +39,28 @@ extern unsigned short test_import_agb_grid(void) {
 
 			if (!import_agb_grid(test, TEST_FILE_NAME)) {
 
-				if ((*(*test).agb_grid).n_m == TEST_N_M && 
-					(*(*test).agb_grid).n_z == TEST_N_Z && 
-					(*(*test).agb_grid).grid != NULL && 
-					(*(*test).agb_grid).m != NULL && 
-					(*(*test).agb_grid).z != NULL) { 
+				INTERP_SCHEME_2D is2d = *(*(*test).agb_grid).interpolator; 
+				if (is2d.n_x_values == TEST_N_M && 
+					is2d.n_y_values == TEST_N_Z && 
+					is2d.xcoords != NULL && 
+					is2d.ycoords != NULL && 
+					is2d.zcoords != NULL) {
 
 					unsigned short i, j, result = 1u; 
 					for (i = 0u; i < TEST_N_M; i++) {
-						if ((*(*test).agb_grid).m[i] != i + 1) { 
-							result = 0u; 
-							break; 
-						} else {} 
+						result &= is2d.xcoords[i] == i + 1u; 
+						if (!result) break; 
 					} 
-					if (result) {
-						for (i = 0u; i < TEST_N_Z; i++) {
-							if ((*(*test).agb_grid).z[i] != 0.01 * i) { 
-								result = 0u; 
-								break; 
-							} else {} 
-						} 							
-					}
-					if (result) {
-						for (i = 0u; i < TEST_N_M; i++) {
-							for (j = 0u; j < TEST_N_Z; j++) {
-								if ((*(*test).agb_grid).grid[i][j] != 0.001) { 
-									result = 0u; 
-									break; 
-								} else {} 
-							} 
+					for (i = 0u; i < TEST_N_Z; i++) {
+						result &= is2d.ycoords[i] == 0.01 * i; 
+						if (!result) break; 
+					} 
+					for (i = 0u; i < TEST_N_M; i++) {
+						for (j = 0u; j < TEST_N_Z; j++) {
+							result &= is2d.zcoords[i][j] == 0.001; 
+							if (!result) break; 
 						} 
-					}
+					} 
 
 					element_free(test); 
 					if (result) return destroy_test_file(); 
@@ -79,7 +70,7 @@ extern unsigned short test_import_agb_grid(void) {
 					element_free(test); 
 					destroy_test_file(); 
 					return 0u; 
-				}
+				} 
 
 			} else { 
 				element_free(test); 

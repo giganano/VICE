@@ -89,10 +89,11 @@ in 68 milliseconds per element.
 
 :ref:`Here <fig_timer>` we plot the integration time for 5, 10, 15, 20, and 
 25 elements with timesteps ranging from 500 kyr to 10 Myr in comparison to the 
-expected scaling relation. For small :math:`\Delta t`, the scaling relation 
-describes the integration time with sufficient accuracy, although slightly 
-underpredicts the integration time when the number of elements is large. This 
-also underpredicts the integration time for coarse timestepping; this is 
+expected scaling relation in one-zone models with the ``singlezone`` object. 
+For small :math:`\Delta t`, the scaling relation describes the integration time 
+with sufficient accuracy, although slightly underpredicts the integration time 
+when the number of elements is large. This also underpredicts the integration 
+time for coarse timestepping; this is 
 because this scaling relation does not take into account write-out time. For 
 large :math:`\Delta t`, the ``singlezone`` object is not algorithm limited 
 but write-out limited. Write out time may also be a potential reason that 

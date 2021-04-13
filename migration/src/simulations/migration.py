@@ -43,6 +43,9 @@ class diskmigration(hydrodisk.hydrodiskstars):
 			raise TypeError("Filename must be a string. Got: %s" % (
 				type(filename))) 
 
+		# use only disk stars in these simulations 
+		self.decomp_filter([1, 2]) 
+
 		# Multizone object automatically swaps this to True in setting up 
 		# its stellar population zone histories 
 		self.write = False 

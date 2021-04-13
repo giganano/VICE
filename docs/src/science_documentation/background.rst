@@ -4,17 +4,18 @@ Background
 
 Galactic Chemical Evolution 
 ---------------------------
-Galactic Chemical Evolution (often referred to as galactic archaeology) 
-studies the connection between a galaxy's evolution and the chemical 
-compositions of its stars. Big Bang Nucleosynthesis produced only hydrogen, 
+Galactic chemical evolution and galactic archaeology study the connection 
+between a galaxy's evolution and the chemical compositions of its gas and 
+stars, with the latter having somewhat special emphasis on the Milky Way. 
+Big Bang Nucleosynthesis produced only hydrogen, 
 helium, and trace amounts of lithium, the three lightest elements on the 
 periodic table. To first order, everything else was produced via nuclear 
 fusion in supernovae and through various channels of stellar evolution, the 
 yields of which are dictated by nuclear physics. The abundances of different 
 nuclei within stars therefore has physical information on the number of 
 nucleosynthetic events and thus the number of stars that came before it. 
-For more theoretical background on galactic archaeology, see sections 1 and 2 
-and the citations therein of `Johnson & Weinberg (2020)`__. 
+For more theoretical background on galactic chemical evolution, see sections 1 
+and 2 and the citations therein of `Johnson & Weinberg (2020)`__. 
 
 __ paper1_ 
 .. _paper1: https://ui.adsabs.harvard.edu/abs/2019arXiv191102598J/abstract 

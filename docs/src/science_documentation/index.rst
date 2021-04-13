@@ -26,7 +26,12 @@ The logarithmic abundance measurement [X/H] is defined by:
 
 .. math:: [X/H] \equiv \log_{10}\left(\frac{Z_x}{Z_x^\odot}\right) 
 
-and logarithmic abundance ratios [X/Y]: 
+This approximation assumes hydrogen mass fractions are similar to the sun 
+always. Relaxing this assumption would require subtracting the term 
+:math:`\log_{10}(X/X_\odot)` where :math:`X` is the hydrogen mass fraction. 
+However, this is generally a negligible correction as hydrogen mass fractions 
+vary only a little, especially on a logarithmic scale (:math:`\lesssim` 0.05 
+dex). The logarithmic abundance ratios [X/Y] follow accordingly: 
 
 .. math:: [X/Y] = [X/H] - [Y/H] = 
 	\log_{10}\left(\frac{Z_x}{Z_x^\odot}\right) - 

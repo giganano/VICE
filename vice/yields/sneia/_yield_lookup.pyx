@@ -74,13 +74,12 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 
 	Notes 
 	-----
-	.. note:: The nucleosynthetic yield tables built into VICE do not include 
-		any treatment of radioactive isotopes. The mass yield of the given 
-		element will be reported as the sum of stable isotopes only. In the 
-		case of elements with a significant nucleosynthetic contribution from 
-		radioactive decay products, the values returned from this function 
-		should be interpreted as lower bounds rather than estimates of the 
-		true yield. 
+	The data stored in this module are reported for each corresponding study 
+	*as published*. The Seitenzahl et al. (2013) model reported mass yields 
+	after complete decay of all radioactive nuclides with half-lives less than 
+	2 Gyr, and the Iwamoto et al. (1999) study fully decayed *all* unstable 
+	isotopes; any additional treatment for radioactive isotopes is thus 
+	unnecessary. 
 
 	Example Code 
 	------------
@@ -222,13 +221,12 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 	where :math:`M_x` is the value returned by vice.yields.sneia.single, and 
 	:math:`N_\text{Ia}/M_\star` is specified by the parameter ``n``. 
 
-	.. note:: The nucleosynthetic yield tables built into VICE do not include 
-		any treatment of radioactive isotopes. This function evaluates the 
-		solution to the above equation given the total mass yield of stable 
-		isotopes only. In the case of elements with a significant 
-		nucleosynthetic contribution from radioactive decay products, the 
-		values returned from this function should be interpreted as lower 
-		bounds rather than estimates of the true yield. 
+	The data stored in this module are reported for each corresponding study 
+	*as published*. The Seitenzahl et al. (2013) model reported mass yields 
+	after complete decay of all radioactive nuclides with half-lives less than 
+	2 Gyr, and the Iwamoto et al. (1999) study fully decayed *all* unstable 
+	isotopes; any additional treatment for radioactive isotopes is thus 
+	unnecessary. 
 
 	Example Code 
 	------------

@@ -42,7 +42,7 @@ def kroupa(mass):
 		The unnormalized value of the Kroupa IMF at that stellar mass, 
 		defined by: 
 
-		.. math:: \frac{dN}{dm} \sim m^{-\alpha} 
+		.. math:: \frac{dN}{dm} \propto m^{-\alpha} 
 
 		where :math:`\alpha` = 2.3, 1.3, and 0.3 for :math:`m` > 0.5, 
 		0.08 :math:`\leq m \leq` 0.5, and :math:`m` < 0.08, respectively. 
@@ -88,7 +88,7 @@ def salpeter(mass):
 		The unnormalized value of the Salpeter IMF at that stellar mass, 
 		defined by: 
 
-		.. math:: \frac{dN}{dm} \sim m^{-\alpha} 
+		.. math:: \frac{dN}{dm} \propto m^{-\alpha} 
 
 		where :math:`\alpha` = 2.35 always. 
 

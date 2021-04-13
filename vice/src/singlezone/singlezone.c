@@ -211,13 +211,13 @@ extern void singlezone_clean(SINGLEZONE *sz) {
 
 	unsigned int i; 
 	for (i = 0; i < (*sz).n_elements; i++) { 
-		if ((*(*(*sz).elements[i]).agb_grid).grid != NULL) { 
-			free(sz -> elements[i] -> agb_grid -> grid); 
-			free(sz -> elements[i] -> agb_grid -> m); 
-			free(sz -> elements[i] -> agb_grid -> z); 
-			sz -> elements[i] -> agb_grid -> grid = NULL; 
-			sz -> elements[i] -> agb_grid -> m = NULL; 
-			sz -> elements[i] -> agb_grid -> z = NULL; 
+		if ((*(*(*(*sz).elements[i]).agb_grid).interpolator).zcoords != NULL) {
+			free(sz -> elements[i] -> agb_grid -> interpolator -> xcoords); 
+			free(sz -> elements[i] -> agb_grid -> interpolator -> ycoords); 
+			free(sz -> elements[i] -> agb_grid -> interpolator -> zcoords); 
+			sz -> elements[i] -> agb_grid -> interpolator -> xcoords = NULL; 
+			sz -> elements[i] -> agb_grid -> interpolator -> ycoords = NULL; 
+			sz -> elements[i] -> agb_grid -> interpolator -> zcoords = NULL; 
 		} else {} 
 		free(sz -> elements[i] -> Z); 
 		free(sz -> elements[i] -> Zin); 
@@ -281,17 +281,17 @@ extern void singlezone_cancel(SINGLEZONE *sz) {
 			free(sz -> elements[i] -> sneia_yields -> RIa); 
 			sz -> elements[i] -> sneia_yields -> RIa = NULL; 
 		} else {} 
-		if ((*(*(*sz).elements[i]).agb_grid).grid != NULL) {
-			free(sz -> elements[i] -> agb_grid -> grid); 
-			sz -> elements[i] -> agb_grid -> grid = NULL; 
+		if ((*(*(*(*sz).elements[i]).agb_grid).interpolator).xcoords != NULL) {
+			free(sz -> elements[i] -> agb_grid -> interpolator -> xcoords); 
+			sz -> elements[i] -> agb_grid -> interpolator -> xcoords = NULL; 
 		} else {} 
-		if ((*(*(*sz).elements[i]).agb_grid).m != NULL) {
-			free(sz -> elements[i] -> agb_grid -> m); 
-			sz -> elements[i] -> agb_grid -> m = NULL; 
+		if ((*(*(*(*sz).elements[i]).agb_grid).interpolator).ycoords != NULL) {
+			free(sz -> elements[i] -> agb_grid -> interpolator -> ycoords); 
+			sz -> elements[i] -> agb_grid -> interpolator -> ycoords = NULL; 
 		} else {} 
-		if ((*(*(*sz).elements[i]).agb_grid).z != NULL) {
-			free(sz -> elements[i] -> agb_grid -> z); 
-			sz -> elements[i] -> agb_grid -> z = NULL; 
+		if ((*(*(*(*sz).elements[i]).agb_grid).interpolator).zcoords != NULL) {
+			free(sz -> elements[i] -> agb_grid -> interpolator -> zcoords); 
+			sz -> elements[i] -> agb_grid -> interpolator -> zcoords = NULL; 
 		} else {} 
 	} 
 

@@ -4,8 +4,10 @@ progenitor mass in solar masses.
 
 **Signature**: from vice.yields.ccsne import engines 
 
-.. tip:: Instances of the ``engine`` class can be passed the keyword argument 
-	``explodability`` to ``vice.yields.ccsne.fractional`` to calculate 
+.. versionadded:: 1.2.0 
+
+.. tip:: Instances of the ``engine`` class can be passed as the keyword 
+	argument ``explodability`` to ``vice.yields.ccsne.fractional`` to calculate 
 	IMF-averaged yields assuming a particular black hole landscape. The impact 
 	of these assumptions is explored in Griffith et al. (2021, in prep) [1]_. 
 
@@ -17,7 +19,7 @@ cutoff : ``engine``
 	An engine characterized by a threshold mass, below which stars explode as 
 	CCSNe, and above which stars collapse directly to a black hole. 
 E16 : ``engine`` 
-	An engine characterized by the Ertl et al. (2016) [2]_ model, characterized 
+	An engine implementing the Ertl et al. (2016) [2]_ model, characterized 
 	by the two parameters :math:`M_4` and :math:`\mu_4`. 
 S16 : ``module`` 
 	Explodability maps as reported by the various models in Sukhbold et al. 

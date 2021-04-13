@@ -28,7 +28,8 @@ _FUNCTIONS_ = {
 	"fig14": 	src.plots.amr.galactic_regions, 
 	"fig15": 	src.plots.amr.comparison, 
 	"fig16": 	src.plots.amr.solar_annulus, 
-	"fig17": 	src.plots.amr.comparison 
+	"fig17": 	src.plots.amr.comparison, 
+	"fig18": 	src.plots.amr.comparison 
 }
 
 
@@ -86,7 +87,12 @@ _ARGS_ = {
 	"fig17": 	["Fe", 
 					["./outputs/diffusion/insideout", 
 					"./outputs/diffusion/lateburst"], 
-					"./figures/fig17"] 
+					"./figures/fig17"], 
+	"fig18": 	["O", 
+					["./outputs/diffusion/insideout", 
+					"./outputs/diffusion/lateburst", 
+					"./outputs/diffusion/outerburst"], 
+					"./figures/fig18"] 
 }
 
 
@@ -101,8 +107,8 @@ _KWARGS_ = {
 	"fig7": 	{}, 
 	"fig8": 	{}, 
 	"fig9": 	{}, 
-	"fig10": 	{"labels": ["Inside-Out"], "apogee": True}, 
-	"fig11": 	{"labels": ["Inside-Out"], "apogee": True}, 
+	"fig10": 	{"labels": ["Inside-Out"]}, 
+	"fig11": 	{"labels": ["Inside-Out"]}, 
 	"fig12": 	{}, 
 	"fig13a": 	{"names": [["Post-Process", "Diffusion"], ["Sudden", "Linear"]]}, 
 	"fig13b": 	{}, 
@@ -110,7 +116,8 @@ _KWARGS_ = {
 	"fig15": 	{"feuillet2019": False, "radii": [[7, 9], [11, 13]], 
 					"labels": None, "left": 0.15, "right": 0.85, "bottom": 0.18}, 
 	"fig16": 	{}, 
-	"fig17": 	{"labels": ["Inside-Out", "Late-Burst"]} 
+	"fig17": 	{"labels": ["Inside-Out", "Late-Burst"]}, 
+	"fig18": 	{"labels": ["Inside-Out", "Late-Burst", "Outer-Burst"]} 
 } 
 
 
@@ -121,7 +128,7 @@ def parse():
 	parser = argparse.ArgumentParser(
 		description = "Produce the figures in Johnson et al. (2021).") 
 
-	for i in range(1, 18): 
+	for i in range(1, 19): 
 		if i == 13: 
 			for j in ["a", "b"]: 
 				parser.add_argument("--fig%d%s" % (i, j), 
@@ -180,6 +187,7 @@ def main():
 	if args.fig15: produce_figure("fig15") 
 	if args.fig16: produce_figure("fig16") 
 	if args.fig17: produce_figure("fig17") 
+	if args.fig18: produce_figure("fig18") 
 	os.chdir(old_path) # move them back to their old directory 
 
 

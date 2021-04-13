@@ -19,6 +19,9 @@ static unsigned short hydrodiskstars_import_sub(HYDRODISKSTARS *hds,
 	unsigned short zfinal_column, unsigned short v_radcolumn, 
 	unsigned short v_phicolumn, unsigned short v_zcolumn, 
 	unsigned short decomp_column); 
+static unsigned short decomp_contains(unsigned short *decomp_values, 
+	unsigned short n_decomp_values, unsigned short test_value); 
+static unsigned long sum_(unsigned short *arr, unsigned long length); 
 static unsigned long candidate_search(HYDRODISKSTARS hds, double birth_radius, 
 	double birth_time, unsigned long **candidates, double max_radius, 
 	double max_time); 
@@ -238,6 +241,164 @@ static unsigned short hydrodiskstars_import_sub(HYDRODISKSTARS *hds,
 	}
 
 } 
+
+
+/* 
+ * Filter the hydrodiskstars data sample based on the kinematic decomposition 
+ * tags. 
+ * 
+ * Parameters 
+ * ==========
+ * hds: 				The hydrodiskstars object to filter data from 
+ * decomp_values: 		The values of the "decomp" attribute that will remain 
+ * 						after the filter
+ * n_decomp_values: 	The number of entries in the "decomp_values" array 
+ * 
+ * Returns 
+ * =======
+ * 1 on success, 0 on failure 
+ * 
+ * header: hydrodiskstars.h 
+ */ 
+extern unsigned short hydrodiskstars_decomp_filter(HYDRODISKSTARS *hds, 
+	unsigned short *decomp_values, unsigned short n_decomp_values) {
+
+	/* 
+	 * Determine which star particles pass the filter. Store it as a simple 
+	 * array of boolean integers. 
+	 */ 
+	unsigned short *which = (unsigned short *) malloc ((*hds).n_stars * 
+		sizeof(unsigned short)); 
+	unsigned long i; 
+	for (i = 0ul; i < (*hds).n_stars; i++) {
+		which[i] = decomp_contains(decomp_values, n_decomp_values, 
+			(*hds).decomp[i]); 
+	} 
+
+	/* 
+	 * Find the number of star particles which pass the filter, and allocate 
+	 * memory for a new arrays for each star particle's attributes. 
+	 */ 
+	unsigned long n_pass = sum_(which, (*hds).n_stars); 
+	unsigned long *new_ids = (unsigned long *) malloc (n_pass * sizeof(
+		unsigned long)); 
+	double *new_birth_times = (double *) malloc (n_pass * sizeof(double)); 
+	double *new_birth_radii = (double *) malloc (n_pass * sizeof(double)); 
+	double *new_final_radii = (double *) malloc (n_pass * sizeof(double)); 
+	double *new_zform = (double *) malloc (n_pass * sizeof(double)); 
+	double *new_zfinal = (double *) malloc (n_pass * sizeof(double)); 
+	double *new_v_rad = (double *) malloc (n_pass * sizeof(double)); 
+	double *new_v_phi = (double *) malloc (n_pass * sizeof(double)); 
+	double *new_v_z = (double *) malloc (n_pass * sizeof(double)); 
+	unsigned short *new_decomp = (unsigned short *) malloc (n_pass * sizeof(
+		unsigned short)); 
+
+	/* 
+	 * Iterate over the current sample, and for those that passed the filter, 
+	 * copy them over to the new arrays. 
+	 */ 
+	unsigned long n = 0ul; 
+	for (i = 0ul; i < (*hds).n_stars; i++) {
+		if (which[i]) {
+			new_ids[n] = hds -> ids[i]; 
+			new_birth_times[n] = hds -> birth_times[i]; 
+			new_birth_radii[n] = hds -> birth_radii[i]; 
+			new_final_radii[n] = hds -> final_radii[i]; 
+			new_zform[n] = hds -> zform[i]; 
+			new_zfinal[n] = hds -> zfinal[i]; 
+			new_v_rad[n] = hds -> v_rad[i]; 
+			new_v_phi[n] = hds -> v_phi[i]; 
+			new_v_z[n] = hds -> v_z[i]; 
+			new_decomp[n] = hds -> decomp[i]; 
+			n++; 
+		} else {} 
+	} 
+
+	/* Free up the old arrays and point the hds data at the new ones. */ 
+	free(hds -> ids); 
+	free(hds -> birth_times); 
+	free(hds -> birth_radii); 
+	free(hds -> final_radii); 
+	free(hds -> zform); 
+	free(hds -> zfinal); 
+	free(hds -> v_rad); 
+	free(hds -> v_phi); 
+	free(hds -> v_z); 
+	free(hds -> decomp); 
+	hds -> ids = new_ids; 
+	hds -> birth_times = new_birth_times; 
+	hds -> birth_radii = new_birth_radii; 
+	hds -> final_radii = new_final_radii; 
+	hds -> zform = new_zform; 
+	hds -> zfinal = new_zfinal; 
+	hds -> v_rad = new_v_rad; 
+	hds -> v_phi = new_v_phi; 
+	hds -> v_z = new_v_z; 
+	hds -> decomp = new_decomp; 
+	hds -> n_stars = n_pass; 
+
+	/* 
+	 * The number of times n++ ran should be equal to n_pass. Return that as 
+	 * a success or failure message. 
+	 */ 
+	return n == n_pass; 
+
+}
+
+
+/* 
+ * Determines if an array of unsigned short integers contains a particular 
+ * unsigned short integer. 
+ * 
+ * Parameters 
+ * ==========
+ * decomp_values: 		The array 
+ * n_decomp_values: 	The number of entries in decomp_values 
+ * test_value: 			The value which may or may not be in decomp_values 
+ * 
+ * Returns 
+ * =======
+ * 1 if decomp_values contains test_value, 0 if not. 
+ */ 
+static unsigned short decomp_contains(unsigned short *decomp_values, 
+	unsigned short n_decomp_values, unsigned short test_value) {
+
+	unsigned short i; 
+	for (i = 0u; i < n_decomp_values; i++) {
+		if (decomp_values[i] == test_value) return 1u; 
+	} 
+	return 0u; 
+
+} 
+
+
+/* 
+ * Calculate the sum of an array of unsigned shorts. 
+ * 
+ * Parameters 
+ * ==========
+ * arr: 		The array to compute the sum of 
+ * length: 		The number of entries in the array. 
+ * 
+ * Returns 
+ * =======
+ * The sum of all entries 
+ * 
+ * Notes 
+ * =====
+ * This performs the same function as "sum" in vice/src/utils.h, but that 
+ * function accepts a double pointer, which is incompatible with an 
+ * unsigned short pointer. 
+ */ 
+static unsigned long sum_(unsigned short *arr, unsigned long length) {
+
+	unsigned long i, s = 0ul; 
+	for (i = 0ul; i < length; i++) {
+		s += arr[i]; 
+	} 
+	return s; 
+
+}
 
 
 /* 

@@ -10,6 +10,7 @@ if not __VICE_SETUP__:
 	__all__ = ["test"] 
 	from ...testing import moduletest 
 	from . import _integral as integral 
+	from . import functional_yields 
 
 	@moduletest 
 	def test(): 
@@ -18,7 +19,8 @@ if not __VICE_SETUP__:
 		""" 
 		return ["vice.src.yields", 
 			[ 
-				integral.test(run = False) 
+				integral.test(run = False), 
+				functional_yields.equivalence_test() 
 			] 
 		] 
 

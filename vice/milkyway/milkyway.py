@@ -25,9 +25,11 @@ class milkyway(multizone):
 
 	This object models the Milky Way as a series of concentric annuli of 
 	uniform width. A prescription for stellar migration based on the ``h277`` 
-	hydrodynamical simulation, a part of the ``g14`` simulation suite 
-	(Christensen et al. 2012 [1]_), and an observationally motivated star 
-	formation law are included by default. For details, see discussion in 
+	hydrodynamical simulation (a part of the ``g14`` simulation suite, 
+	Christensen et al. 2012 [1]_), an observationally motivated star formation 
+	law, and a scaling of the outflow mass loading factor :math:`\eta` with 
+	radius tuned to predict an observationally motivated radial abundance 
+	gradient are included by default. For details, see discussion in 
 	Johnson et al. (2021, in prep [2]_). 
 
 	**Signature**: vice.milkyway(zone_width = 0.5, name = "milkyway", 
@@ -40,14 +42,8 @@ class milkyway(multizone):
 
 		- ``vice.multizone`` 
 		- ``vice.toolkit.J21_sf_law`` 
+		- ``vice.toolkit.hydrodisk.hydrodiskstars`` 
 		- ``vice.singlezone`` 
-
-	.. note:: This is the **only** object in the current version of VICE which 
-		formulates evolutionary parameters in terms of surface densities. This 
-		is done because many physical quantities are reported as surface 
-		densities in the astronomical literature. The ``singlezone`` and 
-		``multizone`` objects, however, formulate parameters in terms of mass, 
-		out of necessity. 
 
 	Parameters 
 	----------
@@ -57,7 +53,7 @@ class milkyway(multizone):
 		The name of the simulation. Output will be stored in a directory under 
 		this name with a ".vice" extension. 
 	n_stars : ``int`` [default : 1] 
-		The number of simple stellar populations per zone per timestep. 
+		The number of stellar populations forming in each zone at each timestep. 
 	simple : ``bool`` [default : False] 
 		If True, VICE will run the model as a series of one-zone models. If 
 		False, information at intermediate timesteps will be taken into 
@@ -86,6 +82,15 @@ class milkyway(multizone):
 		:math:`M_\odot`, the surface density of infall, or the surface density 
 		of star formation in :math:`M_\odot yr^{-1} kpc^{-2}`. The 
 		interpretation of the return value is set by the attribute ``mode``. 
+
+		.. note:: This is the **only** object in the current version of VICE 
+			which formulates an evolutionary parameter in terms of surface 
+			densities. This is done because many physical quantities are 
+			reported as surface densities in the astronomical literature. The 
+			``singlezone`` and ``multizone`` objects, however, formulate 
+			parameters in terms of mass, out of necessity for the 
+			implementation. 
+
 	mode : ``str`` [case-insensitive] [default : "ifr"] 
 		The interpretation of the attribute ``evolution``. Either "sfr" for 
 		star formation rate, "ifr" for infall rate, or "gas" for the ISM 
@@ -135,10 +140,30 @@ class milkyway(multizone):
 
 	Other attributes are inherited from ``vice.multizone``. 
 
+	.. note:: The ``h277`` data is not included in VICE's distribution, but is 
+		available in its GitHub repository. When users first create a 
+		``milkyway`` object, it will download the data automatically and store 
+		it internally for future use. With a good internet connection, this 
+		process takes about 1 minute to complete, and need not be repeated. 
+		If the download fails, it's likely it has to do with not having 
+		administrator's privileges over your system. Users in this situation 
+		should speak with their administrator, who would then be able to 
+		download their data by running the following on their system: 
+
+		>>> import vice 
+		>>> vice.toolkit.hydrodisk.data.download() 
+
 	.. note:: This object, by default, will shut off star formation at 
 		:math:`R` > 15.5 kpc by setting the star formation efficiency timescale 
 		to a very large number. This can be overridden at any time by resetting 
 		the attribute ``tau_star`` of each zone. 
+
+	.. note:: See documentation of ``vice.multizone`` base class for 
+		information on the implementation and required computational overhead 
+		of this and other applications of VICE's multizone capabilities. In 
+		the data involved can be arbitrarily large provied the system has the 
+		space, but coarse versions of finely sampled models often require only 
+		minutes to fully integrate, simplifying the debugging process. 
 
 	Functions 
 	---------
@@ -239,7 +264,7 @@ class milkyway(multizone):
 			if isinstance(attrs[i], list) and len(attrs[i]) > 10: 
 				rep += "> [%g, %g, %g, ... , %g, %g, %g]\n" % (
 					attrs[i][0], attrs[i][1], attrs[i][2], 
-					attrs[i][-1], attrs[i][-2], attrs[i][-3]) 
+					attrs[i][-3], attrs[i][-2], attrs[i][-1]) 
 			else: 
 				rep += "> %s\n" % (str(attrs[i])) 
 		rep += '}' 
@@ -323,7 +348,9 @@ object.""")
 		As a function of radius in kpc and time in Gyr, respectively, either 
 		the surface density of gas in :math:`M_\odot kpc^{-2}`, the surface 
 		density of star formation in :math:`M_\odot kpc^{-2} yr^{-1}`, or the 
-		surface density of infall in :math:`M_\odot kpc^{-2} yr^{-1}`. 
+		surface density of infall in :math:`M_\odot kpc^{-2} yr^{-1}`. As in 
+		the ``singlezone`` object, the interpretation is set by the attribute 
+		``mode``. 
 
 		.. seealso:: vice.milkyway.default_evolution 
 
@@ -332,6 +359,14 @@ object.""")
 			densities of star formation and infall will always be interpreted 
 			as having units of :math:`M_\odot yr^{-1} kpc^{-2}` according to 
 			convention. 
+
+		.. note:: This is the **only** object in the current version of VICE 
+			which formulates an evolutionary parameter in terms of surface 
+			densities. This is done because many physical quantities are 
+			reported as surface densities in the astronomical literature. The 
+			``singlezone`` and ``multizone`` objects, however, formulate 
+			parameters in terms of mass, out of necessity for the 
+			implementation. 
 
 		Example Code 
 		------------
@@ -408,13 +443,15 @@ object.""")
 			represents the surface density of the interstellar medium in 
 			:math:`M_\odot kpc^{-2}`. 
 
-		.. note:: 
-
-			The attribute ``evolution`` will always be expected to accept 
+		.. note:: The attribute ``evolution`` will always be expected to accept 
 			radius in kpc and time in Gyr as the first and second parameters, 
 			respectively. However, infall and star formation histories will be 
 			interpreted as having units of :math:`M_\odot yr^{-1}` according 
 			to convention. 
+
+		.. note:: Updating the value of this attribute also updates the 
+			corresponding attribute of the ``J21_sf_law`` star formation law 
+			where it has been assigned the attribute ``tau_star``. 
 
 		Example Code 
 		------------
@@ -477,7 +514,8 @@ object.""")
 			the absolute abundances of these elements. However, if these 
 			nuclei are assumed to be produced promptly following the formation 
 			of a single stellar population, the yield can be added to the 
-			yield from core collapse supernovae [2]_. 
+			yield from core collapse supernovae, which in theory can describe 
+			the total yield from all prompt sources [2]_. 
 
 		Example Code 
 		------------
@@ -612,6 +650,8 @@ object. Got: %s""" % (type(value)))
 		r""" 
 		The default mass loading factor as a function of galactocentric 
 		radius in kpc. 
+
+		**Signature**: vice.milkyway.default_mass_loading(rgal) 
 
 		Parameters 
 		----------
@@ -976,14 +1016,11 @@ object. Got: %s""" % (type(value)))
 		.. note:: 
 
 			The default value is the metallicity calculated by Asplund et al. 
-			(2009) [1]_. VICE by default adopts the Asplund et al. (2009) 
+			(2009) [1]_; VICE by default adopts the Asplund et al. (2009) 
 			measurements on their element-by-element basis in calculating [X/H] 
-			and [X/Y] in simulations; it is thus recommended that users adopt 
-			these measurements as well so that the adopted solar composition 
-			is self-consistent. This however has no qualitative impact on the 
-			behavior of the simulation. Users who wish to adopt a different 
-			model for the composition of the sun should modify **both** this 
-			value **and** the element-by-element entries in ``vice.solar_z``. 
+			and [X/Y] in simulations. Users who wish to adopt a different model 
+			for the composition of the sun should modify **both** this value 
+			**and** the element-by-element entires in ``vice.solar_z``. 
 
 		Example Code 
 		------------

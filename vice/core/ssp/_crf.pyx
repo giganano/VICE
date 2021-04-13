@@ -31,7 +31,7 @@ def cumulative_return_fraction(age, IMF = "kroupa", m_upper = 100,
 	the birst metallicity of the stars. 
 
 	**Signature**: vice.cumulative_return_fraction(age, IMF = "kroupa", 
-	m_lower = 0.08, postMS = 0.01)
+	m_upper = 100, m_lower = 0.08, postMS = 0.01)
 
 	Parameters 
 	----------
@@ -47,9 +47,8 @@ def cumulative_return_fraction(age, IMF = "kroupa", m_upper = 100,
 		- Kroupa [1]_ 
 		- Salpeter [2]_ 
 
-	.. note:: 
-		Functions do not need to be normalized. VICE will take care of this 
-		automatically. 
+		.. note:: Functions do not need to be normalized. VICE will take care 
+			of this automatically. 
 
 	m_upper : real number [default : 100] 
 		The upper mass limit on star formation in solar masses. 
@@ -60,6 +59,7 @@ def cumulative_return_fraction(age, IMF = "kroupa", m_upper = 100,
 		lifetime. 
 
 		.. versionadded:: 1.1.0 
+			Prior to version 1.1.0, VICE approximated postMS = 0. 
 
 	Returns 
 	-------
