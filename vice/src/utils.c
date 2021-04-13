@@ -2,6 +2,7 @@
  * This file implements pure utility functions. 
  */ 
 
+#include <sys/time.h> 
 #include <stdlib.h> 
 #include <string.h> 
 #include <ctype.h> 
@@ -132,11 +133,26 @@ extern unsigned long simple_hash(char *str) {
 /* 
  * Seeds the random number generator off of the current time. 
  * 
+ * Notes 
+ * =====
+ * This function uses the current time of day to seed the random number 
+ * generator. It can be reseeded every 25 microseconds. This is about as fast 
+ * the random number generator can be reseeded if seeding based on tiem with 
+ * srand(). srand() takes an unsigned int as a parameter, the maximum value 
+ * for which is 2^32 - 1. Dividing up the amount of time in one day by 
+ * 2^32 - 1 yields 20.116568 microseconds. This function thus divides the 
+ * time of day in microseconds by 25, using an overestimate to be safe, and 
+ * uses this as the random number seed. 
+ * 
  * header: utils.h 
  */ 
-extern void seed_random(void) { 
+extern void seed_random(void) {  
 
-	srand(time(NULL)); 
+	struct timeval tv; 
+	gettimeofday(&tv, NULL); 
+	unsigned long time_in_microseconds = 1e6 * tv.tv_sec + tv.tv_usec; 
+	unsigned int seed = (unsigned int) (time_in_microseconds / 25l); 
+	srand(seed); 
 
 } 
 
@@ -384,6 +400,42 @@ extern double *binspace(double start, double stop, unsigned long N) {
 
 
 /* 
+ * Returns a pointer to an array of log-spaced doubles between two specified 
+ * values. For a binspace N bins, the resulting array is of length (N + 1) due 
+ * to the final bin edge. 
+ * 
+ * Parameters 
+ * ==========
+ * start: 		The left-most bin edge 
+ * stop: 		The right-most bin edge 
+ * N: 			The number of desired binds 
+ * 
+ * Notes 
+ * ===== 
+ * This function differs from numpy.logspace in python in that the return 
+ * array is of length N + 1 instead of N, and the first and last elements will 
+ * be start and stop as opposed to 10^start and 10^stop. 
+ * 
+ * header: utils.h 
+ */ 
+extern double *logbinspace(double start, double stop, unsigned long N) {
+
+	double *arr = (double *) malloc ((N + 1ul) * sizeof(double)); 
+	double logstart = log10(start); 
+	double logstop = log10(stop); 
+	double dlogx = (logstop - logstart) / N; 
+
+	unsigned long i; 
+	for (i = 0ul; i <= N; i++) {
+		arr[i] = logstart + i * dlogx; 
+		arr[i] = pow(10, arr[i]); 
+	} 
+	return arr; 
+
+}
+
+
+/* 
  * Determine the center of each bin in an array of bin edges by taking the 
  * arithmetic mean of adjacent bin edges. For a binspace with n bins (i.e. of 
  * length n + 1), the resultant array from this function will be of length n. 
@@ -408,6 +460,36 @@ extern double *bin_centers(double *edges, unsigned long n_bins) {
 		centers[i] = (edges[i] + edges[i + 1l]) / 2.0; 
 	} 
 	return centers; 
+
+} 
+
+
+/* 
+ * Determine the log-center of each bin in an array of bin edges by taking 
+ * the arithmetic mean of the log of adjacent bin edges, and raising 10 to 
+ * that power. For a binspace with n bins (i.e. of length n + 1), the 
+ * resultant array from this function will be of length n. 
+ * 
+ * Parameters 
+ * ==========
+ * edges: 		The bin edges themselves 
+ * n_bins: 		The number of bins in the binspace. This is always 1 less than 
+ * 				the number of elements in the edges array. 
+ * 
+ * Returns 
+ * =======
+ * An array containing the logarithmic mean of the adjacent bin edges. 
+ * 
+ * header: utils.h 
+ */ 
+extern double *logbin_centers(double *edges, unsigned long n_bins) { 
+
+	double *logcenters = (double *) malloc (n_bins * sizeof(double)); 
+	unsigned long i; 
+	for (i = 0ul; i < n_bins; i++) { 
+		logcenters[i] = pow(10, (log10(edges[i]) + log10(edges[i + 1ul])) / 2); 
+	} 
+	return logcenters; 
 
 } 
 

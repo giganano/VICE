@@ -11,11 +11,20 @@ cdef extern from "../../src/ccsne.h":
 
 
 cdef extern from "../../src/yields/ccsne.h": 
+	void set_testing_status(unsigned short testing) 
 	void weight_initial_by_explodability(unsigned short weight) 
 	void set_Z_progenitor(double Z) 
+	double IMFintegrated_fractional_yield_sampled(const unsigned long N, 
+		double m_lower, double m_upper, IMF_ *imf, 
+		CALLBACK_1ARG *explodability, char *path, const unsigned short wind, 
+		char *element)
 	unsigned short IMFintegrated_fractional_yield_numerator(
 		INTEGRAL *intgrl, IMF_ *imf, CALLBACK_1ARG *explodability, 
 		char *path, const unsigned short wind, char *element) 
 	extern unsigned short IMFintegrated_fractional_yield_denominator(
 		INTEGRAL *intgrl, IMF_ *imf) 
+
+
+cdef extern from "../../src/utils.h": 
+	void seed_random() 
 
