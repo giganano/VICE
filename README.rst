@@ -6,7 +6,7 @@ Versatile Integrator for Chemical Evolution
 
 |version| |MIT Licensed| |travis| |docs| |issues| |paper1| 
 
-..	|version| image:: https://img.shields.io/badge/PyPI-1.2.0-blue.svg
+..	|version| image:: https://img.shields.io/badge/PyPI-1.3.0-blue.svg
 	:target: https://pypi.org/project/vice/ 
 	:alt: version
 ..	|MIT Licensed| image:: https://img.shields.io/badge/license-MIT-blue.svg
