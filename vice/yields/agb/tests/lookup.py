@@ -11,6 +11,7 @@ from ...._globals import _RECOGNIZED_ELEMENTS_
 from ....testing import moduletest 
 from ....testing import unittest 
 from .._grid_reader import yield_grid as grid 
+from .._grid_reader import _VENTURA13_ELEMENTS_ 
 import numbers 
 
 
@@ -27,23 +28,23 @@ class generator:
 	def __call__(self): 
 		success = True 
 		for i in _RECOGNIZED_ELEMENTS_: 
-			if not (self._study == "karakas10" and atomic_number[i] > 28): 
-				try: 
-					yields, mass, z = grid(i, study = self._study) 
-					assert isinstance(mass, tuple) 
-					assert isinstance(z, tuple) 
-					assert isinstance(yields, tuple) 
-					assert all(map(lambda x: isinstance(x, tuple), yields)) 
+			if self._study == "karakas10" and atomic_number[i] > 28: continue 
+			if (self._study == "ventura13" and 
+				i not in _VENTURA13_ELEMENTS_): continue 
+			try: 
+				yields, mass, z = grid(i, study = self._study) 
+				assert isinstance(mass, tuple) 
+				assert isinstance(z, tuple) 
+				assert isinstance(yields, tuple) 
+				assert all(map(lambda x: isinstance(x, tuple), yields)) 
+				assert all(map(lambda x: isinstance(x, numbers.Number), 
+					mass)) 
+				assert all(map(lambda x: isinstance(x, numbers.Number), z)) 
+				for j in range(len(yields)): 
 					assert all(map(lambda x: isinstance(x, numbers.Number), 
-						mass)) 
-					assert all(map(lambda x: isinstance(x, numbers.Number), z)) 
-					for j in range(len(yields)): 
-						assert all(map(lambda x: isinstance(x, numbers.Number), 
-							yields[j])) 
-				except: 
-					success = False 
-			else: 
-				pass 
+						yields[j])) 
+			except: 
+				success = False 
 		return success 
 
 
@@ -55,7 +56,8 @@ def test():
 	return ["vice.yields.agb.grid", 
 		[ 
 			trial("Cristallo et al. (2011)", generator(study = "cristallo11")), 
-			trial("Karakas (2010)", generator(study = "karakas10")) 
+			trial("Karakas (2010)", generator(study = "karakas10")), 
+			trial("Ventura et al. (2013)", generator(study = "ventura13")) 
 		] 
 	] 
 
