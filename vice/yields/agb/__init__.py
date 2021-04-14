@@ -6,6 +6,7 @@ This package provides tables from the following nucleosynthetic yield studies:
 
 	- Cristallo et al. (2011) [1]_ 
 	- Karakas (2010) [2]_ 
+	- Ventura et al. (2013) [3]_ 
 
 Contents 
 --------
@@ -27,6 +28,7 @@ any way.
 
 .. [1] Cristallo et al. (2011), ApJS, 197, 17 
 .. [2] Karakas (2010), MNRAS, 403, 1413 
+.. [3] Ventura et al. (2013), MNRAS, 431, 3642 
 """
 
 from __future__ import absolute_import
