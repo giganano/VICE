@@ -231,11 +231,11 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 	Example Code 
 	------------
 	>>> import vice 
-	>>> vice.fractional_ia_yield("fe")
+	>>> vice.yields.sneia.fractional("fe")
 		0.0025825957080000002
-	>>> vice.fractional_ia_yield("ca") 
+	>>> vice.yields.sneia.fractional("ca") 
 		8.935489894764334e-06
-	>>> vice.fractional_ia_yield("ni") 
+	>>> vice.yields.sneia.fractional("ni") 
 		0.00016576890932800003
 
 	.. [1] Seitenzahl et al. (2013), MNRAS, 429, 1156 
