@@ -14,7 +14,7 @@ extern "C" {
  * 
  * Parameters 
  * ========== 
- * t: 			Time in Gyr 
+ * t: 			Stellar population age in Gyr 
  * postMS: 		Ratio of a star's post main sequence lifetime to its main 
  * 				sequence lifetime 
  * 
@@ -26,7 +26,7 @@ extern "C" {
  * Notes 
  * ===== 
  * Versions >= 1.1: This is the mass of a dying star taking into account their 
- * 		main sequence lifetimes. 
+ * 		post main sequence lifetimes. 
  * 10 Gyr and 3.5 are values that can be changed in ssp.h  
  * 
  * source: mlr.c 
