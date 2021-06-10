@@ -118,10 +118,11 @@ _CONFIG_ = {
 			vice.core.dataframe.elemental_settings, 
 			vice.core.dataframe.evolutionary_settings, 
 			vice.core.dataframe.fromfile, 
-			vice.core.dataframe.noncustomizable, 
 			vice.core.dataframe.history, 
+			vice.core.dataframe.noncustomizable, 
 			vice.core.dataframe.saved_yields, 
-			vice.core.dataframe.tracers 
+			vice.core.dataframe.tracers, 
+			vice.core.dataframe.yield_settings 
 		]  
 	}, 
 	vice.dataframe.keys: {
@@ -255,6 +256,30 @@ _CONFIG_ = {
 			vice.core.dataframe.tracers.name, 
 			vice.core.dataframe.tracers.size 
 		] 
+	}, 
+	vice.core.dataframe.yield_settings: {
+		"filename": 	"vice.core.dataframe.yield_settings.rst", 
+		"header": 		"vice.core.dataframe.yield_settings", 
+		"subs": 		[
+			vice.core.dataframe.yield_settings.restore_defaults, 
+			vice.core.dataframe.yield_settings.factory_settings, 
+			vice.core.dataframe.yield_settings.save_defaults 
+		] 
+	}, 
+	vice.core.dataframe.yield_settings.restore_defaults: {
+		"filename": 	"vice.core.dataframe.yield_settings.restore_defaults.rst", 
+		"header": 		"vice.core.dataframe.yield_settings.restore_defaults", 
+		"subs": 		[] 
+	}, 
+	vice.core.dataframe.yield_settings.factory_settings: {
+		"filename": 	"vice.core.dataframe.yield_settings.factory_settings.rst", 
+		"header": 		"vice.core.dataframe.yield_settings.factory_settings", 
+		"subs": 		[] 
+	}, 
+	vice.core.dataframe.yield_settings.save_defaults: {
+		"filename": 	"vice.core.dataframe.yield_settings.save_defaults.rst", 
+		"header": 		"vice.core.dataframe.yield_settings.save_defaults", 
+		"subs": 		[] 
 	}, 
 	vice.yields: {
 		"filename": 	"vice.yields.rst", 
