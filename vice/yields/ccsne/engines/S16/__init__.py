@@ -10,7 +10,7 @@ models.
 .. tip:: Instances of the ``engine`` class can be passed the keyword argument 
 	``explodability`` to ``vice.yields.ccsne.fractional`` to calculate 
 	IMF-averaged yields assuming a particular black hole landscape. The impact 
-	of these assumptions is explored in Griffith et al. (2021, in prep) [2]_. 
+	of these assumptions is explored in Griffith et al. (2021) [2]_. 
 
 .. note:: For all explosion engines, progenitors with zero age main sequence 
 	masses between 9 and 12 :math:`M_\odot` proceed according to the Z9.6 
@@ -31,7 +31,7 @@ W20 : ``engine``
 	An engine characterized by the W20 explosion model. 
 
 .. [1] Sukhbold et al. (2016), ApJ, 821, 38 
-.. [2] Griffith et al. (2021), in prep 
+.. [2] Griffith et al. (2021), arxiv:2103.09837 
 """ 
 
 from __future__ import absolute_import 

@@ -28,7 +28,7 @@ class cutoff(engine):
 	Explosion models such as these have been explored by recent supernova 
 	nucleosynthesis studies (e.g. Limongi & Chieffi 2018 [1]_), and were 
 	compared to more sophisticated explosion models (e.g. Ertl et al. 2016 [2]_; 
-	Sukhbold et al. 2016 [3]_) by Griffith et al. (2021, in prep) [4]_. 
+	Sukhbold et al. 2016 [3]_) by Griffith et al. (2021) [4]_. 
 
 	Attributes 
 	----------
@@ -65,7 +65,7 @@ class cutoff(engine):
 	.. [1] Limongi & Chieffi (2018), ApJS, 237, 13 
 	.. [2] Ertl et al. (2016), ApJ, 818, 124 
 	.. [3] Sukhbold et al. (2016), ApJ, 821, 38 
-	.. [4] Griffith et al. (2021), in prep 
+	.. [4] Griffith et al. (2021), arxiv:2103.09837 
 	""" 
 
 	def __init__(self, collapse_mass = 40): 
