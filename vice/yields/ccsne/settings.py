@@ -158,7 +158,7 @@ class settings(yield_settings):
 		"tl":	8.53e-7, 
 		"pb":	1.50e-9, 
 		"bi":	1.17e-10
-	}, "CCSNe yield", True, "ccsne") 
+	}, "CCSN yield", True, "ccsne") 
 
 
 settings = settings() 
