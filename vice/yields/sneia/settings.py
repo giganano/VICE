@@ -1,6 +1,11 @@
 r""" 
 This file implements the documentation and default values of the 
 ``vice.yields.sneia.settings`` global yield settings dataframe. 
+
+.. note:: While the code in this file is seemingly useless in that the 
+	implemented class does nothing other than call its parent class, the 
+	purpose is for this instance to have its own documentation separate from 
+	other yield setting dataframes. 
 """ 
 
 __all__ = ["settings"] 
@@ -62,9 +67,11 @@ class settings(yield_settings):
 	.. math:: \dot{M}_\text{Ia} = y_\text{Ia} M_\star R_\text{Ia}(\tau) 
 
 	where :math:`M_\star` is the mass of the SSP and :math:`y_\text{Ia}` is the 
-	yield of the element. In a one-zone model, all stellar populations must be 
-	taken into account, which necessitates an integral over the star formation 
-	history: 
+	yield of the element. As with all other yields in VICE, these are *net* 
+	rather than *gross* yields in that they quantify only the mass of a given 
+	element which is newly produced. In a one-zone model, all stellar 
+	populations must be taken into account, which necessitates an integral over 
+	the star formation history: 
 
 	.. math:: \dot{M}_\text{Ia} = \int_0^t \dot{M}_\star R_\text{Ia}(\tau) dt 
 
@@ -182,6 +189,135 @@ class settings(yield_settings):
 		"pb":	0, 
 		"bi":	0, 
 	}, "SN Ia yield", True, "sneia") 
+
+	def keys(self): 
+		r""" 
+		Returns the keys of the SN Ia yield settings dataframe. 
+
+		**Signature**: vice.yields.sneia.settings.keys() 
+
+		.. note:: By nature, this function will simply return a list of all 
+			elements that are built into VICE - the same thing as 
+			``vice.elements.recognized``. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> elements = vice.yields.sneia.settings.keys() 
+		>>> tuple(elements) == vice.elements.recognized 
+			True 
+		""" 
+		return super().keys() 
+
+
+	def todict(self): 
+		r""" 
+		Returns the SN Ia yield settings dataframe as a dictionary. 
+
+		**Signature**: vice.yields.sneia.settings.todict() 
+
+		.. note:: Modifications to the dictionary returned by this function 
+			will *not* affect the global yield settings. 
+
+		.. note:: Python dictionaries are case-insensitive, and are thus less 
+			flexible than this class. 
+
+		Example 
+		-------
+		>>> import vice 
+		>>> example = vice.yields.sneia.settings.todict() 
+		>>> example["c"] 
+			5.74e-06 
+		>>> example["C"] 
+			Traceback (most recent call last):
+			  File "<stdin>", line 1, in <module>
+			KeyError: 'C' 
+		>>> example["c"] = "not a yield setting" 
+		>>> example["c"] 
+			"not a yield setting" 
+		>>> vice.yields.sneia.settings["c"] 
+			5.74e-06 
+		""" 
+		return super().todict() 
+
+
+	def restore_defaults(self): 
+		r""" 
+		Restores the SN Ia yield settings to their default values (i.e. undoes 
+		any changes since VICE was imported). 
+
+		**Signature**: vice.yields.sneia.settings.restore_defaults() 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> vice.yields.sneia.settings["c"] = 0.0 
+		>>> vice.yields.sneia.settings["n"] = 0.0 
+		>>> vice.yields.sneia.settings["o"] = 0.0 
+		>>> vice.yields.sneia.settings.restore_defaults() 
+		>>> vice.yields.sneia.settings["c"] 
+			5.74e-06 
+		>>> vice.yields.sneia.settings["n"] 
+			6.43e-09 
+		>>> vice.yields.sneia.settings["o"] 
+			5.79e-05 
+		""" 
+		super().restore_defaults() 
+
+
+	def factory_settings(self): 
+		r""" 
+		Restores the SN Ia yield settings to their factory defaults. This 
+		differs from ``vice.yields.sneia.settings.restore_defaults`` in that 
+		users may modify their default values from those that VICE is 
+		distributed with. 
+
+		**Signature**: vice.yields.sneia.settings.factory_settings() 
+
+		.. tip:: To revert your nucleosynthetic yield settings back to their 
+			production defaults *permanently*, simply call 
+			``vice.yields.sneia.settings.save_defaults`` immediately following 
+			this function. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> vice.yields.sneia.settings["c"] 
+			0.0 # the user has modified their default yield for carbon 
+		>>> vice.yields.sneia.settings.factory_settings() 
+		>>> vice.yields.sneia.settings["c"] 
+			5.74e-06 
+		""" 
+		super().factory_settings() 
+
+
+	def save_defaults(self): 
+		r""" 
+		Saves the current SN Ia yield settings as the default values. 
+
+		**Signature**: vice.yields.sneia.save_defaults() 
+
+		.. note:: Saving functional yields requires the package dill_, an 
+			extension to ``pickle`` in the python standard library. It is 
+			recommended that VICE users install dill_ >= 0.2.0. 
+
+			.. _dill: https://pypi.org/project/dill 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> vice.yields.sneia.settings["c"] 
+			5.74e-06 
+		>>> vice.yields.sneia.settings["c"] = 0.0 
+		>>> vice.yields.sneia.settings.save_defaults() 
+
+		After re-launching the python interpreter 
+
+		>>> import vice 
+		>>> vice.yields.sneia.settings["c"] 
+			0.0 
+		""" 
+		super().save_defaults() 
 
 
 settings = settings() 

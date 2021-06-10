@@ -1,6 +1,11 @@
 r""" 
 This file implements the documentation and deafult values of the 
 ``vice.yields.ccsne.settings`` global yield settings dataframe. 
+
+.. note:: While the code in this file is seemingly useless in that the 
+	implemented class does nothing other than call its parent class, the 
+	purpose is for this instance to have its own documentation separate from 
+	other yield setting dataframes. 
 """ 
 
 __all__ = ["settings"] 
@@ -46,9 +51,11 @@ class settings(yield_settings):
 	Notes 
 	-----
 	In all instances, VICE approximates CCSN enrichment to occur 
-	instantaneously according to an IMF-averaged yield. In one- and multi-zone 
-	chemical evolution models, the rate of enrichment due to CCSNe proceeds 
-	according to the following equation: 
+	instantaneously according to an IMF-averaged yield. As with all other 
+	yields in VICE, these are *net* rather than *gross* yields in that they 
+	quantify only the mass of a given element which is newly produced. In one- 
+	and multi-zone chemical evolution models, the rate of enrichment due to 
+	CCSNe proceeds according to the following equation: 
 
 	.. math:: \dot{M}_\text{CC} = y_\text{CC}\dot{M}_\star 
 
@@ -159,6 +166,136 @@ class settings(yield_settings):
 		"pb":	1.50e-9, 
 		"bi":	1.17e-10
 	}, "CCSN yield", True, "ccsne") 
+
+
+	def keys(self): 
+		r""" 
+		Returns the keys of the CCSN yield settings dataframe. 
+
+		**Signature**: vice.yields.ccsne.settings.keys() 
+
+		.. note:: By nature, this function will simply return a list of all 
+			elements that are built into VICE - the same thing as 
+			``vice.elements.recognized``. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> elements = vice.yields.ccsne.settings.keys() 
+		>>> tuple(elements) == vice.elements.recognized 
+			True 
+		""" 
+		return super().keys() 
+
+
+	def todict(self): 
+		r""" 
+		Returns the CCSN yield settings as a dictionary. 
+
+		**Signature**: vice.yields.ccsne.settings.todict() 
+
+		.. note:: Modifications to the dictionary returned by this function 
+			will *not* affect the global yield settings. 
+
+		.. note:: Python dictionaries are case-sensitive, and are thus less 
+			flexible than this class. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> example = vice.yields.ccsne.settings.todict() 
+		>>> example["c"] 
+			0.00236 
+		>>> example["C"] 
+			Traceback (most recent call last):
+			  File "<stdin>", line 1, in <module>
+			KeyError: 'C' 
+		>>> example["c"] = "not a yield setting" 
+		>>> example["c"] 
+			"not a yield setting" 
+		>>> vice.yields.ccsne.settings["c"] 
+			0.00236 
+		""" 
+		return super().todict() 
+
+
+	def restore_defaults(self): 
+		r""" 
+		Restores the CCSN yield settings to their default values (i.e. undoes 
+		any changes since VICE was imported). 
+
+		**Signature**: vice.yields.ccsne.settings.restore_defaults() 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> vice.yields.ccsne.settings["c"] = 0.0 
+		>>> vice.yields.ccsne.settings["n"] = 0.0 
+		>>> vice.yields.ccsne.settings["o"] = 0.0 
+		>>> vice.yields.ccsne.settings.restore_defaults() 
+		>>> vice.yields.ccsne.settings["c"] 
+			0.00236 
+		>>> vice.yields.ccsne.settings["n"] 
+			0.000578 
+		>>> vice.yields.ccsne.settings["o"] 
+			0.00564 
+		""" 
+		super().restore_defaults() 
+
+
+	def factory_settings(self): 
+		r""" 
+		Restores the CCSN yield settings to their factory defaults. This 
+		differs from ``vice.yields.ccsne.settings.restore_defaults`` in that 
+		users may modify their default values from those that VICE is 
+		distributed with. 
+
+		**Signature**: vice.yields.ccsne.settings.factory_settings() 
+
+		.. tip:: To revert your nucleosynthetic yield settings back to their 
+			production defaults *permanently*, simply call 
+			``vice.yields.ccsne.settings.save_defaults`` immediately following 
+			this function. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> vice.yields.ccsne.settings["c"] 
+			0.001 # the user has modified their default yield for carbon 
+		>>> vice.yields.ccsne.settings.factory_settings() 
+		>>> vice.yields.ccsne.settings["c"] 
+			0.00236 
+		""" 
+		super().factory_settings() 
+
+
+	def save_defaults(self): 
+		r""" 
+		Saves the current CCSN yield settings as the default values. 
+
+		**Signature**: vice.yields.ccsne.settings.save_defaults() 
+
+		.. note:: Saving functional yields requires the package dill_, an 
+			extension to ``pickle`` in the python standard library. It is 
+			recommended that VICE users install dill_ >= 0.2.0. 
+
+			.. _dill: https://pypi.org/project/dill 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> vice.yields.ccsne.settings["c"] 
+			0.00236 
+		>>> vice.yields.ccsne.settings["c"] = 0.001 
+		>>> vice.yields.ccsne.settings.save_defaults() 
+
+		After re-launching the python interpreter: 
+
+		>>> import vice 
+		>>> vice.yields.ccsne.settings["c"] 
+			0.001 
+		""" 
+		super().save_defaults() 
 
 
 settings = settings() 
