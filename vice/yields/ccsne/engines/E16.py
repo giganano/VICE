@@ -16,7 +16,7 @@ class E16(engine):
 
 	r""" 
 	Core collapse supernova explosion engine as calculated by Ertl et al. 
-	(2016) [1]_ and studied in Griffith et al. (2021, in prep) [2]_. 
+	(2016) [1]_ and studied in Griffith et al. (2021) [2]_. 
 
 	**Signature**: from vice.yields.ccsne.engines import E16 
 
@@ -127,7 +127,7 @@ class E16(engine):
 	0.0 
 
 	.. [1] Ertl et al. (2016), ApJ, 818, 124 
-	.. [2] Griffith et al. (2021), in prep 
+	.. [2] Griffith et al. (2021), arxiv:2103.09837 
 	.. [3] Sukhbold et al. (2016), ApJ, 821, 38 
 	""" 
 

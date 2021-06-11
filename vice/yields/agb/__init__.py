@@ -18,6 +18,10 @@ interpolator : ``object``
 	use in the global yield settings. 
 settings : ``dataframe`` 
 	Stores current settings for these yields 
+cristallo11 : yield preset 
+	Sets the yields according to the Cristallo et al. (2011, 2015) studies. 
+karakas10 : yield preset 
+	Sets the yields according to the Karakas (2010) study 
 
 Notes 
 -----
@@ -43,88 +47,8 @@ if not __VICE_SETUP__:
 
 	from ._grid_reader import yield_grid as grid 
 	from .interpolator import interpolator 
-	from ...core.dataframe import agb_yield_settings 
+	from .settings import settings 
 	from .tests import test 
-
-	settings = agb_yield_settings({ 
-		"he": 	"cristallo11", 
-		"c":	"cristallo11", 
-		"n":	"cristallo11", 
-		"o":	"cristallo11", 
-		"f":	"cristallo11", 
-		"ne":	"cristallo11", 
-		"na":	"cristallo11", 
-		"mg":	"cristallo11", 
-		"al":	"cristallo11", 
-		"si":	"cristallo11", 
-		"p":	"cristallo11", 
-		"s":	"cristallo11", 
-		"cl":	"cristallo11", 
-		"ar":	"cristallo11", 
-		"k":	"cristallo11", 
-		"ca":	"cristallo11", 
-		"sc":	"cristallo11", 
-		"ti":	"cristallo11", 
-		"v":	"cristallo11", 
-		"cr":	"cristallo11", 
-		"mn":	"cristallo11", 
-		"fe":	"cristallo11", 
-		"co":	"cristallo11", 
-		"ni":	"cristallo11", 
-		"cu":	"cristallo11", 
-		"zn":	"cristallo11", 
-		"ga":	"cristallo11", 
-		"ge":	"cristallo11", 
-		"as":	"cristallo11", 
-		"se":	"cristallo11", 
-		"br":	"cristallo11", 
-		"kr":	"cristallo11", 
-		"rb":	"cristallo11", 
-		"sr":	"cristallo11", 
-		"y":	"cristallo11", 
-		"zr":	"cristallo11", 
-		"nb":	"cristallo11", 
-		"mo":	"cristallo11", 
-		"ru":	"cristallo11", 
-		"rh":	"cristallo11", 
-		"pd":	"cristallo11", 
-		"ag":	"cristallo11", 
-		"cd":	"cristallo11", 
-		"in":	"cristallo11", 
-		"sn":	"cristallo11", 
-		"sb":	"cristallo11", 
-		"te":	"cristallo11", 
-		"i":	"cristallo11", 
-		"xe":	"cristallo11", 
-		"cs":	"cristallo11", 
-		"ba":	"cristallo11", 
-		"la":	"cristallo11", 
-		"ce":	"cristallo11", 
-		"pr":	"cristallo11", 
-		"nd":	"cristallo11", 
-		"sm":	"cristallo11", 
-		"eu":	"cristallo11", 
-		"gd":	"cristallo11", 
-		"tb":	"cristallo11", 
-		"dy":	"cristallo11", 
-		"ho":	"cristallo11", 
-		"er":	"cristallo11", 
-		"tm":	"cristallo11", 
-		"yb":	"cristallo11", 
-		"lu":	"cristallo11", 
-		"hf":	"cristallo11", 
-		"ta":	"cristallo11", 
-		"w":	"cristallo11", 
-		"re":	"cristallo11", 
-		"os":	"cristallo11", 
-		"ir":	"cristallo11", 
-		"pt":	"cristallo11", 
-		"au":	"cristallo11", 
-		"hg":	"cristallo11", 
-		"tl":	"cristallo11", 
-		"pb":	"cristallo11", 
-		"bi":	"cristallo11" 
-	}, "AGB yield", True, "agb")
 
 else: 
 	pass 
