@@ -49,6 +49,9 @@ cdef class agb_yield_settings(yield_settings):
 				- "cristallo11" : Cristallo et al. (2011) [1]_ 
 				- "karakas10" : Karakas (2010) [2]_ 
 				- "ventura13" : Ventura et al. (2013) [3]_ 
+				- "karakas16": Karakas & Lugaro (2016) [4]_; Karakas et al. 
+				  (2018) [5]_ 
+
 
 		- <function> : Mathematical function describing the yield. 
 			Must accept the stellar mass in :math:`M_\odot` and the 
@@ -109,6 +112,8 @@ cdef class agb_yield_settings(yield_settings):
 	.. [1] Cristallo et al. (2011), ApJS, 197, 17 
 	.. [2] Karakas (2010), MNRAS, 403, 1413 
 	.. [3] Ventura et al. (2013), MNRAS, 431, 3642 
+	.. [4] Karakas & Lugaro (2016), ApJ, 825, 26 
+	.. [5] Karakas et al. (2018), MNRAS, 477, 421 
 	""" 
 
 	def __init__(self, frame, name, allow_funcs, config_field): 

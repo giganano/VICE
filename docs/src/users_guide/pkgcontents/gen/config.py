@@ -21,6 +21,7 @@ from vice.yields.sneia import seitenzahl13
 from vice.yields.agb import cristallo11 
 from vice.yields.agb import karakas10 
 from vice.yields.agb import ventura13 
+from vice.yields.agb import karakas16 
 from vice.core.singlezone.entrainment import entrainment 
 from vice.toolkit import J21_sf_law 
 from vice.yields.ccsne.engines.E16 import E16 
@@ -276,7 +277,8 @@ _CONFIG_ = {
 			vice.yields.agb.settings, 
 			vice.yields.agb.cristallo11, 
 			vice.yields.agb.karakas10, 
-			vice.yields.agb.ventura13 
+			vice.yields.agb.ventura13, 
+			vice.yields.agb.karakas16 
 		] 
 	}, 
 	vice.yields.agb.grid: {
@@ -357,6 +359,11 @@ _CONFIG_ = {
 	vice.yields.agb.ventura13: {
 		"filename": 	"vice.yields.agb.ventura13.rst", 
 		"header": 		"vice.yields.agb.ventura13", 
+		"subs": 		[] 
+	}, 
+	vice.yields.agb.karakas16: {
+		"filename": 	"vice.yields.agb.karakas16.rst", 
+		"header": 		"vice.yields.agb.karakas16", 
 		"subs": 		[] 
 	}, 
 	vice.yields.ccsne: {

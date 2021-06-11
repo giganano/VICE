@@ -20,7 +20,8 @@ def test():
 		[ 
 			test_cristallo11_import(), 
 			test_karakas10_import(), 
-			test_ventura13_import() 
+			test_ventura13_import(), 
+			test_karakas16_import() 
 		] 
 	] 
 
@@ -77,4 +78,19 @@ def test_ventura13_import():
 			if not status: break 
 		return status 
 	return ["vice.yields.agb.ventura13", test] 
+
+
+@unittest 
+def test_karakas16_import(): 
+	r""" 
+	from vice.yields.agb import karakas16 unittest 
+	""" 
+	def test(): 
+		try: 
+			from .. import karakas16 
+		except: 
+			return False 
+		from .. import settings 
+		return all([settings[i] == "karakas16" for i in _RECOGNIZED_ELEMENTS_]) 
+	return ["vice.yields.agb.karakas16", test] 
 

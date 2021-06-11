@@ -57,7 +57,8 @@ def test():
 		[ 
 			trial("Cristallo et al. (2011)", generator(study = "cristallo11")), 
 			trial("Karakas (2010)", generator(study = "karakas10")), 
-			trial("Ventura et al. (2013)", generator(study = "ventura13")) 
+			trial("Ventura et al. (2013)", generator(study = "ventura13")), 
+			trial("Karakas & Lugaro (2016)", generator(study = "karakas16")) 
 		] 
 	] 
 
