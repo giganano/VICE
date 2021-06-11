@@ -357,7 +357,7 @@ class hydrodiskstars:
 		>>> example.mode = "sudden" 
 		>>> example.mode = "linear" 
 
-		.. [1] Johnson et al. (2021), in prep 
+		.. [1] Johnson et al. (2021), 2103.09838 
 		""" 
 		return self.__c_version.mode 
 
