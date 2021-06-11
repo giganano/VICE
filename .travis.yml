@@ -9,7 +9,6 @@ python:
   - 3.9 
 env: 
   - COMPILER=gcc CYTHON_VERSION=0.29.21 
-  - COMPILER=clang CYTHON_VERSION=0.29.21 
 
 matrix: 
   fast_finish: true 
