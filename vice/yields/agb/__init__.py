@@ -4,8 +4,9 @@ Asymptotic Giant Branch (AGB) Star Nucleosynthetic Yield Tools
 Analyze built-in yield tables and modify yield settings for use in simulations. 
 This package provides tables from the following nucleosynthetic yield studies: 
 
-	- Cristallo et al. (2011, 2015) [1]_ [2]_ 
-	- Karakas (2010) [3]_ 
+	- Cristallo et al. (2011) [1]_ 
+	- Karakas (2010) [2]_ 
+	- Ventura et al. (2013) [3]_ 
 
 Contents 
 --------
@@ -30,8 +31,8 @@ yields (i.e. by dividing by progenitor initial mass), they were not modified in
 any way. 
 
 .. [1] Cristallo et al. (2011), ApJS, 197, 17 
-.. [2] Cristallo et al. (2015), ApJS, 219, 40 
-.. [3] Karakas (2010), MNRAS, 403, 1413 
+.. [2] Karakas (2010), MNRAS, 403, 1413 
+.. [3] Ventura et al. (2013), MNRAS, 431, 3642 
 """
 
 from __future__ import absolute_import
