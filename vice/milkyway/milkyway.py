@@ -26,11 +26,11 @@ class milkyway(multizone):
 	This object models the Milky Way as a series of concentric annuli of 
 	uniform width. A prescription for stellar migration based on the ``h277`` 
 	hydrodynamical simulation (a part of the ``g14`` simulation suite, 
-	Christensen et al. 2012 [1]_), an observationally motivated star formation 
+	Christensen et al. 2012) [1]_, an observationally motivated star formation 
 	law, and a scaling of the outflow mass loading factor :math:`\eta` with 
 	radius tuned to predict an observationally motivated radial abundance 
 	gradient are included by default. For details, see discussion in 
-	Johnson et al. (2021, in prep [2]_). 
+	Johnson et al. (2021) [2]_. 
 
 	**Signature**: vice.milkyway(zone_width = 0.5, name = "milkyway", 
 	n_stars = 1, simple = False, verbose = False, N = 1e5, 
@@ -188,7 +188,7 @@ class milkyway(multizone):
 	>>> mw.run(np.linspace(0, 13.2, 1321), overwrite = True) 
 
 	.. [1] Christensen et al. (2012), MNRAS, 425, 3058 
-	.. [2] Johnson et al. (2021), in prep 
+	.. [2] Johnson et al. (2021), arxiv:2103.09838 
 	.. [3] Kroupa (2001), MNRAS, 322, 231 
 	.. [4] Salpeter (1955), ApJ, 121, 161 
 	.. [5] Johnson & Weinberg (2020), MNRAS, 498, 1364 
@@ -686,7 +686,7 @@ object. Got: %s""" % (type(value)))
 
 		.. [1] Asplund et al. (2009), ARA&A, 47, 481 
 		.. [2] Johnson & Weinberg (2020), MNRAS, 498, 1364 
-		.. [3] Johnson et al. (2021), in prep 
+		.. [3] Johnson et al. (2021), arxiv:2103.09838 
 		""" 
 		return 0.015 / 0.00572 * (10**(0.08 * (rgal - 4) - 0.3)) - 0.6 
 

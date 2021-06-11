@@ -8,6 +8,7 @@ from ..interpolator import interpolator
 from ....core.dataframe._builtin_dataframes import atomic_number 
 from ....testing import unittest 
 from .._grid_reader import _RECOGNIZED_STUDIES_ 
+from .._grid_reader import _VENTURA13_ELEMENTS_ 
 
 
 @unittest 
@@ -21,6 +22,9 @@ def test():
 			for study in _RECOGNIZED_STUDIES_: 
 				# karakas (2010) only goes up to nickel 
 				if study == "karakas10" and atomic_number[elem] > 28: continue 
+				# Ventura et al. (2013) only has a few elements 
+				if (study == "ventura13" and 
+					elem not in _VENTURA13_ELEMENTS_): continue 
 				try: 
 					interp = interpolator(elem, study = study) 
 				except: 

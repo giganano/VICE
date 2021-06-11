@@ -8,6 +8,7 @@ from ...._globals import _RECOGNIZED_ELEMENTS_
 from ....core.dataframe._builtin_dataframes import atomic_number 
 from ....testing import moduletest 
 from ....testing import unittest 
+from .._grid_reader import _VENTURA13_ELEMENTS_ 
 
 
 @moduletest 
@@ -18,7 +19,9 @@ def test():
 	return ["vice.yields.agb.import", 
 		[ 
 			test_cristallo11_import(), 
-			test_karakas10_import() 
+			test_karakas10_import(), 
+			test_ventura13_import(), 
+			test_karakas16_import() 
 		] 
 	] 
 
@@ -56,4 +59,38 @@ def test_karakas10_import():
 				break 
 		return status 
 	return ["vice.yields.agb.karakas10", test] 
+
+
+@unittest 
+def test_ventura13_import(): 
+	r""" 
+	from vice.yields.agb import ventura13 unittest 
+	""" 
+	def test(): 
+		try: 
+			from .. import ventura13 
+		except: 
+			return False 
+		from .. import settings 
+		status = True 
+		for i in _VENTURA13_ELEMENTS_: 
+			status &= settings[i] == "ventura13" 
+			if not status: break 
+		return status 
+	return ["vice.yields.agb.ventura13", test] 
+
+
+@unittest 
+def test_karakas16_import(): 
+	r""" 
+	from vice.yields.agb import karakas16 unittest 
+	""" 
+	def test(): 
+		try: 
+			from .. import karakas16 
+		except: 
+			return False 
+		from .. import settings 
+		return all([settings[i] == "karakas16" for i in _RECOGNIZED_ELEMENTS_]) 
+	return ["vice.yields.agb.karakas16", test] 
 

@@ -46,8 +46,12 @@ cdef class agb_yield_settings(yield_settings):
 
 			Recognized Keywords: 
 
-				- "cristallo11": Cristallo et al. (2011) [1]_ 
-				- "karakas10": Karakas (2010) [2]_ 
+				- "cristallo11" : Cristallo et al. (2011) [1]_ 
+				- "karakas10" : Karakas (2010) [2]_ 
+				- "ventura13" : Ventura et al. (2013) [3]_ 
+				- "karakas16": Karakas & Lugaro (2016) [4]_; Karakas et al. 
+				  (2018) [5]_ 
+
 
 		- <function> : Mathematical function describing the yield. 
 			Must accept the stellar mass in :math:`M_\odot` and the 
@@ -107,6 +111,9 @@ cdef class agb_yield_settings(yield_settings):
 
 	.. [1] Cristallo et al. (2011), ApJS, 197, 17 
 	.. [2] Karakas (2010), MNRAS, 403, 1413 
+	.. [3] Ventura et al. (2013), MNRAS, 431, 3642 
+	.. [4] Karakas & Lugaro (2016), ApJ, 825, 26 
+	.. [5] Karakas et al. (2018), MNRAS, 477, 421 
 	""" 
 
 	def __init__(self, frame, name, allow_funcs, config_field): 
@@ -116,6 +123,7 @@ cdef class agb_yield_settings(yield_settings):
 	def __setitem__(self, key, value): 
 		# These import statements cause import errors when in the preamble 
 		from ...yields.agb._grid_reader import _RECOGNIZED_STUDIES_ 
+		from ...yields.agb._grid_reader import _VENTURA13_ELEMENTS_ 
 		from ._builtin_dataframes import atomic_number 
 
 		if isinstance(key, strcomp): 
@@ -124,14 +132,18 @@ cdef class agb_yield_settings(yield_settings):
 					if value.lower() in _RECOGNIZED_STUDIES_: 
 						if (value.lower() == "karakas10" and 
 							atomic_number[key] > 28): 
-							""" 
-							Karakas et al. (2010) table only goes up to Ni. 
-							""" 
+							# Karakas (2010) table only goes up to Ni. 
 							raise LookupError("""\
 The Karakas (2010), MNRAS, 403, 1413 study did not report yields for elements \
-heavier than nickel. Please modify the attribute 'elements' to exclude these \
-elements from the simulation (or adopt an alternate yield model) before \
-proceeding.""") 		
+heavier than nickel. Cannot assign "karakas10" as the element %s's AGB star \
+yield setting.""" % (key.lower())) 
+						elif (value.lower() == "ventura13" and 
+							key.lower() not in _VENTURA13_ELEMENTS_): 
+							# Ventura tables only have a few elements 
+							raise LookupError("""\
+The Ventura et al. (2013), MNRAS, 431, 3642 study did not report yields for \
+the element %s. "ventura13" can be assigned as the AGB star yield setting for \
+only the following elements: %s""" % (key.lower(), str(_VENTURA13_ELEMENTS_))) 
 						else: 
 							self._frame[key.lower()] = value.lower() 
 					else: 

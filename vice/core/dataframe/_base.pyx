@@ -347,7 +347,7 @@ Got: %s""" % (type(key)))
 		>>> example.todict() 
 		{'a': [1, 2, 3], 'b': [4, 5, 6], 'c': [7, 8, 9]} 
 		""" 
-		return self._frame 
+		return self._frame.copy() 
 
 
 	def remove(self, key): 

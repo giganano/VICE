@@ -11,12 +11,12 @@ a value the user may set upon construction of a ``milkyway`` object. As
 defaults, it adopts an observationally-motivated star formation law and a 
 stellar migration prescription based on N-body simulations. For an in-depth 
 example of an application of the ``milkyway`` object, we refer users to the 
-models of Johnson et al. (2021, in prep [1]_), for which these features were 
+models of Johnson et al. (2021) [1]_, for which these features were 
 designed. 
 
 The default stellar migration model of the ``milkyway`` object is implemented 
 in the ``vice.toolkit.hydrodisk.hydrodiskstars`` object. This object is built 
-around data from the ``h277`` simulation (Christensen et al. 2021 [2]_), a 
+around data from the ``h277`` simulation (Christensen et al. 2021) [2]_, a 
 zoom-in hydrodynamical simulation ran from cosmological initial conditions 
 which has made a number of appearances in the literature to date (e.g. 
 Zolotov et al. 2012 [3]_; Loebman et al. 2012 [4]_, 2014 [5]_; Brooks & 
@@ -191,7 +191,7 @@ Johnson et al. (2021) models for which it was designed focused instead on the
 impact of varying assumptions about stellar migration. 
 
 For further discussion of the ``milkyway`` object, we refer users to section 2 
-of Johnson et al. (2021, in prep). 
+of Johnson et al. (2021). 
 
 Relevant Source Code 
 
@@ -201,7 +201,7 @@ Relevant Source Code
 	- ``vice/toolkit/hydrodisk/_hydrodiskstars.pyx`` 
 	- ``vice/src/toolkit/hydrodiskstars.c`` 
 
-.. [1] Johnson et al. (2021, in prep) 
+.. [1] Johnson et al. (2021), arxiv:2103.09838 
 .. [2] Christensen et al. (2012), MNRAS, 425, 3058 
 .. [3] Zolotov et al. (2012), ApJ, 761, 71 
 .. [4] Loebman et al. (2012), ApJ, 758, L23 
