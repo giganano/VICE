@@ -129,7 +129,7 @@ def find_extensions(path = './vice'):
 			src = "./%s.pyx" % (ext.replace('.', '/')) 
 			if os.path.exists(src): 
 				src_files = [src] + vice.find_c_extensions(
-					ext, tests = "tests" in src
+					tests = "tests" in src
 				)
 				extensions.append(Extension(
 					# The name of the extension 
@@ -147,13 +147,13 @@ def find_extensions(path = './vice'):
 		for root, dirs, files in os.walk(path): 
 			for i in files: 
 				if i.endswith(".pyx"): 
-					# the name of the extesion 
-					ext = "%s.%s" % (root[2:].replace('/', '.'), i.split('.')[0]) 
-					# The required parts of the C library 
 					src_files = ["%s/%s" % (root[2:], i)] 
-					src_files += vice.find_c_extensions(ext, 
-						tests = "tests" in root) 
-					extensions.append(Extension(ext, src_files, 
+					src_files += vice.find_c_extensions(tests = "tests" in root) 
+					extensions.append(Extension( 
+						# The name of the extension 
+						"%s.%s" % (root[2:].replace('/', '.'), i.split('.')[0]), 
+						# Its associated file along w/VICE's C library 
+						src_files, 
 						extra_compile_args = ["-Wno-unreachable-code"] 
 					)) 
 				else: continue 

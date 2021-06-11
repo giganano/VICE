@@ -20,6 +20,8 @@ from vice.yields.sneia import iwamoto99
 from vice.yields.sneia import seitenzahl13 
 from vice.yields.agb import cristallo11 
 from vice.yields.agb import karakas10 
+from vice.yields.agb import ventura13 
+from vice.yields.agb import karakas16 
 from vice.core.singlezone.entrainment import entrainment 
 from vice.toolkit import J21_sf_law 
 from vice.yields.ccsne.engines.E16 import E16 
@@ -118,10 +120,11 @@ _CONFIG_ = {
 			vice.core.dataframe.elemental_settings, 
 			vice.core.dataframe.evolutionary_settings, 
 			vice.core.dataframe.fromfile, 
-			vice.core.dataframe.noncustomizable, 
 			vice.core.dataframe.history, 
+			vice.core.dataframe.noncustomizable, 
 			vice.core.dataframe.saved_yields, 
-			vice.core.dataframe.tracers 
+			vice.core.dataframe.tracers, 
+			vice.core.dataframe.yield_settings 
 		]  
 	}, 
 	vice.dataframe.keys: {
@@ -256,6 +259,30 @@ _CONFIG_ = {
 			vice.core.dataframe.tracers.size 
 		] 
 	}, 
+	vice.core.dataframe.yield_settings: {
+		"filename": 	"vice.core.dataframe.yield_settings.rst", 
+		"header": 		"vice.core.dataframe.yield_settings", 
+		"subs": 		[
+			vice.core.dataframe.yield_settings.restore_defaults, 
+			vice.core.dataframe.yield_settings.factory_settings, 
+			vice.core.dataframe.yield_settings.save_defaults 
+		] 
+	}, 
+	vice.core.dataframe.yield_settings.restore_defaults: {
+		"filename": 	"vice.core.dataframe.yield_settings.restore_defaults.rst", 
+		"header": 		"vice.core.dataframe.yield_settings.restore_defaults", 
+		"subs": 		[] 
+	}, 
+	vice.core.dataframe.yield_settings.factory_settings: {
+		"filename": 	"vice.core.dataframe.yield_settings.factory_settings.rst", 
+		"header": 		"vice.core.dataframe.yield_settings.factory_settings", 
+		"subs": 		[] 
+	}, 
+	vice.core.dataframe.yield_settings.save_defaults: {
+		"filename": 	"vice.core.dataframe.yield_settings.save_defaults.rst", 
+		"header": 		"vice.core.dataframe.yield_settings.save_defaults", 
+		"subs": 		[] 
+	}, 
 	vice.yields: {
 		"filename": 	"vice.yields.rst", 
 		"header": 		"vice.yields", 
@@ -274,8 +301,10 @@ _CONFIG_ = {
 			vice.yields.agb.interpolator, 
 			vice.yields.agb.settings, 
 			vice.yields.agb.cristallo11, 
-			vice.yields.agb.karakas10 
-		]  
+			vice.yields.agb.karakas10, 
+			vice.yields.agb.ventura13, 
+			vice.yields.agb.karakas16 
+		] 
 	}, 
 	vice.yields.agb.grid: {
 		"filename": 	"vice.yields.agb.grid.rst", 
@@ -350,6 +379,16 @@ _CONFIG_ = {
 	vice.yields.agb.karakas10: {
 		"filename": 	"vice.yields.agb.karakas10.rst", 
 		"header": 		"vice.yields.agb.karakas10", 
+		"subs": 		[] 
+	}, 
+	vice.yields.agb.ventura13: {
+		"filename": 	"vice.yields.agb.ventura13.rst", 
+		"header": 		"vice.yields.agb.ventura13", 
+		"subs": 		[] 
+	}, 
+	vice.yields.agb.karakas16: {
+		"filename": 	"vice.yields.agb.karakas16.rst", 
+		"header": 		"vice.yields.agb.karakas16", 
 		"subs": 		[] 
 	}, 
 	vice.yields.ccsne: {

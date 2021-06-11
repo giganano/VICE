@@ -2,8 +2,10 @@
 
 from __future__ import absolute_import 
 from ...core.objects._hydrodiskstars cimport HYDRODISKSTARS 
-from ...core.objects._hydrodiskstars cimport hydrodiskstars_initialize 
-from ...core.objects._hydrodiskstars cimport hydrodiskstars_free 
+
+cdef extern from "../../src/objects/hydrodiskstars.h": 
+	HYDRODISKSTARS *hydrodiskstars_initialize() 
+	void hydrodiskstars_free(HYDRODISKSTARS *hds) 
 
 
 cdef extern from "../../src/toolkit/hydrodiskstars.h": 

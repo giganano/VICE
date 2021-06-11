@@ -9,7 +9,7 @@ progenitor mass in solar masses.
 .. tip:: Instances of the ``engine`` class can be passed as the keyword 
 	argument ``explodability`` to ``vice.yields.ccsne.fractional`` to calculate 
 	IMF-averaged yields assuming a particular black hole landscape. The impact 
-	of these assumptions is explored in Griffith et al. (2021, in prep) [1]_. 
+	of these assumptions is explored in Griffith et al. (2021) [1]_. 
 
 Contents 
 --------
@@ -25,7 +25,7 @@ S16 : ``module``
 	Explodability maps as reported by the various models in Sukhbold et al. 
 	(2016) [3]_. 
 
-.. [1] Griffith et al. (2021), in prep 
+.. [1] Griffith et al. (2021), arxiv:2103.09837 
 .. [2] Ertl et al. (2016), ApJ, 818, 124 
 .. [3] Sukhbold et al. (2016), ApJ, 821, 38 
 """ 

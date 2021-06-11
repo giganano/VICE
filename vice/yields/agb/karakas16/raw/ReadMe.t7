@@ -1,0 +1,25 @@
+================================================================================
+Title: Stellar yields from metal-rich asymptotic giant branch models 
+Authors: Karakas A.I., Lugaro M. 
+================================================================================
+Description of contents: The yield data tables from Karakas & Lugaro
+    2016 (Table 7). Each file comprises N models with permutations of
+    initial mass, M_mix, and N_ov at fixed Z. For each model final and
+    expelled masses are given (in solar units) and yield abundances
+    tabulated for each of 81 elements are given along with s-process
+    indicators, [Rb/Zr], [ls/Fe], [hs/Fe], [hs/ls], [Pb/hs].
+    
+    Filename         Z      N_models
+    yield_z007.dat   0.007  27
+    yield_z014.dat   0.014  35
+    yield_z03.dat    0.03   28
+
+
+System requirements: None specific to these files.
+
+Additional comments: 
+
+================================================================================
+
+
+

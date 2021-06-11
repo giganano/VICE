@@ -24,7 +24,9 @@ from libc.stdlib cimport malloc, free
 from ._grid_reader cimport ELEMENT 
 from . cimport _grid_reader 
 
-_RECOGNIZED_STUDIES_ = tuple(["cristallo11", "karakas10"]) 
+_RECOGNIZED_STUDIES_ = tuple(["cristallo11", "karakas10", "ventura13", 
+	"karakas16"]) 
+_VENTURA13_ELEMENTS_ = tuple(["he", "c", "n", "o", "ne", "na", "mg", "al", "si"]) 
 
 
 #-------------------------- AGB_YIELD_GRID FUNCTION --------------------------# 
@@ -44,8 +46,11 @@ def yield_grid(element, study = "cristallo11"):
 
 		Recognized Keywords: 
 
-			- "cristallo11": Cristallo et al. (2011) [1]_ 
-			- "karakas10": Karakas (2010) [2]_ 
+			- "cristallo11" : Cristallo et al. (2011) [1]_ 
+			- "karakas10" : Karakas (2010) [2]_ 
+			- "ventura13" : Ventura et al. (2013) [3]_ 
+			- "karakas16": Karakas & Lugaro (2016) [4]_; Karkas et al. (2018) 
+			  [5]_ 
 
 	Returns 
 	-------
@@ -66,6 +71,9 @@ def yield_grid(element, study = "cristallo11"):
 		- 	``study == "karakas10"`` and the atomic number of the element is 
 			:math:`\geq` 29. The Karakas (2010) study did not report yields 
 			for elements heavier the nickel. 
+		- 	The Ventura et al. (2013) tables include yields only for the 
+			following elements: he, c, n, o, ne, na, mg, al, si. A request for 
+			a table for any other element with raise an exception. 
 	* IOError [Occur's only if VICE's file structure has been modified] 
 		- 	The parameters passed to this function are allowed but the data 
 			file is not found. 
@@ -90,6 +98,9 @@ def yield_grid(element, study = "cristallo11"):
 
 	.. [1] Cristallo et al. (2011), ApJS, 197, 17 
 	.. [2] Karakas (2010), MNRAS, 403, 1413 
+	.. [3] Ventura et al. (2013), MNRAS, 431, 3642 
+	.. [4] Kakaras & Lugaro (2016), ApJ, 825, 26 
+	.. [5] Karakas et al. (2018), MNRAS, 477, 421 
 	"""
 	# Type checking  
 	if not isinstance(element, strcomp): 
@@ -104,7 +115,9 @@ Got: %s""" % (study))
 	# Study keywords to their full citations 
 	studies = {
 		"cristallo11": 			"Cristallo et al. (2011), ApJ, 197, 17", 
-		"karakas10": 			"Karakas (2010), MNRAS, 403, 1413" 
+		"karakas10": 			"Karakas (2010), MNRAS, 403, 1413", 
+		"ventura13": 			"Ventura et al. (2013), MNRAS, 431, 3642", 
+		"karakas16": 			"Karakas & Lugaro (2016), ApJ, 825, 26" 
 	} 
 
 	# Value checking 
@@ -118,6 +131,11 @@ Got: %s""" % (study))
 	if study.lower() == "karakas10" and atomic_number[element.lower()] > 28: 
 		raise LookupError("""The %s study did not report yields for elements \
 heavier than nickel (atomic number 28).""" % (studies["karakas10"])) 
+	elif (study.lower() == "ventura13" and 
+		element.lower() not in _VENTURA13_ELEMENTS_): 
+		raise LookupError("""The %s study did not report yields for the \
+element %s. Only the following elements have tables available: %s.""" % (
+			studies["ventura13"], element.lower(), str(_VENTURA13_ELEMENTS_))) 
 	else: 
 		pass 
 

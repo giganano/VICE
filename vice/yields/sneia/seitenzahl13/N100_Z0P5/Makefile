@@ -1,0 +1,13 @@
+
+SUBDIRS := $(wildcard */) 
+
+.PHONY: clean 
+clean: 
+	@ echo Cleaning vice/yields/sneia/seitenzahl13/N100_Z0P5/ 
+	@ if [ -d "__pycache__" ] ; then \
+		rm -rf __pycache__ ; \
+	fi 
+	@ for i in $(SUBDIRS) ; do \
+		$(MAKE) -C $$i clean ; \
+	done 
+

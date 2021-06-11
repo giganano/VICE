@@ -1,16 +1,19 @@
 
-.PHONY: clean 
+CYTHON_SOURCES 		:= $(wildcard *.pyx) 
+CYTHON_OUTPUTS 		:= $(CYTHON_SOURCES:.pyx=.c) 
+SUBDIRS 			:= $(wildcard */) 
 
+.PHONY: clean 
 clean: 
 	@ echo Cleaning vice/core/ 
-	@ rm -f *.c 
 	@ rm -f *.so 
-	@ rm -rf __pycache__ 
-	@ $(MAKE) -C dataframe/ clean 
-	@ $(MAKE) -C multizone/ clean 
-	@ $(MAKE) -C objects/ clean 
-	@ $(MAKE) -C outputs/ clean 
-	@ $(MAKE) -C singlezone/ clean 
-	@ $(MAKE) -C ssp/ clean 
-	@ $(MAKE) -C tests/ clean 
+	@ if [ -d "__pycache__" ] ; then \
+		rm -rf __pycache__ ; \
+	fi 
+	@ for i in $(CYTHON_OUTPUTS) ; do \
+		rm -f $$i ; \
+	done 
+	@ for i in $(SUBDIRS) ; do \
+		$(MAKE) -C $$i clean ; \
+	done 
 
