@@ -1,10 +1,13 @@
 
-.PHONY: clean 
+SUBDIRS := $(wildcard */) 
 
+.PHONY: clean 
 clean: 
 	@ echo Cleaning vice/yields/ccsne/engines/ 
-	@ rm -f *.c 
-	@ rm -f *.so 
-	@ rm -rf __pycache__ 
-	@ $(MAKE) -C S16/ clean 
-	@ $(MAKE) -C tests/ clean 
+	@ if [ -d "__pycache__" ] ; then \
+		rm -rf __pycache__ ; \
+	fi 
+	@ for i in $(SUBDIRS) ; do \
+		$(MAKE) -C $$i clean ; \
+	done 
+

@@ -28,10 +28,6 @@ starburst:
 tutorial: 
 	@ $(MAKE) -C examples/ tutorial
 
-.PHONY: clibclean 
-clibclean: 
-	@ $(MAKE) -C vice/ clibclean 
-
 .PHONY: clean 
 clean: 
 	@ echo Cleaning VICE source tree 

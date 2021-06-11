@@ -1,22 +1,18 @@
 
-.PHONY: clean clibclean 
+SUBDIRS := $(wildcard */) 
 
-clibclean: 
-	@ $(MAKE) -C src/ clibclean 
-
+.PHONY: clean 
 clean: 
 	@ echo Cleaning vice/ 
+	@ if [ -d "__pycache__" ] ; then \
+		rm -rf __pycache__ ; \
+	fi 
 	@ rm -f version_breakdown.py 
 	@ rm -f *.out 
 	@ rm -f *.pyc 
 	@ rm -f *.vice.zip 
 	@ rm -rf *.vice 
-	@ rm -rf __pycache__ 
-	@ $(MAKE) -C _build_utils/ clean 
-	@ $(MAKE) -C core/ clean 
-	@ $(MAKE) -C milkyway/ clean 
-	@ $(MAKE) -C src/ clean 
-	@ $(MAKE) -C toolkit/ clean 
-	@ $(MAKE) -C tests/ clean 
-	@ $(MAKE) -C testing/ clean 
-	@ $(MAKE) -C yields/ clean 
+	@ for i in $(SUBDIRS) ; do \
+		$(MAKE) -C $$i clean ; \
+	done 
+

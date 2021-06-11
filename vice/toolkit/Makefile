@@ -1,8 +1,12 @@
 
-.PHONY: clean 
+SUBDIRS := $(wildcard */) 
 
+.PHONY: clean 
 clean: 
 	@ echo Cleaning vice/toolkit/
-	@ rm -rf __pycache__ 
-	@ $(MAKE) -C hydrodisk/ clean 
-	@ $(MAKE) -C interpolation/ clean 
+	@ if [ -d "__pycache__" ] ; then \
+		rm -rf __pycache__ ; \
+	fi 
+	@ for i in $(SUBDIRS) ; do \
+		$(MAKE) -C $$i clean ; \
+	done 
