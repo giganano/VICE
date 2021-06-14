@@ -161,9 +161,10 @@ class milkyway(multizone):
 	.. note:: See documentation of ``vice.multizone`` base class for 
 		information on the implementation and required computational overhead 
 		of this and other applications of VICE's multizone capabilities. In 
-		the data involved can be arbitrarily large provied the system has the 
-		space, but coarse versions of finely sampled models often require only 
-		minutes to fully integrate, simplifying the debugging process. 
+		theory, the data involved can be arbitrarily large provided the system 
+		has the space, but coarse versions of finely sampled models often 
+		require only minutes to fully integrate, simplifying the debugging 
+		process. 
 
 	Functions 
 	---------
