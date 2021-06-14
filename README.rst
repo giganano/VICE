@@ -2,13 +2,22 @@
 |logo| 
 
 Versatile Integrator for Chemical Evolution
-+++++++++++++++++++++++++++++++++++++++++++
+###########################################
 
-|version| |MIT Licensed| |travis| |docs| |issues| |paper1| 
+|paper1| |paper2| |paper3| 
+
+|python| |version| |MIT Licensed| 
+
+|GitHub CI| |docs| |issues| 
+
+.. 	|python| image:: https://img.shields.io/pypi/pyversions/VICE?label=Python&logo=Python&logoColor=white 
+	:target: https://python.org 
+	:alt: Python 
 
 ..	|version| image:: https://img.shields.io/badge/PyPI-1.2.0-blue.svg
 	:target: https://pypi.org/project/vice/ 
 	:alt: version
+
 ..	|MIT Licensed| image:: https://img.shields.io/badge/license-MIT-blue.svg
 	:target: https://raw.githubusercontent.com/giganano/VICE/master/LICENSE
 	:alt: MIT License 
@@ -17,9 +26,9 @@ Versatile Integrator for Chemical Evolution
 	:target: https://github.com/giganano/VICE/issues 
 	:alt: issues 
 
-..	|travis| image:: https://travis-ci.com/giganano/VICE.svg?branch=master 
-	:target: https://travis-ci.com/giganano/VICE 
-	:alt: travis 
+.. 	|GitHub CI| image:: https://github.com/giganano/VICE/workflows/GitHub%20CI/badge.svg 
+	:target: https://github.com/giganano/VICE/actions/workflows/ci.yml 
+	:alt: GitHub CI 
 
 .. 	|docs| image:: https://readthedocs.org/projects/vice-astro/badge/?version=latest
 	:target: https://vice-astro.readthedocs.io/en/latest/?badge=latest
@@ -27,7 +36,15 @@ Versatile Integrator for Chemical Evolution
 
 ..	|paper1| image:: https://img.shields.io/badge/NASA%20ADS-Johnson%20%26%20Weinberg%20(2020)-red
 	:target: https://ui.adsabs.harvard.edu/abs/2020MNRAS.498.1364J/abstract 
-	:alt: JW20 
+	:alt: Johnson & Weinberg (2020)  
+
+.. 	|paper2| image:: https://img.shields.io/badge/NASA%20ADS-Johnson%20et%20al.%20(2021)-red 
+	:target: https://ui.adsabs.harvard.edu/abs/2021arXiv210309838J/abstract 
+	:alt: Johnson et al. (2021) 
+
+.. 	|paper3| image:: https://img.shields.io/badge/NASA%20ADS-Griffith%20et%20al.%20(2021)-red 
+	:target: https://ui.adsabs.harvard.edu/abs/2021arXiv210309837G/abstract 
+	:alt: Griffith et al. (2021) 
 
 ..	|logo| image:: logo/logo.png 
 
@@ -103,11 +120,13 @@ Journal Related Features
 ========================
 Under starbursts_, we provide the python_ code which runs the simulations and 
 produces the figures in `Johnson & Weinberg (2020)`__. Under migration_, we 
-provide the same for Johnson et al. (2021). 
+provide the same for `Johnson et al. (2021)`__. 
 
 .. _starbursts: https://github.com/giganano/VICE/tree/master/starbursts 
 .. _migration: https://github.com/giganano/VICE/tree/master/migration 
 __ jw20_ 
-.. _jw20:  https://ui.adsabs.harvard.edu/abs/2020MNRAS.498.1364J/abstract 
+.. _jw20: https://ui.adsabs.harvard.edu/abs/2020MNRAS.498.1364J/abstract 
+__ j21_ 
+.. _j21: https://ui.adsabs.harvard.edu/abs/2021arXiv210309838J/abstract 
 
 
