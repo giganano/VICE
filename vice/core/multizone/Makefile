@@ -1,6 +1,6 @@
 
 CYTHON_SOURCES 		:= $(wildcard *.pyx) 
-CYTHON_OUTPUTS 		:= $(CYTHON_OUTPUTS:.pyx=.c) 
+CYTHON_OUTPUTS 		:= $(CYTHON_SOURCES:.pyx=.c) 
 SUBDIRS 			:= $(wildcard */) 
 
 .PHONY: clean 
