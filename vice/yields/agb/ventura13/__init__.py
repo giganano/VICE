@@ -4,6 +4,8 @@ yields.
 
 **Signature**: from vice.yields.agb import ventura13 
 
+.. versionadded:: 1.3.0 
+
 Importing this module will set the AGB star yield settings for all elements 
 where yield tables are available to "ventura13". 
 

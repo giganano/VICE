@@ -3,6 +3,8 @@ Karakas & Lugaro (2016), ApJ, 825, 26 Asymptotic Giant Branch (AGB) star yields
 
 **Signature**: from vice.yields.agb import karakas16 
 
+.. versionadded:: 1.3.0 
+
 Importing this module will set the AGB star yield setting for all elements to 
 "karakas16". 
 
