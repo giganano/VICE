@@ -2,7 +2,7 @@
 Johnson et al. (2021) Models
 ++++++++++++++++++++++++++++
 
-|apogeedr16| |feuillet2018| |feuillet2019| |vincenzo2021| 
+|johnson2021| |apogeedr16| |feuillet2018| |feuillet2019| |vincenzo2021| 
 
 Here we provide instructions for running the Johnson et al. (2021) chemical 
 evolution models for the Milky Way disk, producing the figures which appear in 
@@ -11,21 +11,25 @@ comparison. The instructions herein assume that you as the user are already
 familiar with the nature of the Johnson et al. (2021) models; this information 
 can be found in the associated journal publication. 
 
+.. 	|johnson2021| image:: https://img.shields.io/badge/NASA%20ADS-Johnson%20et%20al.%20(2021)-red 
+	:target: https://ui.adsabs.harvard.edu/abs/2021arXiv210309838J/abstract 
+	:alt: Johnson et al. (2021) 
+
 .. 	|apogeedr16| image:: https://img.shields.io/badge/NASA%20ADS-APOGEE%20DR16-red 
 	:target: apogeedr16_ 
-	:alt: apogeedr16 
+	:alt: Ahumada et al. (2020) 
 
 .. 	|feuillet2018| image:: https://img.shields.io/badge/NASA%20ADS-Feuillet%20et%20al.%20(2018)-red 
 	:target: feuillet2018_ 
-	:alt: feuillet2018 
+	:alt: Feuillet et al. (2018) 
 
 .. 	|feuillet2019| image:: https://img.shields.io/badge/NASA%20ADS-Feuillet%20et%20al.%20(2019)-red 
 	:target: feuillet2019_ 
-	:alt: feuillet2019 
+	:alt: Feuillet et al. (2019) 
 
 .. 	|vincenzo2021| image:: https://img.shields.io/badge/NASA%20ADS-Vincenzo%20et%20al.%20(2021)-red 
 	:target: vincenzo2021_ 
-	:alt: vincenzo2021 
+	:alt: Vincenzo et al. (2021) 
 
 .. _feuillet2018: https://ui.adsabs.harvard.edu/abs/2018MNRAS.477.2326F/abstract 
 .. _feuillet2019: https://ui.adsabs.harvard.edu/abs/2019MNRAS.489.1742F/abstract 
