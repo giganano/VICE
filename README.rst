@@ -14,11 +14,11 @@ Versatile Integrator for Chemical Evolution
 	:target: https://python.org 
 	:alt: Python 
 
-..	|version| image:: https://img.shields.io/badge/PyPI-1.2.1-blue.svg
+..	|version| image:: https://img.shields.io/pypi/v/VICE?label=PyPI&logo=PyPI&logoColor=white
 	:target: https://pypi.org/project/vice/ 
 	:alt: version
 
-..	|MIT Licensed| image:: https://img.shields.io/badge/license-MIT-blue.svg
+..	|MIT Licensed| image:: https://img.shields.io/badge/License-MIT-blue.svg 
 	:target: https://raw.githubusercontent.com/giganano/VICE/master/LICENSE
 	:alt: MIT License 
 
