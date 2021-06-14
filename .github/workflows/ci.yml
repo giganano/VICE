@@ -1,0 +1,66 @@
+
+name: GitHub CI 
+
+on: [push, pull_request] 
+
+jobs: 
+  build: 
+    name: ${{ matrix.os }} | Python ${{ matrix.python-version }} | ${{ matrix.compiler }} 
+    runs-on: ${{ matrix.os }} 
+    strategy: 
+      fail-fast: false 
+      matrix: 
+        os: ["ubuntu-latest", "macos-latest"] 
+        compiler: [gcc-10, clang] 
+        python-version: [3.6, 3.7, 3.8, 3.9]  
+        exclude: 
+
+          # Mac OS builds run with clang only 
+          - os: "macos-latest" 
+            compiler: gcc-10 
+
+          # Ubuntu builds run with gcc only 
+          - os: "ubuntu-latest" 
+            compiler: clang 
+
+    env: 
+      COMPILER: ${{ matrix.compiler }} 
+
+    steps: 
+      - uses: actions/checkout@v2 
+
+      - name: Set up Python ${{ matrix.python-version }} 
+        uses: actions/setup-python@v2 
+        with: 
+          python-version: ${{ matrix.python-version }} 
+
+      - name: Install Dependencies 
+        shell: bash 
+        run: |
+          python -m pip install --upgrade pip 
+          python -m pip install cython>=0.29.21 
+
+      - name: Display Environment Variables 
+        shell: bash 
+        run: |
+          echo "PATH: " $PATH 
+          echo "COMPILER: " `which $COMPILER` 
+          echo "COMPILER VERSION: " `$COMPILER --version` 
+          echo "PYTHON: " `which python` 
+          echo "PYTHON VERSION: " `python --version` 
+          echo "MAKE: " `which make` 
+          echo "MAKE VERSION: " `make --version` 
+
+      - name: Compile and Install 
+        shell: bash 
+        run: |
+          make CC=$COMPILER 
+          python setup.py build install -q 
+          make clean 
+
+      - name: Tests 
+        shell: bash 
+        run: |
+          make tests 
+          make clean 
+
