@@ -89,10 +89,10 @@ Topic :: Scientific/Engineering :: Physics
 
 # Version info 
 MAJOR 			= 1 
-MINOR 			= 2 
+MINOR 			= 3 
 MICRO 			= 0 
 BUILD 			= 0 
-ISRELEASED		= True 
+ISRELEASED		= False 
 VERSION  		= "%d.%d.%d" % (MAJOR, MINOR, MICRO) 
 if BUILD: VERSION += ".%d" % (BUILD) 
 

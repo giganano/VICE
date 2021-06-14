@@ -297,10 +297,15 @@ This feature will be removed in a future release of VICE.
 		setup_imf(ssp[0].imf, IMF) 
 	cdef double *evaltimes = binspace(0, time + 10 * dt, 
 		long((time + 10 * dt) / dt)) 
+
+	# patch note (versions >= 1.2.1): long(time / dt) + 10l used to be +11l. 
+	# Although well into the buffer of extra timesteps added, thus not 
+	# affecting the returned values, this used to raise an erroneous error 
+	# about a NaN main sequence turnoff mass. 
 	cdef double *cresults = _ssp.single_population_enrichment(ssp, e, 
 		Z, 
 		evaltimes, 
-		long(time / dt) + 11l, 
+		long(time / dt) + 10l, 
 		mstar) 
 	if cresults is NULL: 
 		raise MemoryError("Internal Error") 

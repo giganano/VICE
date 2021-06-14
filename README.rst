@@ -14,7 +14,7 @@ Versatile Integrator for Chemical Evolution
 	:target: https://python.org 
 	:alt: Python 
 
-..	|version| image:: https://img.shields.io/badge/PyPI-1.2.0-blue.svg
+..	|version| image:: https://img.shields.io/badge/PyPI-1.3.0-blue.svg
 	:target: https://pypi.org/project/vice/ 
 	:alt: version
 

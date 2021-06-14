@@ -5,7 +5,7 @@ This file implements the default star formation law employed by the ``milkyway``
 object. This model was adopted by Johnson et al. (2021) [1]_, the paper which 
 released these features. 
 
-.. [1] Johnson et al. (2021, in prep) 
+.. [1] Johnson et al. (2021), arxiv:2103.09838 
 """ 
 
 from __future__ import absolute_import 
@@ -18,7 +18,7 @@ class J21_sf_law:
 	The default star formation law of the ``milkyway`` object. This is a 
 	callable object, accepting simulation time and either star formation rate 
 	or gas supply as second arguments. By default, it implements the star 
-	formation law adopted in Johnson et al. (2021, in prep) [1]_. 
+	formation law adopted in Johnson et al. (2021) [1]_. 
 
 	**Signature**: vice.toolkit.J21_sf_law(area, \*\*kwargs) 
 
@@ -134,7 +134,7 @@ class J21_sf_law:
 	with the assumption that :math:`t_0` = 13.7 Gyr is the age of the universe 
 	at the present day. 
 
-	.. [1] Johnson et al. (2021, in prep) 
+	.. [1] Johnson et al. (2021), arxiv:2103.09838 
 	""" 
 
 	def __init__(self, area, present_day_molecular = 2.0, molecular_index = 0.5, 
@@ -287,7 +287,7 @@ class J21_sf_law:
 		>>> mw.zones[0].tau_star.molecular(13.2) 
 		2.0 
 
-		.. [1] Johnson et al. (2021, in prep) 
+		.. [1] Johnson et al. (2021), arxiv:2103.09838 
 		""" 
 		return self.present_day_molecular * (
 			(1.5 + time) / 13.7)**self.molecular_index 
@@ -353,7 +353,7 @@ class J21_sf_law:
 		.. note:: The default value is chosen based on the redshift dependence 
 			of :math:`\tau_\text{mol}` reported by Tacconi et al. (2018) [1]_ 
 			and a redshift-time relation accurate for :math:`z \lesssim 3`. 
-			See discussion in section 2 of Johnson et al. (2021, in prep) [2]_. 
+			See discussion in section 2 of Johnson et al. (2021) [2]_. 
 
 		Example Code 
 		------------
@@ -367,7 +367,7 @@ class J21_sf_law:
 		0.6 
 
 		.. [1] Tacconi et al. (2018), ApJ, 853, 179 
-		.. [2] Johnson et al. (2021, in prep) 
+		.. [2] Johnson et al. (2021), arxiv:2103.09838 
 		""" 
 		return self._molecular_index 
 
