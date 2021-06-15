@@ -1,4 +1,15 @@
 
+1.2.1 
+=====
+- Minor documentation updates 
+
+Patches 
+-------
+- Addressed spurrious warning regarding NaN main sequence turnoff mass 
+
+- ``vice.dataframe.todict()`` 
+	Now returns a *copy* of the dictionary stored under the hood  
+
 1.2.0 
 =====
 - ``vice.solar_z`` : ``dataframe`` 
