@@ -133,8 +133,11 @@ extern unsigned short max_age_ssp_test_onH(SINGLEZONE *sz) {
 
 	unsigned short i, status = 1u; 
 	for (i = 0u; i < (*sz).n_elements; i++) {
-		status &= (isfinite(onH(*sz, *(*sz).elements[i])) && 
-			onH(*sz, *(*sz).elements[i]) < 0); 
+		/* manylinux distributions throw warning about isfinite declaration */ 
+		#ifdef isfinite 
+			status &= isfinite(onH(*sz, *(*sz).elements[i])); 
+		#endif 
+		status &= onH(*sz, *(*sz).elements[i]) < 0; 
 		if (!status) break; 
 	} 
 	return status; 
