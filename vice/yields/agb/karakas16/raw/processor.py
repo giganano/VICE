@@ -40,6 +40,15 @@ def get_mass_from_block(block):
 	return float(top.split()[4][:-1]) 
 
 
+def get_masslost_from_block(block): 
+	r""" 
+	Pulls the mass lost due to stellar winds from the black read from the file. 
+	""" 
+	lines = block.split('\n') 
+	second = lines[1] 
+	return float(second.split()[-1]) 
+
+
 def get_yield_from_block(element, block, net_conversion = True): 
 	r""" 
 	Pulls the yield of the given element from the block read from the file. 
@@ -54,13 +63,13 @@ def get_yield_from_block(element, block, net_conversion = True):
 	raise ValueError("Yield not found for element: %s" % (element)) 
 
 
-def convert_to_net(element, mstar, gross, z_initial): 
+def convert_to_net(element, masslost, gross, z_initial): 
 	r""" 
 	Converts a gross yield into a net yield assuming a scaled solar 
 	composition. 
 	""" 
-	initial = mstar * vice.solar_z[element] * (z_initial / 0.014) 
-	return gross - initial # the net yield 
+	recycled = masslost * vice.solar_z[element] * (z_initial / 0.014) 
+	return gross - recycled # the net yield 
 
 
 def pull_yields_from_file(element, filename, z_initial, net_conversion = True): 
@@ -76,8 +85,8 @@ def pull_yields_from_file(element, filename, z_initial, net_conversion = True):
 			if mass in masses and mass not in yields.keys(): 
 				yield_ = get_yield_from_block(element, block, 
 					net_conversion = net_conversion) 
-				if net_conversion: yield_ = convert_to_net(element, mass, 
-					yield_, z_initial) 
+				if net_conversion: yield_ = convert_to_net(element, 
+					get_masslost_from_block(block), yield_, z_initial) 
 				yield_ /= mass 
 				yields[mass] = yield_ 
 			else: pass 
