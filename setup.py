@@ -63,7 +63,10 @@ from Cython.Build import cythonize
 
 # ---------------------------- PACKAGE METADATA ---------------------------- # 
 package_name = "vice" 
-base_url = "http://github.com/giganano/VICE.git"
+repo_url = "https://github.com/giganano/VICE.git" 
+pypi_url = "https://pypi.org/project/vice/" 
+docs_url = "https://vice-astro.readthedocs.io/" 
+
 CLASSIFIERS = """\
 Development Status :: 5 - Production/Stable 
 Intended Audience :: Science/Research 
@@ -293,7 +296,12 @@ def setup_package():
 		author_email = "giganano9@gmail.com", 
 		maintainer = "James W. Johnson", 
 		maintainer_email = "giganano9@gmail.com", 
-		url = base_url, 
+		url = repo_url, 
+		project_urls = {
+			"Bug Tracker": "https://github.com/giganano/VICE/issues", 
+			"Documentation": docs_url, 
+			"Source Code": repo_url 
+		}, 
 		description = "Galactic Chemical Evolution Integrator", 
 		long_description = vice._LONG_DESCRIPTION_, 
 		classifiers = CLASSIFIERS.split('\n'), 
