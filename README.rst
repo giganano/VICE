@@ -10,6 +10,8 @@ Versatile Integrator for Chemical Evolution
 
 |GitHub CI| |docs| |issues| 
 
+|slack| 
+
 .. 	|python| image:: https://img.shields.io/pypi/pyversions/VICE?label=Python&logo=Python&logoColor=white 
 	:target: https://python.org 
 	:alt: Python 
@@ -46,6 +48,10 @@ Versatile Integrator for Chemical Evolution
 	:target: https://ui.adsabs.harvard.edu/abs/2021arXiv210309837G/abstract 
 	:alt: Griffith et al. (2021) 
 
+.. 	|slack| image:: https://img.shields.io/badge/Join-Slack-blueviolet?logo=Slack
+	:target: https://vice-astro.slack.com 
+	:alt: Slack
+
 ..	|logo| image:: logo/logo.png 
 
 VICE is a user-friendly python_ package designed to model chemical enrichment 
@@ -77,6 +83,7 @@ Quick Links
 	- `Tutorial`__ 
 	- `Example Code`__ 
 	- `From the Command Line`__ 
+* `Join our Slack Channel`__ 
 * `Documentation`__ 
 * `Submit a Bug Report`__ 
 * `Cite VICE`__ 
@@ -100,6 +107,9 @@ __ fromcmdline_
 .. _tutorial: https://github.com/giganano/VICE/blob/master/examples/QuickStartTutorial.ipynb
 .. _example: https://github.com/giganano/VICE/tree/master/examples
 .. _fromcmdline: https://vice-astro.readthedocs.io/en/latest/users_guide/command_line.html
+
+__ slack_ 
+.. _slack: https://vice-astro.slack.com 
 
 __ docs_ 
 .. _docs: https://vice-astro.readthedocs.io/en/latest/
