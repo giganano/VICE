@@ -49,7 +49,7 @@ Versatile Integrator for Chemical Evolution
 	:alt: Griffith et al. (2021) 
 
 .. 	|slack| image:: https://img.shields.io/badge/Join-Slack-blueviolet?logo=Slack
-	:target: https://vice-astro.slack.com 
+	:target: https://join.slack.com/t/vice-astro/shared_invite/zt-s5cy25w6-0TlYs2W8wBCy_oUgkBh8PQ
 	:alt: Slack
 
 ..	|logo| image:: logo/logo.png 
@@ -109,7 +109,7 @@ __ fromcmdline_
 .. _fromcmdline: https://vice-astro.readthedocs.io/en/latest/users_guide/command_line.html
 
 __ slack_ 
-.. _slack: https://vice-astro.slack.com 
+.. _slack: https://join.slack.com/t/vice-astro/shared_invite/zt-s5cy25w6-0TlYs2W8wBCy_oUgkBh8PQ
 
 __ docs_ 
 .. _docs: https://vice-astro.readthedocs.io/en/latest/
