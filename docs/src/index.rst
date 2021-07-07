@@ -9,18 +9,21 @@ VICE: Versatile Integrator for Chemical Evolution
 | 	*The Ohio State University Department of Astronomy* 
 | 	*140 W. 18th Ave., Columbus, OH, 43204* 
 
-Welcome to VICE's documentation! Source code and supplementary material can be 
-found in the `git repository`__. First time users should familiarize themselves 
-with VICE's API by going through the `tutorial`__, also available in the 
-`git repository`__. VICE's core developers are also happy to consult with 
-scientists looking to incorporate it into their research. 
+Welcome to VICE's documentation! First time users should familiarize themselves 
+with VICE's API by going through our `tutorial`__, available on `GitHub`__ 
+along with the source code and other supplementary material. 
 
-__ src_ 
+VICE's core developers are happy to consult with scientists looking to 
+incorporate it into their research. `Join us on Slack`__ and start 
+collaborating now! 
+
 __ tutorial_ 
 __ src_ 
+__ slack_ 
 
 .. _src: https://github.com/giganano/VICE.git 
 .. _tutorial: https://github.com/giganano/VICE/blob/master/examples/QuickStartTutorial.ipynb 
+.. _slack: https://join.slack.com/t/vice-astro/shared_invite/zt-s5cy25w6-0TlYs2W8wBCy_oUgkBh8PQ
 
 
 .. toctree:: 
