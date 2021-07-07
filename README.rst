@@ -83,7 +83,7 @@ Quick Links
 	- `Tutorial`__ 
 	- `Example Code`__ 
 	- `From the Command Line`__ 
-* `Join our Slack Channel`__ 
+* `Join our Slack Community`__ 
 * `Documentation`__ 
 * `Submit a Bug Report`__ 
 * `Cite VICE`__ 
