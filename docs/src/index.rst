@@ -23,7 +23,7 @@ __ slack_
 
 .. _src: https://github.com/giganano/VICE.git 
 .. _tutorial: https://github.com/giganano/VICE/blob/master/examples/QuickStartTutorial.ipynb 
-.. _slack: https://join.slack.com/t/vice-astro/shared_invite/zt-s5cy25w6-0TlYs2W8wBCy_oUgkBh8PQ
+.. _slack: https://join.slack.com/t/vice-astro/shared_invite/zt-tqwa1syp-faiQu0P9oe83cazb0q9tJA
 
 
 .. toctree:: 
