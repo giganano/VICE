@@ -9,9 +9,6 @@ cdef extern from "../src/utils.h":
 	double *binspace(double start, double stop, long N) 
 	void set_char_p_value(char *dest, int *ords, int length) 
 
-cdef extern from "../src/imf.h": 
-	double IMF_STEPSIZE 
-	unsigned short imf_set_mass_distribution(IMF_ *imf, double *arr) 
 
 cdef extern from "../src/objects.h": 
 	CALLBACK_1ARG *callback_1arg_initialize() 

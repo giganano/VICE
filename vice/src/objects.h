@@ -11,7 +11,6 @@ extern "C" {
 #include "objects/callback_1arg.h" 
 #include "objects/callback_2arg.h" 
 #include "objects/ccsne.h" 
-#include "objects/dataset.h" 
 #include "objects/channel.h" 
 #include "objects/element.h" 
 #include "objects/fromfile.h" 
