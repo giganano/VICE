@@ -12,7 +12,6 @@ Salpeter : <function>
 	The Salpeter (1955) IMF [2]_. 
 
 .. [1] Kroupa (2001), MNRAS, 322, 231 
-
 .. [2] Salpeter (1955), ApJ, 121, 161 
 """ 
 
