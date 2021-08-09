@@ -214,7 +214,7 @@ _CFILES_ = {
 	"vice.core.outputs._history": [], 
 	"vice.core.outputs._mdf": [], 
 	"vice.core.outputs._multioutput": [], 
-	"vice.core.outputs._history": [], 
+	"vice.core.outputs._output": [], 
 	"vice.core.outputs._tracers": [], 
 	"vice.core.singlezone._singlezone": [
 		"./vice/src/io", 
@@ -354,6 +354,17 @@ _CFILES_ = {
 		"./vice/src/multizone/tests", 
 		"./vice/src/objects", 
 		"./vice/src/singlezone", 
+		"./vice/src/ssp", 
+		"./vice/src/toolkit", 
+		"./vice/src/yields", 
+		"./vice/src" 
+	], 
+	"vice.src.singlezone.tests._singlezone": [
+		"./vice/src/io", 
+		"./vice/src/multizone", 
+		"./vice/src/objects", 
+		"./vice/src/singlezone", 
+		"./vice/src/singlezone/tests", 
 		"./vice/src/ssp", 
 		"./vice/src/toolkit", 
 		"./vice/src/yields", 
