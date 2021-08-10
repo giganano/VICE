@@ -4,9 +4,8 @@
  */ 
 
 #include <stdlib.h> 
-#include "../multizone.h" 
 #include "../migration.h" 
-#include "../singlezone.h" 
+#include "../singlezone/singlezone.h" 
 #include "../utils.h" 
 #include "migration.h" 
 

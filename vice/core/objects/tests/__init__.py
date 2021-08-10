@@ -14,7 +14,6 @@ if not __VICE_SETUP__:
 		"callback_2arg", 
 		"ccsne", 
 		"channel", 
-		"dataset", 
 		"element", 
 		"fromfile", 
 		"imf", 
@@ -37,7 +36,6 @@ if not __VICE_SETUP__:
 	from . import _callback_2arg as callback_2arg 
 	from . import _ccsne as ccsne 
 	from . import _channel as channel 
-	from . import _dataset as dataset 
 	from . import _element as element 
 	from . import _fromfile as fromfile 
 	from . import _hydrodiskstars as hydrodiskstars 
@@ -71,8 +69,6 @@ if not __VICE_SETUP__:
 				ccsne.test_ccsne_yield_specs_destructor(), 
 				channel.test_channel_constructor(), 
 				channel.test_channel_destructor(), 
-				dataset.test_dataset_constructor(), 
-				dataset.test_dataset_destructor(), 
 				element.test_element_constructor(), 
 				element.test_element_destructor(), 
 				fromfile.test_fromfile_constructor(), 
