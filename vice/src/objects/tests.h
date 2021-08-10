@@ -12,7 +12,6 @@ extern "C" {
 #include "tests/callback_2arg.h" 
 #include "tests/ccsne.h" 
 #include "tests/channel.h" 
-#include "tests/dataset.h" 
 #include "tests/element.h" 
 #include "tests/fromfile.h"
 #include "tests/hydrodiskstars.h"  

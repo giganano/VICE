@@ -580,19 +580,6 @@ typedef struct hydrodiskstars {
 } HYDRODISKSTARS; 
 
 
-typedef struct dataset {
-
-	double **data; 
-	double **errors; 
-	double **inv_cov; 
-	double **predictions; 
-	char **labels; 
-	unsigned short n_quantities; 
-	unsigned long n_points; 
-
-} DATASET; 
-
-
 #ifdef __cplusplus 
 } 
 #endif /* __cplusplus */ 
