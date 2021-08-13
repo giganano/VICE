@@ -6,16 +6,25 @@
  * 
  * where A, B, and C are functions of metallicity. Their values are sampled on 
  * a grid of metallicities which are implemented here as independent 
- * 1-dimensional interpolation schema. 
+ * 1-dimensional interpolation schema. These values are computed using 
+ * isochrones computed using the PARSEC stellar evolution code (Bressan et al. 
+ * 2012; Tang et al. 2014; Chen et al. 2015) and were used in combination with 
+ * a one-zone chemical evolution model to reproduce the color-magnitude 
+ * diagram of the Sculptor dwarf galaxy. 
  * 
  * References 
  * ==========
+ * Bressan et al. (2012), MNRAS, 427, 127 
+ * Chen et al. (2015), MNRAS, 452, 1068 
+ * Tang et al. (2014), MNRAS, 445, 4287 
  * Vincenzo et al. (2016), MNRAS, 460, 2238 
  */ 
 
 #include <stdlib.h> 
 #include <math.h> 
+#include "../../objects/interp_scheme_1d.h" 
 #include "../../toolkit/interp_scheme_1d.h" 
+#include "../../io/utils.h" 
 #include "vincenzo2016.h" 
 
 /* 
@@ -27,7 +36,6 @@
 static INTERP_SCHEME_1D *VINCENZO_A = NULL; 
 static INTERP_SCHEME_1D *VINCENZO_B = NULL; 
 static INTERP_SCHEME_1D *VINCENZO_C = NULL; 
-static const unsigned short N_POINTS = 299u; 
 
 
 /* 
@@ -166,25 +174,31 @@ extern double vincenzo2016_lifetime(double mass, double postMS, double Z) {
  */ 
 extern unsigned short vincenzo2016_import(char *filename) {
 
+	int hlength = header_length(filename); 
+	if (hlength == -1) return 1u; 
+	int flength = line_count(filename); 
+	if (flength == -1) return 1u; 
+	unsigned long n_points = (unsigned long) flength - (unsigned long) hlength; 
+
 	VINCENZO_A = interp_scheme_1d_initialize(); 
 	VINCENZO_B = interp_scheme_1d_initialize(); 
-	VINCENZO_B = interp_scheme_1d_initialize(); 
+	VINCENZO_C = interp_scheme_1d_initialize(); 
 
-	VINCENZO_A -> n_points = N_POINTS; 
-	VINCENZO_B -> n_points = N_POINTS; 
-	VINCENZO_C -> n_points = N_POINTS; 
+	VINCENZO_A -> n_points = (unsigned long) n_points; 
+	VINCENZO_B -> n_points = (unsigned long) n_points; 
+	VINCENZO_C -> n_points = (unsigned long) n_points; 
 
-	VINCENZO_A -> xcoords = (double *) malloc (N_POINTS * sizeof(double)); 
-	VINCENZO_A -> ycoords = (double *) malloc (N_POINTS * sizeof(double)); 
-	VINCENZO_B -> xcoords = (double *) malloc (N_POINTS * sizeof(double)); 
-	VINCENZO_B -> ycoords = (double *) malloc (N_POINTS * sizeof(double)); 
-	VINCENZO_C -> xcoords = (double *) malloc (N_POINTS * sizeof(double)); 
-	VINCENZO_C -> ycoords = (double *) malloc (N_POINTS * sizeof(double)); 
+	VINCENZO_A -> xcoords = (double *) malloc (n_points * sizeof(double)); 
+	VINCENZO_A -> ycoords = (double *) malloc (n_points * sizeof(double)); 
+	VINCENZO_B -> xcoords = (double *) malloc (n_points * sizeof(double)); 
+	VINCENZO_B -> ycoords = (double *) malloc (n_points * sizeof(double)); 
+	VINCENZO_C -> xcoords = (double *) malloc (n_points * sizeof(double)); 
+	VINCENZO_C -> ycoords = (double *) malloc (n_points * sizeof(double)); 
 
 	FILE *in = fopen(filename, "r"); 
 	if (in == NULL) return 1u; 
 	unsigned short i; 
-	for (i = 0u; i < N_POINTS; i++) {
+	for (i = 0u; i < n_points; i++) {
 		double z, a, b, c; 
 		fscanf(in, "%lf %lf %lf %lf\n", &z, &a, &b, &c); 
 		VINCENZO_A -> xcoords[i] = z; 

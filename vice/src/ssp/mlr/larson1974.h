@@ -37,7 +37,7 @@ extern "C" {
  * 
  * source: larson1974.c 
  */ 
-extern double Larson1974_turnoffmass(double time, double postMS, double Z); 
+extern double larson1974_turnoffmass(double time, double postMS, double Z); 
 
 /* 
  * Calculate the lifetime of a star of known mass in Gyr according to the 
@@ -67,7 +67,7 @@ extern double Larson1974_turnoffmass(double time, double postMS, double Z);
  * 
  * source: larson1974.c 
  */ 
-extern double Larson1974_lifetime(double mass, double postMS, double Z); 
+extern double larson1974_lifetime(double mass, double postMS, double Z); 
 
 #ifdef __cplusplus 
 } 

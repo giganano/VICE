@@ -6,6 +6,14 @@
 extern "C" { 
 #endif /* __cplusplus */ 
 
+#ifndef BISECTION_INITIAL_LOWER_BOUND 
+#define BISECTION_INITIAL_LOWER_BOUND 1E-6 
+#endif /* BISECTION_INITIAL_LOWER_BOUND */ 
+
+#ifndef BISECTION_INITIAL_UPPER_BOUND 
+#define BISECTION_INITIAL_UPPER_BOUND 1E+6 
+#endif /* BISECTION_INITIAL_UPPER_BOUND */ 
+
 #include "../../objects.h" 
 
 /* 

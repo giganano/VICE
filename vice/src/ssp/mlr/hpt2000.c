@@ -70,7 +70,8 @@ static const unsigned short HPT2000TABLE_DIMENSION = 4u;
 extern double hpt2000_turnoffmass(double time, double postMS, double Z) {
 
 	if (time > 0) {
-		return bisection(&hpt2000_lifetime, 1.0e-3, 1.0e+3, time, postMS, Z); 
+		return bisection(&hpt2000_lifetime, BISECTION_INITIAL_LOWER_BOUND, 
+			BISECTION_INITIAL_UPPER_BOUND, time, postMS, Z); 
 	} else if (time < 0) {
 		/* 
 		 * There was an error somewhere. This function shouldn't ever receive a 

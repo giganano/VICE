@@ -5,6 +5,7 @@
  * Numerical Recipes by Press, Teukolsky, Vetterling & Flannery (2007). 
  */ 
 
+#include <stdio.h> 
 #include "../../utils.h" 
 #include "root.h" 
 
@@ -71,7 +72,17 @@ extern double bisection(double (*func)(double, double, double), double lower,
 		double f_middle = func(middle, postMS, Z); 
 		double f_upper = func(upper, postMS, Z); 
 
-		if (sign(f_lower - time) == sign(f_middle - time)) {
+		if (sign(f_upper - time) == sign(f_lower - time)) {
+			/* 
+			 * The root is not on the interval. In practice this likely means 
+			 * this function is being timed or tested and received a very small 
+			 * stellar age value, and if not then the turnoff mass is 
+			 * sufficiently above the relevant mass range for the parts of VICE 
+			 * that use this function. A large number can safely be returned 
+			 * in this instance. 
+			 */ 
+			return 500; 
+		} else if (sign(f_lower - time) == sign(f_middle - time)) {
 			/* the root is between middle and upper */ 
 			return bisection(func, middle, upper, time, postMS, Z); 
 		} else if (sign(f_middle - time) == sign(f_upper - time)) {

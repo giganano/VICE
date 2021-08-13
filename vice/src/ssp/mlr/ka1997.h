@@ -73,9 +73,24 @@ extern double ka1997_lifetime(double mass, double postMS, double Z);
  * =======
  * 0 on success, 1 on failure 
  * 
+ * References 
+ * ==========
+ * Kodama & Arimoto (1997), A&A, 320, 41 
+ * 
  * source: ha1997.c 
  */ 
 extern unsigned short ka1997_import(char *filename); 
+
+/* 
+ * Free up the memory stored by the Kodama & Arimoto (1997) data. 
+ * 
+ * References 
+ * ==========
+ * Kodama & Arimoto (1997), A&A, 320, 41 
+ * 
+ * source: ka1997.c 
+ */ 
+extern void ka1997_free(void); 
 
 #ifdef __cplusplus 
 } 

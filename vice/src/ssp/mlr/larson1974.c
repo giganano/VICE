@@ -68,7 +68,7 @@ static const double GAMMA = 0.88;
  * 
  * header: larson1974.h 
  */ 
-extern double Larson1974_turnoffmass(double time, double postMS, double Z) {
+extern double larson1974_turnoffmass(double time, double postMS, double Z) {
 
 	if (time > 0) {
 
@@ -149,7 +149,7 @@ extern double Larson1974_turnoffmass(double time, double postMS, double Z) {
  * 
  * header: larson1974.h 
  */ 
-extern double Larson1974_lifetime(double mass, double postMS, double Z) {
+extern double larson1974_lifetime(double mass, double postMS, double Z) {
 
 	if (mass > 0) {
 

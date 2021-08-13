@@ -16,6 +16,15 @@ _CFILES_ = {
 		"./vice/src/objects/callback_2arg.c", 
 		"./vice/src/utils.c" 
 	], 
+	"vice.core._mlr": [
+		"./vice/src/ssp/mlr", 
+		"./vice/src/objects/interp_scheme_1d.c", 
+		"./vice/src/objects/interp_scheme_2d.c", 
+		"./vice/src/toolkit/interp_scheme_1d.c", 
+		"./vice/src/toolkit/interp_scheme_2d.c", 
+		"./vice/src/io/utils.c", 
+		"./vice/src/utils.c" 
+	], 
 	"vice.core.dataframe._agb_yield_settings": [], 
 	"vice.core.dataframe._base": [], 
 	"vice.core.dataframe._ccsn_yield_table": [], 

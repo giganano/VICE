@@ -51,7 +51,8 @@ static INTERP_SCHEME_2D *KA1997 = NULL;
 extern double ka1997_turnoffmass(double time, double postMS, double Z) {
 
 	if (time > 0) {
-		return bisection(&ka1997_lifetime, 1.0e-3, 1.0e+3, time, postMS, Z); 
+		return bisection(&ka1997_lifetime, BISECTION_INITIAL_LOWER_BOUND, 
+			BISECTION_INITIAL_UPPER_BOUND, time, postMS, Z); 
 	} else if (time < 0) {
 		/* 
 		 * There was an error somewhere. This function shouldn't ever receive a 
@@ -142,6 +143,10 @@ extern double ka1997_lifetime(double mass, double postMS, double Z) {
  * ======= 
  * 0 on success, 1 on failure 
  * 
+ * References 
+ * ==========
+ * Kodama & Arimoto (1997), A&A, 320, 41 
+ * 
  * header: ka1997.h 
  */ 
 extern unsigned short ka1997_import(char *filename) {
@@ -172,6 +177,23 @@ extern unsigned short ka1997_import(char *filename) {
 
 	fclose(in); 
 	return 0u; 
+
+} 
+
+
+/* 
+ * Free up the memory stored by the Kodama & Arimoto (1997) data. 
+ * 
+ * References 
+ * ==========
+ * Kodama & Arimoto (1997), A&A, 320, 41 
+ * 
+ * header: ka1997.h 
+ */ 
+extern void ka1997_free(void) {
+
+	interp_scheme_2d_free(KA1997); 
+	KA1997 = NULL; 
 
 }
 
