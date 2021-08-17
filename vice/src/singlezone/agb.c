@@ -42,7 +42,7 @@ extern double m_AGB(SINGLEZONE sz, ELEMENT e) {
 			/* From section 4.4 of VICE's science documentation */ 
 			mass += (
 				get_AGB_yield(e, Z, 
-					main_sequence_turnoff_mass(i * sz.dt, (*sz.ssp).postMS)) * 
+					dying_star_mass(i * sz.dt, (*sz.ssp).postMS, Z)) * 
 				(*sz.ism).star_formation_history[sz.timestep - i] * sz.dt * 
 				((*sz.ssp).msmf[i] - (*sz.ssp).msmf[i + 1l])
 			); 

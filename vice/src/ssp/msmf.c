@@ -135,6 +135,17 @@ extern double MSMFdenominator(SSP ssp) {
  * The total main sequence mass of the stellar population at the given age, up 
  * to the normalization constant of the IMF. 
  * 
+ * Notes 
+ * =====
+ * This calculation assumes solar metallicity in computing the main sequence 
+ * turnoff mass (0.014; Asplund et al. 2009). This drastically reduces 
+ * computing times by not requiring calculation of the CRF for all previous 
+ * timesteps. The effect of metallicity on the CRF is small, anyway. 
+ * 
+ * References 
+ * ==========
+ * Asplund et al. (2009), ARA&A, 47, 481 
+ * 
  * header: msmf.h 
  */ 
 extern double MSMFnumerator(SSP ssp, double t) {
@@ -146,7 +157,7 @@ extern double MSMFnumerator(SSP ssp, double t) {
 	 * for each of the relevant mass ranges. 
 	 */ 
 
-	double turnoff_mass = main_sequence_turnoff_mass(t, ssp.postMS); 
+	double turnoff_mass = dying_star_mass(t, ssp.postMS, 0.014); 
 
 	/* 
 	 * First check if it's ouside the mass range of star formation and handle 

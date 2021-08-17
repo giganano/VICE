@@ -156,7 +156,7 @@ extern double larson1974_lifetime(double mass, double postMS, double Z) {
 		double ALPHA = log10(SOLAR_LIFETIME); 
 
 		/* See file header */ 
-		double logt = ALPHA + (BETA + GAMMA * log(mass)) * log(mass); 
+		double logt = ALPHA + (BETA + GAMMA * log10(mass)) * log10(mass); 
 		return (1 + postMS) * pow(10, logt); 
 
 	} else if (mass < 0) {

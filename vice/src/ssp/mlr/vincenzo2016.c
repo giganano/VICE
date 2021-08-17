@@ -53,6 +53,18 @@ static INTERP_SCHEME_1D *VINCENZO_C = NULL;
  * =======
  * The mass of the stars dying at that time in solar masses. 
  * 
+ * Notes
+ * =====
+ * The Vincenzo et al. (2016) relation quantifies the relationship between 
+ * stellar mass and total lifetime, making the parameter postMS superfluous. 
+ * Although this formalism is independent of its value, the same call signature 
+ * as other mass-lifetime relations is retained here so than any one of them 
+ * can be called with a function pointer. 
+ * 
+ * References 
+ * ==========
+ * Vincenzo et al. (2016), MNRAS, 460, 2238 
+ * 
  * header: vincenzo2016.h 
  */ 
 extern double vincenzo2016_turnoffmass(double time, double postMS, double Z) {
@@ -64,7 +76,7 @@ extern double vincenzo2016_turnoffmass(double time, double postMS, double Z) {
 		double c = interp_scheme_1d_evaluate(*VINCENZO_C, Z); 
 
 		/* analytic solution, see file header */ 
-		return pow(log(time / (a * (1 + postMS)))  / b, -1.0 / c); 
+		return pow(log(time / a)  / b, -1.0 / c); 
 
 	} else if (time < 0) {
 
@@ -111,6 +123,18 @@ extern double vincenzo2016_turnoffmass(double time, double postMS, double Z) {
  * =======
  * The lifetime of the star in Gyr. 
  * 
+ * Notes
+ * =====
+ * The Vincenzo et al. (2016) relation quantifies the relationship between 
+ * stellar mass and total lifetime, making the parameter postMS superfluous. 
+ * Although this formalism is independent of its value, the same call signature 
+ * as other mass-lifetime relations is retained here so than any one of them 
+ * can be called with a function pointer. 
+ * 
+ * References 
+ * ==========
+ * Vincenzo et al. (2016), MNRAS, 460, 2238 
+ * 
  * header: vincenzo2016.h 
  */ 
 extern double vincenzo2016_lifetime(double mass, double postMS, double Z) {
@@ -121,7 +145,7 @@ extern double vincenzo2016_lifetime(double mass, double postMS, double Z) {
 		double b = interp_scheme_1d_evaluate(*VINCENZO_B, Z); 
 		double c = interp_scheme_1d_evaluate(*VINCENZO_C, Z); 
 
-		return (1 + postMS) * a * exp(b * pow(mass, -c)); 
+		return a * exp(b * pow(mass, -c)); 
 
 	} else if (mass < 0) {
 

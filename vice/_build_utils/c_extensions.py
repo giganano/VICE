@@ -18,6 +18,7 @@ _CFILES_ = {
 	], 
 	"vice.core._mlr": [
 		"./vice/src/ssp/mlr", 
+		"./vice/src/ssp/mlr.c", 
 		"./vice/src/objects/interp_scheme_1d.c", 
 		"./vice/src/objects/interp_scheme_2d.c", 
 		"./vice/src/toolkit/interp_scheme_1d.c", 
@@ -82,6 +83,7 @@ _CFILES_ = {
 		"./vice/src/objects", 
 		"./vice/src/singlezone", 
 		"./vice/src/ssp", 
+		"./vice/src/ssp/mlr", 
 		"./vice/src/toolkit", 
 		"./vice/src/yields", 
 		"./vice/src" 
@@ -198,6 +200,7 @@ _CFILES_ = {
 		"./vice/src/objects/tests", 
 		"./vice/src/singlezone", 
 		"./vice/src/ssp", 
+		"./vice/src/ssp/mlr", 
 		"./vice/src/toolkit", 
 		"./vice/src/yields", 
 		"./vice/src" 
@@ -231,6 +234,7 @@ _CFILES_ = {
 		"./vice/src/objects", 
 		"./vice/src/singlezone", 
 		"./vice/src/ssp", 
+		"./vice/src/ssp/mlr", 
 		"./vice/src/toolkit", 
 		"./vice/src/yields", 
 		"./vice/src" 
@@ -242,6 +246,7 @@ _CFILES_ = {
 		"./vice/src/objects", 
 		"./vice/src/singlezone", 
 		"./vice/src/ssp", 
+		"./vice/src/ssp/mlr", 
 		"./vice/src/toolkit", 
 		"./vice/src/yields", 
 		"./vice/src" 
@@ -257,6 +262,7 @@ _CFILES_ = {
 		"./vice/src/objects", 
 		"./vice/src/singlezone", 
 		"./vice/src/ssp", 
+		"./vice/src/ssp/mlr", 
 		"./vice/src/toolkit", 
 		"./vice/src/yields", 
 		"./vice/src" 
@@ -267,6 +273,7 @@ _CFILES_ = {
 		"./vice/src/objects", 
 		"./vice/src/singlezone", 
 		"./vice/src/ssp", 
+		"./vice/src/ssp/mlr", 
 		"./vice/src/toolkit", 
 		"./vice/src/yields", 
 		"./vice/src" 
@@ -278,12 +285,14 @@ _CFILES_ = {
 		"./vice/src/objects/tests", 
 		"./vice/src/singlezone", 
 		"./vice/src/ssp", 
+		"./vice/src/ssp/mlr", 
 		"./vice/src/ssp/tests", 
 		"./vice/src/toolkit", 
 		"./vice/src/yields", 
 		"./vice/src" 
 	], 
 	"vice.core.ssp.tests._mlr": [
+		"./vice/src/ssp/mlr", 
 		"./vice/src/ssp/mlr.c", 
 		"./vice/src/ssp/tests/mlr.c" 
 	], 
@@ -294,12 +303,14 @@ _CFILES_ = {
 		"./vice/src/objects/tests", 
 		"./vice/src/singlezone", 
 		"./vice/src/ssp", 
+		"./vice/src/ssp/mlr", 
 		"./vice/src/ssp/tests", 
 		"./vice/src/toolkit", 
 		"./vice/src/yields", 
 		"./vice/src" 
 	], 
 	"vice.core.ssp.tests._remnants": [
+		"./vice/src/ssp/mlr", 
 		"./vice/src/ssp/remnants.c", 
 		"./vice/src/ssp/tests/remnants.c" 
 	], 
@@ -342,6 +353,7 @@ _CFILES_ = {
 		"./vice/src/objects", 
 		"./vice/src/singlezone", 
 		"./vice/src/ssp", 
+		"./vice/src/ssp/mlr", 
 		"./vice/src/toolkit", 
 		"./vice/src/yields", 
 		"./vice/src" 
@@ -353,6 +365,7 @@ _CFILES_ = {
 		"./vice/src/objects", 
 		"./vice/src/singlezone", 
 		"./vice/src/ssp", 
+		"./vice/src/ssp/mlr", 
 		"./vice/src/toolkit", 
 		"./vice/src/yields", 
 		"./vice/src" 
@@ -364,6 +377,7 @@ _CFILES_ = {
 		"./vice/src/objects", 
 		"./vice/src/singlezone", 
 		"./vice/src/ssp", 
+		"./vice/src/ssp/mlr", 
 		"./vice/src/toolkit", 
 		"./vice/src/yields", 
 		"./vice/src" 
@@ -375,6 +389,7 @@ _CFILES_ = {
 		"./vice/src/singlezone", 
 		"./vice/src/singlezone/tests", 
 		"./vice/src/ssp", 
+		"./vice/src/ssp/mlr", 
 		"./vice/src/toolkit", 
 		"./vice/src/yields", 
 		"./vice/src" 
@@ -386,6 +401,7 @@ _CFILES_ = {
 		"./vice/src/singlezone", 
 		"./vice/src/singlezone/tests", 
 		"./vice/src/ssp", 
+		"./vice/src/ssp/mlr", 
 		"./vice/src/toolkit", 
 		"./vice/src/yields", 
 		"./vice/src" 
@@ -397,6 +413,7 @@ _CFILES_ = {
 		"./vice/src/singlezone", 
 		"./vice/src/singlezone/tests", 
 		"./vice/src/ssp", 
+		"./vice/src/ssp/mlr", 
 		"./vice/src/toolkit", 
 		"./vice/src/yields", 
 		"./vice/src" 
@@ -408,6 +425,7 @@ _CFILES_ = {
 		"./vice/src/singlezone", 
 		"./vice/src/singlezone/tests", 
 		"./vice/src/ssp", 
+		"./vice/src/ssp/mlr", 
 		"./vice/src/toolkit", 
 		"./vice/src/yields", 
 		"./vice/src" 
@@ -419,6 +437,7 @@ _CFILES_ = {
 		"./vice/src/singlezone", 
 		"./vice/src/singlezone/tests", 
 		"./vice/src/ssp", 
+		"./vice/src/ssp/mlr", 
 		"./vice/src/toolkit", 
 		"./vice/src/yields", 
 		"./vice/src" 

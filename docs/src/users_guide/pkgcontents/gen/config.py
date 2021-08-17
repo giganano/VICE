@@ -51,6 +51,7 @@ _CONFIG_ = {
 			vice.cumulative_return_fraction, 
 			vice.main_sequence_mass_fraction, 
 			vice.single_stellar_population, 
+			vice.mlr, 
 			vice.yields, 
 			vice.elements, 
 			vice.imf, 
@@ -281,6 +282,60 @@ _CONFIG_ = {
 	vice.core.dataframe.yield_settings.save_defaults: {
 		"filename": 	"vice.core.dataframe.yield_settings.save_defaults.rst", 
 		"header": 		"vice.core.dataframe.yield_settings.save_defaults", 
+		"subs": 		[] 
+	}, 
+	vice.mlr: {
+		"filename": 	"vice.mlr.rst", 
+		"header": 		"vice.mlr", 
+		"subs":  		[
+			type(vice.mlr).setting, 
+			vice.mlr.powerlaw, 
+			vice.mlr.vincenzo2016, 
+			vice.mlr.hpt2000, 
+			vice.mlr.ka1997, 
+			vice.mlr.pm1993, 
+			vice.mlr.mm1989, 
+			vice.mlr.larson1974 
+		] 
+	}, 
+	type(vice.mlr).setting: {
+		"filename": 	"vice.mlr.setting.rst", 
+		"header": 		"vice.mlr.setting", 
+		"subs": 		[] 
+	}, 
+	vice.mlr.powerlaw: {
+		"filename": 	"vice.mlr.powerlaw.rst", 
+		"header": 		"vice.mlr.powerlaw", 
+		"subs": 		[] 
+	}, 
+	vice.mlr.vincenzo2016: {
+		"filename": 	"vice.mlr.vincenzo2016.rst", 
+		"header": 		"vice.mlr.vincenzo2016", 
+		"subs": 		[] 
+	}, 
+	vice.mlr.hpt2000: {
+		"filename": 	"vice.mlr.hpt2000.rst", 
+		"header": 		"vice.mlr.hpt2000", 
+		"subs": 		[] 
+	}, 
+	vice.mlr.ka1997: {
+		"filename": 	"vice.mlr.ka1997.rst", 
+		"header": 		"vice.mlr.ka1997", 
+		"subs": 		[] 
+	}, 
+	vice.mlr.pm1993: {
+		"filename": 	"vice.mlr.pm1993.rst", 
+		"header": 		"vice.mlr.pm1993", 
+		"subs": 		[] 
+	}, 
+	vice.mlr.mm1989: {
+		"filename": 	"vice.mlr.mm1989.rst", 
+		"header": 		"vice.mlr.mm1989", 
+		"subs": 		[] 
+	}, 
+	vice.mlr.larson1974: {
+		"filename": 	"vice.mlr.larson1974.rst", 
+		"header": 		"vice.mlr.larson1974", 
 		"subs": 		[] 
 	}, 
 	vice.yields: {

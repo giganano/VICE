@@ -59,6 +59,17 @@ extern unsigned short setup_MSMF(SINGLEZONE *sz);
  * The total initial main sequence mass of the stellar population, up to the 
  * normalization constant of the IMF. -1 in the case of an unrecognized IMF. 
  * 
+ * Notes 
+ * =====
+ * This calculation assumes solar metallicity in computing the main sequence 
+ * turnoff mass (0.014; Asplund et al. 2009). This drastically reduces 
+ * computing times by not requiring calculation of the CRF for all previous 
+ * timesteps. The effect of metallicity on the CRF is small, anyway. 
+ * 
+ * References 
+ * ==========
+ * Asplund et al. (2009), ARA&A, 47, 481 
+ * 
  * source: msmf.c 
  */ 
 extern double MSMFdenominator(SSP ssp); 

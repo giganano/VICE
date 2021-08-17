@@ -49,7 +49,7 @@ extern double *m_AGB_from_tracers(MULTIZONE mz, unsigned short index) {
 		unsigned long n = timestep - (*t).timestep_origin; 
 		mass[(*t).zone_current] += (
 			get_AGB_yield( *(*mz.zones[(*t).zone_origin]).elements[index], 
-				Z, main_sequence_turnoff_mass(n * (*sz).dt, (*ssp).postMS) ) * 
+				Z, dying_star_mass(n * (*sz).dt, (*ssp).postMS, Z)) * 
 			(*t).mass * 
 			((*ssp).msmf[n] - (*ssp).msmf[n + 1l]) 
 		); 

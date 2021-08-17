@@ -124,13 +124,13 @@ extern double mm1989_turnoffmass(double time, double postMS, double Z) {
 extern double mm1989_lifetime(double mass, double postMS, double Z) {
 
 	if (mass > 0) { 
-		double lifetime = 1 + postMS; 
+		double lifetime; 
 		if (mass <= 60) {
-			lifetime *= pow(10, alpha(mass) * log10(mass) + beta(mass)); 
+			lifetime = pow(10, alpha(mass) * log10(mass) + beta(mass)); 
 		} else {
-			lifetime *= 1.2 * pow(mass, -1.85) + 0.003; 
+			lifetime = 1.2 * pow(mass, -1.85) + 0.003; 
 		} 
-		return lifetime; 
+		return (1 + postMS) * lifetime; 
 	} else if (mass < 0) {
 		/* 
 		 * There was an error somewhere. This function shouldn't ever receive a 

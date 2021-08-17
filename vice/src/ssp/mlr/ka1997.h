@@ -29,6 +29,14 @@ extern "C" {
  * =======
  * The mass of the stars dying at that time in solar masses. 
  * 
+ * Notes
+ * =====
+ * The Kodama & Arimoto (1997) relation quantifies the relationship between 
+ * stellar mass and total lifetime, making the parameter postMS superfluous. 
+ * Although this formalism is independent of its value, the same call signature 
+ * as other mass-lifetime relations is retained here so than any one of them 
+ * can be called with a function pointer. 
+ * 
  * References 
  * ========== 
  * Kodama & Arimoto (1997), A&A, 320, 41 
@@ -51,6 +59,14 @@ extern double ka1997_turnoffmass(double time, double postMS, double Z);
  * Returns 
  * =======
  * The lifetime of the star in Gyr. 
+ * 
+ * Notes
+ * =====
+ * The Kodama & Arimoto (1997) relation quantifies the relationship between 
+ * stellar mass and total lifetime, making the parameter postMS superfluous. 
+ * Although this formalism is independent of its value, the same call signature 
+ * as other mass-lifetime relations is retained here so than any one of them 
+ * can be called with a function pointer. 
  * 
  * References 
  * ==========

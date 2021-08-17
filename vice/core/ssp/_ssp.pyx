@@ -13,6 +13,8 @@ from ...yields import ccsne
 from ...yields import sneia 
 from . import _ssp_utils 
 from .. import _pyutils 
+from .. import mlr 
+from .._mlr import __NAMES__ 
 from ..callback import callback1_nan_inf_positive 
 from ..callback import callback1_nan_inf 
 from ..callback import callback2_nan_inf 
@@ -41,6 +43,7 @@ from ..objects._ssp cimport SSP
 from ..objects cimport _element 
 from ..objects cimport _sneia 
 from ..objects cimport _agb 
+from .. cimport _mlr 
 from . cimport _ssp 
 
 def single_stellar_population(element, mstar = 1e6, Z = 0.014, time = 10, 
@@ -292,16 +295,21 @@ This feature will be removed in a future release of VICE.
 	# Call the C routines 
 	if callable(IMF): 
 		callback_imf = callback1_nan_inf_positive(IMF) 
-		setup_imf(ssp[0].imf, callback_imf)  
+		setup_imf(ssp[0].imf, callback_imf) 
 	else: 
 		setup_imf(ssp[0].imf, IMF) 
-	cdef double *evaltimes = binspace(0, time + 10 * dt, 
-		long((time + 10 * dt) / dt)) 
+
+	# This calls the C library to update the MLR setting on this extension 
+	_mlr.set_mlr_hashcode(__NAMES__[mlr.setting]) 
+	# mlr.setting = mlr.setting 
 
 	# patch note (versions >= 1.2.1): long(time / dt) + 10l used to be +11l. 
 	# Although well into the buffer of extra timesteps added, thus not 
 	# affecting the returned values, this used to raise an erroneous error 
 	# about a NaN main sequence turnoff mass. 
+	cdef double *evaltimes = binspace(0, time + 10 * dt, 
+		long((time + 10 * dt) / dt)) 
+
 	cdef double *cresults = _ssp.single_population_enrichment(ssp, e, 
 		Z, 
 		evaltimes, 

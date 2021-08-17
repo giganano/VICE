@@ -8,7 +8,9 @@
  * 
  * t_m = 1.2m^-1.85 + 0.003 
  * 
- * for masses above 6.6 Msun. t_m is in Gyr. Though this form is originally 
+ * for masses above 6.6 Msun. Below 0.6
+ * 
+ * t_m is in Gyr. Though this form is originally 
  * from Padovani & Matteucci (1993), the form implemented here is taken from 
  * Romano et al. (2005). 
  * 
@@ -71,7 +73,26 @@ extern double pm1993_turnoffmass(double time, double postMS, double Z) {
 			#else 
 				return 500; 
 			#endif 
+		} else if (time == 160) { 
+			/* 
+			 * Here the relation flattens off at t = 160 Gyr for stars at and 
+			 * below 0.6 Msun. 
+			 */ 
+			return 0.6; 
+		} else if (time > 160) { 
+			/* 
+			 * Under this formalism there is no stellar mass at which the 
+			 * lifetime exceeds 160 Gyr. 
+			 */ 
+			#ifdef NAN 
+				return NAN; 
+			#else 
+				return 0; 
+			#endif 
 		} else {
+			/* Take into account the post main sequence lifetime */ 
+			time /= 1 + postMS; 
+
 			/* 
 			 * Solve for the mass assuming it is less than 6.6 Msun. If it 
 			 * comes out higher, switch to the form appropriate for that mass 
@@ -139,16 +160,18 @@ extern double pm1993_turnoffmass(double time, double postMS, double Z) {
  */ 
 extern double pm1993_lifetime(double mass, double postMS, double Z) {
 
-	if (mass > 0) {
+	if (mass > 0) { 
+		double tau; 
 		if (mass > 6.6) {
-			return 1.2 * pow(mass, -1.85) + 0.003; 
+			tau = 1.2 * pow(mass, -1.85) + 0.003; 
 		} else if (0.60 < mass && mass <= 6.6) {
-			return pow(10, 
+			tau = pow(10, 
 				(ALPHA - sqrt(BETA - GAMMA * (ETA - log10(mass)))) / MU 
 			); 
 		} else {
-			return 160; 
-		}
+			tau = 160; 
+		} 
+		return (1 + postMS) * tau; 
 	} else if (mass < 0) {
 		/* 
 		 * There was an error somewhere. This function shouldn't ever receive a 

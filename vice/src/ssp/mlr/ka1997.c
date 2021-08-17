@@ -42,6 +42,14 @@ static INTERP_SCHEME_2D *KA1997 = NULL;
  * =======
  * The mass of the stars dying at that time in solar masses. 
  * 
+ * Notes
+ * =====
+ * The Kodama & Arimoto (1997) relation quantifies the relationship between 
+ * stellar mass and total lifetime, making the parameter postMS superfluous. 
+ * Although this formalism is independent of its value, the same call signature 
+ * as other mass-lifetime relations is retained here so than any one of them 
+ * can be called with a function pointer. 
+ * 
  * References 
  * ========== 
  * Kodama & Arimoto (1997), A&A, 320, 41 
@@ -51,8 +59,9 @@ static INTERP_SCHEME_2D *KA1997 = NULL;
 extern double ka1997_turnoffmass(double time, double postMS, double Z) {
 
 	if (time > 0) {
+		/* Enforce postMS = 0 -> see note */ 
 		return bisection(&ka1997_lifetime, BISECTION_INITIAL_LOWER_BOUND, 
-			BISECTION_INITIAL_UPPER_BOUND, time, postMS, Z); 
+			BISECTION_INITIAL_UPPER_BOUND, time, 0.0, Z); 
 	} else if (time < 0) {
 		/* 
 		 * There was an error somewhere. This function shouldn't ever receive a 
@@ -94,6 +103,14 @@ extern double ka1997_turnoffmass(double time, double postMS, double Z) {
  * =======
  * The lifetime of the star in Gyr. 
  * 
+ * Notes
+ * =====
+ * The Kodama & Arimoto (1997) relation quantifies the relationship between 
+ * stellar mass and total lifetime, making the parameter postMS superfluous. 
+ * Although this formalism is independent of its value, the same call signature 
+ * as other mass-lifetime relations is retained here so than any one of them 
+ * can be called with a function pointer. 
+ * 
  * References 
  * ==========
  * Kodama & Arimoto (1997), A&A, 320, 41 
@@ -103,7 +120,7 @@ extern double ka1997_turnoffmass(double time, double postMS, double Z) {
 extern double ka1997_lifetime(double mass, double postMS, double Z) {
 
 	if (mass > 0) {
-		return (1 + postMS) * interp_scheme_2d_evaluate(*KA1997, Z, mass); 
+		return interp_scheme_2d_evaluate(*KA1997, Z, mass); 
 	} else if (mass < 0) {
 		/* 
 		 * There was an error somewhere. This function shouldn't ever receive a 

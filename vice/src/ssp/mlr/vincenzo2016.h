@@ -23,6 +23,18 @@ extern "C" {
  * =======
  * The mass of the stars dying at that time in solar masses. 
  * 
+ * Notes
+ * =====
+ * The Vincenzo et al. (2016) relation quantifies the relationship between 
+ * stellar mass and total lifetime, making the parameter postMS superfluous. 
+ * Although this formalism is independent of its value, the same call signature 
+ * as other mass-lifetime relations is retained here so than any one of them 
+ * can be called with a function pointer. 
+ * 
+ * References 
+ * ==========
+ * Vincenzo et al. (2016), MNRAS, 460, 2238 
+ * 
  * source: vincenzo2016.c 
  */ 
 extern double vincenzo2016_turnoffmass(double time, double postMS, double Z); 
@@ -41,6 +53,18 @@ extern double vincenzo2016_turnoffmass(double time, double postMS, double Z);
  * Returns 
  * =======
  * The lifetime of the star in Gyr. 
+ * 
+ * Notes
+ * =====
+ * The Vincenzo et al. (2016) relation quantifies the relationship between 
+ * stellar mass and total lifetime, making the parameter postMS superfluous. 
+ * Although this formalism is independent of its value, the same call signature 
+ * as other mass-lifetime relations is retained here so than any one of them 
+ * can be called with a function pointer. 
+ * 
+ * References 
+ * ==========
+ * Vincenzo et al. (2016), MNRAS, 460, 2238 
  * 
  * source: vincenzo2016.c 
  */ 

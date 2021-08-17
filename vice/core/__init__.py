@@ -27,7 +27,7 @@ if not __VICE_SETUP__:
 	import warnings 
 	from .singlezone import singlezone 
 	from .mirror import mirror 
-	from ._mlr import mlr 
+	from .mlr import mlr 
 	from . import multizone 
 	__all__.extend(multizone.__all__) 
 	from .multizone import * 
