@@ -6,8 +6,10 @@ This file implements the main_sequence_mass_fraction function.
 from __future__ import absolute_import 
 from ..._globals import _RECOGNIZED_IMFS_ 
 from ..._globals import _VERSION_ERROR_ 
+from ..._globals import _DIRECTORY_ 
 from . import _ssp_utils 
 from .. import _pyutils 
+from .. import mlr 
 import numbers 
 import sys 
 if sys.version_info[:2] == (2, 7): 
@@ -19,6 +21,7 @@ else:
 from .._cutils cimport setup_imf 
 from .._cutils cimport set_string 
 from ..objects._ssp cimport SSP 
+from .. cimport _mlr 
 from . cimport _ssp 
 
 
@@ -112,6 +115,19 @@ def main_sequence_mass_fraction(age, IMF = "kroupa", m_upper = 100,
 		_ssp_utils._msmf_crf_value_checks(m_upper = m_upper, 
 			m_lower = m_lower) 
 
+	# Set up any mass-lifetime relation data on this extension 
+	# other forms don't have required data 
+	_mlr.set_mlr_hashcode(_mlr._mlr_linker.__NAMES__[mlr.setting]) 
+	if mlr.setting in ["vincenzo2016", "hpt2000", "ka1997"]: 
+		func = {
+			"vincenzo2016": _mlr.vincenzo2016_import, 
+			"hpt2000": _mlr.hpt2000_import, 
+			"ka1997": _mlr.ka1997_import 
+		}[mlr.setting] 
+		path = "%ssrc/ssp/mlr/%s.dat" % (_DIRECTORY_, mlr.setting) 
+		func(path.encode("latin-1")) 
+	else: pass 
+
 	# necessary for C subroutines 
 	cdef SSP *ssp = _ssp.ssp_initialize() 
 	ssp[0].postMS = 0 
@@ -124,5 +140,16 @@ def main_sequence_mass_fraction(age, IMF = "kroupa", m_upper = 100,
 	finally: 
 		# always free the memory 
 		_ssp.ssp_free(ssp) 
+
+		# take down mass-lifetime relation data 
+		if mlr.setting in ["vincenzo2016", "hpt2000", "ka1997"]: 
+			func = {
+				"vincenzo2016": _mlr.vincenzo2016_free, 
+				"hpt2000": _mlr.hpt2000_free, 
+				"ka1997": _mlr.ka1997_free 
+			}[mlr.setting] 
+			func() 
+		else: pass 
+
 	return x 
 

@@ -98,10 +98,18 @@ extern double get_AGB_yield(ELEMENT e, double Z_stars, double turnoff_mass) {
 
 		/* 
 		 * Let the 2-D interpolation scheme handle the meat of this 
-		 * calculation to not repeat code. 
+		 * calculation to not repeat code. For many AGB elements though, this 
+		 * tends to extrapolate to negative yields near ~1 Msun, when it's 
+		 * probably more physical for the yields to flatten off. To mitigate 
+		 * this issue, we don't allow negative AGB star yields below 1.5 Msun. 
 		 */ 
-		return interp_scheme_2d_evaluate(*(*e.agb_grid).interpolator, 
+		double yield = interp_scheme_2d_evaluate(*(*e.agb_grid).interpolator, 
 			turnoff_mass, Z_stars); 
+		if (turnoff_mass < 1.5 && yield < 0) {
+			return 0; 
+		} else {
+			return yield; 
+		}
 		
 	}
 

@@ -16,51 +16,53 @@ else:
 from . cimport _mlr 
 
 
-# cdef class _mlr_linker: 
+cdef class _mlr_linker: 
 
-# The following are maps to and from the hash-codes #define'd in 
-# vice/src/ssp/mlr.h. 
+	# The following are maps to and from the hash-codes #define'd in 
+	# vice/src/ssp/mlr.h. 
 
-__NAMES__ = {
-	"powerlaw": 881, 
-	"vincenzo2016": 1077, 
-	"hpt2000": 526, 
-	"ka1997": 422, 
-	"pm1993": 435, 
-	"mm1989": 437, 
-	"larson1974": 868 
-} 
+	__NAMES__ = {
+		"powerlaw": 881, 
+		"vincenzo2016": 1077, 
+		"hpt2000": 526, 
+		"ka1997": 422, 
+		"pm1993": 435, 
+		"mm1989": 437, 
+		"larson1974": 868 
+	} 
 
-__HASHCODES__ = {
-	881: "powerlaw", 
-	1077: "vincenzo2016", 
-	526: "hpt2000", 
-	422: "ka1997", 
-	435: "pm1993", 
-	437: "mm1989", 
-	868: "larson1974" 
-}
+	__HASHCODES__ = {
+		881: "powerlaw", 
+		1077: "vincenzo2016", 
+		526: "hpt2000", 
+		422: "ka1997", 
+		435: "pm1993", 
+		437: "mm1989", 
+		868: "larson1974" 
+	}
 
-# Not using a @property object for setting here b/c it would get overridden 
-# by the subclass in mlr.py -> these names will persist in the subclass 
-# even when setting is @property'd. 
+	# Not using a @property object for setting here b/c it would get overridden 
+	# by the subclass in mlr.py -> these names will persist in the subclass 
+	# even when setting is @property'd. 
 
-cpdef _get_setting(): 
-	# see docstring in vice/core/mlr.py 
-	return __HASHCODES__[_mlr.get_mlr_hashcode()] 
+	@staticmethod 
+	def _get_setting(): 
+		# see docstring in vice/core/mlr.py 
+		return _mlr_linker.__HASHCODES__[_mlr.get_mlr_hashcode()] 
 
-cpdef _set_setting(value): 
-	if isinstance(value, strcomp): 
-		if value.lower() in __NAMES__.keys(): 
-			if _mlr.set_mlr_hashcode(
-				<unsigned short> __NAMES__[value.lower()]): 
-				raise SystemError("Internal Error.") 
-			else: pass 
+	@staticmethod 
+	def _set_setting(value): 
+		if isinstance(value, strcomp): 
+			if value.lower() in _mlr_linker.__NAMES__.keys(): 
+				if _mlr.set_mlr_hashcode(
+					<unsigned short> _mlr_linker.__NAMES__[value.lower()]): 
+					raise SystemError("Internal Error.") 
+				else: pass 
+			else: 
+				raise ValueError("Unrecognized MLR setting: %s" % (value)) 
 		else: 
-			raise ValueError("Unrecognized MLR setting: %s" % (value)) 
-	else: 
-		raise TypeError("MLR setting must be of type str. Got: %s" % (
-			type(value))) 
+			raise TypeError("MLR setting must be of type str. Got: %s" % (
+				type(value))) 
 
 
 cdef class _powerlaw: 
@@ -113,7 +115,7 @@ cdef class _vincenzo2016:
 		if _mlr.vincenzo2016_import(path.encode("latin-1")): 
 			raise SystemError("Internal Error.") 
 		else: 
-			self._imported = 1  
+			self._imported = 1 
 
 
 cdef class _hpt2000: 

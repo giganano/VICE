@@ -3,6 +3,7 @@
 # Python imports 
 from __future__ import absolute_import 
 from ..._globals import _VERSION_ERROR_ 
+from ..._globals import _DIRECTORY_ 
 from ..._globals import ScienceWarning 
 from ...toolkit.hydrodisk import hydrodiskstars 
 from ..dataframe._builtin_dataframes import atomic_number 
@@ -13,7 +14,8 @@ from ...yields import agb
 from ...yields import ccsne 
 from ...yields import sneia 
 from ..pickles import jar 
-from .. import _pyutils  
+from .. import _pyutils 
+from .. import mlr 
 import warnings 
 import numbers 
 import time 
@@ -32,6 +34,7 @@ from .._cutils cimport set_string
 from .._cutils cimport copy_pylist 
 from ..objects cimport _singlezone 
 from ..objects._tracer cimport TRACER 
+from .. cimport _mlr 
 from . cimport _hydrodiskstars 
 from . cimport _tracer 
 from . cimport _zone_array 
@@ -84,6 +87,15 @@ cdef class c_multizone:
 				self._mz, 
 				self._zones[i]._singlezone__zone_object_address(), 
 				i) 
+		# import mass-lifetime relation data on this extension 
+		for i in ["vincenzo2016", "hpt2000", "ka1997"]: 
+			func = {
+				"vincenzo2016": _mlr.vincenzo2016_import, 
+				"hpt2000": _mlr.hpt2000_import, 
+				"ka1997": _mlr.ka1997_import 
+			}[i] 
+			path = "%ssrc/ssp/mlr/%s.dat" % (_DIRECTORY_, i) 
+			func(path.encode("latin-1")) 
 
 
 	def __init__(self, 
@@ -103,6 +115,14 @@ cdef class c_multizone:
 
 	def __dealloc__(self): 
 		_multizone.multizone_free(self._mz) 
+		# free mass-lifetime relation data on this extension 
+		for i in ["vincenzo2016", "hpt2000", "ka1997"]: 
+			func = {
+				"vincenzo2016": _mlr.vincenzo2016_free, 
+				"hpt2000": _mlr.hpt2000_free, 
+				"ka1997": _mlr.ka1997_free 
+			}[i] 
+			func() 
 
 
 	@property 
@@ -299,6 +319,9 @@ migration.specs. Got: %s""" % (type(value)))
 			# warn the user about r-process elements and bad solar calibrations 
 			self._zones[0]._singlezone__c_version.nsns_warning() 
 			self._zones[0]._singlezone__c_version.solar_z_warning() 
+
+			# take the current mass-lifetime relation (data already imported) 
+			_mlr.set_mlr_hashcode(_mlr._mlr_linker.__NAMES__[mlr.setting]) 
 
 			# just do it #nike 
 			enrichment = _multizone.multizone_evolve(self._mz) 

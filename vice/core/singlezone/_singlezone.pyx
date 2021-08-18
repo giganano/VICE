@@ -34,6 +34,7 @@ from ...yields import agb
 from ...yields import ccsne 
 from ...yields import sneia 
 from .. import _pyutils 
+from ..mlr import mlr 
 import math as m 
 import warnings 
 import numbers 
@@ -60,6 +61,7 @@ from ..objects cimport _element
 from ..objects cimport _singlezone 
 from ..objects cimport _sneia 
 from ..objects cimport _agb 
+from .. cimport _mlr 
 from . cimport _singlezone 
 
 _RECOGNIZED_MODES_ = tuple(["ifr", "sfr", "gas"]) 
@@ -102,6 +104,15 @@ cdef class c_singlezone:
 
 	def __cinit__(self): 
 		self._sz = _singlezone.singlezone_initialize()
+		# import mass-lifetime relation data on this extension 
+		for i in ["vincenzo2016", "hpt2000", "ka1997"]: 
+			func = {
+				"vincenzo2016": _mlr.vincenzo2016_import, 
+				"hpt2000": _mlr.hpt2000_import, 
+				"ka1997": _mlr.ka1997_import 
+			}[i] 
+			path = "%ssrc/ssp/mlr/%s.dat" % (_DIRECTORY_, i) 
+			func(path.encode("latin-1")) 
 
 	def __init__(self, 
 		name = "onezonemodel", 
@@ -172,6 +183,14 @@ cdef class c_singlezone:
 
 	def __dealloc__(self): 
 		_singlezone.singlezone_free(self._sz) 
+		# free mass-lifetime relation data on this extension 
+		for i in ["vincenzo2016", "hpt2000", "ka1997"]: 
+			func = {
+				"vincenzo2016": _mlr.vincenzo2016_free, 
+				"hpt2000": _mlr.hpt2000_free, 
+				"ka1997": _mlr.ka1997_free 
+			}[i] 
+			func() 
 
 	def object_address(self): 
 		""" 
@@ -1308,6 +1327,9 @@ All elemental yields in the current simulation will be set to the table of \
 			# warn the user about r-process elements and bad solar calibrations 
 			self.nsns_warning() 
 			self.solar_z_warning() 
+
+			# take the current mass-lifetime relation (data already imported) 
+			_mlr.set_mlr_hashcode(_mlr._mlr_linker.__NAMES__[mlr.setting]) 
 
 			# just do it #nike 
 			self._sz[0].output_times = copy_pylist(output_times) 

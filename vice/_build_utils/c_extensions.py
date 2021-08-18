@@ -73,6 +73,7 @@ _CFILES_ = {
 		"./vice/src/objects", 
 		"./vice/src/singlezone", 
 		"./vice/src/ssp", 
+		"./vice/src/ssp/mlr", 
 		"./vice/src/toolkit", 
 		"./vice/src/yields", 
 		"./vice/src" 

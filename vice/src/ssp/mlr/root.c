@@ -6,14 +6,12 @@
  */ 
 
 #include <stdio.h> 
+#include "../../ssp.h" 
 #include "../../utils.h" 
 #include "root.h" 
 
 /* ---------- static function comment headers not duplicated here ---------- */ 
 static double percent_difference(double actual, double test); 
-
-/* The adopted tolerance of the numerical mass-lifetime relations. */ 
-static const double TOLERANCE = 1.0e-4; 
 
 
 /* 
@@ -63,7 +61,8 @@ extern double bisection(double (*func)(double, double, double), double lower,
 	 */ 
 
 	double middle = (lower + upper) / 2; 
-	if (percent_difference(func(middle, postMS, Z), time) < TOLERANCE) {
+	if (percent_difference(func(middle, postMS, Z), time) < SSP_TOLERANCE || 
+		percent_difference(lower, upper) < SSP_TOLERANCE) {
 		/* the base case -> solution has converged */ 
 		return middle; 
 	} else {

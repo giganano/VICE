@@ -7,6 +7,7 @@ from __future__ import absolute_import
 from ...version import version 
 from ..._globals import _RECOGNIZED_IMFS_ 
 from ..._globals import _VERSION_ERROR_ 
+from ..._globals import _DIRECTORY_ 
 from ...yields.agb._grid_reader import find_yield_file as find_agb_yield_file 
 from ...yields import agb 
 from ...yields import ccsne 
@@ -14,7 +15,6 @@ from ...yields import sneia
 from . import _ssp_utils 
 from .. import _pyutils 
 from .. import mlr 
-from .._mlr import __NAMES__ 
 from ..callback import callback1_nan_inf_positive 
 from ..callback import callback1_nan_inf 
 from ..callback import callback2_nan_inf 
@@ -299,9 +299,18 @@ This feature will be removed in a future release of VICE.
 	else: 
 		setup_imf(ssp[0].imf, IMF) 
 
-	# This calls the C library to update the MLR setting on this extension 
-	_mlr.set_mlr_hashcode(__NAMES__[mlr.setting]) 
-	# mlr.setting = mlr.setting 
+	# Set up any mass-lifetime relation data on this extension 
+	# other forms don't have required data 
+	_mlr.set_mlr_hashcode(_mlr._mlr_linker.__NAMES__[mlr.setting]) 
+	if mlr.setting in ["vincenzo2016", "hpt2000", "ka1997"]: 
+		func = {
+			"vincenzo2016": _mlr.vincenzo2016_import, 
+			"hpt2000": _mlr.hpt2000_import, 
+			"ka1997": _mlr.ka1997_import 
+		}[mlr.setting] 
+		path = "%ssrc/ssp/mlr/%s.dat" % (_DIRECTORY_, mlr.setting) 
+		func(path.encode("latin-1")) 
+	else: pass 
 
 	# patch note (versions >= 1.2.1): long(time / dt) + 10l used to be +11l. 
 	# Although well into the buffer of extra timesteps added, thus not 
@@ -330,6 +339,17 @@ This feature will be removed in a future release of VICE.
 		_ssp.ssp_free(ssp)
 		free(cresults) 
 		free(evaltimes) 
+
+		# take down mass-lifetime relation data 
+		# other forms don't have required data 
+		if mlr.setting in ["vincenzo2016", "hpt2000", "ka1997"]: 
+			func = {
+				"vincenzo2016": _mlr.vincenzo2016_free, 
+				"hpt2000": _mlr.hpt2000_free, 
+				"ka1997": _mlr.ka1997_free 
+			}[mlr.setting] 
+			func() 
+		else: pass 
 
 	return [pyresults, times] 
 

@@ -1,10 +1,7 @@
 # cython: language_level = 3, boundscheck = False 
 
-# cdef class _mlr_linker: 
-# 	pass 
-
-cpdef _get_setting() 
-cpdef _set_setting(value) 
+cdef class _mlr_linker: 
+	pass 
 
 cdef extern from "../src/ssp/mlr.h": 
 	unsigned short get_mlr_hashcode() 

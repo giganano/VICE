@@ -1,6 +1,6 @@
 
-from ._mlr import (_get_setting, _set_setting, _powerlaw, _vincenzo2016, 
-	_hpt2000, _ka1997, _pm1993, _mm1989, _larson1974) 
+from ._mlr import (_mlr_linker, _powerlaw, _vincenzo2016, _hpt2000, _ka1997, 
+	_pm1993, _mm1989, _larson1974) 
 
 __POWERLAW__ = _powerlaw() 
 __VINCENZO2016__ = _vincenzo2016() 
@@ -11,7 +11,7 @@ __MM1989__ = _mm1989()
 __LARSON1974__ = _larson1974() 
 
 
-class mlr: 
+class mlr(_mlr_linker): 
 
 	r""" 
 	The Mass-Lifetime Relationship (MLR) for Stars: VICE provides several 
@@ -116,11 +116,11 @@ class mlr:
 		.. [5] Maeder & Meynet (1989), A&A, 210, 155 
 		.. [6] Larson (1974), MNRAS, 166, 585 
 		""" 
-		return _get_setting() 
+		return _mlr_linker._get_setting() 
 
 	@setting.setter 
 	def setting(self, value): 
-		_set_setting(value) 
+		_mlr_linker._set_setting(value) 
 
 	@staticmethod 
 	def powerlaw(qty, postMS = 0.1, which = "mass"): # metallicity independent 

@@ -45,7 +45,6 @@ extern double dying_star_mass(double time, double postMS, double Z) {
 	 */ 
 
 	double (*mlr)(double, double, double); 
-	printf("MLR_SETTING: %u\n", MLR_SETTING); 
 
 	switch (MLR_SETTING) {
 
@@ -126,7 +125,6 @@ extern unsigned short set_mlr_hashcode(unsigned short hashcode) {
 		hashcode == HPT2000 || hashcode == KA1997 || hashcode == PM1993 || 
 		hashcode == MM1989 || hashcode == LARSON1974) { 
 		MLR_SETTING = hashcode; 
-		printf("MLR_SETTING assigned: %u\n", MLR_SETTING); 
 		return 0u; 
 	} else { 
 		return 1u; /* unrecognized MLR -> ValueError in Python */ 
