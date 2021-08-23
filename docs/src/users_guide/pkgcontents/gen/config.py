@@ -289,6 +289,7 @@ _CONFIG_ = {
 		"header": 		"vice.mlr", 
 		"subs":  		[
 			type(vice.mlr).setting, 
+			type(vice.mlr).recognized, 
 			vice.mlr.powerlaw, 
 			vice.mlr.vincenzo2016, 
 			vice.mlr.hpt2000, 
@@ -301,6 +302,11 @@ _CONFIG_ = {
 	type(vice.mlr).setting: {
 		"filename": 	"vice.mlr.setting.rst", 
 		"header": 		"vice.mlr.setting", 
+		"subs": 		[] 
+	}, 
+	type(vice.mlr).recognized: {
+		"filename": 	"vice.mlr.recognized.rst", 
+		"header": 		"vice.mlr.recognized", 
 		"subs": 		[] 
 	}, 
 	vice.mlr.powerlaw: {

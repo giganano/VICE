@@ -117,6 +117,14 @@ extern double hpt2000_turnoffmass(double time, double postMS, double Z) {
  */ 
 extern double hpt2000_lifetime(double mass, double postMS, double Z) { 
 
+	/* 
+	 * Due to the polynomial dependence of the coefficients a_n on metallicity 
+	 * Z, this form reaches numerical instability at Z / Zsun < 0.001. 
+	 * Therefore, as a safeguard, this function enforces a minimum value of 
+	 * zeta of -3. 
+	 */ 
+	if (zeta(Z) < -3) return hpt2000_lifetime(mass, postMS, 2.0e-5); 
+
 	if (mass > 0) {
 
 		/* Analytic form -> see file header */ 

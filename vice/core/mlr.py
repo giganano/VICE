@@ -25,6 +25,19 @@ class mlr(_mlr_linker):
 	setting : ``str`` 
 		A string denoting which of the following functional forms is to 
 		describe the MLR in all chemical evolution models. 
+	recognized : ``tuple`` 
+		A tuple of strings denoting the allowed values of the parameter 
+		``setting``. Each string corresponds directly to the name of the 
+		function to adopt. 
+
+			- "powerlaw" 
+			- "vincenzo2016" 
+			- "hpt2000" 
+			- "ka1997" 
+			- "pm1993" 
+			- "mm1989" 
+			- "larson1974" 
+
 	powerlaw : <function> 
 		The MLR parameterized by a single power-law, a popular exercise in 
 		undergraduate astronomy courses. 
@@ -40,6 +53,8 @@ class mlr(_mlr_linker):
 		The MLR as characterized by Maeder & Meynet (1989) [5]_. 
 	larson1974 : <function> 
 		The MLR as parameterized by Larson (1974) [6]_. 
+	test : <function> 
+		Run unit-tests on VICE's MLR capabilities. 
 
 	.. note:: For reasons relating to the implementation, this set of functions 
 		is not a module but an object. Consequently, importing them with 
@@ -121,6 +136,34 @@ class mlr(_mlr_linker):
 	@setting.setter 
 	def setting(self, value): 
 		_mlr_linker._set_setting(value) 
+
+	@property 
+	def recognized(self): 
+		r""" 
+		Type : ``tuple`` [elements of type ``str``] 
+
+		Value : ("powerlaw", "vincenzo2016", "hpt2000", "ka1997", "pm1993", 
+		"mm1989", "larson1974") 
+
+		The allowed values of the parameter ``vice.mlr.setting``. 
+
+		Example Code 
+		------------
+		>>> import vice 
+		>>> vice.mlr.recognized 
+		("powerlaw", 
+		 "vincenzo2016", 
+		 "hpt2000", 
+		 "ka1997", 
+		 "pm1993", 
+		 "mm1989", 
+		 "larson1974") 
+		>>> "hpt2000" in vice.mlr.recognized 
+		True 
+		>>> "name2003" in vice.mlr.recognized 
+		False 
+		""" 
+		return tuple(_mlr_linker.__NAMES__.keys()) 
 
 	@staticmethod 
 	def powerlaw(qty, postMS = 0.1, which = "mass"): # metallicity independent 
@@ -233,7 +276,7 @@ class mlr(_mlr_linker):
 		.. [3] Tang et al. (2014), MNRAS, 445, 4287 
 		.. [4] Chen et al. (2015), MNARS, 452, 1068 
 		""" 
-		return __VINCENZO2016__(qty, Z = Z, which = which)  
+		return __VINCENZO2016__(qty, Z = Z, which = which) 
 
 	@staticmethod 
 	def hpt2000(qty, postMS = 0.1, Z = 0.014, which = "mass"): 
@@ -561,7 +604,15 @@ class mlr(_mlr_linker):
 		.. [3] David, Forman & Jones (1990), ApJ, 359, 29 
 		.. [4] Kobayashi (2004), MNRAS, 347, 74 
 		""" 
-		return __LARSON1974__(qty, postMS = postMS, which = which)  
+		return __LARSON1974__(qty, postMS = postMS, which = which) 
+
+	@staticmethod 
+	def test(): 
+		r""" 
+		Runs the unit tests on the ``vice.mlr`` module. 
+		""" 
+		from .tests.mlr import test 
+		return test() 
 
 
 mlr = mlr() 
