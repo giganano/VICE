@@ -167,7 +167,7 @@ static double alpha(double mass) {
 		return -0.6545; 
 	} else if (1.3 < mass && mass <= 3) {
 		return -3.7; 
-	} else if (3 < mass & mass <= 7) {
+	} else if (3 < mass && mass <= 7) {
 		return -2.51; 
 	} else if (7 < mass && mass <= 15) {
 		return -1.78; 

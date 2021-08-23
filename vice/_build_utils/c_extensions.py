@@ -292,11 +292,6 @@ _CFILES_ = {
 		"./vice/src/yields", 
 		"./vice/src" 
 	], 
-	"vice.core.ssp.tests._mlr": [
-		"./vice/src/ssp/mlr", 
-		"./vice/src/ssp/mlr.c", 
-		"./vice/src/ssp/tests/mlr.c" 
-	], 
 	"vice.core.ssp.tests._msmf": [
 		"./vice/src/io", 
 		"./vice/src/multizone", 
@@ -311,9 +306,17 @@ _CFILES_ = {
 		"./vice/src" 
 	], 
 	"vice.core.ssp.tests._remnants": [
+		"./vice/src/io", 
+		"./vice/src/multizone", 
+		"./vice/src/objects", 
+		"./vice/src/objects/tests", 
+		"./vice/src/singlezone", 
+		"./vice/src/ssp", 
 		"./vice/src/ssp/mlr", 
-		"./vice/src/ssp/remnants.c", 
-		"./vice/src/ssp/tests/remnants.c" 
+		"./vice/src/ssp/tests", 
+		"./vice/src/toolkit", 
+		"./vice/src/yields", 
+		"./vice/src" 
 	], 
 	"vice.core.tests._cutils": [
 		"./vice/src/objects/callback_1arg.c", 
