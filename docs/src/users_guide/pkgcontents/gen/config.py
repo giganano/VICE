@@ -824,9 +824,15 @@ _CONFIG_ = {
 		"filename": 	"vice.elements.rst", 
 		"header": 		"vice.elements", 
 		"subs": 		[
+			vice.elements.recognized, 
 			vice.elements.element, 
 			vice.elements.yields 
 		] 
+	}, 
+	vice.elements.recognized: {
+		"filename": 	"vice.elements.recognized.rst", 
+		"header": 		"vice.elements.recognized", 
+		"subs": 		[] 
 	}, 
 	vice.elements.element: {
 		"filename": 	"vice.elements.element.rst", 
