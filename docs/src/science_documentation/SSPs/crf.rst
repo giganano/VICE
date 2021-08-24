@@ -15,7 +15,7 @@ amount of material." Its analytic form is therefore given by:
 	\left[\int_l^u M \frac{dN}{dm} dm\right]^{-1} 
 
 The current version of VICE employs the initial-final remnant mass relation 
-of Kalirai et al. (2008) [1]_: 
+of Kalirai et al. (2008) [17]_: 
 
 .. math:: m_\text{rem}(m) = \Biggl \lbrace {
 	1.44\ (m \geq 8) 
@@ -52,12 +52,12 @@ The denominator has a simpler analytic form:
 	\frac{1}{2 - \alpha} m^{2 - \alpha} \Bigg|_l^u 
 
 :ref:`Here <fig_crf>` we plot :math:`r` as a function of the stellar 
-population's age. Weinberg, Andrews, and Freudenburg (2017) [2]_ adopted 
+population's age. Weinberg, Andrews, and Freudenburg (2017) [18]_ adopted 
 instantaneous recycling, whereby a fraction of the stellar population's mass 
 :math:`r_\text{inst}` is returned *instantaneously* in the interest of an 
 analytic approach to singlezone models. They find that :math:`r_\text{inst}` = 
 0.4 and :math:`r_\text{inst}` = 0.2 is an adequate approximation for Kroupa 
-[3]_ and Salpeter [4]_ IMFs. This reduces the more sophisticated formulation 
+[19]_ and Salpeter [20]_ IMFs. This reduces the more sophisticated formulation 
 implemented here to: 
 
 .. math:: r(t) \approx \Bigg \lbrace { 
@@ -92,7 +92,7 @@ Relevant source code:
 	- ``vice/src/ssp/crf.c`` 
 	- ``vice/src/yields/integral.c`` 
 
-.. [1] Kalirai et al. (2008), ApJ, 676, 594 
-.. [2] Weinberg, Andrews & Freudenburg (2017), ApJ, 837, 183 
-.. [3] Kroupa (2001), MNRAS, 322, 231 
-.. [4] Salpeter (1955), ApJ, 121, 161 
+.. [17] Kalirai et al. (2008), ApJ, 676, 594 
+.. [18] Weinberg, Andrews & Freudenburg (2017), ApJ, 837, 183 
+.. [19] Kroupa (2001), MNRAS, 322, 231 
+.. [20] Salpeter (1955), ApJ, 121, 161 

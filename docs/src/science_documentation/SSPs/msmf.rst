@@ -25,7 +25,7 @@ which for a power-law IMF :math:`dN/dm \sim m^{-\alpha}` becomes
 	\left[\frac{1}{2 - \alpha}m^{2 - \alpha}\Bigg|_l^u\right]^{-1} 
 
 It may be tempting to cancel the factor of :math:`1/(2 - \alpha)`, but more 
-careful consideration must be taken for piece-wise IMFs like Kroupa [7]_: 
+careful consideration must be taken for piece-wise IMFs like Kroupa [23]_: 
 
 .. math:: h(t) = 
 	\left[
@@ -45,7 +45,7 @@ respectively.
 :ref:`Here <fig_msmf>` we plot :math:`h` as a function of the stellar 
 population's age. By 10 Gyr, :math:`h(t)` is as low as :math:`\sim0.45` 
 for the Kroupa IMF and 
-:math:`\sim0.65` for the Salpeter [8]_ IMF. In comparison, the 
+:math:`\sim0.65` for the Salpeter [24]_ IMF. In comparison, the 
 :ref:`cumulative return fraction <crf>` :math:`r(t) \approx 0.45` for the 
 Kroupa IMF and :math:`\sim0.28` for the Salpeter IMF. This suggests that the 
 approximation :math:`h(t) \approx 1 - r(t)` fails at the :math:`\sim5-10\%` 
@@ -70,5 +70,5 @@ Relevant source code:
 	- ``vice/src/ssp/msmf.c`` 
 	- ``vice/src/yields/integral.c`` 
 
-.. [7] Kroupa (2001), MNRAS, 322, 231 
-.. [8] Salpeter (1955), ApJ, 121, 161 
+.. [23] Kroupa (2001), MNRAS, 322, 231 
+.. [24] Salpeter (1955), ApJ, 121, 161 

@@ -24,6 +24,9 @@ of enrichment from asymptotic giant branch stars.
 .. _mlr: 
 .. include:: stellar_lifetimes.rst 
 
+.. _fig_mlr: 
+.. include:: stellar_lifetimes.fig.rst 
+
 .. _crf: 
 .. include:: crf.rst 
 
