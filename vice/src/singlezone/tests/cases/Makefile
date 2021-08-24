@@ -1,7 +1,7 @@
 
 CYTHON_SOURCES 		:= $(wildcard *pyx) 
 CYTHON_OUTPUTS 		:= $(CYTHON_SOURCES:.pyx=.c) 
-SUBDIRS 			:= $(wildcard */) 
+SUBDIRS 			:= $(filter-out __pycache__/, $(wildcard */)) 
 
 all: print_message $(SUBDIRS) 
 
