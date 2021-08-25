@@ -1574,11 +1574,22 @@ ran.""" % (i, j), UserWarning)
 		The ratio of a star's post main sequence lifetime to its main sequence 
 		lifetime. 
 
+		.. note:: This parameter has no impact when the stellar mass-lifetime 
+			relations of either Vincenzo et al. (2016) [1]_ or Kodama & Arimoto 
+			(1997) [2]_ are adopted (i.e. when ``vice.mlr.setting`` is either 
+			``"vincenzo2016"`` or ``"ka1997"``). These parameterizations as 
+			they are built into VICE quantify the *total* lifetimes of stars, 
+			making a prescription for the post main sequence lifetimes 
+			superfluous. 
+
 		Example Code 
 		------------
 		>>> import vice 
 		>>> sz = vice.singlezone(name = "example") 
 		>>> sz.postMS = 0.12 
+
+		.. [1] Vincenzo et al. (2016), MNRAS, 460, 2238 
+		.. [2] Kodama & Arimoto (1997), A&A, 320, 41 
 		""" 
 		return self.__c_version.postMS 
 
@@ -1717,6 +1728,13 @@ ran.""" % (i, j), UserWarning)
 				part by r-process nucleosynthesis. 
 			- 	Any element tracked by the simulation has a weakly constrained 
 				solar abundance measurement. 
+		* VisibleRuntimeWarning 
+			- 	The attribute ``RIa`` is a user-defined function. 
+			- 	Any of the elements tracked by the simulation have AGB star 
+				yields described by a user-defined function. 
+			- 	The model is running with a mass-lifetime relation which 
+				requires numerical solutions to the inverse function (i.e. 
+				mass as a function of lifetime). 
 
 		Notes 
 		-----

@@ -52,12 +52,14 @@ The denominator has a simpler analytic form:
 	\frac{1}{2 - \alpha} m^{2 - \alpha} \Bigg|_l^u 
 
 :ref:`Here <fig_crf>` we plot :math:`r` as a function of the stellar 
-population's age. Weinberg, Andrews, and Freudenburg (2017) [18]_ adopted 
+population's age assuming the mass-lifetime relation of Hurley, Pols & Tout 
+(2000) [18]_ (see discussion :ref:`here <mlr>`). 
+Weinberg, Andrews, and Freudenburg (2017) [19]_ adopted 
 instantaneous recycling, whereby a fraction of the stellar population's mass 
 :math:`r_\text{inst}` is returned *instantaneously* in the interest of an 
 analytic approach to singlezone models. They find that :math:`r_\text{inst}` = 
 0.4 and :math:`r_\text{inst}` = 0.2 is an adequate approximation for Kroupa 
-[19]_ and Salpeter [20]_ IMFs. This reduces the more sophisticated formulation 
+[20]_ and Salpeter [21]_ IMFs. This reduces the more sophisticated formulation 
 implemented here to: 
 
 .. math:: r(t) \approx \Bigg \lbrace { 
@@ -80,7 +82,8 @@ of :math:`r_\text{inst}`, which allows any fraction between 0 and 1.
 
 In calculations of :math:`r(t)` with the built-in Kroupa and Salpeter IMFs, 
 the analytic solution is calculated. In the case of a user-customized IMF, 
-VICE solves the equation numerically using quadrature. 
+VICE solves the equation numerically using quadrature with the methods 
+described in chapter 4 of Press, Teukolsky, Vetterling & Flannery (2007) [22]_. 
 
 .. note:: The approximation of :math:`h(t) \approx 1 - r(t)` where :math:`h` 
 	is the :ref:`main sequence mass fraction <msmf>` fails at the 
@@ -93,6 +96,9 @@ Relevant source code:
 	- ``vice/src/yields/integral.c`` 
 
 .. [17] Kalirai et al. (2008), ApJ, 676, 594 
-.. [18] Weinberg, Andrews & Freudenburg (2017), ApJ, 837, 183 
-.. [19] Kroupa (2001), MNRAS, 322, 231 
-.. [20] Salpeter (1955), ApJ, 121, 161 
+.. [18] Hurley, Pols & Tout (2000), MNRAS, 315, 543 
+.. [19] Weinberg, Andrews & Freudenburg (2017), ApJ, 837, 183 
+.. [20] Kroupa (2001), MNRAS, 322, 231 
+.. [21] Salpeter (1955), ApJ, 121, 161 
+.. [22] Press, Teukolsky, Vetterling & Flannery (2007), Numerical Recipes, 
+	Cambridge University Press 

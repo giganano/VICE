@@ -316,9 +316,11 @@ migration.specs. Got: %s""" % (type(value)))
 			self.setup_migration() # used to be in self.prep 
 			start = time.time() 
 
-			# warn the user about r-process elements and bad solar calibrations 
+			# warn the user about r-process elements, bad solar calibrations, 
+			# and mass-lifetime relation effects 
 			self._zones[0]._singlezone__c_version.nsns_warning() 
 			self._zones[0]._singlezone__c_version.solar_z_warning() 
+			self._zones[0]._singlezone__c_version.mlr_warnings() 
 
 			# take the current mass-lifetime relation (data already imported) 
 			_mlr.set_mlr_hashcode(_mlr._mlr_linker.__NAMES__[mlr.setting]) 

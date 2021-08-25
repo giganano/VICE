@@ -263,6 +263,32 @@ The form to be adopted in all chemical evolution models and single stellar
 population calculations is assigned via a global setting stored at 
 ``vice.mlr.setting``. 
 
+Of these parameterizations of the MLR, the following take into account the 
+metallicity dependence: 
+
+	- Vincenzo et al. (2016) 
+	- Hurley, Pols & Tout (2000) 
+	- Kodama & Arimoto (1997) 
+
+The following require numerical solutions for the inverse function 
+(i.e. stellar mass as a function of lifetime): 
+
+	- Hurley, Pols & Tout (2000) 
+	- Kodama & Arimoto (1997) 
+	- Maeder & Meynet (1989) 
+
+The following quantify the total lifetimes *a priori*, making calculations 
+of the main sequence lifetimes only unavailable: 
+
+	- Vincenzo et al. (2016) 
+	- Kodama & Arimoto (1997) 
+
+Except where measurements of the total lifetime is available, VICE always 
+implements the simplest assumption of allowing the user to specify the 
+parameter :math:`p_\text{MS}` (see above), and the total lifetime then 
+follows trivially via: 
+
+.. math:: \tau_\text{total} = (1 + p_\text{MS}) \tau_\text{MS} 
 
 Relevant source code: 
 

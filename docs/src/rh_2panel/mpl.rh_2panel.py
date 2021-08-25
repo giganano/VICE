@@ -3,14 +3,15 @@ Produces the 2-panel figure showing the cumulative return fraction and the
 main sequence mass fraction for VICE's science documentation. 
 """ 
 
-import matplotlib as mpl 
+import matplotlib as mpl
 import matplotlib.pyplot as plt 
 import numpy as np 
 import vice 
+vice.mlr.setting = "hpt2000" 
 
 mpl.rcParams["font.family"] = "serif"
 mpl.rcParams["text.usetex"] = True 
-mpl.rcParams["text.latex.preamble"] = [r"\usepackage{amsmath}"]
+mpl.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
 mpl.rcParams["errorbar.capsize"] = 5
 mpl.rcParams["axes.linewidth"] = 2
 mpl.rcParams["xtick.major.size"] = 16
