@@ -41,7 +41,7 @@ class singlezone:
 	single-zone approximation for user-specified parameters. The parameters of 
 	the simulation are implemented as attributes of this class. 
 
-	**Signature**: Signature: vice.singlezone(\*\*kwargs) 
+	**Signature**: vice.singlezone(\*\*kwargs) 
 
 	Parameters 
 	----------
