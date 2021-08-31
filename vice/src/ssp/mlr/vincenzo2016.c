@@ -76,7 +76,23 @@ extern double vincenzo2016_turnoffmass(double time, double postMS, double Z) {
 		double c = interp_scheme_1d_evaluate(*VINCENZO_C, Z); 
 
 		/* analytic solution, see file header */ 
-		return pow(log(time / a)  / b, -1.0 / c); 
+		double mass = pow(log(time / a)  / b, -1.0 / c); 
+
+		/* 
+		 * The condition checks for NaN even when isnan isn't defined. This is 
+		 * necessary because time may be small enough but still non-zero that 
+		 * the turnoff mass isn't defined mathematically. 
+		 */
+		if (mass != mass) { 
+			#ifdef INFINITY 
+				return INFINITY; 
+			#else 
+				return 500; 
+			#endif 
+		} else {
+			return mass; 
+		}
+
 
 	} else if (time < 0) {
 

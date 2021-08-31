@@ -89,7 +89,20 @@ extern double larson1974_turnoffmass(double time, double postMS, double Z) {
 			2 * GAMMA 
 		); 
 
-		return pow(10, logm); 
+		/* 
+		 * The condition checks for NaN even when isnan isn't defined. This is 
+		 * necessary because time may be small enough but still non-zero that 
+		 * the turnoff mass isn't defined. 
+		 */
+		if (logm != logm) { 
+			#ifdef INFINITY 
+				return INFINITY; 
+			#else 
+				return 500; 
+			#endif 
+		} else {
+			return pow(10, logm); 
+		} 
 
 	} else if (time < 0) {
 

@@ -8,8 +8,8 @@
 #include "../ssp.h" 
 #include "mlr.h" 
 
-/* The hash-code for the current MLR setting: default is the power-law */ 
-static unsigned short MLR_SETTING = POWERLAW; 
+/* The hash-code for the current MLR setting: default is Larson (1974) */ 
+static unsigned short MLR_SETTING = LARSON1974; 
 
 /* 
  * Determine the mass of dying stars from a single stellar population of known 
