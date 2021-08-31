@@ -736,7 +736,7 @@ class mlr(_mlr_linker):
 		In calculating stellar masses from ages (i.e. when ``which == "age"``), 
 		the equation must be solved numerically. For this, VICE makes use of 
 		the bisection root-finding algorithm described in chapter 9 of Press, 
-		Teukolsky, Vetterling & Flannery (2007) [2]_. 
+		Teukolsky, Vetterling & Flannery (2007) [3]_. 
 
 		Example Code 
 		------------
