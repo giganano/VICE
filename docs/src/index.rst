@@ -2,20 +2,16 @@
 
 VICE: Versatile Integrator for Chemical Evolution 
 =================================================
-| **Version 1.3.0** 
-| James W. Johnson 
-|	Primary Author 
-| 	Email: giganano9@gmail.com 
-| 	*The Ohio State University Department of Astronomy* 
-| 	*140 W. 18th Ave., Columbus, OH, 43204* 
-
-Welcome to VICE's documentation! First time users should familiarize themselves 
-with VICE's API by going through our `tutorial`__, available on `GitHub`__ 
-along with the source code and other supplementary material. 
+Welcome! 
+This is the documentation for **VICE version 1.3.0**. 
+First time users should familiarize themselves with VICE's API by going 
+through our `tutorial`__, available on `GitHub`__ along with the source code 
+and other supplementary material. 
 
 VICE's core developers are happy to consult with scientists looking to 
-incorporate it into their research. `Join us on Slack`__ and start 
-collaborating now! 
+incorporate it into their research. 
+Email one of our :ref:`contributors <contributors>` or `join us on Slack`__ 
+and start collaborating now! 
 
 __ tutorial_ 
 __ src_ 

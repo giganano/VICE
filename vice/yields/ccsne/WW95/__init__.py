@@ -30,6 +30,10 @@ try:
 	__VICE_SETUP__ 
 except NameError: 
 	__VICE_SETUP__ = False 
+try: 
+	__VICE_DOCS__ 
+except NameError: 
+	__VICE_DOCS__ = False 
 
 if not __VICE_SETUP__: 
 
@@ -75,7 +79,7 @@ if not __VICE_SETUP__:
 			for i in _RECOGNIZED_ELEMENTS_: 
 				__settings[i] = __fractional(i, study = "WW95", **kwargs)[0] 
 
-	set_params(m_upper = 40, Nmax = 1e5) 
+	if not __VICE_DOCS__: set_params(m_upper = 40, Nmax = 1e5) 
 
 else: 
 	pass 

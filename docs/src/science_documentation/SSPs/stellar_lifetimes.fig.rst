@@ -6,7 +6,7 @@
 	forms recognized by VICE: Larson (1974; black), Maeder & Meynet 
 	(1989; red), Padovani & Matteucci (1993; yellow), Kodama & 
 	Arimoto (1997; green), Hurley, Pols & Tout (2000; blue), 
-	Vincenzo et al. (2016; purple), and the default power-law 
+	Vincenzo et al. (2016; purple), and the single power-law 
 	relationship (grey; see above). 
 	For the forms which take into account the metallicity-dependence of stellar 
 	lifetimes (Kodama & Aritmoto 1997; Hurley, Pols & Tout 2000; Vincenzo 

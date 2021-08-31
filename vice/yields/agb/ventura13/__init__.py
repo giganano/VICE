@@ -22,6 +22,10 @@ try:
 	__VICE_SETUP__ 
 except NameError: 
 	__VICE_SETUP__ = False 
+try: 
+	__VICE_DOCS__ 
+except NameError: 
+	__VICE_DOCS__ = False 
 
 if not __VICE_SETUP__: 
 
@@ -29,7 +33,9 @@ if not __VICE_SETUP__:
 	from .._grid_reader import _VENTURA13_ELEMENTS_ 
 	from .. import settings as __settings 
 	import warnings 
-	for elem in _VENTURA13_ELEMENTS_: __settings[elem] = "ventura13" 
+	if not __VICE_DOCS__: 
+		for elem in _VENTURA13_ELEMENTS_: __settings[elem] = "ventura13" 
+	else: pass 
 
 	warnings.warn("""\
 The Ventura (2013) study reported yields only for the following elements: %s. \

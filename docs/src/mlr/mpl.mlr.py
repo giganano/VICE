@@ -26,7 +26,7 @@ mpl.rcParams["ytick.minor.width"] = 1
 mpl.rcParams["axes.labelsize"] = 30
 mpl.rcParams["xtick.labelsize"] = 25
 mpl.rcParams["ytick.labelsize"] = 25
-mpl.rcParams["legend.fontsize"] = 30
+mpl.rcParams["legend.fontsize"] = 12
 mpl.rcParams["xtick.direction"] = "in"
 mpl.rcParams["ytick.direction"] = "in"
 mpl.rcParams["ytick.right"] = True
@@ -86,9 +86,8 @@ def main():
 		"loc": 9, # upper center 
 		"ncol": 1, 
 		"frameon": False, 
-		"bbox_to_anchor": (0.7, 0.99), 
+		"bbox_to_anchor": (0.7, 0.96), 
 		"handlelength": 0, 
-		"fontsize": 25 
 	} 
 	leg = ax.legend(**kwargs) 
 	for i in range(len(_FORMS_.keys())): 
@@ -124,7 +123,7 @@ def setup_subplot():
 	Setup a matplotlib subplot to plot on 
 	""" 
 	plt.clf() 
-	fig = plt.figure(figsize = (10, 10), facecolor = "white") 
+	fig = plt.figure(figsize = (6, 6), facecolor = "white") 
 	ax = fig.add_subplot(111) 
 	ax.set_xlabel(r"M$_\text{ZAMS}$ [M$_\odot$]") 
 	ax.set_ylabel(r"$\tau$ [Gyr]") 
@@ -134,6 +133,7 @@ def setup_subplot():
 	ax.yaxis.set_major_formatter(fsf("%g")) 
 	ax.set_xlim([0.07, 150]) 
 	ax.set_ylim([1.e-3, 1.e+3]) 
+	ax.set_xticks([0.1, 1, 10, 100]) 
 	ax.set_yticks([10**_ for _ in range(-3, 4)]) 
 	return ax 
 

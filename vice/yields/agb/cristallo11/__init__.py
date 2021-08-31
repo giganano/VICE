@@ -15,12 +15,18 @@ try:
 	__VICE_SETUP__ 
 except NameError: 
 	__VICE_SETUP__ = False 
+try: 
+	__VICE_DOCS__ 
+except NameError: 
+	__VICE_DOCS__ = False 
 
 if not __VICE_SETUP__: 
 
 	from .. import settings as __settings 
-	for i in __settings.keys(): 
-		__settings[i] = "cristallo11" 
+	if not __VICE_DOCS__: 
+		for i in __settings.keys(): 
+			__settings[i] = "cristallo11" 
+	else: pass 
 
 else: 
 	pass 

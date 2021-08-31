@@ -1,14 +1,14 @@
 
 Stellar Lifetimes 
 -----------------
-As a default, VICE adopts a single power law to describe the relationship 
-between a star's mass and its lifetime (i.e. the 
-*mass-lifetime relationship*, hereafter MLR): 
+The simplest description of the relationship between a star's mass and its 
+lifetime (i.e. the *mass-lifetime relationship*, hereafter MLR) is a single 
+power law: 
 
 .. math:: \tau_\text{MS} = \tau_\odot m^{-\alpha} 
 
 where :math:`\tau_\odot` is the sun's main sequence lifetime and :math:`\alpha` 
-is the power-law index of the mass-lifetime relationship. 
+is the power law index of the mass-lifetime relationship. 
 The constants ``SOLAR_LIFETIME`` and ``MASS_LIFETIME_PLAW_INDEX``, both 
 declared in ``vice/src/ssp.h``, assign the values of :math:`\tau_\odot` = 10 
 Gyr and :math:`\alpha` = 3.5, respectively. 
@@ -16,7 +16,7 @@ Motivated by a popular exercise in undergradaute astronomy courses, this form
 follows from an assumed single-power law relating the mass and luminosity of 
 stars: :math:`L \sim M^{1 + \alpha}`. 
 Because the lifetime of a star scales with its luminosity per unit mass, the 
-power-law then follows trivially: :math:`\tau \sim M/L \sim M/M^{1 + \alpha} 
+power law then follows trivially: :math:`\tau \sim M/L \sim M/M^{1 + \alpha} 
 \sim M^{-\alpha}`. 
 
 VICE generalizes this form to describe the *total lifetime* of a star of mass 
@@ -60,10 +60,12 @@ The important exception to this rule is that an accurate MLR for
 :math:`M \gtrsim 4 M_\odot` stars is necessary when considering elements with 
 significant nucleosynthetic yields from these stars (e.g. nitrogen, Johnson 
 et al. 2021 [1]_). 
-Beginning with version 1.3.0, VICE recognizes a handful of additional forms of 
-the MLR in order to fill this need: 
+Prior to version 1.3.0, VICE implemented this single power law relationship 
+only. 
+In subsequent versions, a handful of additional forms are available to fill 
+this need: 
 
-	- Larson (1974) [2]_ 
+	- Larson (1974) [2]_ **(default)** 
 
 		This form is a metallicity-independent parabola in 
 		:math:`\log\tau-\log m` space describing the main sequence lifetimes 
@@ -92,9 +94,11 @@ the MLR in order to fill this need:
 		as this corresponds to increasing lifetimes with decreasing stellar 
 		mass. 
 
+		This is the default MLR for VICE version 1.3.0 and later. 
+
 	- Maeder & Meynet (1989) [6]_ 
 
-		This form is a metallicity-independent broken power-law quantifying 
+		This form is a metallicity-independent broken power law quantifying 
 		only the main sequence lifetimes: 
 
 		.. math:: \tau = \Bigg \lbrace {
@@ -252,7 +256,7 @@ the MLR in order to fill this need:
 		reproduce the color-magnitude diagram of the Sculptor dwarf galaxy. 
 
 :ref:`Here <fig_mlr>` we plot stellar lifetime as a function of progenitor mass 
-according to each of these forms along with the single power-law described 
+according to each of these forms along with the single power law described 
 above; its failure at high masses compared to the other, more sophisticated 
 parameterizations is quite clear. 
 VICE affords users the ability to evaluate these functions using the 

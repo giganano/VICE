@@ -45,12 +45,19 @@ if tuple([int(i) for i in vice.__version__.split('.')]) >= (1, 1, 0):
 	for i in ["o", "fe", "sr"]: 
 		vice.yields.agb.settings[i] = "cristallo11" 
 else: pass 
-vice.yields.ccsne.settings["o"] = 0.015 
-vice.yields.ccsne.settings["fe"] = 0.0012 
-vice.yields.ccsne.settings["sr"] = 3.5e-8 
-vice.yields.sneia.settings["o"] = 0.0 
-vice.yields.sneia.settings["fe"] = 0.0017 
-vice.yields.sneia.settings["sr"] = 0.0 
+try: 
+	__VICE_DOCS__ 
+except NameError: 
+	__VICE_DOCS__ = False 
+
+if not __VICE_DOCS__: 
+	vice.yields.ccsne.settings["o"] = 0.015 
+	vice.yields.ccsne.settings["fe"] = 0.0012 
+	vice.yields.ccsne.settings["sr"] = 3.5e-8 
+	vice.yields.sneia.settings["o"] = 0.0 
+	vice.yields.sneia.settings["fe"] = 0.0017 
+	vice.yields.sneia.settings["sr"] = 0.0 
+else: pass 
 
 
 def alt_cc_sr_linear(Z, Z_solar = 0.014): 

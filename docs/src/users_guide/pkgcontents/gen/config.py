@@ -5,6 +5,9 @@ their docstrings.
 
 import warnings 
 warnings.filterwarnings("ignore") 
+# partial import -> only documentation aspects required 
+import builtins 
+builtins.__VICE_DOCS__ = True 
 import vice 
 from vice.yields.presets import JW20 
 from vice.yields.ccsne import LC18 
