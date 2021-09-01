@@ -63,6 +63,10 @@ static const double MU = 0.1116;
 extern double pm1993_turnoffmass(double time, double postMS, double Z) {
 
 	if (time > 0) {
+
+		/* Take into account the post main sequence lifetime */ 
+		time /= 1 + postMS; 
+
 		if (time <= 0.003) {
 			/* 
 			 * Under this parameterization, stars reach a minimum lifetime of 
@@ -90,9 +94,6 @@ extern double pm1993_turnoffmass(double time, double postMS, double Z) {
 				return 0; 
 			#endif 
 		} else {
-			/* Take into account the post main sequence lifetime */ 
-			time /= 1 + postMS; 
-
 			/* 
 			 * Solve for the mass assuming it is less than 6.6 Msun. If it 
 			 * comes out higher, switch to the form appropriate for that mass 
@@ -101,7 +102,7 @@ extern double pm1993_turnoffmass(double time, double postMS, double Z) {
 			double mass = pow(10, 
 				ETA - 1 / GAMMA * (BETA - pow(ALPHA - MU * log10(time), 2))
 			); 
-			if (mass > 6.6) mass = pow((time - 0.003) / 1.2, -1 / 1.85); 
+			if (mass > 6.6) mass = pow((time - 0.003) / 1.2, -1.0 / 1.85); 
 			return mass; 
 		}
 	} else if (time < 0) {

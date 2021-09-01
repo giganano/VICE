@@ -88,14 +88,14 @@ cdef class c_multizone:
 				self._zones[i]._singlezone__zone_object_address(), 
 				i) 
 		# import mass-lifetime relation data on this extension 
-		for i in ["vincenzo2016", "hpt2000", "ka1997"]: 
-			func = {
-				"vincenzo2016": _mlr.vincenzo2016_import, 
-				"hpt2000": _mlr.hpt2000_import, 
-				"ka1997": _mlr.ka1997_import 
-			}[i] 
-			path = "%ssrc/ssp/mlr/%s.dat" % (_DIRECTORY_, i) 
-			func(path.encode("latin-1")) 
+		# for i in ["vincenzo2016", "hpt2000", "ka1997"]: 
+		# 	func = {
+		# 		"vincenzo2016": _mlr.vincenzo2016_import, 
+		# 		"hpt2000": _mlr.hpt2000_import, 
+		# 		"ka1997": _mlr.ka1997_import 
+		# 	}[i] 
+		# 	path = "%ssrc/ssp/mlr/%s.dat" % (_DIRECTORY_, i) 
+		# 	func(path.encode("latin-1")) 
 
 
 	def __init__(self, 
@@ -116,13 +116,13 @@ cdef class c_multizone:
 	def __dealloc__(self): 
 		_multizone.multizone_free(self._mz) 
 		# free mass-lifetime relation data on this extension 
-		for i in ["vincenzo2016", "hpt2000", "ka1997"]: 
-			func = {
-				"vincenzo2016": _mlr.vincenzo2016_free, 
-				"hpt2000": _mlr.hpt2000_free, 
-				"ka1997": _mlr.ka1997_free 
-			}[i] 
-			func() 
+		# for i in ["vincenzo2016", "hpt2000", "ka1997"]: 
+		# 	func = {
+		# 		"vincenzo2016": _mlr.vincenzo2016_free, 
+		# 		"hpt2000": _mlr.hpt2000_free, 
+		# 		"ka1997": _mlr.ka1997_free 
+		# 	}[i] 
+		# 	func() 
 
 
 	@property 
@@ -322,12 +322,14 @@ migration.specs. Got: %s""" % (type(value)))
 			self._zones[0]._singlezone__c_version.solar_z_warning() 
 			self._zones[0]._singlezone__c_version.mlr_warnings() 
 
-			# take the current mass-lifetime relation (data already imported) 
+			# take the current mass-lifetime relation setting 
+			self.import_mlr_data() 
 			_mlr.set_mlr_hashcode(_mlr._mlr_linker.__NAMES__[mlr.setting]) 
 
 			# just do it #nike 
 			enrichment = _multizone.multizone_evolve(self._mz) 
 			if pickle: self.pickle() 
+			self.free_mlr_data() 
 
 			# save yield settings and attributes always 
 			for i in range(self._mz[0].mig[0].n_zones): 
@@ -890,6 +892,31 @@ its time of formation, must equal its zone of origin.""")
 			raise RuntimeError("Timestep size not uniform across zones.") 
 		else: 
 			pass 
+
+
+	def import_mlr_data(self): 
+		# import the mass-lifetime relation data on this extension 
+		if mlr.setting in ["vincenzo2016", "hpt2000", "ka1997"]: 
+			func = {
+				"vincenzo2016": _mlr.vincenzo2016_import, 
+				"hpt2000": _mlr.hpt2000_import, 
+				"ka1997": _mlr.ka1997_import 
+			}[mlr.setting] 
+			path = "%ssrc/ssp/mlr/%s.dat" % (_DIRECTORY_, mlr.setting) 
+			func(path.encode("latin-1")) 
+		else: pass 
+
+
+	def free_mlr_data(self): 
+		# frees the mass-lifetime relation data on this extension 
+		if mlr.setting in ["vincenzo2016", "hpt2000", "ka1997"]: 
+			func = {
+				"vincenzo2016": _mlr.vincenzo2016_free, 
+				"hpt2000": _mlr.hpt2000_free, 
+				"ka1997": _mlr.ka1997_free 
+			}[mlr.setting] 
+			func() 
+		else: pass 
 
 
 	def pickle(self): 

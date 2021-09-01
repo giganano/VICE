@@ -71,6 +71,18 @@ extern double vincenzo2016_turnoffmass(double time, double postMS, double Z);
 extern double vincenzo2016_lifetime(double mass, double postMS, double Z); 
 
 /* 
+ * Assign the full path to the Vincenzo et al. (2016) data to be stored as a 
+ * global within this file. 
+ * 
+ * Parameters 
+ * ==========
+ * filename: 		The full path to the file 
+ * 
+ * source: vincenzo2016.c 
+ */ 
+extern void set_vincenzo2016_filename(char *filename); 
+
+/* 
  * Import the Vincenzo et al. (2016) data. This function must be called by 
  * python before vincenzo2016_lifetime or vincenzo2016_turnoff mass can be 
  * called, otherwise a segmentation fault will occur. 

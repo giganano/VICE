@@ -59,24 +59,45 @@ class generator:
 	singlezone object 
 	""" 
 
-	def __init__(self, **kwargs): 
+	def __init__(self, msg, **kwargs): 
+		self.msg = msg 
 		self._sz = singlezone(name = "test", dt = 0.05, **kwargs) 
 		if self._sz.schmidt: self._sz.MgCrit = self._sz.MgSchmidt 
 
+	@unittest 
 	def __call__(self): 
-		try: 
-			self._sz.run(_OUTTIMES_, overwrite = True) 
-		except: 
-			return False 
-		status = True 
-		if self._sz.schmidt: 
-			out = output("test") 
-			tau_star = list(map(
-				lambda x, y: 1.e-9 * x / y if y else float('inf'), 
-				out.history["mgas"], out.history["sfr"])) 
-			status &= all(map(lambda x: x >= self._sz.tau_star, tau_star)) 
-		else: pass 
-		return status 
+		def test(): 
+			try: 
+				self._sz.run(_OUTTIMES_, overwrite = True) 
+			except: 
+				return False 
+			status = True 
+			if self._sz.schmidt: 
+				out = output("test") 
+				tau_star = list(map(
+					lambda x, y: 1.e-9 * x / y if y else float('inf'), 
+					out.history["mgas"], out.history["sfr"])) 
+				status &= all(map(lambda x: x >= self._sz.tau_star, tau_star)) 
+			else: pass 
+			return status 
+		return [self.msg, test] 
+
+	@property 
+	def msg(self): 
+		r""" 
+		Type : str 
+
+		The message to print with the unit test. 
+		""" 
+		return self._msg 
+
+	@msg.setter 
+	def msg(self, value): 
+		if isinstance(value, strcomp): 
+			self._msg = value 
+		else: 
+			raise TypeError("Attribute 'msg' must be of type str. Got: %s" % (
+				type(value))) 
 
 
 class mlr_generator: 
@@ -91,27 +112,29 @@ class mlr_generator:
 	def __init__(self, mlr = "larson1974"): 
 		self.mlr = mlr 
 		self._sz = singlezone(name = "test", elements = ["fe", "sr", "o"], 
-			dt = 0.001) 
-		# stop at 500 Myr, no need to go longer since this already gets into 
-		# the regime where AGB stars will be ejecting yields 
-		self._outtimes = [0.01 * i for i in range(51)] 
+			dt = 0.001)
 
+	@unittest 
 	def __call__(self): 
-		try: 
-			current = mlr.setting 
-			mlr.setting = self.mlr 
-			out = self._sz.run(self._outtimes, overwrite = True, 
-				capture = True) 
-			mlr.setting = current 
-		except: 
-			return False 
-		status = True 
-		for i in range(len(out.history["time"])): 
-			status &= not math.isnan(out.history["mass(fe)"][i]) 
-			status &= not math.isnan(out.history["mass(sr)"][i]) 
-			status &= not math.isnan(out.history["mass(o)"][i]) 
-			if not status: break 
-		return status 
+		def test(): 
+			try: 
+				current = mlr.setting 
+				mlr.setting = self.mlr 
+				# stop at 500 Myr, no need to go longer since this already gets 
+				# into the regime where AGB stars will be ejecting yields 
+				outtimes = [0.01 * i for i in range(51)] 
+				out = self._sz.run(outtimes, overwrite = True, capture = True) 
+				mlr.setting = current 
+			except: 
+				return False 
+			status = True 
+			for i in range(len(out.history["time"])): 
+				status &= not math.isnan(out.history["mass(fe)"][i]) 
+				status &= not math.isnan(out.history["mass(sr)"][i]) 
+				status &= not math.isnan(out.history["mass(o)"][i]) 
+				if not status: break 
+			return status 
+		return ["vice.core.singlezone [MLR :: %s]" % (self.mlr), test] 
 
 	@property 
 	def mlr(self): 
@@ -142,41 +165,31 @@ def test():
 	""" 
 	trials = [] 
 	for i in _MODES_: 
-		trials.append(trial("vice.core.singlezone [mode :: %s]" % (str(i)), 
-			generator(mode = i))) 
+		trials.append(generator(
+			"vice.core.singlezone [mode :: %s]" % (str(i)), mode = i)()) 
 	for i in _IMF_: 
-		trials.append(trial("vice.core.singlezone [IMF :: %s]" % (str(i)), 
-			generator(IMF = i))) 
+		trials.append(generator(
+			"vice.core.singlezone [IMF :: %s]" % (str(i)), IMF = i)()) 
 	for i in _ETA_: 
-		trials.append(trial("vice.core.singlezone [eta :: %s]" % (str(i)), 
-			generator(eta = i))) 
+		trials.append(generator(
+			"vice.core.singlezone [eta :: %s]" % (str(i)), eta = i)())
 	for i in _ZIN_: 
-		trials.append(trial("vice.core.singlezone [Zin :: %s]" % (str(i)), 
-			generator(Zin = i))) 
+		trials.append(generator(
+			"vice.core.singlezone [Zin :: %s]" % (str(i)), Zin = i)()) 
 	for i in _RECYCLING_: 
-		trials.append(trial("vice.core.singlezone [recycling :: %s]" % (str(i)), 
-			generator(recycling = i))) 
+		trials.append(generator(
+			"vice.core.singlezone [recycling :: %s]" % (str(i)), 
+			recycling = i)())
 	for i in _RIA_: 
-		trials.append(trial("vice.core.singlezone [RIa :: %s]" % (str(i)), 
-			generator(RIa = i))) 
+		trials.append(generator(
+			"vice.core.singlezone [RIa :: %s]" % (str(i)), RIa = i)()) 
 	for i in _TAU_STAR_: 
-		trials.append(trial("vice.core.singlezone [tau_star :: %s]" % (str(i)), 
-			generator(tau_star = i))) 
+		trials.append(generator(
+			"vice.core.singlezone [tau_star :: %s]" % (str(i)), 
+			tau_star = i)()) 
 	for i in _SCHMIDT_: 
-		trials.append(trial("vice.core.singlezone [schmidt :: %s]" % (str(i)), 
-			generator(schmidt = i))) 
-	for i in mlr.recognized: 
-		trials.append(trial("vice.core.singlezone [MLR :: %s]" % (i), 
-			mlr_generator(mlr = i)))  
+		trials.append(generator(
+			"vice.core.singlezone [schmidt :: %s]" % (str(i)), schmidt = i)()) 
+	for i in mlr.recognized: trials.append(mlr_generator(mlr = i)()) 
 	return ["vice.core.singlezone trial tests", trials] 
-
-
-@unittest 
-def trial(label, generator_): 
-	""" 
-	Obtain a unittest object for a singlezone trial test 
-	""" 
-	def test_(): 
-		return generator_() 
-	return [label, test_] 
 

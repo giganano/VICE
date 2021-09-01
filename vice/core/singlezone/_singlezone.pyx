@@ -104,15 +104,6 @@ cdef class c_singlezone:
 
 	def __cinit__(self): 
 		self._sz = _singlezone.singlezone_initialize()
-		# import mass-lifetime relation data on this extension 
-		for i in ["vincenzo2016", "hpt2000", "ka1997"]: 
-			func = {
-				"vincenzo2016": _mlr.vincenzo2016_import, 
-				"hpt2000": _mlr.hpt2000_import, 
-				"ka1997": _mlr.ka1997_import 
-			}[i] 
-			path = "%ssrc/ssp/mlr/%s.dat" % (_DIRECTORY_, i) 
-			func(path.encode("latin-1")) 
 
 	def __init__(self, 
 		name = "onezonemodel", 
@@ -183,14 +174,6 @@ cdef class c_singlezone:
 
 	def __dealloc__(self): 
 		_singlezone.singlezone_free(self._sz) 
-		# free mass-lifetime relation data on this extension 
-		for i in ["vincenzo2016", "hpt2000", "ka1997"]: 
-			func = {
-				"vincenzo2016": _mlr.vincenzo2016_free, 
-				"hpt2000": _mlr.hpt2000_free, 
-				"ka1997": _mlr.ka1997_free 
-			}[i] 
-			func() 
 
 	def object_address(self): 
 		""" 
@@ -1330,7 +1313,8 @@ All elemental yields in the current simulation will be set to the table of \
 			self.solar_z_warning() 
 			self.mlr_warnings() 
 
-			# take the current mass-lifetime relation (data already imported) 
+			# take the current mass-lifetime relation setting 
+			self.import_mlr_data() 
 			_mlr.set_mlr_hashcode(_mlr._mlr_linker.__NAMES__[mlr.setting]) 
 
 			# just do it #nike 
@@ -1338,8 +1322,9 @@ All elemental yields in the current simulation will be set to the table of \
 			self._sz[0].n_outputs = len(output_times) 
 			enrichment = _singlezone.singlezone_evolve(self._sz) 
 
-			# save yield settings and attributes 
+			# save yield settings and attributes, free mass-lifetime data 
 			self.pickle() 
+			self.free_mlr_data() 
 
 		else: 
 			_singlezone.singlezone_cancel(self._sz) 
@@ -1855,6 +1840,31 @@ function (i.e. stellar mass as a function of lifetime). This can increase \
 the required integration time considerably, particularly for fine \
 timestepping.""" % (names[mlr.setting]) 
 			warnings.warn(msg, VisibleRuntimeWarning) 
+		else: pass 
+
+
+	def import_mlr_data(self): 
+		# import the mass-lifetime relation data on this extension 
+		if mlr.setting in ["vincenzo2016", "hpt2000", "ka1997"]: 
+			func = {
+				"vincenzo2016": _mlr.vincenzo2016_import, 
+				"hpt2000": _mlr.hpt2000_import, 
+				"ka1997": _mlr.ka1997_import 
+			}[mlr.setting] 
+			path = "%ssrc/ssp/mlr/%s.dat" % (_DIRECTORY_, mlr.setting) 
+			func(path.encode("latin-1")) 
+		else: pass 
+
+
+	def free_mlr_data(self): 
+		# frees the mass-lifetime relation data on this extension 
+		if mlr.setting in ["vincenzo2016", "hpt2000", "ka1997"]: 
+			func = {
+				"vincenzo2016": _mlr.vincenzo2016_free, 
+				"hpt2000": _mlr.hpt2000_free, 
+				"ka1997": _mlr.ka1997_free 
+			}[mlr.setting] 
+			func() 
 		else: pass 
 
 

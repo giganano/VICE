@@ -21,6 +21,7 @@
  */ 
 
 #include <stdlib.h> 
+#include <string.h> 
 #include <math.h> 
 #include "../../objects/interp_scheme_1d.h" 
 #include "../../toolkit/interp_scheme_1d.h" 
@@ -31,7 +32,6 @@
  * VINCENZO_A: The interpolation scheme for the values of A 
  * VINCENZO_B: The interpolation scheme for the values of B 
  * VINCENZO_C: The interpolation scheme for the values of C 
- * N_POINTS: The number of sampled values in each interpolation scheme 
  */ 
 static INTERP_SCHEME_1D *VINCENZO_A = NULL; 
 static INTERP_SCHEME_1D *VINCENZO_B = NULL; 
