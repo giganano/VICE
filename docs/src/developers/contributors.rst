@@ -7,7 +7,7 @@ Contributors
 James W. Johnson
 ----------------
 | Primary Author 
-| Email: giganano9@gmail.com
+| Email: giganano9@gmail.com johnson.7419@buckeyemail.osu.edu 
 | Webiste: https://sites.google.com/view/jameswjohnson/
 | The Ohio State University Department of Astronomy
 | 140 W. 18th Ave., Columbus, OH, 43204

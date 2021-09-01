@@ -1,4 +1,6 @@
 
+.. _apiref: 
+
 Comprehensive API Reference 
 ===========================
 

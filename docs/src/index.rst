@@ -7,8 +7,12 @@ This is the documentation for **VICE version 1.3.0**.
 First time users should familiarize themselves with VICE's API by going 
 through our `tutorial`__, available on `GitHub`__ along with the source code 
 and other supplementary material. 
+Usage instructions for all of the functions and objects that VICE provides can 
+be found in our :ref:`comprehensive API reference <apiref>`. 
+Details on VICE's implementation and justification thereof can be found in 
+our :ref:`science documentation <scidocs>`. 
 
-VICE's core developers are happy to consult with scientists looking to 
+VICE's developers are happy to consult with scientists looking to 
 incorporate it into their research. 
 Email one of our :ref:`contributors <contributors>` or `join us on Slack`__ 
 and start collaborating now! 

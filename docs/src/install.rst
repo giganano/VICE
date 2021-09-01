@@ -21,17 +21,20 @@ __ `Installing from Source`_
 .. _WSL: https://docs.microsoft.com/en-us/windows/wsl/install-win10 
 
 
-Users who have or would like to modify VICE's source code should conduct a 
-`from source installation`__; this also applies to users who would like to 
-install for a development version of python, such as 3.10. Installing from 
-source is also an alternative in the event that the PyPI_ installation fails 
-for some reason. If you have already installed VICE and would like help 
-getting started, we recommend checking out VICE's tutorial_. Further usage 
-guidelines can be found `here`__. 
+Users who have or would like to modify VICE's source code should conduct an 
+`installation from source`__. 
+This also applies to users who would like to install for a development version 
+of python, such as 3.10, as well as to versions of VICE still in development, 
+which can be found on alternate branches of its `GitHub repository`__. 
+Installing from source is also an alternative in the event that the PyPI_ 
+installation fails for some reason. 
+If you have already installed VICE and would like help getting started, we 
+recommend checking out VICE's tutorial_. 
+Further usage guidelines can be found :ref:`here <getting_started>`. 
 
 __ `Installing from Source`_ 
-__ usage_ 
-.. _usage: https://github.com/giganano/VICE/blob/master/docs/src/getting_started.rst
+__ repo_ 
+.. _repo: https://github.com/giganano/VICE.git 
 .. _tutorial: https://github.com/giganano/VICE/blob/master/examples/QuickStartTutorial.ipynb
 
 .. Contents:: 
@@ -108,35 +111,34 @@ using a terminal and change directories into the source tree:
 	$ git clone https://github.com/giganano/VICE.git 
 	$ cd VICE 
 
-To install VICE, then run: 
+To compile and install VICE, simply run: 
 
 :: 
 
 	$ make 
-	$ python setup.py build -j 2 install 
+	$ python setup.py build install [--user] 
 
-This will compile VICE on 2 CPUs in parallel and subsequently install. Users 
-installing VICE on a system on which they do not have adminstrator's 
-privileges should perform a local installation. This can be achieved with the 
-``--user`` command-line argument: 
+This will compile the source code under a directory named ``build``, and 
+subsequently install to the appropriate ``site-packages`` directory once 
+completed. 
+Users who do not have administrator's privileges on the system they're 
+conducting the installation should add the ``--user`` command-line argument, 
+which will conduct a local installation. 
 
-:: 
-
-	$ python setup.py build -j 2 install --user 
-
-Please note that users installing VICE to multiple versions of python will 
-likely have to run ``make clean`` between runs of the setup.py file. 
-Following the installation, to run the tests and clean the source tree: 
+Following the installation, running VICE's unit tests (if desired) and 
+cleaning the source tree can be achieved with 
 
 :: 
 
 	$ make tests 
 	$ make clean 
 
-Please also note that ``make tests`` runs VICE's tests in the user's default 
-version of python. If your machine is defaulting to another version of 
-python, ``make tests3`` will run them in python 3 always. Alternatively, the 
-tests can be ran from within python itself: 
+Please note that users installing VICE to multiple versions of python will 
+likely have to run ``make clean`` between runs of the setup.py file. 
+The command ``make tests`` runs the unit tests in the current environment's 
+default version of python. 
+If a specific version of python is required, the tests can be ran from 
+within the interpreter itself easily: 
 
 .. code:: python 
 
@@ -145,75 +147,135 @@ tests can be ran from within python itself:
 
 If you have issues installing or running VICE, please see the section on 
 `Troubleshooting Your Build`_. If your installation was successful and you 
-would like help getting started, usage guidelines can be found `here`__. 
+would like help getting started, usage guidelines can be found 
+:ref:`here <getting_started>`.  
 
-__ usage_ 
+
+Additional Compile Options 
+--------------------------
+VICE affords users flexibility in specifying how they'd like to compile from 
+source. 
+
+1. Parallelization 
+	Users may spread out the job of compiling VICE across multiple cores via 
+	the ``[-j N]`` command-line argument. 
+	For example, 
+
+	:: 
+
+		$ python setup.py build -j 2 install [--user] 
+
+	will compile all extensions using 2 cores. 
+	**Warning**: See `note`__ below regarding parallel installations on 
+	mounted file systems. 
+
+2. Suppress verbose output 
+	Users may suppress the printing of compiler commands to the consoler with 
+	the ``[-q --quiet]`` command-line argument. 
+	For example, when running 
+
+	:: 
+
+		$ python setup.py build --quiet install [--user] 
+
+	the only lines printed to the console by the setup.py file will say that 
+	specific extensions are being cythonized. 
+
+3. Individual extensions 
+	If VICE's source code has already been compiled and is located in the 
+	``build`` directory, then the entire code base does not need to be 
+	re-compiled every time a small modification is made. 
+	The name of the extension, which can be determined via the relative path 
+	to the file, is all that is required. 
+	For example, the ``vice.singlezone`` object is linked to VICE's C library 
+	in the file ``vice/core/singlezone/_singlezone.pyx``, so the name of its 
+	extension is ``vice.core.singlezone._singlezone``. 
+	To recompile this extension only and reinstall with all previously 
+	compiled extensions, simply run 
+
+	:: 
+
+		$ python setup.py build ext=vice.core.singlezone._singlezone install [--user] 
+
+4. Distutils versus setuptools 
+	By default, the setup.py file will compile VICE using the setuptools_ 
+	library. 
+	If setuptools_ is not found in the compile-time environment, VICE will 
+	conduct the installation with distutils_ within the 
+	`python standard library`__. 
+	However, if users wish to compile and install VICE with distutils_ even if 
+	setuptools_ is installed, they may do so trivially with the 
+	``[distutils]`` command-line argument. 
+	For example, 
+
+	:: 
+
+		$ python setup.py build distutils install [--user] 
+
+	will always import the necessary functions from distutils_ rather than 
+	setuptools_. 
+	**Warning**: See `note`__ below on installing with distutils_ inside of a 
+	conda environment. 
+
+__ mounted_note_ 
+__ stdlib_ 
+__ condanote_ 
+
+.. _setuptools: https://setuptools.readthedocs.io/en/latest/ 
+.. _distutils: https://docs.python.org/3/library/distutils.html 
+.. _stdlib: https://docs.python.org/3/library/
+	
 
 
 Things to Avoid 
 ---------------
 
+.. _mounted_note: 
+
+1. Parallelization on mounted file systems 
+	Users are on a mounted file system if their environment consists of a main 
+	central server storing each user's files; a common example is a department 
+	at a university with its own central computer for all of its members. 
+	If a user is installing VICE from source in such an environment, then they 
+	should omit the ``[-j N]`` command-line argument (see 
+	`Additional Compile Options`_ above). 
+	On such systems, parallel installations usually cause a compiler failure. 
+
+.. _simultaneous_note: 
+
+2. Simultaneous installations 
+	Users installing VICE from source for multiple versions of python should 
+	not run the setup.py file in separate terminals simultaneously; this will 
+	cause one of the builds to fail. 
+	Likewise, users should not run the tests for multiple versions of python 
+	simultaneously; this will almost certainly cause a ``segmentation fault``. 
+
 .. _condanote: 
 
-1. conda Environments
-	VICE should **never** be installed from source within a conda environment. 
-	This only applies to source installations; a binary installation from 
-	PyPI_ should run properly within any conda environment provided the 
-	version of python is supported. When installing from source in a conda 
-	environment, the installation process will run without errors, but the 
-	compiled extensions are not placed in the correct directory, preventing 
-	VICE from running properly. This does not apply to the default environment 
-	``base`` associated with later versions of python and Anaconda_. 
+3. Conda environments 
+	VICE should **never** be installed from source with distutils_ within a 
+	conda environment; this applies *only* if the user is making use of the 
+	``[distutils]`` command-line argument accepted by the setup.py file 
+	(see `Additional Compile Options`_ above). 
+	Conda environments manage packages in a manner that is compatible with 
+	setuptools_ but not with distutils_. 
+	As a result, the installation process will run without errors, but 
+	distutils_ will place the compiled extensions in the incorrect directory, 
+	preventing VICE from properly importing into python. 
+	This however does not apply to the default environment ``base`` associated 
+	with recent versions of python and Anaconda_. 
 
-	VICE will *run* within whatever conda environments users create; it is only 
-	the source installation process that this applies to. As noted `here`__, 
-	VICE is implemented entirely independently of Anaconda_, and for this 
-	reason, it does not make sense to install VICE from source in a conda 
-	environment anyway. This is also true for installing from PyPI_ in a 
-	conda environment, unless a specific version of python is required. 
-
-	__ `A Note on Implementation`_ 
-
-.. _parallelnote: 
-
-2. Parallel Installations 
-	Users installing VICE to multiple versions of python should not run the 
-	setup.py file in separate terminals simultaneously; this will cause one of 
-	the builds to fail. Likewise, users should not run the tests for multiple 
-	versions of python simultaneously; it's likely this will cause a 
-	``segmentation fault``. 
-
-
-Additional Options 
-------------------
-By default, VICE will install verbosely, printing to the console. To turn this 
-off, run a quiet installation: 
-
-:: 
-
-	$ python setup.py build -j 2 install -q 
-
-or 
-
-:: 
-
-	$ python setup.py build -j 2 install --quiet 
-
-To change the number of cores used to compile VICE: 
-
-:: 
-
-	$ python setup.py build -j <number of cores> install 
-
-If you have modified VICE's source code and are reinstalling your modified 
-version, there's no need to rebuild the entire package. Any number of 
-extensions can be specified with the ``ext`` directive. For example, the 
-following will rebuild the singlezone object, whose extension is 
-``vice.core.singlezone._singlezone``: 
-
-:: 
-
-	$ python setup.py build install ext=vice.core.singlezone._singlezone 
+	VICE will *run* within a conda environment following an installation from 
+	source with distutils_ - it is only the installation process that this 
+	applies to. 
+	That is, if users wish to conduct the installation with distutils_ but 
+	need to use VICE within a conda environment, they must simply exit their 
+	conda environment, conduct the installation from source, and then 
+	reactivate their conda environment. 
+	VICE is implemented entirely independent of Anaconda_ (see 
+	`A Note on Implementation`_ above), and for this reason, it is unnecessary 
+	to repeat installations within differently curated conda environments 
+	anyway. 
 
 
 Troubleshooting Your Build 
@@ -227,8 +289,8 @@ __ issues_
 
 ImportError After Installation 
 ------------------------------
-`Did you install VICE from within a conda environment?`__ If not, please 
-open an issue `here`__. 
+`Did you install VICE with distutils_ from within a conda environment?`__ 
+If not, please open an issue `here`__. 
 
 __ condanote_ 
 .. _issues: https://github.com/giganano/VICE/issues 
@@ -237,10 +299,13 @@ __ issues_
 
 Running the setup.py File Failed
 --------------------------------
-`Did you run it for multiple versions of python simultaneously?`__ If not, 
-please open an issue `here`__. 
+`Did you run it for multiple versions of python simultaneously?`__ 
+Alternatively, 
+`did you run a parallelized installation on a mounted file system?`__ 
+If neither is the case, please open an issue `here`__. 
 
-__ parallelnote_ 
+__ mounted_note_ 
+__ simultaneous_note_  
 __ issues_ 
 
 
@@ -249,7 +314,7 @@ Running the Tests Resulted in a Segmentation Fault
 `Did you run the tests for multiple versions of python simultaneously?`__ 
 If not, please open an issue `here`__. 
 
-__ parallelnote_ 
+__ simultaneous_note_  
 __ issues_ 
 
 
@@ -318,7 +383,8 @@ adding the following line to
 Compiler Failure 
 ----------------
 This is usually an indication that the build should not be ran on multiple 
-cores. First run ``make clean``, and subsequently ``make``. Then replace your 
+cores, which `is usually the case on a mounted file system`__. 
+First run ``make clean``, and subsequently ``make``. Then replace your 
 previous command to run the setup.py file with: 
 
 :: 
@@ -332,9 +398,10 @@ installing without the ``build`` directive:
 
 	$ python setup.py install [--user] [--quiet] 
 
-If neither of these recommendations fixed your problem, please open an 
-issue `here`__. 
+If neither of these recommendations fix your problem, please open an issue 
+`here`__. 
 
+__ mounted_note_ 
 __ issues_ 
 
 Uninstalling VICE 
