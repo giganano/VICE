@@ -21,6 +21,7 @@ from vice.yields.ccsne.S16 import W18
 from vice.yields.ccsne.S16 import W18F 
 from vice.yields.sneia import iwamoto99 
 from vice.yields.sneia import seitenzahl13 
+from vice.yields.sneia import gronow21 
 from vice.yields.agb import cristallo11 
 from vice.yields.agb import karakas10 
 from vice.yields.agb import ventura13 
@@ -717,8 +718,9 @@ _CONFIG_ = {
 			vice.yields.sneia.fractional, 
 			vice.yields.sneia.settings, 
 			vice.yields.sneia.iwamoto99, 
-			vice.yields.sneia.seitenzahl13 
-		]  
+			vice.yields.sneia.seitenzahl13, 
+			vice.yields.sneia.gronow21 
+		] 
 	}, 
 	vice.yields.sneia.single: {
 		"filename": 	"vice.yields.sneia.single.rst", 
@@ -739,7 +741,7 @@ _CONFIG_ = {
 			vice.yields.sneia.settings.restore_defaults, 
 			vice.yields.sneia.settings.factory_settings, 
 			vice.yields.sneia.settings.save_defaults 
-		]  
+		] 
 	}, 
 	vice.yields.sneia.settings.keys: {
 		"filename": 	"vice.yields.sneia.settings.keys.rst", 
@@ -784,6 +786,16 @@ _CONFIG_ = {
 	vice.yields.sneia.seitenzahl13.set_params: {
 		"filename": 	"vice.yields.sneia.seitenzahl13.set_params.rst", 
 		"header": 		"vice.yields.sneia.seitenzahl13.set_params", 
+		"subs": 		[] 
+	}, 
+	vice.yields.sneia.gronow21: {
+		"filename": 	"vice.yields.sneia.gronow21.rst", 
+		"header": 		"vice.yields.sneia.gronow21", 
+		"subs": 		[vice.yields.sneia.gronow21.set_params] 
+	}, 
+	vice.yields.sneia.gronow21.set_params: {
+		"filename": 	"vice.yields.sneia.gronow21.set_params.rst", 
+		"header": 		"vice.yields.sneia.gronow21.set_params", 
 		"subs": 		[] 
 	}, 
 	vice.yields.presets: {

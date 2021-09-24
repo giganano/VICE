@@ -4,10 +4,10 @@ Seitenzahl et al. (2013), MNRAS, 429, 1156 Type Ia supernova (SN Ia) yields
 **Signature**: from vice.yields.sneia import seitenzahl13 
 
 Importing this module will automatically set the SN Ia yield settings for all 
-elements to the IMF-averaged yields calculated with the Seitenzahl et al. 
-(2013) yield table under the N1 explosion model. This study is for delayed 
-detonation explosion models of Chandrasekhar mass progenitors 
-(1.4 :math:`M_\odot`). 
+elements to the delay-time distribution integrated yields calculated with the 
+Seitenzahl et al. (2013) yield table under the N1 explosion model. This study 
+reported yields for delayed detonation explosion models of Chandrasekhar mass 
+progenitors (1.4 :math:`M_\odot`). 
 
 .. tip:: By importing this module, the user does not sacrifice the ability to 
 	specify their yield settings directly. 
@@ -57,8 +57,6 @@ if not __VICE_SETUP__:
 				"seitenzahl13" when called from this module. 
 
 		Other exceptions are raised by vice.yields.sneia.fractional.  
-
-		.. seealso:: vice.yields.sneia.fractional 
 
 		Example Code 
 		------------

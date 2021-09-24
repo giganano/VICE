@@ -4,9 +4,10 @@ Iwamoto et al. (1999), ApJ, 124, 439 Type Ia supernova (SN Ia) yields
 **Signature**: from vice.yields.sneia import iwamoto99 
 
 Importing this module will automatically set the SN Ia yield settings for all 
-elements to the IMF-averaged yields calculated with the Iwamoto et al. (1999) 
-yield table under the W70 explosion model. This study is for Chandrasekhar 
-Mass progenitors (1.4 :math:`M_\odot`). 
+elements to the delay-time distribution integrated yields calculated with the 
+Iwamoto et al. (1999) yield table under the W70 explosion model. This study 
+reports yields for Chandrasekhar Mass progenitors (1.4 :math:`M_\odot`) with a 
+variety of deflagration speeds and ignition densities. 
 
 .. tip:: By importing this module, the user does not sacrifice the ability to 
 	specify their yield settings directly. 

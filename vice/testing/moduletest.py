@@ -94,7 +94,7 @@ class _moduletest:
 				skipped += skipped_ 
 		if print_results: 
 			if not failed and not skipped: 
-				print("\n\033[92mAll tests passed.\033[00m\n") 
+				print("\n\033[92mAll tests passed. (%d)\033[00m\n" % (passed)) 
 			else: 
 				print("\n\033[92m%d tests passed.\033[00m" % (passed)) 
 				print("\033[91m%d tests failed.\033[00m" % (failed)) 

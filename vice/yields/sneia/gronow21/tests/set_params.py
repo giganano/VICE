@@ -1,5 +1,4 @@
 
-from __future__ import absolute_import 
 from ....._globals import _RECOGNIZED_ELEMENTS_ 
 from .....testing import unittest 
 from ... import fractional 
@@ -13,7 +12,7 @@ def test():
 	""" 
 	def test_set_params(): 
 		kwargs = {
-			"model": "CDD1", 
+			"model": "M10_05_01", 
 			"n": 1.3e-03 
 		} 
 		try: 
@@ -26,9 +25,8 @@ def test():
 			return False 
 		status = True 
 		for i in _RECOGNIZED_ELEMENTS_: 
-			status &= settings[i] == fractional(i, study = "iwamoto99", 
-				**kwargs) 
+			status &= settings[i] == fractional(i, study = "gronow21", **kwargs) 
 			if not status: break 
 		return status 
-	return ["vice.yields.sneia.iwamoto99.set_params", test_set_params] 
+	return ["vice.yields.sneia.gronow21.set_params", test_set_params] 
 

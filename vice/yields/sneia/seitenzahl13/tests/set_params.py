@@ -18,14 +18,17 @@ def test():
 		} 
 		try: 
 			from .. import set_params 
+		except: 
+			return None 
+		try: 
 			set_params(**kwargs) 
 		except: 
 			return False 
 		status = True 
 		for i in _RECOGNIZED_ELEMENTS_: 
-			if settings[i] != fractional(i, study = "seitenzahl13", **kwargs): 
-				status = False 
-				break 
+			status &= settings[i] == fractional(i, study = "seitenzahl13", 
+				**kwargs) 
+			if not status: break 
 		return status 
 	return ["vice.yields.sneia.seitenzahl13.set_params", test_set_params] 
 
