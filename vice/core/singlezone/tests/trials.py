@@ -10,6 +10,7 @@ __all__ = [
 from ...._globals import _VERSION_ERROR_ 
 from ....testing import moduletest 
 from ....testing import unittest 
+from ....testing import generator 
 from ...outputs import output 
 from ..singlezone import singlezone 
 from ...mlr import mlr 
@@ -52,17 +53,13 @@ _TAU_STAR_ = [2.0,
 _SCHMIDT_ = [False, True] 
 
 
-class generator: 
+class attribute_generator(generator): 
 
-	""" 
-	A callable object which can be cast as a unittest object for the 
-	singlezone object 
-	""" 
+	# Systematically generate trial tests for the singlezone object. 
 
 	def __init__(self, msg, **kwargs): 
-		self.msg = msg 
+		super().__init__(msg, **kwargs) 
 		self._sz = singlezone(name = "test", dt = 0.05, **kwargs) 
-		if self._sz.schmidt: self._sz.MgCrit = self._sz.MgSchmidt 
 
 	@unittest 
 	def __call__(self): 
@@ -73,46 +70,31 @@ class generator:
 				return False 
 			status = True 
 			if self._sz.schmidt: 
-				out = output("test") 
-				tau_star = list(map(
-					lambda x, y: 1.e-9 * x / y if y else float('inf'), 
-					out.history["mgas"], out.history["sfr"])) 
-				status &= all(map(lambda x: x >= self._sz.tau_star, tau_star)) 
-			else: pass 
+				try: 
+					out = output("test") 
+				except: 
+					return None 
+				tau_star = [1.e-9 * a / b if b else float("inf") for a, b in 
+					zip(out.history["mgas"], out.history["sfr"])] 
+				status &= all([i >= self._sz.tau_star for i in tau_star]) 
+			else: 
+				pass 
 			return status 
 		return [self.msg, test] 
 
-	@property 
-	def msg(self): 
-		r""" 
-		Type : str 
 
-		The message to print with the unit test. 
-		""" 
-		return self._msg 
+class mlr_generator(generator): 
 
-	@msg.setter 
-	def msg(self, value): 
-		if isinstance(value, strcomp): 
-			self._msg = value 
-		else: 
-			raise TypeError("Attribute 'msg' must be of type str. Got: %s" % (
-				type(value))) 
-
-
-class mlr_generator: 
-
-	""" 
-	A callable object designed to run a singlezone object under a given 
-	mass-lifetime relation to ensure that it works properly. 
-	A timestep size of 0.001 is used to ensure that the assumed MLR responds 
-	properly to stellar populations young enough that no stars have died yet. 
-	""" 
+	# Systematically generate trial tests for the singlezone object with 
+	# different mass-lifetime relations. A timestep size of 1 Myr is used to 
+	# ensure that the assumed MLR responds properly to stellar populations 
+	# young enough that no stars have died yet. 
 
 	def __init__(self, mlr = "larson1974"): 
 		self.mlr = mlr 
+		super().__init__("vice.core.singlezone [MLR :: %s]" % (self.mlr)) 
 		self._sz = singlezone(name = "test", elements = ["fe", "sr", "o"], 
-			dt = 0.001)
+			dt = 0.001) 
 
 	@unittest 
 	def __call__(self): 
@@ -134,12 +116,12 @@ class mlr_generator:
 				status &= not math.isnan(out.history["mass(o)"][i]) 
 				if not status: break 
 			return status 
-		return ["vice.core.singlezone [MLR :: %s]" % (self.mlr), test] 
+		return [self.msg, test] 
 
 	@property 
 	def mlr(self): 
 		r""" 
-		Type : str 
+		Type : ``str`` 
 
 		Default : "larson1974" 
 
@@ -165,30 +147,30 @@ def test():
 	""" 
 	trials = [] 
 	for i in _MODES_: 
-		trials.append(generator(
+		trials.append(attribute_generator( 
 			"vice.core.singlezone [mode :: %s]" % (str(i)), mode = i)()) 
 	for i in _IMF_: 
-		trials.append(generator(
+		trials.append(attribute_generator( 
 			"vice.core.singlezone [IMF :: %s]" % (str(i)), IMF = i)()) 
 	for i in _ETA_: 
-		trials.append(generator(
+		trials.append(attribute_generator( 
 			"vice.core.singlezone [eta :: %s]" % (str(i)), eta = i)())
 	for i in _ZIN_: 
-		trials.append(generator(
+		trials.append(attribute_generator( 
 			"vice.core.singlezone [Zin :: %s]" % (str(i)), Zin = i)()) 
 	for i in _RECYCLING_: 
-		trials.append(generator(
+		trials.append(attribute_generator( 
 			"vice.core.singlezone [recycling :: %s]" % (str(i)), 
 			recycling = i)())
 	for i in _RIA_: 
-		trials.append(generator(
+		trials.append(attribute_generator( 
 			"vice.core.singlezone [RIa :: %s]" % (str(i)), RIa = i)()) 
 	for i in _TAU_STAR_: 
-		trials.append(generator(
+		trials.append(attribute_generator( 
 			"vice.core.singlezone [tau_star :: %s]" % (str(i)), 
 			tau_star = i)()) 
 	for i in _SCHMIDT_: 
-		trials.append(generator(
+		trials.append(attribute_generator( 
 			"vice.core.singlezone [schmidt :: %s]" % (str(i)), schmidt = i)()) 
 	for i in mlr.recognized: trials.append(mlr_generator(mlr = i)()) 
 	return ["vice.core.singlezone trial tests", trials] 

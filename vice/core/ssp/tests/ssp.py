@@ -15,6 +15,7 @@ from .._ssp import single_stellar_population
 from ....yields import agb 
 from ....testing import moduletest 
 from ....testing import unittest 
+from ....testing import generator 
 from ...mlr import mlr 
 import math 
 import sys 
@@ -36,16 +37,10 @@ _IMF_ = ["kroupa", "salpeter", lambda m: m**-2]
 _RIA_ = ["plaw", "exp", lambda t: t**-1.5] 
 
 
-class generator: 
+class ssp_generator(generator): 
 
-	""" 
-	A callable object which can be cast as a unittest for the 
-	single_stellar_population function 
-	""" 
-
-	def __init__(self, msg, **kwargs): 
-		self.msg = msg 
-		self._kwargs = kwargs 
+	# Systematically generate tests for different parameters of the 
+	# single_stellar_population function. 
 
 	@unittest 
 	def __call__(self): 
@@ -55,7 +50,8 @@ class generator:
 				current_agb_setting = agb.settings[elem] 
 				agb.settings[elem] = "cristallo11" 
 				try: 
-					mass, times = single_stellar_population(elem, **self._kwargs) 
+					mass, times = single_stellar_population(elem, 
+						**self._kwargs) 
 					if mass[-1] > _MSTAR_: success = False 
 				except: 
 					success = False 
@@ -73,35 +69,18 @@ class generator:
 			return success 
 		return [self.msg, test] 
 
-	@property 
-	def msg(self): 
-		r""" 
-		Type : str 
 
-		The message to print with the unit test. 
-		""" 
-		return self._msg 
+class mlr_generator(generator): 
 
-	@msg.setter 
-	def msg(self, value): 
-		if isinstance(value, strcomp): 
-			self._msg = value 
-		else: 
-			raise TypeError("Attribute 'msg' must be of type str. Got: %s" % (
-				type(value))) 
-
-
-class mlr_generator: 
-
-	""" 
-	A callable object designed to run trial SSP calculations under different 
-	assumptions about the mass-lifetime relations. A timestep size of 1.e-4 is 
-	used to ensure that the assumed MLR responds properly to stellar 
-	populations young enough that no stars have died yet. 
-	""" 
+	# Systematically generate trial tests of the single_stellar_population 
+	# function for the various mass-lifetime relations built into VICE. 
+	# A timestep size of 1 Myr is used to ensure that the assumed MLR responds 
+	# properly to stellar populations young enough that no stars have died yet. 
 
 	def __init__(self, mlr = "larson1974"): 
 		self.mlr = mlr 
+		super().__init__("vice.core.single_stellar_population [MLR :: %s]" % (
+			self.mlr)) 
 
 	@unittest 
 	def __call__(self): 
@@ -112,36 +91,14 @@ class mlr_generator:
 				mlr.setting = self.mlr 
 				for elem in _RECOGNIZED_ELEMENTS_: 
 					mass, times = single_stellar_population(elem, time = 1, 
-						dt = 1.e-4) 
+						dt = 1.e-3) 
 					success &= all([not math.isnan(_) for _ in mass]) 
 					if not success: break 
 				mlr.setting = current 
 			except: 
 				return False 
 			return success 
-		return ["vice.core.single_stellar_population [MLR :: %s]" % (self.mlr), 
-			test] 
-
-	@property 
-	def mlr(self): 
-		r""" 
-		Type : str 
-
-		Default : "larson1974" 
-
-		The MLR setting to test the SSP calculations with. 
-		""" 
-		return self._mlr 
-
-	@mlr.setter 
-	def mlr(self, value): 
-		if isinstance(value, strcomp): 
-			if value.lower() in mlr.recognized: 
-				self._mlr = value.lower() 
-			else: 
-				raise ValueError("Unrecognized MLR: %s" % (value)) 
-		else: 
-			raise TypeError("MLR must be of type str. Got: %s" % (type(value))) 
+		return [self.msg, test] 
 
 
 @moduletest 
@@ -151,13 +108,13 @@ def test():
 	""" 
 	trials = [] 
 	for i in _IMF_: 
-		trials.append(generator(
+		trials.append(ssp_generator(
 			"vice.core.single_stellar_population [IMF :: %s]" % (str(i)), 
-			IMF = i)()) 
+			IMF = i, time = 3)()) 
 	for i in _RIA_: 
-		trials.append(generator(
+		trials.append(ssp_generator(
 			"vice.core.single_stellar_population [RIa :: %s]" % (str(i)), 
-			RIa = i)()) 
+			RIa = i, time = 3)()) 
 	for i in mlr.recognized: trials.append(mlr_generator(mlr = i)()) 
 	return ["vice.core.single_stellar_population trial tests", trials] 
 

@@ -1,5 +1,11 @@
-""" 
-This file implements the moduletest object 
+r""" 
+**VICE Developer's Documentation** 
+
+This file implements an object used for "module testing", or stitching 
+together a series of unit tests. The decorators.py file implements the 
+decorator @moduletest, which can be attached to a function that returns a name 
+of the module test and a list containing unit test and other module test 
+objects. 
 """ 
 
 from __future__ import absolute_import 
@@ -12,11 +18,33 @@ from .unittest import _unittest
 
 class _moduletest: 
 
-	""" 
-	A class designed to hold the information associated with a module test 
-	(i.e. a set of unit tests) and subsequently run it. 
+	r""" 
+	**VICE Developer's Documentation** 
+	
+	The base class for a module test in VICE, or stitching together a series 
+	of unit tests. 
 
-	User access of this class is strongly discouraged. 
+	**Signature**: moduletest(name) 
+
+	Parameters 
+	----------
+	name : ``str`` 
+		The attribute ``name``. See below. 
+
+	Attributes 
+	----------
+	name : ``str`` 
+		The name of the module test. 
+	unittests : ``list`` 
+		A list of the unit tests contained in this module test, as well as 
+		other module tests contained within this one. 
+
+	Functions 
+	---------
+	new : instance method 
+		Add a new unit test or module test object to this one. 
+	run : instance method 
+		Run all unit tests and module tests contained within this one. 
 	""" 
 
 	def __init__(self, name): 
@@ -25,10 +53,12 @@ class _moduletest:
 
 	@property 
 	def name(self): 
-		""" 
-		Type :: str 
+		r""" 
+		**VICE Developer's Documentation 
 
-		The name of the module being tested 
+		Type : ``str`` 
+
+		The name of the module test. 
 		""" 
 		return self._name 
 
@@ -37,34 +67,59 @@ class _moduletest:
 		if isinstance(value, str): 
 			self._name = value 
 		else: 
-			raise TypeError("Attribute 'name' must be of type str. Got: %s" % (
+			raise TypeError("Attribute 'name' must be of type str. Got: %s" % ( 
 				type(value))) 
 
 	@property 
 	def unittests(self): 
-		""" 
-		Type :: list 
+		r""" 
+		**VICE Developer's Documentation** 
 
-		The unit tests in the module 
+		Type : ``list`` 
+
+		The unit tests in this module test. 
 		""" 
 		return self._unittests 
 
 	def new(self, obj): 
-		""" 
-		Add a unit test to the module test. 
+		r""" 
+		**VICE Developer's Documentation** 
+
+		Add a unit test to this module test. 
+
+		**Signature**: x.new(obj) 
+
+		Parameters 
+		----------
+		x : ``moduletest`` 
+			An instance of this class. 
+		obj : ``unittest`` or ``moduletest`` 
+			The unittest or another moduletest object to add to this one. 
 		""" 
 		if isinstance(obj, _unittest) or isinstance(obj, _moduletest): 
 			self._unittests.append(obj) 
 		elif obj is not None:  
-			raise TypeError("Object must be of type unittest. Got: %s" % (
-				type(obj))) 
+			raise TypeError("""\
+Object must be of type unittest or moduletest. Got: %s""" % (type(obj))) 
 		else: 
 			# the root moduletest being ran will return None when finished. 
 			pass 
 
-	def run(self, print_results = False): 
+	def run(self, print_results = True): 
 		r""" 
-		Run the module tests 
+		**VICE Deverloper's Documentation** 
+
+		Run the module tests. 
+
+		**Signature**: x.run(print_results = True) 
+
+		Parameters 
+		----------
+		x : ``moduletest`` 
+			An instance of this class. 
+		print_results : ``bool`` [default : True] 
+			Whether or not to print the total number of tests that pass, fail, 
+			and skip. 
 		""" 
 		passed = 0 
 		failed = 0 
@@ -88,7 +143,7 @@ class _moduletest:
 					failed += 1 
 				print(msg) 
 			else: 
-				passed_, failed_, skipped_ = i.run() 
+				passed_, failed_, skipped_ = i.run(print_results = False) 
 				passed += passed_ 
 				failed += failed_ 
 				skipped += skipped_ 

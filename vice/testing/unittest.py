@@ -1,5 +1,10 @@
-""" 
-This file implements the unittest object 
+r""" 
+**VICE Developer's Documentation** 
+
+This file implements an object used for unit testing. The decorators.py file 
+implements the decorator @unittest, which can be attached to a function that 
+returns a name of the unit test (a string) and another function which will be 
+called to determine the status of the test. 
 """ 
 
 from __future__ import absolute_import 
@@ -21,11 +26,29 @@ _SKIPPED_MESSAGE_ = "\033[94mSkipped\033[00m"
 
 class _unittest: 
 
-	""" 
-	A class designed to hold the information associated with a unit test and 
-	subsequently run it. 
+	r""" 
+	**VICE Developer's Documentation** 
 
-	User access of this class is strongly discouraged. 
+	The base class used for unit testing in VICE. Simply print the unit test 
+	or type-cast it to a string and the success, failure, or skipped message 
+	will be determined and included with the string/output. 
+
+	**Signature**: unittest(name, function) 
+
+	Attributes & Parameters 
+	-----------------------
+	name : ``str`` 
+		The name of the unit test. 
+	function : <function> 
+		A function to call which will determine the status of the unit test. 
+		Must return True if the unit test passes, False if it fails, and None 
+		if it skips. 
+
+	Functions 
+	---------
+	run : instance method 
+		Run the function which executes the unit test. ``self.run()`` is 
+		equivalent to ``self.function()``. 
 	""" 
 
 	def __init__(self, name, function): 
@@ -39,23 +62,24 @@ class _unittest:
 				False: 		_FAILED_MESSAGE_, 
 				None: 		_SKIPPED_MESSAGE_ 
 			}[self.run()]) 
-			# _PASSED_MESSAGE_ if self.run() else _FAILED_MESSAGE_) 
 
 	def __str__(self): 
 		return self.__repr__() 
 
-	def __enter__(self): 
-		return self 
+	# def __enter__(self): 
+	# 	return self 
 
-	def __exit__(self, exc_type, exc_value, exc_tb): 
-		return exc_value is None 
+	# def __exit__(self, exc_type, exc_value, exc_tb): 
+	# 	return exc_value is None 
 
 	@property 
 	def name(self): 
-		""" 
-		Type :: str 
+		r""" 
+		**VICE Developer's Documentation** 
 
-		The name of the test 
+		Type : ``str`` 
+
+		The name of the test. 
 		""" 
 		return self._name 
 
@@ -69,11 +93,13 @@ str. Got: %s""" % (type(value)))
 
 	@property 
 	def function(self): 
-		""" 
-		Type :: <function> 
+		r""" 
+		**VICE Developer's Documentation** 
 
-		The function to call to conduct the unit test. This must return type 
-		bool and take no arguments. 
+		Type : <function> 
+
+		The function to call to conduct the unit test. This must return True 
+		if the test passes, False if it fails, and None if it skips. 
 		""" 
 		return self._function 
 
@@ -85,8 +111,10 @@ str. Got: %s""" % (type(value)))
 			raise TypeError("Unit test function must be a callable object.") 
 
 	def run(self): 
-		""" 
-		Run this unit test 
+		r""" 
+		**VICE Developer's Documentation** 
+
+		Run this unit test. 
 		""" 
 		return self.function() 
 
