@@ -63,10 +63,26 @@ class fractional_generator(generator):
 					err_gross_with_wind) 
 				if net_no_wind == 0: success &= math.isnan(err_net_no_wind) 
 				if gross_no_wind == 0: success &= math.isnan(err_gross_no_wind) 
-				success &= 0 <= gross_no_wind <= gross_with_wind <= 1 
-				success &= net_no_wind <= net_with_wind <= 1 
-				success &= net_no_wind <= gross_no_wind 
-				success &= net_with_wind <= gross_with_wind 
+				success &= net_no_wind <= 1 
+				success &= net_with_wind <= 1 
+				success &= 0 <= gross_with_wind <= 1 
+				success &= 0 <= gross_no_wind <= 1 
+				if gross_no_wind and gross_with_wind: 
+					success &= (gross_no_wind - err_gross_no_wind <= 
+						gross_with_wind + err_gross_with_wind) 
+					success &= gross_with_wind <= 1 
+				else: pass 
+				if net_no_wind and net_with_wind: 
+					success &= (net_no_wind - err_net_no_wind <= 
+						net_with_wind + err_net_with_wind) 
+				else: pass 
+				if net_no_wind and gross_no_wind: 
+					success &= (net_no_wind - err_net_no_wind <= 
+						gross_no_wind + err_gross_no_wind) 
+				else: pass 
+				if net_with_wind and gross_with_wind: 
+					success &= (net_with_wind - err_net_with_wind <= 
+						gross_with_wind + err_gross_with_wind) 
 				if not success: break 
 			return success 
 		return [self.msg, test] 
@@ -87,7 +103,8 @@ def test():
 						MoverH = j, 
 						rotation = k, 
 						IMF = l, 
-						m_upper = _UPPER_[i] 
+						m_upper = _UPPER_[i], 
+						method = "trapezoid" 
 					) 
 					trials.append(fractional_generator(
 						"%s :: [M/H] = %g :: vrot = %g km/s :: IMF = %s" % (
