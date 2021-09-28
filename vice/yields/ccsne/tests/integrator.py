@@ -58,15 +58,23 @@ class fractional_generator(generator):
 						wind = False, net = False, **self._kwargs) 
 				except: 
 					return False 
+
+				# error should always be NaN if the yield is zero 
 				if net_with_wind == 0: success &= math.isnan(err_net_with_wind) 
 				if gross_with_wind == 0: success &= math.isnan(
 					err_gross_with_wind) 
 				if net_no_wind == 0: success &= math.isnan(err_net_no_wind) 
 				if gross_no_wind == 0: success &= math.isnan(err_gross_no_wind) 
-				success &= net_no_wind <= 1 
-				success &= net_with_wind <= 1 
+
+				# Fractional yields must always be between 0 and 1, but the net 
+				# yields can be negative 
 				success &= 0 <= gross_with_wind <= 1 
 				success &= 0 <= gross_no_wind <= 1 
+				success &= net_with_wind <= 1 
+				success &= net_no_wind <= 1 
+
+				# Compare the gross and net yields with and without winds 
+				# taking into account the numerical errors. 
 				if gross_no_wind and gross_with_wind: 
 					success &= (gross_no_wind - err_gross_no_wind <= 
 						gross_with_wind + err_gross_with_wind) 
@@ -98,6 +106,12 @@ def test():
 		for j in _MOVERH_[i]: 
 			for k in _ROTATION_[i]: 
 				for l in _IMF_: 
+					# Compute the yields with trapezoid rule - in practice 
+					# simpson's rule produces numerical errors for some 
+					# elements with the LC18 yields at [M/H] = -1 and 
+					# rotation = 300 km/s for the custom IMF. These errors are 
+					# small and are not cause for concern, but do cause the 
+					# test to spurriously fail. 
 					params = dict(
 						study = i, 
 						MoverH = j, 

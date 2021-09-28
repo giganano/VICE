@@ -15,8 +15,8 @@ from ..mlr import mlr
 
 _POSTMS_TEST_VALUES_ = [0.01 * _ for _ in range(16)] 
 _Z_TEST_VALUES_ = [0.001 * _ for _ in range(21)] 
-_TEST_MASSES_ = [0.01 * i for i in range(1, 10001)] 
-_TEST_TIMES_ = [0.01 * i for i in range(1501)] 
+_TEST_MASSES_ = [0.01 * i for i in range(1, 1001)] 
+_TEST_TIMES_ = [0.01 * i for i in range(751)] 
 
 
 @moduletest 

@@ -61,6 +61,20 @@ def snia_yield_sr(z):
 	""" 
 	return _SNIA_YIELD_SR_ 
 
+class agb_interpolator_mimic(agb.interpolator): 
+
+	# The AGB yield calculator forces yields to zero if a negative yield is 
+	# calculated for progenitor masses < 1.5 Msun to avoid numerical artifacts. 
+	# The agb.interpolator objects does not do this, so this functionality is 
+	# duplicated here in a subclass for testing purposes. 
+
+	def __call__(self, mass, metallicity): 
+		y = super().__call__(mass, metallicity) 
+		if mass < 1.5 and y < 0: 
+			return 0 
+		else: 
+			return y 
+
 
 @unittest 
 def equivalence_test(): 
@@ -88,9 +102,9 @@ def equivalence_test():
 			sneia.settings['o'] = snia_yield_o 
 			sneia.settings['fe'] = snia_yield_fe 
 			sneia.settings['sr'] = snia_yield_sr 
-			agb.settings['o'] = agb.interpolator('o') 
-			agb.settings['fe'] = agb.interpolator('fe') 
-			agb.settings['sr'] = agb.interpolator('sr') 
+			agb.settings['o'] = agb_interpolator_mimic('o') 
+			agb.settings['fe'] = agb_interpolator_mimic('fe') 
+			agb.settings['sr'] = agb_interpolator_mimic('sr') 
 		except: 
 			return None 
 		try: 
