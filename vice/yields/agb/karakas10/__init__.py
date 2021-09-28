@@ -5,6 +5,9 @@ Karakas (2010), MNRAS, 403, 1413 Asymptotic Giant Branch (AGB) star yields.
 
 Importing this module will set the AGB star yield setting for all elements up 
 to nickel to "karakas10". 
+AGB star yields will then be calculated using bi-linear interpolation in 
+progenitor mass and metallicity using these data to determine AGB star yields 
+in chemical evolution models. 
 
 .. note:: This module is not imported with a simple ``import vice`` statement. 
 

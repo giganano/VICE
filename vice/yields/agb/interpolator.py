@@ -26,8 +26,11 @@ class interpolator(interp_scheme_2d):
 
 		Recognized keywords: 
 
-			- "cristallo11": Cristallo et al. (2011) [1]_ 
-			- "karakas10": Karakas (2010) [2]_ 
+			- "cristallo11" : Cristallo et al. (2011, 2015) [1]_ [2]_ 
+			- "karakas10" : Karakas (2010) [3]_ 
+			- "ventura13" : Ventura et al. (2013) [4]_ 
+			- "karakas16": Karakas & Lugaro (2016) [5]_; Karkas et al. (2018) 
+				[6]_ 
 
 	Attributes 
 	----------
@@ -82,6 +85,18 @@ class interpolator(interp_scheme_2d):
 	yields the z-coordinates. For further details, see the associated 
 	documentation. 
 
+	.. warning:: VICE's AGB star yield interpolation routines force negative 
+		yields to zero below 1.5 :math:`M_\odot` in order to prevent numerical 
+		artifacts associated with extrapolation to stellar masses below the 
+		table of yields. This object does **not** include this functionality; 
+		numerical artifacts may be introduced as a consequence (see "Asymptotic 
+		Giant Branch Stars" under "Nucleosynthetic Yields" in VICE's science 
+		documentation: https://vice-astro.readthedocs.io/en/latest/science_documentation/index.html). 
+		If this correction is desired, users should subclass this object and 
+		add the following ``if`` statement to the ``__call__`` function for a 
+		value ``y`` returned from the inherited ``__call__`` function: 
+		``if mass < 1.5 and y < 0: return 0``. 
+
 	Example Code 
 	------------
 	>>> import vice 
@@ -121,7 +136,11 @@ class interpolator(interp_scheme_2d):
 	0.0017274533333333335 
 
 	.. [1] Cristallo et al. (2011), ApJS, 197, 17 
-	.. [2] Karakas (2010), MNRAS, 403, 1413 	
+	.. [2] Cristallo et al. (2015), ApJS, 219, 40 
+	.. [3] Karakas (2010), MNRAS, 403, 1413 
+	.. [4] Ventura et al. (2013), MNRAS, 431, 3642 
+	.. [5] Karakas & Lugaro (2016), ApJ, 825, 26 
+	.. [6] Karakas et al. (2018), MNRAS, 477, 421 
 	""" 
 
 	def __init__(self, element, study = "cristallo11"): 

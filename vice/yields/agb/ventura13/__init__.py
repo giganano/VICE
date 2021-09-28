@@ -8,6 +8,9 @@ yields.
 
 Importing this module will set the AGB star yield settings for all elements 
 where yield tables are available to "ventura13". 
+AGB star yields will then be calculated using bi-linear interpolation in 
+progenitor mass and metallicity using these data to determine AGB star yields 
+in chemical evolution models. 
 
 .. note:: This module is not imported with a simple ``import vice`` statement. 
 

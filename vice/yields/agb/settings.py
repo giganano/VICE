@@ -45,7 +45,13 @@ class settings(agb_yield_settings):
 			masses and metallicities which can be adopted directly. 
 
 			- "cristallo11" : Cristallo et al. (2011, 2015) [1]_ [2]_ 
-			- "karakas10": Karakas (2010) [3]_ 
+			- "karakas10" : Karakas (2010) [3]_ 
+			- "ventura13" : Ventura et al. (2013) [4]_ 
+			- "karakas16" : Karakas & Lugaro (2016) [5]_ ; Karakas et al. (2018) 
+				[6]_ 
+
+			.. versionadded:: 1.3.0 
+				The "ventura13" and "karakas16" models were added. 
 
 		- <function> : Mathematical function describing the yield 
 			Must accept progenitor zero age main sequence mass in 
@@ -96,6 +102,9 @@ class settings(agb_yield_settings):
 	.. [1] Cristallo et al. (2011), ApJS, 197, 17 
 	.. [2] Cristallo et al. (2015), ApJS, 219, 40 
 	.. [3] Karakas (2010), MNRAS, 403, 1413 
+	.. [4] Ventura et al. (2013), MNRAS, 431, 3642 
+	.. [5] Kakaras & Lugaro (2016), ApJ, 825, 26 
+	.. [6] Karakas et al. (2018), MNRAS, 477, 421 
 	""" 
 
 	def __init__(self): 

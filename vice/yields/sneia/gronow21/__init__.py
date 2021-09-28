@@ -3,6 +3,8 @@ Gronow et al. (2021a, b) Type Ia supernova (SN Ia) yields
 
 **Signature**: from vice.yields.sneia import gronow21 
 
+.. versionadded:: 1.3.0 
+
 Importing this module will automatically set the SN Ia yield settings for all 
 elements to the delay-time distribution integrated yields calculated with the 
 Gronow et al. (2021a, b) [1]_ [2]_ yield tables under the M10_10_1 progenitor 
