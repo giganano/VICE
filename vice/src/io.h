@@ -19,6 +19,7 @@ extern "C" {
 #include "io/agb.h" 
 #include "io/ccsne.h" 
 #include "io/multizone.h" 
+#include "io/progressbar.h" 
 #include "io/sneia.h" 
 #include "io/singlezone.h" 
 #include "io/utils.h" 

@@ -14,6 +14,7 @@ from ...yields import agb
 from ...yields import ccsne 
 from ...yields import sneia 
 from ..pickles import jar 
+from .._cutils import progressbar 
 from .. import _pyutils 
 from .. import mlr 
 import warnings 
@@ -552,7 +553,12 @@ None.""" % (self.migration.stars.mode), UserWarning)
 		else: 
 			using_hydrodisk = False 
 
-		if self.verbose: start = time.time() # for printing the ETA 
+		# if self.verbose: start = time.time() # for printing the ETA 
+		if self.verbose: 
+			print("Setting up stellar populations....") 
+			start = time.time() # for printing total setup time 
+			pbar = progressbar(maxval = n) 
+		else: pass 
 		for i in range(n): # for each timestep 
 			for j in range(self.n_zones): # for each zone 
 				if using_hydrodisk: 
@@ -584,21 +590,12 @@ None.""" % (self.migration.stars.mode), UserWarning)
 					self.setup_tracers_given_zone_timestep(j, i, n, 
 						takes_keyword = takes_keyword) 
 			if self.verbose: 
-				# Estimate an ETA by linear extrapolation 
 				percentage = 100 * (i + 1) / n 
-				ETA = (100 - percentage) / percentage * (time.time() - start) 
-				days, hours, minutes, seconds = _pyutils.format_time(ETA) 
-				if days: 
-					ETA = "%d days %02dh%02dm%02ds" % (days, hours, minutes, 
-						int(seconds)) 
-				else: 
-					ETA = "%02dh%02dm%02ds" % (hours, minutes, int(seconds)) 
-				sys.stdout.write("""\
-\rSetting up stellar populations. Progress: %.2f%% | ETA: %s""" % (
-	percentage, ETA)) 
-				sys.stdout.flush() 
+				pbar.left_hand_side = "Progress: %.2f%%" % (percentage) 
+				pbar.update(i + 1) 
 			else: pass 
 		if self.verbose: 
+			pbar.finish() 
 			setup_time = time.time() - start 
 			days, hours, minutes, seconds = _pyutils.format_time(setup_time) 
 			if days: 
@@ -606,9 +603,8 @@ None.""" % (self.migration.stars.mode), UserWarning)
 					int(seconds)) 
 			else: 
 				setup_time = "%02dh%02dm%02ds" % (hours, minutes, int(seconds)) 
-			sys.stdout.write("""\
-\rSetting up stellar populations. Progress: 100.00%% | Setup Time: %s\n""" % (
-	setup_time)) 
+				print("Setup time: %s" % (setup_time)) 
+		else: pass 
 
 		if hasattr(self.migration.stars, "write"): 
 			# revert write attribute to False 

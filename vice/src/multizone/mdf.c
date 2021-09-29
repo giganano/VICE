@@ -9,6 +9,7 @@
 #include "../singlezone.h" 
 #include "../utils.h" 
 #include "../mdf.h" 
+#include "../io.h" 
 #include "mdf.h" 
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
@@ -33,16 +34,20 @@ extern void tracers_MDF(MULTIZONE *mz) {
 		/* First reset the MDF in each zone ... */ 
 		reset_MDF(mz -> zones[i]); 
 	} 
+	PROGRESSBAR *pb; 
+	if ((*mz).verbose) {
+		printf("Computing distribution functions....\n"); 
+		pb = progressbar_initialize((*(*mz).mig).tracer_count); 
+	} else {} 
 	for (i = 0l; i < (*(*mz).mig).tracer_count; i++) {
 		/* ... then update with each tracer particle ... */ 
 		update_MDF_from_tracer(mz, *(*(*mz).mig).tracers[i]); 
-		if ((*mz).verbose) {
-			printf("\rProgress: %.1f%%", 
-				i * 100.0 / (*(*mz).mig).tracer_count); 
-			fflush(stdout); 
-		} else {} 
+		if ((*mz).verbose) progressbar_update(pb, i + 1ul); 
 	} 
-	if ((*mz).verbose) printf("\n"); 
+	if ((*mz).verbose) {
+		progressbar_finish(pb); 
+		progressbar_free(pb); 
+	} else {} 
 	for (i = 0l; i < (*(*mz).mig).n_zones; i++) {
 		/* ... and finally normalize it within each zone */ 
 		normalize_MDF(mz -> zones[i]); 

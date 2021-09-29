@@ -101,7 +101,6 @@ extern int header_length(char *file) {
 	/* Store a line in memory, check for error reading the first line */  
 	char *line = (char *) malloc (LINESIZE * sizeof(char)); 
 	if (fgets(line, LINESIZE, in) == NULL) { 
-		printf("%s\n", line); 
 		fclose(in); 
 		free(line); 
 		return -1; 
