@@ -106,20 +106,20 @@ extern unsigned short multizone_evolve(MULTIZONE *mz) {
  */ 
 extern void multizone_evolve_simple(MULTIZONE *mz) {
 
+	/* 
+	 * Allocate memory for the progressbar regardless of verbosity to avoid it 
+	 * being used uninitialized as a failsafe. 
+	 */ 
+	PROGRESSBAR *pb = progressbar_initialize((*(*mz).mig).n_zones); 
+	if ((*mz).verbose) printf("Evolving zones....\n"); 
+
 	unsigned int i; 
-	PROGRESSBAR *pb; 
-	if ((*mz).verbose) {
-		printf("Evolving zones....\n"); 
-		pb = progressbar_initialize((*(*mz).mig).n_zones); 
-	} else {} 
 	for (i = 0; i < (*(*mz).mig).n_zones; i++) { 
 		singlezone_evolve_no_setup_no_clean(mz -> zones[i]); 
 		if ((*mz).verbose) progressbar_update(pb, i + 1u); 
 	} 
-	if ((*mz).verbose) {
-		progressbar_finish(pb); 
-		progressbar_free(pb); 
-	} else {} 
+	if ((*mz).verbose) progressbar_finish(pb); 
+	progressbar_free(pb); 
 
 	/* 
 	 * Set the tracer count to the proper value for computing the MDF 

@@ -1,5 +1,5 @@
 /* 
- * This file implements a progressbar for VICE's terminal I/O. 
+ * This file implements a progressbar for VICE's verbose terminal output. 
  */ 
 
 #include <sys/ioctl.h> 
@@ -12,9 +12,11 @@
 #include <time.h> 
 #include "progressbar.h" 
 #include "../utils.h" 
+#include "../io.h" 
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
-static void progressbar_print(PROGRESSBAR pb); 
+static void progressbar_print(PROGRESSBAR *pb); 
+static void progressbar_set_strings(PROGRESSBAR *pb); 
 static unsigned long progressbar_eta(PROGRESSBAR pb); 
 static unsigned short window_width(void); 
 static char *format_time(unsigned long seconds); 
@@ -40,6 +42,8 @@ extern PROGRESSBAR *progressbar_initialize(unsigned long maxval) {
 	pb -> custom_right_hand_side = 0u; 
 	pb -> eta_mode = 635u; 
 	pb -> maxval = maxval; 
+	pb -> current = 0ul; /* start at 0 by default */ 
+	pb -> testing = 0u; 
 
 	struct timeval tv; 
 	gettimeofday(&tv, NULL); 
@@ -84,18 +88,25 @@ extern void progressbar_free(PROGRESSBAR *pb) {
  * Parameters 
  * ==========
  * pb: 		A pointer to the progressbar to assign the string for 
- * value: 	The string to assign 
+ * value: 	The string to assign. NULL to revert to default. 
  * 
  * header: progressbar.h 
  */ 
 extern void progressbar_set_left_hand_side(PROGRESSBAR *pb, char *value) {
 
-	if ((*pb).left_hand_side != NULL) free(pb -> left_hand_side); 
-	pb -> left_hand_side = (char *) malloc ((strlen(value) + 1u) * 
-		sizeof(char)); 
-	strcpy(pb -> left_hand_side, value); 
-	pb -> left_hand_side[strlen(value)] = '\0'; 
-	if (!(*pb).custom_left_hand_side) pb -> custom_left_hand_side = 1u; 
+	if ((*pb).left_hand_side != NULL) {
+		free(pb -> left_hand_side); 
+		pb -> left_hand_side = NULL; 
+	} else {} 
+	if (value != NULL) { 
+		pb -> left_hand_side = (char *) malloc ((strlen(value) + 1u) * 
+			sizeof(char)); 
+		strcpy(pb -> left_hand_side, value); 
+		pb -> left_hand_side[strlen(value)] = '\0'; 
+		if (!(*pb).custom_left_hand_side) pb -> custom_left_hand_side = 1u; 
+	} else {
+		if ((*pb).custom_left_hand_side) pb -> custom_left_hand_side = 0u; 
+	} 
 
 }
 
@@ -107,69 +118,44 @@ extern void progressbar_set_left_hand_side(PROGRESSBAR *pb, char *value) {
  * Parameters 
  * ==========
  * pb: 		A pointer to the progressbar to assign the string for 
- * value: 	The string to assign 
+ * value: 	The string to assign. NULL to revert to default. 
  * 
  * header: progressbar.h 
  */ 
 extern void progressbar_set_right_hand_side(PROGRESSBAR *pb, char *value) {
 
-	if ((*pb).right_hand_side != NULL) free(pb -> right_hand_side); 
-	pb -> right_hand_side = (char *) malloc ((strlen(value) + 1u) * 
-		sizeof(char)); 
-	strcpy(pb -> right_hand_side, value); 
-	pb -> right_hand_side[strlen(value)] = '\0'; 
-	if (!(*pb).custom_right_hand_side) pb -> custom_right_hand_side = 1u; 
+	if ((*pb).right_hand_side != NULL) { 
+		free(pb -> right_hand_side); 
+		pb -> right_hand_side = NULL; 
+	} else {} 
+	if (value != NULL) { 
+		pb -> right_hand_side = (char *) malloc ((strlen(value) + 1u) * 
+			sizeof(char)); 
+		strcpy(pb -> right_hand_side, value); 
+		pb -> right_hand_side[strlen(value)] = '\0'; 
+		if (!(*pb).custom_right_hand_side) pb -> custom_right_hand_side = 1u; 
+	} else { 
+		if ((*pb).custom_right_hand_side) pb -> custom_right_hand_side = 0u; 
+	} 
 
-}
+} 
+
 
 /* 
- * Update the progressbar's current value and refresh what's printed on the 
- * terminal window. 
+ * Updates the progressbar with a value of 0 and prints to the console. 
  * 
  * Parameters 
  * ==========
- * pb: 		A pointer to the progressbar to update 
- * value: 	The value to update the progressbar with. Assumed to be less than 
- * 			the attribute 'maxval,' though this is not enforced. 
+ * pb: 		A pointer to the current progressbar. 
  * 
  * header: progressbar.h 
  */ 
-extern void progressbar_update(PROGRESSBAR *pb, unsigned long value) {
+extern void progressbar_start(PROGRESSBAR *pb) {
 
-	pb -> current = value; 
+	progressbar_update(pb, 0ul); 
+	progressbar_print(pb); 
 
-	if (!(*pb).custom_left_hand_side) {
-		/* 
-		 * Set the default string to print on the left hand side of the 
-		 * progressbar, unless the user has overridden it. Default is how many 
-		 * of the maximum iterations have passed. 
-		 */ 
-		if (pb -> left_hand_side != NULL) free(pb -> left_hand_side); 
-		pb -> left_hand_side = (char *) malloc ((4u + 
-			(unsigned int) n_digits((*pb).current) + 
-			(unsigned int) n_digits((*pb).maxval)) * sizeof(char)); 
-		sprintf(pb -> left_hand_side, "%ld of %ld", (*pb).current, 
-			(*pb).maxval); 
-	} else {} 
-
-	if (!(*pb).custom_right_hand_side) {
-		/* 
-		 * Set the default string to print on the right hand side of the 
-		 * progressbar, unless the user has overridden it. Default is a message 
-		 * with an approximate ETA. 
-		 */ 
-		if (pb -> right_hand_side != NULL) free(pb -> right_hand_side); 
-		char *eta = format_time(progressbar_eta(*pb)); 
-		pb -> right_hand_side = (char *) malloc ((5u + strlen(eta)) * 
-			sizeof(char)); 
-		sprintf(pb -> right_hand_side, "ETA: %s", eta); 
-		free(eta); 
-	} else {} 
-
-	/* refresh the terminal window */ 
-	progressbar_print(*pb); 
-
-} 
+}
 
 
 /* 
@@ -185,8 +171,121 @@ extern void progressbar_update(PROGRESSBAR *pb, unsigned long value) {
 extern void progressbar_finish(PROGRESSBAR *pb) {
 
 	progressbar_update(pb, (*pb).maxval); 
-	printf("\n"); 
+	if (!(*pb).testing) printf("\n"); 
 	fflush(stdout); 
+
+} 
+
+
+/* 
+ * Update the progressbar's current value and refresh what's printed on the 
+ * terminal window. 
+ * 
+ * Parameters 
+ * ==========
+ * pb: 		A pointer to the progressbar to update 
+ * value: 	The value to update the progressbar with. Assumed to be less than 
+ * 			the attribute 'maxval,' though this is not enforced. 
+ * 
+ * Notes 
+ * =====
+ * The change will only be reflected if value is between 0 and (*pb).maxval 
+ * (inclusive). When called in C with this error, there is no change to the 
+ * current value and the result is the same as calling progressbar_refresh(pb). 
+ * In python, however, this results in a ValueError. 
+ * 
+ * header: progressbar.h 
+ */ 
+extern void progressbar_update(PROGRESSBAR *pb, unsigned long value) {
+
+	if (0 <= value && value <= (*pb).maxval) pb -> current = value; 
+	progressbar_print(pb); 
+
+} 
+
+
+/* 
+ * Refresh the progressbar -> updates with the current value to capture any 
+ * changes to the right or left hand side and updates the console. 
+ * 
+ * Parameters 
+ * ==========
+ * pb: 		A pointer to the current progressbar 
+ * 
+ * header: progressbar.h 
+ */ 
+extern void progressbar_refresh(PROGRESSBAR *pb) {
+
+	progressbar_print(pb); 
+
+}
+
+
+/* 
+ * Get the current state of the progressbar as a string. 
+ * 
+ * Parameters 
+ * ==========
+ * pb: 		The progressbar to get the current state of. 
+ * 
+ * Returns 
+ * =======
+ * A char pointer to the string which would be printed on the terminal window. 
+ * 
+ * header: progressbar.h 
+ */ 
+extern char *progressbar_string(PROGRESSBAR *pb) {
+
+	/* how many characters fit on one line in the terminal */ 
+	unsigned short n_cols = window_width(); 
+
+	/* 
+	 * Allocate memory for the string. In practice, allocating memory for only 
+	 * the size of the string produces a memory error, so we allocate for a 
+	 * safely large number of characters. 
+	 * Here is also where the strings on the left and right hand sides of the 
+	 * bar get assigned, hence why this takes a pointer. 
+	 */ 
+	char *current = (char *) malloc (LINESIZE * sizeof(char)); 
+	progressbar_set_strings(pb); 
+
+	/* 
+	 * Make space for the strings on the left and right hand sides as well as 
+	 * whitespace between the strings and the bar itself. 
+	 */ 
+	short bar_width = (signed) n_cols - 4u; 
+	if ((*pb).left_hand_side != NULL) bar_width -= (signed) strlen(
+		(*pb).left_hand_side); 
+	if ((*pb).right_hand_side != NULL) bar_width -= (signed) strlen(
+		(*pb).right_hand_side); 
+
+	if (bar_width > 0) {
+		/* n_chars : how full the progressbar is in its current state. */ 
+		unsigned short i, n_chars; 
+		n_chars = (double) ((*pb).current) / (*pb).maxval * bar_width; 
+		if ((*pb).left_hand_side != NULL) strcpy(current, 
+			(*pb).left_hand_side); 
+		strcat(current, " ["); 
+		for (i = 0u; i < n_chars; i++) strcat(current, "="); 
+		if ((*pb).current < (*pb).maxval) {
+			strcat(current, ">"); 
+		} else {
+			strcat(current, "="); 
+		}
+		for (i = 0u; i < bar_width - n_chars; i++) strcat(current, " "); 
+		strcat(current, "] "); 
+		if ((*pb).right_hand_side != NULL) strcat(current, 
+			(*pb).right_hand_side); 
+		strcat(current, "\0"); 
+	} else {
+		/* 
+		 * Not enough space for the progressbar -> terminal window is small. 
+		 * Return a blank string in this case. 
+		 */ 
+		current[0] = '\0'; 
+	} 
+
+	return current; 
 
 } 
 
@@ -197,36 +296,61 @@ extern void progressbar_finish(PROGRESSBAR *pb) {
  * Parameters 
  * ==========
  * pb: 		The progressbar object controlling what's printed. 
+ * 
+ * Notes 
+ * =====
+ * This function accepts a pointer because it also calls the functions which 
+ * set up the string that gets printed, which in turn require the pointer. 
  */ 
-static void progressbar_print(PROGRESSBAR pb) {
+static void progressbar_print(PROGRESSBAR *pb) {
 
-	/* how many characters fit on 1 line in the terminal */ 
-	unsigned short n_cols = window_width(); 
-
-	/* 
-	 * Make space for the strings on the left and right hand sides as well as 
-	 * whitespace between the strings and the bar itself. 
-	 */ 
-	short bar_width = (signed) (n_cols - strlen(pb.left_hand_side) - 
-		strlen(pb.right_hand_side) - 4u); 
-
-	if (bar_width > 0) {
-		unsigned short i, n_chars; 
-		n_chars = (double) (pb.current) / pb.maxval * bar_width; 
-		printf("\r%s [", pb.left_hand_side); 
-		for (i = 0u; i <= n_chars; i++) printf("="); 
-		if (pb.current < pb.maxval) printf(">"); 
-		for (i = 0u; i < bar_width - n_chars - 1; i++) printf(" "); 
-		printf("] %s", pb.right_hand_side); 
-		fflush(stdout); 
-	} else {
-		/* 
-		 * Not enough space for the progressbar => terminal window is small. 
-		 * Do nothing in this case. 
-		 */ 
-	} 
+	char *current = progressbar_string(pb); 
+	if (!(*pb).testing) printf("\r%s", current); /* don't print if testing */ 
+	free(current); 
+	fflush(stdout); 
 
 } 
+
+
+/* 
+ * Assign the strings that appear on the left and right hand sides of the 
+ * progressbar. 
+ * 
+ * Parameters 
+ * ==========
+ * pb: 		A pointer to the progressbar to assign the strings for. 
+ */ 
+static void progressbar_set_strings(PROGRESSBAR *pb) {
+
+	if (!(*pb).custom_left_hand_side) { 
+		/* 
+		 * Set the default string to print on the left hand side of the 
+		 * progressbar, unless the user has overridden it. Default is how many 
+		 * of the maximum iterations have passed. 
+		 */ 
+		if (pb -> left_hand_side != NULL) free(pb -> left_hand_side); 
+		pb -> left_hand_side = (char *) malloc ((4u + 
+			(unsigned int) n_digits((*pb).current) + 
+			(unsigned int) n_digits((*pb).maxval)) * sizeof(char)); 
+		sprintf(pb -> left_hand_side, "%ld of %ld", (*pb).current, 
+			(*pb).maxval); 
+	} else {} 
+
+	if (!(*pb).custom_right_hand_side) { 
+		/* 
+		 * Set the default string to print on the right hand side of the 
+		 * progressbar, unless the user has overridden it. Default is a message 
+		 * with an approximate ETA. 
+		 */ 
+		if (pb -> right_hand_side != NULL) free(pb -> right_hand_side); 
+		char *eta = format_time(progressbar_eta(*pb)); 
+		pb -> right_hand_side = (char *) malloc ((5u + strlen(eta)) * 
+			sizeof(char)); 
+		sprintf(pb -> right_hand_side, "ETA: %s", eta); 
+		free(eta); 
+	} else {} 
+
+}
 
 
 /* 

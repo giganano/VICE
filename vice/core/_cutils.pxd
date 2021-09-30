@@ -15,13 +15,17 @@ cdef extern from "../src/io/progressbar.h":
 		unsigned short custom_left_hand_side 
 		unsigned short custom_right_hand_side 
 		unsigned short eta_mode 
+		unsigned short testing 
 
 	PROGRESSBAR *progressbar_initialize(unsigned long maxval) 
 	void progressbar_free(PROGRESSBAR *pb) 
 	void progressbar_set_left_hand_side(PROGRESSBAR *pb, char *value) 
 	void progressbar_set_right_hand_side(PROGRESSBAR *pb, char *value) 
-	void progressbar_update(PROGRESSBAR *pb, unsigned long value) 
+	void progressbar_start(PROGRESSBAR *pb) 
 	void progressbar_finish(PROGRESSBAR *pb) 
+	void progressbar_update(PROGRESSBAR *pb, unsigned long value) 
+	void progressbar_refresh(PROGRESSBAR *pb) 
+	char *progressbar_string(PROGRESSBAR *pb) 
 
 cdef class progressbar: 
 	cdef PROGRESSBAR *_pb 
