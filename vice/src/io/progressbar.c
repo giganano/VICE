@@ -198,7 +198,8 @@ extern void progressbar_finish(PROGRESSBAR *pb) {
  */ 
 extern void progressbar_update(PROGRESSBAR *pb, unsigned long value) {
 
-	if (0 <= value && value <= (*pb).maxval) pb -> current = value; 
+	/* No need to make sure an unsigned number is positive */ 
+	if (value <= (*pb).maxval) pb -> current = value; 
 	progressbar_print(pb); 
 
 } 
@@ -253,7 +254,7 @@ extern char *progressbar_string(PROGRESSBAR *pb) {
 	 * Make space for the strings on the left and right hand sides as well as 
 	 * whitespace between the strings and the bar itself. 
 	 */ 
-	short bar_width = (signed) n_cols - 4u; 
+	short bar_width = (signed) n_cols - 4; 
 	if ((*pb).left_hand_side != NULL) bar_width -= (signed) strlen(
 		(*pb).left_hand_side); 
 	if ((*pb).right_hand_side != NULL) bar_width -= (signed) strlen(
@@ -419,7 +420,7 @@ static unsigned short window_width(void) {
 	 * far right side of the progressbar. 
 	 */ 
 	struct winsize w; 
-	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w); 
+	ioctl(0, TIOCGWINSZ, &w); 
 	return w.ws_col - 1u; 
 
 } 
