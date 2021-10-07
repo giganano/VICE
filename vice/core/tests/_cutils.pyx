@@ -1,7 +1,7 @@
 # cython: language_level = 3, boundscheck = False 
 
 from __future__ import absolute_import 
-__all__ = ["test"] 
+__all__ = ["test", "test_progressbar"] 
 from ..._globals import _VERSION_ERROR_ 
 from ..._globals import _RECOGNIZED_IMFS_ 
 from ...testing import moduletest 
@@ -50,8 +50,8 @@ def test():
 			test_ordinals(), 
 			test_copy_pylist(), 
 			test_copy_2Dpylist(), 
-			test_map_pyfunc_over_array(), 
-			test_progressbar(run = False) 
+			test_map_pyfunc_over_array() 
+			# test_progressbar(run = False) 
 		] 
 	] 
 
