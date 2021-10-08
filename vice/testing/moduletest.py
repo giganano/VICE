@@ -10,10 +10,19 @@ objects.
 
 from __future__ import absolute_import 
 __all__ = ["_moduletest"] 
+from .._globals import _VERSION_ERROR_
 from .unittest import _SKIPPED_MESSAGE_ 
 from .unittest import _PASSED_MESSAGE_ 
 from .unittest import _FAILED_MESSAGE_ 
 from .unittest import _unittest 
+import sys
+import io
+if sys.version_info[:2] == (2, 7):
+	strcomp = basestring
+elif sys.version_info[:2] >= (3, 5):
+	strcomp = str
+else:
+	_VERSION_ERROR_()
 
 
 class _moduletest: 
@@ -105,7 +114,7 @@ Object must be of type unittest or moduletest. Got: %s""" % (type(obj)))
 			# the root moduletest being ran will return None when finished. 
 			pass 
 
-	def run(self, print_results = True): 
+	def run(self, print_results = True, outfile = None): 
 		r""" 
 		**VICE Deverloper's Documentation** 
 
@@ -121,13 +130,25 @@ Object must be of type unittest or moduletest. Got: %s""" % (type(obj)))
 			Whether or not to print the total number of tests that pass, fail, 
 			and skip. 
 		""" 
+		if outfile is not None:
+			if isinstance(outfile, strcomp):
+				out = open(outfile, "w")
+			elif isinstance(outfile, io.IOBase):
+				out = outfile
+			else:
+				raise TypeError("""Outfile must of type str or a file output \
+stream. Got: %s""" % (type(outfile)))
+		else: pass
+
 		passed = 0 
 		failed = 0 
 		skipped = 0 
 		if self.name is not None: 
-			print("\033[96m%s\033[00m" % (self.name)) 
+			msg = "\033[96m%s\033[00m" % (self.name)
+			print(msg)
+			if out is not None: out.write("%s\n" % (msg))
 		else: 
-			pass 
+			out = None
 		for i in self._unittests: 
 			if isinstance(i, _unittest): 
 				x = i.run() 
@@ -142,19 +163,30 @@ Object must be of type unittest or moduletest. Got: %s""" % (type(obj)))
 					msg += _FAILED_MESSAGE_ 
 					failed += 1 
 				print(msg) 
+				if out is not None: out.write("%s\n" % (msg))
 			else: 
-				passed_, failed_, skipped_ = i.run(print_results = False) 
+				passed_, failed_, skipped_ = i.run(print_results = False,
+					outfile = out)
 				passed += passed_ 
 				failed += failed_ 
 				skipped += skipped_ 
-		if print_results: 
-			if not failed and not skipped: 
-				print("\n\033[92mAll tests passed. (%d)\033[00m\n" % (passed)) 
-			else: 
-				print("\n\033[92m%d tests passed.\033[00m" % (passed)) 
-				print("\033[91m%d tests failed.\033[00m" % (failed)) 
-				print("\033[94m%d tests skipped.\033[00m\n" % (skipped)) 
-		else: 
-			pass 
-		return [passed, failed, skipped] 
+		if print_results:
+			if not failed and not skipped:
+				msg = "\n\033[92mAll tests passed. (%d)\033[00m\n" % (passed)
+			else:
+				msg = """
+
+\033[92m%d tests passed.\033[00m
+\033[91m%d tests failed.\033[00m
+\033[94m%d tests skipped.\033[00m
+
+""" % (passed, failed, skipped)
+			print(msg)
+		else: pass
+		if out is not None and print_results:
+			# Only run these lines if this is the root of the moduletest tree
+			out.write("%s\n" % (msg))
+			out.close()
+		else: pass
+		return [passed, failed, skipped]
 

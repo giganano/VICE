@@ -48,7 +48,7 @@ def moduletest(function):
 	``other_moduletest_2()`` also have the ``@moduletest`` decorator applied. 
 	""" 
 	@functools.wraps(function) 
-	def wrapper(run = True): 
+	def wrapper(run = True, outfile = None): 
 		try: 
 			description, unittests = function() 
 		except TypeError: 
@@ -63,7 +63,7 @@ def moduletest(function):
 			for i in unittests: 
 				test.new(i) 
 		if run: 
-			test.run(print_results = True) 
+			test.run(print_results = True, outfile = outfile)
 		else: 
 			return test 
 	return wrapper 

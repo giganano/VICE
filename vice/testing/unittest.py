@@ -66,12 +66,6 @@ class _unittest:
 	def __str__(self): 
 		return self.__repr__() 
 
-	# def __enter__(self): 
-	# 	return self 
-
-	# def __exit__(self, exc_type, exc_value, exc_tb): 
-	# 	return exc_value is None 
-
 	@property 
 	def name(self): 
 		r""" 

@@ -25,10 +25,6 @@ if not __VICE_SETUP__:
 		return ["vice.core.ssp", 
 			[ 
 				remnants.test_kalirai08(), 
-				# crf.test_cumulative_return_fraction(), 
-				# crf.test_setup_cumulative_return_fraction(), 
-				# msmf.test_main_sequence_mass_fraction(), 
-				# msmf.test_setup_main_sequence_mass_fraction(), 
 				crf.test(run = False), 
 				msmf.test(run = False), 
 				ssp.test(run = False) 
