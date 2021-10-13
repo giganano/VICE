@@ -8,7 +8,7 @@ Gronow et al. (2021a, b) Type Ia supernova (SN Ia) yields
 Importing this module will automatically set the SN Ia yield settings for all 
 elements to the delay-time distribution integrated yields calculated with the 
 Gronow et al. (2021a, b) [1]_ [2]_ yield tables under the M10_10_1 progenitor 
-model. This study reports yields for double detonations of sub-Chandrasekhar 
+model. These studies reports yields for double detonations of sub-Chandrasekhar 
 mass (1.4 :math:`M_\odot`) white dwarfs at various progenitor metallicities, 
 with the solar metallicity yields published in Gronow et al. (2021a) and those 
 for remaining metallicities (:math:`Z / Z_\odot` = 0.01, 0.1, and 3) in Gronow 
