@@ -80,11 +80,21 @@ extern short sign(double x);
  */ 
 extern unsigned long simple_hash(char *str); 
 
-/* 
- * Seeds the random number generator off of the current time. 
- * 
- * source: utils.c 
- */ 
+/*
+ * Seeds the random number generator off of the current time.
+ *
+ * Notes
+ * =====
+ * This function uses the current time of day to seed the random number
+ * generator. It can be reseeded every 25 microseconds. This is nearly the
+ * fastest it can be reseeded if seeding based on time with srand. srand takes
+ * an unsigned int as a parameter, the maximum values for which is 2^32 - 1.
+ * Dividing up the amount of time in one day by this value yields 20.116568
+ * microseconds. This function thus divides the time of day in microseconds
+ * by 25, using an overestimate to be safe, and uses this as the RNG seed.
+ *
+ * header: utils.h
+ */
 extern void seed_random(void); 
 
 /* 
