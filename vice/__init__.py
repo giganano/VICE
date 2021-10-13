@@ -132,7 +132,7 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 		try: 
 			from .version import version 
 			__version__ = str(version) 
-			if not version.released: 
+			if not version.isreleased: 
 				warnings.warn("Using un-released version of VICE", UserWarning)
 			from .milkyway import milkyway 
 			from . import milkyway 
