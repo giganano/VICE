@@ -1,51 +1,88 @@
 
-Installing VICE 
+Installing VICE
 +++++++++++++++
 
-Binary installers of the latest version of VICE for python versions 3.6-3.9 
-on Mac OS X and Linux operating systems can be found on PyPI_. We recommend 
-that VICE be installed in this manner by running ``pip install vice [--user]`` 
-from a bash terminal. Users should add the ``--user`` flag if they do not have 
-administrator privileges; this will install VICE to their ``~/.local`` 
-directory. 
+Pre-compiled binary installers of the latest version of VICE can be found on
+PyPI_.
+We recommend that users install VICE in this manner by running
+``python -m pip install vice [--user]`` from a terminal.
+Users should add the ``--user`` flag if they do not have administrative
+priviliges on their current machine; this will install VICE to their
+``~/.local`` directory.
+In this version, the PyPI_ installer is available for python versions 3.6-3.10
+on computers with an x86_64 CPU architecture running Mac OS and Linux operating
+systems.
 
-.. _PyPI: https://pypi.org/project/vice/ 
+.. _PyPI: https://pypi.org/project/vice/
 
-Designed for Unix system architectures, VICE does not function within a 
-windows environment. Windows users should therefore install VICE within the 
-`Windows Subsystem for Linux (WSL)`__. An `installation from source`__ on a 
-windows machine should also be ran from within WSL. 
+Designed for systems with a Unix kernel, VICE does not function within a
+windows environment.
+Windows users should therefore install VICE within the
+`Windows Subsystem for Linux (WSL)`__.
+Provided that the call to ``pip`` is ran from within WSL, the pre-compiled
+binary installer from PyPI_ should install VICE properly.
+An `installation from source`__ on a windows machine must also be ran within
+WSL.
 
-__ WSL_ 
-__ `Installing from Source`_ 
-.. _WSL: https://docs.microsoft.com/en-us/windows/wsl/install-win10 
+__ WSL_
+__ `Installing from Source`_
+.. _WSL: https://docs.microsoft.com/en-us/windows/wsl/install-win10
 
+Users wishing to install VICE on machines with CPU architectures other than
+x86_64 must conduct an `installation from source`__.
+This includes Linux computers with AArch64 hardware as well as the new ARM64
+Apple Silicon computers.
+At present, the developers do not have the necessary resources to pre-compile
+VICE for these machines; we apologize for the inconvenience.
+Although an `installation from source`__ is possible on 32-bit hardware (e.g.
+i686 CPUs), we strongly discourage running VICE on such machines.
 
-Users who have or would like to modify VICE's source code should conduct an 
-`installation from source`__. 
-This also applies to users who would like to install for a development version 
-of python, such as 3.10, as well as to versions of VICE still in development, 
-which can be found on alternate branches of its `GitHub repository`__. 
-Installing from source is also an alternative in the event that the PyPI_ 
-installation fails for some reason. 
+__ `Installing from Source`_
+__ `Installing from Source`_
+
+Users who have or would like to modify VICE's source code must conduct an
+`installation from source`__.
+This also applies to users who would like to install a version of VICE that
+is still under development (these can be found on various branches of its
+`GitHub repository`__) as well as for versions of python still under
+development.
+
+__ `Installing from Source`_
+__ repo_
+.. _repo: https://github.com/giganano/VICE.git
+
+Although it is generally not advised to mix package managers, this is not a
+concern for VICE.
+At present, a pre-compiled installation of VICE is not available through
+conda_, though users who typically install their python packages and manage
+their computing environments with conda_ can safely conduct their installation
+of VICE using ``pip``.
+`As noted below`__, VICE has no run-time dependencies, meaning that there is
+no environment that would need solved in the event the installation were 
+conducted using conda_.
+In this case, the package manager would simply see that the list of
+dependencies is empty, then download the pre-compiled binary and install it.
+
+__ `Dependencies`_
+.. _conda: https://docs.conda.io/en/latest/
+
 If you have already installed VICE and would like help getting started, we 
 recommend checking out VICE's tutorial_. 
 Further usage guidelines can be found :ref:`here <getting_started>`. 
 
-__ `Installing from Source`_ 
-__ repo_ 
-.. _repo: https://github.com/giganano/VICE.git 
 .. _tutorial: https://github.com/giganano/VICE/blob/master/examples/QuickStartTutorial.ipynb
 
 .. Contents:: 
 
 Dependencies 
 ============
-VICE has no *primary* runtime dependencies; that is, it does not require any 
-external software to run properly. There are however a handful of features 
-which are enabled when certain dependencies are satisfied, and we recommend 
-users install them to make use of VICE to its full extent. These *secondary* 
-dependencies are as follows: 
+VICE has no *primary* run-time dependencies; that is, it does not require any
+external software to run properly.
+All that is required to run VICE is python itself.
+There are however a handful of features which are enabled when certain
+dependencies are satisfied, and we recommend users install them to make use of
+VICE to its full extent.
+These *secondary* dependencies are as follows: 
 
 1. dill_ >= 0.2.0 
 	dill_ allows VICE to save python functions with its output. This makes it 
@@ -79,9 +116,9 @@ is designed to run independently of them.
 .. _pandas: https://pypi.org/project/pandas/ 
 
 
-Installing from Source  
+Installing from Source
 ======================
-While VICE does not have any primary runtime dependencies, there are several 
+While VICE does not have any primary run-time dependencies, there are several 
 compile-time dependencies that must be satisfied to install from source. They 
 are as follows: 
 
