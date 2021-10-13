@@ -138,7 +138,8 @@ Object must be of type unittest or moduletest. Got: %s""" % (type(obj)))
 			else:
 				raise TypeError("""Outfile must of type str or a file output \
 stream. Got: %s""" % (type(outfile)))
-		else: pass
+		else: 
+			out = None
 
 		passed = 0 
 		failed = 0 

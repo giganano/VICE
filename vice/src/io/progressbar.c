@@ -18,7 +18,7 @@
 static void progressbar_print(PROGRESSBAR *pb); 
 static void progressbar_set_strings(PROGRESSBAR *pb); 
 static unsigned long progressbar_eta(PROGRESSBAR pb); 
-static unsigned short window_width(void); 
+static unsigned short window_width(PROGRESSBAR pb); 
 static char *format_time(unsigned long seconds); 
 static unsigned short n_digits(double value); 
 
@@ -238,7 +238,7 @@ extern void progressbar_refresh(PROGRESSBAR *pb) {
 extern char *progressbar_string(PROGRESSBAR *pb) {
 
 	/* how many characters fit on one line in the terminal */ 
-	unsigned short n_cols = window_width(); 
+	unsigned short n_cols = window_width(*pb); 
 
 	/* 
 	 * Allocate memory for the string. In practice, allocating memory for only 
@@ -268,12 +268,10 @@ extern char *progressbar_string(PROGRESSBAR *pb) {
 			(*pb).left_hand_side); 
 		strcat(current, " ["); 
 		for (i = 0u; i < n_chars; i++) strcat(current, "="); 
-		if ((*pb).current < (*pb).maxval) {
-			strcat(current, ">"); 
-		} else {
-			strcat(current, "="); 
-		}
-		for (i = 0u; i < bar_width - n_chars; i++) strcat(current, " "); 
+		if ((*pb).current < (*pb).maxval) strcat(current, ">");
+		for (i = 0u;
+			i < (unsigned) bar_width - n_chars - (bar_width != n_chars) * 1u;
+			i++) strcat(current, " ");
 		strcat(current, "] "); 
 		if ((*pb).right_hand_side != NULL) strcat(current, 
 			(*pb).right_hand_side); 
@@ -413,17 +411,31 @@ static unsigned long progressbar_eta(PROGRESSBAR pb) {
  * The total number of columns in the window minus 1 to make room for the 
  * cursor on the same line. 
  */ 
-static unsigned short window_width(void) {
+static unsigned short window_width(PROGRESSBAR pb) {
 
-	/* 
-	 * Subtract 1 from the window width to make room for the cursor on the 
-	 * far right side of the progressbar. 
-	 */ 
-	struct winsize w; 
-	ioctl(0, TIOCGWINSZ, &w); 
-	return w.ws_col - 1u; 
+	if (pb.testing) {
+		/*
+		 * GitHub actions has a different ioctl than a Mac OS or Linux desktop,
+		 * so the usual routine at the bottom of this function doesn't work.
+		 * When GitHub actions runs this function, simply assume a window
+		 * width of 100 for the sake of testing purposes.
+		 * GitHub actions sets the environment variable GITHUB_ACTIONS="true"
+		 */
+		char *github_actions = getenv("GITHUB_ACTIONS");
+		if (github_actions != NULL) {
+			if (!strcmp(github_actions, "true")) return 100u;
+		} else {}
+	} else {}
 
-} 
+	/*
+	 * Subtract 1 from the window width to make room for the cursor on the
+	 * far right side of the progressbar.
+	 */
+	struct winsize w;
+	ioctl(0, TIOCGWINSZ, &w);
+	return w.ws_col - 1u;
+
+}
 
 
 /* 

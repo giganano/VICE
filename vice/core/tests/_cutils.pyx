@@ -50,8 +50,8 @@ def test():
 			test_ordinals(), 
 			test_copy_pylist(), 
 			test_copy_2Dpylist(), 
-			test_map_pyfunc_over_array() 
-			# test_progressbar(run = False) 
+			test_map_pyfunc_over_array(),
+			test_progressbar(run = False)
 		] 
 	] 
 
@@ -106,7 +106,20 @@ def test_progressbar_string():
 			str(_TEST_PBAR_) 
 		except: 
 			return False 
-		status = len(str(_TEST_PBAR_)) == os.get_terminal_size().columns 
+		status = True
+		# Only compare to terminal size if this isn't GitHub actions
+		# GitHub actions has a different ioctl than a Mac OS or Linux desktop,
+		# so getting the window width the routine at vice/src/io/progressbar.c
+		# doesn't work. Instead, when CI testing with GitHub actions that
+		# routine simply assumes a window width of 100.
+		if ("GITHUB_ACTIONS" in os.environ.keys() and
+			os.environ["GITHUB_ACTIONS"] == "true"):
+			status &= len(str(_TEST_PBAR_)) == 100
+		else:
+			status &= (
+				# One space is left for the cursor at the end of the line.
+				len(str(_TEST_PBAR_)) == os.get_terminal_size().columns - 1
+			)
 		status &= str(_TEST_PBAR_).startswith(_TEST_PBAR_.left_hand_side) 
 		status &= str(_TEST_PBAR_).endswith(_TEST_PBAR_.right_hand_side) 
 		return status 
