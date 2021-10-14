@@ -184,7 +184,6 @@ cdef class multizone_tester:
 				return status
 			else:
 				return True
-			# return not "test.vice" in os.listdir(os.getcwd())
 		return ["vice.core.multizone.outfile_check", test]
 
 
