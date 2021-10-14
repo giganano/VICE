@@ -1,5 +1,5 @@
 
-SUBDIRS := $(wildcard */) 
+SUBDIRS := $(filter-out __pycache__/, $(wildcard */)) 
 
 .PHONY: clean 
 clean: 
@@ -8,6 +8,7 @@ clean:
 		rm -rf __pycache__ ; \
 	fi 
 	@ rm -f version_breakdown.py 
+	@ rm -f *.log
 	@ rm -f *.out 
 	@ rm -f *.pyc 
 	@ rm -f *.vice.zip 

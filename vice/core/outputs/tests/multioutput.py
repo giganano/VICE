@@ -14,7 +14,10 @@ def test_multioutput():
 	from ...multizone import multizone 
 	def test(): 
 		try: 
-			multizone(name = "test", n_zones = 3).run(
+			# Run with 5 zones to prevent missing files from linux .nfs files
+			# causing IOErrors associated with reading in the output. See
+			# vice.core.multizone.outfile_check unit test for details.
+			multizone(name = "test", n_zones = 5).run(
 				[0.01 * i for i in range(1001)], 
 				overwrite = True) 
 			test_ = multioutput("test") 

@@ -91,7 +91,7 @@ yield presets. Please choose an alternate name.""")
 			try: 
 				# simply try to import the file 
 				__import__(new_name) 
-				os.system("cp %s.py %s/yields/presets/" % (new_name, 
+				os.system("cp %s.py %syields/presets/" % (new_name, 
 					_DIRECTORY_)) 
 			except Exception as exc: 
 				raise RuntimeError("""Could not import specified file. \

@@ -8,7 +8,6 @@ from ..objects._ssp cimport ssp_free
 
 
 cdef extern from "../../src/ssp.h": 
-	double main_sequence_turnoff_mass(double t, double postMS) 
 	double *single_population_enrichment(SSP *ssp, ELEMENT *e, 
 		double Z, double *times, unsigned long n_times, double mstar) 
 	double CRF(SSP ssp, double time) 

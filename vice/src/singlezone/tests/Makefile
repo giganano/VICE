@@ -6,7 +6,7 @@ HEADERS 			:= $(wildcard *.h)
 OBJECTS 			:= $(SOURCES:.c=.o) 
 CYTHON_SOURCES 		:= $(wildcard *.pyx) 
 CYTHON_OUTPUTS 		:= $(CYTHON_SOURCES:.pyx=.c) 
-SUBDIRS 			:= $(wildcard */) 
+SUBDIRS 			:= $(filter-out __pycache__/, $(wildcard */)) 
 
 all: print_message $(OBJECTS) $(SUBDIRS) 
 
@@ -28,7 +28,6 @@ clean:
 	@ if [ -d "__pycache__" ] ; then \
 		rm -rf __pycache__ ; \
 	fi 
-	@ rm -rf __pycache__ 
 	@ for i in $(OBJECTS) ; do \
 		rm -f $$i ; \
 	done 

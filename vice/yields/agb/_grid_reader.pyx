@@ -46,11 +46,11 @@ def yield_grid(element, study = "cristallo11"):
 
 		Recognized Keywords: 
 
-			- "cristallo11" : Cristallo et al. (2011) [1]_ 
-			- "karakas10" : Karakas (2010) [2]_ 
-			- "ventura13" : Ventura et al. (2013) [3]_ 
-			- "karakas16": Karakas & Lugaro (2016) [4]_; Karkas et al. (2018) 
-			  [5]_ 
+			- "cristallo11" : Cristallo et al. (2011, 2015) [1]_ [2]_ 
+			- "karakas10" : Karakas (2010) [3]_ 
+			- "ventura13" : Ventura et al. (2013) [4]_ 
+			- "karakas16": Karakas & Lugaro (2016) [5]_; Karkas et al. (2018) 
+				[6]_ 
 
 	Returns 
 	-------
@@ -97,10 +97,11 @@ def yield_grid(element, study = "cristallo11"):
 	    2.32254e-09
 
 	.. [1] Cristallo et al. (2011), ApJS, 197, 17 
-	.. [2] Karakas (2010), MNRAS, 403, 1413 
-	.. [3] Ventura et al. (2013), MNRAS, 431, 3642 
-	.. [4] Kakaras & Lugaro (2016), ApJ, 825, 26 
-	.. [5] Karakas et al. (2018), MNRAS, 477, 421 
+	.. [2] Cristallo et al. (2015), ApJS, 219, 40 
+	.. [3] Karakas (2010), MNRAS, 403, 1413 
+	.. [4] Ventura et al. (2013), MNRAS, 431, 3642 
+	.. [5] Kakaras & Lugaro (2016), ApJ, 825, 26 
+	.. [6] Karakas et al. (2018), MNRAS, 477, 421 
 	"""
 	# Type checking  
 	if not isinstance(element, strcomp): 

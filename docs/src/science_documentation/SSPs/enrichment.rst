@@ -17,20 +17,20 @@ production of the element as a function of the stellar population's age.
 The star cluster is assumed to form at time :math:`t = 0`, and thus at this 
 time there is no net production. Because VICE operates under the assumption 
 that all core-collapse supernovae (CCSNe) occur instantaneously following the 
-star cluster's formation [11]_, the entire CCSN net yield is injected within 
+star cluster's formation [33]_, the entire CCSN net yield is injected within 
 the first timestep at :math:`t = \Delta t`: 
 
 .. math:: \Delta M_x = y_x^\text{CC}(Z) M_\star 
 
 where :math:`y_x^\text{CC}(Z)` is the user's current setting for CCSN yields 
 at a stellar metallicity Z. At subsequent timesteps, enrichment from 
-asymptotic giant branch (AGB) stars is injected according to [12]_: 
+asymptotic giant branch (AGB) stars is injected according to [34]_: 
 
 .. math:: \dot{M}_x^\text{AGB}\Delta t \approx 
 	y_x^\text{AGB}(m_\text{postMS}(t), Z)M_\star
 	\left[h(t) - h(t + \Delta t)\right] 
 
-and from type Ia supernovae (SN Ia) according to [13]_: 
+and from type Ia supernovae (SN Ia) according to [35]_: 
 
 .. math:: \dot{M}_x^\text{Ia}\Delta t \approx 
 	y_x^\text{Ia}(Z) M_\star \frac{
@@ -51,10 +51,10 @@ Relevant Source Code:
 	- ``vice/core/ssp/_ssp.pyx`` 
 
 
-.. [11] See the discussion of :ref:`enrichment from CCSNe <enr_ccsne>` for 
+.. [33] See the discussion of :ref:`enrichment from CCSNe <enr_ccsne>` for 
 	justification of this assumption. 
 
-.. [12] Justification of this can be found :ref:`here <enr_agb>`. 
+.. [34] Justification of this can be found :ref:`here <enr_agb>`. 
 
-.. [13] Justification of this can be found :ref:`here <enr_sneia>`. 
+.. [35] Justification of this can be found :ref:`here <enr_sneia>`. 
 

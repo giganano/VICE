@@ -15,7 +15,8 @@ def test():
 	return ["vice.yields.sneia.imports", 
 		[ 
 			test_iwamoto99_import(), 
-			test_seitenzahl13_import() 
+			test_seitenzahl13_import(), 
+			test_gronow21_import() 
 		] 
 	] 
 
@@ -47,4 +48,18 @@ def test_seitenzahl13_import():
 			return False 
 		return True 
 	return ["vice.yields.sneia.seitenzahl13", test] 
+
+
+@unittest 
+def test_gronow21_import(): 
+	r""" 
+	from vice.yields.sneia import gronow21 unit test 
+	""" 
+	def test(): 
+		try: 
+			from .. import gronow21 
+		except: 
+			return False 
+		return True 
+	return ["vice.yields.sneia.gronow21", test] 
 

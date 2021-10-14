@@ -34,6 +34,7 @@ from ...yields import agb
 from ...yields import ccsne 
 from ...yields import sneia 
 from .. import _pyutils 
+from ..mlr import mlr 
 import math as m 
 import warnings 
 import numbers 
@@ -60,6 +61,7 @@ from ..objects cimport _element
 from ..objects cimport _singlezone 
 from ..objects cimport _sneia 
 from ..objects cimport _agb 
+from .. cimport _mlr 
 from . cimport _singlezone 
 
 _RECOGNIZED_MODES_ = tuple(["ifr", "sfr", "gas"]) 
@@ -1305,17 +1307,24 @@ All elemental yields in the current simulation will be set to the table of \
 		cdef int enrichment 
 		if self.open_output_dir(overwrite): 
 
-			# warn the user about r-process elements and bad solar calibrations 
+			# warn the user about r-process elements, bad solar calibrations, 
+			# and mass-lifetime relation effects 
 			self.nsns_warning() 
 			self.solar_z_warning() 
+			self.mlr_warnings() 
+
+			# take the current mass-lifetime relation setting 
+			self.import_mlr_data() 
+			_mlr.set_mlr_hashcode(_mlr._mlr_linker.__NAMES__[mlr.setting]) 
 
 			# just do it #nike 
 			self._sz[0].output_times = copy_pylist(output_times) 
 			self._sz[0].n_outputs = len(output_times) 
 			enrichment = _singlezone.singlezone_evolve(self._sz) 
 
-			# save yield settings and attributes 
+			# save yield settings and attributes, free mass-lifetime data 
 			self.pickle() 
+			self.free_mlr_data() 
 
 		else: 
 			_singlezone.singlezone_cancel(self._sz) 
@@ -1790,6 +1799,74 @@ arbitrary normalization."""
 			warnings.warn(message, ScienceWarning) 
 		else: 
 			pass 
+
+
+	def mlr_warnings(self): 
+		""" 
+		Raise Warnings regarding the mass-lifetime relation. 
+
+		If the model is running with either the Vincenzo et al. (2016) [1]_ or 
+		Kodama & Arimoto (1997) [2]_ models, then the post main sequence 
+		lifetime prescription will be ignored. 
+
+		If the model is running with any of the Hurley, Pols & Tout (2000) 
+		[3]_, Kodama & Arimoto (1997), or Maeder & Meynet (1989) [4]_ forms, 
+		then numerical solutions are required to solve the inverse function, 
+		which can increase integration times considerably. 
+
+		.. [1] Vincenzo et al. (2016), MNRAS, 460, 2238 
+		.. [2] Kodama & Arimoto (1997), A&A, 320, 41 
+		.. [3] Hurley, Pols & Tout (2000), MNRAS, 315, 543 
+		.. [4] Maeder & Meynet (1989), A&A, 210, 155 
+		""" 
+		names = {
+			"vincenzo2016": "Vincenzo et al. (2016)", 
+			"hpt2000": "Hurley, Pols & Tout (2000)", 
+			"ka1997": "Kodama & Arimoto (1997)", 
+			"mm1989": "Maeder & Meynet (1989)" 
+		} 
+		if mlr.setting in ["vincenzo2016", "ka1997"]: 
+			msg = """\
+The %s mass-lifetime relation quantifies the total lifetimes of stars as \
+opposed to only the main sequence lifetimes. Consequently, this model will \
+neglect the current setting of postMS = %g.""" % (names[mlr.setting], 
+				self.postMS) 
+			warnings.warn(msg, UserWarning) 
+		else: pass 
+		if mlr.setting in ["hpt2000", "ka1997", "mm1989"]: 
+			msg = """\
+The %s mass-lifetime relation requires numerical solutions to the inverse \
+function (i.e. stellar mass as a function of lifetime). This can increase \
+the required integration time considerably, particularly for fine \
+timestepping.""" % (names[mlr.setting]) 
+			warnings.warn(msg, VisibleRuntimeWarning) 
+		else: pass 
+
+
+	def import_mlr_data(self): 
+		# import the mass-lifetime relation data on this extension 
+		if mlr.setting in ["vincenzo2016", "hpt2000", "ka1997"]: 
+			func = {
+				"vincenzo2016": _mlr.vincenzo2016_import, 
+				"hpt2000": _mlr.hpt2000_import, 
+				"ka1997": _mlr.ka1997_import 
+			}[mlr.setting] 
+			path = "%ssrc/ssp/mlr/%s.dat" % (_DIRECTORY_, mlr.setting) 
+			func(path.encode("latin-1")) 
+		else: pass 
+
+
+	def free_mlr_data(self): 
+		# frees the mass-lifetime relation data on this extension 
+		if mlr.setting in ["vincenzo2016", "hpt2000", "ka1997"]: 
+			func = {
+				"vincenzo2016": _mlr.vincenzo2016_free, 
+				"hpt2000": _mlr.hpt2000_free, 
+				"ka1997": _mlr.ka1997_free 
+			}[mlr.setting] 
+			func() 
+		else: pass 
+
 
 	def pickle(self): 
 		""" 

@@ -10,6 +10,7 @@ if not __VICE_SETUP__:
 	__all__ = ["test"] 
 	from ...testing import moduletest 
 	from . import callback 
+	from . import mlr 
 	from . import pickles 
 	from . import _pyutils 
 	from . import _cutils 
@@ -22,6 +23,7 @@ if not __VICE_SETUP__:
 		return ["vice.core.tests", 
 			[
 				callback.test(run = False), 
+				mlr.test(run = False), 
 				pickles.test(run = False), 
 				_pyutils.test(run = False), 
 				_cutils.test(run = False) 

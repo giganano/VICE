@@ -172,14 +172,20 @@ static double CRFdenominator_integrand(double m) {
  * the integral from the turnoff mass to the 8 Msun plus the integral from 
  * 8 Msun to the upper mass limit. 
  * 
+ * This calculation assumes solar metallicity in computing the main sequence 
+ * turnoff mass (0.014; Asplund et al. 2009). This drastically reduces 
+ * computing times by not requiring calculation of the CRF for all previous 
+ * timesteps. The effect of metallicity on the CRF is small, anyway. 
+ * 
  * References 
  * ========== 
+ * Asplund et al. (2009), ARA&A, 47, 481 
  * Kalirai et al. (2008), ApJ, 676, 594 
  * Kroupa (2001), MNRAS, 322, 231 
  */ 
 static double CRFnumerator_Kalirai08(SSP ssp, double t) {
 
-	double turnoff_mass = main_sequence_turnoff_mass(t, ssp.postMS); 
+	double turnoff_mass = dying_star_mass(t, ssp.postMS, 0.014); 
 	if (turnoff_mass > (*ssp.imf).m_upper) return 0; 
 	switch (checksum((*ssp.imf).spec)) {
 

@@ -25,10 +25,14 @@ if not __VICE_SETUP__:
 		try: 
 			from .. import iwamoto99 
 			tests.append(iwamoto99.test(run = False)) 
-		except: pass 
+		except: pass # import tests will show their failure 
 		try: 
 			from .. import seitenzahl13 
 			tests.append(seitenzahl13.test(run = False)) 
+		except: pass 
+		try: 
+			from .. import gronow21 
+			tests.append(gronow21.test(run = False)) 
 		except: pass 
 		return ["vice.yields.sneia", tests] 
 

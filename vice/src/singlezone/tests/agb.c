@@ -53,20 +53,10 @@ extern unsigned short max_age_ssp_test_m_AGB(SINGLEZONE *sz) {
 
 	unsigned short i, status = 1u; 
 	for (i = 0u; i < (*sz).n_elements; i++) {
-		// double mass = (
-		// 	get_AGB_yield(*(*sz).elements[i], 0, 
-		// 		main_sequence_turnoff_mass((*sz).timestep * (*sz).dt, 
-		// 		(*(*sz).ssp).postMS)) * 
-		// 	(*(*sz).ism).star_formation_history[0] * (*sz).dt * 
-		// 	(
-		// 		(*(*sz).ssp).msmf[(*sz).timestep] - 
-		// 		(*(*sz).ssp).msmf[(*sz).timestep + 1l]
-		// 	) 
-		// ); 
 		status &= m_AGB(*sz, *(*sz).elements[i]) == (
 			get_AGB_yield(*(*sz).elements[i], 0, 
-				main_sequence_turnoff_mass((*sz).timestep * (*sz).dt, 
-				(*(*sz).ssp).postMS)) * 
+				dying_star_mass((*sz).timestep * (*sz).dt, 
+					(*(*sz).ssp).postMS, 0)) * 
 			(*(*sz).ism).star_formation_history[0] * (*sz).dt * 
 			(
 				(*(*sz).ssp).msmf[(*sz).timestep] - 

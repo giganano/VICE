@@ -7,8 +7,9 @@ except NameError:
 
 if not __VICE_SETUP__: 
 
-	__all__ = ["moduletest", "unittest"] 
+	__all__ = ["moduletest", "unittest", "generator"]  
 	from .decorators import * 
+	from .generator import generator 
 
 else: 
 	pass 

@@ -6,6 +6,7 @@ This package provides tables from the following nucleosynthetic yield studies:
 
 	- Seitenzahl et al. (2013) [1]_ 
 	- Iwamoto et al. (1999) [2]_ 
+	- Gronow et al. (2021a, b) [3]_ [4]_ 
 
 Contents 
 --------
@@ -16,21 +17,29 @@ single : <function>
 	from a specified study. 
 settings : dataframe 
 	Stores current settings for these yields. 
+gronow21 : yield preset 
+	Sets the yields according to one of the models published in the Gronow et 
+	al. (2021a, b) studies. 
 seitenzahl13 : yield preset 
-	Sets the yields according to the Seitenzahl et al. (2013) study. 
+	Sets the yields according to one of the models published in the Seitenzahl 
+	et al. (2013) study. 
 iwamoto99 : yield preset 
-	Sets the yields according to the Iwamoto et al. (1999) study. 
+	Sets the yields according to one of the models published in the Iwamoto et 
+	al. (1999) study. 
 
 Notes 
 -----
 The data stored in this module are reported for each corresponding study 
-*as published*. The Seitenzahl et al. (2013) model reported mass yields after 
-complete decay of all radioactive nuclides with half-lives less than 2 Gyr, and 
-the Iwamoto et al. (1999) study fully decayed *all* unstable isotopes; any 
-additional treatment for radioactive isotopes is thus unnecessary. 
+*as published*. The Seitenzahl et al. (2013) and Gronow et al. (2021a, b) 
+models reported mass yields after complete decay of all radioactive nuclides 
+with half-lives less than 2 Gyr, and the Iwamoto et al. (1999) study fully 
+decayed *all* unstable isotopes; any additional treatment for radioactive 
+isotopes is thus unnecessary. 
 
 .. [1] Seitenzahl et al. (2013), MNRAS, 429, 1156 
 .. [2] Iwamoto et al. (1999), ApJ, 124, 439 
+.. [3] Gronow et al. (2021a), A&A, 649, 155 
+.. [4] Gronow et al. (2021b), arxiv:2103.14050 
 """
 
 from __future__ import absolute_import

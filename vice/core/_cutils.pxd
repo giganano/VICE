@@ -5,6 +5,32 @@ from .objects._imf cimport IMF_
 from .objects._callback_1arg cimport CALLBACK_1ARG 
 from .objects._callback_2arg cimport CALLBACK_2ARG 
 
+cdef extern from "../src/io/progressbar.h": 
+	ctypedef struct PROGRESSBAR: 
+		unsigned long start_time 
+		unsigned long maxval 
+		unsigned long current 
+		char *left_hand_side 
+		char *right_hand_side 
+		unsigned short custom_left_hand_side 
+		unsigned short custom_right_hand_side 
+		unsigned short eta_mode 
+		unsigned short testing 
+
+	PROGRESSBAR *progressbar_initialize(unsigned long maxval) 
+	void progressbar_free(PROGRESSBAR *pb) 
+	void progressbar_set_left_hand_side(PROGRESSBAR *pb, char *value) 
+	void progressbar_set_right_hand_side(PROGRESSBAR *pb, char *value) 
+	void progressbar_start(PROGRESSBAR *pb) 
+	void progressbar_finish(PROGRESSBAR *pb) 
+	void progressbar_update(PROGRESSBAR *pb, unsigned long value) 
+	void progressbar_refresh(PROGRESSBAR *pb) 
+	char *progressbar_string(PROGRESSBAR *pb) 
+
+cdef class progressbar: 
+	cdef PROGRESSBAR *_pb 
+
+
 cdef extern from "../src/utils.h": 
 	double *binspace(double start, double stop, long N) 
 	void set_char_p_value(char *dest, int *ords, int length) 

@@ -3,6 +3,7 @@
 # Python imports 
 from __future__ import absolute_import 
 from ..._globals import _VERSION_ERROR_ 
+from ..._globals import _DIRECTORY_ 
 from ..._globals import ScienceWarning 
 from ...toolkit.hydrodisk import hydrodiskstars 
 from ..dataframe._builtin_dataframes import atomic_number 
@@ -13,7 +14,9 @@ from ...yields import agb
 from ...yields import ccsne 
 from ...yields import sneia 
 from ..pickles import jar 
-from .. import _pyutils  
+from .._cutils import progressbar 
+from .. import _pyutils 
+from .. import mlr 
 import warnings 
 import numbers 
 import time 
@@ -32,6 +35,7 @@ from .._cutils cimport set_string
 from .._cutils cimport copy_pylist 
 from ..objects cimport _singlezone 
 from ..objects._tracer cimport TRACER 
+from .. cimport _mlr 
 from . cimport _hydrodiskstars 
 from . cimport _tracer 
 from . cimport _zone_array 
@@ -84,6 +88,15 @@ cdef class c_multizone:
 				self._mz, 
 				self._zones[i]._singlezone__zone_object_address(), 
 				i) 
+		# import mass-lifetime relation data on this extension 
+		# for i in ["vincenzo2016", "hpt2000", "ka1997"]: 
+		# 	func = {
+		# 		"vincenzo2016": _mlr.vincenzo2016_import, 
+		# 		"hpt2000": _mlr.hpt2000_import, 
+		# 		"ka1997": _mlr.ka1997_import 
+		# 	}[i] 
+		# 	path = "%ssrc/ssp/mlr/%s.dat" % (_DIRECTORY_, i) 
+		# 	func(path.encode("latin-1")) 
 
 
 	def __init__(self, 
@@ -103,6 +116,14 @@ cdef class c_multizone:
 
 	def __dealloc__(self): 
 		_multizone.multizone_free(self._mz) 
+		# free mass-lifetime relation data on this extension 
+		# for i in ["vincenzo2016", "hpt2000", "ka1997"]: 
+		# 	func = {
+		# 		"vincenzo2016": _mlr.vincenzo2016_free, 
+		# 		"hpt2000": _mlr.hpt2000_free, 
+		# 		"ka1997": _mlr.ka1997_free 
+		# 	}[i] 
+		# 	func() 
 
 
 	@property 
@@ -296,13 +317,20 @@ migration.specs. Got: %s""" % (type(value)))
 			self.setup_migration() # used to be in self.prep 
 			start = time.time() 
 
-			# warn the user about r-process elements and bad solar calibrations 
+			# warn the user about r-process elements, bad solar calibrations, 
+			# and mass-lifetime relation effects 
 			self._zones[0]._singlezone__c_version.nsns_warning() 
 			self._zones[0]._singlezone__c_version.solar_z_warning() 
+			self._zones[0]._singlezone__c_version.mlr_warnings() 
+
+			# take the current mass-lifetime relation setting 
+			self.import_mlr_data() 
+			_mlr.set_mlr_hashcode(_mlr._mlr_linker.__NAMES__[mlr.setting]) 
 
 			# just do it #nike 
 			enrichment = _multizone.multizone_evolve(self._mz) 
 			if pickle: self.pickle() 
+			self.free_mlr_data() 
 
 			# save yield settings and attributes always 
 			for i in range(self._mz[0].mig[0].n_zones): 
@@ -525,7 +553,12 @@ None.""" % (self.migration.stars.mode), UserWarning)
 		else: 
 			using_hydrodisk = False 
 
-		if self.verbose: start = time.time() # for printing the ETA 
+		# if self.verbose: start = time.time() # for printing the ETA 
+		if self.verbose: 
+			print("Setting up stellar populations....") 
+			start = time.time() # for printing total setup time 
+			pbar = progressbar(maxval = n) 
+		else: pass 
 		for i in range(n): # for each timestep 
 			for j in range(self.n_zones): # for each zone 
 				if using_hydrodisk: 
@@ -557,21 +590,12 @@ None.""" % (self.migration.stars.mode), UserWarning)
 					self.setup_tracers_given_zone_timestep(j, i, n, 
 						takes_keyword = takes_keyword) 
 			if self.verbose: 
-				# Estimate an ETA by linear extrapolation 
 				percentage = 100 * (i + 1) / n 
-				ETA = (100 - percentage) / percentage * (time.time() - start) 
-				days, hours, minutes, seconds = _pyutils.format_time(ETA) 
-				if days: 
-					ETA = "%d days %02dh%02dm%02ds" % (days, hours, minutes, 
-						int(seconds)) 
-				else: 
-					ETA = "%02dh%02dm%02ds" % (hours, minutes, int(seconds)) 
-				sys.stdout.write("""\
-\rSetting up stellar populations. Progress: %.2f%% | ETA: %s""" % (
-	percentage, ETA)) 
-				sys.stdout.flush() 
+				pbar.left_hand_side = "Progress: %.2f%%" % (percentage) 
+				pbar.update(i + 1) 
 			else: pass 
 		if self.verbose: 
+			pbar.finish() 
 			setup_time = time.time() - start 
 			days, hours, minutes, seconds = _pyutils.format_time(setup_time) 
 			if days: 
@@ -579,9 +603,8 @@ None.""" % (self.migration.stars.mode), UserWarning)
 					int(seconds)) 
 			else: 
 				setup_time = "%02dh%02dm%02ds" % (hours, minutes, int(seconds)) 
-			sys.stdout.write("""\
-\rSetting up stellar populations. Progress: 100.00%% | Setup Time: %s\n""" % (
-	setup_time)) 
+				print("Setup time: %s" % (setup_time)) 
+		else: pass 
 
 		if hasattr(self.migration.stars, "write"): 
 			# revert write attribute to False 
@@ -865,6 +888,31 @@ its time of formation, must equal its zone of origin.""")
 			raise RuntimeError("Timestep size not uniform across zones.") 
 		else: 
 			pass 
+
+
+	def import_mlr_data(self): 
+		# import the mass-lifetime relation data on this extension 
+		if mlr.setting in ["vincenzo2016", "hpt2000", "ka1997"]: 
+			func = {
+				"vincenzo2016": _mlr.vincenzo2016_import, 
+				"hpt2000": _mlr.hpt2000_import, 
+				"ka1997": _mlr.ka1997_import 
+			}[mlr.setting] 
+			path = "%ssrc/ssp/mlr/%s.dat" % (_DIRECTORY_, mlr.setting) 
+			func(path.encode("latin-1")) 
+		else: pass 
+
+
+	def free_mlr_data(self): 
+		# frees the mass-lifetime relation data on this extension 
+		if mlr.setting in ["vincenzo2016", "hpt2000", "ka1997"]: 
+			func = {
+				"vincenzo2016": _mlr.vincenzo2016_free, 
+				"hpt2000": _mlr.hpt2000_free, 
+				"ka1997": _mlr.ka1997_free 
+			}[mlr.setting] 
+			func() 
+		else: pass 
 
 
 	def pickle(self): 

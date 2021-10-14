@@ -10,42 +10,41 @@ from ....core.dataframe._builtin_dataframes import atomic_number
 from ...._globals import _RECOGNIZED_ELEMENTS_ 
 from ....testing import moduletest 
 from ....testing import unittest 
+from ....testing import generator 
 from .._grid_reader import yield_grid as grid 
 from .._grid_reader import _VENTURA13_ELEMENTS_ 
 import numbers 
 
 
-class generator: 
+class lookup_generator(generator): 
 
-	""" 
-	A class which can be cast as a unittest for the AGB yield grid functions. 
-	""" 
+	# Systematically generate unit tests for the AGB yield grid lookup 
 
-	def __init__(self, study = "cristallo11"): 
-		self._study = study 
-
-
+	@unittest 
 	def __call__(self): 
-		success = True 
-		for i in _RECOGNIZED_ELEMENTS_: 
-			if self._study == "karakas10" and atomic_number[i] > 28: continue 
-			if (self._study == "ventura13" and 
-				i not in _VENTURA13_ELEMENTS_): continue 
-			try: 
-				yields, mass, z = grid(i, study = self._study) 
-				assert isinstance(mass, tuple) 
-				assert isinstance(z, tuple) 
-				assert isinstance(yields, tuple) 
-				assert all(map(lambda x: isinstance(x, tuple), yields)) 
-				assert all(map(lambda x: isinstance(x, numbers.Number), 
-					mass)) 
-				assert all(map(lambda x: isinstance(x, numbers.Number), z)) 
-				for j in range(len(yields)): 
-					assert all(map(lambda x: isinstance(x, numbers.Number), 
-						yields[j])) 
-			except: 
-				success = False 
-		return success 
+		def test(): 
+			success = True 
+			for elem in _RECOGNIZED_ELEMENTS_: 
+				if (self.kwargs["study"] == "karakas10" and 
+					atomic_number[elem] > 28): continue 
+				if (self.kwargs["study"] == "ventura13" and 
+					elem not in _VENTURA13_ELEMENTS_): continue 
+				try: 
+					yields, mass, z = grid(elem, **self.kwargs) 
+				except: 
+					return False 
+				success &= isinstance(mass, tuple) 
+				success &= isinstance(z, tuple) 
+				success &= isinstance(yields, tuple) 
+				success &= all([isinstance(i, tuple) for i in yields]) 
+				success &= all([isinstance(i, numbers.Number) for i in mass]) 
+				success &= all([isinstance(i, numbers.Number) for i in z]) 
+				for i in range(len(yields)): 
+					success &= all([isinstance(i, numbers.Number) for i in 
+						yields[i]]) 
+				if not success: break 
+			return success 
+		return [self.msg, test] 
 
 
 @moduletest 
@@ -55,20 +54,14 @@ def test():
 	""" 
 	return ["vice.yields.agb.grid", 
 		[ 
-			trial("Cristallo et al. (2011)", generator(study = "cristallo11")), 
-			trial("Karakas (2010)", generator(study = "karakas10")), 
-			trial("Ventura et al. (2013)", generator(study = "ventura13")), 
-			trial("Karakas & Lugaro (2016)", generator(study = "karakas16")) 
+			lookup_generator("Cristallo et al. (2011, 2015)", 
+				study = "cristallo11")(), 
+			lookup_generator("Karakas (2010)", 
+				study = "karakas10")(), 
+			lookup_generator("Ventura et al. (2013)", 
+				study = "ventura13")(), 
+			lookup_generator("Karakas & Lugaro (2016) ; Karakas et al. (2018)", 
+				study = "karakas16")() 
 		] 
 	] 
-
-
-@unittest 
-def trial(label, generator_): 
-	""" 
-	Obtain a unittest object for a singlezone trial test 
-	""" 
-	def test_(): 
-		return generator_() 
-	return [label, test_] 
 

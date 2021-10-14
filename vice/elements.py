@@ -77,7 +77,7 @@ from __future__ import absolute_import
 # __all__ extended at the end of this module out of necessity 
 __all__ = ["recognized", "test"]  
 
-from ._globals import _RECOGNIZED_ELEMENTS_ as recognized 
+from ._globals import _RECOGNIZED_ELEMENTS_ 
 from ._globals import _VERSION_ERROR_ 
 from .core.dataframe._builtin_dataframes import stable_isotopes 
 from .core.dataframe._builtin_dataframes import atomic_number 
@@ -176,6 +176,35 @@ _FULL_NAMES_ = {
 	"pb":		"lead", 
 	"bi": 		"bismuth" 
 }
+
+
+# Give vice.elements.recognized a special docstring for documentation 
+class _recognized(tuple): 
+
+	r""" 
+	Type : ``tuple`` [elements of type ``str``] 
+
+	The [lower-cased] symbols of all elements recognized by VICE as they appear 
+	on the periodic table. 
+
+	.. versionadded:: 1.1.0 
+
+	Example Code 
+	------------
+	>>> import vice 
+	>>> "fe" in vice.elements.recognized 
+	True 
+	>>> "mg" in vice.elements.recognized 
+	True 
+	>>> "li" in vice.elements.recognized # VICE cannot do lithium yet 
+	False 
+	>>> "sr" in vice.elements.recognized 
+	True 
+	>>> "foo" in vice.elements.recognized 
+	False 
+	""" 
+	
+	pass 
 
 
 class element: 
@@ -342,7 +371,7 @@ class element:
 	@symbol.setter 
 	def symbol(self, value): 
 		if isinstance(value, strcomp): 
-			if value.lower() in recognized: 
+			if value.lower() in _RECOGNIZED_ELEMENTS_: 
 				self._symbol = value.capitalize() 
 			else: 
 				raise ValueError("Unrecognized element: %s" % (value)) 
@@ -539,7 +568,7 @@ class yields:
 
 	def __init__(self, symbol): 
 		if isinstance(symbol, strcomp): 
-			if symbol.lower() in recognized: 
+			if symbol.lower() in _RECOGNIZED_ELEMENTS_: 
 				self._symbol = symbol.capitalize() 
 			else: 
 				raise ValueError("Unrecognized element: %s" % (symbol)) 
@@ -669,6 +698,9 @@ class yields:
 	def sneia(self, value): 
 		# error handling in the yield_settings object 
 		sneia.settings[self._symbol] = value 
+
+
+recognized = _recognized(_RECOGNIZED_ELEMENTS_) 
 
 
 __all__.extend([i.capitalize() for i in recognized]) 

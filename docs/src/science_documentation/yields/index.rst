@@ -39,3 +39,7 @@ intended for use in VICE.
 .. _yields_agb: 
 
 .. include:: agb.rst 
+
+.. _fig_yields_agb: 
+
+.. include:: agb.fig.rst 

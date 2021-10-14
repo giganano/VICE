@@ -1,5 +1,5 @@
 
-SUBDIRS := $(wildcard */) 
+SUBDIRS := $(filter-out __pycache__/, $(wildcard */)) 
 
 .PHONY: clean
 clean: 

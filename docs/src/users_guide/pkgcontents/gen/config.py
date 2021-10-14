@@ -5,6 +5,9 @@ their docstrings.
 
 import warnings 
 warnings.filterwarnings("ignore") 
+# partial import -> only documentation aspects required 
+import builtins 
+builtins.__VICE_DOCS__ = True 
 import vice 
 from vice.yields.presets import JW20 
 from vice.yields.ccsne import LC18 
@@ -18,6 +21,7 @@ from vice.yields.ccsne.S16 import W18
 from vice.yields.ccsne.S16 import W18F 
 from vice.yields.sneia import iwamoto99 
 from vice.yields.sneia import seitenzahl13 
+from vice.yields.sneia import gronow21 
 from vice.yields.agb import cristallo11 
 from vice.yields.agb import karakas10 
 from vice.yields.agb import ventura13 
@@ -51,6 +55,7 @@ _CONFIG_ = {
 			vice.cumulative_return_fraction, 
 			vice.main_sequence_mass_fraction, 
 			vice.single_stellar_population, 
+			vice.mlr, 
 			vice.yields, 
 			vice.elements, 
 			vice.imf, 
@@ -281,6 +286,66 @@ _CONFIG_ = {
 	vice.core.dataframe.yield_settings.save_defaults: {
 		"filename": 	"vice.core.dataframe.yield_settings.save_defaults.rst", 
 		"header": 		"vice.core.dataframe.yield_settings.save_defaults", 
+		"subs": 		[] 
+	}, 
+	vice.mlr: {
+		"filename": 	"vice.mlr.rst", 
+		"header": 		"vice.mlr", 
+		"subs":  		[
+			type(vice.mlr).setting, 
+			type(vice.mlr).recognized, 
+			vice.mlr.powerlaw, 
+			vice.mlr.vincenzo2016, 
+			vice.mlr.hpt2000, 
+			vice.mlr.ka1997, 
+			vice.mlr.pm1993, 
+			vice.mlr.mm1989, 
+			vice.mlr.larson1974 
+		] 
+	}, 
+	type(vice.mlr).setting: {
+		"filename": 	"vice.mlr.setting.rst", 
+		"header": 		"vice.mlr.setting", 
+		"subs": 		[] 
+	}, 
+	type(vice.mlr).recognized: {
+		"filename": 	"vice.mlr.recognized.rst", 
+		"header": 		"vice.mlr.recognized", 
+		"subs": 		[] 
+	}, 
+	vice.mlr.powerlaw: {
+		"filename": 	"vice.mlr.powerlaw.rst", 
+		"header": 		"vice.mlr.powerlaw", 
+		"subs": 		[] 
+	}, 
+	vice.mlr.vincenzo2016: {
+		"filename": 	"vice.mlr.vincenzo2016.rst", 
+		"header": 		"vice.mlr.vincenzo2016", 
+		"subs": 		[] 
+	}, 
+	vice.mlr.hpt2000: {
+		"filename": 	"vice.mlr.hpt2000.rst", 
+		"header": 		"vice.mlr.hpt2000", 
+		"subs": 		[] 
+	}, 
+	vice.mlr.ka1997: {
+		"filename": 	"vice.mlr.ka1997.rst", 
+		"header": 		"vice.mlr.ka1997", 
+		"subs": 		[] 
+	}, 
+	vice.mlr.pm1993: {
+		"filename": 	"vice.mlr.pm1993.rst", 
+		"header": 		"vice.mlr.pm1993", 
+		"subs": 		[] 
+	}, 
+	vice.mlr.mm1989: {
+		"filename": 	"vice.mlr.mm1989.rst", 
+		"header": 		"vice.mlr.mm1989", 
+		"subs": 		[] 
+	}, 
+	vice.mlr.larson1974: {
+		"filename": 	"vice.mlr.larson1974.rst", 
+		"header": 		"vice.mlr.larson1974", 
 		"subs": 		[] 
 	}, 
 	vice.yields: {
@@ -653,8 +718,9 @@ _CONFIG_ = {
 			vice.yields.sneia.fractional, 
 			vice.yields.sneia.settings, 
 			vice.yields.sneia.iwamoto99, 
-			vice.yields.sneia.seitenzahl13 
-		]  
+			vice.yields.sneia.seitenzahl13, 
+			vice.yields.sneia.gronow21 
+		] 
 	}, 
 	vice.yields.sneia.single: {
 		"filename": 	"vice.yields.sneia.single.rst", 
@@ -675,7 +741,7 @@ _CONFIG_ = {
 			vice.yields.sneia.settings.restore_defaults, 
 			vice.yields.sneia.settings.factory_settings, 
 			vice.yields.sneia.settings.save_defaults 
-		]  
+		] 
 	}, 
 	vice.yields.sneia.settings.keys: {
 		"filename": 	"vice.yields.sneia.settings.keys.rst", 
@@ -722,6 +788,16 @@ _CONFIG_ = {
 		"header": 		"vice.yields.sneia.seitenzahl13.set_params", 
 		"subs": 		[] 
 	}, 
+	vice.yields.sneia.gronow21: {
+		"filename": 	"vice.yields.sneia.gronow21.rst", 
+		"header": 		"vice.yields.sneia.gronow21", 
+		"subs": 		[vice.yields.sneia.gronow21.set_params] 
+	}, 
+	vice.yields.sneia.gronow21.set_params: {
+		"filename": 	"vice.yields.sneia.gronow21.set_params.rst", 
+		"header": 		"vice.yields.sneia.gronow21.set_params", 
+		"subs": 		[] 
+	}, 
 	vice.yields.presets: {
 		"filename": 	"vice.yields.presets.rst", 
 		"header": 		"vice.yields.presets", 
@@ -763,9 +839,15 @@ _CONFIG_ = {
 		"filename": 	"vice.elements.rst", 
 		"header": 		"vice.elements", 
 		"subs": 		[
+			vice.elements.recognized, 
 			vice.elements.element, 
 			vice.elements.yields 
 		] 
+	}, 
+	vice.elements.recognized: {
+		"filename": 	"vice.elements.recognized.rst", 
+		"header": 		"vice.elements.recognized", 
+		"subs": 		[] 
 	}, 
 	vice.elements.element: {
 		"filename": 	"vice.elements.element.rst", 

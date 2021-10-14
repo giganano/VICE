@@ -25,7 +25,7 @@ which for a power-law IMF :math:`dN/dm \sim m^{-\alpha}` becomes
 	\left[\frac{1}{2 - \alpha}m^{2 - \alpha}\Bigg|_l^u\right]^{-1} 
 
 It may be tempting to cancel the factor of :math:`1/(2 - \alpha)`, but more 
-careful consideration must be taken for piece-wise IMFs like Kroupa [7]_: 
+careful consideration must be taken for piece-wise IMFs like Kroupa [26]_: 
 
 .. math:: h(t) = 
 	\left[
@@ -43,9 +43,10 @@ respectively.
 .. _approx_1minusr: 
 
 :ref:`Here <fig_msmf>` we plot :math:`h` as a function of the stellar 
-population's age. By 10 Gyr, :math:`h(t)` is as low as :math:`\sim0.45` 
-for the Kroupa IMF and 
-:math:`\sim0.65` for the Salpeter [8]_ IMF. In comparison, the 
+population's age assuming the mass-lifetime relation of Hurley, Pols & Tout 
+(2000) [27]_ (see discussion :ref:`here <mlr>`). 
+By 10 Gyr, :math:`h(t)` is as low as :math:`\sim0.45` for the Kroupa IMF and 
+:math:`\sim0.65` for the Salpeter [28]_ IMF. In comparison, the 
 :ref:`cumulative return fraction <crf>` :math:`r(t) \approx 0.45` for the 
 Kroupa IMF and :math:`\sim0.28` for the Salpeter IMF. This suggests that the 
 approximation :math:`h(t) \approx 1 - r(t)` fails at the :math:`\sim5-10\%` 
@@ -63,12 +64,16 @@ implemented with a calculation of :math:`h(t)` rather than :math:`\dot{h}`.
 
 In calculations of :math:`h(t)` with the built-in Kroupa and Salpeter IMFs, 
 the analytic solution is calculated. In the case of a user-customized IMF, 
-VICE solves the equation numerically using quadrature. 
+VICE solves the equation numerically using quadrature with the methods 
+described in chapter 4 of Press, Teukolsky, Vetterling & Flannery (2007) [29]_. 
 
 Relevant source code: 
 
 	- ``vice/src/ssp/msmf.c`` 
 	- ``vice/src/yields/integral.c`` 
 
-.. [7] Kroupa (2001), MNRAS, 322, 231 
-.. [8] Salpeter (1955), ApJ, 121, 161 
+.. [26] Kroupa (2001), MNRAS, 322, 231 
+.. [27] Hurley, Pols & Tout (2000), MNRAS, 315, 543 
+.. [28] Salpeter (1955), ApJ, 121, 161 
+.. [29] Press, Teukolsky, Vetterling & Flannery (2007), Numerical Recipes, 
+	Cambridge University Press 

@@ -28,7 +28,330 @@ else:
 	_VERSION_ERROR_() 
 
 from libc.stdlib cimport malloc, free 
+from libc.string cimport strlen 
 from . cimport _cutils 
+
+
+cdef class progressbar: 
+
+	r""" 
+	**VICE Developer's Documentation** 
+
+	A simple progressbar object wrapping the one implements in C at 
+	./vice/src/io/progressbar.c. 
+
+	**Signature**: progressbar(maxval = 10, left_hand_side = None, 
+		right_hand_side = None) 
+
+	Attributes 
+	----------
+	maxval : ``int`` [positive definite] 
+		The maximum number of iterations in the progressbar. 
+	current : ``int`` [positive definite] 
+		The current number of iterations that the progressbar has completed. 
+	left_hand_side : ``str`` [default : None] 
+		The string to print to the left of the progressbar. ``None`` to use the 
+		default value, which prints the current and maximum number of 
+		iterations. 
+	right_hand_side : ``str`` [default : None] 
+		The string to print to the right of the progressbar. ``None`` to use 
+		the default value, which prints an estimate of the time remaining in 
+		the calculation. 
+	_testing : ``bool`` [default : False] 
+		Whether or not this object is being tested. If True, the verbose output 
+		will be suppressed. 
+
+	Functions 
+	---------
+	start : instance method 
+		Set the current number of iterations equal to zero and print the 
+		progressbar to the terminal. 
+	finish : instance method 
+		Set the current number of iterations equal to self.maxval and move to a 
+		new line in the terminal. 
+	update : instance method 
+		Update the number of iterations in the progressbar and refresh what's 
+		printed on the terminal screen. 
+	refresh : instance method 
+		Update the progressbar as printed on the terminal window. Any changes 
+		to the attribute ``left_hand_side`` or ``right_hand_side`` will be 
+		reflected. 
+
+	Notes 
+	-----
+	This object can be type-cast to a string (i.e. ``str(x)`` for an instance 
+	``x``) to obtain the string of the progressbar without printing it to the 
+	terminal window. 
+
+	Example Code 
+	------------
+	>>> import time 
+	# The following runs a progressbar which simply changes the messages on the 
+	# left and right hand sides of the bar back and forth between custom and 
+	# default values, sleeping briefly between updates. 
+	>>> with progressbar(maxval = 10, 
+		left_hand_side = "Starting progressbar!") as pbar: 
+			pbar.start() 
+			time.sleep(2) 
+			for i in range(pbar.maxval): 
+				pbar.left_hand_side = "Hello!" 
+				pbar.right_hand_side = "%d of %d" % (pbar.current, pbar.maxval) 
+				pbar.refresh() 
+				time.sleep() 
+				pbar.update(i + 1) # the same pbar.current = i + 1 
+				time.sleep(1) 
+				pbar.left_hand_side = None 
+				pbar.right_hand_side = None 
+				pbar.refresh() 
+				time.sleep(1) 
+	""" 
+
+	def __cinit__(self, maxval = 10, left_hand_side = None, 
+		right_hand_side = None): 
+		self._pb = _cutils.progressbar_initialize(<unsigned long> 10) 
+		self.maxval = maxval 
+		self.left_hand_side = left_hand_side 
+		self.right_hand_side = right_hand_side 
+
+	def __init__(self, maxval = 10, left_hand_side = None, 
+		right_hand_side = None): 
+		pass 
+
+	def __str__(self): 
+		r""" 
+		**VICE Developer's Documentation** 
+
+		Get the current state of the progressbar as a string. 
+
+		**Signature**: str(x) 
+
+		Parameters 
+		----------
+		x : ``progressbar`` 
+			An instance of this class. 
+
+		Returns 
+		-------
+		s : ``str`` 
+			The string that would be printed to the console. Its value is what 
+			would be printed if the user calls ``x.refresh()`` or 
+			``x.update(x.current)``. 
+		""" 
+		cdef char *string = _cutils.progressbar_string(self._pb) 
+		s = "".join([chr(string[i]) for i in range(strlen(string))]) 
+		free(string) 
+		return s 
+
+	def __dealloc__(self): 
+		_cutils.progressbar_free(self._pb) 
+
+	def __enter__(self): 
+		return self 
+
+	def __exit__(self, exc_type, exc_value, exc_tb): 
+		self.finish() 
+		return exc_value is None 
+
+	@property 
+	def maxval(self): 
+		r""" 
+		**VICE Developer's Documentation** 
+
+		Type : ``int`` [positive definite] 
+
+		The maximum number of iterations in the progressbar. 
+		""" 
+		return self._pb[0].maxval 
+
+	@maxval.setter 
+	def maxval(self, value): 
+		if isinstance(value, numbers.Number): 
+			if value % 1 == 0: 
+				if value > 0: 
+					self._pb[0].maxval = <unsigned long> value 
+				else: 
+					raise ValueError("""\
+Attribute 'maxval' must be positive. Got: %d""" % (value)) 
+			else: 
+				raise ValueError("""\
+Attribute 'maxval' must be an integer. Got: %g""" % (value)) 
+		else: 
+			raise TypeError("""\
+Attribute 'maxval' must be an integer. Got: %s""" % (type(value))) 
+
+	@property 
+	def current(self): 
+		r""" 
+		Type : ``int`` 
+
+		The current number of iterations that the progressbar has ran through. 
+		This property can be modified by either ``self.current = value`` or 
+		``self.update(value)``. 
+		""" 
+		return self._pb[0].current 
+
+	@current.setter 
+	def current(self, value): 
+		# Let property assignment be an alias for self.update(value) 
+		self.update(value) 
+
+	@property 
+	def left_hand_side(self): 
+		r""" 
+		**VICE Developer's Documentation** 
+
+		Type : ``str`` 
+
+		The string that will print on the left hand side of the progressbar. 
+		Defaults to the current and maximum number of iterations. 
+
+		.. tip:: After assigning a value, one can revert back to the default 
+			by assigning a value of none (i.e. ``self.left_hand_side = None``). 
+		""" 
+		return "".join([chr(self._pb[0].left_hand_side[i]) for i in range(
+			strlen(self._pb[0].left_hand_side))]) 
+
+	@left_hand_side.setter 
+	def left_hand_side(self, value): 
+		if isinstance(value, strcomp): 
+			_cutils.progressbar_set_left_hand_side(self._pb, 
+				value.encode("latin-1")) 
+		elif value is None: 
+			# revert to default 
+			_cutils.progressbar_set_left_hand_side(self._pb, NULL) 
+		else: 
+			raise TypeError("""Attribute 'left_hand_side' must be of type str. \
+Got: %s""" % (type(value))) 
+
+	@property 
+	def right_hand_side(self): 
+		r""" 
+		**VICE Developer's Documentation** 
+
+		Type : ``str`` 
+
+		The string that will print on the right hand side of the progressbar. 
+		Defaults to an ETA on the time remaining for the calculation. 
+
+		.. tip:: After assigning a value, one can revert back to the default 
+			by assigning a value of none (i.e. ``self.right_hand_side = None``). 
+		""" 
+		return "".join([chr(self._pb[0].right_hand_side[i]) for i in range(
+			strlen(self._pb[0].right_hand_side))]) 
+
+	@right_hand_side.setter 
+	def right_hand_side(self, value): 
+		if isinstance(value, strcomp): 
+			_cutils.progressbar_set_right_hand_side(self._pb, 
+				value.encode("latin-1")) 
+		elif value is None: 
+			# revert to default 
+			_cutils.progressbar_set_right_hand_side(self._pb, NULL) 
+		else: 
+			raise TypeError("""Attribute 'right_hand_side' must be of type \
+str. Got: %s""" % (type(value))) 
+
+	@property 
+	def _testing(self): 
+		r""" 
+		**VICE Developer's Documentation** 
+
+		Type : ``bool`` [default : False] 
+
+		Whether or not testing is active. This should only be switched to 
+		``True`` inside of a unit test. 
+		""" 
+		return bool(self._pb[0].testing) 
+
+	@_testing.setter 
+	def _testing(self, value): 
+		try: 
+			if value: 
+				self._pb[0].testing = <unsigned short> 1 
+			else: 
+				self._pb[0].testing = <unsigned short> 0 
+		except: 
+			raise ValueError("""Attribute '_testing' must be interpreted as a \
+boolean. Got: %s""" % (type(value))) 
+
+	def start(self): 
+		r""" 
+		**VICE Developer's Documentation** 
+
+		Start the progressbar by placing the current number of iterations at 
+		zero and printing its current status to the console. 
+
+		**Signature**: x.start() 
+
+		Parameters 
+		----------
+		x : ``progressbar`` 
+			An instance of this class. 
+		""" 
+		_cutils.progressbar_start(self._pb) 
+
+	def finish(self): 
+		r""" 
+		**VICE Developer's Documentation** 
+
+		Finish the progressbar by placing the current number of iterations at 
+		self.maxval and moving to a new line in the terminal output. 
+
+		**Signature**: x.finish() 
+
+		Parameters 
+		----------
+		x : ``progressbar`` 
+			An instance of this class. 
+		""" 
+		_cutils.progressbar_finish(self._pb) 
+
+	def update(self, value): 
+		r""" 
+		**VICE Developer's Documentation** 
+
+		Update the progressbar with a new number of iterations. 
+
+		**Signature**: x.update(value) 
+
+		Parameters 
+		----------
+		x : ``progressbar`` 
+			An instance of this class. 
+		value : ``int`` 
+			An integer between 0 and x.maxval. 
+		""" 
+		if isinstance(value, numbers.Number): 
+			if value % 1 == 0: 
+				if 0 <= value <= self.maxval: 
+					_cutils.progressbar_update(self._pb, <unsigned long> value) 
+				else: 
+					raise ValueError("""\
+Value out of bounds for progressbar of maximum value %d: %d""" % (
+						self.maxval, value)) 
+			else: 
+				raise ValueError("Value must be an integer. Got: %g" % (value)) 
+		else: 
+			raise TypeError("Value must be an integer. Got: %s" % (
+				type(value))) 
+
+	def refresh(self): 
+		r""" 
+		**VICE Developer's Documentation** 
+
+		Refresh the progressbar. Any changes to the strings on the left or 
+		right hand side of the bar will be reflected. 
+
+		**Signature**: x.refresh() 
+
+		Parameters 
+		----------
+		x : ``progressbar`` 
+			An instance of this class. 
+
+		.. note:: This method is equivalent to ``x.update(x.current)``. 
+		""" 
+		_cutils.progressbar_refresh(self._pb) 
 
 
 cdef void callback_1arg_setup(CALLBACK_1ARG *cb1, value) except *: 

@@ -90,15 +90,31 @@ Topic :: Scientific/Engineering :: Astronomy
 Topic :: Scientific/Engineering :: Physics
 """
 
-# Version info 
-MAJOR 			= 1 
-MINOR 			= 3 
-MICRO 			= 0 
-BUILD 			= 0 
-ISRELEASED		= False 
-VERSION  		= "%d.%d.%d" % (MAJOR, MINOR, MICRO) 
-if BUILD: VERSION += ".%d" % (BUILD) 
-
+# Version info
+# Note that only one of DEV, ALPHA, BETA, RC, and POST can be non-zero
+# Changes to these numbers also require changes to ./docs/src/index.rst and
+# ./docs/src/cover.tex
+MAJOR			= 1
+MINOR			= 3
+MICRO			= 0
+DEV				= 1
+ALPHA			= 0
+BETA			= 0
+RC				= 0
+POST			= 0
+ISRELEASED		= False
+VERSION			= "%d.%d.%d" % (MAJOR, MINOR, MICRO)
+if DEV:
+	VERSION += ".dev%d" % (DEV)
+elif ALPHA:
+	VERSION += "a%d" % (ALPHA)
+elif BETA:
+	VERSION += "b%d" % (BETA)
+elif RC:
+	VERSION += "rc%d" % (RC)
+elif POST:
+	VERSION += ".post%d" % (POST)
+else: pass
 
 
 def find_extensions(path = './vice'): 
@@ -214,39 +230,47 @@ def find_package_data():
 	return data 
 
 
-def write_version_info(filename = "./vice/version_breakdown.py"): 
+def write_version_info(filename = "./vice/version_breakdown.py"):
 	r"""
-	Writes the version info to disk within the source tree 
+	Writes the version info to disk within the source tree
 
-	Parameters 
+	Parameters
 	----------
-	filename : str [default : "./vice/version_breakdown.py"] 
-		The file to write the version info to. 
+	filename : str [default : "./vice/version_breakdown.py"]
+		The file to write the version info to.
 
-	.. note:: vice/version.py depends on the file produced by this function. 
+	.. note:: vice/version.py depends on the file produced by this function.
 	"""
-	cnt = """
+	cnt = """\
 # This file is generated from vice setup.py %(version)s
 
-MAJOR = %(major)d 
-MINOR = %(minor)d 
-MICRO = %(micro)d 
-BUILD = %(build)d 
-RELEASED = %(isreleased)s 
-MIN_PYTHON_VERSION = \"%(minversion)s\" 
+MAJOR = %(major)d
+MINOR = %(minor)d
+MICRO = %(micro)d
+DEV = %(dev)d
+ALPHA = %(alpha)d
+BETA = %(beta)d
+RC = %(rc)d
+POST = %(post)d
+ISRELEASED = %(isreleased)s
+MIN_PYTHON_VERSION = \"%(minversion)s\"
 """
-	with open(filename, 'w') as f: 
+	with open(filename, 'w') as f:
 		try:
 			f.write(cnt % {
-					"version": 		VERSION, 
-					"major": 		MAJOR, 
-					"minor": 		MINOR, 
-					"micro": 		MICRO, 
-					"build": 		BUILD, 
-					"isreleased": 	str(ISRELEASED), 
-					"minversion": 	MIN_PYTHON_VERSION 
+					"version":		VERSION,
+					"major":		MAJOR,
+					"minor":		MINOR,
+					"micro":		MICRO,
+					"dev":			DEV,
+					"alpha":		ALPHA,
+					"beta":			BETA,
+					"rc":			RC,
+					"post":			POST,
+					"isreleased":	str(ISRELEASED),
+					"minversion":	MIN_PYTHON_VERSION
 				})
-		finally: 
+		finally:
 			f.close()
 
 

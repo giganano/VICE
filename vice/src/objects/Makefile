@@ -4,7 +4,7 @@ CFLAGS 		:= -fPIC -Wsign-conversion -Wsign-compare
 SOURCES 	:= $(wildcard *.c) 
 HEADERS 	:= $(wildcard *.h) 
 OBJECTS 	:= $(SOURCES:.c=.o) 
-SUBDIRS 	:= $(wildcard */) 
+SUBDIRS 	:= $(filter-out __pycache__/, $(wildcard */)) 
 
 all: print_message $(OBJECTS) $(SUBDIRS) 
 

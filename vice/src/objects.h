@@ -17,6 +17,8 @@ extern "C" {
 #include "objects/hydrodiskstars.h" 
 #include "objects/imf.h" 
 #include "objects/integral.h" 
+#include "objects/interp_scheme_1d.h" 
+#include "objects/interp_scheme_2d.h" 
 #include "objects/ism.h" 
 #include "objects/mdf.h" 
 #include "objects/migration.h" 

@@ -107,6 +107,17 @@ extern void singlezone_cancel(SINGLEZONE *sz);
 extern unsigned long n_timesteps(SINGLEZONE sz); 
 
 /* 
+ * Handles the progressbar for a singlezone object as it runs. 
+ * 
+ * Parameters 
+ * ========== 
+ * sz: 		The singlezone object for the current simulation 
+ * 
+ * source: singlezone.c 
+ */ 
+extern void singlezone_verbosity(SINGLEZONE sz); 
+
+/* 
  * Determine the stellar mass in a singlezone simulation 
  * 
  * Parameters 

@@ -65,7 +65,7 @@ extern double *single_population_enrichment(SSP *ssp, ELEMENT *e,
 			/* The contribution from AGB stars */ 
 			mass[i] += (
 				get_AGB_yield(*e, Z, 
-					main_sequence_turnoff_mass(times[i], (*ssp).postMS)) * 
+					dying_star_mass(times[i], (*ssp).postMS, Z)) * 
 				mstar * ((*ssp).msmf[i] - (*ssp).msmf[i + 1l])
 			); 
 

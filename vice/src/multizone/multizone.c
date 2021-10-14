@@ -75,7 +75,6 @@ extern unsigned short multizone_evolve(MULTIZONE *mz) {
 	 * timestep after the user's specified ending time, and will mess up 
 	 * age calculations from the output. 
 	 */ 
-	if ((*mz).verbose) printf("Computing distribution functions....\n"); 
 	tracers_MDF(mz); 
 	write_multizone_mdf(*mz); 
 
@@ -107,15 +106,20 @@ extern unsigned short multizone_evolve(MULTIZONE *mz) {
  */ 
 extern void multizone_evolve_simple(MULTIZONE *mz) {
 
+	/* 
+	 * Allocate memory for the progressbar regardless of verbosity to avoid it 
+	 * being used uninitialized as a failsafe. 
+	 */ 
+	PROGRESSBAR *pb = progressbar_initialize((*(*mz).mig).n_zones); 
+	if ((*mz).verbose) printf("Evolving zones....\n"); 
+
 	unsigned int i; 
 	for (i = 0; i < (*(*mz).mig).n_zones; i++) { 
-		if ((*mz).verbose) {
-			printf("\rEvolving zone: %d", i); 
-			fflush(stdout); 
-		} else {} 
 		singlezone_evolve_no_setup_no_clean(mz -> zones[i]); 
+		if ((*mz).verbose) progressbar_update(pb, i + 1u); 
 	} 
-	if ((*mz).verbose) printf("\n"); 
+	if ((*mz).verbose) progressbar_finish(pb); 
+	progressbar_free(pb); 
 
 	/* 
 	 * Set the tracer count to the proper value for computing the MDF 
@@ -172,7 +176,6 @@ extern void multizone_evolve_full(MULTIZONE *mz) {
 	verbosity(*mz); 
 	inject_tracers(mz); 
 	write_multizone_history(*mz); 
-	if ((*mz).verbose) printf("\n"); 
 
 } 
 
@@ -359,9 +362,9 @@ extern double *multizone_stellar_mass(MULTIZONE mz) {
  */ 
 static void verbosity(MULTIZONE mz) {
 
-	if (mz.verbose) { 
-		printf("\rCurrent Time: %.2f Gyr", (*mz.zones[0]).current_time); 
-		fflush(stdout); 
+	if (mz.verbose) {
+		if (!(*mz.zones[0]).verbose) mz.zones[0] -> verbose = 1u; 
+		singlezone_verbosity(*mz.zones[0]); 
 	} else {} 
 
 }

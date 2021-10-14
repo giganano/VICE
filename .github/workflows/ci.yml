@@ -1,3 +1,4 @@
+# This workflow conducts CI testing across all of VICE's branches. 
 
 name: GitHub CI 
 
@@ -32,9 +33,10 @@ jobs:
       COMPILER: ${{ matrix.compiler }}
 
     steps: 
-      - uses: actions/checkout@v2 
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Setup Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2 
         with: 
           python-version: ${{ matrix.python-version }}
@@ -60,12 +62,23 @@ jobs:
         shell: bash 
         run: |
           make CC=$COMPILER 
-          python setup.py build install -q 
+          python setup.py build install --quiet
           make clean 
 
       - name: Tests 
         shell: bash 
         run: |
           make tests 
-          make clean 
+
+      # Tests leave behind a test_<platform>_<version>.log file under ./vice
+      - name: Upload Test Log
+        uses: actions/upload-artifact@v2
+        with:
+          name: testlogs
+          path: ./vice/*.log
+
+      - name: Clean Source Tree
+        shell: bash
+        run: |
+          make clean
 

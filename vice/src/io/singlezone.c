@@ -186,7 +186,7 @@ extern void write_zone_history(SINGLEZONE sz, double mstar,
 	 * units. 
 	 */ 
 
-	if (sz.current_time <= sz.output_times[sz.n_outputs - 1l]) {
+	if (sz.current_time < sz.output_times[sz.n_outputs - 1l] + sz.dt) {
 
 		/* 
 		 * Only write output if the time is actually in the window the user 

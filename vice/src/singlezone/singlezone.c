@@ -5,6 +5,7 @@
 
 #include <stdlib.h> 
 #include <stdio.h> 
+#include <math.h> 
 #include "../singlezone.h" 
 #include "../ssp.h" 
 #include "../io.h" 
@@ -12,7 +13,9 @@
 
 /* ---------- Static function comment headers not duplicated here ---------- */ 
 static unsigned short singlezone_timestepper(SINGLEZONE *sz); 
-static void verbosity(SINGLEZONE sz); 
+
+/* A progressbar that will run for the singlezone object */ 
+static PROGRESSBAR *PB = NULL; 
 
 
 /* 
@@ -86,11 +89,10 @@ extern void singlezone_evolve_no_setup_no_clean(SINGLEZONE *sz) {
 			n++; 
 		} else {} 
 		if (singlezone_timestepper(sz)) break; 
-		verbosity(*sz); 
+		singlezone_verbosity(*sz); 
 	} 
-	verbosity(*sz); 
+	singlezone_verbosity(*sz); 
 	write_singlezone_history(*sz); 
-	if ((*sz).verbose) printf("\n"); 
 
 }
 
@@ -341,18 +343,31 @@ extern unsigned long n_timesteps(SINGLEZONE sz) {
 
 
 /* 
- * Prints the current time on the same line on the console if the user has 
- * specified verbosity. 
+ * Handles the progressbar for a singlezone object as it runs. 
  * 
  * Parameters 
  * ========== 
  * sz: 		The singlezone object for the current simulation 
+ * 
+ * header: singlezone.h 
  */ 
-static void verbosity(SINGLEZONE sz) {
+extern void singlezone_verbosity(SINGLEZONE sz) {
 
 	if (sz.verbose) {
-		printf("\rCurrent Time: %.2f Gyr", sz.current_time); 
-		fflush(stdout); 
+		if (PB == NULL) {
+			PB = progressbar_initialize(n_timesteps(sz) - BUFFER); 
+			PB -> custom_left_hand_side = 1u; 
+			PB -> eta_mode = 875u; 
+		} else {} 
+		char current_time[100]; 
+		sprintf(current_time, "Current Time: %.2f Gyr", sz.current_time); 
+		progressbar_set_left_hand_side(PB, current_time); 
+		if (sz.timestep <= (*PB).maxval) progressbar_update(PB, sz.timestep); 
+		if (sz.timestep == (*PB).maxval) {
+			progressbar_finish(PB); 
+			progressbar_free(PB); 
+			PB = NULL; 
+		} else {} 
 	} else {} 
 
 }

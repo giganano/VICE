@@ -10,6 +10,7 @@
 #include "../ssp.h" 
 #include "../ism.h" 
 #include "multizone.h" 
+#include "progressbar.h" 
 
 /* 
  * Writes history output for each zone in a multizone simulation 
@@ -133,7 +134,11 @@ extern void write_tracers_output(MULTIZONE mz) {
 	 * zone numbers. 
 	 */ 
 
-	if (mz.verbose) printf("Saving star particle data....\n"); 
+	PROGRESSBAR *pb; 
+	if (mz.verbose) {
+		printf("Saving star particle data....\n"); 
+		pb = progressbar_initialize((*mz.mig).tracer_count); 
+	} else {} 
 	unsigned long i; 
 	for (i = 0l; i < (*mz.mig).tracer_count; i++) { 
 		FILE *out = (*mz.mig).tracers_output; 
@@ -156,7 +161,8 @@ extern void write_tracers_output(MULTIZONE mz) {
 			/* Metallicity by mass of each element in the simulation */ 
 			unsigned int j; 
 			for (j = 0; j < origin.n_elements; j++) {
-				fprintf(out, "%e\t", (*origin.elements[j]).Z[t.timestep_origin]); 
+				fprintf(out, "%e\t", 
+					(*origin.elements[j]).Z[t.timestep_origin]); 
 			} 
 			fprintf(out, "\n"); 
 
@@ -165,13 +171,12 @@ extern void write_tracers_output(MULTIZONE mz) {
 		 */ 
 		} else {} 
 
-		if (mz.verbose) {
-			printf("Progress: %.1f%%\r", 
-				100.0 * (i + 1) / (*mz.mig).tracer_count); 
-			fflush(stdout); 
-		} 
+		if (mz.verbose) progressbar_update(pb, i + 1ul); 
 	} 
-	if (mz.verbose) printf("\n"); 
+	if (mz.verbose) {
+		progressbar_finish(pb); 
+		progressbar_free(pb); 
+	} else {} 
 
 } 
 

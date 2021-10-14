@@ -37,14 +37,13 @@ os.system("make -C %s/users_guide" % (
 # -- Project information -----------------------------------------------------
 
 project = 'VICE'
-copyright = '2020, James W. Johnson'
+copyright = '2020-2021, James W. Johnson' 
 author = vice.__author__ 
 release = vice.__version__ 
 
 
 # -- General configuration ---------------------------------------------------
-extensions = [
-]
+extensions = []
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
