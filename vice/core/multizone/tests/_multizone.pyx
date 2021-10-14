@@ -159,18 +159,32 @@ cdef class multizone_tester:
 		return ["vice.core.multizone.prep", test] 
 
 
-	@unittest 
-	def test_outfile_check(self): 
-		r""" 
-		vice.core.multizone.outfile_check unit test 
-		""" 
-		def test(): 
-			try: 
-				self.name = "test" 
-				self.outfile_check(True) 
-			except: 
-				return False 
-			return not "test.vice" in os.listdir(os.getcwd()) 
-		return ["vice.core.multizone.outfile_check", test] 
+	@unittest
+	def test_outfile_check(self):
+		r"""
+		vice.core.multizone.outfile_check unit test
+		"""
+		def test():
+			try:
+				self.name = "test"
+				self.outfile_check(True)
+			except:
+				return False
+			if "test.vice" in os.listdir(os.getcwd()):
+				# Sometimes Linux leaves behind .nfs files that can't be
+				# removed, giving the message that the device or resource
+				# is busy. If the test.vice directory is still there, the test
+				# can still pass if only those files are present.
+				status = True
+				for root, dirs, files in os.walk("test.vice"):
+					for f in files:
+						status &= f.startswith(".nfs")
+						if not status: break
+					if not status: break
+				return status
+			else:
+				return True
+			# return not "test.vice" in os.listdir(os.getcwd())
+		return ["vice.core.multizone.outfile_check", test]
 
 
