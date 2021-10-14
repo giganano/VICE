@@ -24,22 +24,18 @@ def test_tracers_row():
 			return False
 		status = True
 		random.seed()
+		# Testing every single row of the stars object is too computationally
+		# expensive for a test - it chews up gigabytes of data that can only be
+		# freed by restarting the pytho interpreter since it's captured in
+		# python here. Instead, draw ten rows at random and test them
+		# individually, then move on.
 		for _ in range(10):
-			# Testing every single row of the stars object is too
-			# computationally expensive for a test - it chews up gigabytes
-			# of data that can only be freed by restarting the python
-			# interpreter since it's captured in python here. Instead, draw
-			# ten rows at random and test them individually, then move on.
 			idx = int(_TEST_.size[0] * random.random())
 			status &= isinstance(_TEST_[idx], base)
 			status &= _TEST_[idx].keys() == _TEST_.keys()
 			status &= all([isinstance(i, numbers.Number) for i in
 				[_TEST_[idx][j] for j in _TEST_.keys()]])
 			if not status: break
-			# assert isinstance(_TEST_[i], base)
-			# assert _TEST_[i].keys() == _TEST_.keys()
-			# assert all(map(lambda x: isinstance(x, numbers.Number),
-			# 	[_TEST_[i][j] for j in _TEST_.keys()]))
 		return status
 	return ["vice.core.dataframe.tracers.__getitem__.row", test]
 
