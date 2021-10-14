@@ -36,6 +36,7 @@
 - ``vice.yields.agb.ventura13``
 	New set of theoretically predicted asymptotic giant branch star yields
 	compiled from the following set of papers:
+
 	- Ventura et al. (2013), MNRAS, 431, 3642 (Z = 0.0003, 0.008)
 	- Ventura et al. (2014), MNRAS, 437, 3274 (Z = 0.004)
 	- Ventura et al. (2018), MNRAS, 475, 2282 (Z = 0.014)
@@ -59,7 +60,7 @@
 	sub-Chandrasekhar mass white dwarfs at various progenitor metallicities.
 	The Gronow et al. (2021a) study reports yields for white dwarf progenitors
 	of solar metallicity, while Gronow et al. (2021b) report them for
-	:math:`Z / Z_\odot` = 0.01, 0.1, and 3.
+	Z / Zsun = 0.01, 0.1, and 3.
 
 1.2.1
 =====
