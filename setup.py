@@ -91,28 +91,34 @@ Topic :: Scientific/Engineering :: Physics
 """
 
 # Version info
-# Note that only one of DEV, ALPHA, BETA, RC, and POST can be non-zero
+# Note that only one of DEV, ALPHA, BETA, RC, and POST can be anything other
+# than None, in which case it must be an ``int``. 
 # Changes to these numbers also require changes to ./docs/src/index.rst and
 # ./docs/src/cover.tex
 MAJOR			= 1
 MINOR			= 3
 MICRO			= 0
-DEV				= 1
-ALPHA			= 0
-BETA			= 0
-RC				= 0
-POST			= 0
+DEV				= 0
+ALPHA			= None
+BETA			= None
+RC				= None
+POST			= None
 ISRELEASED		= False
 VERSION			= "%d.%d.%d" % (MAJOR, MINOR, MICRO)
-if DEV:
+if DEV is not None:
+	assert isinstance(DEV, int), "Invalid version information"
 	VERSION += ".dev%d" % (DEV)
-elif ALPHA:
+elif ALPHA is not None:
+	assert isinstance(ALPHA, int), "Invalid version information"
 	VERSION += "a%d" % (ALPHA)
-elif BETA:
+elif BETA is not None:
+	assert isinstance(BETA, int), "Invalid version information"
 	VERSION += "b%d" % (BETA)
-elif RC:
+elif RC is not None:
+	assert isinstance(RC, int), "Invalid version information"
 	VERSION += "rc%d" % (RC)
-elif POST:
+elif POST is not None:
+	assert isinstance(POST, int), "Invalid version information"
 	VERSION += ".post%d" % (POST)
 else: pass
 
@@ -247,11 +253,11 @@ def write_version_info(filename = "./vice/version_breakdown.py"):
 MAJOR = %(major)d
 MINOR = %(minor)d
 MICRO = %(micro)d
-DEV = %(dev)d
-ALPHA = %(alpha)d
-BETA = %(beta)d
-RC = %(rc)d
-POST = %(post)d
+DEV = %(dev)s
+ALPHA = %(alpha)s
+BETA = %(beta)s
+RC = %(rc)s
+POST = %(post)s
 ISRELEASED = %(isreleased)s
 MIN_PYTHON_VERSION = \"%(minversion)s\"
 """
@@ -262,11 +268,11 @@ MIN_PYTHON_VERSION = \"%(minversion)s\"
 					"major":		MAJOR,
 					"minor":		MINOR,
 					"micro":		MICRO,
-					"dev":			DEV,
-					"alpha":		ALPHA,
-					"beta":			BETA,
-					"rc":			RC,
-					"post":			POST,
+					"dev":			str(DEV),
+					"alpha":		str(ALPHA),
+					"beta":			str(BETA),
+					"rc":			str(RC),
+					"post":			str(POST),
 					"isreleased":	str(ISRELEASED),
 					"minversion":	MIN_PYTHON_VERSION
 				})

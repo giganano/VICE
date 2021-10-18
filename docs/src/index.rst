@@ -3,7 +3,7 @@
 VICE: Versatile Integrator for Chemical Evolution
 =================================================
 Welcome!
-This is the documentation for **VICE version 1.3.0.dev1**.
+This is the documentation for **VICE version 1.3.0.dev0**.
 First time users should familiarize themselves with VICE's API by going
 through our `tutorial`__, available on `GitHub`__ along with the source code
 and other supplementary material.

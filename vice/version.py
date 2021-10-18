@@ -35,26 +35,26 @@ class version_info:
 	micro : ``int``
 		The micro version number of this release (also known as patch number).
 	dev : ``int``
-		The development version number of this release. Zero if this is not
+		The development version number of this release. ``None`` if this is not
 		a development release.
 	alpha : ``int``
-		The alpha version number of this release. Zero if this is not an alpha
-		release.
+		The alpha version number of this release. ``None`` if this is not an
+		alpha release.
 	beta : ``int``
-		The beta version number of this release. Zero if this is not a beta
+		The beta version number of this release. ``None`` if this is not a beta
 		release.
 	rc : ``int``
-		The release candidate number of this release. Zero if this is not a
+		The release candidate number of this release. ``None`` if this is not a
 		release candidate.
 	post : ``int``
-		The post number of this release. Zero if this is not a post release.
+		The post number of this release. ``None`` if this is not a post release.
 	isreleased : ``bool``
 		Whether or not this version has been released. If False, users are
 		advised to contact a contributor to VICE if they are not a contributor
 		themselves.
 
 	.. note:: At most one of the attributes ``dev``, ``alpha``, ``beta``,
-		``rc``, and ``post`` will be non-zero.
+		``rc``, and ``post`` will not be ``None``.
 
 	Notes
 	-----
@@ -70,15 +70,20 @@ class version_info:
 
 	def __repr__(self):
 		rep = "%d.%d.%d" % (self.major, self.minor, self.micro)
-		if self.dev:
+		if self.dev is not None:
+			assert isinstance(self.dev, int), "Invalid version information"
 			rep += ".dev%d" % (self.dev)
-		elif self.alpha:
+		elif self.alpha is not None:
+			assert isinstance(self.alpha, int), "Invalid version information"
 			rep += "a%d" % (self.alpha)
-		elif self.beta:
+		elif self.beta is not None:
+			assert isinstance(self.beta, int), "Invalid version information"
 			rep += "b%d" % (self.beta)
-		elif self.rc:
+		elif self.rc is not None:
+			assert isinstance(self.rc, int), "Invalid version information"
 			rep += "rc%d" % (self.rc)
-		elif self.post:
+		elif self.post is not None:
+			assert isinstance(self.post, int), "Invalid version information"
 			rep += ".post%d" % (self.post)
 		else: pass
 		return rep
@@ -135,7 +140,7 @@ class version_info:
 	@property
 	def dev(self): 
 		r"""
-		The development number for this release. Zero if this is not a
+		The development number for this release. ``None`` if this is not a
 		development release.
 		"""
 		return version_breakdown.DEV
@@ -143,7 +148,7 @@ class version_info:
 	@property
 	def alpha(self):
 		r"""
-		The alpha number for this release. Zero if this is not an alpha
+		The alpha number for this release. ``None`` if this is not an alpha
 		release.
 		"""
 		return version_breakdown.ALPHA
@@ -151,7 +156,7 @@ class version_info:
 	@property
 	def beta(self):
 		r"""
-		The beta number for this release. Zero if this is not a beta
+		The beta number for this release. ``None`` if this is not a beta
 		release.
 		"""
 		return version_breakdown.BETA
@@ -159,7 +164,7 @@ class version_info:
 	@property
 	def rc(self):
 		r"""
-		The rc number for this release. Zero if this is not a release
+		The rc number for this release. ``None`` if this is not a release
 		candidate.
 		"""
 		return version_breakdown.RC
@@ -167,7 +172,7 @@ class version_info:
 	@property
 	def post(self):
 		r"""
-		The post number for this release. Zero if this is not a post
+		The post number for this release. ``None`` if this is not a post
 		release.
 		"""
 		return version_breakdown.POST
