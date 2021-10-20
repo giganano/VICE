@@ -1,4 +1,4 @@
 
-__all__ = [] 
-from .plots import * 
-__all__.extend(plots.__all__) 
+__all__ = []
+from .plots import *
+__all__.extend(plots.__all__)

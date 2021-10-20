@@ -1,58 +1,58 @@
-# cython: language_level = 3, boundscheck = False 
-""" 
-This file implements the history function, which returns a history object 
-from a singlezone output. 
-""" 
+# cython: language_level = 3, boundscheck = False
+"""
+This file implements the history function, which returns a history object
+from a singlezone output.
+"""
 
-from __future__ import absolute_import 
-from . import _output_utils 
-from ..pickles import pickled_object 
-try: 
-	ModuleNotFoundError 
-except NameError: 
-	ModuleNotFoundError = ImportError 
-from ..dataframe._history cimport history as history_obj 
-from . cimport _history 
+from __future__ import absolute_import
+from . import _output_utils
+from ..pickles import pickled_object
+try:
+	ModuleNotFoundError
+except NameError:
+	ModuleNotFoundError = ImportError
+from ..dataframe._history cimport history as history_obj
+from . cimport _history
 
 
-def history(name): 
-	r""" 
-	Obtain a ``history`` object from a VICE output containing the 
-	time-evolution of the interstellar medium and its relevant abundance 
-	information. 
+def history(name):
+	r"""
+	Obtain a ``history`` object from a VICE output containing the
+	time-evolution of the interstellar medium and its relevant abundance
+	information.
 
-	**Signature**: vice.history(name) 
+	**Signature**: vice.history(name)
 
-	Parameters 
+	Parameters
 	----------
-	name : ``str`` 
-		The full or relative path to the output directory. The '.vice' 
-		extension is not required. 
+	name : ``str``
+		The full or relative path to the output directory. The '.vice'
+		extension is not required.
 
-	Returns 
+	Returns
 	-------
-	hist : ``history`` [VICE ``dataframe`` derived class] 
-		A subclass of the VICE dataframe designed to store the output and to 
-		calculate relevant quantities automatically upon indexing. 
+	hist : ``history`` [VICE ``dataframe`` derived class]
+		A subclass of the VICE dataframe designed to store the output and to
+		calculate relevant quantities automatically upon indexing.
 
-	Raises 
-	------ 
-	* IOError [Only occurs if the output has been altered] 
-		- Output directory not found. 
-		- Output files not formatted correctly. 
-		- Other VICE output files are missing from the output. 
+	Raises
+	------
+	* IOError [Only occurs if the output has been altered]
+		- Output directory not found.
+		- Output files not formatted correctly.
+		- Other VICE output files are missing from the output.
 
-	.. seealso:: vice.core.dataframe.history 
+	.. seealso:: vice.core.dataframe.history
 
-	Example Code 
+	Example Code
 	------------
-	>>> import numpy as np 
-	>>> import vice 
-	>>> vice.singlezone(name = "example").run(np.linspace(0, 10, 1001)) 
-	>>> example = vice.history("example") 
+	>>> import numpy as np
+	>>> import vice
+	>>> vice.singlezone(name = "example").run(np.linspace(0, 10, 1001))
+	>>> example = vice.history("example")
 	>>> example["time"][:10]
-		[0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09] 
-	>>> example["[o/fe]"][:10] 
+		[0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09]
+	>>> example["[o/fe]"][:10]
 		[-0.30581989611140603,
 		 -0.3059028126227887,
 		 -0.3059856206579771,
@@ -63,7 +63,7 @@ def history(name):
 		 -0.3063978595147838,
 		 -0.30647984166504416,
 		 -0.3065618040838354]
-	>>> example[100] 
+	>>> example[100]
 		vice.dataframe{
 			time -----------> 1.0
 			mgas -----------> 5795119000.0
@@ -95,26 +95,26 @@ def history(name):
 			[m/h] ----------> -0.6200211036287412
 			lookback -------> 9.0
 		}
-	""" 
-	return c_history(name) 
+	"""
+	return c_history(name)
 
 
 
-cdef history_obj c_history(name): 
-	""" 
-	Returns a history object for a given output. 
+cdef history_obj c_history(name):
+	"""
+	Returns a history object for a given output.
 
-	For details and documentation, see docstring of history function in this 
-	file. 
-	""" 
-	name = _output_utils._get_name(name) 
-	_output_utils._check_singlezone_output(name) 
+	For details and documentation, see docstring of history function in this
+	file.
+	"""
+	name = _output_utils._get_name(name)
+	_output_utils._check_singlezone_output(name)
 	adopted_solar_z = pickled_object.from_pickle(
-		"%s/attributes/Z_solar.obj" % (name) 
-	) 
+		"%s/attributes/Z_solar.obj" % (name)
+	)
 	return history_obj(
-		filename = "%s/history.out" % (name), 
+		filename = "%s/history.out" % (name),
 		adopted_solar_z = adopted_solar_z
-	) 
+	)
 
 

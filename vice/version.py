@@ -138,7 +138,7 @@ class version_info:
 		return version_breakdown.MICRO
 
 	@property
-	def dev(self): 
+	def dev(self):
 		r"""
 		The development number for this release. ``None`` if this is not a
 		development release.
@@ -177,13 +177,13 @@ class version_info:
 		"""
 		return version_breakdown.POST
 
-	@property 
-	def isreleased(self): 
-		r""" 
-		If True, this version of VICE has been released. 
-		""" 
-		return version_breakdown.ISRELEASED 
+	@property
+	def isreleased(self):
+		r"""
+		If True, this version of VICE has been released.
+		"""
+		return version_breakdown.ISRELEASED
 
 
-version = version_info() 
+version = version_info()
 

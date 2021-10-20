@@ -1,21 +1,21 @@
 
-#ifndef MDF_H 
-#define MDF_H 
+#ifndef MDF_H
+#define MDF_H
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 extern "C" {
-#endif 
+#endif
 
-#include "objects.h" 
-#include "singlezone/mdf.h" 
-#include "multizone/mdf.h" 
-#include "objects/mdf.h" 
+#include "objects.h"
+#include "singlezone/mdf.h"
+#include "multizone/mdf.h"
+#include "objects/mdf.h"
 
-#ifdef __cplusplus 
-} 
-#endif /* __cplusplus */ 
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
-#endif /* MDF_H */ 
+#endif /* MDF_H */
 
 
 

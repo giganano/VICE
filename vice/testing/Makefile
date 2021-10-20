@@ -1,12 +1,12 @@
 
-SUBDIRS := $(filter-out __pycache__/, $(wildcard */)) 
+SUBDIRS := $(filter-out __pycache__/, $(wildcard */))
 
-.PHONY: clean 
-clean: 
-	@ echo Cleaning vice/testing/ 
+.PHONY: clean
+clean:
+	@ echo Cleaning vice/testing/
 	@ if [ -d "__pycache__" ] ; then \
 		rm -rf __pycache__ ; \
-	fi 
+	fi
 	@ for i in $(SUBDIRS) ; do \
 		$(MAKE) -C $$i clean ; \
-	done 
+	done

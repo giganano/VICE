@@ -1,21 +1,21 @@
 
-#ifndef CHANNEL_H 
-#define CHANNEL_H 
+#ifndef CHANNEL_H
+#define CHANNEL_H
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 extern "C" {
-#endif /* __cpluslus */ 
+#endif /* __cpluslus */
 
-#include "objects.h" 
-#include "singlezone/channel.h" 
-#include "multizone/channel.h" 
-#include "objects/channel.h" 
+#include "objects.h"
+#include "singlezone/channel.h"
+#include "multizone/channel.h"
+#include "objects/channel.h"
 
-#ifdef __cpluslus 
-} 
-#endif /* __cplusplus */ 
+#ifdef __cpluslus
+}
+#endif /* __cplusplus */
 
-#endif /* CHANNEL_H */ 
+#endif /* CHANNEL_H */
 
 
 

@@ -1,15 +1,15 @@
 
-all: pkgcontents 
-.PHONY: pkgcontents clean 
+all: pkgcontents
+.PHONY: pkgcontents clean
 
-pkgcontents: 
-	@ echo Generating package contents documentation 
-	@ python3 ./gen 
+pkgcontents:
+	@ echo Generating package contents documentation
+	@ python3 ./gen
 
-clean: 
-	@ echo Cleaning docs/src/users_guide/pkgcontents/ 
-	@ rm -rf __pycache__ 
-	@ rm -f *.rst 
-	@ rm -rf vice.* 
-	@ $(MAKE) -C gen/ clean 
+clean:
+	@ echo Cleaning docs/src/users_guide/pkgcontents/
+	@ rm -rf __pycache__
+	@ rm -f *.rst
+	@ rm -rf vice.*
+	@ $(MAKE) -C gen/ clean
 

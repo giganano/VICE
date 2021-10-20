@@ -1,34 +1,34 @@
 
-CC 			:= gcc 
-CFLAGS 		:= -fPIC -Wsign-conversion -Wsign-compare 
-SOURCES 	:= $(wildcard *.c) 
-HEADERS 	:= $(wildcard *.h) 
-OBJECTS 	:= $(SOURCES:.c=.o) 
-SUBDIRS 	:= $(filter-out __pycache__/, $(wildcard */)) 
+CC 			:= gcc
+CFLAGS 		:= -fPIC -Wsign-conversion -Wsign-compare
+SOURCES 	:= $(wildcard *.c)
+HEADERS 	:= $(wildcard *.h)
+OBJECTS 	:= $(SOURCES:.c=.o)
+SUBDIRS 	:= $(filter-out __pycache__/, $(wildcard */))
 
-all: print_message $(OBJECTS) $(SUBDIRS) 
+all: print_message $(OBJECTS) $(SUBDIRS)
 
-.PHONY: print_message 
-print_message: 
-	@ echo Compiling vice/src/dataframe/ 
+.PHONY: print_message
+print_message:
+	@ echo Compiling vice/src/dataframe/
 
-%.o: %.c $(HEADERS) 
-	@ $(CC) $(CFLAGS) -c $< -o $@ 
+%.o: %.c $(HEADERS)
+	@ $(CC) $(CFLAGS) -c $< -o $@
 
-.PHONY: $(SUBDIRS) 
-$(SUBDIRS): 
-	@ $(MAKE) -C $@ 
+.PHONY: $(SUBDIRS)
+$(SUBDIRS):
+	@ $(MAKE) -C $@
 
-.PHONY: clean 
-clean: 
-	@ echo Cleaning vice/src/dataframe/ 
+.PHONY: clean
+clean:
+	@ echo Cleaning vice/src/dataframe/
 	@ if [ -d "__pycache__" ] ; then \
 		rm -rf __pycache__ ; \
-	fi 
+	fi
 	@ for i in $(OBJECTS) ; do \
 		rm -f $$i ; \
-	done 
+	done
 	@ for i in $(SUBDIRS) ; do \
 		$(MAKE) -C $$i clean ; \
-	done 
+	done
 

@@ -1,16 +1,16 @@
 
-#ifndef YIELDS_TESTS_H 
-#define YIELDS_TESTS_H 
+#ifndef YIELDS_TESTS_H
+#define YIELDS_TESTS_H
 
-#ifdef __cplusplus 
-extern "C" { 
-#endif /* __cplusplus */ 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
-#include "tests/integral.h" 
+#include "tests/integral.h"
 
-#ifdef __cplusplus 
-} 
-#endif /* __cplusplus */ 
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
-#endif /* YIELDS_TESTS_H */ 
+#endif /* YIELDS_TESTS_H */
 

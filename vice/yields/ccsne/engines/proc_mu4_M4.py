@@ -1,7 +1,7 @@
 
-import numpy as np 
+import numpy as np
 
-data = np.genfromtxt('pre_sn.dat', 
+data = np.genfromtxt('pre_sn.dat',
 						skip_header=1, names=True)
 M_ZAMS = data['M_ZAMSM_sun']
 M4s = data['M_s4M_sun']
