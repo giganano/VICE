@@ -1,14 +1,14 @@
 
-.. _apiref: 
+.. _apiref:
 
-Comprehensive API Reference 
+Comprehensive API Reference
 ===========================
 
-.. toctree:: 
-	:titlesonly: 
+.. toctree::
+	:titlesonly:
 	:maxdepth: 8
 
-	command_line 
-	pkgcontents/index 
+	command_line
+	pkgcontents/index
 
 

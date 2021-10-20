@@ -1,163 +1,163 @@
 
-.. _enr: 
+.. _enr:
 
-Enrichment 
+Enrichment
 ==========
-VICE takes a general approach in modeling nucleosynthesis. All elements are 
-treated equally; there are no special considerations for any element. In this 
-documentation we derive the analytic form of 
-:ref:`the enrichment equation <enr_eq>` for an arbitrary element :math:`x` 
-with arbitrary nucleosynthetic yields for arbitrary evolutionary 
-histories. This is an integro-differential equation of the element's mass as a 
-function of time, which VICE solves as an initial-value problem by imposing 
-the boundary condition that its abundance at time zero is given by the 
-primordial abundance from big bang nucleosynthesis. In this version of VICE, 
-helium is the only element for which this value is nonzero. 
+VICE takes a general approach in modeling nucleosynthesis. All elements are
+treated equally; there are no special considerations for any element. In this
+documentation we derive the analytic form of
+:ref:`the enrichment equation <enr_eq>` for an arbitrary element :math:`x`
+with arbitrary nucleosynthetic yields for arbitrary evolutionary
+histories. This is an integro-differential equation of the element's mass as a
+function of time, which VICE solves as an initial-value problem by imposing
+the boundary condition that its abundance at time zero is given by the
+primordial abundance from big bang nucleosynthesis. In this version of VICE,
+helium is the only element for which this value is nonzero.
 
-.. _enr_eq: 
+.. _enr_eq:
 
-The Enrichment Equation 
+The Enrichment Equation
 -----------------------
-The enrichment equation quantifies the rate of change of an element's total 
-mass present in the interstellar medium (ISM). At its core, it is a simple sum 
-of source and sink terms. 
+The enrichment equation quantifies the rate of change of an element's total
+mass present in the interstellar medium (ISM). At its core, it is a simple sum
+of source and sink terms.
 
-.. math:: \dot{M}_x = 
-	\dot{M}_x^\text{CC} + 
-	\dot{M}_x^\text{Ia} + 
-	\dot{M}_x^\text{AGB} - 
+.. math:: \dot{M}_x =
+	\dot{M}_x^\text{CC} +
+	\dot{M}_x^\text{Ia} +
+	\dot{M}_x^\text{AGB} -
 	\frac{M_x}{M_g}\left[
 	\dot{M}_\star + \xi_\text{enh}\dot{M}_\text{out}
-	\right] + 
-	\dot{M}_x^\text{r} + 
-	Z_{x,\text{in}}\dot{M}_\text{in} 
+	\right] +
+	\dot{M}_x^\text{r} +
+	Z_{x,\text{in}}\dot{M}_\text{in}
 
-where :math:`M_x` is the mass of the element :math:`x` in the interstellar 
-medium, :math:`\dot{M}_x` its time-derivative, and :math:`M_g` the mass of the 
-ISM gas. :math:`\dot{M}_x^\text{CC}`, :math:`\dot{M}_x^\text{Ia}`, and 
-:math:`\dot{M}_x^\text{AGB}` quantify the rate of production from 
-core-collapse supernovae (CCSNe), type Ia supernovae (SNe Ia), and asymptotic 
-giant branch (AGB) stars, respectively. 
+where :math:`M_x` is the mass of the element :math:`x` in the interstellar
+medium, :math:`\dot{M}_x` its time-derivative, and :math:`M_g` the mass of the
+ISM gas. :math:`\dot{M}_x^\text{CC}`, :math:`\dot{M}_x^\text{Ia}`, and
+:math:`\dot{M}_x^\text{AGB}` quantify the rate of production from
+core-collapse supernovae (CCSNe), type Ia supernovae (SNe Ia), and asymptotic
+giant branch (AGB) stars, respectively.
 
-We detail each term individually here. 
+We detail each term individually here.
 
-.. _enr_ccsne: 
+.. _enr_ccsne:
 
-.. include:: ccsne.rst 
+.. include:: ccsne.rst
 
-.. _enr_sneia: 
+.. _enr_sneia:
 
-.. include:: sneia.rst 
+.. include:: sneia.rst
 
-.. _enr_agb: 
+.. _enr_agb:
 
-.. include:: agb.rst 
+.. include:: agb.rst
 
-Subsequent Terms 
+Subsequent Terms
 ----------------
-The remaining terms in the enrichment equation make simple statements about 
-remaining source and sink terms. 
+The remaining terms in the enrichment equation make simple statements about
+remaining source and sink terms.
 
-VICE retains the assumption that stars are born at the same metallicity as the 
-ISM from which they form. This motivates the sink term 
+VICE retains the assumption that stars are born at the same metallicity as the
+ISM from which they form. This motivates the sink term
 
-.. math:: -\left(\frac{M_x}{M_g}\right)\dot{M}_\star 
+.. math:: -\left(\frac{M_x}{M_g}\right)\dot{M}_\star
 
-where the mass of the element :math:`x` is depleted at the metallicity of the 
-ISM :math:`Z_x = M_x/M_g` in proportion with the star formation rate 
-:math:`\dot{M}_\star`. 
+where the mass of the element :math:`x` is depleted at the metallicity of the
+ISM :math:`Z_x = M_x/M_g` in proportion with the star formation rate
+:math:`\dot{M}_\star`.
 
-Many galactic chemical evolution models to date have assumed that outflows 
-from galaxies occur at the same metallicity of the ISM. This would suggest 
-that :math:`\dot{M}_x^\text{out} \approx (M_x/M_g)\dot{M}_\text{out}`. 
-However, recent work in the astronomical literature from both simulations 
-(e.g. Christensen et al. (2018) [5]_) and observations (e.g. Chisholm, 
-Trimonti & Leitherer (2018) [6]_) suggest that this may not be the case. 
-Therefore, VICE allows outflows to occur at some multiplicative factor 
-:math:`\xi_\text{enh}` above or below the ISM metallicity, which may vary 
-with time. This motivates the sink term 
+Many galactic chemical evolution models to date have assumed that outflows
+from galaxies occur at the same metallicity of the ISM. This would suggest
+that :math:`\dot{M}_x^\text{out} \approx (M_x/M_g)\dot{M}_\text{out}`.
+However, recent work in the astronomical literature from both simulations
+(e.g. Christensen et al. (2018) [5]_) and observations (e.g. Chisholm,
+Trimonti & Leitherer (2018) [6]_) suggest that this may not be the case.
+Therefore, VICE allows outflows to occur at some multiplicative factor
+:math:`\xi_\text{enh}` above or below the ISM metallicity, which may vary
+with time. This motivates the sink term
 
-.. math:: -\left(\frac{M_x}{M_g}\right)\xi_\text{enh}\dot{M}_\text{out} 
+.. math:: -\left(\frac{M_x}{M_g}\right)\xi_\text{enh}\dot{M}_\text{out}
 
-Because :ref:`VICE works with net rather than absolute yields <yields>`, 
-simulations must quantify the rate at which stars return mass to the ISM at 
-their birth metallicity. This is mathematically similar to the rate of total 
-gas recycling, but weighted by the metallicities of the stars recycling. Since 
-stars are assumed to form at the metallicity of the ISM, 
+Because :ref:`VICE works with net rather than absolute yields <yields>`,
+simulations must quantify the rate at which stars return mass to the ISM at
+their birth metallicity. This is mathematically similar to the rate of total
+gas recycling, but weighted by the metallicities of the stars recycling. Since
+stars are assumed to form at the metallicity of the ISM,
 
-.. math:: \dot{M}_x^\text{r} = 
-	\int_0^t \dot{M}_\star(t') Z_{x,\text{ISM}}(t') \dot{r}(t - t') dt 
+.. math:: \dot{M}_x^\text{r} =
+	\int_0^t \dot{M}_\star(t') Z_{x,\text{ISM}}(t') \dot{r}(t - t') dt
 
-where :math:`r(\tau)` is the :ref:`cumulative return fraction <crf>` from a 
-single stellar population of age :math:`\tau`. This is approximated 
-numerically as 
+where :math:`r(\tau)` is the :ref:`cumulative return fraction <crf>` from a
+single stellar population of age :math:`\tau`. This is approximated
+numerically as
 
-.. math:: \dot{M}_x^\text{r} \approx 
-	\sum_i \dot{M}_\star(i\Delta t) Z_{x,\text{ISM}}(i\Delta t) 
-	\left[r((i + 1)\Delta t) - r(i\Delta t)\right] 
+.. math:: \dot{M}_x^\text{r} \approx
+	\sum_i \dot{M}_\star(i\Delta t) Z_{x,\text{ISM}}(i\Delta t)
+	\left[r((i + 1)\Delta t) - r(i\Delta t)\right]
 
-where the summation is taken over all previous timesteps. The need to 
-differentiate :math:`r` with time is eliminated in the numerical approximation 
-by allowing each stellar population to be weighted by :math:`\Delta r` between 
-the current timestep and the next, made possible by the quantization of 
-timesteps. In the event that the user has specified instantaneous recycling: 
+where the summation is taken over all previous timesteps. The need to
+differentiate :math:`r` with time is eliminated in the numerical approximation
+by allowing each stellar population to be weighted by :math:`\Delta r` between
+the current timestep and the next, made possible by the quantization of
+timesteps. In the event that the user has specified instantaneous recycling:
 
-.. math:: \dot{M}_x^\text{r} = r_\text{inst}\dot{M}_\star Z_{x,\text{ISM}} 
+.. math:: \dot{M}_x^\text{r} = r_\text{inst}\dot{M}_\star Z_{x,\text{ISM}}
 
-At any given timestep, there is gas infall onto the simulated galaxy of a 
-given metallicity :math:`Z`. In most cases this term is negligibly small, but 
-in some interesting cases it may not be (e.g. a major merger event). This 
-necessitates the final term :math:`Z_{x,\text{in}}\dot{M}_\text{in}`. 
+At any given timestep, there is gas infall onto the simulated galaxy of a
+given metallicity :math:`Z`. In most cases this term is negligibly small, but
+in some interesting cases it may not be (e.g. a major merger event). This
+necessitates the final term :math:`Z_{x,\text{in}}\dot{M}_\text{in}`.
 
-Relevant Source Code: 
+Relevant Source Code:
 
-	- ``vice/src/singlezone/recycling.c`` 
-	- ``vice/src/singlezone/element.c`` 
-	- ``vice/src/singlezone/ism.c`` 
+	- ``vice/src/singlezone/recycling.c``
+	- ``vice/src/singlezone/element.c``
+	- ``vice/src/singlezone/ism.c``
 
 
-Extension to Multizone Models 
+Extension to Multizone Models
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The only subsequent term of the enrichment equation modified in multizone 
-simulations is that quantifying the rate of recycling of an element :math:`x`. 
-The migration of star particles into and out of zones can affect the recycling 
-rate in a given zone. In a singlezone simulation it is exactly as expected for 
-the star formation history, but in a multizone model, it is coupled to the 
-star formation histories in other zones. Because VICE knows the zone each 
-star particle occupies at all times in simulation, the rate of recycling 
-of some element :math:`x` should be expressed not as an integral over the star 
-formation history, but as a summation over the stellar populations in the 
-zone: 
+The only subsequent term of the enrichment equation modified in multizone
+simulations is that quantifying the rate of recycling of an element :math:`x`.
+The migration of star particles into and out of zones can affect the recycling
+rate in a given zone. In a singlezone simulation it is exactly as expected for
+the star formation history, but in a multizone model, it is coupled to the
+star formation histories in other zones. Because VICE knows the zone each
+star particle occupies at all times in simulation, the rate of recycling
+of some element :math:`x` should be expressed not as an integral over the star
+formation history, but as a summation over the stellar populations in the
+zone:
 
-.. math:: \dot{M}_x^\text{r} \approx \sum_i M_i Z_{x,i} 
-	[r(\tau_i + \Delta t) - r(\tau_i)] 
+.. math:: \dot{M}_x^\text{r} \approx \sum_i M_i Z_{x,i}
+	[r(\tau_i + \Delta t) - r(\tau_i)]
 
-where :math:`M_i`, :math:`Z_i`, and :math:`\tau_i` are the mass, metallicity, 
-and age, respectively, of the :math:`i`'th star particle in a given zone at 
-a given time. 
+where :math:`M_i`, :math:`Z_i`, and :math:`\tau_i` are the mass, metallicity,
+and age, respectively, of the :math:`i`'th star particle in a given zone at
+a given time.
 
-Relevant Source Code: 
+Relevant Source Code:
 
-	- ``vice/src/multizone/recycling.c`` 
-	- ``vice/src/multizone/element.c`` 
-	- ``vice/src/multizone/ism.c`` 
+	- ``vice/src/multizone/recycling.c``
+	- ``vice/src/multizone/element.c``
+	- ``vice/src/multizone/ism.c``
 
 
-Sanity Checks 
+Sanity Checks
 -------------
-At all timesteps VICE forces the mass of every element to be non-negative. If 
-the mass is found to be below zero at any given time, it is assumed to not be 
-present in the interstellar medium and is assigned a mass of exactly zero. 
-Absent this, the mass of each element reported by VICE is merely the 
-numerically estimated solution to the enrichment equation. 
+At all timesteps VICE forces the mass of every element to be non-negative. If
+the mass is found to be below zero at any given time, it is assumed to not be
+present in the interstellar medium and is assigned a mass of exactly zero.
+Absent this, the mass of each element reported by VICE is merely the
+numerically estimated solution to the enrichment equation.
 
 
-Relevant source code: 
+Relevant source code:
 
-	- ``vice/src/singlezone/element.c`` 
+	- ``vice/src/singlezone/element.c``
 
-.. [5] Christensen et al. (2018), ApJ, 867, 142 
+.. [5] Christensen et al. (2018), ApJ, 867, 142
 
-.. [6] Chisholm, Trimonti & Leitherer (2018), MNRAS, 481, 1690 
+.. [6] Chisholm, Trimonti & Leitherer (2018), MNRAS, 481, 1690
 
 
