@@ -18,7 +18,7 @@ jobs:
       matrix: 
         os: ["ubuntu-latest", "macos-10.15"]
         compiler: [gcc-10, clang]
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.6, 3.7, 3.8, 3.9, 3.10]
         exclude: 
 
           # Mac OS builds run with clang only 
