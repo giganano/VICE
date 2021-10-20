@@ -20,6 +20,14 @@ Emily J. Griffith
 | The Ohio State University Department of Astronomy
 | 140 W. 18th Ave., Columbus, OH, 43204
 
+John W. Bredall
+---------------
+| Contributing Developer
+| Email: bredall.1@buckeyemail.osu.edu
+| Website: https://u.osu.edu/jbredall/
+| The Ohio State University Department of Astronomy
+| 140 W. 18th Ave., Columbus, OH, 43204
+
 David H. Weinberg
 -----------------
 | Advising Developer
