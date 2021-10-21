@@ -1,15 +1,15 @@
 
-version: 2 
+version: 2
 
-sphinx: 
-  configuration: docs/src/conf.py 
+sphinx:
+  configuration: docs/src/conf.py
 
-formats: 
-  - pdf 
+formats:
+  - pdf
 
-python: 
-  version: 3.7 
-  install: 
-    - requirements: docs/requirements.txt 
-    - method: setuptools 
-      path: . 
+python:
+  version: 3.8
+  install:
+    - requirements: docs/requirements.txt
+    - method: setuptools
+      path: .
