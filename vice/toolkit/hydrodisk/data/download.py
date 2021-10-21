@@ -12,7 +12,7 @@ def download(verbose = True):
 	"""
 	if not os.path.exists("%s/h277" % (PATH)): os.mkdir("%s/h277" % (PATH))
 	for sub in range(NSUBS):
-		url = "https://raw.githubusercontent.com/giganano/VICE/v1.2.x/vice/"
+		url = "https://raw.githubusercontent.com/giganano/VICE/v1.3.x/vice/"
 		url += "toolkit/hydrodisk/data/h277/sub%d.dat" % (sub)
 		urllib.request.urlretrieve(url, "%s/h277/sub%d.dat" % (PATH, sub))
 		if verbose: sys.stdout.write("\rDownloading subsample: %d of %d" % (
