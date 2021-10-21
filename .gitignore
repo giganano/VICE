@@ -52,4 +52,5 @@ vice/toolkit/hydrodisk/data/h277/processor/*.fits
 # Temporary h277 files 
 vice/toolkit/hydrodisk/data/h277/no_outer_disk/*.dat 
 
-
+# Local file for organization purposes
+info.yaml
