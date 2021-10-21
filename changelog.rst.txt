@@ -62,6 +62,15 @@
 	of solar metallicity, while Gronow et al. (2021b) report them for
 	Z / Zsun = 0.01, 0.1, and 3.
 
+- Command-Line Functionality
+	When running ``vice --tutorial`` from the command line (or equivalently,
+	``python -m vice --tutorial``), VICE first attempts to download the
+	examples/QuickStartTutorial.ipynb jupyter notebook to the install directory,
+	and then launches it locally. If it cannot download the notebook, it will
+	launch a previously downloaded version if it has one. In the event that no
+	local copy exists and it cannot be downloaded, it will raise a
+	``RuntimeError``.
+
 1.2.1
 =====
 - Minor documentation updates
