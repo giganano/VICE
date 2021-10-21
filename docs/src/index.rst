@@ -1,4 +1,4 @@
-.. VICE documentation master file
+.. VICE documentation root file
 
 VICE: Versatile Integrator for Chemical Evolution
 =================================================
@@ -22,7 +22,7 @@ __ src_
 __ slack_
 
 .. _src: https://github.com/giganano/VICE.git
-.. _tutorial: https://github.com/giganano/VICE/blob/master/examples/QuickStartTutorial.ipynb
+.. _tutorial: https://github.com/giganano/VICE/blob/main/examples/QuickStartTutorial.ipynb
 .. _slack: https://join.slack.com/t/vice-astro/shared_invite/zt-tqwa1syp-faiQu0P9oe83cazb0q9tJA
 
 

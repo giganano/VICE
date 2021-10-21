@@ -1,4 +1,4 @@
-.. VICE developer's documentation master file
+.. VICE developer's documentation root file
 
 Developer's Documentation
 =========================

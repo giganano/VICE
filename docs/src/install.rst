@@ -70,7 +70,7 @@ If you have already installed VICE and would like help getting started, we
 recommend checking out VICE's tutorial_.
 Further usage guidelines can be found :ref:`here <getting_started>`.
 
-.. _tutorial: https://github.com/giganano/VICE/blob/master/examples/QuickStartTutorial.ipynb
+.. _tutorial: https://github.com/giganano/VICE/blob/main/examples/QuickStartTutorial.ipynb
 
 .. Contents::
 

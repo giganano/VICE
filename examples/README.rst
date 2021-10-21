@@ -6,7 +6,7 @@ First time users of VICE should first go through the `tutorial`__
 to familiarize themselves with how to use VICE's basic features.
 
 __ tutorial_
-.. _tutorial: https://github.com/astrobeard/VICEdev/blob/master/examples/QuickStartTutorial.ipynb
+.. _tutorial: https://github.com/astrobeard/VICEdev/blob/main/examples/QuickStartTutorial.ipynb
 
 Here we also provide example scripts to help users further familiarize
 themselves with VICE.
@@ -47,7 +47,7 @@ one-zone models.
 
 __ jw20_
 __ starbursts_
-.. _starbursts: https://github.com/giganano/VICE/tree/master/starbursts
+.. _starbursts: https://github.com/giganano/VICE/tree/main/starbursts
 
 .. _example:
 
@@ -59,7 +59,7 @@ These models focus on the effects of stellar migration on the enrichment
 history of the Milky Way.
 
 __ migration_
-.. _migration: https://github.com/giganano/VICE/tree/master/migration
+.. _migration: https://github.com/giganano/VICE/tree/main/migration
 
 
 A Simple Example: A Simulation of a Galaxy with Known Star Formation History

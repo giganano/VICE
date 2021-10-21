@@ -31,7 +31,7 @@ the ``examples`` directory.
 __ repo_
 __ tutorial_
 .. _repo: https://github.com/giganano/VICE.git
-.. _tutorial: https://github.com/giganano/VICE/blob/master/examples/QuickStartTutorial.ipynb
+.. _tutorial: https://github.com/giganano/VICE/blob/main/examples/QuickStartTutorial.ipynb
 
 
 Example Code
@@ -41,7 +41,7 @@ alongside the `tutorial`__.
 
 __ examples_
 __ tutorial_
-.. _examples: https://github.com/giganano/VICE/tree/master/examples
+.. _examples: https://github.com/giganano/VICE/tree/main/examples
 
 
 Accessing Documentation
@@ -54,7 +54,7 @@ can also be found in the docstrings embedded in the code, and in the
 
 __ troubleshooting_
 __ repo_
-.. _troubleshooting: https://github.com/giganano/VICE/blob/master/docs/src/install.rst#troubleshooting-your-build
+.. _troubleshooting: https://github.com/giganano/VICE/blob/main/docs/src/install.rst#troubleshooting-your-build
 
 
 From the Command Line

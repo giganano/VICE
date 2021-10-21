@@ -21,7 +21,7 @@ Versatile Integrator for Chemical Evolution
 	:alt: version
 
 ..	|MIT Licensed| image:: https://img.shields.io/badge/License-MIT-blue.svg
-	:target: https://raw.githubusercontent.com/giganano/VICE/master/LICENSE
+	:target: https://raw.githubusercontent.com/giganano/VICE/main/LICENSE
 	:alt: MIT License
 
 ..	|issues| image:: https://img.shields.io/github/issues/giganano/VICE.svg
@@ -104,8 +104,8 @@ __ tutorial_
 __ example_
 __ fromcmdline_
 .. _usage: https://vice-astro.readthedocs.io/en/latest/getting_started.html
-.. _tutorial: https://github.com/giganano/VICE/blob/master/examples/QuickStartTutorial.ipynb
-.. _example: https://github.com/giganano/VICE/tree/master/examples
+.. _tutorial: https://github.com/giganano/VICE/blob/main/examples/QuickStartTutorial.ipynb
+.. _example: https://github.com/giganano/VICE/tree/main/examples
 .. _fromcmdline: https://vice-astro.readthedocs.io/en/latest/users_guide/command_line.html
 
 __ slack_
@@ -132,8 +132,8 @@ Under starbursts_, we provide the python_ code which runs the simulations and
 produces the figures in `Johnson & Weinberg (2020)`__. Under migration_, we
 provide the same for `Johnson et al. (2021)`__.
 
-.. _starbursts: https://github.com/giganano/VICE/tree/master/starbursts
-.. _migration: https://github.com/giganano/VICE/tree/master/migration
+.. _starbursts: https://github.com/giganano/VICE/tree/main/starbursts
+.. _migration: https://github.com/giganano/VICE/tree/main/migration
 __ jw20_
 .. _jw20: https://ui.adsabs.harvard.edu/abs/2020MNRAS.498.1364J/abstract
 __ j21_

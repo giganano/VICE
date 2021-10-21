@@ -11,7 +11,7 @@ Rebuilding VICE's documetation requires the following
 
 2. Make_ >= 3.81
 
-.. _Sphinx: https://www.sphinx-doc.org/en/master/
+.. _Sphinx: https://www.sphinx-doc.org/
 .. _Make: https://www.gnu.org/software/make/
 
 Recompile
@@ -23,7 +23,7 @@ either ``make`` within this directory or ``make docs`` in the parent
 directory immediately after running the ``setup.py`` file.
 
 __ install_
-.. _install: https://github.com/giganano/VICE/blob/master/docs/src/install.rst#installing-from-source
+.. _install: https://github.com/giganano/VICE/blob/main/docs/src/install.rst#installing-from-source
 
 This will automatically produce both the HTML and the PDF forms of the
 documentation. The PDF form will be located here under the name vice.pdf, and

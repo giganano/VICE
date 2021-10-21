@@ -281,7 +281,7 @@ def launch_tutorial(args):
 	"""
 	if args.tutorial:
 		import webbrowser
-		url = """https://github.com/giganano/VICE/blob/master/examples/\
+		url = """https://github.com/giganano/VICE/blob/main/examples/\
 QuickStartTutorial.ipynb"""
 		webbrowser.open(url)
 		if "-t" in sys.argv: sys.argv.remove("-t")
