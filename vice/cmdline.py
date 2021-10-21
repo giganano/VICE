@@ -46,8 +46,8 @@ the implementation of VICE, see the associated documentation at \
 """)
 
 	parser.add_argument("-t", "--tutorial",
-		help = """Open the default web browser to VICE QuickStartTutorial \
-jupyter notebook on GitHub.""",
+		help = """Download and launch VICE's QuickStartTutorial, a jupyter \
+notebook intended to familiarize new users with the ins and outs of VICE.""",
 		action = "store_true")
 
 	parser.add_argument("-d", "--docs",

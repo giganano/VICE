@@ -33,17 +33,19 @@ of generality while retaining powerful computing speeds.
 
 Minimization of Dependencies
 ----------------------------
-VICE is implemented in its entirety in ANSI/ISO C, standard library Python_,
-and standard library Cython_. With this implementation, VICE is entirely
-cross platform and independent of the user's version of Anaconda_ (or
-lackthereof). However, VICE is not wrapped for installation in a Windows
-environment without modifying the installation source code. We recommend users
-install and run VICE in a linux environment using the `Windows Terminal`__.
+VICE is implememented entirely in ANSI/ISO C and standard library Python_ and
+Cython_.
+For this reason, it is highly portable across platforms and is independent of
+the user's version of Anaconda_ (or lackthereof).
+However, VICE is not wrapped for installation in a Windows environment, and
+the developers do not provide support for non-POSIX operating systems.
+We therefore recommend that Windows users install and run VICE entirely within
+the `Windows Subsystem for Linux`__.
 
-__ windows_terminal_
 .. _Cython: https://cython.org/
 .. _Anaconda: https://www.anaconda.com/
-.. _windows_terminal: https://www.microsoft.com/en-us/p/windows-terminal-preview/9n0dx20hk701?activetab=pivot:overviewtab
+__ WSL_
+.. _WSL: https://docs.microsoft.com/en-us/windows/wsl/about
 
 Timed Runs
 ----------

@@ -1,4 +1,6 @@
 
+.. _install:
+
 Installing VICE
 +++++++++++++++
 
@@ -253,15 +255,20 @@ source.
 	setuptools_.
 	**Warning**: See `note`__ below on installing with distutils_ inside of a
 	conda environment.
+	**Warning**: distutils_ is deprecated in python versions >= 3.10 (see
+	`PEP 632`__).
+	For this reason, we recommend users avoid installing VICE (or any
+	python package for that matter) using distutils_.
 
 __ mounted_note_
 __ stdlib_
 __ condanote_
+__ pep632_
 
 .. _setuptools: https://setuptools.readthedocs.io/en/latest/
 .. _distutils: https://docs.python.org/3/library/distutils.html
 .. _stdlib: https://docs.python.org/3/library/
-	
+.. _pep632: https://www.python.org/dev/peps/pep-0632/
 
 
 Things to Avoid

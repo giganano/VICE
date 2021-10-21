@@ -21,12 +21,16 @@ Tutorial
 --------
 Under ``examples`` in VICE's `GitHub repository`__ is the `tutorial`__,
 a ``jupyter notebook`` intended to provide first-time users with a primer on
-how to use all of VICE's features. After installation, this jupyter notebook
-can be viewed in the web browser by running ``vice --tutorial`` from the
-command line. Alternatively, if installing from source, it can be launched via
-``make tutorial`` in the root directory. To download this jupyter notebook,
-simply clone the git repository if you haven't already, and it will be under
-the ``examples`` directory.
+how to use all of VICE's features.
+:ref:`After installation <install>`, this jupyter notebook can be downloaded
+and launched automatically by running ``vice --tutorial`` (or, equivalently,
+``python -m vice --tutorial``) from a Unix terminal.
+Whenever this command is ran, VICE will re-download this notebook from GitHub,
+falling back on a previously downloaded version if there is no internet
+connection (or if it cannot be downloaded for some other reason).
+Alternatively, if installing from source, it can be launched via
+``make tutorial`` in the root directory.
+This jupyter notebook can also be obtained by cloning the git repository.
 
 __ repo_
 __ tutorial_

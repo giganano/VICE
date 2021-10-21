@@ -43,7 +43,7 @@ if not __VICE_SETUP__:
 		Update the parameters with which the yields are calculated from the
 		Seitenzahl et al. (2013) [1]_ data.
 
-		**Signature**: vice.yields.sneia.seitenzahl13(\*\*kwargs)
+		**Signature**: vice.yields.sneia.seitenzahl13.set_params(\*\*kwargs)
 
 		Parameters
 		----------
