@@ -50,7 +50,7 @@ if not __VICE_SETUP__:
 		Update the parameters with which the yields are calculated from the
 		Gronow et al. (2021a, b) [1]_ [2]_ data.
 
-		**Signature**: vice.yields.sneia.gronow21(\*\*kwargs)
+		**Signature**: vice.yields.sneia.gronow21.set_params(\*\*kwargs)
 
 		Parameters
 		----------

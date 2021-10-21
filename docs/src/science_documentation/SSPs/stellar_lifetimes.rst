@@ -8,7 +8,7 @@ power law:
 .. math:: \tau_\text{MS} = \tau_\odot m^{-\alpha}
 
 where :math:`\tau_\odot` is the sun's main sequence lifetime and :math:`\alpha`
-is the power law index of the mass-lifetime relationship.
+is the power law index of the MLR.
 The constants ``SOLAR_LIFETIME`` and ``MASS_LIFETIME_PLAW_INDEX``, both
 declared in ``vice/src/ssp.h``, assign the values of :math:`\tau_\odot` = 10
 Gyr and :math:`\alpha` = 3.5, respectively.
@@ -57,15 +57,15 @@ Consequently, this approximation generally suffices for galactic chemical
 evolution models.
 
 The important exception to this rule is that an accurate MLR for
-:math:`M \gtrsim 4 M_\odot` stars is necessary when considering elements with
-significant nucleosynthetic yields from these stars (e.g. nitrogen, Johnson
-et al. 2021 [1]_).
+:math:`4 \lesssim M/M_\odot \lesssim 8` stars is necessary when considering
+elements with significant nucleosynthetic yields from these stars (e.g.
+nitrogen, Johnson et al. 2021 [1]_).
 Prior to version 1.3.0, VICE implemented this single power law relationship
 only.
 In subsequent versions, a handful of additional forms are available to fill
 this need:
 
-	- Larson (1974) [2]_ **(default)**
+	- Larson (1974) [2]_ **(default in versions >= 1.3.0)**
 
 		This form is a metallicity-independent parabola in
 		:math:`\log\tau-\log m` space describing the main sequence lifetimes
@@ -169,9 +169,9 @@ this need:
 	- Kodama & Arimoto (1997) [10]_
 
 		Using the stellar evolution code presented in Iwamoto & Saio (1999)
-		[11]_, Kodama & Arimoto tabulate the *total* lifetimes (i.e. including
-		post main sequence evolution) of stars as a function of both initial
-		mass and metallicity.
+		[11]_, Kodama & Arimoto (1997) tabulate the *total* lifetimes (i.e.
+		including post main sequence evolution) of stars as a function of
+		both initial mass and metallicity.
 		VICE stores internal data at 41 initial masses and 9 metallicities,
 		using 2-dimensional linear interpolation to approximate a smooth
 		function based on these discrete points.
@@ -252,8 +252,9 @@ this need:
 		Vincenzo et al. (2016) determined the values of these coefficients by
 		using isochrones computed using the PARSEC stellar evolution code
 		(Bressan et al. 2012 [14]_; Tang et al. 2014 [15]_; Chen et al. 2015
-		[16]_) in combination with a one-zone chemical evolution model to
-		reproduce the color-magnitude diagram of the Sculptor dwarf galaxy.
+		[16]_) in combination with a one-zone chemical evolution model
+		parameterized to reproduce the color-magnitude diagram of the
+		Sculptor dwarf galaxy.
 
 :ref:`Here <fig_mlr>` we plot stellar lifetime as a function of progenitor mass
 according to each of these forms along with the single power law described
@@ -282,7 +283,7 @@ The following require numerical solutions for the inverse function
 	- Maeder & Meynet (1989)
 
 The following quantify the total lifetimes *a priori*, making calculations
-of the main sequence lifetimes only unavailable:
+of purely main sequence lifetimes unavailable:
 
 	- Vincenzo et al. (2016)
 	- Kodama & Arimoto (1997)

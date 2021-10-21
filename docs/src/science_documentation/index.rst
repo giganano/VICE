@@ -3,6 +3,13 @@
 
 Science Documentation
 =====================
+**Disclaimer**: This section of VICE's documentation is not intended to provide
+users with a holistic scientific background in galactic chemical evolution
+models.
+Rather, some knowledge of the science at hand is assumed.
+Where possible, we have linked additional references to peer reviewed journal
+articles with more in-depth scientific justification and disucssion.
+
 In this documentation we adopt the notation where a lower-case :math:`m`
 implicitly represents the mass ratio of the star to the sun, a unitless
 mass measurement. When relevant, we refer to the mass of a star with units
@@ -45,7 +52,7 @@ The logarithmic abundance ratios :math:`[X/Y]` follow accordingly:
 	\log_{10}\left(\frac{Z_y}{Z_y^\odot}\right)
 
 The symbols :math:`\odot` and :math:`\tau` refer to the sun and a timescale,
-respectively, and we use the term "zone models" refers to both one-zone and
+respectively, and the term "zone models" refers to both one-zone and
 multi-zone models in the general sense.
 
 
