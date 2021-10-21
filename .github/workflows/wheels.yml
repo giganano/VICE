@@ -11,16 +11,16 @@ name: PyPI Wheels
 
 on:
 
-  # Build wheels on all pushes to master and versioned branches and whenever a
+  # Build wheels on all pushes to main and versioned branches and whenever a
   # release is published.
 
   push:
     branches:
-      - master
+      - main
       - v[0-9]+.[0-9]+.x
   pull_request:
     branches:
-      - master
+      - main
       - v[0-9]+.[0-9]+.x
   release:
     types:
