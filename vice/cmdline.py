@@ -13,7 +13,8 @@ try:
 except (ImportError, ModuleNotFoundError):
 	raise ModuleNotFoundError("""\
 VICE not found. Source code and installation instructions can be found at \
-<http://github.com/giganano/VICE.git>.""")
+<https://pypi.org/project/vice>.""")
+import urllib.request
 import math as m
 import argparse
 import sys
@@ -280,15 +281,40 @@ def launch_tutorial(args):
 		True if this program should continue with a simulation.
 	"""
 	if args.tutorial:
-		import webbrowser
-		url = """https://github.com/giganano/VICE/blob/main/examples/\
-QuickStartTutorial.ipynb"""
-		webbrowser.open(url)
+		if download_tutorial():
+			os.system("jupyter notebook %s/QuickStartTutorial.ipynb" % (
+				vice.__path__[0]))
+		else:
+			# if it doesn't exist, it's because it couldn't get downloaded.
+			# A previous version may still be there.
+			raise RuntimeError("""\
+Could not download VICE QuickStartTutorial jupyter notebook. \
+Please check your internet connection and try again.""")
 		if "-t" in sys.argv: sys.argv.remove("-t")
 		if "--tutorial" in sys.argv: sys.argv.remove("--tutorial")
 	else:
 		pass
 	return len(sys.argv) > 1
+
+
+def download_tutorial():
+	r"""
+	Downloads VICE's tutorial into its installed directory if it isn't
+	already present.
+
+	Returns
+	-------
+	True if the jupyter notebook exists within VICE's install directory, False
+	otherwise.
+	"""
+	filename = "%s/QuickStartTutorial.ipynb" % (vice.__path__[0])
+	url = "https://raw.githubusercontent.com/giganano/VICE/main/examples"
+	url += "/QuickStartTutorial.ipynb"
+	try:
+		urllib.request.urlretrieve(url, filename)
+	except:
+		pass
+	return os.path.exists(filename)
 
 
 def open_documentation(args):
