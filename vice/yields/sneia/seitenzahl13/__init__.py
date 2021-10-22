@@ -9,6 +9,27 @@ Seitenzahl et al. (2013) yield table under the N1 explosion model. This study
 reported yields for delayed detonation explosion models of Chandrasekhar mass
 progenitors (1.4 :math:`M_\odot`).
 
+We provide type Ia supernova yields from the Seitenzahl et al. (2013) study
+under the following explosions models presented in their journal publication:
+
+	- N1
+	- N3
+	- N5
+	- N10
+	- N20
+	- N40
+	- N100H
+	- N100
+	- N100L
+	- N150
+	- N200
+	- N300C
+	- N1600
+	- N1600C
+	- N100_Z0.5
+	- N100_Z0.1
+	- N100_Z0.01
+
 .. tip:: By importing this module, the user does not sacrifice the ability to
 	specify their yield settings directly.
 
@@ -58,10 +79,45 @@ if not __VICE_SETUP__:
 
 		Other exceptions are raised by vice.yields.sneia.fractional.
 
+		Notes
+		-----
+		We provide type Ia supernova yields from the Seitenzahl et al. (2013)
+		study under the following explosions models presented in their journal
+		publication:
+
+			- N1
+			- N3
+			- N5
+			- N10
+			- N20
+			- N40
+			- N100H
+			- N100
+			- N100L
+			- N150
+			- N200
+			- N300C
+			- N1600
+			- N1600C
+			- N100_Z0.5
+			- N100_Z0.1
+			- N100_Z0.01
+
 		Example Code
 		------------
+		>>> import vice
 		>>> from vice.yields.sneia import seitenzahl13
-		>>> seitenzahl13.set_params(n = 1.5e-03)
+		>>> vice.yields.sneia.settings['fe']
+		0.0025825957080000002
+		>>> seitenzahl13.set_params(n = 1.5e-3)
+		>>> vice.yields.sneia.settings['fe']
+		0.0017608607100000001
+		>>> seitenzahl13.set_params(n = 1.8e-3, model = "N100L")
+		>>> vice.yields.sneia.settings['fe']
+		0.0010877402286
+		>>> seitenzahl13.set_params(model = "N1600")
+		>>> vice.yields.sneia.settings['fe']
+		0.001158315444
 
 		.. seealso::
 			- vice.yields.sneia.fractional

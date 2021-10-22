@@ -52,6 +52,9 @@ main_sequence_mass_fraction : <function>
 	Calculate the main sequence mass fraction of a star cluster of known age
 imf : <module>
 	Built-in funcitonal forms of popular stellar initial mass functions.
+mlr : ``object``
+	Built-in popular function forms of the stellar mass-lifetime relationship.
+	Also stores which form to adopt in chemical evolution models.
 yields : <module>
 	Calculate, access, and declare nucleosynthetic yield settings for use in
 	simulations.

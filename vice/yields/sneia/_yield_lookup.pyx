@@ -93,23 +93,30 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 	study fully decayed *all* unstable isotopes; any additional treatment for
 	radioactive isotopes is thus unnecessary.
 
+	The Gronow et al. (2021a, b) models are named for the mass of the
+	carbon-oxygen core, the mass of the helium shell, and the metallicity of
+	the progenitor relative to solar, in that order.
+	For example, the "M09_05_01" model refers to one with a 0.9 :math:`M_\odot`
+	carbon-oxygen core and a 0.05 :math:`M_\odot` helium shell produced by a
+	star that was initially at a metallicity of 0.1 :math:`Z_\odot`.
+
 	Example Code
 	------------
 	>>> import vice
 	>>> vice.yields.sneia.single("fe")
-		1.17390714
+	1.17390714
 	>>> vice.yields.sneia.single("fe", study = "iwamoto99", model = "W70")
-		0.77516
+	0.77516
 	>>> vice.yields.sneia.single("fe", study = "iwamoto99", model = "CDD1")
-		0.6479629999999998
+	0.6479629999999998
 	>>> vice.yields.sneia.single("ni", model = "n100l")
-		0.0391409000000526
+	0.0391409000000526
 	>>> vice.yields.sneia.single("ni", model = "N150")
-		0.0749891244
+	0.0749891244
 	>>> vice.yields.sneia.single("co", study = "gronow21", model = "M10_10_1")
-		0.001058
+	0.001058
 	>>> vice.yields.sneia.single("co", study = "gronow21", model = "M09_05_001")
-		0.0001572
+	0.0001572
 
 	.. seealso::
 
@@ -282,25 +289,32 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 	study fully decayed *all* unstable isotopes; any additional treatment for
 	radioactive isotopes is thus unnecessary.
 
+	The Gronow et al. (2021a, b) models are named for the mass of the
+	carbon-oxygen core, the mass of the helium shell, and the metallicity of
+	the progenitor relative to solar, in that order.
+	For example, the "M09_05_01" model refers to one with a 0.9 :math:`M_\odot`
+	carbon-oxygen core and a 0.05 :math:`M_\odot` helium shell produced by a
+	star that was initially at a metallicity of 0.1 :math:`Z_\odot`.
+
 	Example Code
 	------------
 	>>> import vice
 	>>> vice.yields.sneia.fractional("fe")
-		0.0025825957080000002
+	0.0025825957080000002
 	>>> vice.yields.sneia.fractional("fe", study = "iwamoto99", model = "W70")
-		0.001705352
+	0.001705352
 	>>> vice.yields.sneia.fractional("fe", study = "iwamoto99", model = "CDD1")
-		0.0014255185999999997
+	0.0014255185999999997
 	>>> vice.yields.sneia.fractional("ni", model = "n100l")
-		8.610998000011574e-05
+	8.610998000011574e-05
 	>>> vice.yields.sneia.fractional("ni", model = "N150")
-		0.00016497607368
+	0.00016497607368
 	>>> vice.yields.sneia.fractional("co", study = "gronow21",
 		model = "M10_10_1")
-		2.3276e-06
+	2.3276e-06
 	>>> vice.yields.sneia.fractional("co", study = "gronow21",
 		model = "M09_05_001")
-		3.4584000000000003e-07
+	3.4584000000000003e-07
 
 	.. seealso::
 

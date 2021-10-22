@@ -27,6 +27,9 @@ iwamoto99 : yield preset
 	Sets the yields according to one of the models published in the Iwamoto et
 	al. (1999) study.
 
+.. versionadded:: 1.3.0
+	The "gronow21" yield model was introduced in version 1.3.0.
+
 Notes
 -----
 The data stored in this module are reported for each corresponding study

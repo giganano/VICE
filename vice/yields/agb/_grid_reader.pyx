@@ -52,6 +52,10 @@ def yield_grid(element, study = "cristallo11"):
 			- "karakas16": Karakas & Lugaro (2016) [5]_; Karkas et al. (2018)
 				[6]_
 
+		.. versionadded:: 1.3.0
+			The "ventura13" and "karakas16" yield models were introduced in
+			version 1.3.0.
+
 	Returns
 	-------
 	grid : ``tuple`` (2-D)

@@ -606,8 +606,16 @@ class yields:
 
 			Keywords and their Associated Studies:
 
-				- "cristallo11": Cristallo et al. (2011) [1]_
-				- "karakas10": Karakas (2010) [2]_
+				- "cristallo11" : Cristallo et al. (2011) [1]_
+				- "karakas10" : Karakas (2010) [2]_
+				- "ventura13" : Ventura et al. (2013, 2014, 2018, 2020) [3]_
+					[4]_ [5]_ [6]_
+				- "karakas16" : Karakas & Lugaro (2016) [7]_, Karakas et al.
+					(2018) [8]_
+
+			.. versionadded:: 1.3.0
+				The "ventura13" and "karakas16" yield models were introduced
+				in version 1.3.0.
 
 		Internal yield tables can be analyzed by calling vice.yields.agb.grid.
 
@@ -622,9 +630,21 @@ class yields:
 		>>> import vice
 		>>> vice.elements.C.yields.agb = "cristallo11"
 		>>> vice.elements.N.yields.agb = "cristallo11"
+		>>> vice.elements.Ne.yields.agb = "ventura13"
+		>>> vice.elements.Mg.yields.agb = "karakas16"
+		>>> vice.elements.O.yields.agb = "karakas10"
+		>>> def my_n_yield(m, z):
+			return 9.0e-4 * m * (z / 0.014)
+		>>> vice.elements.N.yields.agb = my_n_yield
 
 		.. [1] Cristallo et al. (2011), ApJS, 197, 17
 		.. [2] Karakas (2010), MNRAS, 403, 1413
+		.. [3] Ventura et al. (2013), MNRAS, 431, 3642
+		.. [4] Ventura et al. (2014), MNRAS, 437, 3274
+		.. [5] Ventura et al. (2018), MNRAS, 475, 2282
+		.. [6] Ventura et al. (2020), A&A, 641, A103
+		.. [7] Karakas & Lugaro (2016), ApJ, 825, 26
+		.. [8] Karakas et al. (2018), MNRAS, 477, 421
 		"""
 		return agb.settings[self._symbol]
 
@@ -658,6 +678,9 @@ class yields:
 		>>> import vice
 		>>> vice.elements.Fe.yields.ccsne = 0.0012
 		>>> vice.elements.O.yields.ccsne = 0.015
+		>>> def z_dep_o_yield(z):
+			return 0.015 * (z / 0.014)**0.5
+		>>> vice.elements.O.yields.ccsne = z_dep_o_yield
 		"""
 		return ccsne.settings[self._symbol]
 
@@ -691,6 +714,9 @@ class yields:
 		>>> import vice
 		>>> vice.elements.Fe.yields.sneia = 0.0017
 		>>> vice.elements.O.yields.sneia = 0
+		>>> def z_dep_fe_yield(z):
+			return 0.0017 * (z / 0.014)**0.5
+		>>> vice.elements.Fe.yields.sneia = z_dep_fe_yield
 		"""
 		return sneia.settings[self._symbol]
 

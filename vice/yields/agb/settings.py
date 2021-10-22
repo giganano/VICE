@@ -51,7 +51,8 @@ class settings(agb_yield_settings):
 				[6]_
 
 			.. versionadded:: 1.3.0
-				The "ventura13" and "karakas16" models were added.
+				The "ventura13" and "karakas16" yields models were introduced
+				in version 1.3.0.
 
 		- <function> : Mathematical function describing the yield
 			Must accept progenitor zero age main sequence mass in

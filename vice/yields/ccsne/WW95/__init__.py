@@ -8,6 +8,16 @@ elements to the IMF-averaged yields calculated with the Woosley & Weaver
 (1995) yield table for [M/H] = 0 stars. This will adopt an upper mass limit
 of 40 :math:`M_\odot`.
 
+We provide core collapse supernova yields for non-rotating progenitors as
+reported by Woosley & Weaver (1995) at metallicities relative to solar of
+:math:`\log_{10}(Z / Z_\odot)` =
+
+	- -inf
+	- -4
+	- -2
+	- -1
+	- 0
+
 .. tip:: By importing this module, the user does not sacrifice the ability to
 	specify their yield settings directly.
 
@@ -63,11 +73,40 @@ if not __VICE_SETUP__:
 
 		Other exceptions are raised by vice.yields.ccsne.fractional.
 
+		Notes
+		-----
+		We provide core collapse supernova yields for non-rotating progenitors
+		as reported by Woosley & Weaver (1995) at metallicities relative to
+		solar of :math:`\log_{10}(Z / Z_\odot)` =
+
+			- -inf
+			- -4
+			- -2
+			- -1
+			- 0
+
 		Example Code
 		------------
 		>>> import vice
 		>>> from vice.yields.ccsne import WW95
-		>>> WW95.set_params(m_lower = 0.3, m_upper = 45, IMF = "salpeter")
+		>>> vice.yields.ccsne.settings['o']
+		0.011213287529967898
+		>>> WW95.set_params(IMF = "salpeter")
+		>>> vice.yields.ccsne.settings['o']
+		0.01031925181253855
+		>>> WW95.set_params(IMF = "salpeter", m_upper = 80)
+		>>> vice.yields.ccsne.settings['o']
+		0.009732682861255278
+		>>> from vice.yields.ccsne.engines.S16 import W18
+		>>> from vice.yields.ccsne.engines import E16
+		>>> # Sukhbold et al. (2016) W18 black hole landscape with WW95 yields
+		... WW95.set_params(explodability = W18)
+		>>> vice.yields.ccsne.settings['o']
+		0.004076427850896676
+		>>> # Ertl et al. (2016) black hole landscape with WW95 yields
+		... WW95.set_params(explodability = E16)
+		>>> vice.yields.ccsne.settings['o']
+		0.0026048168655224023
 
 		.. seealso:: vice.yields.ccsne.fractional
 
