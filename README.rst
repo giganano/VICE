@@ -106,7 +106,7 @@ __ fromcmdline_
 .. _usage: https://vice-astro.readthedocs.io/en/latest/getting_started.html
 .. _tutorial: https://github.com/giganano/VICE/blob/main/examples/QuickStartTutorial.ipynb
 .. _example: https://github.com/giganano/VICE/tree/main/examples
-.. _fromcmdline: https://vice-astro.readthedocs.io/en/latest/users_guide/command_line.html
+.. _fromcmdline: https://vice-astro.readthedocs.io/en/latest/api/command_line.html
 
 __ slack_
 .. _slack: https://join.slack.com/t/vice-astro/shared_invite/zt-tqwa1syp-faiQu0P9oe83cazb0q9tJA

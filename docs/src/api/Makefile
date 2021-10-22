@@ -6,6 +6,6 @@ pkgcontents:
 	@ $(MAKE) -C pkgcontents
 
 clean:
-	@ echo Cleaning docs/src/users_guide/
+	@ echo Cleaning docs/src/api/
 	@ rm -rf __pycache__
 	@ $(MAKE) -C pkgcontents/ clean
