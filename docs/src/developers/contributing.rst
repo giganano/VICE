@@ -57,7 +57,7 @@ and the header files they're declared in.
 These comment headers should reflect the style of those already present in
 the C library.
 Finally, add the new features to the API reference config file at
-``docs/src/users_guide/pkgcontents/gen/config.py`` and generate the
+``docs/src/api/pkgcontents/gen/config.py`` and generate the
 documentation by running ``make`` in the ``docs/`` directory.
 
 Submitting a Contribution

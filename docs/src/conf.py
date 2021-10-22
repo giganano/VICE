@@ -28,7 +28,7 @@ import warnings
 warnings.filterwarnings("ignore")
 import os
 # Generates the comprehensive API reference
-os.system("make -C %s/users_guide" % (
+os.system("make -C %s/api" % (
 	os.path.dirname(os.path.abspath(__file__))))
 
 
