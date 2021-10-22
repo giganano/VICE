@@ -10,6 +10,10 @@ elements to the IMF-averaged yields calculated with the Sukhbold et al. (2016)
 yield table under the W18F explosion engine for [M/H] = 0 stars. This will
 adopt an upper mass limit of 120 :math:`M_\odot`.
 
+We provide core collapse supernova yields for non-rotating progenitors at
+solar metallicity only as reported by Sukhbold et al. (2016) under the
+W18F explosion engine.
+
 For details on the nature of the forced explosion model, see discussion in
 Griffith et al. (2021) [1]_.
 
@@ -70,11 +74,34 @@ if not __VICE_SETUP__:
 
 		Other exceptions are raised by vice.yields.ccsne.fractional.
 
+		Notes
+		-----
+		We provide core collapse supernova yields for non-rotating progenitors
+		at solar metallicity only as reported by Sukhbold et al. (2016) under
+		the W18F explosion engine.
+
 		Example Code
 		------------
 		>>> import vice
 		>>> from vice.yields.ccsne.S16 import W18F
-		>>> W18F.set_params(m_lower = 0.3, m_upper = 45, IMF = "salpeter")
+		>>> vice.yields.ccsne.settings['o']
+		0.018063484040223107
+		>>> W18F.set_params(IMF = "salpeter")
+		>>> vice.yields.ccsne.settings['o']
+		0.010770572437600351
+		>>> W18F.set_params(IMF = "salpeter", m_upper = 80)
+		>>> vice.yields.ccsne.settings['o']
+		0.010523432438733342
+		>>> from vice.yields.ccsne.engines import E16
+		>>> from vice.yields.ccsne.engines.S16 import W20
+		>>> # Ertl et al. (2016) black hole landscape with W18F yields
+		... W18F.set_params(explodability = E16)
+		>>> vice.yields.ccsne.settings['o']
+		0.0044613656957736055
+		>>> # Sukhbold et al. (2016) W20 black hole landscape with W18F yields
+		... W18F.set_params(explodability = W20)
+		>>> vice.yields.ccsne.settings['o']
+		0.0034641626751717044
 
 		.. seealso:: vice.yields.ccsne.fractional
 

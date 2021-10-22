@@ -18,6 +18,8 @@ class mlr(_mlr_linker):
 	functional forms available for individual calculations as well as for use
 	in chemical evolution models.
 
+	**Signature**: vice.mlr
+
 	.. versionadded:: 1.3.0
 
 	Contents
@@ -144,11 +146,15 @@ class mlr(_mlr_linker):
 			- vice.mlr.mm1989
 			- vice.mlr.larson1974
 
+		.. note:: Though assignment of this object is case-insensitive, the
+			value stored will always be lower-cased. See example below
+			assigning the Kodama & Arimoto (1997) MLR as the setting.
+
 		Example Code
 		------------
 		>>> import vice
-		>>> vice.mlr.setting
-		"powerlaw"
+		>>> vice.mlr.setting # the default setting
+		"larson1974"
 		>>> vice.mlr.setting = "KA1997"
 		>>> vice.mlr.setting
 		"ka1997"
