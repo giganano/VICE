@@ -28,7 +28,7 @@ vice/modeling/*.c
 # Ignore locally compiled documentation 
 docs/vice.pdf 
 docs/src/_build/* 
-docs/src/users_guide/pkgcontents/*.rst 
+docs/src/api/pkgcontents/*.rst 
 
 # source installation artifacts 
 vice.egg-info/* 

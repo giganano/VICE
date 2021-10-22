@@ -31,6 +31,6 @@ __ slack_
 	install
 	getting_started
 	science_documentation/index
-	users_guide/index
+	api/index
 	developers/index
 
