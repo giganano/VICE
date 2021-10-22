@@ -8,6 +8,10 @@ elements to the IMF-averaged yields calculated with the Chieffi & Limongi
 (2013) yield table for [M/H] = 0 stars. This will adopt an upper mass limit of
 100 :math:`M_\odot`.
 
+We provide core collapse supernova yields for progenitors at rotational
+velocities of 0 and 300 km/s as reported by Chieffi & Limongi (2013) at solar
+metallicity.
+
 .. tip:: By importing this module, the user does not sacrifice the ability to
 	specify their yield settings directly.
 
@@ -64,11 +68,37 @@ if not __VICE_SETUP__:
 
 		Other exceptions are raised by vice.yields.ccsne.fractional.
 
+		Notes
+		-----
+		We provide core collapse supernova yields for progenitors at rotational
+		velocities of 0 and 300 km/s as reported by Chieffi & Limongi (2013) at
+		solar metallicity.
+
 		Example Code
 		------------
 		>>> import vice
 		>>> from vice.yields.ccsne import CL13
-		>>> CL13.set_params(m_lower = 0.3, m_upper = 40, IMF = "salpeter")
+		>>> vice.yields.ccsne.settings['o']
+		0.01559740936489062
+		>>> CL13.set_params(IMF = "salpeter")
+		>>> vice.yields.ccsne.settings['o']
+		0.009261587578694157
+		>>> CL13.set_params(rotation = 300)
+		>>> vice.yields.ccsne.settings['o']
+		0.024372870613029975
+		>>> CL13.set_params(rotation = 300, IMF = "salpeter")
+		>>> vice.yields.ccsne.settings['o']
+		0.014655521027938309
+		>>> from vice.yields.ccsne.engines.S16 import W18
+		>>> from vice.yields.ccsne.engines import E16
+		>>> # Sukhbold et al. (2016) W18 black hole landscape with CL13 yields
+		... CL13.set_params(explodability = W18)
+		>>> vice.yields.ccsne.settings['o']
+		0.0029448935889672184
+		>>> # Ertl et al. (2016) black hole landscape with CL13 yields
+		... CL13.set_params(explodability = E16, rotation = 300)
+		>>> vice.yields.ccsne.settings['o']
+		0.005392906178396455
 
 		.. seealso:: vice.yields.ccsne.fractional
 

@@ -10,6 +10,10 @@ elements to the IMF-averaged yields calculated with the Sukhbold et al. (2016)
 yield table under the N20 explosion engine for [M/H] = 0 stars. This will
 adopt an upper mass limit of 120 :math:`M_\odot`.
 
+We provide core collapse supernova yields for non-rotating progenitors at
+solar metallicity only as reported by Sukhbold et al. (2016) under the
+N20 explosion engine.
+
 .. tip:: By importing this module the user does not sacrifice the ability to
 	specify their yield settings directly.
 
@@ -65,11 +69,24 @@ if not __VICE_SETUP__:
 
 		Other exceptions are raised by vice.yields.ccsne.fractional.
 
+		Notes
+		-----
+		We provide core collapse supernova yields for non-rotating progenitors
+		at solar metallicity only as reported by Sukhbold et al. (2016) under
+		the N20 explosion engine.
+
 		Example Code
 		------------
 		>>> import vice
 		>>> from vice.yields.ccsne.S16 import N20
-		>>> N20.set_params(m_lower = 0.3, m_upper = 45, IMF = "salpeter")
+		>>> vice.yields.ccsne.settings['o']
+		0.007286488814947039
+		>>> N20.set_params(IMF = "salpeter")
+		>>> vice.yields.ccsne.settings['o']
+		0.004247585262396765
+		>>> N20.set_params(IMF = "salpeter", m_upper = 80)
+		>>> vice.yields.ccsne.settings['o']
+		0.003960345954142228
 
 		.. seealso:: vice.yields.ccsne.fractional
 

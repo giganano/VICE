@@ -8,6 +8,15 @@ elements to the IMF-averaged yields calculated with the Limongi & Chieffi
 (2018) yield table for [M/H] = 0 stars. This will adopt an upper mass limit of
 100 :math:`M_\odot`.
 
+We provide core collapse supernova yields for progenitors at rotational
+velocities of 0, 150, and 300 km/s as reported by Limongi & Chieffi (2018) at
+metallicities relative to solar of :math:`\log_{10}(Z / Z_\odot)` =
+
+	- -3
+	- -2
+	- -1
+	- 0
+
 .. tip:: By importing this module, the user does not sacrifice the ability to
 	specify their yield settings directly.
 
@@ -63,11 +72,36 @@ if not __VICE_SETUP__:
 
 		Other exceptions are raised by vice.yields.ccsne.fractional.
 
+		Notes
+		-----
+		We provide core collapse supernova yields for progenitors at rotational
+		velocities of 0, 150, and 300 km/s as reported by Limongi & Chieffi
+		(2018) at metallicities relative to solar of
+		:math:`\log_{10}(Z / Z_\odot)` =
+
+			- -3
+			- -2
+			- -1
+			- 0
+
 		Example Code
 		------------
 		>>> import vice
 		>>> from vice.yields.ccsne import LC18
-		>>> LC18.set_params(m_lower = 0.3, m_upper = 40, IMF = "salpeter")
+		>>> vice.yields.ccsne.settings['o']
+		0.0036512768277795864
+		>>> LC18.set_params(IMF = "salpeter")
+		>>> vice.yields.ccsne.settings['o']
+		0.0022556257770960713
+		>>> LC18.set_params(rotation = 150)
+		>>> vice.yields.ccsne.settings['o']
+		0.010851696623329273
+		>>> LC18.set_params(rotation = 150, IMF = "salpeter")
+		>>> vice.yields.ccsne.settings['o']
+		0.006744726174198793
+		>>> LC18.set_params(rotation = 150, IMF = "salpeter", MoverH = -2)
+		>>> vice.yields.ccsne.settings['o']
+		0.0081235534350932
 
 		.. seealso:: vice.yields.ccsne.fractional
 

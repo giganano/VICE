@@ -6,7 +6,8 @@ This package provides tables from the following nucleosynthetic yield studies:
 
 	- Cristallo et al. (2011) [1]_
 	- Karakas (2010) [2]_
-	- Ventura et al. (2013) [3]_
+	- Ventura et al. (2013, 2014, 2018, 2020) [3]_ [4]_ [5]_ [6]_
+	- Karakas & Lugaro (2016) [7]_, Karakas et al. (2018) [8]_
 
 Contents
 --------
@@ -21,7 +22,17 @@ settings : ``dataframe``
 cristallo11 : yield preset
 	Sets the yields according to the Cristallo et al. (2011, 2015) studies.
 karakas10 : yield preset
-	Sets the yields according to the Karakas (2010) study
+	Sets the yields according to the Karakas (2010) study.
+ventura13 : yield preset
+	Sets the yields according to the Ventura et al. (2013, 2014, 2018, 2020)
+	studies.
+karakas16 : yield preset
+	Sets the yields according to the Karakas & Lugaro (2016), Karakas et al.
+	(2018) studies.
+
+.. versionadded:: 1.3.0
+	The "ventura13" and "karakas16" yield models were introduced in version
+	1.3.0.
 
 Notes
 -----
@@ -33,6 +44,11 @@ any way.
 .. [1] Cristallo et al. (2011), ApJS, 197, 17
 .. [2] Karakas (2010), MNRAS, 403, 1413
 .. [3] Ventura et al. (2013), MNRAS, 431, 3642
+.. [4] Ventura et al. (2014), MNRAS, 437, 3274
+.. [5] Ventura et al. (2018), MNRAS, 475, 2282
+.. [6] Ventura et al. (2020), A&A, 641, A103
+.. [7] Karakas & Lugaro (2016), ApJ, 825, 26
+.. [8] Karakas et al. (2018), MNRAS, 477, 421
 """
 
 from __future__ import absolute_import

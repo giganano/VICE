@@ -32,6 +32,10 @@ class interpolator(interp_scheme_2d):
 			- "karakas16": Karakas & Lugaro (2016) [5]_; Karkas et al. (2018)
 				[6]_
 
+		.. versionadded:: 1.3.0
+			The "ventura13" and "karakas16" yield models were introduced in
+			version 1.3.0.
+
 	Attributes
 	----------
 	masses : ``list`` [elements of type ``float``]

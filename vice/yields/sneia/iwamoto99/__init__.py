@@ -9,6 +9,17 @@ Iwamoto et al. (1999) yield table under the W70 explosion model. This study
 reports yields for Chandrasekhar Mass progenitors (1.4 :math:`M_\odot`) with a
 variety of deflagration speeds and ignition densities.
 
+We provide type Ia supernova yields from the Iwamoto et al. (1999) study under
+the following explosion models presented in their journal publication:
+
+	- W7
+	- W70
+	- WDD1
+	- WDD2
+	- WDD3
+	- CDD1
+	- CDD2
+
 .. tip:: By importing this module, the user does not sacrifice the ability to
 	specify their yield settings directly.
 
@@ -58,10 +69,35 @@ if not __VICE_SETUP__:
 
 		Other exceptions are raised by vice.yields.sneia.fractional.
 
+		Notes
+		-----
+		We provide type Ia supernova yields from the Iwamoto et al. (1999)
+		study under the following explosion models presented in their
+		journal publication:
+
+			- W7
+			- W70
+			- WDD1
+			- WDD2
+			- WDD3
+			- CDD1
+			- CDD2
+
 		Example Code
 		------------
+		>>> import vice
 		>>> from vice.yields.sneia import iwamoto99
-		>>> iwamoto99.set_params(n = 1.5e-03)
+		>>> vice.yields.sneia.settings['fe']
+		0.001705352
+		>>> iwamoto99.set_params(n = 1.5e-3)
+		>>> vice.yields.sneia.settings['fe']
+		0.00116274
+		>>> iwamoto99.set_params(n = 1.8e-3, model = "CDD1")
+		>>> vice.yields.sneia.settings['fe']
+		0.0011663333999999998
+		>>> iwamoto99.set_params(model = "cdd2")
+		>>> vice.yields.sneia.settings['fe']
+		0.001835812
 
 		.. seealso::
 			- vice.yields.sneia.fractional
