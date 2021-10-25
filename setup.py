@@ -97,7 +97,7 @@ Topic :: Scientific/Engineering :: Physics
 # Changes to these numbers also require changes to ./docs/src/index.rst and
 # ./docs/src/cover.tex
 MAJOR			= 1
-MINOR			= 3
+MINOR			= 4
 MICRO			= 0
 DEV				= 0
 ALPHA			= None
