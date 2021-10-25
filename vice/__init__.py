@@ -137,6 +137,14 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 			__version__ = str(version)
 			if not version.isreleased:
 				warnings.warn("Using un-released version of VICE", UserWarning)
+			else:
+				prerelease = False
+				for item in [version.dev, version.alpha, version.beta,
+					version.rc]:
+					prerelease |= item is not None
+					if prerelease: break
+				if prerelease: warnings.warn("Using a pre-release of VICE",
+					UserWarning)
 			from .milkyway import milkyway
 			from . import milkyway
 			from .core import *
