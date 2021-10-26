@@ -39,6 +39,7 @@ if not __VICE_SETUP__:
 		"test"
 	]
 	from .atomic_number import atomic_number
+	from .isotopic_mass import isotopic_mass
 	from .primordial import primordial
 	from .solar_z import solar_z
 	from .sources import sources
