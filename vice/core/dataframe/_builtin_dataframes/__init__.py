@@ -32,6 +32,7 @@ except NameError:
 if not __VICE_SETUP__:
 	__all__ = [
 		"atomic_number",
+		"isotopic_mass",
 		"primordial",
 		"solar_z",
 		"sources",
