@@ -3,6 +3,7 @@ from __future__ import absolute_import
 __all__ = ["table"]
 from ...core.dataframe._ccsn_yield_table import ccsn_yield_table
 from ...core.dataframe._builtin_dataframes import stable_isotopes
+from ...core.dataframe._builtin_dataframes import isotopic_mass
 from ..._globals import _RECOGNIZED_ELEMENTS_
 from ..._globals import _VERSION_ERROR_
 from ..._globals import ScienceWarning
@@ -25,7 +26,7 @@ else:
 
 
 def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
-	isotopic = False):
+	isotopic = False, in_n=False):
 	
 	r"""
 	Look up the mass yield of a given element as a function of stellar mass
@@ -81,9 +82,9 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 			- "CL04": v = 0
 			- "WW95": v = 0
 
-	wind : bool [default : ``True``]
-		If True, the stellar wind contribution to the yield will be included
-		in the reported table. If False, the table will include only the
+	wind : ``bool`` [default : ``True``]
+		If ``True``, the stellar wind contribution to the yield will be included
+		in the reported table. If ``False``, the table will include only the
 		supernova explosion yields.
 
 		.. note:: Wind and explosive yields are only separated for the
@@ -95,6 +96,10 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 		If ``True``, the full-breakdown of isotopic mass yields is returned.
 		If ``False``, only the total mass yield of the given element is
 		returned.
+
+	in_n : ``bool`` [default : ``False``]
+		if ``True``, yields are reported in number of particles
+		n=mass_yield/isotopic_mass. If ``False``, yields are reported by mass.
 
 	Returns
 	-------
@@ -250,15 +255,25 @@ reason, this function cannot separate the wind yields from this table.""" % (
 			_NAMES_[study.upper()]), ScienceWarning)
 	else: pass
 
-	# Format them as total or isotopic mass yields, and return a yield table
+	# Format them as total or isotopic mass yields, dividing by isotope mass if
+	# necessary, and return a yield table
 	masses = tuple([i[0] for i in grid])
 	isotopic_yields = (len(grid[0]) - 1) * [None]
 	for i in range(1, len(grid[0])):
 		isotopic_yields[i - 1] = tuple([row[i] for row in grid])
 
+	if in_n or isotopic:
+		isotopes = get_isotopes(filename)
+
+	if in_n:
+		isotopic_yields = [
+			tuple(val / isotopic_mass[element][iso] for val in values)
+			for iso, values in zip(isotopes, isotopic_yields)
+		]
+
 	if isotopic:
 		return ccsn_yield_table(masses, tuple(isotopic_yields),
-			isotopes = get_isotopes(filename))
+			isotopes = isotopes)
 	else:
 		mass_yields = len(masses) * [0.]
 		for i in range(len(mass_yields)):
@@ -272,12 +287,12 @@ def read_grid(filename):
 
 	Parameters
 	----------
-	filename: str
+	filename: ``str``
 		The path to the file to read.
 
 	Returns
 	-------
-	yields : list
+	yields : ``list``
 		The contents of the yield file as a 2-D list
 	"""
 	with open(filename, 'r') as f:
@@ -299,10 +314,10 @@ def get_isotopes(filename):
 
 	Parameters
 	----------
-	filename : str
+	filename : ``str``
 		The path to the file containing the yields.
 
-	isotopes : list
+	isotopes : ``list``
 		A list of strings denoting the isotopes of each element in the file.
 	"""
 	with open(filename, 'r') as f:
