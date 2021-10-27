@@ -3,48 +3,59 @@ This file implements the isotopic_mass built-in dataframe
 """
 
 from __future__ import absolute_import
-
+from ...._globals import _RECOGNIZED_ELEMENTS_
 from .._elemental_settings import elemental_settings
+from .._base import base
 
 
 class isotopic_mass(elemental_settings):
 
-    r"""
-    The VICE dataframe: isotopic masses
+	r"""
+	The VICE dataframe: isotopic masses
 
-    Stores the mass of each recognized isotope. Stored values are of
-    type ``float``.
+	Stores the mass of each recognized isotope. Stored values are of
+	type ``float``.
 
-    Indexing
-    --------
-    - ``str`` [case-insensitive]
-        The symbol of a chemical element as it appears on the periodic table,
-        followed by its mass number.
+	Indexing
+	--------
+	- ``str`` [case-insensitive]
+		The symbol of a chemical element as it appears on the periodic table.
+	- ``str`` [case-insensitive]
+		The symbol of a chemical element as it appears on the periodic table, followed by its mass number.
 
-    Item Assignment
-    ---------------
-    This instance of the VICE dataframe does not support item assignment.
+	Item Assignment
+	---------------
+	This instance of the VICE dataframe does not support item assignment.
 
-    Functions
-    ---------
-    - keys
-    - todict
+	Functions
+	---------
+	- keys
+	- todict
 
-    Example Code
-    ------------
-    >>> import vice
-    >>> vice.isotopic_mass['o16']
-    15.99491461957
-    >>> vice.isotopic_mass['fe52']
-    51.9481131
-    >>> vice.isotopic_mass['sr90']
-    89.90773
+	Example Code
+	------------
+	>>> import vice
+	>>> vice.isotopic_mass['he']
+	vice.dataframe{
+		he3 ------------> 3.0160293201
+		he4 ------------> 4.00260325413
+		he5 ------------> 5.012057
+		he6 ------------> 6.018885891
+		he7 ------------> 7.0279907
+		he8 ------------> 8.03393439
+		he9 ------------> 9.043946
+		he10 -----------> 10.05279
+	}
+	>>> vice.isotopic_mass['o']['o16']
+	15.99491461957
+	>>> vice.isotopic_mass['fe']['fe52']
+	51.9481131
 
-    .. [1] Wang et al. (2012), Chinese Phys. C, 36, 1603
-    """
+	.. [1] Wang et al. (2012), Chinese Phys. C, 36, 1603
+	"""
 
-    def __init__(self):
-        super().__init__({
+	def __init__(self):
+		super().__init__({
 			"he": {
 				"he3":		3.0160293201,
 				"he4":		4.00260325413,
@@ -223,7 +234,7 @@ class isotopic_mass(elemental_settings):
 				"al43":		43.05147,
 			},
 			"si": {
-				"si22":	22.03579,
+				"si22": 22.03579,
 				"si23":		23.02544,
 				"si24":		24.011535,
 				"si25":		25.004109,
@@ -2301,44 +2312,44 @@ class isotopic_mass(elemental_settings):
 				"ta192":	191.97514
 			},
 			"w": {
-				"w157":	156.97884,
-				"w158":	157.97456,
-				"w159":	158.97264,
-				"w160":	159.96846,
-				"w161":	160.9672,
-				"w162":	161.963499,
-				"w163":	162.962524,
-				"w164":	163.958961,
-				"w165":	164.958281,
-				"w166":	165.955031,
-				"w167":	166.954805,
-				"w168":	167.951806,
-				"w169":	168.951779,
-				"w170":	169.949232,
-				"w171":	170.949451,
-				"w172":	171.947292,
-				"w173":	172.947689,
-				"w174":	173.946079,
-				"w175":	174.946717,
-				"w176":	175.945634,
-				"w177":	176.946643,
-				"w178":	177.945883,
-				"w179":	178.947077,
-				"w180":	179.9467108,
-				"w181":	180.9481978,
-				"w182":	181.94820394,
-				"w183":	182.95022275,
-				"w184":	183.95093092,
-				"w185":	184.95341897,
-				"w186":	185.9543628,
-				"w187":	186.9571588,
-				"w188":	187.9584862,
-				"w189":	188.961763,
-				"w190":	189.963091,
-				"w191":	190.966531,
-				"w192":	191.96817,
-				"w193":	192.97178,
-				"w194":	193.97367
+				"w157": 156.97884,
+				"w158": 157.97456,
+				"w159": 158.97264,
+				"w160": 159.96846,
+				"w161": 160.9672,
+				"w162": 161.963499,
+				"w163": 162.962524,
+				"w164": 163.958961,
+				"w165": 164.958281,
+				"w166": 165.955031,
+				"w167": 166.954805,
+				"w168": 167.951806,
+				"w169": 168.951779,
+				"w170": 169.949232,
+				"w171": 170.949451,
+				"w172": 171.947292,
+				"w173": 172.947689,
+				"w174": 173.946079,
+				"w175": 174.946717,
+				"w176": 175.945634,
+				"w177": 176.946643,
+				"w178": 177.945883,
+				"w179": 178.947077,
+				"w180": 179.9467108,
+				"w181": 180.9481978,
+				"w182": 181.94820394,
+				"w183": 182.95022275,
+				"w184": 183.95093092,
+				"w185": 184.95341897,
+				"w186": 185.9543628,
+				"w187": 186.9571588,
+				"w188": 187.9584862,
+				"w189": 188.961763,
+				"w190": 189.963091,
+				"w191": 190.966531,
+				"w192": 191.96817,
+				"w193": 192.97178,
+				"w194": 193.97367
 			},
 			"re": {
 				"re159":	158.98418,
@@ -2738,14 +2749,16 @@ class isotopic_mass(elemental_settings):
 				"bi224":	224.03947
 			},
 		})
+		for ele in _RECOGNIZED_ELEMENTS_:
+			super().__setitem__(ele, base(self[ele]))
 
 
-    def __setitem__(self):
-        r"""
-        Override the __setitem__ function to throw a TypeError whenever this
-        function is called.
-        """
-        raise TypeError("This dataframe does not support item assignment.")
+	def __setitem__(self):
+		r"""
+		Override the __setitem__ function to throw a TypeError whenever this
+		function is called.
+		"""
+		raise TypeError("This dataframe does not support item assignment.")
 
 
 isotopic_mass = isotopic_mass()
