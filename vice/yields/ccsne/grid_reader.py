@@ -26,7 +26,7 @@ else:
 
 
 def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
-	isotopic = False, in_n=False):
+	isotopic = False, by_number=False):
 	
 	r"""
 	Look up the mass yield of a given element as a function of stellar mass
@@ -97,7 +97,7 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 		If ``False``, only the total mass yield of the given element is
 		returned.
 
-	in_n : ``bool`` [default : ``False``]
+	by_number : ``bool`` [default : ``False``]
 		if ``True``, yields are reported in number of particles
 		n=mass_yield/isotopic_mass. If ``False``, yields are reported by mass.
 
@@ -262,10 +262,10 @@ reason, this function cannot separate the wind yields from this table.""" % (
 	for i in range(1, len(grid[0])):
 		isotopic_yields[i - 1] = tuple([row[i] for row in grid])
 
-	if in_n or isotopic:
+	if by_number or isotopic:
 		isotopes = get_isotopes(filename)
 
-	if in_n:
+	if by_number:
 		isotopic_yields = [
 			tuple(val / isotopic_mass[element][iso] for val in values)
 			for iso, values in zip(isotopes, isotopic_yields)
