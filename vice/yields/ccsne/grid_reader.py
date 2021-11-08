@@ -266,10 +266,23 @@ reason, this function cannot separate the wind yields from this table.""" % (
 		isotopes = get_isotopes(filename)
 
 	if by_number:
-		isotopic_yields = [
-			tuple(val / isotopic_mass[element][iso] for val in values)
-			for iso, values in zip(isotopes, isotopic_yields)
-		]
+		if element.lower() == "mg":
+			isotopic_yields = [
+				tuple(val / isotopic_mass[element][iso] for val in values)
+				if iso != "al26" else tuple(val / isotopic_mass["al"]["al26"] for val in values)
+				for iso, values in zip(isotopes, isotopic_yields)
+			]
+		elif element.lower() == "fe":
+			isotopic_yields = [
+				tuple(val / isotopic_mass[element][iso] for val in values)
+				if iso != "ni56" else tuple(val / isotopic_mass["ni"]["ni56"] for val in values)
+				for iso, values in zip(isotopes, isotopic_yields)
+			]
+		else:
+			isotopic_yields = [
+				tuple(val / isotopic_mass[element][iso] for val in values)
+				for iso, values in zip(isotopes, isotopic_yields)
+			]
 
 	if isotopic:
 		return ccsn_yield_table(masses, tuple(isotopic_yields),

@@ -207,7 +207,6 @@ class isotopic_mass(elemental_settings):
 				"mg38":		38.03658,
 				"mg39":		39.04538,
 				"mg40":		40.05218,
-				"al26":		25.986891904,
 			},
 			"al": {
 				"al21":		21.02897,
@@ -593,7 +592,6 @@ class isotopic_mass(elemental_settings):
 				"fe72":		71.96983,
 				"fe73":		72.97572,
 				"fe74":		73.97935,
-				"ni56":		55.94212855,
 			},
 			"co": {
 				"co47":		47.01057,
