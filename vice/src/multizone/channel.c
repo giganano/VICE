@@ -37,8 +37,8 @@ extern void from_tracers(MULTIZONE *mz) {
 				CHANNEL *ch = (mz -> zones[(*t).zone_origin] -> elements[j] ->
 					channels[k]);
 				e -> mass += (*(*e).channels[k]).entrainment * (
-					get_yield(*ch, tracer_metallicity(*mz, *t) * (*t).mass *
-						(*ch).rate[timestep - (*t).timestep_origin] )
+					get_yield(*ch, tracer_metallicity(*mz, *t)) * (*t).mass *
+						(*ch).rate[timestep - (*t).timestep_origin]
 				);
 			}
 		}
