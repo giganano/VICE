@@ -201,7 +201,7 @@ Relevant Source Code
 	- ``vice/toolkit/hydrodisk/_hydrodiskstars.pyx``
 	- ``vice/src/toolkit/hydrodiskstars.c``
 
-.. [1] Johnson et al. (2021), arxiv:2103.09838
+.. [1] Johnson et al. (2021), MNRAS, 508, 4484
 .. [2] Christensen et al. (2012), MNRAS, 425, 3058
 .. [3] Zolotov et al. (2012), ApJ, 761, 71
 .. [4] Loebman et al. (2012), ApJ, 758, L23

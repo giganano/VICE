@@ -25,7 +25,7 @@ S16 : ``module``
 	Explodability maps as reported by the various models in Sukhbold et al.
 	(2016) [3]_.
 
-.. [1] Griffith et al. (2021), arxiv:2103.09837
+.. [1] Griffith et al. (2021), ApJ, 921, 73
 .. [2] Ertl et al. (2016), ApJ, 818, 124
 .. [3] Sukhbold et al. (2016), ApJ, 821, 38
 """

@@ -32,7 +32,7 @@ extern "C" {
  *
  * References
  * ==========
- * Kobayashi (2004), MNRAS, 347, 74
+ * Kobayashi (2004), MNRAS, 347, 740
  * Larson (1974), MNRAS, 166, 585
  *
  * source: larson1974.c
@@ -62,7 +62,7 @@ extern double larson1974_turnoffmass(double time, double postMS, double Z);
  *
  * References
  * ==========
- * Kobayashi (2004), MNRAS, 347, 74
+ * Kobayashi (2004), MNRAS, 347, 740
  * Larson (1972), MNRAS, 166, 585
  *
  * source: larson1974.c

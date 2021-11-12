@@ -32,7 +32,7 @@
  * References
  * ==========
  * David, Forman & Jones (1990), ApJ, 359, 29
- * Kobayashi (2004), MNRAS, 347, 74
+ * Kobayashi (2004), MNRAS, 347, 740
  * Larson (1974), MNRAS, 166, 585
  */
 static const double BETA = -3.42;
@@ -63,7 +63,7 @@ static const double GAMMA = 0.88;
  *
  * References
  * ==========
- * Kobayashi (2004), MNRAS, 347, 74
+ * Kobayashi (2004), MNRAS, 347, 740
  * Larson (1974), MNRAS, 166, 585
  *
  * header: larson1974.h
@@ -157,7 +157,7 @@ extern double larson1974_turnoffmass(double time, double postMS, double Z) {
  *
  * References
  * ==========
- * Kobayashi (2004), MNRAS, 347, 74
+ * Kobayashi (2004), MNRAS, 347, 740
  * Larson (1972), MNRAS, 166, 585
  *
  * header: larson1974.h

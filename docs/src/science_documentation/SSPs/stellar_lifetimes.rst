@@ -312,7 +312,7 @@ Relevant source code:
 .. [1] Johnson et al. (2021), in prep
 .. [2] Larson (1974), MNRAS, 166, 585
 .. [3] Tinsley (1972), A&A, 20, 383
-.. [4] Kobayashi (2004), MNRAS, 347, 74
+.. [4] Kobayashi (2004), MNRAS, 347, 740
 .. [5] David, Forman & Jones (1990), ApJ, 359, 29
 .. [6] Maeder & Meynet (1989), A&A, 210, 155
 .. [7] Romano et al. (2005), A&A, 430, 491

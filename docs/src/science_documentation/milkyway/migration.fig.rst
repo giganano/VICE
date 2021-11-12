@@ -10,4 +10,4 @@
 	by the :math:`\Delta R` of the assigned ``h277`` star particle, and one of
 	these assumptions, the radius at all times is known.
 	
-.. [8] Johnson et al. (2021), arxiv:2103.09838
+.. [8] Johnson et al. (2021), MNRAS, 508, 4484

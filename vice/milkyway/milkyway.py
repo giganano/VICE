@@ -189,7 +189,7 @@ class milkyway(multizone):
 	>>> mw.run(np.linspace(0, 13.2, 1321), overwrite = True)
 
 	.. [1] Christensen et al. (2012), MNRAS, 425, 3058
-	.. [2] Johnson et al. (2021), arxiv:2103.09838
+	.. [2] Johnson et al. (2021), MNRAS, 508, 4484
 	.. [3] Kroupa (2001), MNRAS, 322, 231
 	.. [4] Salpeter (1955), ApJ, 121, 161
 	.. [5] Johnson & Weinberg (2020), MNRAS, 498, 1364
@@ -687,7 +687,7 @@ object. Got: %s""" % (type(value)))
 
 		.. [1] Asplund et al. (2009), ARA&A, 47, 481
 		.. [2] Johnson & Weinberg (2020), MNRAS, 498, 1364
-		.. [3] Johnson et al. (2021), arxiv:2103.09838
+		.. [3] Johnson et al. (2021), MNRAS, 508, 4484
 		"""
 		return 0.015 / 0.00572 * (10**(0.08 * (rgal - 4) - 0.3)) - 0.6
 
