@@ -15,7 +15,7 @@ J21_sf_law : <module>
 	[1]_, intended for use as the attribute ``tau_star`` of the ``singlezone``
 	class.
 
-.. [1] Johnson et al. (2021), arxiv:2103.09838
+.. [1] Johnson et al. (2021), MNRAS, 508, 4484
 """
 
 from __future__ import absolute_import
