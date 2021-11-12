@@ -14,8 +14,12 @@ class primordial(elemental_settings):
 
 	Stores the abundance by mass of each element following big bang
 	nucleosynthesis. Stored values are of type ``float``, and are zero for all
-	elements with the exception of helium, which is assigned the standard model
-	value of :math:`Y_\text{p} = 0.24672 \pm 0.00017` [1]_ [2]_ [3]_.
+	elements with the exception of helium, which is assigned a value of
+	:math:`Y_\text{p} = 0.24721 \pm 0.00014` (Pitrou et al. 2021 [1]_).
+	This updates the value of :math:`Y_\text{p} = 0.24672 \pm 0.00017` (Planck
+	Collaboration et al. 2016 [2]_; Pitrou et al. 2018 [3]_; Pattie et al. 2018
+	[4]_) from previous versions of VICE based on updates to the neutron
+	lifetime and the D(p, :math:`\gamma`):math:^3`He reaction cross section.
 
 	.. versionadded:: 1.1.0
 
@@ -39,20 +43,21 @@ class primordial(elemental_settings):
 	>>> vice.primordial['o']
 	0.0
 	>>> vice.primordial['he']
-	0.24672
+	0.24721
 	>>> vice.primordial['c']
 	0.0
 
-	.. [1] Planck Collaboration et al. (2016), A&A, 594, A13
-	.. [2] Pitrou et al. (2018), Phys. Rep., 754, 1
-	.. [3] Pattie et al. (2018), Science, 360, 627
+	.. [1] Pitrou et al. (2021), MNRAS, 502, 2474
+	.. [2] Planck Collaboration et al. (2016), A&A, 594, A13
+	.. [3] Pitrou et al. (2018), Phys. Rep., 754, 1
+	.. [4] Pattie et al. (2018), Science, 360, 627
 	"""
 
 	def __init__(self):
 		data = {}
 		for elem in _RECOGNIZED_ELEMENTS_:
 			if elem == "he":
-				value = 0.24672
+				value = 0.24721
 			else:
 				value = 0.0
 			data[elem] = value

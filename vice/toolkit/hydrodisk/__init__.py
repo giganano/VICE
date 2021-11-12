@@ -20,7 +20,7 @@ data : ``module``
 	object.
 
 .. [1] Christensen et al. (2012), MNRAS, 425, 3058
-.. [2] Johnson et al. (2021), arxiv:2103.09838
+.. [2] Johnson et al. (2021), MNRAS, 508, 4484
 """
 
 from __future__ import absolute_import

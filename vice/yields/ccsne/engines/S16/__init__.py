@@ -31,7 +31,7 @@ W20 : ``engine``
 	An engine characterized by the W20 explosion model.
 
 .. [1] Sukhbold et al. (2016), ApJ, 821, 38
-.. [2] Griffith et al. (2021), arxiv:2103.09837
+.. [2] Griffith et al. (2021), ApJ, 921, 73
 """
 
 from __future__ import absolute_import

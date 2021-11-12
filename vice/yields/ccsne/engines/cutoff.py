@@ -65,7 +65,7 @@ class cutoff(engine):
 	.. [1] Limongi & Chieffi (2018), ApJS, 237, 13
 	.. [2] Ertl et al. (2016), ApJ, 818, 124
 	.. [3] Sukhbold et al. (2016), ApJ, 821, 38
-	.. [4] Griffith et al. (2021), arxiv:2103.09837
+	.. [4] Griffith et al. (2021), MNRAS, 921, 73
 	"""
 
 	def __init__(self, collapse_mass = 40):

@@ -854,7 +854,7 @@ class mlr(_mlr_linker):
 		.. [1] Larson (1974), MNRAS, 166, 585
 		.. [2] Tinsley (1972), A&A, 20, 383
 		.. [3] David, Forman & Jones (1990), ApJ, 359, 29
-		.. [4] Kobayashi (2004), MNRAS, 347, 74
+		.. [4] Kobayashi (2004), MNRAS, 347, 740
 		"""
 		return __LARSON1974__(qty, postMS = postMS, which = which)
 

@@ -27,7 +27,7 @@ W18F : module
 
 For details on the W18F engine, see discussion in Griffith et al. (2021) [1]_.
 
-.. [1] Griffith et al. (2021), arxiv:2103.09837
+.. [1] Griffith et al. (2021), ApJ, 921, 73
 """
 
 pass
