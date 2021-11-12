@@ -16,12 +16,10 @@ class primordial(elemental_settings):
 	nucleosynthesis. Stored values are of type ``float``, and are zero for all
 	elements with the exception of helium, which is assigned a value of
 	:math:`Y_\text{p} = 0.24721 \pm 0.00014` (Pitrou et al. 2021 [1]_).
-	This updates the value of :math:`Y_\text{p} = 0.24672 \pm 0.00017` (Planck
-	Collaboration et al. 2016 [2]_; Pitrou et al. 2018 [3]_; Pattie et al. 2018
-	[4]_) from previous versions of VICE based on updates to the neutron
-	lifetime and the :math:`\text{D}(p, \gamma)^3\text{He}` reaction.
 
 	.. versionadded:: 1.1.0
+		Previous versions of VICE did not implement helium, and therefore did
+		not require any information on primordial abundances.
 
 	Indexing
 	--------
@@ -36,6 +34,15 @@ class primordial(elemental_settings):
 	---------
 	- keys
 	- todict
+
+	Notes
+	-----
+	In versions >= 1.3.0, the primordial abundance of helium is taken to be
+	:math:`Y_\text{p} = 0.24721 \pm 0.00014` (Pitrou et al. 2021), which updates
+	the value of :math:`Y_\text{p} = 0.24672 \pm 0.00017` (Planck Collaboration
+	et al. 2016 [2]_; Pitrou et al. 2018 [3]_; Pattie et al. 2018 [4]_) from
+	previous versions of VICE based on updates to the neutron lifetime and the
+	:math:`\text{D}(p, \gamma)^3\text{He}` reaction.
 
 	Example Code
 	------------
