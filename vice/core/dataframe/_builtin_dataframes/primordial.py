@@ -19,7 +19,7 @@ class primordial(elemental_settings):
 	This updates the value of :math:`Y_\text{p} = 0.24672 \pm 0.00017` (Planck
 	Collaboration et al. 2016 [2]_; Pitrou et al. 2018 [3]_; Pattie et al. 2018
 	[4]_) from previous versions of VICE based on updates to the neutron
-	lifetime and the D(p, :math:`\gamma`):math:^3`He reaction cross section.
+	lifetime and the :math:`\text{D}(p, \gamma)^3\text{He}` reaction.
 
 	.. versionadded:: 1.1.0
 
