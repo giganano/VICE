@@ -307,7 +307,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	.. [4] Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457
 	.. [5] Chieffi & Limongi (2004), ApJ, 608, 405
 	.. [6] Woosley & Weaver (1995), ApJ, 101, 181
-	.. [7] Griffith et al. (2021), arxiv:2103.09837
+	.. [7] Griffith et al. (2021), ApJ, 921, 73
 	.. [8] Kroupa (2001), MNRAS, 231, 322
 	.. [9] Salpeter (1955), ApJ, 121, 161
 	.. [10] Press, Teukolsky, Vetterling & Flannery (2007), Numerical Recipes,

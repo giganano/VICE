@@ -33,7 +33,7 @@ Contents
 set_params : <function>
 	Update the parameters with which the yields are calculated.
 
-.. [1] Griffith et al. (2021), arxiv:2103.09837
+.. [1] Griffith et al. (2021), ApJ, 921, 73
 """
 
 from __future__ import absolute_import

@@ -5,7 +5,7 @@ This file implements the default star formation law employed by the ``milkyway``
 object. This model was adopted by Johnson et al. (2021) [1]_, the paper which
 released these features.
 
-.. [1] Johnson et al. (2021), arxiv:2103.09838
+.. [1] Johnson et al. (2021), MNRAS, 508, 4484
 """
 
 from __future__ import absolute_import
@@ -134,7 +134,7 @@ class J21_sf_law:
 	with the assumption that :math:`t_0` = 13.7 Gyr is the age of the universe
 	at the present day.
 
-	.. [1] Johnson et al. (2021), arxiv:2103.09838
+	.. [1] Johnson et al. (2021), MNRAS, 508, 4484
 	"""
 
 	def __init__(self, area, present_day_molecular = 2.0, molecular_index = 0.5,
@@ -287,7 +287,7 @@ class J21_sf_law:
 		>>> mw.zones[0].tau_star.molecular(13.2)
 		2.0
 
-		.. [1] Johnson et al. (2021), arxiv:2103.09838
+		.. [1] Johnson et al. (2021), MNRAS, 508, 4484
 		"""
 		return self.present_day_molecular * (
 			(1.5 + time) / 13.7)**self.molecular_index
@@ -367,7 +367,7 @@ class J21_sf_law:
 		0.6
 
 		.. [1] Tacconi et al. (2018), ApJ, 853, 179
-		.. [2] Johnson et al. (2021), arxiv:2103.09838
+		.. [2] Johnson et al. (2021), MNRAS, 508, 4484
 		"""
 		return self._molecular_index
 

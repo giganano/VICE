@@ -127,7 +127,7 @@ class E16(engine):
 	0.0
 
 	.. [1] Ertl et al. (2016), ApJ, 818, 124
-	.. [2] Griffith et al. (2021), arxiv:2103.09837
+	.. [2] Griffith et al. (2021), ApJ, 921, 73
 	.. [3] Sukhbold et al. (2016), ApJ, 821, 38
 	"""
 
