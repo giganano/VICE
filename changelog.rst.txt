@@ -62,6 +62,10 @@
 	of solar metallicity, while Gronow et al. (2021b) report them for
 	Z / Zsun = 0.01, 0.1, and 3.
 
+- ``vice.primordial``
+	Primordial abundance of helium updated from 0.24672 to 0.24721 based on the
+	findings of Pitrou et al. (2021), MNRAS, 502, 2474.
+
 - Command-Line Functionality
 	When running ``vice --tutorial`` from the command line (or equivalently,
 	``python -m vice --tutorial``), VICE first attempts to download the
