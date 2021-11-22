@@ -325,13 +325,17 @@ static void progressbar_set_strings(PROGRESSBAR *pb) {
 		/*
 		 * Set the default string to print on the left hand side of the
 		 * progressbar, unless the user has overridden it. Default is how many
-		 * of the maximum iterations have passed.
+		 * of the maximum iterations have passed. Add a null terminator to
+		 * the end of the string to prevent the left and right hand sides from
+		 * getting concatenated together since they're declared side by side.
+		 * Forgetting this can lead to a seg fault as the memory blocks are
+		 * often adjacent.
 		 */
 		if (pb -> left_hand_side != NULL) free(pb -> left_hand_side);
-		pb -> left_hand_side = (char *) malloc ((4u +
+		pb -> left_hand_side = (char *) malloc ((5u +
 			(unsigned int) n_digits((*pb).current) +
 			(unsigned int) n_digits((*pb).maxval)) * sizeof(char));
-		sprintf(pb -> left_hand_side, "%ld of %ld", (*pb).current,
+		sprintf(pb -> left_hand_side, "%ld of %ld\0", (*pb).current,
 			(*pb).maxval);
 	} else {}
 
@@ -339,13 +343,17 @@ static void progressbar_set_strings(PROGRESSBAR *pb) {
 		/*
 		 * Set the default string to print on the right hand side of the
 		 * progressbar, unless the user has overridden it. Default is a message
-		 * with an approximate ETA.
+		 * with an approximate ETA. Add a null terminator to the end of the
+		 * string to prevent the left and right hand sides from getting
+		 * concatenated together since they're declared side by side.
+		 * Forgetting this can lead to a seg fault as the memory blocks are
+		 * often adjacent.
 		 */
 		if (pb -> right_hand_side != NULL) free(pb -> right_hand_side);
 		char *eta = format_time(progressbar_eta(*pb));
-		pb -> right_hand_side = (char *) malloc ((5u + strlen(eta)) *
+		pb -> right_hand_side = (char *) malloc ((6u + strlen(eta)) *
 			sizeof(char));
-		sprintf(pb -> right_hand_side, "ETA: %s", eta);
+		sprintf(pb -> right_hand_side, "ETA: %s\0", eta);
 		free(eta);
 	} else {}
 

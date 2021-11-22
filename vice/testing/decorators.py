@@ -48,9 +48,9 @@ def moduletest(function):
 	``other_moduletest_2()`` also have the ``@moduletest`` decorator applied.
 	"""
 	@functools.wraps(function)
-	def wrapper(run = True, outfile = None):
+	def wrapper(*args, run = True, outfile = None):
 		try:
-			description, unittests = function()
+			description, unittests = function(*args)
 		except TypeError:
 			print(inspect.getfile(function))
 			print(function)
