@@ -14,6 +14,11 @@ extern "C" {
 extern unsigned long (*checksum)(char *);
 
 /*
+ * Run a test on openMP threads.
+ */
+extern void openmp_test(void);
+
+/*
  * Performs the choose operations between two positive numbers
  *
  * Parameters

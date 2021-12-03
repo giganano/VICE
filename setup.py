@@ -157,7 +157,8 @@ def find_extensions(path = './vice'):
 				# The associated source files in the C library
 				src_files = [src] + vice.find_c_extensions(ext)
 				extensions.append(Extension(ext, src_files,
-					extra_compile_args = ["-Wno-unreachable-code"]
+					extra_compile_args = compiler_flags(which = "compile"),
+					extra_link_args = compiler_flags(which = "link")
 				))
 				sys.argv.remove(i) # get rid of this for setup install
 			else:
@@ -175,10 +176,50 @@ def find_extensions(path = './vice'):
 					src_files = ["%s/%s" % (root[2:], i)]
 					src_files += vice.find_c_extensions(name)
 					extensions.append(Extension(name, src_files,
-						extra_compile_args = ["-Wno-unreachable-code"]
+						extra_compile_args = compiler_flags(which = "compile"),
+						extra_link_args = compiler_flags(which = "link")
 					))
 				else: continue
 	return extensions
+
+
+def compiler_flags(which = "compile"):
+	r"""
+	Get a list of additional flags for Cython to pass to the compiler at either
+	compile or link time for a given extension. If this source build is linking
+	to openMP, then the flag '-fopenmp' will be passed at both compile and link
+	time.
+
+	Parameters
+	----------
+	which : ``str``
+		Either "compile" or "link", depending on which action is being taken by
+		the compiler.
+
+	Returns
+	-------
+	flags : ``list``
+		A list of additional flags to pass to the C compiler.
+	"""
+	if which == "compile":
+		flags = ["-Wno-unreachable-code"]
+	elif which == "link":
+		flags = []
+	else:
+		raise RuntimeError("Unrecognized argument for parameter 'which': %s" % (
+			which))
+	if ("VICE_ENABLE_OPENMP" in os.environ.keys() and
+		os.environ["VICE_ENABLE_OPENMP"] == "true"):
+		if sys.platform == "linux":
+			flags.append("-fopenmp")
+		elif sys.platform == "darwin":
+			flags.append("-Xpreprocessor")
+			flags.append("-fopenmp")
+			flags.append("-lomp")
+		else:
+			raise RuntimeError("Sorry, only Linux and Mac OS are supported.")
+	else: pass
+	return flags
 
 
 def find_packages(path = './vice'):

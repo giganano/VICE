@@ -32,6 +32,7 @@ cdef class progressbar:
 
 
 cdef extern from "../src/utils.h":
+	void openmp_test()
 	double *binspace(double start, double stop, long N)
 	void set_char_p_value(char *dest, int *ords, int length)
 

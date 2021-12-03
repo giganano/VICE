@@ -32,6 +32,13 @@ from libc.string cimport strlen
 from . cimport _cutils
 
 
+def openmp():
+	r"""
+	Run a test on the openMP linker.
+	"""
+	_cutils.openmp_test()
+
+
 cdef class progressbar:
 
 	r"""

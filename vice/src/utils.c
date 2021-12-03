@@ -2,6 +2,9 @@
  * This file implements pure utility functions.
  */
 
+#if defined(_OPENMP)
+ 	#include <omp.h>
+#endif
 #include <sys/time.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,6 +16,27 @@
 
 /* Define the checksum function adopted in this implementation */
 unsigned long (*checksum)(char *) = &simple_hash;
+
+
+/*
+ * Run a test on openMP threads.
+ */
+extern void openmp_test(void) {
+
+	unsigned short i;
+
+	#if defined(_OPENMP)
+		#pragma omp parallel for num_threads(10)
+	#endif
+	for (i = 0u; i < 20u; i++) {
+		int thread = -1;
+		#if defined(_OPENMP)
+			thread = omp_get_thread_num();
+		#endif
+		printf("Hello from thread %d! i = %u\n", thread, i);
+	}
+
+}
 
 
 /*
