@@ -14,6 +14,9 @@
 #include "utils.h"
 #include "singlezone.h"
 
+/* Record the number of threads used by openMP */
+static unsigned short OPENMP_NTHREADS = 1u;
+
 /* Define the checksum function adopted in this implementation */
 unsigned long (*checksum)(char *) = &simple_hash;
 
@@ -26,7 +29,7 @@ extern void openmp_test(void) {
 	unsigned short i;
 
 	#if defined(_OPENMP)
-		#pragma omp parallel for num_threads(10)
+		#pragma omp parallel for
 	#endif
 	for (i = 0u; i < 20u; i++) {
 		int thread = -1;
@@ -35,6 +38,59 @@ extern void openmp_test(void) {
 		#endif
 		printf("Hello from thread %d! i = %u\n", thread, i);
 	}
+
+}
+
+
+/*
+ * Set the number of threads to be used with openMP.
+ *
+ * Parameters
+ * ==========
+ * n: 		The number of threads to use.
+ *
+ * Returns
+ * =======
+ * 0 if openMP was linked at compile time or if only 1 thread is being used
+ * if it wasn't linked at compile time. If the user is requesting multiple
+ * threads but openMP wasn't linked at compile time, a value of 1 is
+ * returned, in which case a RuntimeError will be raised in Python to alert
+ * the user that they need to reinstall VICE from source and follow the
+ * steps required to enable multithreading.
+ *
+ * header: utils.h
+ */
+extern unsigned short openmp_set_nthreads(unsigned short n) {
+
+	#if defined(_OPENMP)
+		omp_set_num_threads(n);
+		OPENMP_NTHREADS = n;
+		return 0u;
+	#else
+		return n != 1u;
+	#endif
+
+}
+
+
+/*
+ * Determine the number of threads to be used with openMP.
+ *
+ * Returns
+ * =======
+ * The positive definite number of threads to be used. If openMP was not
+ * linked with VICE at compile time, then this function will always return
+ * a value of 1.
+ *
+ * header: utils.h
+ */
+extern unsigned short openmp_get_nthreads(void) {
+
+	#if defined(_OPENMP)
+		return OPENMP_NTHREADS;
+	#else
+		return 1u;
+	#endif
 
 }
 

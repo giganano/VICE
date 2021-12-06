@@ -33,6 +33,8 @@ cdef class progressbar:
 
 cdef extern from "../src/utils.h":
 	void openmp_test()
+	unsigned short openmp_set_nthreads(unsigned short n)
+	unsigned short openmp_get_nthreads()
 	double *binspace(double start, double stop, long N)
 	void set_char_p_value(char *dest, int *ords, int length)
 
@@ -44,6 +46,8 @@ cdef extern from "../src/objects.h":
 	void callback_2arg_free(CALLBACK_2ARG *cb2)
 
 
+cdef void set_nthreads(n) except *
+cdef unsigned short get_nthreads() except *
 cdef void callback_1arg_setup(CALLBACK_1ARG *cb1, value) except *
 cdef void callback_2arg_setup(CALLBACK_2ARG *cb2, value) except *
 cdef double callback_1arg(double x, void *f)

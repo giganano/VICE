@@ -32,11 +32,63 @@ from libc.string cimport strlen
 from . cimport _cutils
 
 
-def openmp():
+def openmp(nthreads):
 	r"""
-	Run a test on the openMP linker.
+	Run a simple test on openMP features.
 	"""
+	set_nthreads(nthreads)
+	print("Number of openMP threads: %d" % (get_nthreads()))
 	_cutils.openmp_test()
+
+
+cdef void set_nthreads(n) except *:
+	r"""
+	Set the number of threads used in multithreaded portions of VICE's backend.
+
+	Parameters
+	----------
+	n : ``int``
+		The number of threads to spread the calculation across.
+
+	Raises
+	------
+	RuntimeWarning
+		The user has not gone through the necessary steps to enable
+		multiprocessing within VICE, which requires linking to the openMP
+		library at compile time.
+	"""
+	if isinstance(n, numbers.Number):
+		if n % 1 == 0 and n > 0:
+			if _cutils.openmp_set_nthreads(<unsigned short> n):
+				raise RuntimeError("""\
+This installation of VICE was not linked with the openMP library at compile \
+time, rendering multithreading unavailable. To make use of these features, \
+follow the instructions under "Enable Multithreading" at \
+https://vice-astro.readthedocs.io/en/latest/install.html.
+""")
+			else: pass
+		else:
+			raise ValueError("""\
+Number of threads must be a positive definite integer. Got: %g""" % (n))
+	else:
+		raise TypeError("""\
+Number of threads must be a positive definite integer. Got: %s""" % (type(n)))
+
+
+cdef unsigned short get_nthreads() except *:
+	r"""
+	Determine the number of threads used in multithreaded portions of VICE's
+	backend.
+
+	Returns
+	-------
+	n : ``int``
+		The number of threads calculations will be spread across.
+
+		.. note:: This number can be assigned by calling the ``set_nthreads``
+			function in vice/core/_cutils.pyx.
+	"""
+	return int(_cutils.openmp_get_nthreads())
 
 
 cdef class progressbar:
