@@ -217,7 +217,7 @@ def compiler_flags(which = "compile"):
 			flags.append("-fopenmp")
 			flags.append("-lomp")
 		else:
-			raise RuntimeError("Sorry, only Linux and Mac OS are supported.")
+			raise OSError("Sorry, only Linux and Mac OS are supported.")
 	else: pass
 	return flags
 
