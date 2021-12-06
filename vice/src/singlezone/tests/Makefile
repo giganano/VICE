@@ -1,11 +1,11 @@
 
 CC 					:= gcc
 CFLAGS 				:= -fPIC -Wsign-conversion -Wsign-compare
-SOURCES 			:= $(wildcard *.c)
-HEADERS 			:= $(wildcard *.h)
-OBJECTS 			:= $(SOURCES:.c=.o)
 CYTHON_SOURCES 		:= $(wildcard *.pyx)
 CYTHON_OUTPUTS 		:= $(CYTHON_SOURCES:.pyx=.c)
+SOURCES 			:= $(filter-out $(CYTHON_OUTPUTS), $(wildcard *.c))
+HEADERS 			:= $(wildcard *.h)
+OBJECTS 			:= $(SOURCES:.c=.o)
 SUBDIRS 			:= $(filter-out __pycache__/, $(wildcard */))
 
 all: print_message $(OBJECTS) $(SUBDIRS)
