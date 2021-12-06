@@ -3,7 +3,6 @@ CC 					:= gcc
 CFLAGS 				:= -fPIC -Wsign-conversion -Wsign-compare
 CYTHON_SOURCES 		:= $(wildcard *.pyx)
 CYTHON_OUTPUTS 		:= $(CYTHON_SOURCES:.pyx=.c)
-# SOURCES 			:= $(wildcard *.c)
 SOURCES 			:= $(filter-out $(CYTHON_OUTPUTS), $(wildcard *.c))
 HEADERS 			:= $(wildcard *.h)
 OBJECTS 			:= $(SOURCES:.c=.o)
