@@ -10,6 +10,7 @@
 #include <time.h>
 #include "utils.h"
 #include "singlezone.h"
+#include "debug.h"
 
 /* Define the checksum function adopted in this implementation */
 unsigned long (*checksum)(char *) = &simple_hash;
@@ -36,6 +37,8 @@ unsigned long (*checksum)(char *) = &simple_hash;
  */
 extern unsigned long choose(unsigned long a, unsigned long b) {
 
+	trace_print();
+	unsigned long result;
 	if (a > b) {
 		/*
 		 * a choose b = (a(a - 1)(a - 2)...(a - b + 1)) / b!
@@ -50,51 +53,12 @@ extern unsigned long choose(unsigned long a, unsigned long b) {
 			x--;
 			y--;
 		}
-		return numerator / denominator;
+		result = numerator / denominator;
 	} else {
-		return (a == b);
+		result = (unsigned long) (a == b);
 	}
 
-}
-
-
-/*
- * Determine the absolute value of a double x. This function extends the
- * standard library function abs, which only excepts values of type int.
- *
- * Parameters
- * ==========
- * x: 		The number to determine the absolute value of
- *
- * Returns
- * =======
- * +x if x >= 0, -x if x < 0
- *
- * header: utils.h
- */
-extern double absval(double x) {
-
-	return sign(x) * x;
-
-}
-
-
-/*
- * Determine the sign of a double x
- *
- * Parameters
- * ==========
- * x: 		The value to determine the sign of
- *
- * Returns
- * =======
- * +1 if x >= 0, -1 if x < 0
- *
- * header: utils.h
- */
-extern short sign(double x) {
-
-	return (x >= 0) - (x < 0);
+	return result;
 
 }
 
@@ -147,6 +111,7 @@ extern unsigned long simple_hash(char *str) {
  */
 extern void seed_random(void) {
 
+	trace_print();
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	unsigned long time_in_microseconds = 1e6 * tv.tv_sec + tv.tv_usec;
@@ -172,6 +137,7 @@ extern void seed_random(void) {
  */
 extern double rand_range(double minimum, double maximum) {
 
+	trace_print();
 	return minimum + (maximum - minimum) * ((double) rand() / RAND_MAX);
 
 }
@@ -387,6 +353,7 @@ extern double scale_metallicity(SINGLEZONE sz, unsigned long timestep) {
  */
 extern double *binspace(double start, double stop, unsigned long N) {
 
+	trace_print();
 	double *arr = (double *) malloc ((N + 1l) * sizeof(double));
 	double dx = (stop - start) / N;
 	unsigned long i;
@@ -417,6 +384,7 @@ extern double *binspace(double start, double stop, unsigned long N) {
  */
 extern double *bin_centers(double *edges, unsigned long n_bins) {
 
+	trace_print();
 	double *centers = (double *) malloc (n_bins * sizeof(double));
 	unsigned long i;
 	for (i = 0l; i < n_bins; i++) {
@@ -467,11 +435,18 @@ extern double sum(double *arr, unsigned long len) {
  */
 extern void set_char_p_value(char *dest, int *ords, int length) {
 
+	trace_print();
+	debug_print("Destination string address: %p\n", (void *) dest);
+	debug_print("String ordinals address: %p\n", (void *) ords);
+	debug_print("String length: %d\n", length);
+
 	int i;
 	for (i = 0; i < length; i++) {
 		dest[i] = ords[i];
 	}
+
 	dest[length] = '\0'; 	/* null terminator */
+	debug_print("Destination string: %s\n", dest);
 
 }
 
@@ -492,6 +467,7 @@ extern void set_char_p_value(char *dest, int *ords, int length) {
  */
 extern double max(double *arr, unsigned long length) {
 
+	trace_print();
 	if (length >= 2) {
 		unsigned long i;
 		double max_ = arr[0] > arr[1] ? arr[0] : arr[1];
