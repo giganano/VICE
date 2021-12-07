@@ -67,5 +67,32 @@
 		} else {} \
 	} while (0)
 
+/* For printing errors and warning messages in red. */
+#define RESET "\033[0m"
+#define RED "\033[31m"
+#define BOLDRED "\033[1m\033[31m"
+
+/* Print a warning message to the console */
+#define warning_print(fmt, ...) \
+	do { \
+		fprintf(stderr, RED"Warning: "RESET fmt, __VA_ARGS__); \
+	} while (0)
+
+/* Raise an error message to the console and exit the program */
+#define error_print(fmt, ...) \
+	do { \
+		fprintf(stderr, BOLDRED"Error!"RESET" %s:%d:%s(): " fmt, \
+			__FILE__, __LINE__, __func__, __VA_ARGS__); \
+		exit(1); \
+	} while (0)
+
+/* Raise a fatal massage to the console and exit the program */
+#define fatal_print(fmt, ...) \
+	do { \
+		fprintf(stderr, BOLDRED"Fatal!"RESET" %s:%d:%s(): " fmt, \
+			__FILE__, __LINE__, __func__, __VA_ARGS__); \
+		exit(1); \
+	} while (0)
+
 #endif /* DEBUG_H */
 
