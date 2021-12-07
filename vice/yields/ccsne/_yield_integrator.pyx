@@ -7,6 +7,7 @@ tables of core collapse supernovae yields.
 from __future__ import absolute_import
 from ..._globals import _DIRECTORY_
 from ..._globals import _RECOGNIZED_ELEMENTS_
+from ..._globals import _RECOGNIZED_ISOTOPES_
 from ..._globals import _RECOGNIZED_IMFS_
 from ..._globals import _VERSION_ERROR_
 from ..._globals import ScienceWarning
@@ -62,8 +63,8 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	Parameters
 	----------
 	element : ``str`` [case-insensitive]
-		The symbol of the element to calculate the IMF-integrated fractional
-		yield for.
+		The symbol of the element or isotope to calculate the IMF-integrated
+		fractional yield for.
 	study : ``str`` [case-insensitive] [default : "LC18"]
 		A keyword denoting which study to adopt the yields from
 
@@ -334,11 +335,27 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	else:
 		MoverHstr = ("%.2f" % (MoverH)).replace('.', 'p')
 
+	if element.lower() in _RECOGNIZED_ISOTOPES_:
+		is_isotope = True
+		isotope = element
+		if isotope.lower() == "ni56":
+			element = "fe"
+		elif isotope.lower() == "al26":
+			element = "mg"
+		else:
+			element = ''.join(
+				map(lambda c: '' if c in '0123456789' else c, isotope))
+	else:
+		is_isotope = False
+
 	# Value checking errors
 	if element.lower() not in _RECOGNIZED_ELEMENTS_:
 		raise ValueError("Unrecognized element: %s" % (element))
 	elif study.upper() not in _RECOGNIZED_STUDIES_:
 		raise ValueError("Unrecognized study: %s" % (study))
+	elif is_isotope and study.upper() not in ["S16/N20", "S16/W18", "S16/W18F"]:
+		raise ValueError("The %s study does not support isotopic breakdown of \
+yields" % (study.upper()))
 	elif not os.path.exists("%syields/ccsne/%s/FeH%s" % (_DIRECTORY_,
 		study.upper(), MoverHstr)):
 		raise LookupError("The %s study does not have yields for [M/H] = %s" % (
@@ -481,9 +498,16 @@ own discretion by modifying their CCSN yield settings directly.""" % (
 		pass
 
 	if net:
-		zprog = initial_abundance(
-			"%syields/ccsne/%s/FeH%s/birth_composition.dat" % (
-				_DIRECTORY_, study.upper(), MoverHstr), element.lower())
+		if not is_isotope:
+			zprog = initial_abundance(
+				"%syields/ccsne/%s/FeH%s/birth_composition.dat" % (
+					_DIRECTORY_, study.upper(), MoverHstr),
+				element.lower(), is_isotope)
+		else:
+			zprog = initial_abundance(
+				"%syields/ccsne/%s/FeH%s/birth_composition.dat" % (
+					_DIRECTORY_, study.upper(), MoverHstr),
+				isotope.lower(), is_isotope)
 		_yield_integrator.set_Z_progenitor(zprog)
 		if study.upper() not in ["S16/W18", "S16/W18F", "S16/N20", "LC18"]:
 			_yield_integrator.weight_initial_by_explodability(1)
@@ -510,9 +534,17 @@ study, only reporting net yields.""")
 	num[0].Nmax = <unsigned long> Nmax
 	num[0].Nmin = <unsigned long> Nmin
 	try:
-		x = _yield_integrator.IMFintegrated_fractional_yield_numerator(num,
-			imf_obj, explodability_cb, path.encode("latin-1"),
-			int(wind), element.lower().encode("latin-1"))
+		if not is_isotope:
+			x = _yield_integrator.IMFintegrated_fractional_yield_numerator(num,
+				imf_obj, explodability_cb, path.encode("latin-1"),
+				int(wind), element.lower().encode("latin-1"))
+		else:
+			x = _yield_integrator.IMFintegrated_fractional_yield_iso_numerator(
+				num, imf_obj, explodability_cb, path.encode("latin-1"),
+				int(wind), element.lower().encode("latin-1"),
+				isotope.lower().encode("latin-1"))
+			# We no longer need to distinguish between the two
+			element = isotope
 		if x == 1:
 			warnings.warn("""Yield-weighted IMF integration did not converge \
 for element: %s. Estimated fractional error: %.2e""" % (element.lower(),
@@ -558,7 +590,7 @@ Estimated fractional error: %.2e""" % (den[0].error), ScienceWarning)
 	return [y, err]
 
 
-def initial_abundance(filename, element):
+def initial_abundance(filename, element, is_isotope=False):
 	r"""
 	Read in the table containing the initial abundances of each element.
 
@@ -574,16 +606,28 @@ def initial_abundance(filename, element):
 	zprog : elemental_settings
 		A dataframe mapping elemental symbols to the initial abundance.
 	"""
+	Z = 0.
+	reading_ele = False
 	with open(filename, 'r') as f:
 		while True:
 			line = f.readline()
-			element_, Z = line.split()
-			if element_.lower() == element.lower():
+			if not line:
 				f.close()
-				return float(Z)
+				return 0
+			element_, Z_ = line.split()
+			if not is_isotope:
+				element_ = ''.join(
+					map(lambda c: '' if c in '0123456789'
+						else c, element_))
+			if element_.lower() == element.lower():
+				reading_ele = True
+				Z += float(Z_)
 			elif line == "":
 				break
 			else:
+				if reading_ele:
+					f.close()
+					return Z
 				continue
 		f.close()
 	# integrator should return 0 before this function is called in this case.

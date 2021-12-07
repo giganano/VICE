@@ -71,6 +71,25 @@ extern int file_dimension(char *file);
  */
 extern long line_count(char *file);
 
+/*
+ * Determine the column number of data corresponding to the given column name,
+ * assuming the header is commented out with '#' and the last line of the
+ * header corresponds with column names
+ *
+ * Parameters
+ * ==========
+ * file: 		The file to determine the column of
+ * col: 		The name of the desired column
+ *
+ * Returns
+ * =======
+ * The column number of the given column name. -1 on failure to read
+ * from the file or find the column name.
+ *
+ * source: utils.c
+ */
+extern int header_column_number(char *file, char *col);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

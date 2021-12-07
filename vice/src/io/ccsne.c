@@ -53,3 +53,47 @@ extern double **cc_yield_grid(char *file) {
 
 }
 
+
+/*
+ * Read a yield table for CCSNe for a specific isotope.
+ *
+ * Parameters
+ * ==========
+ * file: 		The name of the file, passed from python.
+ * iso: 		The isotope in question
+ *
+ * Returns
+ * =======
+ * Type **double:
+ * 		returned[i][0]: initial stellar mass
+ * 		returned[i][1]: total mass yield of the isotope
+ * NULL on failure to read from the file
+ *
+ * header: ccsne.h
+ */
+extern double **cc_yield_grid_iso(char *file, char *iso) {
+
+	/*
+	 * The number of masses and isotopes on the grid can be determined from
+	 * the length and dimensionality of the data file
+	 */
+	int n_masses = line_count(file) - header_length(file);
+	if (n_masses == 0) return NULL;
+	int col_no = header_column_number(file, iso);
+	if (col_no == -1) return NULL;			/* error handling */
+
+	int i;
+	double **raw = read_square_ascii_file(file);
+	double **grid = (double **) malloc ( (unsigned) n_masses *
+		sizeof(double *));
+	for (i = 0; i < n_masses; i++) {
+		/* Convert to a stellar mass - total isotope mass yield grid */
+		grid[i] = (double *) malloc (2 * sizeof(double));
+		grid[i][0] = raw[i][0];
+		grid[i][1] = raw[i][col_no];
+	}
+	free(raw);
+	return grid;
+
+}
+

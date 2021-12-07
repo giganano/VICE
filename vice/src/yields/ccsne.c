@@ -17,6 +17,8 @@
 /* ---------- static function comment headers not duplicated here ---------- */
 static void setup_calculation(IMF_ *imf, CALLBACK_1ARG *explodability,
 	char *path, const unsigned short wind, char *element);
+static void setup_calculation_iso(IMF_ *imf, CALLBACK_1ARG *explodability,
+	char *path, const unsigned short wind, char *element, char*isotope);
 static void zero_wind_yield_grid(void);
 static double interpolate_yield(double m);
 static double y_cc_numerator(double m);
@@ -121,6 +123,43 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
 
 
 /*
+ * Determine the value of the integrated IMF weighted by the mass yield of a
+ * given isotope, up to the normalization of the IMF.
+ *
+ * Parameters
+ * ==========
+ * intgrl: 			The integral object for the numerator of the yield
+ * imf:				The associated IMF object
+ * explodability: 	Stellar explodability as a function of mass
+ * path:			The nme of the data file containing the grid
+ * wind: 			Boolean int describing whether or not to include winds
+ * isotope: 		The symbol of the isotope
+ *
+ * Returns
+ * =======
+ * 3 on an unrecognized IMF, otherwise the value returned by quad (see
+ * quadrature.h).
+ *
+ * header: ccsne.h
+ */
+extern unsigned short IMFintegrated_fractional_yield_iso_numerator(
+	INTEGRAL *intgrl, IMF_ *imf, CALLBACK_1ARG *explodability,
+	char *path, const unsigned short wind, char *element, char *isotope) {
+
+	setup_calculation_iso(imf, explodability, path, wind, element, isotope);
+	intgrl -> func = &y_cc_numerator;
+	int x = quad(intgrl);
+	free(GRID);
+	free(WIND);
+	intgrl -> func = NULL;
+	GRIDSIZE = 0;
+	IMF = NULL;
+	return x;
+
+}
+
+
+/*
  * Setup the yield calculation by initializing all of the necessary global
  * variables.
  *
@@ -156,6 +195,53 @@ static void setup_calculation(IMF_ *imf, CALLBACK_1ARG *explodability,
 		strcat(wind, element);
 		strcat(wind, ".dat");
 		WIND = cc_yield_grid(wind);
+		free(wind);
+	} else {
+		zero_wind_yield_grid();
+	}
+
+	IMF = imf;
+	EXPLODABILITY = explodability;
+
+}
+
+
+/*
+ * Setup the yield calculation by initializing all of the necessary global
+ * variables.
+ *
+ * Parameters
+ * ==========
+ * imf:				The associated IMF object
+ * explodability: 	Stellar explodability as a function of mass
+ * path:			The nme of the data file containing the grid
+ * wind: 			Boolean int describing whether or not to include winds
+ * element: 		The symbol of the element
+ */
+static void setup_calculation_iso(IMF_ *imf, CALLBACK_1ARG *explodability,
+	char *path, const unsigned short wind, char *element, char *isotope) {
+
+	/*
+	 * Initialize these variables globally. This is such that the function
+	 * which executes numerical quadrature can accept only one parameter - the
+	 * ZAMS mass of the progenitor.
+	 */
+	char *file = (char *) malloc (MAX_FILENAME_SIZE * sizeof(char));
+	strcpy(file, path);
+	strcat(file, "explosive/");
+	strcat(file, element);
+	strcat(file, ".dat");
+
+	GRIDSIZE = line_count(file) - header_length(file);
+	GRID = cc_yield_grid_iso(file, isotope);
+
+	if (wind) {
+		char *wind = (char *) malloc (MAX_FILENAME_SIZE * sizeof(char));
+		strcpy(wind, path);
+		strcat(wind, "wind/");
+		strcat(wind, element);
+		strcat(wind, ".dat");
+		WIND = cc_yield_grid_iso(wind, isotope);
 		free(wind);
 	} else {
 		zero_wind_yield_grid();

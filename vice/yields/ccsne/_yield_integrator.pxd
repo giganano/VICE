@@ -16,6 +16,9 @@ cdef extern from "../../src/yields/ccsne.h":
 	unsigned short IMFintegrated_fractional_yield_numerator(
 		INTEGRAL *intgrl, IMF_ *imf, CALLBACK_1ARG *explodability,
 		char *path, const unsigned short wind, char *element)
+	unsigned short IMFintegrated_fractional_yield_iso_numerator(
+		INTEGRAL *intgrl, IMF_ *imf, CALLBACK_1ARG *explodability,
+		char *path, const unsigned short wind, char *element, char *isotope)
 	extern unsigned short IMFintegrated_fractional_yield_denominator(
 		INTEGRAL *intgrl, IMF_ *imf)
 

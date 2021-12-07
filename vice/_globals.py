@@ -51,13 +51,21 @@ Elements and initial mass functions built into VICE. The user cannot simply
 modify these fields and have new elements or IMFs built into the software. As
 such, we do not recommend the user modify these attributes.
 """
-_RECOGNIZED_ELEMENTS_ = tuple(["he", "c", "n", "o", "f", "ne", "na",
-	"mg", "al", "si", "p", "s", "cl", "ar", "k", "ca", "sc", "ti", "v", "cr",
-	"mn", "fe", "co", "ni", "cu", "zn", "ga", "ge", "as", "se", "br", "kr",
-	"rb", "sr", "y", "zr", "nb", "mo", "ru", "rh", "pd", "ag", "cd", "in",
-	"sn", "sb", "te", "i", "xe", "cs", "ba", "la", "ce", "pr", "nd", "sm",
-	"eu", "gd", "tb", "dy", "ho", "er", "tm", "yb", "lu", "hf", "ta", "w",
-	"re", "os", "ir", "pt", "au", "hg", "tl", "pb", "bi"])
+iso_fpath = _DIRECTORY_ + "core/dataframe/_builtin_dataframes/stable_isotopes.dat"
+
+with open(iso_fpath, 'r') as f:
+	eles, isos = [], []
+	for line in f:
+		if line[0] == "#":
+			continue
+		data = line.split()
+		ele = data[0].lower()
+		masses = data[1:]
+		eles += [ele]
+		isos += ["".join([ele, m]) for m in masses]
+
+_RECOGNIZED_ELEMENTS_ = tuple(eles)
+_RECOGNIZED_ISOTOPES_ = tuple(isos + ["ni56"] + ["al26"])
 _RECOGNIZED_IMFS_ = tuple(["kroupa", "salpeter"])
 
 

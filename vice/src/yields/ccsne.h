@@ -58,6 +58,30 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
 	char *path, const unsigned short wind, char *element);
 
 /*
+ * Determine the value of the integrated IMF weighted by the mass yield of a
+ * given isotope, up to the normalization of the IMF.
+ *
+ * Parameters
+ * ==========
+ * intgrl: 			The integral object for the numerator of the yield
+ * imf:				The associated IMF object
+ * explodability: 	Stellar explodability as a function of mass
+ * path:			The nme of the data file containing the grid
+ * wind: 			Boolean int describing whether or not to include winds
+ * isotope: 		The symbol of the isotope
+ *
+ * Returns
+ * =======
+ * 3 on an unrecognized IMF, otherwise the value returned by quad (see
+ * quadrature.h).
+ *
+ * header: ccsne.h
+ */
+extern unsigned short IMFintegrated_fractional_yield_iso_numerator(
+	INTEGRAL *intgrl, IMF_ *imf, CALLBACK_1ARG *explodability,
+	char *path, const unsigned short wind, char *element, char *isotope);
+
+/*
  * Determine the value of the integrated IMF weighted by stellar mass, up to
  * the normalization of the IMF.
  *

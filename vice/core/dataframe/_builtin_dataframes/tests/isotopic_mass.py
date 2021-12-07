@@ -2,7 +2,9 @@
 from __future__ import absolute_import
 __all__ = ["test_isotopic_mass"]
 from ....._globals import _RECOGNIZED_ELEMENTS_
+from ....._globals import _RECOGNIZED_ISOTOPES_
 from .....testing import unittest
+from ..._base import base
 from ..isotopic_mass import isotopic_mass
 
 
@@ -14,11 +16,11 @@ def test_isotopic_mass():
 	def test():
 		try:
 			for i in _RECOGNIZED_ELEMENTS_:
-				assert isinstance(isotopic_mass[i], dict)
-				assert all(map(lambda x: i in x,
+				assert isinstance(isotopic_mass[i], base)
+				assert all(map(lambda x: x in _RECOGNIZED_ISOTOPES_,
 					isotopic_mass[i].keys()))
-				assert all(map(lambda x: isinstance(x, int),
-					isotopic_mass[i].values()))
+				assert all(map(lambda x: isinstance(x, float),
+					isotopic_mass[i].todict().values()))
 		except:
 			return False
 		return True

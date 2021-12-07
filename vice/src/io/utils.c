@@ -184,6 +184,67 @@ extern int file_dimension(char *file) {
 
 
 /*
+ * Determine the column number of data corresponding to the given column name,
+ * assuming the header is commented out with '#' and the last line of the
+ * header corresponds with column names
+ *
+ * Parameters
+ * ==========
+ * file: 		The file to determine the column of
+ * col: 		The name of the desired column
+ *
+ * Returns
+ * =======
+ * The column number of the given column name. -1 on failure to read
+ * from the file or find the column name.
+ *
+ * header: utils.h
+ */
+extern int header_column_number(char *file, char *col) {
+	/* Open the file and check for error opening the file */
+	int h_length = header_length(file);
+	if (h_length == -1) return -1;
+	int dimension = file_dimension(file);
+	if (dimension == -1) return -1;
+	FILE *in = fopen(file, "r");
+	if (in == NULL) return -1;
+
+	/* Read to last line of header */
+	int i;
+	char *line = (char *) malloc (LINESIZE * sizeof(char));
+	for (i = 0; i < h_length-1; i++) {
+		if (fgets(line, LINESIZE, in) == NULL) {
+			fclose(in);
+			free(line);
+			return -1;
+		} else {}
+	}
+	free(line);
+
+	/* Find the index of the column */
+	int col_num = -1;
+	char *column = (char *) malloc (LINESIZE * sizeof(char));
+	for (i = -1; i < dimension; i++) {		/* start at -1 to excude header comment */
+		if (fscanf(in, "%s", column)) {
+			if (strcmp(column, col) == 0) {
+				col_num = i;
+				break;
+			}
+			continue;
+		} else {
+			fclose(in);
+			free(column);
+			return -1;
+		}
+	}
+	fclose(in);
+	free(column);
+	return col_num;
+
+}
+
+
+/*
  * Determine the number of lines in an text file
  *
  * Parameters
