@@ -83,6 +83,7 @@ extern unsigned long choose(unsigned long a, unsigned long b) {
  */
 extern unsigned long simple_hash(char *str) {
 
+	// trace_print(); // significant slowdown
 	unsigned long h = 0l;
 	unsigned long i;
 	for (i = 0l; i < strlen(str); i++) {
@@ -166,6 +167,8 @@ extern double rand_range(double minimum, double maximum) {
 extern double interpolate(double x1, double x2, double y1, double y2,
 	double x) {
 
+	// trace_print(); // significant slowdown
+
 	/* Can be derived from the point-slope form of a line */
 	return (y2 - y1) / (x2 - x1) * (x - x1) + y1;
 
@@ -197,6 +200,8 @@ extern double interpolate(double x1, double x2, double y1, double y2,
  */
 extern double interpolate2D(double x[2], double y[2], double f[2][2],
 	double x0, double y0) {
+
+	// trace_print(); // significant slowdown
 
 	/*
 	 * By implementing this is a chain of two 1-D interpolations,
@@ -236,6 +241,8 @@ extern double interpolate2D(double x[2], double y[2], double f[2][2],
 extern double interpolate_sqrt(double x1, double x2, double y1, double y2,
 	double x) {
 
+	// trace_print(); // significant slowdown
+
 	return (y2 - y1) * sqrt( (x - x1) / (x2 - x1) ) + y1;
 
 }
@@ -265,6 +272,8 @@ extern double interpolate_sqrt(double x1, double x2, double y1, double y2,
  */
 extern long get_bin_number(double *binspace, unsigned long num_bins,
 	double value) {
+
+	// trace_print(); // significant slowdown
 
 	/*
 	 * Notes
@@ -316,6 +325,8 @@ extern long get_bin_number(double *binspace, unsigned long num_bins,
  * header: utils.h
  */
 extern double scale_metallicity(SINGLEZONE sz, unsigned long timestep) {
+
+	// trace_print(); // significant slowdown
 
 	unsigned int i;
 	double solar_by_element = 0, z_by_element = 0;
@@ -410,6 +421,8 @@ extern double *bin_centers(double *edges, unsigned long n_bins) {
  * header: utils.h
  */
 extern double sum(double *arr, unsigned long len) {
+
+	// trace_print(); // significant slowdown
 
 	unsigned long i;
 	double s = 0;
