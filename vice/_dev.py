@@ -41,8 +41,8 @@ def set_logging_level(level = None):
 				Print the names of functions being called and in which file the
 				function is implemented.
 			- "debug"
-				Print the names of functions being called, the file in which it
-				is implemented, the line number calling the logging print
+				Print the names of functions being called, the files in which
+				they are implemented, the line numbers calling the logging print
 				statement, and variable states.
 
 	Notes
