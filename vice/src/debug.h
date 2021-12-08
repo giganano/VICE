@@ -1,3 +1,21 @@
+/*
+ * This file handles logging within VICE for development and debugging
+ * purposes. VICE subscribes to a conventional format, where there are six
+ * different types of verbosity for logging:
+ * 
+ * 1. info: General information regarding the process executed by the program.
+ * 2. trace: Individual function calls and the files in which they're
+ *    implemented.
+ * 3. debug: Print the names of functions being called, the files in which
+ *    they're implemented, the line numbers calling the logging print statement,
+ *    and variable states.
+ * 4. warning: Prints regardless of the user's logging level and whether or not
+ *    they've ignored warnings in Python. Does not stop the program.
+ * 5. error: A state is reached in which VICE cannot continue the calculation.
+ *    This exits the python interpreter always.
+ * 6. fatal: A state is reached in which VICE cannot *safely* continue the
+ *    calculation. This exits the python interpreter always.
+ */
 
 #ifndef DEBUG_H
 #define DEBUG_H
@@ -72,13 +90,26 @@
 #define RED "\033[31m"
 #define BOLDRED "\033[1m\033[31m"
 
-/* Print a warning message to the console */
+/*
+ * Print a warning message to the console. This runs regardless of the logging
+ * level and whether or not the user has turned off Python warnings. This
+ * message is however intended for developers, so if this warning is raised in
+ * an end user's system where they haven't modified source code, it should be
+ * interpreted as an issue within VICE.
+ */
 #define warning_print(fmt, ...) \
 	do { \
 		fprintf(stderr, RED"Warning: "RESET fmt, __VA_ARGS__); \
 	} while (0)
 
-/* Raise an error message to the console and exit the program */
+/*
+ * Raise an error message to the console and exit the current process; this
+ * will quit the Python interpreter. This runs regardless of the logging
+ * level and whether or not the user has turned off Python warnings. This
+ * message is however intended for developers, so if this warning is raised in
+ * an end user's system where they haven't modified source code, it should be
+ * interpreted as an issue within VICE.
+ */
 #define error_print(fmt, ...) \
 	do { \
 		fprintf(stderr, BOLDRED"Error!"RESET" %s:%d:%s(): " fmt, \
@@ -86,7 +117,14 @@
 		exit(1); \
 	} while (0)
 
-/* Raise a fatal massage to the console and exit the program */
+/*
+ * Raise a fatal message to the console and exit the current process; this
+ * will quit the Python interpreter. This runs regardless of the logging
+ * level and whether or not the user has turned off Python warnings. This
+ * message is however intended for developers, so if this warning is raised in
+ * an end user's system where they haven't modified source code, it should be
+ * interpreted as an issue within VICE.
+ */
 #define fatal_print(fmt, ...) \
 	do { \
 		fprintf(stderr, BOLDRED"Fatal!"RESET" %s:%d:%s(): " fmt, \
