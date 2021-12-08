@@ -313,6 +313,7 @@ extern unsigned short hydrodiskstars_decomp_filter(HYDRODISKSTARS *hds,
 			n++;
 		} else {}
 	}
+	free(which);
 
 	/* Free up the old arrays and point the hds data at the new ones. */
 	free(hds -> ids);
@@ -469,6 +470,7 @@ extern long hydrodiskstars_find_analog(HYDRODISKSTARS hds, double birth_radius,
 		analog_idx = assign_analog_min_radius(hds, birth_radius, birth_time);
 	} else {}
 
+	if (n_candidates) free(candidates);
 	return analog_idx;
 
 }
