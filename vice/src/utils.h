@@ -106,7 +106,7 @@ extern unsigned long simple_hash(char *str);
  * microseconds. This function thus divides the time of day in microseconds
  * by 25, using an overestimate to be safe, and uses this as the RNG seed.
  *
- * header: utils.h
+ * source: utils.c
  */
 extern void seed_random(void);
 
