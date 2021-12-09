@@ -2,9 +2,6 @@
  * This file implements pure utility functions.
  */
 
-#if defined(_OPENMP)
- 	#include <omp.h>
-#endif
 #include <sys/time.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,9 +11,7 @@
 #include "utils.h"
 #include "singlezone.h"
 #include "debug.h"
-
-/* Record the number of threads used by openMP */
-static unsigned short OPENMP_NTHREADS = 1u;
+#include "multithread.h"
 
 /* Define the checksum function adopted in this implementation */
 unsigned long (*checksum)(char *) = &simple_hash;
@@ -43,6 +38,7 @@ extern void openmp_test(void) {
 }
 
 
+#if 0
 /*
  * Set the number of threads to be used with openMP.
  *
@@ -94,6 +90,7 @@ extern unsigned short openmp_get_nthreads(void) {
 	#endif
 
 }
+#endif
 
 
 /*

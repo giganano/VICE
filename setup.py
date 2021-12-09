@@ -215,7 +215,7 @@ def compiler_flags(which = "compile"):
 		elif sys.platform == "darwin":
 			flags.append("-Xpreprocessor")
 			flags.append("-fopenmp")
-			flags.append("-lomp")
+			if which == "link": flags.append("-lomp")
 		else:
 			raise OSError("Sorry, only Linux and Mac OS are supported.")
 	else: pass

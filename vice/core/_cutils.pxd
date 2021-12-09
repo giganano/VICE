@@ -31,10 +31,13 @@ cdef class progressbar:
 	cdef PROGRESSBAR *_pb
 
 
-cdef extern from "../src/utils.h":
-	void openmp_test()
+cdef extern from "../src/multithread.h":
 	unsigned short openmp_set_nthreads(unsigned short n)
 	unsigned short openmp_get_nthreads()
+
+
+cdef extern from "../src/utils.h":
+	void openmp_test()
 	double *binspace(double start, double stop, long N)
 	void set_char_p_value(char *dest, int *ords, int length)
 

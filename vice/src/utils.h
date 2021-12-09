@@ -18,6 +18,7 @@ extern unsigned long (*checksum)(char *);
  */
 extern void openmp_test(void);
 
+#if 0
 /*
  * Set the number of threads to be used with openMP.
  *
@@ -50,6 +51,7 @@ extern unsigned short openmp_set_nthreads(unsigned short n);
  * source: utils.c
  */
 extern unsigned short openmp_get_nthreads(void);
+#endif
 
 /*
  * Performs the choose operations between two positive numbers

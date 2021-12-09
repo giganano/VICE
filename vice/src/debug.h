@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "multithread.h"
 
 /*
  * Failsafe: define the __func__ identifier if it isn't already for maximum
@@ -77,13 +78,23 @@
  * Print the value of variables to the console to stderr if and only if the
  * loglevel is equal to 3 (DEBUG).
  */
-#define debug_print(fmt, ...) \
-	do { \
-		if (logging_level() == DEBUG) { \
-			fprintf(stderr, "%s:%d:%s(): " fmt, __FILE__, __LINE__, __func__, \
-				__VA_ARGS__); \
-		} else {} \
-	} while (0)
+#if defined(_OPENMP)
+	#define debug_print(fmt, ...) \
+		do { \
+			if (!omp_get_thread_num() && logging_level() == DEBUG) { \
+				fprintf(stderr, "%s:%d:%s(): " fmt, __FILE__, __LINE__, \
+					__func__, __VA_ARGS__); \
+			} else {} \
+		} while (0)
+#else
+	#define debug_print(fmt, ...) \
+		do { \
+			if (logging_level() == DEBUG) { \
+				fprintf(stderr, "%s:%d:%s(): " fmt, __FILE__, __LINE__, \
+					__func__, __VA_ARGS__); \
+			} else {} \
+		} while (0)
+#endif
 
 /* For printing errors and warning messages in red. */
 #define RESET "\033[0m"
