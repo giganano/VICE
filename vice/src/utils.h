@@ -11,12 +11,6 @@ extern "C" {
 
 #include "objects.h"
 
-/* Determine the sign of a variable x */
-#define sign(x) (x >= 0) - (x < 0)
-
-/* Determine the absolute value of a variable x */
-#define absval(x) sign(x) * x
-
 extern unsigned long (*checksum)(char *);
 
 /*
@@ -39,6 +33,38 @@ extern unsigned long (*checksum)(char *);
  * source: utils.c
  */
 extern unsigned long choose(unsigned long a, unsigned long b);
+
+/*
+ * Determine the absolute value of a double x. This function extends the
+ * standard library function abs, which only excepts values of type int.
+ *
+ * Parameters
+ * ==========
+ * x: 		The number to determine the absolute value of
+ *
+ * Returns
+ * =======
+ * +x if x >= 0, -x if x < 0
+ *
+ * source: utils.c
+ */
+extern double absval(double x);
+
+
+/*
+ * Determine the sign of a double x
+ *
+ * Parameters
+ * ==========
+ * x: 		The value to determine the sign of
+ *
+ * Returns
+ * =======
+ * +1 if x >= 0, -1 if x < 0
+ *
+ * source: utils.c
+ */
+extern short sign(double x);
 
 /*
  * Obtain a simple hash for a string
