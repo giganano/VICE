@@ -12,6 +12,7 @@
 #include "../utils.h"
 #include "../ccsne.h"
 #include "../stats.h"
+#include "../debug.h"
 #include "ccsne.h"
 
 /* ---------- static function comment headers not duplicated here ---------- */
@@ -63,6 +64,8 @@ static unsigned short WEIGHT_INITIAL;
  */
 extern void weight_initial_by_explodability(unsigned short weight) {
 
+	trace_print();
+	debug_print("weight = %u\n", weight);
 	WEIGHT_INITIAL = weight;
 
 }
@@ -80,6 +83,8 @@ extern void weight_initial_by_explodability(unsigned short weight) {
  */
 extern void set_Z_progenitor(double Z) {
 
+	trace_print();
+	debug_print("Z = %.5e\n", Z);
 	Z_PROGENITOR = Z;
 
 }
@@ -109,6 +114,7 @@ extern unsigned short IMFintegrated_fractional_yield_numerator(
 	INTEGRAL *intgrl, IMF_ *imf, CALLBACK_1ARG *explodability,
 	char *path, const unsigned short wind, char *element) {
 
+	trace_print();
 	setup_calculation(imf, explodability, path, wind, element);
 	intgrl -> func = &y_cc_numerator;
 	int x = quad(intgrl);
@@ -174,6 +180,8 @@ extern unsigned short IMFintegrated_fractional_yield_iso_numerator(
 static void setup_calculation(IMF_ *imf, CALLBACK_1ARG *explodability,
 	char *path, const unsigned short wind, char *element) {
 
+	trace_print();
+
 	/*
 	 * Initialize these variables globally. This is such that the function
 	 * which executes numerical quadrature can accept only one parameter - the
@@ -184,6 +192,7 @@ static void setup_calculation(IMF_ *imf, CALLBACK_1ARG *explodability,
 	strcat(file, "explosive/");
 	strcat(file, element);
 	strcat(file, ".dat");
+	debug_print("Explosive yield file: %s\n", file);
 
 	GRIDSIZE = line_count(file) - header_length(file);
 	GRID = cc_yield_grid(file);
@@ -194,6 +203,7 @@ static void setup_calculation(IMF_ *imf, CALLBACK_1ARG *explodability,
 		strcat(wind, "wind/");
 		strcat(wind, element);
 		strcat(wind, ".dat");
+		debug_print("Wind yield file: %s\n", wind);
 		WIND = cc_yield_grid(wind);
 		free(wind);
 	} else {
@@ -272,6 +282,7 @@ static void setup_calculation_iso(IMF_ *imf, CALLBACK_1ARG *explodability,
 extern unsigned short IMFintegrated_fractional_yield_denominator(
 	INTEGRAL *intgrl, IMF_ *imf) {
 
+	trace_print();
 	IMF = imf;
 	intgrl -> func = &y_cc_denominator;
 	int x = quad(intgrl);
@@ -288,6 +299,7 @@ extern unsigned short IMFintegrated_fractional_yield_denominator(
  */
 static void zero_wind_yield_grid(void) {
 
+	trace_print();
 	unsigned int i;
 	WIND = (double **) malloc (GRIDSIZE * sizeof(double *));
 	for (i = 0u; i < GRIDSIZE; i++) {
@@ -314,6 +326,7 @@ static void zero_wind_yield_grid(void) {
  */
 static double interpolate_yield(double m) {
 
+	trace_print();
 	if (m < CC_MIN_STELLAR_MASS) {
 		return 0;
 	} else {
@@ -388,7 +401,10 @@ static double interpolate_yield(double m) {
  */
 static double y_cc_numerator(double m) {
 
-	return interpolate_yield(m) * imf_evaluate(*IMF, m);
+	trace_print();
+	double result = interpolate_yield(m) * imf_evaluate(*IMF, m);
+	debug_print("result = %.5e\n", result);
+	return result;
 
 }
 
@@ -406,7 +422,10 @@ static double y_cc_numerator(double m) {
  */
 static double y_cc_denominator(double m) {
 
-	return m * imf_evaluate(*IMF, m);
+	trace_print();
+	double result = m * imf_evaluate(*IMF, m);
+	debug_print("result = %.5e\n", result);
+	return result;
 
 }
 
