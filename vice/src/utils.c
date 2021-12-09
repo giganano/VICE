@@ -64,6 +64,47 @@ extern unsigned long choose(unsigned long a, unsigned long b) {
 
 
 /*
+ * Determine the absolute value of a double x. This function extends the
+ * standard library function abs, which only excepts values of type int.
+ *
+ * Parameters
+ * ==========
+ * x: 		The number to determine the absolute value of
+ *
+ * Returns
+ * =======
+ * +x if x >= 0, -x if x < 0
+ *
+ * header: utils.h
+ */
+extern double absval(double x) {
+
+	return sign(x) * x;
+
+}
+
+
+/*
+ * Determine the sign of a double x
+ *
+ * Parameters
+ * ==========
+ * x: 		The value to determine the sign of
+ *
+ * Returns
+ * =======
+ * +1 if x >= 0, -1 if x < 0
+ *
+ * header: utils.h
+ */
+extern short sign(double x) {
+
+	return (x >= 0) - (x < 0);
+
+}
+
+
+/*
  * Obtain a simple hash for a string
  *
  * Parameters
