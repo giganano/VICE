@@ -10,6 +10,7 @@
 #include "../callback.h"
 #include "../sneia.h"
 #include "../utils.h"
+#include "../multithread.h"
 #include "sneia.h"
 
 /* ---------- static function comment headers not duplicated here ---------- */

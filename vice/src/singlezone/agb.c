@@ -10,6 +10,7 @@
 #include "../ssp.h"
 #include "../toolkit.h"
 #include "../utils.h"
+#include "../multithread.h"
 #include "agb.h"
 
 /*
