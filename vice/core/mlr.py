@@ -120,7 +120,7 @@ class mlr(_mlr_linker):
 		r"""
 		Type : str [assignment is case-insensitive]
 
-		Default : "powerlaw"
+		Default : "larson1974"
 
 		.. versionadded:: 1.3.0
 
