@@ -9,6 +9,7 @@
 #include "../yields.h"
 #include "../utils.h"
 #include "../debug.h"
+#include "../multithread.h"
 
 /* ---------- static function comment headers not duplicated here ---------- */
 static double euler(INTEGRAL intgrl, unsigned long N);
@@ -151,6 +152,9 @@ static double euler(INTEGRAL intgrl, unsigned long N) {
 	 * bin width and return
 	 */
 	unsigned long i;
+	#if defined(_OPENMP)
+		#pragma omp parallel for
+	#endif
 	for (i = 0l; i < N; i++) {
 		eval[i] = intgrl.func(x[i]);
 	}
@@ -192,6 +196,9 @@ static double trapzd(INTEGRAL intgrl, unsigned long N) {
 	 * first and last bin edges, then multiply by the width and return
 	 */
 	unsigned long i;
+	#if defined(_OPENMP)
+		#pragma omp parallel for
+	#endif
 	for (i = 0l; i <= N; i++) {
 		eval[i] = intgrl.func(x[i]);
 	}
@@ -234,6 +241,9 @@ static double midpt(INTEGRAL intgrl, unsigned long N) {
 	 * multiply by the width and return
 	 */
 	unsigned long i;
+	#if defined(_OPENMP)
+		#pragma omp parallel for
+	#endif
 	for (i = 0l; i < N; i++) {
 		eval[i] = intgrl.func(mids[i]);
 	}

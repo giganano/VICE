@@ -8,12 +8,6 @@
 #include "multithread.h"
 #include "debug.h"
 
-/* 
- * Record the number of threads used by openMP, default to 1. This variable
- * will be used if and only if openMP is enabled.
- */
-static unsigned short OPENMP_NTHREADS = 1u;
-
 
 /*
  * Set the number of threads to be used with openMP.
@@ -39,9 +33,8 @@ extern unsigned short openmp_set_nthreads(unsigned short n) {
 	#if defined(_OPENMP)
 		if (n) {
 			omp_set_num_threads(n);
-			OPENMP_NTHREADS = n;
-			debug_print("openMP enabled. OPENMP_NTHREADS = %u\n",
-				OPENMP_NTHREADS);
+			debug_print("openMP enabled. NTHREADS = %u\n",
+				omp_get_max_threads());
 			return 0u;
 		} else {
 			error_print("%s\n", "Cannot assign 0 threads to process.");
@@ -69,8 +62,8 @@ extern unsigned short openmp_get_nthreads(void) {
 
 	trace_print();
 	#if defined(_OPENMP)
-		debug_print("openMP enabled. OPENMP_NTHREADS = %u\n", OPENMP_NTHREADS);
-		return OPENMP_NTHREADS;
+		debug_print("openMP enabled. NTHREADS = %u\n", omp_get_max_threads());
+		return omp_get_max_threads();
 	#else
 		debug_print("%s\n", "openMP not enabled.");
 		return 1u;

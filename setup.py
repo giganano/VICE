@@ -9,11 +9,15 @@ python setup.py build [-j N] install [--user] [-q --quiet] [distutils]
 
 Install Options
 ---------------
--j N        : Run build in parallel across N cores
---user      : Install to ~/.local directory
--q --quiet  : Run the installation non-verbosely
-distutils   : Run the installation with distutils rather than setuptools
-ext=        : Build and install specific extension
+-j N             : Run build in parallel across N cores
+--user           : Install to ~/.local directory
+-q --quiet       : Run the installation non-verbosely
+distutils        : Run the installation with distutils rather than setuptools
+ext=             : Build and install specific extension
+--enbable-openmp : Link VICE's compiled outputs to the openMP library to enable
+                   multithreaded calculations. Alternatively, this can be
+                   achieved by setting the environment variable
+                   ``VICE_ENABLE_OPENMP`` to "true".
 
 Individual extensions should be rebuilt and reinstalled only after the entire
 body of VICE has been installed. This allows slight modifications to be
@@ -180,6 +184,7 @@ def find_extensions(path = './vice'):
 						extra_link_args = compiler_flags(which = "link")
 					))
 				else: continue
+	if "--enable-openmp" in sys.argv: sys.argv.remove("--enable-openmp")
 	return extensions
 
 
@@ -188,7 +193,9 @@ def compiler_flags(which = "compile"):
 	Get a list of additional flags for Cython to pass to the compiler at either
 	compile or link time for a given extension. If this source build is linking
 	to openMP, then the flag '-fopenmp' will be passed at both compile and link
-	time.
+	time. Such an option can be triggered either by setting the environment
+	variable ``VICE_ENABLE_OPENMP`` to "true" or by passing the command line
+	argument "--enable-openmp" to this script.
 
 	Parameters
 	----------
@@ -208,8 +215,9 @@ def compiler_flags(which = "compile"):
 	else:
 		raise RuntimeError("Unrecognized argument for parameter 'which': %s" % (
 			which))
-	if ("VICE_ENABLE_OPENMP" in os.environ.keys() and
-		os.environ["VICE_ENABLE_OPENMP"] == "true"):
+	if ("--enable-openmp" in sys.argv or
+		("VICE_ENABLE_OPENMP" in os.environ.keys() and
+			os.environ["VICE_ENABLE_OPENMP"] == "true")):
 		if sys.platform == "linux":
 			flags.append("-fopenmp")
 		elif sys.platform == "darwin":

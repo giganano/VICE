@@ -30,26 +30,56 @@
  */
 extern double m_AGB(SINGLEZONE sz, ELEMENT e) {
 
+	/*
+	 * This is a performance critical function. To minimize computing time,
+	 * parallelized openMP threads are constructed, and rather than computing
+	 * the change in mass with the `#pragma omp atomic` compiler directive,
+	 * the contributions from various timesteps are computed in an array where
+	 * each thread increments one value of the array. This allows each thread
+	 * to proceed unimpeded by synchronization requirements.
+	 */
+
 	if (sz.timestep == 0l) {
 		return 0; /* No star's yet */
 	} else {
 		unsigned long i;
-		double mass = 0;
+		#if defined(_OPENMP)
+			unsigned long nthreads = (unsigned long) omp_get_max_threads();
+			double *mass = (double *) malloc (nthreads * sizeof(double));
+			for (i = 0ul; i < nthreads; i++) mass[i] = 0;
+			#pragma omp parallel for
+		#else
+			double mass = 0;
+		#endif
 		for (i = 0l; i <= sz.timestep; i++) {
-			/* The metallicity of the stars that formed i timesteps ago */
+			/* 
+			 * The metallicity of the stars that formed i timesteps ago and
+			 * their fractional yield.
+			 */
 			double Z = scale_metallicity(sz, sz.timestep - i);
-
-			/* From section 4.4 of VICE's science documentation */
-			mass += (
-				get_AGB_yield(e, Z,
-					dying_star_mass(i * sz.dt, (*sz.ssp).postMS, Z)) *
+			double yield = get_AGB_yield(e, Z,
+				dying_star_mass(i * sz.dt, (*sz.ssp).postMS, Z));
+			double dm = (yield *
 				(*sz.ism).star_formation_history[sz.timestep - i] * sz.dt *
 				((*sz.ssp).msmf[i] - (*sz.ssp).msmf[i + 1l])
 			);
+
+			/* From section 4.4 of VICE's science documentation */
+			#if defined(_OPENMP)
+				mass[omp_get_thread_num()] += dm;
+			#else 
+				mass += dm;
+			#endif
 			
 		}
 
-		return mass;
+		#if defined(_OPENMP)
+			double result = sum(mass, nthreads);
+			free(mass);
+			return result;
+		#else
+			return mass;
+		#endif
 		
 	}
 

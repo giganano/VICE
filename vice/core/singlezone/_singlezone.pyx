@@ -57,6 +57,8 @@ from .._cutils cimport setup_imf
 from .._cutils cimport callback_1arg_setup
 from .._cutils cimport callback_2arg_setup
 from .._cutils cimport copy_2Dpylist
+from .._cutils cimport set_nthreads
+from .._cutils cimport get_nthreads
 from ..objects cimport _element
 from ..objects cimport _singlezone
 from ..objects cimport _sneia
@@ -110,6 +112,7 @@ cdef class c_singlezone:
 		func = _DEFAULT_FUNC_,
 		mode = "ifr",
 		verbose = False,
+		nthreads = 1,
 		elements = ("fe", "sr", "o"),
 		IMF = "kroupa",
 		eta = 2.5,
@@ -145,6 +148,7 @@ cdef class c_singlezone:
 		self.func = func
 		self.mode = mode
 		self.verbose = verbose
+		self.nthreads = nthreads
 		self.elements = elements
 		self.IMF = IMF
 		self.eta = eta
@@ -312,6 +316,29 @@ Got: %s""" % (type(value)))
 		else:
 			raise TypeError("""Attribute 'verbose' must be interpretable as \
 a boolean. Got: %s""" % (type(value)))
+
+	@property
+	def nthreads(self):
+		# docstring in python version
+		return get_nthreads()
+
+	@nthreads.setter
+	def nthreads(self, value):
+		r"""
+		The number of openMP threads to use in this calculation.
+
+		Allowed Types
+		=============
+		int
+
+		Allowed Values
+		==============
+		Positive definite
+
+		The ``set_nthreads`` function in vice/core/_cutils.pyx does all of
+		the error handling here.
+		"""
+		set_nthreads(value)
 
 	@property
 	def elements(self):

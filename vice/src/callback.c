@@ -3,6 +3,7 @@
  */
 
 #include "callback.h"
+#include "multithread.h"
 
 
 /*
@@ -22,11 +23,22 @@
 extern double callback_1arg_evaluate(CALLBACK_1ARG cb1, double x) {
 
 	// trace_print(); // significant slowdown
+	double result;
 	if (cb1.user_func != NULL) {
-		return cb1.callback(x, cb1.user_func);
+		/*
+		 * Calling Python from C is not thread safe, so all calls to Python
+		 * must be declared as critical for openMP. Since all calls to
+		 * Python pass through VICE's callback objects, that can be
+		 * achieved throughout the code base here.
+		 */
+		#if defined(_OPENMP)
+			#pragma omp critical
+		#endif
+		result = cb1.callback(x, cb1.user_func);
 	} else {
-		return cb1.assumed_constant;
+		result = cb1.assumed_constant;
 	}
+	return result;
 
 }
 
@@ -49,11 +61,22 @@ extern double callback_1arg_evaluate(CALLBACK_1ARG cb1, double x) {
 extern double callback_2arg_evaluate(CALLBACK_2ARG cb2, double x, double y) {
 
 	// trace_print(); // significant slowdown
+	double result;
 	if (cb2.user_func != NULL) {
-		return cb2.callback(x, y, cb2.user_func);
+		/*
+		 * Calling Python from C is not thread safe, so all calls to Python
+		 * must be declared as critical for openMP. Since all calls to
+		 * Python pass through VICE's callback objects, that can be
+		 * achieved throughout the code base here.
+		 */
+		#if defined(_OPENMP)
+			#pragma omp critical
+		#endif
+		result = cb2.callback(x, y, cb2.user_func);
 	} else {
-		return cb2.assumed_constant;
+		result = cb2.assumed_constant;
 	}
+	return result;
 
 }
 

@@ -34,17 +34,44 @@ static double RIa_builtin(ELEMENT e, double time);
  */
 extern double mdot_sneia(SINGLEZONE sz, ELEMENT e) {
 
+	/*
+	 * This is a performance critical function. To minimize computing time,
+	 * parallelized openMP threads are constructed, and rather than computing
+	 * the change in mass with the `#pragma omp atomic` compiler directive,
+	 * the contributions from various timesteps are computed in an array where
+	 * each thread increments one value of the array. This allows each thread
+	 * to proceed unimpeded by synchronization requirements.
+	 */
+
 	unsigned long i;
-	double mdotia = 0;
+	#if defined(_OPENMP)
+		unsigned long nthreads = (unsigned long) omp_get_max_threads();
+		double *mdotia = (double *) malloc (nthreads * sizeof(double));
+		for (i = 0ul; i < nthreads; i++) mdotia[i] = 0;
+		#pragma omp parallel for
+	#else
+		double mdotia = 0;
+	#endif
 	for (i = 0l; i < sz.timestep; i++) {
-		mdotia += (
-			get_ia_yield(e, scale_metallicity(sz, i)) *
-			(*sz.ism).star_formation_history[i] *
+		double yield = get_ia_yield(e, scale_metallicity(sz, i));
+		double dm = (
+			yield * (*sz.ism).star_formation_history[i] *
 			(*e.sneia_yields).RIa[sz.timestep - i]
 		);
+		#if defined(_OPENMP)
+			mdotia[omp_get_thread_num()] += dm;
+		#else
+			mdotia += dm;
+		#endif
 	}
 	/* Entrainment is handled in vice/src/singlezone/element.c */
-	return mdotia;
+	#if defined(_OPENMP)
+		double result = sum(mdotia, nthreads);
+		free(mdotia);
+		return result;
+	#else
+		return mdotia;
+	#endif
 
 }
 

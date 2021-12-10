@@ -9,6 +9,7 @@
 #include "../singlezone.h"
 #include "../ssp.h"
 #include "../io.h"
+#include "../multithread.h"
 #include "singlezone.h"
 
 /* ---------- Static function comment headers not duplicated here ---------- */
@@ -116,6 +117,9 @@ static unsigned short singlezone_timestepper(SINGLEZONE *sz) {
 	 */
 	unsigned int i;
 	update_gas_evolution(sz);
+	#if defined(_OPENMP)
+		#pragma omp parallel for
+	#endif
 	for (i = 0; i < (*sz).n_elements; i++) {
 		update_element_mass(*sz, (*sz).elements[i]);
 		/* Now the ISM and this element are at the next timestep */
@@ -394,6 +398,9 @@ extern double singlezone_stellar_mass(SINGLEZONE sz) {
 	 */
 	unsigned long i;
 	double mass = 0;
+	#if defined(_OPENMP)
+		#pragma omp parallel for
+	#endif
 	for (i = 0l; i < sz.timestep; i++) {
 		mass += ((*sz.ism).star_formation_history[sz.timestep - i - 1l] *
 			sz.dt * (1 - (*sz.ssp).crf[i + 1l]));
