@@ -353,9 +353,6 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		raise ValueError("Unrecognized element: %s" % (element))
 	elif study.upper() not in _RECOGNIZED_STUDIES_:
 		raise ValueError("Unrecognized study: %s" % (study))
-	elif is_isotope and study.upper() not in ["S16/N20", "S16/W18", "S16/W18F"]:
-		raise ValueError("The %s study does not support isotopic breakdown of \
-yields" % (study.upper()))
 	elif not os.path.exists("%syields/ccsne/%s/FeH%s" % (_DIRECTORY_,
 		study.upper(), MoverHstr)):
 		raise LookupError("The %s study does not have yields for [M/H] = %s" % (
