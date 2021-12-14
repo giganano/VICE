@@ -12,6 +12,7 @@ from ..._globals import _RECOGNIZED_IMFS_
 from ..._globals import _VERSION_ERROR_
 from ..._globals import ScienceWarning
 from ...core.dataframe._builtin_dataframes import atomic_number
+from ...core.dataframe._builtin_dataframes import isotopic_mass
 from ...core.callback import callback1_nan_inf_positive
 from ...core.callback import callback1_nan_inf
 from ...core import _pyutils
@@ -45,11 +46,12 @@ from ...core._cutils cimport callback_1arg_setup
 from . cimport _yield_integrator
 _MINIMUM_MASS_ = float(_yield_integrator.CC_MIN_STELLAR_MASS)
 
+U_TO_M_SUN = 8.35109044e-58
 
 def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	explodability = None, wind = True, net = True, IMF = "kroupa",
 	method = "simpson", m_lower = 0.08, m_upper = 100,
-	tolerance = 1e-3, Nmin = 64, Nmax = 2e8):
+	tolerance = 1e-3, Nmin = 64, Nmax = 2e8, by_number = False):
 	
 	r"""
 	Calculate an IMF-integrated fractional nucleosynthetic yield of a
@@ -343,8 +345,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		elif isotope.lower() == "al26":
 			element = "mg"
 		else:
-			element = ''.join(
-				map(lambda c: '' if c in '0123456789' else c, isotope))
+			element = ''.join([c for c in isotope if not c.isdigit()])
 	else:
 		is_isotope = False
 
@@ -371,6 +372,25 @@ km/s and [M/H] = %g""" % (study, rotation, MoverH))
 		raise ValueError("""Minimum number of bins in quadrature must be \
 smaller than maximum number of bins.""")
 	else: pass
+
+	if not is_isotope and by_number:
+		isotopes = []
+		for ISO in _RECOGNIZED_ISOTOPES_:
+			ELE = ''.join([c for c in ISO if not c.isdigit()])
+			if (ELE == element
+				or (element == "fe" and ISO == "ni56")
+				or (element == "mg" and ISO == "al26")):
+				isotopes.append(ISO)
+		total = 0
+		var = 0
+		for iso in isotopes:
+			results = integrate(iso, study = study, MoverH = MoverH, rotation = rotation,
+				explodability = explodability, wind = wind, net = net, IMF = IMF,
+				method = method, m_lower = m_lower, m_upper = m_upper,
+				tolerance = tolerance, Nmin = Nmin, Nmax = Nmax, by_number = True)
+			total += results[0]
+			var += results[1]**2
+		return [total, var**(1/2)]
 
 	"""
 	Explodability is either None of a callable function with one parameter.
@@ -540,8 +560,6 @@ study, only reporting net yields.""")
 				num, imf_obj, explodability_cb, path.encode("latin-1"),
 				int(wind), element.lower().encode("latin-1"),
 				isotope.lower().encode("latin-1"))
-			# We no longer need to distinguish between the two
-			element = isotope
 		if x == 1:
 			warnings.warn("""Yield-weighted IMF integration did not converge \
 for element: %s. Estimated fractional error: %.2e""" % (element.lower(),
@@ -583,6 +601,11 @@ Estimated fractional error: %.2e""" % (den[0].error), ScienceWarning)
 	errden = denominator[1] * denominator[0]
 	err = m.sqrt(errnum**2 / denominator[0]**2 + numerator[0]**2 /
 		denominator[0]**4 * errden**2)
+	
+	if by_number:
+		element = ''.join([c for c in isotope if not c.isdigit()])
+		y /= isotopic_mass[element][isotope] * U_TO_M_SUN
+		err /= isotopic_mass[element][isotope] * U_TO_M_SUN
 
 	return [y, err]
 
@@ -613,9 +636,7 @@ def initial_abundance(filename, element, is_isotope=False):
 				return 0
 			element_, Z_ = line.split()
 			if not is_isotope:
-				element_ = ''.join(
-					map(lambda c: '' if c in '0123456789'
-						else c, element_))
+				element_ = ''.join([c for c in element_ if not c.isdigit()])
 			if element_.lower() == element.lower():
 				reading_ele = True
 				Z += float(Z_)
