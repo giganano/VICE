@@ -61,6 +61,18 @@ _ROTATION_ = {
 	"S16/N20":		[0]
 }
 
+# Keywords and isotopes that they do NOT support
+_MISSING_ISOTOPES_ = {
+	"LC18": 		[],
+	"CL13": 		[],
+	"NKT13": 		[],
+	"CL04": 		["al26"],
+	"WW95": 		[],
+	"S16/W18": 		[],
+	"S16/W18F": 	[],
+	"S16/N20":		[]
+}
+
 
 def numeric_check(param, name):
 	"""

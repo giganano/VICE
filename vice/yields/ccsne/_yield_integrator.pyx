@@ -19,6 +19,7 @@ from ...core import _pyutils
 from ._errors import _NAMES_
 from ._errors import _RECOGNIZED_METHODS_
 from ._errors import _RECOGNIZED_STUDIES_
+from ._errors import _MISSING_ISOTOPES_
 from ._errors import numeric_check
 from ._errors import string_check
 import math as m
@@ -339,21 +340,25 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 
 	if element.lower() in _RECOGNIZED_ISOTOPES_:
 		is_isotope = True
-		isotope = element
-		if isotope.lower() == "ni56":
+		isotope = element.lower()
+		if isotope == "ni56":
 			element = "fe"
-		elif isotope.lower() == "al26":
+		elif isotope == "al26":
 			element = "mg"
 		else:
 			element = ''.join([c for c in isotope if not c.isdigit()])
 	else:
 		is_isotope = False
+		isotope = None
 
 	# Value checking errors
 	if element.lower() not in _RECOGNIZED_ELEMENTS_:
 		raise ValueError("Unrecognized element: %s" % (element))
 	elif study.upper() not in _RECOGNIZED_STUDIES_:
 		raise ValueError("Unrecognized study: %s" % (study))
+	elif is_isotope and isotope in _MISSING_ISOTOPES_[study.upper()]:
+		raise LookupError("The %s study did not report yields for %s" % (
+			_NAMES_[study.upper()], isotope.capitalize()))
 	elif not os.path.exists("%syields/ccsne/%s/FeH%s" % (_DIRECTORY_,
 		study.upper(), MoverHstr)):
 		raise LookupError("The %s study does not have yields for [M/H] = %s" % (
@@ -384,12 +389,21 @@ smaller than maximum number of bins.""")
 		total = 0
 		var = 0
 		for iso in isotopes:
-			results = integrate(iso, study = study, MoverH = MoverH, rotation = rotation,
-				explodability = explodability, wind = wind, net = net, IMF = IMF,
-				method = method, m_lower = m_lower, m_upper = m_upper,
-				tolerance = tolerance, Nmin = Nmin, Nmax = Nmax, by_number = True)
-			total += results[0]
-			var += results[1]**2
+			try:
+				results = integrate(iso, study=study, MoverH=MoverH,
+					rotation=rotation, explodability=explodability,
+					wind=wind, net=net, IMF=IMF, method=method,
+					m_lower=m_lower, m_upper=m_upper, tolerance=tolerance,
+					Nmin=Nmin, Nmax=Nmax, by_number=True)
+				total += results[0]
+				var += results[1]**2
+			except LookupError:
+				# some studies are missing certain isotopes
+				continue
+		if total == 0:
+			# I doubt this will ever get raised, but just in case
+			raise LookupError("Could not find any isotopes of %s for %s" % (
+				element.capitalize(), _NAMES_[study.upper()]))
 		return [total, var**(1/2)]
 
 	"""
