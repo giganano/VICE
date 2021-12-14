@@ -1,0 +1,4 @@
+Yields from LC18. Initial abundances given
+
+Note: I had to modify the names of isotopes from the original file, as the hundredths
+place for mass number wasn't present in the original (i.e. Bi09 vs Bi209)

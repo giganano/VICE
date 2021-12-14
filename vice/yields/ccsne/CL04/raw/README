@@ -1,0 +1,17 @@
+Yields from Anders & Grevesse (1989), from Chiefi & Limongi's website
+http://orfeo.iaps.inaf.it/
+
+Scaled solar abundance file gives mass fraction of isotope relative to total metals
+and is converted to initial abundances via
+
+Z global metallicity
+Y He4 mass fraction
+			Z, Y 	
+FeH-inf		0   , 0.23
+FeH-4		1E-6, 0.23
+FeH-2		1E-4, 0.23
+FeH-1		1E-3, 0.23
+FeH-0p37	6E-3, 0.26
+FeH0p15		2E-2, 0.285
+
+Note: K40 is omitted as it is not currently supported by VICE
