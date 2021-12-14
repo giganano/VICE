@@ -24,6 +24,7 @@ elif sys.version_info[:2] >= (3, 5):
 else:
 	_VERSION_ERROR_()
 
+U_TO_M_SUN = 8.35109044e-58
 
 def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 	isotopic = False, by_number=False):
@@ -266,27 +267,17 @@ reason, this function cannot separate the wind yields from this table.""" % (
 		isotopes = get_isotopes(filename)
 
 	if by_number:
-		if element.lower() == "mg":
-			isotopic_yields = [
-				tuple(val / isotopic_mass[element][iso] for val in values)
-				if iso != "al26" else tuple(val / isotopic_mass["al"]["al26"] for val in values)
-				for iso, values in zip(isotopes, isotopic_yields)
-			]
-		elif element.lower() == "fe":
-			isotopic_yields = [
-				tuple(val / isotopic_mass[element][iso] for val in values)
-				if iso != "ni56" else tuple(val / isotopic_mass["ni"]["ni56"] for val in values)
-				for iso, values in zip(isotopes, isotopic_yields)
-			]
-		else:
-			isotopic_yields = [
-				tuple(val / isotopic_mass[element][iso] for val in values)
-				for iso, values in zip(isotopes, isotopic_yields)
-			]
+		for i, (iso, ylds) in enumerate(zip(isotopes, isotopic_yields)):
+			if iso == "al26":
+				iso_mass = isotopic_mass["al"][iso] * U_TO_M_SUN
+			elif iso == "ni56":
+				iso_mass = isotopic_mass["ni"][iso] * U_TO_M_SUN
+			else:
+				iso_mass = isotopic_mass[element][iso] * U_TO_M_SUN
+			isotopic_yields[i] = tuple(yld / iso_mass for yld in ylds)
 
 	if isotopic:
-		return ccsn_yield_table(masses, tuple(isotopic_yields),
-			isotopes = isotopes)
+		return ccsn_yield_table(masses, isotopic_yields, isotopes = isotopes)
 	else:
 		mass_yields = len(masses) * [0.]
 		for i in range(len(mass_yields)):
