@@ -152,6 +152,7 @@ extern unsigned short IMFintegrated_fractional_yield_iso_numerator(
 	INTEGRAL *intgrl, IMF_ *imf, CALLBACK_1ARG *explodability,
 	char *path, const unsigned short wind, char *element, char *isotope) {
 
+	trace_print();
 	setup_calculation_iso(imf, explodability, path, wind, element, isotope);
 	intgrl -> func = &y_cc_numerator;
 	int x = quad(intgrl);
@@ -231,6 +232,8 @@ static void setup_calculation(IMF_ *imf, CALLBACK_1ARG *explodability,
 static void setup_calculation_iso(IMF_ *imf, CALLBACK_1ARG *explodability,
 	char *path, const unsigned short wind, char *element, char *isotope) {
 
+	trace_print();
+
 	/*
 	 * Initialize these variables globally. This is such that the function
 	 * which executes numerical quadrature can accept only one parameter - the
@@ -241,6 +244,7 @@ static void setup_calculation_iso(IMF_ *imf, CALLBACK_1ARG *explodability,
 	strcat(file, "explosive/");
 	strcat(file, element);
 	strcat(file, ".dat");
+	debug_print("Explosive yield file: %s\n", file);
 
 	GRIDSIZE = line_count(file) - header_length(file);
 	GRID = cc_yield_grid_iso(file, isotope);
@@ -251,6 +255,7 @@ static void setup_calculation_iso(IMF_ *imf, CALLBACK_1ARG *explodability,
 		strcat(wind, "wind/");
 		strcat(wind, element);
 		strcat(wind, ".dat");
+		debug_print("Wind yield file: %s\n", wind);
 		WIND = cc_yield_grid_iso(wind, isotope);
 		free(wind);
 	} else {

@@ -5,6 +5,7 @@
 
 #include <stdlib.h>
 #include "../io.h"
+#include "../debug.h"
 #include "utils.h"
 #include "ccsne.h"
 
@@ -25,6 +26,8 @@
  * header: ccsne.h
  */
 extern double **cc_yield_grid(char *file) {
+
+	trace_print();
 
 	/*
 	 * The number of masses and isotopes on the grid can be determined from
@@ -72,6 +75,8 @@ extern double **cc_yield_grid(char *file) {
  * header: ccsne.h
  */
 extern double **cc_yield_grid_iso(char *file, char *iso) {
+
+	trace_print();
 
 	/*
 	 * The number of masses and isotopes on the grid can be determined from

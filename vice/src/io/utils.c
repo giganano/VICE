@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include "../io.h"
+#include "../debug.h"
 #include "utils.h"
 
 
@@ -25,6 +26,9 @@
  * header: utils.h
  */
 extern double **read_square_ascii_file(char *file) {
+
+	trace_print();
+	debug_print("Input file: %s\n", file);
 
 	/*
 	 * Initialize important variables for reading the file. See docstrings of
@@ -46,6 +50,7 @@ extern double **read_square_ascii_file(char *file) {
 		if (fgets(line, LINESIZE, in) == NULL) {
 			fclose(in);
 			free(line);
+			error_print("Could not read header of %s", file);
 			return NULL;
 		} else {}
 	}
@@ -66,11 +71,13 @@ extern double **read_square_ascii_file(char *file) {
 			} else {
 				fclose(in);
 				free(data);
+				error_print("Could not read data of %s", file);
 				return NULL;
 			}
 		}
 	}
 	fclose(in);
+	debug_print("return data of %s\n", file);
 	return data;
 
 }
@@ -92,9 +99,13 @@ extern double **read_square_ascii_file(char *file) {
  */
 extern int header_length(char *file) {
 
+	trace_print();
+	debug_print("Input file: %s\n", file);
+
 	/* Open the file and check for error opening the file */
 	FILE *in = fopen(file, "r");
 	if (in == NULL) {
+		error_print("Could not open file %s\n", file);
 		return -1;
 	}
 
@@ -103,6 +114,7 @@ extern int header_length(char *file) {
 	if (fgets(line, LINESIZE, in) == NULL) {
 		fclose(in);
 		free(line);
+		error_print("Could not read file %s\n", file);
 		return -1;
 	} else {}
 
@@ -113,6 +125,7 @@ extern int header_length(char *file) {
 		if (fgets(line, LINESIZE, in) == NULL) {
 			fclose(in);
 			free(line);
+			error_print("Could not find non-header lines of file %s\n", file);
 			return -1;
 		} else {
 			continue;
@@ -121,6 +134,8 @@ extern int header_length(char *file) {
 
 	fclose(in);
 	free(line);
+
+	debug_print("return header_length = %d\n", n);
 	return n;
 
 }
@@ -143,12 +158,18 @@ extern int header_length(char *file) {
  */
 extern int file_dimension(char *file) {
 
+	trace_print();
+	debug_print("Input file: %s\n", file);
+
 	/* Need to read past header first, find out how many lines that is */
 	int hlen = header_length(file);
 	if (hlen == -1) return -1; 		/* error checking */
 
 	FILE *in = fopen(file, "r");
-	if (in == NULL) return -1; 		/* error checking */
+	if (in == NULL) {
+		error_print("Could not open file %s\n", file);
+		return -1; 		/* error checking */
+	}
 
 	/* Store a line in memory, read passed the header */
 	int i;
@@ -157,6 +178,7 @@ extern int file_dimension(char *file) {
 		if (fgets(line, LINESIZE, in) == NULL) {
 			fclose(in);
 			free(line);
+			error_print("Could not read file %s\n", file);
 			return -1; 				/* error checking */
 		} else {
 			continue;
@@ -178,6 +200,7 @@ extern int file_dimension(char *file) {
 	}
 	fclose(in);
 	free(line);
+	debug_print("return dimension = %d\n", dimension);
 	return dimension;
 
 }
@@ -201,13 +224,21 @@ extern int file_dimension(char *file) {
  * header: utils.h
  */
 extern int header_column_number(char *file, char *col) {
+
+	trace_print();
+	debug_print("Input file: %s\n", file);
+	debug_print("Input column name: %s\n", col);
+
 	/* Open the file and check for error opening the file */
 	int h_length = header_length(file);
 	if (h_length == -1) return -1;
 	int dimension = file_dimension(file);
 	if (dimension == -1) return -1;
 	FILE *in = fopen(file, "r");
-	if (in == NULL) return -1;
+	if (in == NULL) {
+		error_print("Could not open file %s\n", file);
+		return -1;
+	}
 
 	/* Read to last line of header */
 	int i;
@@ -216,6 +247,7 @@ extern int header_column_number(char *file, char *col) {
 		if (fgets(line, LINESIZE, in) == NULL) {
 			fclose(in);
 			free(line);
+			error_print("Could not read file %s\n", file);
 			return -1;
 		} else {}
 	}
@@ -234,11 +266,19 @@ extern int header_column_number(char *file, char *col) {
 		} else {
 			fclose(in);
 			free(column);
+			error_print("Could not find column %s in %s\n", col, file);
 			return -1;
 		}
 	}
 	fclose(in);
 	free(column);
+
+	if (col_num == -1) {
+		error_print("Could not find column %s in %s\n", col, file);
+		return -1;
+	}
+
+	debug_print("return col_num = %d\n", col_num);
 	return col_num;
 
 }
@@ -260,8 +300,14 @@ extern int header_column_number(char *file, char *col) {
  */
 extern long line_count(char *file) {
 
+	trace_print();
+	debug_print("Input file: %s\n", file);
+
 	FILE *in = fopen(file, "r");
-	if (in == NULL) return -1l; 		/* error checking */
+	if (in == NULL) {
+		error_print("Could not open file %s\n", file);
+		return -1l; 		/* error checking */
+	}
 
 	/*
 	 * Start reading in lines, count them, and don't stop until fgets returns
@@ -274,6 +320,7 @@ extern long line_count(char *file) {
 	}
 	fclose(in);
 	free(line);
+	debug_print("return line_count = %li\n", n);
 	return n;
 
 }
