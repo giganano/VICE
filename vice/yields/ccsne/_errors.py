@@ -4,6 +4,7 @@ module
 """
 
 from __future__ import absolute_import
+
 __all__ = [
 	"numeric_check",
 	"string_check"
@@ -12,6 +13,7 @@ from ..._globals import _VERSION_ERROR_
 from ..._globals import _DIRECTORY_
 import numbers
 import sys
+import os
 if sys.version_info[:2] == (2, 7):
 	strcomp = basestring
 elif sys.version_info[:2] >= (3, 5):
@@ -61,17 +63,42 @@ _ROTATION_ = {
 	"S16/N20":		[0]
 }
 
-# Keywords and isotopes that they do NOT support
-_MISSING_ISOTOPES_ = {
-	"LC18": 		[],
-	"CL13": 		[],
-	"NKT13": 		[],
-	"CL04": 		["al26"],
-	"WW95": 		[],
-	"S16/W18": 		[],
-	"S16/W18F": 	[],
-	"S16/N20":		[]
-}
+
+def isotope_check(study, fpath, isotope):
+	"""
+	Ensures that a given file has information on a given isotope
+
+	Parameters
+	==========
+	study :: str
+		The study to check
+	fpath :: str
+		The file to check
+	isotope :: str
+		The isotope to look for
+
+	Raises
+	======
+	LookupError ::
+		::	isotope is not in file
+	"""
+
+	if not os.path.exists(fpath):
+		return
+
+	with open(fpath, "r") as f:
+		for line in f:
+			if line.startswith("# M_init"):
+				break
+
+	line = line.split()
+	isotopes = line[2:]
+
+	if isotope not in isotopes:
+		raise LookupError("The %s study did not report yields for %s" % (
+			_NAMES_[study.upper()], isotope.capitalize()))
+	else:
+		pass
 
 
 def numeric_check(param, name):
@@ -150,4 +177,3 @@ def find_yield_file(study, MoverH, rotation, which, element):
 		rotation,
 		which,
 		element.lower())
-

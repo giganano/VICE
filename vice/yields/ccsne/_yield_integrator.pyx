@@ -19,9 +19,9 @@ from ...core import _pyutils
 from ._errors import _NAMES_
 from ._errors import _RECOGNIZED_METHODS_
 from ._errors import _RECOGNIZED_STUDIES_
-from ._errors import _MISSING_ISOTOPES_
 from ._errors import numeric_check
 from ._errors import string_check
+from ._errors import isotope_check
 import math as m
 import warnings
 import numbers
@@ -356,9 +356,6 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		raise ValueError("Unrecognized element: %s" % (element))
 	elif study.upper() not in _RECOGNIZED_STUDIES_:
 		raise ValueError("Unrecognized study: %s" % (study))
-	elif is_isotope and isotope in _MISSING_ISOTOPES_[study.upper()]:
-		raise LookupError("The %s study did not report yields for %s" % (
-			_NAMES_[study.upper()], isotope.capitalize()))
 	elif not os.path.exists("%syields/ccsne/%s/FeH%s" % (_DIRECTORY_,
 		study.upper(), MoverHstr)):
 		raise LookupError("The %s study does not have yields for [M/H] = %s" % (
@@ -377,6 +374,13 @@ km/s and [M/H] = %g""" % (study, rotation, MoverH))
 		raise ValueError("""Minimum number of bins in quadrature must be \
 smaller than maximum number of bins.""")
 	else: pass
+
+	if is_isotope:
+		isotope_check(study, "%syields/ccsne/%s/FeH%s/v%d/explosive/%s.dat" % (
+			_DIRECTORY_, study.upper(), MoverHstr, rotation, element), isotope)
+		if wind:
+			isotope_check(study, "%syields/ccsne/%s/FeH%s/v%d/wind/%s.dat" % (
+				_DIRECTORY_, study.upper(), MoverHstr, rotation, element), isotope)
 
 	if not is_isotope and by_number:
 		isotopes = []
