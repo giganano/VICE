@@ -27,7 +27,7 @@ for i in range(len(FeH)):
 				line = line.split()
 				if (is_element(FeH_label[i], line[4]) and
 							int(digits(line[4])[3:])==vel):
-					counter = 141
+					counter = 142
 				if ((line[0].lower() in _RECOGNIZED_ISOTOPES_) and
 					counter>0):
 					print(line[0], line[3])
