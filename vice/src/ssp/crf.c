@@ -10,6 +10,7 @@
 #include "../imf.h"
 #include "../yields/integral.h"
 #include "../utils.h"
+#include "../multithread.h"
 #include "crf.h"
 #include "mlr.h"
 
@@ -88,6 +89,9 @@ extern unsigned short setup_CRF(SINGLEZONE *sz) {
 		unsigned long i, n = n_timesteps(*sz);
 
 		sz -> ssp -> crf = (double *) malloc (n * sizeof(double));
+		#if defined(_OPENMP)
+			#pragma omp parallel for num_threads((*sz).nthreads)
+		#endif
 		for (i = 0l; i < n; i++) {
 			sz -> ssp -> crf[i] = CRFnumerator_Kalirai08(
 				(*(*sz).ssp), i * (*sz).dt) / denominator;

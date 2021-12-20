@@ -10,6 +10,7 @@
 #include "../singlezone.h"
 #include "../yields/integral.h"
 #include "../utils.h"
+#include "../multithread.h"
 #include "msmf.h"
 #include "mlr.h"
 
@@ -81,6 +82,9 @@ extern unsigned short setup_MSMF(SINGLEZONE *sz) {
 		unsigned long i, n = n_timesteps(*sz);
 
 		sz -> ssp -> msmf = (double *) malloc (n * sizeof(double));
+		#if defined(_OPENMP)
+			#pragma omp parallel for num_threads((*sz).nthreads)
+		#endif
 		for (i = 0l; i < n; i++) {
 			sz -> ssp -> msmf[i] = MSMFnumerator((*(*sz).ssp),
 				i * (*sz).dt) / denominator;

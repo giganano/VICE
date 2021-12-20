@@ -9,6 +9,7 @@
 #include "../singlezone.h"
 #include "../ssp.h"
 #include "../io.h"
+#include "../utils.h"
 #include "../multithread.h"
 #include "singlezone.h"
 
@@ -118,7 +119,7 @@ static unsigned short singlezone_timestepper(SINGLEZONE *sz) {
 	unsigned int i;
 	update_gas_evolution(sz);
 	#if defined(_OPENMP)
-		#pragma omp parallel for
+		#pragma omp parallel for num_threads((*sz).nthreads)
 	#endif
 	for (i = 0; i < (*sz).n_elements; i++) {
 		update_element_mass(*sz, (*sz).elements[i]);
@@ -181,12 +182,16 @@ extern unsigned short singlezone_setup(SINGLEZONE *sz) {
 	if (setup_RIa(sz)) return 1u;
 	if (setup_gas_evolution(sz)) return 1u;
 	unsigned int i;
+	unsigned short retval = 0u;
+	#if defined(_OPENMP)
+		#pragma omp parallel for num_threads((*sz).nthreads)
+	#endif
 	for (i = 0u; i < (*sz).n_elements; i++) {
 		/*
 		 * The singlezone object always allocates memory for 10 timesteps
 		 * beyond the ending time as a safeguard against memory errors.
 		 */
-		if (malloc_Z(sz -> elements[i], n_timesteps(*sz))) return 1u;
+		if (malloc_Z(sz -> elements[i], n_timesteps(*sz))) retval = 1u;
 		sz -> elements[i] -> mass = (
 			(*(*sz).elements[i]).primordial * (*(*sz).ism).mass
 		);
@@ -195,7 +200,7 @@ extern unsigned short singlezone_setup(SINGLEZONE *sz) {
 		);
 	}
 
-	return 0u;
+	return retval;
 
 }
 
@@ -216,6 +221,9 @@ extern unsigned short singlezone_setup(SINGLEZONE *sz) {
 extern void singlezone_clean(SINGLEZONE *sz) {
 
 	unsigned int i;
+	#if defined(_OPENMP)
+		#pragma omp parallel for num_threads((*sz).nthreads)
+	#endif
 	for (i = 0; i < (*sz).n_elements; i++) {
 		if ((*(*(*(*sz).elements[i]).agb_grid).interpolator).zcoords != NULL) {
 			free(sz -> elements[i] -> agb_grid -> interpolator -> xcoords);
@@ -278,6 +286,9 @@ extern void singlezone_cancel(SINGLEZONE *sz) {
 	 */
 
 	unsigned int i;
+	#if defined(_OPENMP)
+		#pragma omp parallel for num_threads((*sz).nthreads)
+	#endif
 	for (i = 0; i < (*sz).n_elements; i++) {
 		if ((*(*sz).elements[i]).Zin != NULL) {
 			free(sz -> elements[i] -> Zin);
@@ -397,15 +408,30 @@ extern double singlezone_stellar_mass(SINGLEZONE sz) {
 	 * considered as stellar mass until at least one timestep old.
 	 */
 	unsigned long i;
-	double mass = 0;
 	#if defined(_OPENMP)
-		#pragma omp parallel for
+		double *mass = (double *) malloc (sz.nthreads * sizeof(double));
+		for (i = 0ul; i < sz.nthreads; i++) mass[i] = 0;
+		#pragma omp parallel for num_threads(sz.nthreads)
+	#else
+		double mass = 0;
 	#endif
-	for (i = 0l; i < sz.timestep; i++) {
-		mass += ((*sz.ism).star_formation_history[sz.timestep - i - 1l] *
+	for (i = 0ul; i < sz.timestep; i++) {
+		double dm = ((*sz.ism).star_formation_history[sz.timestep - i - 1l] *
 			sz.dt * (1 - (*sz.ssp).crf[i + 1l]));
+		#if defined(_OPENMP)
+			mass[omp_get_thread_num()] += dm;
+		#else
+			mass += dm;
+		#endif
 	}
-	return mass;
+
+	#if defined(_OPENMP)
+		double result = sum(mass, sz.nthreads);
+		free(mass);
+		return result;
+	#else
+		return mass;
+	#endif
 
 }
 

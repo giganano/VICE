@@ -10,6 +10,7 @@
 #include "../ssp.h"
 #include "../ism.h"
 #include "../utils.h"
+#include "../multithread.h"
 #include "ism.h"
 
 
@@ -326,6 +327,9 @@ extern void primordial_inflow(SINGLEZONE *sz) {
 
 	if (!isnan((*(*sz).ism).infall_rate)) {
 		unsigned int i;
+		#if defined(_OPENMP)
+			#pragma omp parallel for num_threads((*sz).nthreads)
+		#endif
 		for (i = 0; i < (*sz).n_elements; i++) {
 			sz -> elements[i] -> mass += (
 				(*(*sz).ism).infall_rate * (*sz).dt *
@@ -380,12 +384,24 @@ extern double get_outflow_rate(SINGLEZONE sz) {
 			 * In either case, simply add up the previous star formation rates
 			 * and divide by the number of timesteps.
 			 */
+			#if defined(_OPENMP)
+				#pragma omp parallel for num_threads(sz.nthreads)
+			#endif
 			for (i = 0l; i <= sz.timestep; i++) {
+				#if defined(_OPENMP)
+					#pragma omp atomic
+				#endif
 				mean_sfr += (*sz.ism).star_formation_history[sz.timestep - i];
 			}
 			mean_sfr /= sz.timestep + 1l;
 		} else {
+			#if defined(_OPENMP)
+				#pragma omp parallel for num_threads(sz.nthreads)
+			#endif
 			for (i = 0l; i <= n; i++) {
+				#if defined(_OPENMP)
+					#pragma omp atomic
+				#endif
 				mean_sfr += (*sz.ism).star_formation_history[sz.timestep - i];
 			}
 			mean_sfr /= n + 1l;
@@ -416,6 +432,9 @@ extern double *singlezone_unretained(SINGLEZONE sz) {
 
 	unsigned short i;
 	double *unretained = (double *) malloc (sz.n_elements * sizeof(double));
+	#if defined(_OPENMP)
+		#pragma omp parallel for num_threads(sz.nthreads)
+	#endif
 	for (i = 0u; i < sz.n_elements; i++) {
 		unretained[i] = (*sz.elements[i]).unretained / sz.dt;
 	}

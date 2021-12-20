@@ -9,6 +9,7 @@
 #include "../singlezone.h"
 #include "../ssp.h"
 #include "../element.h"
+#include "../multithread.h"
 #include "element.h"
 
 
@@ -35,6 +36,9 @@ extern unsigned short malloc_Z(ELEMENT *e, unsigned long n_timesteps) {
 		return 1;
 	} else {
 		unsigned long i;
+		#if defined(_OPENMP)
+			#pragma omp parallel for
+		#endif
 		for (i = 0l; i < n_timesteps; i++) {
 			e -> Z[i] = 0;
 		}

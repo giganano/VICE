@@ -4,6 +4,8 @@
 #include "../mdf.h"
 #include "../utils.h"
 #include "../stats.h"
+#include "../multithread.h"
+#include "../debug.h"
 #include "mdf.h"
 
 
@@ -32,18 +34,26 @@ extern unsigned short setup_MDF(SINGLEZONE *sz) {
 	 */
 	unsigned long i;
 	unsigned int j;
+	unsigned short return_value = 0u;
 	sz -> mdf -> abundance_distributions = (double **) malloc (
 		(*sz).n_elements * sizeof(double *)
 	);
 	if ((*(*sz).mdf).abundance_distributions == NULL) {
-		return 1;
+		return_value = 1u;
 	} else {
+		#if defined(_OPENMP)
+			#pragma omp parallel for num_threads((*sz).nthreads)
+		#endif
 		for (j = 0; j < (*sz).n_elements; j++) {
+			if (return_value) continue;
 			sz -> mdf -> abundance_distributions[j] = (double *) malloc (
 				(*(*sz).mdf).n_bins * sizeof(double));
 			if ((*(*sz).mdf).abundance_distributions[j] == NULL) {
-				return 1;
+				return_value = 1u;
 			} else {
+				#if defined(_OPENMP)
+					#pragma omp parallel for num_threads((*sz).nthreads)
+				#endif
 				for (i = 0l; i < (*(*sz).mdf).n_bins; i++) {
 					sz -> mdf -> abundance_distributions[j][i] = 0.0;
 				}
@@ -60,14 +70,21 @@ extern unsigned short setup_MDF(SINGLEZONE *sz) {
 	sz -> mdf -> ratio_distributions = (double **) malloc (n_ratios *
 		sizeof(double *));
 	if ((*(*sz).mdf).ratio_distributions == NULL) {
-		return 1;
+		return_value = 1u;
 	} else {
+		#if defined(_OPENMP)
+			#pragma omp parallel for num_threads((*sz).nthreads)
+		#endif
 		for (j = 0; j < n_ratios; j++) {
+			if (return_value) continue;
 			sz -> mdf -> ratio_distributions[j] = (double *) malloc (
 				(*(*sz).mdf).n_bins * sizeof(double));
 			if ((*(*sz).mdf).ratio_distributions == NULL) {
-				return 1;
+				return_value = 1u;
 			} else {
+				#if defined(_OPENMP)
+					#pragma omp parallel for num_threads((*sz).nthreads)
+				#endif
 				for (i = 0l; i < (*(*sz).mdf).n_bins; i++) {
 					sz -> mdf -> ratio_distributions[j][i] = 0.0;
 				}
@@ -75,7 +92,7 @@ extern unsigned short setup_MDF(SINGLEZONE *sz) {
 		}
 	}
 
-	return 0;
+	return return_value;
 
 }
 
@@ -96,6 +113,9 @@ extern void update_MDF(SINGLEZONE *sz) {
 
 	/* ---------------------- for each tracked element ---------------------- */
 	unsigned int i, j;
+	#if defined(_OPENMP)
+		#pragma omp parallel for num_threads((*sz).nthreads)
+	#endif
 	for (i = 0; i < (*sz).n_elements; i++) {
 		double onH1 = onH(*sz, *(*sz).elements[i]);
 		/* The bin number for [X/H] */
@@ -112,8 +132,13 @@ extern void update_MDF(SINGLEZONE *sz) {
 	}
 
 	/* ---------------------- for each abundance ratio ---------------------- */
-	unsigned int n = 0;
+	#if defined(_OPENMP)
+		#pragma omp parallel for num_threads((*sz).nthreads)
+	#endif
 	for (i = 1; i < (*sz).n_elements; i++) {
+		#if defined(_OPENMP)
+			#pragma omp parallel for num_threads((*sz).nthreads)
+		#endif
 		for (j = 0; j < i; j++) {
 			double onH1 = onH(*sz, *(*sz).elements[i]);
 			double onH2 = onH(*sz, *(*sz).elements[j]);
@@ -126,10 +151,11 @@ extern void update_MDF(SINGLEZONE *sz) {
 				 * Prefactors cancel in normalization at the end of the
 				 * simulation.
 				 */
-				sz -> mdf -> ratio_distributions[n][bin] += (
+				unsigned int k, idx = j;
+				for (k = 0u; k < i; k++) idx += k;
+				sz -> mdf -> ratio_distributions[idx][bin] += (
 					*(*sz).ism).star_formation_rate;
 			} else {}
-			n++;
 		}
 	}
 
@@ -161,8 +187,14 @@ extern void normalize_MDF(SINGLEZONE *sz) {
 	unsigned short i, n_ratios = choose((*sz).n_elements, 2);
 
 	/* --------------------- for each tracked element --------------------- */
+	#if defined(_OPENMP)
+		#pragma omp parallel for num_threads((*sz).nthreads)
+	#endif
 	for (i = 0u; i < (*sz).n_elements; i++) {
 		unsigned long j;
+		#if defined(_OPENMP)
+			#pragma omp parallel for num_threads((*sz).nthreads)
+		#endif
 		for (j = 0ul; j < (*(*sz).mdf).n_bins; j++) {
 			sz -> mdf -> abundance_distributions[i][j] /= (
 				(*(*sz).mdf).bins[j + 1] - (*(*sz).mdf).bins[j]
@@ -175,8 +207,14 @@ extern void normalize_MDF(SINGLEZONE *sz) {
 	}
 
 	/* --------------------- for each abundance ratio --------------------- */
+	#if defined(_OPENMP)
+		#pragma omp parallel for num_threads((*sz).nthreads)
+	#endif
 	for (i = 0u; i < n_ratios; i++) {
 		unsigned long j;
+		#if defined(_OPENMP)
+			#pragma omp parallel for num_threads((*sz).nthreads)
+		#endif
 		for (j = 0ul; j < (*(*sz).mdf).n_bins; j++) {
 			sz -> mdf -> ratio_distributions[i][j] /= (
 				(*(*sz).mdf).bins[j + 1] - (*(*sz).mdf).bins[j]

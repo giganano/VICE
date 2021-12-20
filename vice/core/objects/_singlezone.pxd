@@ -20,6 +20,7 @@ cdef extern from "../../src/objects.h":
 		double Z_solar
 		unsigned int n_elements
 		unsigned short verbose
+		unsigned short nthreads
 		ELEMENT **elements
 		ISM *ism
 		MDF *mdf

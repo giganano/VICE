@@ -3,6 +3,7 @@
 #include <math.h>
 #include "stats.h"
 #include "utils.h"
+#include "multithread.h"
 #include "debug.h"
 
 
@@ -37,11 +38,20 @@ extern double *convert_to_PDF(double *dist, double *bins,
 	unsigned long i;
 
 	/* Add up the area in each bin */
+	#if defined(_OPENMP)
+		#pragma omp parallel for
+	#endif
 	for (i = 0l; i < n_bins; i++) {
+		#if defined(_OPENMP)
+			#pragma omp atomic
+		#endif
 		sum += dist[i] * (bins[i + 1l] - bins[i]);
 	}
 
 	/* Divide each element by the value of the integral */
+	#if defined(_OPENMP)
+		#pragma omp parallel for
+	#endif
 	for (i = 0l; i < n_bins; i++) {
 		pdf[i] = dist[i] / sum;
 	}

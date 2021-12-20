@@ -45,10 +45,9 @@ extern double m_AGB(SINGLEZONE sz, ELEMENT e) {
 	} else {
 		unsigned long i;
 		#if defined(_OPENMP)
-			unsigned long nthreads = (unsigned long) omp_get_max_threads();
-			double *mass = (double *) malloc (nthreads * sizeof(double));
-			for (i = 0ul; i < nthreads; i++) mass[i] = 0;
-			#pragma omp parallel for
+			double *mass = (double *) malloc (sz.nthreads * sizeof(double));
+			for (i = 0ul; i < sz.nthreads; i++) mass[i] = 0;
+			#pragma omp parallel for num_threads(sz.nthreads)
 		#else
 			double mass = 0;
 		#endif
@@ -75,7 +74,7 @@ extern double m_AGB(SINGLEZONE sz, ELEMENT e) {
 		}
 
 		#if defined(_OPENMP)
-			double result = sum(mass, nthreads);
+			double result = sum(mass, sz.nthreads);
 			free(mass);
 			return result;
 		#else

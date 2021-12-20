@@ -320,7 +320,7 @@ a boolean. Got: %s""" % (type(value)))
 	@property
 	def nthreads(self):
 		# docstring in python version
-		return get_nthreads()
+		return int(self._sz[0].nthreads)
 
 	@nthreads.setter
 	def nthreads(self, value):
@@ -338,7 +338,10 @@ a boolean. Got: %s""" % (type(value)))
 		The ``set_nthreads`` function in vice/core/_cutils.pyx does all of
 		the error handling here.
 		"""
+		# Let the _cutils set_nthreads function do the error handling
 		set_nthreads(value)
+		# If the code gets here, can proceed as planned w/o a worry
+		self._sz[0].nthreads = <unsigned short> value
 
 	@property
 	def elements(self):

@@ -46,10 +46,9 @@ extern double mdot_sneia(SINGLEZONE sz, ELEMENT e) {
 
 	unsigned long i;
 	#if defined(_OPENMP)
-		unsigned long nthreads = (unsigned long) omp_get_max_threads();
-		double *mdotia = (double *) malloc (nthreads * sizeof(double));
-		for (i = 0ul; i < nthreads; i++) mdotia[i] = 0;
-		#pragma omp parallel for
+		double *mdotia = (double *) malloc (sz.nthreads * sizeof(double));
+		for (i = 0ul; i < sz.nthreads; i++) mdotia[i] = 0;
+		#pragma omp parallel for num_threads(sz.nthreads)
 	#else
 		double mdotia = 0;
 	#endif
@@ -67,7 +66,7 @@ extern double mdot_sneia(SINGLEZONE sz, ELEMENT e) {
 	}
 	/* Entrainment is handled in vice/src/singlezone/element.c */
 	#if defined(_OPENMP)
-		double result = sum(mdotia, nthreads);
+		double result = sum(mdotia, sz.nthreads);
 		free(mdotia);
 		return result;
 	#else
@@ -117,7 +116,13 @@ extern unsigned short setup_RIa(SINGLEZONE *sz) {
 
 	unsigned int j;
 	unsigned long i, length = (unsigned long) (RIA_MAX_EVAL_TIME / (*sz).dt);
+	unsigned short retval = 0u;
+	#if defined(_OPENMP)
+		#pragma omp parallel for num_threads((*sz).nthreads)
+	#endif
 	for (j = 0; j < (*sz).n_elements; j++) {
+
+		if (retval) continue;
 
 		switch (checksum((*(*(*sz).elements[j]).sneia_yields).dtd)) {
 
@@ -128,8 +133,11 @@ extern unsigned short setup_RIa(SINGLEZONE *sz) {
 				sz -> elements[j] -> sneia_yields -> RIa = (double *) malloc (
 					length * sizeof(double));
 				if ((*(*(*sz).elements[j]).sneia_yields).RIa == NULL) {
-					return 1; 		/* memory error */
+					retval = 1u; 		/* memory error */
 				} else {
+					#if defined(_OPENMP)
+						#pragma omp parallel for num_threads((*sz).nthreads)
+					#endif
 					for (i = 0l; i < length; i++) {
 						sz -> elements[j] -> sneia_yields -> RIa[i] = (
 							RIa_builtin(*(*sz).elements[j], i * (*sz).dt)
@@ -148,13 +156,13 @@ extern unsigned short setup_RIa(SINGLEZONE *sz) {
 				break;
 
 			default:
-				return 1;
+				retval = 1u;
 
 		}
 
 	}
 
-	return 0; 		/* success */
+	return retval;
 
 }
 
@@ -217,9 +225,18 @@ extern void normalize_RIa(ELEMENT *e, unsigned long length) {
 
 	unsigned long i;
 	double sum = 0;
+	#if defined(_OPENMP)
+		#pragma omp parallel for
+	#endif
 	for (i = 0l; i < length; i++) {
+		#if defined(_OPENMP)
+			#pragma omp atomic
+		#endif
 		sum += (*(*e).sneia_yields).RIa[i];
 	}
+	#if defined(_OPENMP)
+		#pragma omp parallel for
+	#endif
 	for (i = 0l; i < length; i++) {
 		e -> sneia_yields -> RIa[i] /= sum;
 	}
