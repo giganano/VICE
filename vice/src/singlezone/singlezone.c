@@ -11,6 +11,7 @@
 #include "../io.h"
 #include "../utils.h"
 #include "../multithread.h"
+#include "../debug.h"
 #include "singlezone.h"
 
 /* ---------- Static function comment headers not duplicated here ---------- */
@@ -407,31 +408,15 @@ extern double singlezone_stellar_mass(SINGLEZONE sz) {
 	 * Only previous timesteps are considered - stars currently forming not
 	 * considered as stellar mass until at least one timestep old.
 	 */
-	unsigned long i;
-	#if defined(_OPENMP)
-		double *mass = (double *) malloc (sz.nthreads * sizeof(double));
-		for (i = 0ul; i < sz.nthreads; i++) mass[i] = 0;
-		#pragma omp parallel for num_threads(sz.nthreads)
-	#else
-		double mass = 0;
-	#endif
-	for (i = 0ul; i < sz.timestep; i++) {
-		double dm = ((*sz.ism).star_formation_history[sz.timestep - i - 1l] *
-			sz.dt * (1 - (*sz.ssp).crf[i + 1l]));
-		#if defined(_OPENMP)
-			mass[omp_get_thread_num()] += dm;
-		#else
-			mass += dm;
-		#endif
-	}
 
-	#if defined(_OPENMP)
-		double result = sum(mass, sz.nthreads);
-		free(mass);
-		return result;
-	#else
-		return mass;
-	#endif
+	unsigned long i;
+	double mass = 0;
+	for (i = 0ul; i < sz.timestep; i++) mass += (
+		(*sz.ism).star_formation_history[sz.timestep - i - 1l] *
+		sz.dt * (1 - (*sz.ssp).crf[i + 1l])
+	);
+
+	return mass;
 
 }
 

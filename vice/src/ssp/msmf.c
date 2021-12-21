@@ -82,9 +82,7 @@ extern unsigned short setup_MSMF(SINGLEZONE *sz) {
 		unsigned long i, n = n_timesteps(*sz);
 
 		sz -> ssp -> msmf = (double *) malloc (n * sizeof(double));
-		#if defined(_OPENMP)
-			#pragma omp parallel for num_threads((*sz).nthreads)
-		#endif
+		/* For some reason not thread safe, so don't multithread */
 		for (i = 0l; i < n; i++) {
 			sz -> ssp -> msmf[i] = MSMFnumerator((*(*sz).ssp),
 				i * (*sz).dt) / denominator;

@@ -3,7 +3,6 @@
  * giant branch (AGB) stars in VICE's singlezone simulations.
  */
 
-#include <stdlib.h>
 #include "../singlezone.h"
 #include "../callback.h"
 #include "../agb.h"
@@ -45,7 +44,7 @@ extern double m_AGB(SINGLEZONE sz, ELEMENT e) {
 	} else {
 		unsigned long i;
 		#if defined(_OPENMP)
-			double *mass = (double *) malloc (sz.nthreads * sizeof(double));
+			double mass[sz.nthreads];
 			for (i = 0ul; i < sz.nthreads; i++) mass[i] = 0;
 			#pragma omp parallel for num_threads(sz.nthreads)
 		#else
@@ -59,15 +58,16 @@ extern double m_AGB(SINGLEZONE sz, ELEMENT e) {
 			double Z = scale_metallicity(sz, sz.timestep - i);
 			double yield = get_AGB_yield(e, Z,
 				dying_star_mass(i * sz.dt, (*sz.ssp).postMS, Z));
+
+			/* From section 4.4 of VICE's science documentation */
 			double dm = (yield *
 				(*sz.ism).star_formation_history[sz.timestep - i] * sz.dt *
 				((*sz.ssp).msmf[i] - (*sz.ssp).msmf[i + 1l])
 			);
 
-			/* From section 4.4 of VICE's science documentation */
 			#if defined(_OPENMP)
 				mass[omp_get_thread_num()] += dm;
-			#else 
+			#else
 				mass += dm;
 			#endif
 			
@@ -75,7 +75,6 @@ extern double m_AGB(SINGLEZONE sz, ELEMENT e) {
 
 		#if defined(_OPENMP)
 			double result = sum(mass, sz.nthreads);
-			free(mass);
 			return result;
 		#else
 			return mass;

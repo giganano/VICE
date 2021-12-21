@@ -89,9 +89,7 @@ extern unsigned short setup_CRF(SINGLEZONE *sz) {
 		unsigned long i, n = n_timesteps(*sz);
 
 		sz -> ssp -> crf = (double *) malloc (n * sizeof(double));
-		#if defined(_OPENMP)
-			#pragma omp parallel for num_threads((*sz).nthreads)
-		#endif
+		/* For some reason not thread safe, so don't multithread */
 		for (i = 0l; i < n; i++) {
 			sz -> ssp -> crf[i] = CRFnumerator_Kalirai08(
 				(*(*sz).ssp), i * (*sz).dt) / denominator;

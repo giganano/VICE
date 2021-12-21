@@ -9,7 +9,6 @@
 #include "../yields.h"
 #include "../utils.h"
 #include "../debug.h"
-#include "../multithread.h"
 
 /* ---------- static function comment headers not duplicated here ---------- */
 static double euler(INTEGRAL intgrl, unsigned long N);
@@ -152,12 +151,7 @@ static double euler(INTEGRAL intgrl, unsigned long N) {
 	 * bin width and return
 	 */
 	unsigned long i;
-	#if defined(_OPENMP)
-		#pragma omp parallel for
-	#endif
-	for (i = 0l; i < N; i++) {
-		eval[i] = intgrl.func(x[i]);
-	}
+	for (i = 0l; i < N; i++) eval[i] = intgrl.func(x[i]);
 	double total = sum(eval, N);
 	debug_print("total = %.5e\n", total);
 	free(eval);
@@ -196,12 +190,7 @@ static double trapzd(INTEGRAL intgrl, unsigned long N) {
 	 * first and last bin edges, then multiply by the width and return
 	 */
 	unsigned long i;
-	#if defined(_OPENMP)
-		#pragma omp parallel for
-	#endif
-	for (i = 0l; i <= N; i++) {
-		eval[i] = intgrl.func(x[i]);
-	}
+	for (i = 0l; i <= N; i++) eval[i] = intgrl.func(x[i]);
 	double total = sum(eval, N + 1l);
 	total -= 0.5 * (eval[0] + eval[N]);
 	debug_print("total = %.5e\n", total);
@@ -241,12 +230,7 @@ static double midpt(INTEGRAL intgrl, unsigned long N) {
 	 * multiply by the width and return
 	 */
 	unsigned long i;
-	#if defined(_OPENMP)
-		#pragma omp parallel for
-	#endif
-	for (i = 0l; i < N; i++) {
-		eval[i] = intgrl.func(mids[i]);
-	}
+	for (i = 0l; i < N; i++) eval[i] = intgrl.func(mids[i]);
 	double total = sum(eval, N);
 	debug_print("total = %.5e\n", total);
 	free(x);

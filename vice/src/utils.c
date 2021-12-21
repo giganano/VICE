@@ -431,12 +431,7 @@ extern double *binspace(double start, double stop, unsigned long N) {
 	double *arr = (double *) malloc ((N + 1l) * sizeof(double));
 	double dx = (stop - start) / N;
 	unsigned long i;
-	#if defined(_OPENMP)
-		#pragma omp parallel for
-	#endif
-	for (i = 0l; i <= N; i++) {
-		arr[i] = start + i * dx;
-	}
+	for (i = 0l; i <= N; i++) arr[i] = start + i * dx;
 	return arr;
 
 }
@@ -464,9 +459,6 @@ extern double *bin_centers(double *edges, unsigned long n_bins) {
 	trace_print();
 	double *centers = (double *) malloc (n_bins * sizeof(double));
 	unsigned long i;
-	#if defined(_OPENMP)
-		#pragma omp parallel for
-	#endif
 	for (i = 0l; i < n_bins; i++) {
 		centers[i] = (edges[i] + edges[i + 1l]) / 2.0;
 	}
@@ -495,15 +487,7 @@ extern double sum(double *arr, unsigned long len) {
 
 	unsigned long i;
 	double s = 0;
-	#if defined(_OPENMP)
-		#pragma omp parallel for
-	#endif
-	for (i = 0l; i < len; i++) {
-		#if defined(_OPENMP)
-			#pragma omp atomic
-		#endif
-		s += arr[i];
-	}
+	for (i = 0l; i < len; i++) s += arr[i];
 	return s;
 
 }

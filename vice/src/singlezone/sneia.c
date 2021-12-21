@@ -46,7 +46,7 @@ extern double mdot_sneia(SINGLEZONE sz, ELEMENT e) {
 
 	unsigned long i;
 	#if defined(_OPENMP)
-		double *mdotia = (double *) malloc (sz.nthreads * sizeof(double));
+		double mdotia[sz.nthreads];
 		for (i = 0ul; i < sz.nthreads; i++) mdotia[i] = 0;
 		#pragma omp parallel for num_threads(sz.nthreads)
 	#else
@@ -67,7 +67,6 @@ extern double mdot_sneia(SINGLEZONE sz, ELEMENT e) {
 	/* Entrainment is handled in vice/src/singlezone/element.c */
 	#if defined(_OPENMP)
 		double result = sum(mdotia, sz.nthreads);
-		free(mdotia);
 		return result;
 	#else
 		return mdotia;
@@ -135,9 +134,6 @@ extern unsigned short setup_RIa(SINGLEZONE *sz) {
 				if ((*(*(*sz).elements[j]).sneia_yields).RIa == NULL) {
 					retval = 1u; 		/* memory error */
 				} else {
-					#if defined(_OPENMP)
-						#pragma omp parallel for num_threads((*sz).nthreads)
-					#endif
 					for (i = 0l; i < length; i++) {
 						sz -> elements[j] -> sneia_yields -> RIa[i] = (
 							RIa_builtin(*(*sz).elements[j], i * (*sz).dt)
@@ -225,15 +221,7 @@ extern void normalize_RIa(ELEMENT *e, unsigned long length) {
 
 	unsigned long i;
 	double sum = 0;
-	#if defined(_OPENMP)
-		#pragma omp parallel for
-	#endif
-	for (i = 0l; i < length; i++) {
-		#if defined(_OPENMP)
-			#pragma omp atomic
-		#endif
-		sum += (*(*e).sneia_yields).RIa[i];
-	}
+	for (i = 0l; i < length; i++) sum += (*(*e).sneia_yields).RIa[i];
 	#if defined(_OPENMP)
 		#pragma omp parallel for
 	#endif
