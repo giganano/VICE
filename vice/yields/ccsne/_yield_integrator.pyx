@@ -41,7 +41,6 @@ from ...core.objects cimport _integral
 from ...core.objects cimport _imf
 from ...core._cutils cimport copy_pylist
 from ...core._cutils cimport callback_1arg_setup
-from ...core._cutils cimport set_nthreads
 from . cimport _yield_integrator
 _MINIMUM_MASS_ = float(_yield_integrator.CC_MIN_STELLAR_MASS)
 
@@ -49,7 +48,7 @@ _MINIMUM_MASS_ = float(_yield_integrator.CC_MIN_STELLAR_MASS)
 def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	explodability = None, wind = True, net = True, IMF = "kroupa",
 	method = "simpson", m_lower = 0.08, m_upper = 100,
-	tolerance = 1e-3, nthreads = 1, Nmin = 64, Nmax = 2e8):
+	tolerance = 1e-3, Nmin = 64, Nmax = 2e8):
 	
 	r"""
 	Calculate an IMF-integrated fractional nucleosynthetic yield of a
@@ -58,7 +57,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	**Signature**: vice.yields.ccsne.fractional(element, study = "LC18",
 	MoverH = 0, rotation = 0, explodability = None, wind = True, net = True,
 	IMF = "kroupa", method = "simpson", m_lower = 0.08, m_upper = 100,
-	tolerance = 1e-3, nthreads = 1, Nmin = 64, Nmax = 2.0e+08)
+	tolerance = 1e-3, Nmin = 64, Nmax = 2.0e+08)
 
 	Parameters
 	----------
@@ -189,16 +188,6 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		The lower mass limit on star formation in :math:`M_\odot`.
 	m_upper : real number [default : 100]
 		The upper mass limit on star formation in :math:`M_\odot`.
-	nthreads : ``int`` [default : 1]
-		The number of openMP threads to use in the integration. This requires
-		installing VICE from source and linking to the openMP library at
-		compile time. Without this, multithreaded calculations are unavailable.
-		To enable this functionality, follow the steps described under "Enable
-		Multithreading" in VICE's :ref:`installation instructions <install>`.
-
-		.. versionadded:: 1.X.0
-			Prior to version 1.X.0, VICE did not implemented multithreading.
-
 	tolerance : real number [default : 0.001]
 		The numerical tolerance. VICE will not return a result until the
 		fractional change between two successive integrations is smaller than
@@ -368,7 +357,6 @@ km/s and [M/H] = %g""" % (study, rotation, MoverH))
 		raise ValueError("""Minimum number of bins in quadrature must be \
 smaller than maximum number of bins.""")
 	else: pass
-	set_nthreads(nthreads)
 
 	"""
 	Explodability is either None or a callable function with one parameter.
