@@ -18,7 +18,7 @@ print_message:
 	@ echo Compiling vice/src/
 
 vice.so: $(OBJECTS) $(SUBDIRS)
-	@ $(CC) $(shell find . -name "*.o") -shared -o $@ $(LINKFLAGS)
+	@ $(CC) $(CFLAGS) $(shell find . -name "*.o") -shared -o $@ $(LINKFLAGS)
 
 %.o: %.c $(HEADERS)
 	@ $(CC) $(CFLAGS) -c $< -o $@
