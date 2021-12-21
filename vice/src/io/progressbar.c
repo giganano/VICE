@@ -368,8 +368,9 @@ static void progressbar_set_strings(PROGRESSBAR *pb) {
 		pb -> left_hand_side = (char *) malloc ((5u +
 			(unsigned int) n_digits((*pb).current) +
 			(unsigned int) n_digits((*pb).maxval)) * sizeof(char));
-		sprintf(pb -> left_hand_side, "%ld of %ld\0", (*pb).current,
+		sprintf(pb -> left_hand_side, "%ld of %ld", (*pb).current,
 			(*pb).maxval);
+		strcat(pb -> left_hand_side, "\0");
 	} else {}
 
 	if (!(*pb).custom_right_hand_side) {
@@ -386,7 +387,8 @@ static void progressbar_set_strings(PROGRESSBAR *pb) {
 		char *eta = format_time(progressbar_eta(*pb));
 		pb -> right_hand_side = (char *) malloc ((6u + strlen(eta)) *
 			sizeof(char));
-		sprintf(pb -> right_hand_side, "ETA: %s\0", eta);
+		sprintf(pb -> right_hand_side, "ETA: %s", eta);
+		strcat(pb -> right_hand_side, "\0");
 		free(eta);
 	} else {}
 
