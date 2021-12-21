@@ -69,7 +69,7 @@
 #define trace_print() \
 	do { \
 		if (logging_level() == TRACE) { \
-			fprintf(stderr, "%s:%s()\n", __FILE__, __func__); \
+			fprintf(stderr, "%s:%d:%s()\n", __FILE__, __LINE__, __func__); \
 		} else {} \
 	} while (0)
 
