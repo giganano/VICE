@@ -1,6 +1,7 @@
 
 CC 			:= gcc
 CFLAGS 		:= -fPIC -Wsign-conversion -Wsign-compare
+LINKFLAGS 	:=
 SOURCES 	:= $(wildcard *.c)
 HEADERS 	:= $(wildcard *.h)
 OBJECTS 	:= $(SOURCES:.c=.o)
@@ -13,10 +14,11 @@ print_message:
 	@ echo Compiling VICE C Library
 	@ echo C Compiler: $(CC)
 	@ echo CFLAGS: $(CFLAGS)
+	@ echo LINKFLAGS: $(LINKFLAGS)
 	@ echo Compiling vice/src/
 
 vice.so: $(OBJECTS) $(SUBDIRS)
-	@ $(CC) $(shell find . -name "*.o") -shared -o $@
+	@ $(CC) $(shell find . -name "*.o") -shared -o $@ $(LINKFLAGS)
 
 %.o: %.c $(HEADERS)
 	@ $(CC) $(CFLAGS) -c $< -o $@
