@@ -49,7 +49,7 @@ jobs:
 
     steps:
       - name: Install OpenMP
-        if: runner.os == "macOS"
+        if: runner.os == 'macOS'
         run: |
           brew install libomp
 
