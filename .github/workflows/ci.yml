@@ -16,26 +16,29 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ubuntu-latest
-          compiler: gcc-10
-          env:
-            COMPILER: gcc-10
-            CFLAGS: "-fPIC -Wsign-conversion -Wsign-compare -fopenmp"
-            LINKFLAGS: ""
-
-        os: macos-10.15
-          compiler: clang
-          env:
-            COMPILER: clang
-            CFLAGS: "-fPIC -Wsign-conversion -Wsign-compare -Xpreprocessor -fopenmp"
-            LINKFLAGS: "-lomp"
-
+        os: [ubuntu-latest, macos-10.15]
+        compiler: [gcc-10, clang]
         python-version:
           - "3.6"
           - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
+
+        include:
+          os: ubuntu-latest
+            compiler: gcc-10
+            env:
+              COMPILER: gcc-10
+              CFLAGS: "-fPIC -Wsign-conversion -Wsign-compare -fopenmp"
+              LINKFLAGS: ""
+
+          os: macos-10.15
+            compiler: clang
+            env:
+              COMPILER: clang
+              CFLAGS: "-fPIC -Wsign-conversion -Wsign-compare -Xpreprocessor -fopenmp"
+              LINKFLAGS: "-lomp"
 
     steps:
       - name: Install OpenMP
