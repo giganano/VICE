@@ -40,9 +40,16 @@ jobs:
               CFLAGS: "-fPIC -Wsign-conversion -Wsign-compare -Xpreprocessor -fopenmp"
               LINKFLAGS: "-lomp"
 
+        exclude:
+          - os: macos-10.15
+            compiler: gcc-10
+
+          - os: ubuntu-latest
+            compiler: clang
+
     steps:
       - name: Install OpenMP
-        if: ${{ matrix.os }} == "macos-10.15"
+        if: runner.os == "macOS"
         run: |
           brew install libomp
 
