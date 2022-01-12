@@ -12,7 +12,6 @@ Install Options
 -j N             : Run build in parallel across N cores
 --user           : Install to ~/.local directory
 -q --quiet       : Run the installation non-verbosely
-distutils        : Run the installation with distutils rather than setuptools
 ext=             : Build and install specific extension
 --enbable-openmp : Link VICE's compiled outputs to the openMP library to enable
                    multithreaded calculations. Alternatively, this can be
@@ -45,25 +44,12 @@ try:
 	ModuleNotFoundError
 except NameError:
 	ModuleNotFoundError = ImportError
-if "distutils" in sys.argv:
-	from distutils.core import setup, Extension
-	sys.argv.remove("distutils")
-else:
-	try:
-		from setuptools import setup, Extension
-	except (ImportError, ModuleNotFoundError):
-		from distutils.core import setup, Extension
+from setuptools import setup, Extension
 
 # partial import
 import builtins
 builtins.__VICE_SETUP__ = True
 import vice
-
-# From-source build of this version requires Cython >= 0.29.0
-MIN_CYTHON_VERSION = "0.29.0"
-vice._check_cython(MIN_CYTHON_VERSION)
-import Cython
-from Cython.Build import cythonize
 
 # ---------------------------- PACKAGE METADATA ---------------------------- #
 package_name = "vice"
@@ -364,6 +350,11 @@ def setup_package():
 	os.chdir(src_path)
 	sys.path.insert(0, src_path)
 
+	# directories with .h header files, req'd by setup
+	include_dirs = []
+	for root, dirs, files in os.walk("./vice/src"):
+		if "__pycache__" not in root: include_dirs.append(root)
+
 	# Keywords to the setup() call
 	metadata = dict(
 		name = package_name,
@@ -389,16 +380,18 @@ def setup_package():
 		package_data = find_package_data(),
 		scripts = ["bin/%s" % (i) for i in os.listdir("./bin/")],
 		ext_modules = find_extensions(),
+		include_dirs = include_dirs,
+		setup_requires = [
+			"setuptools>=18.0", # automatically handles Cython extensions
+			"Cython>=0.29.0"
+		],
 		python_requires=">=3.6.*, <4",
 		zip_safe = False,
 		verbose = "-q" not in sys.argv and "--quiet" not in sys.argv
 	)
-	if "sdist" not in sys.argv: metadata["ext_modules"] = cythonize(
-		metadata["ext_modules"])
 
 	try:
 		write_version_info() 	# Write the version file
-		vice._write_build() 	# save version info for packaged used in build
 		setup(**metadata)
 		set_path_variable()
 	finally:

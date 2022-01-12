@@ -109,7 +109,6 @@ except NameError:
 
 if __VICE_SETUP__:
 	from .src import *
-	from ._build_utils import *
 	_LONG_DESCRIPTION_ = __doc__
 else:
 	if "vice" in os.listdir(os.getcwd()):
@@ -152,7 +151,6 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 			from . import milkyway
 			from .core import *
 			from .core.dataframe import base as dataframe
-			from ._build_utils import *
 			from ._globals import ScienceWarning
 			from ._globals import VisibleRuntimeWarning
 			from ._globals import VisibleDeprecationWarning
@@ -162,7 +160,6 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 			from .tests import test
 			from . import _dev
 			__all__.extend(core.__all__)
-			__all__.extend(_build_utils.__all__)
 		except (ImportError, ModuleNotFoundError):
 			raise ImportError("""\
 Error importing VICE. If you conducted this installation with pip, it is \
