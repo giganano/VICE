@@ -155,13 +155,13 @@ If you have already modified VICE's source code or plan to do so, we encourage
 you to reach out to one of our :ref:`developers <contributors>` - we'd be happy
 to consult with you to help VICE meet your needs!
 
-While VICE does not have any primary run-time dependencies, there are several
-compile-time dependencies that must be satisfied to install from source. They
-are as follows:
+While VICE does not have any primary run-time dependencies, there are a few
+common compile-time dependencies that must be satisfied to install from source.
+They are as follows:
 
-1. Cython_ >= 0.29.0
+1. Python_ >= 3.6
 
-2. Python_ >= 3.6
+2. setuptools_ >= 18.0
 
 3. Make_ >= 3.81
 
@@ -170,12 +170,18 @@ are as follows:
 On Mac OS X and Linux architectures, it is likely that Make_ and one of gcc_
 or clang_ come pre-installed. Users may install with alternative C compilers
 if they so choose, but VICE is tested with only gcc_ and clang_.
+While a sizable portion of VICE's source code is written in Cython_ and
+requires Cython_ >= 0.29.0 to compile, this should be handled automatically by
+setuptools_.
+Nonetheless, it is always an easy option to install it manually via
+``python -m pip install Cython>=0.29.0``.
 
 .. _Cython: https://pypi.org/project/Cython/
 .. _Python: https://www.python.org/downloads/
 .. _Make: https://www.gnu.org/software/make/
 .. _gcc: https://gcc.gnu.org/
 .. _clang: https://clang.llvm.org/get_started.html
+.. _setuptools: https://setuptools.readthedocs.io/en/latest/
 
 Once the build dependencies are satisfied, download the source code
 using a terminal and change directories into the source tree:
@@ -246,6 +252,8 @@ source.
 	**Warning**: See `note`__ below regarding parallel installations with the
 	gcc_ C compiler.
 
+__ gcc_parallel_note_
+
 2. Suppress verbose output
 	Users may suppress the printing of compiler commands to the consoler with
 	the ``[-q --quiet]`` command-line argument.
@@ -274,40 +282,6 @@ source.
 
 		$ python setup.py build ext=vice.core.singlezone._singlezone install [--user]
 
-4. Distutils versus setuptools
-	By default, the setup.py file will compile VICE using the setuptools_
-	library.
-	If setuptools_ is not found in the compile-time environment, VICE will
-	conduct the installation with distutils_ within the
-	`python standard library`__.
-	However, if users wish to compile and install VICE with distutils_ even if
-	setuptools_ is installed, they may do so trivially with the
-	``[distutils]`` command-line argument.
-	For example,
-
-	::
-
-		$ python setup.py build distutils install [--user]
-
-	will always import the necessary functions from distutils_ rather than
-	setuptools_.
-	**Warning**: See `note`__ below on installing with distutils_ inside of a
-	conda environment.
-	**Warning**: distutils_ is deprecated in python versions >= 3.10 (see
-	`PEP 632`__).
-	For this reason, we recommend users avoid installing VICE (or any
-	python package for that matter) using distutils_.
-
-__ gcc_parallel_note_
-__ stdlib_
-__ condanote_
-__ pep632_
-
-.. _setuptools: https://setuptools.readthedocs.io/en/latest/
-.. _distutils: https://docs.python.org/3/library/distutils.html
-.. _stdlib: https://docs.python.org/3/library/
-.. _pep632: https://www.python.org/dev/peps/pep-0632/
-
 
 Things to Avoid
 ---------------
@@ -335,31 +309,6 @@ Things to Avoid
 
 .. _condanote:
 
-3. Conda environments
-	VICE should **never** be manually installed from source with distutils_
-	within a conda environment; this applies *only* if the user is making use
-	of the ``[distutils]`` command-line argument accepted by the setup.py file
-	(see `Additional Compile Options`_ above).
-	Conda environments manage packages in a manner that is compatible with
-	setuptools_ but not with distutils_.
-	As a result, the installation process will run without errors, but
-	distutils_ will place the compiled extensions in the incorrect directory,
-	preventing VICE from properly importing into python.
-	This however does not apply to the default environment ``base`` associated
-	with recent versions of python and Anaconda_.
-
-	VICE will *run* within a conda environment following an installation from
-	source with distutils_ - it is only the installation process that this
-	applies to.
-	That is, if users wish to conduct the installation with distutils_ but
-	need to use VICE within a conda environment, they must simply exit their
-	conda environment, conduct the installation from source, and then
-	reactivate their conda environment.
-	VICE is implemented entirely independent of Anaconda_ (see
-	`A Note on Implementation`_ above), and for this reason, it is unnecessary
-	to repeat installations within differently curated conda environments
-	anyway.
-
 
 Troubleshooting Your Build
 ==========================
@@ -370,15 +319,7 @@ installation with ``pip`` as opposed to installing manually, please open an
 issue `here`__.
 
 __ issues_
-
-ImportError After Installation
-------------------------------
-`Did you install VICE with distutils_ from within a conda environment?`__
-If not, please open an issue `here`__.
-
-__ condanote_
 .. _issues: https://github.com/giganano/VICE/issues
-__ issues_
 
 Running the setup.py File Failed
 --------------------------------
