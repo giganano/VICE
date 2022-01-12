@@ -75,6 +75,11 @@
 	local copy exists and it cannot be downloaded, it will raise a
 	``RuntimeError``.
 
+Patches
+-------
+- Addressed single timestep level bug in elemental accretion rate from
+	primordial gas affecting models ran in star formation and gas modes.
+
 1.2.1
 =====
 - Minor documentation updates
