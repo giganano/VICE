@@ -1,2 +1,5 @@
+global-include *.py
 global-include *.pyx
 global-include *.pxd
+global-include *.c
+global-include *.h
