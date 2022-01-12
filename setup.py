@@ -66,6 +66,7 @@ package_name = "vice"
 repo_url = "https://github.com/giganano/VICE.git"
 pypi_url = "https://pypi.org/project/vice/"
 docs_url = "https://vice-astro.readthedocs.io/"
+bugs_url = "https://github.com/giganano/VICE/issues"
 
 CLASSIFIERS = """\
 Development Status :: 5 - Production/Stable
@@ -224,7 +225,7 @@ def find_package_data():
 	"""
 	packages = find_packages()
 	data = {}
-	data_extensions = [".dat", ".so", ".obj", ".o"]
+	data_extensions = [".dat", ".obj"]
 	for i in packages:
 		data[i] = []
 		for j in os.listdir(i.replace('.', '/')):
@@ -324,7 +325,7 @@ def setup_package():
 		maintainer_email = "giganano9@gmail.com",
 		url = repo_url,
 		project_urls = {
-			"Bug Tracker": "https://github.com/giganano/VICE/issues",
+			"Bug Tracker": bugs_url,
 			"Documentation": docs_url,
 			"Source Code": repo_url
 		},
@@ -338,11 +339,13 @@ def setup_package():
 		packages = find_packages(),
 		package_data = find_package_data(),
 		scripts = ["bin/%s" % (i) for i in os.listdir("./bin/")],
-		ext_modules = cythonize(find_extensions()),
+		ext_modules = find_extensions(),
 		python_requires=">=3.6.*, <4",
 		zip_safe = False,
 		verbose = "-q" not in sys.argv and "--quiet" not in sys.argv
 	)
+	if "sdist" not in sys.argv: metadata["ext_modules"] = cythonize(
+		metadata["ext_modules"])
 
 	try:
 		write_version_info() 	# Write the version file
