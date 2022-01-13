@@ -250,8 +250,6 @@ def find_package_data():
 	.dat : files holding built-in data
 	.obj : a pickled object -> currently the only instance is the pickled
 		dictionary containing version info of build dependencies
-	.so : shared object
-	.o : compiled C code
 
 	VICE's C extensions are compiled individually and wrapped into a
 	shared object using make. All of this output is moved to the install
