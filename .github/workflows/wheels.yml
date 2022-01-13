@@ -6,284 +6,91 @@
 # as Aarch64 Linux machines. We do not yet pre-compile VICE for ARM hardware,
 # though an installation from source is straight-forward and fast on these
 # machines.
+# 
+# At present, GitHub actions does not support a build matrix for jobs that
+# call a reusable workflow, so the Mac OS and manylinux jobs here implement
+# the workaround from the following URL: 
+# 
+# https://github.community/t/reusable-workflow-with-strategy-matrix/205676/8
 
 name: PyPI Wheels
 
+# only when specifically requested
 on:
-
-  # Build wheels on all pushes to main and versioned branches and whenever a
-  # release is published.
-
-  push:
-    branches:
-      - main
-      - v[0-9]+.[0-9]+.x
-  pull_request:
-    branches:
-      - main
-      - v[0-9]+.[0-9]+.x
-  release:
-    types:
-      - published
-      - pre-released
+  workflow_dispatch:
 
 jobs:
 
   ##### Source distribution -> prepared using the Ubuntu VM #####
-
   sdist:
-    name: Source Distribution
-    runs-on: ubuntu-20.04
-    if: contains(github.event.head_commit.message, 'make wheels')
-    strategy:
-      fail-fast: false
-
-    env:
-      COMPILER: gcc
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Setup Python 3.9
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
-
-      - name: Install Dependencies
-        shell: bash
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install Cython>=0.29.21
-          python -m pip install wheel>=0.33.0
-
-      - name: Display Environment Variables
-        shell: bash
-        run: |
-          echo "PATH: " $PATH
-          echo "COMIPLER: " `which $COMPILER`
-          echo "COMPILER VERSION: " `$COMPILER --version`
-          echo "PYTHON: " `which python`
-          echo "PYTHON VERSION: " `python --version`
-          echo "MAKE: " `which make`
-          echo "MAKE VERSION: " `make --version`
-
-      - name: Create Source Distribution
-        shell: bash
-        run: |
-          make
-          python setup.py sdist --quiet
-          make clean
-
-      - name: Upload Source Distribution
-        uses: actions/upload-artifact@v2
-        with:
-          name: source_distribution
-          path: ./dist/*.tar.gz
+    uses: giganano/VICE/.github/workflows/sdist.yml@development-cirefactor
+    with:
+      os: ubuntu-20.04
+      python-version: "3.9"
 
   ##### Mac OS distributions for >= 10.9 on x86_64 hardware #####
-
   macos_x86_64:
-    name: Mac OS >= 10.9 x86_64| Python ${{ matrix.python-version }}
-    runs-on: ${{ matrix.os }}
-    if: contains(github.event.head_commit.message, 'make wheels')
-    strategy:
-      fail-fast: false
-      matrix:
-        os: ["macos-10.15"]
-        python-version:
-          - "3.6"
-          - "3.7"
-          - "3.8"
-          - "3.9"
-          - "3.10"
-
-    env:
-      COMPILER: clang
-      MACOSX_DEPLOYMENT_TARGET: 10.9
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Setup Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Setup Miniconda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          auto-update-conda: true
-          auto-activate-base: false
-          miniconda-version: 'latest'
-          python-version: ${{ matrix.python-version }}
-
-      - name: Setup Environment and Install Dependencies
-        shell: bash -l {0}
-        run: |
-          conda create -qy --name buildenv python=${{ matrix.python-version }}
-          conda activate buildenv
-          python -m pip install --upgrade pip
-          python -m pip install Cython>=0.29.21
-          python -m pip install wheel>=0.33.0
-
-      - name: Display Environment Variables
-        shell: bash -l {0}
-        run: |
-          conda activate buildenv
-          echo "PATH: " $PATH
-          echo "COMIPLER: " `which $COMPILER`
-          echo "COMPILER VERSION: " `$COMPILER --version`
-          echo "PYTHON: " `which python`
-          echo "PYTHON VERSION: " `python --version`
-          echo "MAKE: " `which make`
-          echo "MAKE VERSION: " `make --version`
-
-      - name: Build Mac OS x86_64 CPython ${{ matrix.python-version }} Wheel
-        shell: bash -l {0}
-        run: |
-          conda activate buildenv
-          make CC=$COMPILER
-          python setup.py bdist_wheel --quiet
-          make clean
-
-      - name: Upload Wheel
-        uses: actions/upload-artifact@v2
-        with:
-          name: macosx_x86_64_wheels
-          path: ./dist/*.whl
-
-  # Although the various manylinux distribution wheels are made with similar
-  # patterns, the YAML interpreter is not happy with a build matrix variable
-  # storing the docker image. Since there are only a handful of them, the
-  # simplest solution is to explicitly define a job for each of the manylinux
-  # distributions with a hard-coded docker image so that the wheels can be
-  # made in parallel. (Note: PyPA does not provide docker images for compiling
-  # manylinux1 or manylinux2010 distributions on aarch64 architecture.)
-
-  ##### manylinux1 distribution on x86_64 hardware #####
-
-  manylinux1_x86_64:
-    name: manylinux1_x86_64 | ${{ matrix.python-version }}
-    runs-on: ubuntu-20.04
-    if: contains(github.event.head_commit.message, 'make wheels')
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version:
-          - cp36-cp36m
-          - cp37-cp37m
-          - cp38-cp38
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Build manylinux1 ${{ matrix.python-version }} Wheel
-        uses: docker://quay.io/pypa/manylinux1_x86_64
-        with:
-          args: |
-            ./.github/workflows/build_manylinux.sh ${{ matrix.python-version }}
-
-      - name: Upload Wheel
-        uses: actions/upload-artifact@v2
-        with:
-          name: manylinux1_x86_64_wheels
-          path: ./wheelhouse/*.whl
-
-  ##### manylinux2010 distribution on x86_64 hardware #####
-
-  manylinux2010_x86_64:
-    name: manylinux2010_x86_64 | ${{ matrix.python-version }}
-    runs-on: ubuntu-20.04
-    if: contains(github.event.head_commit.message, 'make wheels')
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version:
-          - cp36-cp36m
-          - cp37-cp37m
-          - cp38-cp38
-          - cp39-cp39
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Build manylinux2010 ${{ matrix.python-version }} Wheel
-        uses: docker://quay.io/pypa/manylinux2010_x86_64
-        with:
-          args: |
-            ./.github/workflows/build_manylinux.sh ${{ matrix.python-version }}
-
-      - name: Upload Wheel
-        uses: actions/upload-artifact@v2
-        with:
-          name: manylinux2010_x86_64_wheels
-          path: ./wheelhouse/*.whl
+    uses: giganano/VICE/.github/workflows/bdist_macos.yml@development-cirefactor
+    with:
+      python-versions: >-
+        ["3.6", "3.7", "3.8", "3.9", "3.10"]
+      wheel-name: macos_x86_64
 
   ##### manylinux2014 distribution on x86_64 hardware #####
-
   manylinux2014_x86_64:
-    name: manylinux2014_x86_64 | ${{ matrix.python-version }}
-    runs-on: ubuntu-20.04
-    if: contains(github.event.head_commit.message, 'make wheels')
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version:
-          - cp36-cp36m
-          - cp37-cp37m
-          - cp38-cp38
-          - cp39-cp39
-          - cp310-cp310
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Build manylinux2014 ${{ matrix.python-version }} Wheel
-        uses: docker://quay.io/pypa/manylinux2014_x86_64
-        with:
-          args: |
-            ./.github/workflows/build_manylinux.sh ${{ matrix.python-version }}
-
-      - name: Upload Wheel
-        uses: actions/upload-artifact@v2
-        with:
-          name: manylinux2014_x86_64_wheels
-          path: ./wheelhouse/*.whl
+    uses: giganano/VICE/.github/workflows/bdist_linux.yml@development-cirefactor
+    with:
+      python-versions: >-
+        ["cp36-cp36m", "cp37-cp37m", "cp38-cp38", "cp39-cp39", "cp310-cp310"]
+      wheel-name: manylinux2014_x86_64
+      image: docker://quay.io/pypa/manylinux2014_x86_64
 
   ##### manylinux_2_24 distribution on x86_64 hardware #####
-
   manylinux_2_24_x86_64:
-    name: manylinux_2_24_x86_64 | ${{ matrix.python-version }}
+    uses: giganano/VICE/.github/workflows/bdist_linux.yml@development-cirefactor
+    with:
+      python-versions: >-
+        ["cp36-cp36m", "cp37-cp37m", "cp38-cp38", "cp39-cp39", "cp310-cp310"]
+      wheel-name: manylinux_2_24_x86_64
+      image: docker://quay.io/pypa/manylinux_2_24_x86_64
+
+  # Combines the zipfiles containing the wheels and the source distribution
+  # 
+  # An action which deletes workflow artifacts is in development by GitHub.
+  # Once released, this workflow should delete previous artifacts and leave
+  # behind only the one zipfile containing all of the wheels.
+  combine_zipfiles:
+    name: Combine Wheel Zipfiles
+    needs: [sdist, macos_x86_64, manylinux2014_x86_64, manylinux_2_24_x86_64]
     runs-on: ubuntu-20.04
-    if: contains(github.event.head_commit.message, 'make wheels')
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version:
-          - cp36-cp36m
-          - cp37-cp37m
-          - cp38-cp38
-          - cp39-cp39
-          - cp310-cp310
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Build manylinux_2_24 ${{ matrix.python-version }} Wheel
-        uses: docker://quay.io/pypa/manylinux_2_24_x86_64
+      - name: Download Source Distribution
+        uses: actions/download-artifact@v2
         with:
-          args: |
-            ./.github/workflows/build_manylinux.sh ${{ matrix.python-version }}
+          name: sdist
 
-      - name: Upload Wheel
+      - name: Download Mac OS Wheels
+        uses: actions/download-artifact@v2
+        with:
+          name: macos_x86_64
+
+      - name: Download manylinux2014_x86_64 Wheels
+        uses: actions/download-artifact@v2
+        with:
+          name: manylinux2014_x86_64
+
+      - name: Download manylinux_2_24_x86_64 Wheels
+        uses: actions/download-artifact@v2
+        with:
+          name: manylinux_2_24_x86_64
+
+      - name: Upload Files
         uses: actions/upload-artifact@v2
         with:
-          name: manylinux_2_24_x86_64_wheels
-          path: ./wheelhouse/*.whl
+          name: wheels
+          path: |
+            ./*.whl
+            ./*.tar.gz
+          retention-days: 5
 

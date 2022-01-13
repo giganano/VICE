@@ -1,0 +1,67 @@
+# This workflow creates a source distribution intended for uploading to PyPI
+# and uploads it to GitHub actions as an artifact, where it then gets
+# re-downloaded and combined with other wheels created by the wheels.yml
+# workflow.
+
+name: sdist
+
+on:
+  workflow_call:
+    inputs:
+      os:
+        description: The OS to use for creating the source distribution
+        required: true
+        type: string
+      python-version:
+        description: The version of python for creating the source distribution
+        required: true
+        type: string
+
+jobs:
+  sdist:
+    name: Source Distribution
+    runs-on: ${{ inputs.os }}
+    env:
+      COMPILER: gcc
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup Python ${{ inputs.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Install Dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install Cython>=0.29.21
+          python -m pip install wheel>=0.33.0
+
+      - name: Display Environment Variables
+        shell: bash
+        run: |
+          echo "PATH: " $PATH
+          echo "COMIPLER: " `which $COMPILER`
+          echo "COMPILER VERSION: " `$COMPILER --version`
+          echo "PYTHON: " `which python`
+          echo "PYTHON VERSION: " `python --version`
+          echo "MAKE: " `which make`
+          echo "MAKE VERSION: " `make --version`
+
+      - name: Create Source Distribution
+        shell: bash
+        run: |
+          make
+          python setup.py sdist
+          make clean
+
+      - name: Upload Source Distribution
+        uses: actions/upload-artifact@v2
+        with:
+          name: sdist
+          path: ./dist/*.tar.gz
+          retention-days: 1
+
