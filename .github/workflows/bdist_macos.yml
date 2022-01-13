@@ -3,7 +3,7 @@
 # re-downloaded and combined with other wheels created by the wheels.yml
 # workflow.
 
-name: bdist
+name: Binary Distribution (Mac OS)
 
 on:
   workflow_call:
