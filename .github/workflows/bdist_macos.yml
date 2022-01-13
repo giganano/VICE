@@ -1,0 +1,85 @@
+# This workflow creates pre-compiled binary wheels intended for uploading
+# to PyPI and uploads it to GitHub actions as an artifact, where it then gets
+# re-downloaded and combined with other wheels created by the wheels.yml
+# workflow.
+
+name: bdist
+
+on:
+  workflow_call:
+    inputs:
+      python-versions:
+        description: The versions of python to create wheels for
+        required: true
+        type: string
+      wheel-name:
+        description: A name distinguishing wheels for different OS's
+        required: true
+        type: string
+
+jobs:
+
+  bdist_macosx:
+    name: Python ${{ matrix.python-version }}
+    runs-on: macos-10.15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ${{ fromJson(inputs.python-versions) }}
+
+    env:
+      COMPILER: clang
+      MACOSX_DEPLOYMENT_TARGET: 10.9
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          auto-activate-base: false
+          miniconda-version: 'latest'
+          python-version: ${{ matrix.python-version }}
+
+      - name: Setup Environment and Install Dependencies
+        shell: bash -l {0}
+        run: |
+          conda create -qy --name buildenv python=${{ matrix.python-version }}
+          conda activate buildenv
+          python -m pip install --upgrade pip
+          python -m pip install Cython>=0.29.21
+          python -m pip install wheel>=0.33.0
+
+      - name: Display Environment Variables
+        shell: bash -l {0}
+        run: |
+          conda activate buildenv
+          echo "PATH: " $PATH
+          echo "COMIPLER: " `which $COMPILER`
+          echo "COMPILER VERSION: " `$COMPILER --version`
+          echo "PYTHON: " `which python`
+          echo "PYTHON VERSION: " `python --version`
+          echo "MAKE: " `which make`
+          echo "MAKE VERSION: " `make --version`
+
+      - name: Build Wheel
+        shell: bash -l {0}
+        run: |
+          conda activate buildenv
+          make CC=$COMPILER
+          python setup.py bdist_wheel
+          make clean
+
+      - name: Upload Wheel
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ inputs.wheel-name }}
+          path: ./dist/*.whl
+
