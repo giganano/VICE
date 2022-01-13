@@ -1,0 +1,78 @@
+# This workflow creates pre-compiled binary wheels intended for uploading
+# to PyPI and uploads it to GitHub actions as an artifact, where it then gets
+# re-downloaded and combined with other wheels created by the wheels.yml
+# workflow.
+
+name: bdist
+
+on:
+  workflow_call:
+    inputs:
+      python-versions:
+        description: The versions of python to create wheels for
+        required: true
+        type: string
+      wheel-name:
+        description: A name distinguishing wheels for different OS's
+        required: true
+        type: string
+      image: # inconsequential for Mac OS builds
+        description: The docker container image to build wheels in
+        required: false
+        default: "none"
+        type: string
+
+jobs:
+
+  bdist_manylinux:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ${{ fromJson(inputs.python-versions) }}
+
+    container:
+      image: ${{ inputs.image }}
+      env:
+        COMPILER: gcc
+        PYTHON: "/opt/python/${{ matrix.python-version }}/bin/python"
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        shell: bash
+        run: |
+          $PYTHON -m pip install --upgrade pip
+          $PYTHON -m pip install Cython>=0.29.21
+          $PYTHON -m pip install wheel>=0.33.0
+          $PYTHON -m pip install auditwheel
+
+      - name: Display Environment Variables
+        shell: bash
+        run: |
+          echo "PATH: "$PATH
+          echo "COMPILER: " `which $COMPILER`
+          echo "COMPILER VERSION: " `$COMPILER --version`
+          echo "PYTHON: " $PYTHON
+          echo "PYTHON VERSION: " `$PYTHON --version`
+          echo "MAKE: " `which make`
+          echo "MAKE VERSION: " `make --version`
+
+      - name: Build Wheel
+        shell: bash
+        run: |
+          make CC=$COMPILER
+          $PYTHON setup.py bdist_wheel
+          make clean
+          auditwheel repair ./dist/*.whl
+
+      - name: Upload Wheel
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ inputs.wheel-name }}
+          path: ./wheelhouse/*.whl
+          retention-days: 1
+
