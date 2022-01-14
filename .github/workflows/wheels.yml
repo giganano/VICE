@@ -23,14 +23,14 @@ jobs:
 
   ##### Source distribution -> prepared using the Ubuntu VM #####
   sdist:
-    uses: giganano/VICE/.github/workflows/sdist.yml@development-cirefactor
+    uses: giganano/VICE/.github/workflows/sdist.yml@main
     with:
       os: ubuntu-20.04
       python-version: "3.9"
 
   ##### Mac OS distributions for >= 10.9 on x86_64 hardware #####
   macos_x86_64:
-    uses: giganano/VICE/.github/workflows/bdist_macos.yml@development-cirefactor
+    uses: giganano/VICE/.github/workflows/bdist_macos.yml@main
     with:
       python-versions: >-
         ["3.6", "3.7", "3.8", "3.9", "3.10"]
@@ -38,7 +38,7 @@ jobs:
 
   ##### manylinux2014 distribution on x86_64 hardware #####
   manylinux2014_x86_64:
-    uses: giganano/VICE/.github/workflows/bdist_linux.yml@development-cirefactor
+    uses: giganano/VICE/.github/workflows/bdist_linux.yml@main
     with:
       python-versions: >-
         ["cp36-cp36m", "cp37-cp37m", "cp38-cp38", "cp39-cp39", "cp310-cp310"]
@@ -47,7 +47,7 @@ jobs:
 
   ##### manylinux_2_24 distribution on x86_64 hardware #####
   manylinux_2_24_x86_64:
-    uses: giganano/VICE/.github/workflows/bdist_linux.yml@development-cirefactor
+    uses: giganano/VICE/.github/workflows/bdist_linux.yml@main
     with:
       python-versions: >-
         ["cp36-cp36m", "cp37-cp37m", "cp38-cp38", "cp39-cp39", "cp310-cp310"]
