@@ -6,34 +6,20 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: ${{ matrix.os }} | Python ${{ matrix.python-version }} | ${{ matrix.compiler }}
+    name: ${{ matrix.os }} | Python ${{ matrix.python-version }} | openmp = ${{ matrix.openmp }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-10.15]
         compiler: [gcc-10, clang]
+        openmp: [true, false]
         python-version:
           - "3.6"
           - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
-
-        include:
-          - os: ubuntu-latest
-            compiler: gcc-10
-            env:
-              COMPILER: gcc-10
-              CFLAGS: "-fPIC -Wsign-conversion -Wsign-compare -fopenmp"
-              LINKFLAGS: ""
-
-          - os: macos-10.15
-            compiler: clang
-            env:
-              COMPILER: clang
-              CFLAGS: "-fPIC -Wsign-conversion -Wsign-compare -Xpreprocessor -fopenmp"
-              LINKFLAGS: "-lomp"
 
         exclude:
           - os: macos-10.15
@@ -42,11 +28,23 @@ jobs:
           - os: ubuntu-latest
             compiler: clang
 
+    env:
+      COMPILER: ${{ matrix.compiler }}
+      CFLAGS: "-fPIC -Wsign-conversion -Wsign-compare"
+      LINKFLAGS: ""
+
     steps:
-      - name: Install OpenMP
-        if: runner.os == 'macOS'
+        # Extend the environment variables for subsequent steps if necessary
+      - name: Setup OpenMP
+        if: matrix.openmp
         run: |
-          brew install libomp
+          if [[ $OSTYPE == *"darwin"* ]] ; then
+            brew install libomp
+            echo "CFLAGS=$CFLAGS -Xpreprocessor -fopenmp" >> $GITHUB_ENV
+            echo "LINKFLAGS=$LINKFLAGS -lomp" >> $GITHUB_ENV
+          elif [[ $OSTYPE == *"linux-gnu"* ]] ; then
+            echo "CFLAGS=$CFLAGS -fopenmp" >> $GITHUB_ENV
+          fi
 
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -60,7 +58,7 @@ jobs:
         shell: bash
         run: |
           python -m pip install --upgrade pip
-          python -m pip install cython>=0.29.21
+          python -m pip install Cython>=0.29.21
 
       - name: Display Environment Variables
         shell: bash
@@ -72,18 +70,29 @@ jobs:
           echo "PYTHON VERSION: " `python --version`
           echo "MAKE: " `which make`
           echo "MAKE VERSION: " `make --version`
+          echo "CFLAGS: " $CFLAGS
+          echo "LINKFLAGS: " $LINKFLAGS
 
       - name: Compile and Install
         shell: bash
         run: |
           make CC=$COMPILER CFLAGS="$CFLAGS" LINKFLAGS="$LINKFLAGS"
-          python setup.py build install --quiet --enable-openmp
+          if [[ $CFLAGS == *"-fopenmp"* ]] ; then
+            python setup.py build install --enable-openmp
+          else
+            python setup.py build install
+          fi
           make clean
 
+      # After tests, rename the output log if this is ran with openMP
       - name: Tests
         shell: bash
         run: |
           make tests
+          if [[ $CFLAGS == *"-fopenmp"* ]] ; then
+            LOGFILE=$(ls ./vice | grep .log)
+            mv ./vice/$LOGFILE ./vice/openmp_$LOGFILE
+          fi
 
       # Tests leave behind a test_<platform>_<version>.log file under ./vice
       - name: Upload Test Log
