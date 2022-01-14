@@ -248,17 +248,10 @@ def find_package_data():
 	Extensions
 	----------
 	.dat : files holding built-in data
-	.obj : a pickled object -> currently the only instance is the pickled
-		dictionary containing version info of build dependencies
-
-	VICE's C extensions are compiled individually and wrapped into a
-	shared object using make. All of this output is moved to the install
-	directory to allow forward compatibility with future features that may
-	require it.
 	"""
 	packages = find_packages()
 	data = {}
-	data_extensions = [".dat", ".obj"]
+	data_extensions = [".dat"]
 	for i in packages:
 		data[i] = []
 		for j in os.listdir(i.replace('.', '/')):
