@@ -52,7 +52,7 @@ Versatile Integrator for Chemical Evolution
 	:target: https://join.slack.com/t/vice-astro/shared_invite/zt-tqwa1syp-faiQu0P9oe83cazb0q9tJA
 	:alt: Slack
 
-..	|logo| image:: logo/logo.png
+..	|logo| image:: logo/logo_transparent_blue.png
 
 VICE is a user-friendly python_ package designed to model chemical enrichment
 in galaxies.
