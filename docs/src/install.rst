@@ -23,7 +23,6 @@ do not want to use the binary using the ``--no-binary`` flag:
 
 	$ python -m pip install vice [--user] --no-binary :all:
 
-
 The option ``:all:`` above tells ``pip`` to install all of the packages in the
 current call to ``pip install`` without binaries; when installing multiple
 packages, this value can be specified as a comma-separated list.
@@ -60,7 +59,7 @@ __ `Manual Installation`_
 .. _WSL: https://docs.microsoft.com/en-us/windows/wsl/install-win10
 
 For the current version, we provide pre-compiled binaries for Python_ versions
-3.6-3.10 on computers with an x86_64 CPU architecture running Mac OS and Linux
+3.7-3.10 on computers with an x86_64 CPU architecture running Mac OS and Linux
 operating systems.
 We do not provide pre-compiled binaries for CPU architectures other than x86_64.
 This includes Linux computers with Aarch64 hardware as well as the new ARM64
@@ -159,13 +158,13 @@ While VICE does not have any primary run-time dependencies, there are a few
 common compile-time dependencies that must be satisfied to install from source.
 They are as follows:
 
-1. Python_ >= 3.6
+1. Python_ >= 3.7
 
 2. setuptools_ >= 18.0
 
 3. Make_ >= 3.81
 
-4. gcc_ >= 4.6 or clang_ >= 3.6.0
+4. gcc_ >= 4.6 or clang_ >= 3.6
 
 On Mac OS X and Linux architectures, it is likely that Make_ and one of gcc_
 or clang_ come pre-installed. Users may install with alternative C compilers
