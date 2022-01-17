@@ -15,7 +15,6 @@ jobs:
         compiler: [gcc-10, clang]
         openmp: [true, false]
         python-version:
-          - "3.6"
           - "3.7"
           - "3.8"
           - "3.9"
