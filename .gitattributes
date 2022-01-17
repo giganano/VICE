@@ -1,0 +1,37 @@
+# Set default behavior to automatically normalize line endings.
+* text=auto
+
+# Source files
+*.py		text	diff=Python		linguist-language=Python
+*.pyx		text	diff=Cython		linguist-language=Cython
+*.pxd		text	diff=Cython		linguist-language=Cython
+*.c			text	diff=C			linguist-language=C
+*.h			text	diff=C			linguist-language=C
+*Makefile	text	diff=Makefile	linguist-language=Makefile
+
+# Text and Documentation
+*.tex	text	linguist-documentation=true	linguist-language=TeX
+*.rst	text 	linguist-documentation=true
+*.txt	text
+*.t7	text
+
+# Data
+*.dat 	text
+*.fits	binary
+
+# Graphics
+*.pdf binary
+*.png binary
+
+# Serialization
+*.yaml	text
+*.yml	text
+
+# Jupyter Notebook
+*.ipynb text
+
+# Miscellaneous
+./MANIFEST.in	text
+./LICENSE		text
+./.gitignore	text
+
