@@ -41,12 +41,13 @@ can be found in the associated journal publication.
 
 Requirements
 ============
-To run these models, you must first `install the latest version of VICE`__,
-1.2.0. Unless you wish to modify VICE's source code to run some alternate
+To run these models, you must first `install VICE`__ version 1.2.0 or greater.
+Unless you wish to modify VICE's source code to run some alternate
 version of these models, you can achieve this with a simple ``pip install vice``
 command in a ``Unix`` terminal. VICE 1.2.0 is the earliest version that
 includes the necessary functionality with which to handle stellar migration.
-In turn, VICE 1.2.0 requires Python >= 3.6.0.
+In turn, VICE 1.2.0 requires Python >= 3.6.0, but subsequent versions require
+later versions of Python.
 
 __ install_
 .. _install: https://vice-astro.readthedocs.io/en/latest/install.html
