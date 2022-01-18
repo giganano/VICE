@@ -390,6 +390,8 @@ typedef struct singlezone {
 	 * n_elements: The number of elements to track
 	 * verbose: boolean int describing whether or not to print the time as the
 	 * 		simulation evolves
+	 * nthreads: The number of openMP threads to use, if it was linked at
+	 * 		compile time.
 	 * elements: The yield information for each element
 	 * ism: The time evolution information for the interstellar medium (ISM)
 	 * mdf: The stellar metallicity distribution function (MDF) information

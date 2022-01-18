@@ -317,7 +317,7 @@ This feature will be removed in a future release of VICE.
 	# affecting the returned values, this used to raise an erroneous error
 	# about a NaN main sequence turnoff mass.
 	cdef double *evaltimes = binspace(0, time + 10 * dt,
-		long((time + 10 * dt) / dt))
+		<unsigned long> ((time + 10 * dt) / dt))
 
 	cdef double *cresults = _ssp.single_population_enrichment(ssp, e,
 		Z,

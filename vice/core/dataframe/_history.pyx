@@ -211,8 +211,8 @@ cdef class history(fromfile):
 		self._n_elements = <unsigned> len(elements)
 		self._elements = <char **> malloc (self._n_elements * sizeof(char *))
 		for i in range(self._n_elements):
-			self._elements[i] = <char *> malloc ((len(elements) + 1) *
-				sizeof(char))
+			self._elements[i] = <char *> malloc (<unsigned long> (len(elements)
+				+ 1) * sizeof(char))
 			set_string(self._elements[i], elements[i])
 		self._solar = <double *> malloc (self._n_elements * sizeof(double))
 		from ._builtin_dataframes import solar_z
@@ -273,7 +273,8 @@ cdef class history(fromfile):
 		cdef double *item
 		cdef char *copy
 		element = key.split('(')[1][:-1].lower()
-		copy = <char *> malloc ((len(element) + 1) * sizeof(char))
+		copy = <char *> malloc (<unsigned long> (len(element) + 1) *
+			sizeof(char))
 		set_string(copy, element.lower())
 		item = _history.history_Z_element(self._ff, copy)
 		free(copy)
@@ -333,8 +334,10 @@ cdef class history(fromfile):
 		cdef char *copy2
 		element1 = key.split('/')[0][1:]
 		element2 = key.split('/')[1][:-1]
-		copy = <char *> malloc ((len(element1) + 1) * sizeof(char))
-		copy2 = <char *> malloc ((len(element2) + 1) * sizeof(char))
+		copy = <char *> malloc (<unsigned long> (len(element1) + 1) *
+			sizeof(char))
+		copy2 = <char *> malloc (<unsigned long> (len(element2) + 1) *
+			sizeof(char))
 		set_string(copy, element1.lower())
 		set_string(copy2, element2.lower())
 		item = _history.history_logarithmic_abundance_ratio(self._ff,

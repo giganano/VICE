@@ -647,7 +647,7 @@ cdef int *ordinals(pystr) except *:
 	else:
 		pass
 
-	cdef int *copy = <int *> malloc (len(pystr) * sizeof(int))
+	cdef int *copy = <int *> malloc (<unsigned long> len(pystr) * sizeof(int))
 	for i in range(len(pystr)):
 		copy[i] = ord(pystr[i])
 	return copy
@@ -668,7 +668,8 @@ cdef double *copy_pylist(pylist) except *:
 	* TypeError
 		- ``pylist`` has a non-numerical value
 	"""
-	cdef double *copy = <double *> malloc (len(pylist) * sizeof(double))
+	cdef double *copy = <double *> malloc (<unsigned long> len(pylist) *
+		sizeof(double))
 	for i in range(len(pylist)):
 		if isinstance(pylist[i], numbers.Number):
 			copy[i] = pylist[i]
@@ -693,9 +694,11 @@ cdef double **copy_2Dpylist(pylist) except *:
 	* TypeError
 		- pylist has a non-numerical value
 	"""
-	cdef double **copy = <double **> malloc (len(pylist) * sizeof(double *))
+	cdef double **copy = <double **> malloc (<unsigned long> len(pylist) *
+		sizeof(double *))
 	for i in range(len(pylist)):
-		copy[i] = <double *> malloc (len(pylist[i]) * sizeof(double))
+		copy[i] = <double *> malloc (<unsigned long> len(pylist[i]) *
+			sizeof(double))
 		for j in range(len(pylist[i])):
 			if isinstance(pylist[i][j], numbers.Number):
 				copy[i][j] = pylist[i][j]
@@ -735,7 +738,8 @@ cdef double *map_pyfunc_over_array(pyfunc, pyarray) except *:
 			type(pyfunc)))
 	else:
 		pass
-	cdef double *mapped = <double *> malloc (len(pyarray) * sizeof(double))
+	cdef double *mapped = <double *> malloc (<unsigned long> len(pyarray) *
+		sizeof(double))
 	for i in range(len(pyarray)):
 		if isinstance(pyarray[i], numbers.Number):
 			if isinstance(pyfunc(pyarray[i]), numbers.Number):

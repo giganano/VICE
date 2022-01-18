@@ -238,7 +238,7 @@ None. Got: %s""" % (type(value)))
 		values = _pyutils.copy_array_like_object(values)
 		if all([_ % 1 == 0 for _ in values]):
 			values = [int(_) for _ in values]
-			copy = <unsigned short *> malloc (len(values) *
+			copy = <unsigned short *> malloc (<unsigned long> len(values) *
 				sizeof(unsigned short))
 			for i in range(len(values)): copy[i] = <unsigned short> values[i]
 			if not _hydrodiskstars.hydrodiskstars_decomp_filter(self._hds,

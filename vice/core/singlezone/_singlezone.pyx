@@ -58,7 +58,6 @@ from .._cutils cimport callback_1arg_setup
 from .._cutils cimport callback_2arg_setup
 from .._cutils cimport copy_2Dpylist
 from .._cutils cimport set_nthreads
-from .._cutils cimport get_nthreads
 from ..objects cimport _element
 from ..objects cimport _singlezone
 from ..objects cimport _sneia
@@ -765,8 +764,11 @@ value with a >10%% discrepancy from this value: %g""" % (value),
 		_pyutils.numeric_check(value, TypeError, """Attribute 'bins' must \
 contain only numerical values.""")
 		value = sorted(value) 	# ascending order
-		self._sz[0].mdf[0].n_bins = len(value) - 1
-		self._sz[0].mdf[0].bins = copy_pylist(value)
+		if len(value) > 1:
+			self._sz[0].mdf[0].n_bins = <unsigned> len(value) - 1
+			self._sz[0].mdf[0].bins = copy_pylist(value)
+		else:
+			raise ValueError("Attribute 'bins' must be of length > 1.")
 
 	@property
 	def delay(self):
@@ -1349,7 +1351,7 @@ All elemental yields in the current simulation will be set to the table of \
 
 			# just do it #nike
 			self._sz[0].output_times = copy_pylist(output_times)
-			self._sz[0].n_outputs = len(output_times)
+			self._sz[0].n_outputs = <unsigned> len(output_times)
 			enrichment = _singlezone.singlezone_evolve(self._sz)
 
 			# save yield settings and attributes, free mass-lifetime data

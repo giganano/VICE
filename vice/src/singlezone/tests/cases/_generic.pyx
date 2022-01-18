@@ -30,7 +30,7 @@ cdef class generic:
 		super().__init__(name = "test", **kwargs)
 		self.prep(_TIMES_)
 		self.open_output_dir(True)
-		self._sz[0].n_outputs = len(_TIMES_)
+		self._sz[0].n_outputs = <unsigned long> len(_TIMES_)
 		self._sz[0].output_times = <double *> malloc (self._sz[0].n_outputs *
 			sizeof(double))
 		for i in range(self._sz[0].n_outputs):

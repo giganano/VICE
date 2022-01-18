@@ -92,8 +92,8 @@ extern unsigned short import_agb_grid(ELEMENT *e, char *file) {
 	 * with the line number. These lines are explicitly designed to read in
 	 * that format.
 	 */
+	unsigned long i, j;
 	switch( (unsigned) length % (*(*(*e).agb_grid).interpolator).n_y_values ) {
-		unsigned long i, j;
 
 		case 0:
 			/*

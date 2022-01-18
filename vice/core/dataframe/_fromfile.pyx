@@ -149,7 +149,7 @@ cdef class fromfile(base):
 						self._ff[0].n_cols * sizeof(char *))
 					for i in range(self._ff[0].n_cols):
 						self._ff[0].labels[i] = <char *> malloc (
-							(len(labels[i]) + 1) * sizeof(char))
+							<unsigned long> (len(labels[i]) + 1) * sizeof(char))
 						set_string(self._ff[0].labels[i],
 							labels[i])
 				else:
@@ -183,7 +183,8 @@ Got: %s""" % (type(key)))
 		cdef double *item
 		cdef char *copy
 		if _pyutils.is_ascii(key):
-			copy = <char *> malloc ((len(key) + 1) * sizeof(char))
+			copy = <char *> malloc (<unsigned long> (len(key) + 1) *
+				sizeof(char))
 			set_string(copy, key.lower())
 			item = _fromfile.fromfile_column(self._ff, copy)
 			free(copy)
@@ -231,7 +232,8 @@ Got: %s""" % (type(key)))
 			"All elements of assigned array must be real numbers.")
 		if isinstance(key, strcomp):
 			if <unsigned> len(value) == self._ff[0].n_rows:
-				copy = <char *> malloc ((len(key) + 1) * sizeof(char))
+				copy = <char *> malloc (<unsigned long> (len(key) + 1) *
+					sizeof(char))
 				set_string(copy, key.lower())
 				if _fromfile.fromfile_modify_column(self._ff, copy,
 					copy_pylist(value)):

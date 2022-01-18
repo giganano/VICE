@@ -46,6 +46,41 @@ except NameError:
 	ModuleNotFoundError = ImportError
 from setuptools import setup, Extension
 
+# Determine if we need to link to the openMP library
+if "--enable-openmp" in sys.argv or ("VICE_ENABLE_OPENMP" in os.environ.keys()
+	and os.environ["VICE_ENABLE_OPENMP"] == "true"):
+	ENABLE_OPENMP = True
+	if "--enable-openmp" in sys.argv: sys.argv.remove("--enable-openmp")
+else:
+	ENABLE_OPENMP = False
+
+# Determine if we'll be using gcc or clang
+_SUPPORTED_COMPILERS_ = set(["gcc", "clang"])
+_CC_ = list(filter(lambda x: x.startswith("CC="), sys.argv))
+if len(_CC_): # they specified one on the command line
+	if len(_CC_) == 1:
+		_CC_ = _CC_.split('=')[-1]
+	else:
+		raise RuntimeError("Got multiple values for C compiler.")
+else: # they did not specify one on the command line
+	if "CC" in os.environ.keys(): # check for environment variable spec
+		_CC_ = os.environ["CC"]
+	else:
+		# no command-line or environment variable spec, use platform default
+		if sys.platform == "linux":
+			_CC_ = "gcc"
+		elif sys.platform == "darwin":
+			_CC_ = "clang"
+		else:
+			raise OSError("""\
+Sorry, Windows is not supported. Please install and use VICE within the \
+Windows Subsystem for Linux.""")
+if _CC_ in _SUPPORTED_COMPILERS_:
+	os.environ["CC"] = _CC_
+else:
+	raise RuntimeError("Sorry, only gcc and clang are supported. Got: %s" % (
+		_CC_))
+
 # partial import
 import builtins
 builtins.__VICE_SETUP__ = True
@@ -170,48 +205,49 @@ def find_extensions(path = './vice'):
 						extra_link_args = compiler_flags(which = "link")
 					))
 				else: continue
-	if "--enable-openmp" in sys.argv: sys.argv.remove("--enable-openmp")
 	return extensions
 
 
 def compiler_flags(which = "compile"):
 	r"""
-	Get a list of additional flags for Cython to pass to the compiler at either
-	compile or link time for a given extension. If this source build is linking
-	to openMP, then the flag '-fopenmp' will be passed at both compile and link
-	time. Such an option can be triggered either by setting the environment
-	variable ``VICE_ENABLE_OPENMP`` to "true" or by passing the command line
-	argument "--enable-openmp" to this script.
+	Determine the list of compiler flags for Cython to pass to the compiler at
+	either compile or link time.
 
 	Parameters
 	----------
 	which : ``str``
-		Either "compile" or "link", depending on which action is being taken by
-		the compiler.
+		Either "compile" or "link", depending on which action is being
+		taken by the compiler.
 
 	Returns
 	-------
 	flags : ``list``
-		A list of additional flags to pass to the C compiler.
+		A list of flags to pass to the C compiler
+
+	Notes
+	-----
+	Regardless of whether or not openMP is being linked, VICE will always
+	compile with "-fPIC -Wsign-conversion -Wsign-compare" flags.
+
+	When using the ``gcc`` compiler and linking with openMP, the script
+	compiles and links using the "-fopenmp" flag. When using the ``clang``
+	compiler and link with openMP, it compiles using "-Xpreprocessor -fopenmp"
+	and links using "-Xpreprocessor -fopenmp -lomp".
 	"""
 	if which == "compile":
-		flags = ["-Wno-unreachable-code"]
+		flags = ["-fPIC", "-Wsign-conversion", "-Wsign-compare"]
 	elif which == "link":
 		flags = []
 	else:
-		raise RuntimeError("Unrecognized argument for parameter 'which': %s" % (
-			which))
-	if ("--enable-openmp" in sys.argv or
-		("VICE_ENABLE_OPENMP" in os.environ.keys() and
-			os.environ["VICE_ENABLE_OPENMP"] == "true")):
-		if sys.platform == "linux":
+		raise RuntimeError("Invalid value for which': %s" % (which))
+
+	if ENABLE_OPENMP:
+		if _CC_ == "gcc":
 			flags.append("-fopenmp")
-		elif sys.platform == "darwin":
+		else: #clang
 			flags.append("-Xpreprocessor")
 			flags.append("-fopenmp")
 			if which == "link": flags.append("-lomp")
-		else:
-			raise OSError("Sorry, only Linux and Mac OS are supported.")
 	else: pass
 	return flags
 

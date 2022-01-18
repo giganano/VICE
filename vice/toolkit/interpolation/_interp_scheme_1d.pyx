@@ -22,7 +22,7 @@ cdef class c_interp_scheme_1d:
 		ycoords = _pyutils.copy_array_like_object(ycoords)
 		if len(xcoords) == len(ycoords):
 			self._is1d = _interp_scheme_1d.interp_scheme_1d_initialize()
-			self._is1d[0].n_points = len(xcoords)
+			self._is1d[0].n_points = <unsigned long> len(xcoords)
 
 			# using copy_pylist from vice/core/_cutils.pyx causes a NameError
 			# upon import stating that the "numbers" module isn't imported

@@ -77,11 +77,20 @@ jobs:
         run: |
           make CC=$COMPILER CFLAGS="$CFLAGS" LINKFLAGS="$LINKFLAGS"
           if [[ $CFLAGS == *"-fopenmp"* ]] ; then
-            python setup.py build install --enable-openmp
+            python setup.py build install --enable-openmp 2> err.out
           else
-            python setup.py build install
+            python setup.py build install 2> err.out
           fi
           make clean
+
+      - name: Display Compiler Warnings
+        if: always()
+        shell: bash
+        run: |
+          if [ -f "err.out" ] ; then
+            cat err.out
+            rm -f err.out
+          fi
 
       # After tests, rename the output log if this is ran with openMP
       - name: Tests

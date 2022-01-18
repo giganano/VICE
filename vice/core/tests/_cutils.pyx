@@ -152,7 +152,8 @@ def test_set_string():
 	cdef char *cstring
 	def test():
 		pystr = "This is a test string."
-		cstring = <char *> malloc ((len(pystr) + 1) * sizeof(char))
+		cstring = <char *> malloc (<unsigned long> (len(pystr) + 1) *
+			sizeof(char))
 		try:
 			set_string(cstring, pystr)
 		except:

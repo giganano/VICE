@@ -395,7 +395,7 @@ zone and at least one timestep larger than 1.""")
 			times = self._zones[i]._singlezone__zone_prep(output_times)
 			self._mz[0].zones[i][0].output_times = copy_pylist(
 				times)
-			self._mz[0].zones[i][0].n_outputs = len(times)
+			self._mz[0].zones[i][0].n_outputs = <unsigned long> len(times)
 
 
 	def outfile_check(self, overwrite):

@@ -204,7 +204,8 @@ cdef class tracers(history):
 		cdef double *item
 		cdef char *copy
 		element = key.split('(')[1][:-1].lower()
-		copy = <char *> malloc ((len(element) + 1) * sizeof(char))
+		copy = <char *> malloc (<unsigned long> (len(element) + 1) *
+			sizeof(char))
 		set_string(copy, element.lower())
 		item = _tracers.tracers_Z_element(self._ff, copy)
 		free(copy)
@@ -270,8 +271,10 @@ cdef class tracers(history):
 		cdef char *copy2
 		element1 = key.split('/')[0][1:]
 		element2 = key.split('/')[1][:-1]
-		copy = <char *> malloc ((len(element1) + 1) * sizeof(char))
-		copy2 = <char *> malloc ((len(element2) + 1) * sizeof(char))
+		copy = <char *> malloc (<unsigned long> (len(element1) + 1) *
+			sizeof(char))
+		copy2 = <char *> malloc (<unsigned long> (len(element2) + 1) *
+			sizeof(char))
 		set_string(copy, element1.lower())
 		set_string(copy2, element2.lower())
 		item = _tracers.tracers_logarithmic_abundance_ratio(self._ff, copy,

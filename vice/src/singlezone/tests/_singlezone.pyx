@@ -132,7 +132,7 @@ cdef class singlezone_tester:
 	def _reset_prep(self):
 		self.prep(_TEST_TIMES_)
 		self.open_output_dir(True)
-		self._sz[0].n_outputs = len(_TEST_TIMES_)
+		self._sz[0].n_outputs = <unsigned long> len(_TEST_TIMES_)
 		self._sz[0].output_times = <double *> malloc (self._sz[0].n_outputs *
 			sizeof(double))
 		for i in range(self._sz[0].n_outputs):
