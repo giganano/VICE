@@ -431,7 +431,7 @@ extern long hydrodiskstars_find_analog(HYDRODISKSTARS hds, double birth_radius,
 
 	/* Conduct the initial candidate search, default analog_idx of -1l */
 	long analog_idx = -1l;
-	unsigned long *candidates;
+	unsigned long *candidates = NULL;
 	unsigned long n_candidates;
 	double search_radius = INITIAL_ANALOG_SEARCH_RADIUS;
 	double search_time = INITIAL_ANALOG_SEARCH_TIME;
@@ -470,7 +470,7 @@ extern long hydrodiskstars_find_analog(HYDRODISKSTARS hds, double birth_radius,
 		analog_idx = assign_analog_min_radius(hds, birth_radius, birth_time);
 	} else {}
 
-	if (n_candidates) free(candidates);
+	if (n_candidates || candidates != NULL) free(candidates);
 	return analog_idx;
 
 }
