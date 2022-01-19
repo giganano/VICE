@@ -7,6 +7,7 @@
 #include <math.h>
 #include "../utils.h"
 #include "../io.h"
+#include "../multithread.h"
 #include "hydrodiskstars.h"
 
 /* ---------- Static function comment headers not duplicated here ---------- */
@@ -501,19 +502,39 @@ static unsigned long candidate_search(HYDRODISKSTARS hds, double birth_radius,
 	double birth_time, unsigned long **candidates, double max_radius,
 	double max_time) {
 
+	/*
+	 * This is a performance critical function.
+	 *
+	 * To decrease computing time, we spread this function out across multiple
+	 * openMP threads. Although the body of the for-loop is largely within a
+	 * #pragma omp critical block to ensure thread safety, most calls to
+	 * assess_candidate will fail, and for the most part only one thread will
+	 * be in the critical block anyway. This results in significant speed
+	 * boosts for this function.
+	 */
+
 	unsigned long i, n_candidates = 0ul;
 
+	#if defined(_OPENMP)
+		#pragma omp parallel for
+	#endif
 	for (i = 0ul; i < hds.n_stars; i++) {
 		if (assess_candidate(hds, birth_radius, birth_time, max_radius,
 			max_time, i)) {
-			if (n_candidates) {
-				*candidates = (unsigned long *) realloc (*candidates,
-					(n_candidates + 1ul) * sizeof(unsigned long));
-			} else {
-				*candidates = (unsigned long *) malloc (sizeof(unsigned long));
+			#if defined(_OPENMP)
+				#pragma omp critical
+			#endif
+			{
+				if (n_candidates) {
+					*candidates = (unsigned long *) realloc (*candidates,
+						(n_candidates + 1ul) * sizeof(unsigned long));
+				} else {
+					*candidates = (unsigned long *) malloc (
+						sizeof(unsigned long));
+				}
+				(*candidates)[n_candidates] = i;
+				n_candidates++;
 			}
-			(*candidates)[n_candidates] = i;
-			n_candidates++;
 		}
 	}
 
@@ -603,13 +624,27 @@ static long assign_analog_min_radius(HYDRODISKSTARS hds,
 	double birth_radius, double birth_time) {
 
 	/*
+	 * This is a performance critical function.
+	 *
+	 * To speed up the calculation, we spread the minimum dr analog search
+	 * across multiple threads. Because this isn't thread-safe, we let each
+	 * thread find its own minimum dr analog, then compare all of them at the
+	 * end of the function.
+	 *
 	 * This function is called only when the initial search within
 	 * MAXIMUM_ANALOG_SEARCH_TIME and MAXIMUM_ANALOG_SEARCH_RADIUS fail to
 	 * find a candidate analog star particle. Therefore start with an analog
 	 * index of -1.
 	 */
 	unsigned long i;
-	long analog_idx = -1l;
+	#if defined(_OPENMP)
+		unsigned long nthreads = (unsigned long) omp_get_max_threads();
+		long analog_idx[nthreads];
+		for (i = 0ul; i < nthreads; i++) analog_idx[i] = -1l;
+		#pragma omp parallel for
+	#else
+		long analog_idx = -1l;
+	#endif
 	for (i = 0ul; i < hds.n_stars; i++) {
 		/*
 		 * For each star particle in the data, check if it's birth radius is
@@ -617,17 +652,29 @@ static long assign_analog_min_radius(HYDRODISKSTARS hds,
 		 * yet, take the current minimum to be infinity.
 		 */
 		double current_candidate_dr;
-		if (analog_idx == -1l) {
-			/* Linux distributions don't have INFINITY defined */
+		#if defined(_OPENMP)
+			unsigned short condition = analog_idx[omp_get_thread_num()] == -1l;
+		#else
+			unsigned short condition = analog_idx == -1l;
+		#endif
+		if (condition) {
+			/* manylinux distributions don't have INFINITY defined */
 			#ifdef INFINITY
 				current_candidate_dr = INFINITY;
 			#else
 				current_candidate_dr = 1e6;
 			#endif
 		} else {
-			current_candidate_dr = absval(
-				hds.birth_radii[analog_idx] - birth_radius
-			);
+			#if defined(_OPENMP)
+				current_candidate_dr = absval(
+					hds.birth_radii[analog_idx[omp_get_thread_num()]] -
+					birth_radius
+				);
+			#else
+				current_candidate_dr = absval(
+					hds.birth_radii[analog_idx] - birth_radius
+				);
+			#endif
 		}
 		if (assess_candidate(hds, birth_radius, birth_time,
 			current_candidate_dr, MAXIMUM_ANALOG_SEARCH_TIME, i)) {
@@ -635,11 +682,42 @@ static long assign_analog_min_radius(HYDRODISKSTARS hds,
 			 * If this star particle passes this call to assess_candidate,
 			 * take it as the new candidate analog.
 			 */
-			analog_idx = (signed) i;
+			#if defined(_OPENMP)
+				analog_idx[omp_get_thread_num()] = (signed) i;
+			#else
+				analog_idx = (signed) i;
+			#endif
 		} else {}
 	}
 
-	return analog_idx;
+	#if defined(_OPENMP)
+		if (nthreads > 1) {
+			long idx = -1l;
+			double min_dr;
+			#ifdef INFINITY
+				min_dr = INFINITY;
+			#else
+				min_dr = 1e6;
+			#endif
+			for (i = 0ul; i < nthreads; i++) {
+				if (analog_idx[i] != -1l) {
+					/* If this thread actually iterated in the block above */
+					double dr = absval(
+						hds.birth_radii[analog_idx[i]] - birth_radius
+					);
+					if (dr < min_dr) {
+						min_dr = dr;
+						idx = analog_idx[(signed) i];
+					} else {}
+				}
+			}
+			return idx;
+		} else {
+			return analog_idx[0];
+		}
+	#else
+		return analog_idx;
+	#endif
 
 }
 

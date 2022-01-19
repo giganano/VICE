@@ -11,6 +11,8 @@ cdef extern from "../../src/objects.h":
 		_migration.MIGRATION *mig
 		unsigned short verbose
 		unsigned short simple
+		unsigned short nthreads
+		unsigned short setup_nthreads
 
 
 cdef extern from "../../src/multizone/multizone.h":

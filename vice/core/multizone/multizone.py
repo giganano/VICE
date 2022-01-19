@@ -215,6 +215,8 @@ Got: %s""" % (type(n_zones)))
 			"n_stars": 			self.n_stars,
 			"verbose": 			self.verbose,
 			"simple": 			self.simple,
+			"nthreads": 		self.nthreads,
+			"setup_nthreads": 	self.setup_nthreads,
 			"zones": 			[self.zones[i].name for i in range(
 									self.n_zones)],
 			"migration": 		self.migration
@@ -658,6 +660,48 @@ simulation was ran.""" % (i, j), UserWarning)
 	@simple.setter
 	def simple(self, value):
 		self.__c_version.simple = value
+
+	@property
+	def nthreads(self):
+		r"""
+		Type : ``int``
+
+		Default : 1
+
+		.. versionadded:: 1.X.0
+			Prior to version 1.X.0, VICE did not implement multithreading.
+
+		The number of openMP threads to use in the integration. This requires
+		installing VICE from source and linking to the openMP library at
+		compile time. Without this, multithreaded calculations are unavailable.
+		To enable this functionality, follow the steps described under "Enable
+		Multithreading" in VICE's :ref:`installation instructions <install>`.
+		"""
+		return self.__c_version.nthreads
+
+	@nthreads.setter
+	def nthreads(self, value):
+		self.__c_version.nthreads = value
+
+	@property
+	def setup_nthreads(self):
+		r"""
+		Type : ``int``
+
+		Default : 1
+
+		The number of openMP threads to use in setting up the model integration.
+		This requires installing VICE from source and linking to the openMP
+		library at compile time. Without this, multithreaded calculations are
+		unavailable. To enable this functionality, follow the steps described
+		under "Enable Multithreading" in VICE's
+		:ref:`installation instructions <install>`.
+		"""
+		return self.__c_version.setup_nthreads
+
+	@setup_nthreads.setter
+	def setup_nthreads(self, value):
+		self.__c_version.setup_nthreads = value
 
 	def run(self, output_times, capture = False, overwrite = False,
 		pickle = True):

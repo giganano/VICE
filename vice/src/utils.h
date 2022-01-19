@@ -18,6 +18,17 @@ extern unsigned long (*checksum)(char *);
  */
 extern void openmp_test(void);
 
+/*
+ * Determine if the current installation supports multithreading with openMP.
+ *
+ * Returns
+ * =======
+ * 1 if the openMP has been linked, 0 otherwise.
+ *
+ * source: utils.c
+ */
+extern unsigned short openmp_linked(void);
+
 #if 0
 /*
  * Set the number of threads to be used with openMP.

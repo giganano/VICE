@@ -41,6 +41,14 @@ def openmp(nthreads):
 	_cutils.openmp_test()
 
 
+def _openmp_linked():
+	r"""
+	Returns ``True`` if the current installation was linked with openMP at
+	compile-time, ``False`` otherwise.
+	"""
+	return bool(_cutils.openmp_linked())
+
+
 cdef void set_nthreads(n) except *:
 	r"""
 	Set the number of threads used in multithreaded portions of VICE's backend.

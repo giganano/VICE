@@ -39,6 +39,26 @@ extern void openmp_test(void) {
 
 
 /*
+ * Determine if the current installation supports multithreading with openMP.
+ *
+ * Returns
+ * =======
+ * 1 if the openMP has been linked, 0 otherwise.
+ *
+ * header: utils.h
+ */
+extern unsigned short openmp_linked(void) {
+
+    #if defined(_OPENMP)
+        return 1u;
+    #else
+        return 0u;
+    #endif
+
+}
+
+
+/*
  * Performs the choose operations between two positive numbers
  *
  * Parameters
