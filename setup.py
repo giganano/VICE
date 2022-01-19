@@ -2,21 +2,20 @@ r"""
 VICE setup.py file
 
 If building VICE from source, first run ``make`` in this directory before
-running this file. This file should then be ran with the following rule:
+running this file, after which VICE can be installed with the conventional
+``python setup.py install``.
 
-python setup.py build [-j N] install [--user] [-q --quiet] [distutils]
-	[ext=ext1] [ext=ext2] [ext=ext3] [...]
+This ``setup.py`` file offers the following command-line options in addition
+to those provided by ``setuptools``:
 
-Install Options
----------------
--j N             : Run build in parallel across N cores
---user           : Install to ~/.local directory
--q --quiet       : Run the installation non-verbosely
-ext=             : Build and install specific extension
---enbable-openmp : Link VICE's compiled outputs to the openMP library to enable
-                   multithreaded calculations. Alternatively, this can be
-                   achieved by setting the environment variable
-                   ``VICE_ENABLE_OPENMP`` to "true".
+- ``--ext`` : Compile the specified extension(s) only.
+- ``--compiler`` : Specify which Unix C compiler to use.
+- ``--openmp`` : Link with the openMP library to enable multithreading.
+
+Run ``python setup.py --help`` for more information on the additional
+command-line options provided by this file, and
+``python setup.py --help-commands`` for more information on those provided
+by ``setuptools``.
 
 Individual extensions should be rebuilt and reinstalled only after the entire
 body of VICE has been installed. This allows slight modifications to be
@@ -28,11 +27,16 @@ compiler outputs from the source tree.
 Raises
 ------
 * RuntimeError
-	- The name of the extension to reinstall is invalid
+	- The minimum version of Python is not satisfied (3.7.0)
+	- The specified Unix C compiler is not 'gcc' or 'clang'
+	- Invalid name for a specified extension to reinstall
+* OSError
+	- This file is being ran from within a Windows OS (POSIX is required)
 """
 
 # this version requires python >= 3.7.0
 MIN_PYTHON_VERSION = "3.7.0"
+import argparse
 import sys
 import os
 if sys.version_info[:] < tuple(
@@ -46,15 +50,6 @@ except NameError:
 	ModuleNotFoundError = ImportError
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext as _build_ext
-
-# Determine if we need to link to the openMP library
-# Must be done before any calls to setup(...)
-if "--enable-openmp" in sys.argv or ("VICE_ENABLE_OPENMP" in os.environ.keys()
-	and os.environ["VICE_ENABLE_OPENMP"] == "true"):
-	_ENABLE_OPENMP_ = True
-	if "--enable-openmp" in sys.argv: sys.argv.remove("--enable-openmp")
-else:
-	_ENABLE_OPENMP_ = False
 
 # partial import
 import builtins
@@ -124,87 +119,110 @@ elif POST is not None:
 else: pass
 
 
+def parse():
+	r"""
+	Parse the command-line arguments passed by the user that need to be
+	processed before any calls to setup(...). This enables ``python setup.py
+	--help`` to display only these command-line arguments.
+	"""
+	parser = argparse.ArgumentParser(
+		description = """Command-line arguments accepted by this script in \
+addition to those recognized by setuptools.""",
+		epilog = """\
+Run python setup.py --help-commands for additional setuptools options.""")
+	parser.add_argument("--ext", action = "append", nargs = 1, type = str,
+		help = "Individual extensions to compile and reinstall.")
+	parser.add_argument("--compiler", type = str,
+		help = """\
+The Unix C compiler to use (either 'gcc' or 'clang'). Can also be specified \
+via the environment variable 'CC'. Defaults to 'gcc' for Linux platforms and \
+to 'clang' on Mac OS.""")
+	parser.add_argument("--openmp", action = "store_true",
+		help = """\
+Link this installation to the openMP library to enable multithreading. \
+Can also be accomplished by assigning the environment variable \
+'VICE_ENABLE_OPENMP' a value of \"true\"""")
+
+	# Leave the setuptools options out of this argparse and remove command
+	# line arguments it won't recognize
+	args, _ = parser.parse_known_args()
+	sys.argv = list(filter(lambda x: not x.startswith("--ext"), sys.argv))
+	sys.argv = list(filter(lambda x: not x.startswith("--compiler"), sys.argv))
+	sys.argv = list(filter(lambda x: x != "--openmp", sys.argv))
+
+	# Collect the specified extensions to compile as a list. If empty, this
+	# script will compile all of them.
+	extensions = []
+	if args.ext is not None:
+		for _ in args.ext: extensions.append(_[0])
+
+	# Determine the compiler to use and set it as the environment variable 'CC'
+	supported_compilers = set(["gcc", "clang"])
+	if args.compiler is not None:
+		if args.compiler in supported_compilers:
+			os.environ["CC"] = args.compiler
+		else:
+			raise RuntimeError("""\
+Unix C compiler must be either 'gcc' or 'clang'. Got: %s""" % (args.compiler))
+	elif "CC" in os.environ.keys():
+		if os.environ["CC"] not in supported_compilers:
+			raise RuntimeError("""\
+Unix C compiler must be either 'gcc' or 'clang'. Got %s from environment \
+variable 'CC'.""" % (os.environ["CC"]))
+	else:
+		if sys.platform == "linux":
+			os.environ["CC"] = "gcc"
+		elif sys.platform == "darwin":
+			os.environ["CC"] = "clang"
+		else:
+			raise OSError("""\
+Sorry, Windows is not supported. Please install and use VICE within the \
+Windows Subsystem for Linux.""")
+
+	# For linking with openMP at compile time
+	if args.openmp: os.environ["VICE_ENABLE_OPENMP"] = "true"
+	return extensions
+
+
 class build_ext(_build_ext):
 
 	r"""
 	Extends the ``build_ext`` base class provided by ``setuptools`` to
-	determine compiler flags on a case-by-case basis. See `Notes`_ below.
+	determine compiler flags on a case-by-case basis.
 
-	This class operates by first stopping the ``__init__`` function to
-	determine which of gcc or clang to use. The compile and linker flags are
-	then determined based on that and whether or not it needs to link to the
-	openMP library before calling ``super().__init__``.
-
-	Notes
-	-----
 	Although ``setuptools`` does not differentiate between Unix C compilers
-	(gcc and clang), the difference between the two is important for compiling
-	and linking VICE with openMP to enable multithreading. gcc can compile and
-	link to openMP using only the "-fopenmp" compiler flag, whereas clang
-	requires the additional "-Xpreprocessor" flag for compiling and linking and
-	the "-lomp" flag for linking.
+	(gcc and clang), this difference is important for linking with the openMP
+	library to enable multithreading. With gcc, simply passing the flag
+	"-fopenmp" for compiling and linking sufficies. With clang, "-fopenmp"
+	must be preceeded by "-Xpreprocessor" and when linking, the "-lomp" flag
+	is also required.
 	"""
 
-	SUPPORTED_COMPILERS = set(["gcc", "clang"])
-
-	def __init__(self, *args, **kwargs):
-		# Determine if we'll be using gcc or clang
-		cc = list(filter(lambda x: x.startswith("CC="), sys.argv))
-		if len(cc): # user specified one on the command line
-			if len(cc) == 1:
-				cc = cc.split('=')[-1]
-			else:
-				raise RuntimeError("Got multiple values for C compiler.")
-		else: # they did not specify one on the command line
-			if "CC" in os.environ.keys(): # check for env variable spec
-				cc = os.environ["CC"]
-			else: # no command-line or env variable spec, use platform default
-				if sys.platform == "linux":
-					cc = "gcc"
-				elif sys.platform == "darwin":
-					cc = "clang"
-				else:
-					raise OSError("""\
-Sorry, Windows is not supported. Please install and run VICE within the \
-Windows Subsystem for Linux.""")
-		if cc in self.SUPPORTED_COMPILERS:
-			os.environ["CC"] = cc
-		else:
-			raise RuntimeError("""\
-Sorry, only gcc and clang are supported. Got: %s""" % (cc))
-
-		# Determine compile and link flags based on compiler and openMP
-		# These flags are always used
-		self.compile_flags = ["-fPIC", "-Wsign-conversion", "-Wsign-compare"]
-		self.link_flags = []
-
-		# Determined at top of file before any calls to setup(...)
-		if _ENABLE_OPENMP_:
-			if cc == "gcc":
-				self.compile_flags.append("-fopenmp")
-				self.link_flags.append("-fopenmp")
-			else: # guaranteed to be clang
-				self.compile_flags.append("-Xpreprocessor")
-				self.compile_flags.append("-fopenmp")
-				self.link_flags.append("-Xpreprocessor")
-				self.link_flags.append("-fopenmp")
-				self.link_flags.append("-lomp")
-		else: pass # No additional flags required
-		super().__init__(*args, **kwargs)
-
-
 	def build_extensions(self):
-		r"""
-		Adds the compile and link arguments to the extensions before running
-		the ``setuptools`` built-in ``build_extensions`` function.
-		"""
+
+		compile_args = ["-fPIC", "-Wsign-conversion", "-Wsign-compare"]
+		link_args = []
+
+		if os.environ["VICE_ENABLE_OPENMP"] == "true":
+			if os.environ["CC"] == "gcc":
+				compile_args.append("-fopenmp")
+				link_args.append("-fopenmp")
+			else: # guaranteed to be clang by this point
+				compile_args.append("-Xpreprocessor")
+				compile_args.append("-fopenmp")
+				link_args.append("-Xpreprocessor")
+				link_args.append("-fopenmp")
+				link_args.append("-lomp")
+		else: pass
+
 		for ext in self.extensions:
-			for flag in self.compile_flags: ext.extra_compile_args.append(flag)
-			for flag in self.link_flags: ext.extra_link_args.append(flag)
+			for flag in compile_args: ext.extra_compile_args.append(flag)
+			for flag in link_args: ext.extra_link_args.append(flag)
+
 		_build_ext.build_extensions(self)
 
 
-def find_extensions(path = './vice'):
+def find_extensions(specified, path = './vice'):
 	r"""
 	Finds each extension to install
 
@@ -213,6 +231,9 @@ def find_extensions(path = './vice'):
 
 	Parameters
 	----------
+	specified : list [elements of type ``str``]
+		The specified extensions to compile. If this is an empty list, all of
+		them will be compiled.
 	path : str [default : './vice']
 		The path to the package directory
 
@@ -226,18 +247,15 @@ def find_extensions(path = './vice'):
 	* RuntimeError
 		- Invalid extension (file not found)
 	"""
-	specified = list(filter(lambda x: x.startswith("ext="), sys.argv))
 	extensions = []
 	if len(specified):
 		# The user has specified a specific extension(s)
-		for i in specified:
-			ext = i.split('=')[1] # The name of the extension
+		for ext in specified:
 			src = "./%s.pyx" % (ext.replace('.', '/'))
 			if os.path.exists(src):
 				# The associated source files in the C library
 				src_files = [src] + vice.find_c_extensions(ext)
 				extensions.append(Extension(ext, src_files))
-				sys.argv.remove(i) # get rid of this for setup install
 			else:
 				raise RuntimeError("Source file for extension not found: %s" % (
 					ext))
@@ -411,7 +429,7 @@ def setup_package():
 		packages = find_packages(),
 		package_data = find_package_data(),
 		scripts = ["bin/%s" % (i) for i in os.listdir("./bin/")],
-		ext_modules = find_extensions(),
+		ext_modules = find_extensions(parse()),
 		include_dirs = include_dirs,
 		setup_requires = [
 			"setuptools>=18.0", # automatically handles Cython extensions
