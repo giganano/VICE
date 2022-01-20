@@ -260,11 +260,11 @@ not running 'setup.py openmp'.""")
 
 	def finalize_options(self):
 		if self.compiler is not None:
-			if self.compiler not in self.supported_compilers:
+			if not openmp.check_compiler(self.compiler):
 				raise RuntimeError("""\
 Unix C compiler must be either 'gcc' or 'clang'. Got: %s""" % (self.compiler))
 		elif "CC" in os.environ.keys():
-			if os.environ["CC"] not in self.supported_compilers:
+			if not openmp.check_compiler(os.environ["CC"]):
 				raise RuntimeError("""\
 Unix C compiler must be either 'gcc' or 'clang'. Got %s from environment \
 variable 'CC'.""" % (os.environ["CC"]))
@@ -286,6 +286,36 @@ variable 'CC'.""" % (os.environ["CC"]))
 Sorry, Windows is not supported. Please install and use VICE within the \
 Windows Subsystem for Linux.""")
 			os.environ["CC"] = self.compiler
+
+	@staticmethod
+	def check_compiler(compiler):
+		r"""
+		Determine if the specified compiler string is supported. A more robust
+		test like this also incorporates version info included in the compiler
+		specification (e.g. gcc-10, clang-11).
+
+		Parameters
+		----------
+		compiler : ``str``
+			The compiler that may or may not be supported.
+
+		Returns
+		-------
+		``True`` if the compiler is supported, ``False`` if not.
+		"""
+		for testval in openmp.supported_compilers:
+			if compiler == testval:
+				return True
+			elif compiler.startswith(testval):
+				# everything after the name of the compiler should be able to
+				# be cast to a negative integer if it's just version
+				# information (e.g. gcc-10 -> -10, clang-11 -> -11).
+				try:
+					x = int(compiler[len(testval):])
+					if x < 0: return True
+				except:
+					continue
+		return False
 
 
 def find_extensions(path = './vice'):

@@ -77,7 +77,7 @@ jobs:
         run: |
           make CC=$COMPILER CFLAGS="$CFLAGS" LINKFLAGS="$LINKFLAGS"
           if [[ $CFLAGS == *"-fopenmp"* ]] ; then
-            python setup.py build install --enable-openmp 2> err.out
+            python setup.py build install openmp -c $COMPILER 2> err.out
           else
             python setup.py build install 2> err.out
           fi
