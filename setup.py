@@ -242,8 +242,10 @@ precedent. Users may also override the environment variable \
 		self.ext = None
 
 	def finalize_options(self):
+		# No error handling necessary as unrecognized extensions will have no
+		# impact. This feature works by *filtering out* from the list of all
+		# extensions determined by the ``find_extensions`` function.
 		pass
-		# error handling by the find_packages function
 
 	def run(self):
 		if self.ext is not None:
