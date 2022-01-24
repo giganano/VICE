@@ -38,23 +38,10 @@ extern double *convert_to_PDF(double *dist, double *bins,
 	unsigned long i;
 
 	/* Add up the area in each bin */
-	#if defined(_OPENMP)
-		#pragma omp parallel for
-	#endif
-	for (i = 0l; i < n_bins; i++) {
-		#if defined(_OPENMP)
-			#pragma omp atomic
-		#endif
-		sum += dist[i] * (bins[i + 1l] - bins[i]);
-	}
+	for (i = 0l; i < n_bins; i++) sum += dist[i] * (bins[i + 1l] - bins[i]);
 
 	/* Divide each element by the value of the integral */
-	#if defined(_OPENMP)
-		#pragma omp parallel for
-	#endif
-	for (i = 0l; i < n_bins; i++) {
-		pdf[i] = dist[i] / sum;
-	}
+	for (i = 0l; i < n_bins; i++) pdf[i] = dist[i] / sum;
 
 	debug_print("sum = %.5e\n", sum);
 	debug_print("PDF address: %p\n", pdf);

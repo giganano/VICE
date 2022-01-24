@@ -36,9 +36,6 @@ extern unsigned short malloc_Z(ELEMENT *e, unsigned long n_timesteps) {
 		return 1;
 	} else {
 		unsigned long i;
-		#if defined(_OPENMP)
-			#pragma omp parallel for
-		#endif
 		for (i = 0l; i < n_timesteps; i++) e -> Z[i] = 0;
 		return 0;
 	}

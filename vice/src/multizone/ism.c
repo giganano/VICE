@@ -43,6 +43,10 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 	
 	unsigned int i;
 	double *mass_recycled = gas_recycled_in_zones(*mz);
+	unsigned short status = 0u;
+	#if defined(_OPENMP)
+		#pragma omp parallel for num_threads((*mz).nthreads)
+	#endif
 	for (i = 0; i < (*(*mz).mig).n_zones; i++) {
 		SINGLEZONE *sz = mz -> zones[i];
 
@@ -100,8 +104,7 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 				break;
 
 			default:
-				free(mass_recycled);
-				return 1;
+				status = 1u;
 
 		}
 
@@ -112,7 +115,7 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 	}
 
 	free(mass_recycled);
-	return 0;
+	return status;
 
 }
 

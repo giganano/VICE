@@ -116,9 +116,6 @@ extern unsigned short setup_RIa(SINGLEZONE *sz) {
 	unsigned int j;
 	unsigned long i, length = (unsigned long) (RIA_MAX_EVAL_TIME / (*sz).dt);
 	unsigned short retval = 0u;
-	#if defined(_OPENMP)
-		#pragma omp parallel for num_threads((*sz).nthreads)
-	#endif
 	for (j = 0; j < (*sz).n_elements; j++) {
 
 		if (retval) continue;
@@ -222,12 +219,7 @@ extern void normalize_RIa(ELEMENT *e, unsigned long length) {
 	unsigned long i;
 	double sum = 0;
 	for (i = 0l; i < length; i++) sum += (*(*e).sneia_yields).RIa[i];
-	#if defined(_OPENMP)
-		#pragma omp parallel for
-	#endif
-	for (i = 0l; i < length; i++) {
-		e -> sneia_yields -> RIa[i] /= sum;
-	}
+	for (i = 0l; i < length; i++) e -> sneia_yields -> RIa[i] /= sum;
 
 }
 

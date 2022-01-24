@@ -330,6 +330,8 @@ migration.specs. Got: %s""" % (type(value)))
 		set_nthreads(value)
 		# If the code gets here, can proceed as planned w/o worry
 		self._mz[0].nthreads = <unsigned short> value
+		# Set the same number of threads in each zone
+		for zone in self._zones: zone.nthreads = value
 
 	@property
 	def setup_nthreads(self):

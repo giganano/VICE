@@ -23,6 +23,9 @@
 extern void update_elements(MULTIZONE *mz) {
 
 	unsigned int i, j;
+	#if defined(_OPENMP)
+		#pragma omp parallel for num_threads((*mz).nthreads)
+	#endif
 	for (i = 0u; i < (*(*mz).mig).n_zones; i++) {
 		SINGLEZONE *sz = mz -> zones[i];
 		for (j = 0u; j < (*(*mz).zones[i]).n_elements; j++) {
@@ -70,6 +73,9 @@ extern void update_elements(MULTIZONE *mz) {
 	 * Enrichment from SNe Ia
 	 * Re-enrichment from recycling
 	 */
+	#if defined(_OPENMP)
+		#pragma omp parallel for num_threads((*mz).nthreads)
+	#endif
 	for (i = 0u; i < (*(*mz).zones[0]).n_elements; i++) {
 
 		/* AGB stars taking into account entrainment in the current zone */
