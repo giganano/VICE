@@ -44,6 +44,7 @@ Raises
 
 # this version requires python >= 3.7.0
 MIN_PYTHON_VERSION = "3.7.0"
+from subprocess import Popen, PIPE
 import sys
 import os
 if os.name != "posix": raise OSError("""\
@@ -149,15 +150,31 @@ class build_ext(_build_ext):
 		link_args = []
 		if "VICE_ENABLE_OPENMP" in os.environ.keys():
 			if os.environ["VICE_ENABLE_OPENMP"] == "true":
-				if os.environ["CC"] == "gcc":
-					compile_args.append("-fopenmp")
-					link_args.append("-fopenmp")
-				else: # guaranteed to be clang by this point
-					compile_args.append("-Xpreprocessor")
-					compile_args.append("-fopenmp")
-					link_args.append("-Xpreprocessor")
-					link_args.append("-fopenmp")
-					link_args.append("-lomp")
+				if "CC" in os.environ.keys():
+					# Some steps here duplicated because this environment
+					# variable may be set without invoking ``setup.py openmp``.
+					os.environ["CC"] = openmp.check_compiler(os.environ["CC"])
+					# don't use == because it could be, e.g., gcc-10
+					if os.environ["CC"].startswith("gcc"):
+						compile_args.append("-fopenmp")
+						link_args.append("-fopenmp")
+					elif os.environ["CC"].startswith("clang"):
+						compile_args.append("-Xpreprocessor")
+						compile_args.append("-fopenmp")
+						link_args.append("-Xpreprocessor")
+						link_args.append("-fopenmp")
+						link_args.append("-lomp")
+					else:
+						raise RuntimeError("""\
+Unix C compiler must be either 'gcc' or 'clang'. Got %s from environment \
+variable 'CC'.""" % (os.environ["CC"]))
+				else:
+					if sys.platform == "linux":
+						os.environ["CC"] = "gcc"
+					elif sys.platform == "darwin":
+						os.environ["CC"] = "clang"
+					else:
+						raise OSError("Sorry, Windows is not supported.")
 			else: pass
 		else: pass
 
@@ -273,7 +290,7 @@ variable 'CC'.""" % (os.environ["CC"]))
 	def run(self):
 		os.environ["VICE_ENABLE_OPENMP"] = "true"
 		if self.compiler is not None:
-			os.environ["CC"] = self.compiler
+			os.environ["CC"] = self.check_compiler(self.compiler)
 		elif "CC" in os.environ.keys():
 			self.compiler = os.environ["CC"]
 		else:
@@ -290,9 +307,8 @@ Windows Subsystem for Linux.""")
 	@staticmethod
 	def check_compiler(compiler):
 		r"""
-		Determine if the specified compiler string is supported. A more robust
-		test like this also incorporates version info included in the compiler
-		specification (e.g. gcc-10, clang-11).
+		Determine if the specified compiler is supported and whether or not
+		it corresponds to gcc or clang.
 
 		Parameters
 		----------
@@ -301,21 +317,73 @@ Windows Subsystem for Linux.""")
 
 		Returns
 		-------
-		``True`` if the compiler is supported, ``False`` if not.
+		The plain name of the compiler (i.e. "gcc" or "clang" as opposed to,
+		e.g., "gcc-10" or "clang-11") if it is supported. ``None`` if the
+		compiler is not found on the user's PATH, and ``False`` if it is
+		outrightly not supported.
+
+		Notes
+		-----
+		This test determines whether to compiler corresponds to a version of
+		gcc or clang by using the `which` bash command and the `--version`
+		flag the compiler should accept on the command-line, then looking for
+		the strings "gcc" and "clang" in the output string. This allows a
+		compiler invoked with a version number (e.g. gcc-10, clang-11) to work
+		with this function.
 		"""
-		for testval in openmp.supported_compilers:
-			if compiler == testval:
-				return True
-			elif compiler.startswith(testval):
-				# everything after the name of the compiler should be able to
-				# be cast to a negative integer if it's just version
-				# information (e.g. gcc-10 -> -10, clang-11 -> -11).
-				try:
-					x = int(compiler[len(testval):])
-					if x < 0: return True
-				except:
-					continue
-		return False
+		kwargs = {
+			"stdout": PIPE,
+			"stderr": PIPE,
+			"shell": True,
+			"text": True
+		}
+
+		# First check if the system if even recognizes the compiler
+		with Popen("which %s" % (compiler), **kwargs) as proc:
+			out, err = proc.communicate()
+			if sys.platform == "linux":
+				# The error message printed on Linux `which`
+				if "no %s" % (compiler) in err: return None
+			elif sys.platform == "darwin":
+				# On Mac OS, `which` prints nothing on error
+				if out == "" and err == "": return None
+			else:
+				raise OSError("Sorry, Windows is not supported.")
+
+		def is_version_number(word):
+			r"""
+			Looks for what could be a version number in a single string by
+			determining if it is simply numbers separated by decimals.
+			Returns ``True`` if the string could be interpreted as a version
+			number and ``False`` otherwise.
+			"""
+			if '.' in word:
+				_is_version_number = True
+				for item in word.split('.'): _is_version_number &= item.isdigit()
+				return _is_version_number
+			else:
+				return False
+
+		# Then check if the command `$compiler --version` runs properly and
+		# has either "gcc" or "clang" in the output along with a version number
+		with Popen("%s --version" % (compiler), **kwargs) as proc:
+			out, err = proc.communicate()
+			# Should catch all typos
+			if err != "" and "command not found" in err: return None
+			# Should catch anything that isn't a compiler
+			if err != "" and "illegal" in err: return False
+			recognized = False
+			contains_version_number = False
+			for word in out.split():
+				for test in openmp.supported_compilers:
+					# startswith as opposed to == works with, e.g., gcc-10
+					if word.startswith(test):
+						compiler = word # catches gcc -> clang alias on Mac OS
+						recognized = True
+					else: pass
+					contains_version_number |= is_version_number(word)
+			if recognized and contains_version_number: return compiler
+			return False
 
 
 def find_extensions(path = './vice'):
