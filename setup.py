@@ -169,10 +169,20 @@ class build_ext(_build_ext):
 Unix C compiler must be either 'gcc' or 'clang'. Got %s from environment \
 variable 'CC'.""" % (os.environ["CC"]))
 				else:
+					# environment variable assigned but no CC, so
+					# ``setup.py openmp`` definitely wasn't invoked -> assume
+					# system default and expand compiler flags accordingly.
 					if sys.platform == "linux":
 						os.environ["CC"] = "gcc"
+						compile_args.append("-fopenmp")
+						link_args.append("-fopenmp")
 					elif sys.platform == "darwin":
 						os.environ["CC"] = "clang"
+						compile_args.append("-Xpreprocessor")
+						compile_args.append("-fopenmp")
+						link_args.append("-Xpreprocessor")
+						link_args.append("-fopenmp")
+						link_args.append("-lomp")
 					else:
 						raise OSError("Sorry, Windows is not supported.")
 			else: pass
