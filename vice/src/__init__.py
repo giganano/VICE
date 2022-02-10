@@ -42,8 +42,8 @@ if __VICE_SETUP__:
 					extensions.append(item)
 				elif os.path.isdir(item):
 					for i in os.listdir(item):
-						if i.endswith(".c"): extensions.append("%s/%s" % (
-							item, i))
+						if i.endswith(".c"):
+							extensions.append(os.path.join(item, i))
 				else:
 					raise SystemError("""Internal Error. Invalid C Extension \
 listing for extension %s: %s""" % (name, item))
@@ -56,7 +56,7 @@ listing for extension %s: %s""" % (name, item))
 							continue
 						else:
 							extensions.append(
-								("%s/%s" % (root, i)).replace(os.getcwd(), '.')
+								os.path.join(root, i).replace(os.getcwd(), '.')
 							)
 					else: pass
 		

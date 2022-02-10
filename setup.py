@@ -47,9 +47,6 @@ MIN_PYTHON_VERSION = "3.7.0"
 from subprocess import Popen, PIPE
 import sys
 import os
-if os.name != "posix": raise OSError("""\
-Sorry, Windows is not supported. Please install and run VICE from within the \
-Windows Subsystem for Linux.""")
 if sys.version_info[:] < tuple(
 	[int(_) for _ in MIN_PYTHON_VERSION.split('.')]):
 	raise RuntimeError("""This version of VICE requires python >= %s. \
@@ -228,8 +225,8 @@ class extensions(Command):
 		("ext=", "e", """\
 The extension to rebuild. If multiple extensions should be compiled, they can \
 be passed as a comma-separated list (no spaces!). The name of an extension can \
-be determined by the relative path to a .pyx file by changing each '/' to a \
-'.' (e.g. vice/core/singlezone/_singlezone.pyx -> \
+be determined by the relative path to a .pyx file by changing each separator \
+to a '.' (e.g. vice/core/singlezone/_singlezone.pyx -> \
 vice.core.singlezone._singlezone). The extension(s) to build can also be set \
 by assigning the environment variable 'VICE_SETUP_EXTENSIONS' to the same \
 value. In the event that this environment variable exists and 'setup.py \
@@ -416,14 +413,13 @@ def find_extensions(path = './vice'):
 		A list of ``Extension`` objects to build.
 	"""
 	extensions = []
-	for root, dirs, files in os.walk(path):
+	for root, dirs, files in os.walk(os.path.normpath(path)):
 		for i in files:
 			if i.endswith(".pyx"):
 				# The name of the extension
-				name = "%s.%s" % (root[2:].replace('/', '.'),
-					i.split('.')[0])
+				name = '.'.join(os.path.join(root, i).split(os.sep)[:-1])
 				# The source files in the C library
-				src_files = ["%s/%s" % (root[2:], i)]
+				src_files = [os.path.join(root, i)]
 				src_files += vice.find_c_extensions(name)
 				extensions.append(Extension(name, src_files))
 			else: continue
@@ -446,9 +442,9 @@ def find_packages(path = './vice'):
 		directories containing an __init__.py file.
 	"""
 	packages = []
-	for root, dirs, files in os.walk(path):
+	for root, dirs, files in os.walk(os.path.normpath(path)):
 		if "__init__.py" in files:
-			packages.append(root[2:].replace('/', '.'))
+			packages.append(root.replace(os.sep, '.'))
 		else:
 			continue
 	return packages
@@ -467,7 +463,7 @@ def find_package_data():
 	data_extensions = [".dat"]
 	for i in packages:
 		data[i] = []
-		for j in os.listdir(i.replace('.', '/')):
+		for j in os.listdir(i.replace('.', os.sep)):
 			# look at each files extension
 			for k in data_extensions:
 				if j.endswith(k):
@@ -502,7 +498,7 @@ POST = %(post)s
 ISRELEASED = %(isreleased)s
 MIN_PYTHON_VERSION = \"%(minversion)s\"
 """
-	with open(filename, 'w') as f:
+	with open(os.path.normpath(filename), 'w') as f:
 		try:
 			f.write(cnt % {
 					"version":		VERSION,
@@ -525,6 +521,7 @@ def set_path_variable(filename = "~/.bash_profile"):
 	r"""
 	Permanently adds ~/.local/bin/ to the user's $PATH for local
 	installations (i.e. with [--user] directive).
+    TODO not sure about local installation on Windows.
 
 	Parameters
 	----------
@@ -556,7 +553,7 @@ def setup_package():
 
 	# directories with .h header files, req'd by setup
 	include_dirs = []
-	for root, dirs, files in os.walk("./vice/src"):
+	for root, dirs, files in os.walk(os.path.normpath("./vice/src")):
 		if "__pycache__" not in root: include_dirs.append(root)
 
 	# Keywords to the setup() call
@@ -587,7 +584,7 @@ def setup_package():
 		},
 		packages = find_packages(),
 		package_data = find_package_data(),
-		scripts = ["bin/%s" % (i) for i in os.listdir("./bin/")],
+		scripts = [os.path.join("bin", i) for i in os.listdir("./bin/")],
 		ext_modules = find_extensions(),
 		include_dirs = include_dirs,
 		setup_requires = [
