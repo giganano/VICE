@@ -417,7 +417,10 @@ def find_extensions(path = './vice'):
 		for i in files:
 			if i.endswith(".pyx"):
 				# The name of the extension
-				name = '.'.join(os.path.join(root, i).split(os.sep)[:-1])
+				name = "%s.%s" % (
+					'.'.join(os.path.join(root, i).split(os.sep)[:-1]),
+					i.split('.')[0]
+				)
 				# The source files in the C library
 				src_files = [os.path.join(root, i)]
 				src_files += vice.find_c_extensions(name)
