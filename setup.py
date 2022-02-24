@@ -143,7 +143,12 @@ class build_ext(_build_ext):
 		# Determine compiler and linker flags, some of which are always
 		# included and others of which are only included when linking to
 		# openMP to enable multithreading.
-		compile_args = ["-fPIC", "-Wsign-conversion", "-Wsign-compare"]
+		if sys.platform in ["linux", "darwin"]:
+			compile_args = ["-fPIC", "-Wsign-conversion", "-Wsign-compare"]
+		elif sys.platform == "win32":
+			# TODO fix fPIC
+			compile_args = ["-fPIC", "/w34287", "/w44365", "/w44388", "/w24826", 
+				   "/w44389", "/w44245", "/w44365", "/w34018", "/w34267"]
 		link_args = []
 		if "VICE_ENABLE_OPENMP" in os.environ.keys():
 			if os.environ["VICE_ENABLE_OPENMP"] == "true":
@@ -161,10 +166,13 @@ class build_ext(_build_ext):
 						link_args.append("-Xpreprocessor")
 						link_args.append("-fopenmp")
 						link_args.append("-lomp")
+					elif os.environ["CC"].startswith("msc"):
+						# TODO openMP flags
+						pass
 					else:
 						raise RuntimeError("""\
-Unix C compiler must be either 'gcc' or 'clang'. Got %s from environment \
-variable 'CC'.""" % (os.environ["CC"]))
+C compiler must be either 'gcc' or 'clang' on Unix or 'msc' on Windows. \
+Got %s from environment variable 'CC'.""" % (os.environ["CC"]))
 				else:
 					# environment variable assigned but no CC, so
 					# ``setup.py openmp`` definitely wasn't invoked -> assume
@@ -180,8 +188,11 @@ variable 'CC'.""" % (os.environ["CC"]))
 						link_args.append("-Xpreprocessor")
 						link_args.append("-fopenmp")
 						link_args.append("-lomp")
+					elif sys.platform == "win32":
+						os.environ["CC"] = "msc"
+						# TODO openMP flags flags
 					else:
-						raise OSError("Sorry, Windows is not supported.")
+						raise OSError("Sorry, this operating system is not supported.")
 			else: pass
 		else: pass
 
@@ -270,16 +281,17 @@ class openmp(Command):
 
 	user_options = [
 		("compiler=", "c", """\
-The Unix C Compiler to use. Must be either 'gcc' or 'clang'. If not specified, \
+The C Compiler to use. Must be either 'gcc' or 'clang' on Unix or 'msc' on \
+Windows. If not specified, \
 the environment variable "CC" will be used. If no such environment variable \
 has been assigned, the system default will be used. Although setuptools does \
-not differentiate between the two, the two require different compiler flags \
+not differentiate between the three, the three require different compiler flags \
 for linking with the openMP library. As with any other compilation process, \
 the environment variable "CC" can be used to specify the C compiler even when \
 not running 'setup.py openmp'.""")
 	]
 
-	supported_compilers = set(["gcc", "clang"])
+	supported_compilers = set(["gcc", "clang", "msc"])
 
 	def initialize_options(self):
 		self.compiler = None
@@ -288,12 +300,13 @@ not running 'setup.py openmp'.""")
 		if self.compiler is not None:
 			if not openmp.check_compiler(self.compiler):
 				raise RuntimeError("""\
-Unix C compiler must be either 'gcc' or 'clang'. Got: %s""" % (self.compiler))
+C compiler must be either 'gcc' or 'clang' for Unix or 'msc' for Windows. \
+Got: %s""" % (self.compiler))
 		elif "CC" in os.environ.keys():
 			if not openmp.check_compiler(os.environ["CC"]):
 				raise RuntimeError("""\
-Unix C compiler must be either 'gcc' or 'clang'. Got %s from environment \
-variable 'CC'.""" % (os.environ["CC"]))
+C compiler must be either 'gcc' or 'clang' for Unix or 'msc' for Windows. \
+Got %s from environment variable 'CC'.""" % (os.environ["CC"]))
 		else: pass
 
 	def run(self):
@@ -307,10 +320,11 @@ variable 'CC'.""" % (os.environ["CC"]))
 				self.compiler = "gcc"
 			elif sys.platform == "darwin":
 				self.compiler = "clang"
+			elif sys.platform == "win32":
+				self.compiler = "msc"
 			else:
 				raise OSError("""\
-Sorry, Windows is not supported. Please install and use VICE within the \
-Windows Subsystem for Linux.""")
+Sorry, this operating system is not supported.""")
 			os.environ["CC"] = self.compiler
 
 	@staticmethod
@@ -348,16 +362,22 @@ Windows Subsystem for Linux.""")
 		}
 
 		# First check if the system if even recognizes the compiler
-		with Popen("which %s" % (compiler), **kwargs) as proc:
-			out, err = proc.communicate()
-			if sys.platform == "linux":
-				# The error message printed on Linux `which`
-				if "no %s" % (compiler) in err: return None
-			elif sys.platform == "darwin":
-				# On Mac OS, `which` prints nothing on error
-				if out == "" and err == "": return None
-			else:
-				raise OSError("Sorry, Windows is not supported.")
+		if sys.platform in ["linux", "darwin"]:
+			with Popen("which %s" % (compiler), **kwargs) as proc:
+				out, err = proc.communicate()
+				if sys.platform == "linux":
+					# The error message printed on Linux `which`
+					if "no %s" % (compiler) in err: return None
+				elif sys.platform == "darwin":
+					# On Mac OS, `which` prints nothing on error
+					if out == "" and err == "": return None
+		elif sys.platform == "win32":
+			# The error message printed on Windows `where`
+			with Popen("where %s" % (compiler), **kwargs) as proc:
+				out, err = proc.communicate()
+				if "INFO:" in err: return None
+		else:
+			raise OSError("Sorry, this operating system is not supported.")
 
 		def is_version_number(word):
 			r"""
