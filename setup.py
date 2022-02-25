@@ -146,8 +146,7 @@ class build_ext(_build_ext):
 		if sys.platform in ["linux", "darwin"]:
 			compile_args = ["-fPIC", "-Wsign-conversion", "-Wsign-compare"]
 		elif sys.platform == "win32":
-			# TODO fix fPIC
-			compile_args = ["-fPIC", "/w34287", "/w44365", "/w44388", "/w24826", 
+			compile_args = ["/w34287", "/w44365", "/w44388", "/w24826", 
 				   "/w44389", "/w44245", "/w44365", "/w34018", "/w34267"]
 		link_args = []
 		if "VICE_ENABLE_OPENMP" in os.environ.keys():
@@ -166,12 +165,12 @@ class build_ext(_build_ext):
 						link_args.append("-Xpreprocessor")
 						link_args.append("-fopenmp")
 						link_args.append("-lomp")
-					elif os.environ["CC"].startswith("msc"):
+					elif os.environ["CC"].startswith("cl"):
 						# TODO openMP flags
 						pass
 					else:
 						raise RuntimeError("""\
-C compiler must be either 'gcc' or 'clang' on Unix or 'msc' on Windows. \
+C compiler must be either 'gcc' or 'clang' on Unix or 'cl' on Windows. \
 Got %s from environment variable 'CC'.""" % (os.environ["CC"]))
 				else:
 					# environment variable assigned but no CC, so
@@ -189,7 +188,7 @@ Got %s from environment variable 'CC'.""" % (os.environ["CC"]))
 						link_args.append("-fopenmp")
 						link_args.append("-lomp")
 					elif sys.platform == "win32":
-						os.environ["CC"] = "msc"
+						os.environ["CC"] = "cl"
 						# TODO openMP flags flags
 					else:
 						raise OSError("Sorry, this operating system is not supported.")
@@ -281,7 +280,7 @@ class openmp(Command):
 
 	user_options = [
 		("compiler=", "c", """\
-The C Compiler to use. Must be either 'gcc' or 'clang' on Unix or 'msc' on \
+The C Compiler to use. Must be either 'gcc' or 'clang' on Unix or 'cl' on \
 Windows. If not specified, \
 the environment variable "CC" will be used. If no such environment variable \
 has been assigned, the system default will be used. Although setuptools does \
@@ -291,7 +290,7 @@ the environment variable "CC" can be used to specify the C compiler even when \
 not running 'setup.py openmp'.""")
 	]
 
-	supported_compilers = set(["gcc", "clang", "msc"])
+	supported_compilers = set(["gcc", "clang", "cl"])
 
 	def initialize_options(self):
 		self.compiler = None
@@ -300,12 +299,12 @@ not running 'setup.py openmp'.""")
 		if self.compiler is not None:
 			if not openmp.check_compiler(self.compiler):
 				raise RuntimeError("""\
-C compiler must be either 'gcc' or 'clang' for Unix or 'msc' for Windows. \
+C compiler must be either 'gcc' or 'clang' for Unix or 'cl' for Windows. \
 Got: %s""" % (self.compiler))
 		elif "CC" in os.environ.keys():
 			if not openmp.check_compiler(os.environ["CC"]):
 				raise RuntimeError("""\
-C compiler must be either 'gcc' or 'clang' for Unix or 'msc' for Windows. \
+C compiler must be either 'gcc' or 'clang' for Unix or 'cl' for Windows. \
 Got %s from environment variable 'CC'.""" % (os.environ["CC"]))
 		else: pass
 
@@ -321,7 +320,7 @@ Got %s from environment variable 'CC'.""" % (os.environ["CC"]))
 			elif sys.platform == "darwin":
 				self.compiler = "clang"
 			elif sys.platform == "win32":
-				self.compiler = "msc"
+				self.compiler = "cl"
 			else:
 				raise OSError("""\
 Sorry, this operating system is not supported.""")
@@ -395,7 +394,12 @@ Sorry, this operating system is not supported.""")
 
 		# Then check if the command `$compiler --version` runs properly and
 		# has either "gcc" or "clang" in the output along with a version number
-		with Popen("%s --version" % (compiler), **kwargs) as proc:
+		if sys.platform in ["linux", "darwin"]:
+			_command = "%s --version" % compiler
+		elif sys.platform == "win32":
+			_command = compiler
+		
+		with Popen(_command, **kwargs) as proc:
 			out, err = proc.communicate()
 			# Should catch all typos
 			if err != "" and "command not found" in err: return None
