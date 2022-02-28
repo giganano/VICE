@@ -14,4 +14,4 @@ cdef extern from "utils.h":
 	unsigned short test_bin_centers()
 	unsigned short test_sum()
 	unsigned short test_set_char_p_value()
-	unsigned short test_max()
+	unsigned short test_arrmax()

@@ -362,7 +362,7 @@ extern double sum(double *arr, unsigned long len);
  *
  * source: utils.c
  */
-extern double max(double *arr, unsigned long length);
+extern double arrmax(double *arr, unsigned long length);
 
 #ifdef __cplusplus
 }

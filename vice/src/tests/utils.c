@@ -455,7 +455,7 @@ extern unsigned short test_set_char_p_value(void) {
 
 
 /*
- * Test the max function at vice/src/utils.h
+ * Test the arrmax function at vice/src/utils.h
  *
  * Returns
  * =======
@@ -463,7 +463,7 @@ extern unsigned short test_set_char_p_value(void) {
  *
  * header: utils.h
  */
-extern unsigned short test_max(void) {
+extern unsigned short test_arrmax(void) {
 
 	/*
 	 * Test by ensuring it returns the final element from an array of
@@ -474,7 +474,7 @@ extern unsigned short test_max(void) {
 	for (i = 0u; i < 100u; i++) {
 		test[i] = i;
 	}
-	unsigned short result = max(test, 100u) == test[99];
+	unsigned short result = arrmax(test, 100u) == test[99];
 	free(test);
 	return result;
 

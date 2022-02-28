@@ -557,7 +557,7 @@ extern void set_char_p_value(char *dest, int *ords, int length) {
  *
  * header: utils.h
  */
-extern double max(double *arr, unsigned long length) {
+extern double arrmax(double *arr, unsigned long length) {
 
 	trace_print();
 	if (length >= 2) {

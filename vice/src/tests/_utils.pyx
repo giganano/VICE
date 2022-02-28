@@ -155,7 +155,7 @@ def test_string_copier():
 @unittest
 def test_maximum():
 	"""
-	Tests the max function at vice/src/utils.h
+	Tests the arrmax function at vice/src/utils.h
 	"""
-	return ["vice.src.utils.max", _utils.test_max]
+	return ["vice.src.utils.arrmax", _utils.test_arrmax]
 
