@@ -151,7 +151,7 @@ extern unsigned short test_sum(void);
 extern unsigned short test_set_char_p_value(void);
 
 /*
- * Test the max function at vice/src/utils.h
+ * Test the arrmax function at vice/src/utils.h
  *
  * Returns
  * =======
@@ -159,7 +159,7 @@ extern unsigned short test_set_char_p_value(void);
  *
  * source: utils.c
  */
-extern unsigned short test_max(void);
+extern unsigned short test_arrmax(void);
 
 #ifdef __cplusplus
 }

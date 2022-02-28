@@ -75,7 +75,7 @@ static double *age_lookback(FROMFILE *ff, char *time_label) {
 
 	unsigned long i;
 	double *time_ = fromfile_column(ff, time_label);
-	double max_time = max(time_, (*ff).n_rows);
+	double max_time = arrmax(time_, (*ff).n_rows);
 	double *ages_lookbacks = (double *) malloc ((*ff).n_rows * sizeof(double));
 	for (i = 0ul; i < (*ff).n_rows; i++) {
 		ages_lookbacks[i] = max_time - time_[i];
