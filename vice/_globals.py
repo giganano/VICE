@@ -37,7 +37,7 @@ import os
 
 
 # The path to the directory after installation
-_DIRECTORY_ = "%s/" % (os.path.dirname(os.path.abspath(__file__)))
+_DIRECTORY_ = os.path.dirname(os.path.abspath(__file__))
 
 """
 The default bins into which a stellar metallicity distribution function
