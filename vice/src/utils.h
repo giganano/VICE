@@ -132,6 +132,35 @@ extern short sign(double x);
  */
 extern unsigned long simple_hash(char *str);
 
+#if defined(WIN32)
+/*
+ * Implements the gettimeofday function on Windows which would otherwise be
+ * available in the <sys/time.h> header on Unix.
+ *
+ * Parameters
+ * ==========
+ * tp: 		The timeval struct within which to store the number of seconds and
+ * 			microseconds elapsed in the day.
+ * tzp: 	A pointer to a timezone struct.
+ *
+ * Returns
+ * =======
+ * Zero always.
+ *
+ * Notes
+ * =====
+ * The parameter tzp is not used in this function. It is included only for
+ * binary compatibility with Unix. VICE only requires a time elapsed on a given
+ * day or differences in time anyway, always calling gettimeofday with NULL as
+ * the second parameter. This makes timezone information moot anyway.
+ *
+ * This function implements the solution at https://stackoverflow.com/questions/10905892/equivalent-of-gettimeday-for-windows
+ *
+ * source: utils.c
+ */
+extern int gettimeofday(struct timeval *tp, struct timezone *tzp);
+#endif
+
 /*
  * Seeds the random number generator off of the current time.
  *

@@ -146,7 +146,7 @@ class build_ext(_build_ext):
 		if sys.platform in ["linux", "darwin"]:
 			compile_args = ["-fPIC", "-Wsign-conversion", "-Wsign-compare"]
 		elif sys.platform == "win32":
-			compile_args = ["/w34287", "/w44365", "/w44388", "/w24826", 
+			compile_args = ["/w34287", "/w44365", "/w44388", "/w24826",
 				   "/w44389", "/w44245", "/w44365", "/w34018", "/w34267"]
 		link_args = []
 		if "VICE_ENABLE_OPENMP" in os.environ.keys():

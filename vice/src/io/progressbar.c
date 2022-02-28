@@ -2,8 +2,12 @@
  * This file implements a progressbar for VICE's verbose terminal output.
  */
 
-#include <sys/ioctl.h>
-#include <sys/time.h>
+#if defined(WIN32)
+	#include <windows.h>
+#else
+	#include <sys/ioctl.h>
+	#include <sys/time.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -480,14 +484,25 @@ static unsigned short window_width(PROGRESSBAR pb) {
 		} else {}
 	} else {}
 
-	/*
-	 * Subtract 1 from the window width to make room for the cursor on the
-	 * far right side of the progressbar.
-	 */
-	struct winsize w;
-	ioctl(0, TIOCGWINSZ, &w);
-	debug_print("Window width = %u\n", w.ws_col - 1u);
-	return w.ws_col - 1u;
+	#if defined(WIN32)
+		/*
+		 * This is an implementation of the solution at https://stackoverflow.com/questions/6812224/getting-terminal-size-in-c-for-windows
+		 */
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+		unsigned int columns = (unsigned) (csbi.srWindow.Right -
+			csbi.srWindow.Left);
+		return columns;
+	#else
+		/*
+		 * Subtract 1 from the window width to make room for the cursor on the
+		 * far right side of the progressbar.
+		 */
+		struct winsize w;
+		ioctl(0, TIOCGWINSZ, &w);
+		debug_print("Window width = %u\n", w.ws_col - 1u);
+		return w.ws_col - 1u;
+	#endif
 
 }
 

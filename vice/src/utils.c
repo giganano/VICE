@@ -2,12 +2,16 @@
  * This file implements pure utility functions.
  */
 
-#include <sys/time.h>
+#if defined(WIN32)
+	#include <windows.h> /* automatically #include's <winsock2.h> */
+	#include <stdint.h> /* also available on Unix, but not necessary */
+#else
+	#include <sys/time.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
-#include <time.h>
 #include "utils.h"
 #include "singlezone.h"
 #include "debug.h"
@@ -177,6 +181,58 @@ extern unsigned long simple_hash(char *str) {
 
 }
 
+
+#if defined(WIN32)
+/*
+ * Implements the gettimeofday function on Windows which would otherwise be
+ * available in the <sys/time.h> header on Unix.
+ *
+ * Parameters
+ * ==========
+ * tp: 		The timeval struct within which to store the number of seconds and
+ * 			microseconds elapsed in the day.
+ * tzp: 	A pointer to a timezone struct.
+ *
+ * Returns
+ * =======
+ * Zero always.
+ *
+ * Notes
+ * =====
+ * The parameter tzp is not used in this function. It is included only for
+ * binary compatibility with Unix. VICE only requires a time elapsed on a given
+ * day or differences in time anyway, always calling gettimeofday with NULL as
+ * the second parameter. This makes timezone information moot anyway.
+ *
+ * This function implements the solution at https://stackoverflow.com/questions/10905892/equivalent-of-gettimeday-for-windows
+ *
+ * header: utils.h
+ */
+extern int gettimeofday(struct timeval *tp, struct timezone *tzp) {
+
+	/*
+	 * Note: some broken versions only have 8 trailing zeroes. The correct
+	 * epoch has 9 trailing zeroes. This magic number is the number of 100
+	 * nanosecond intervals between January 1, 1601 (UTC) and 00:00:00
+	 * January 1, 1970.
+	 */
+	static const uint64_t EPOCH = (uint64_t) 116444736000000000ULL;
+
+	SYSTEMTIME system_time;
+	FILETIME file_time;
+	uint64_t time;
+
+	GetSystemTime(&system_time);
+	SystemTimeToFileTime(&system_time, &file_time);
+	time = (uint64_t) file_time.dwLowDateTime;
+	time += (uint64_t) file_time.dwHighDateTime << 32;
+
+	tp -> tv_sec = (long) ((time - EPOCH) / 10000000L);
+	tp -> tv_usec = (long) (system_time.wMilliseconds * 1000);
+	return 0;
+
+}
+#endif
 
 /*
  * Seeds the random number generator off of the current time.
