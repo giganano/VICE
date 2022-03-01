@@ -30,12 +30,14 @@
  * portability.
  */
 #if __STDC_VERSION__ < 199901L
-	#if __GNUC__ >= 2
+	#ifdef _MSC_VER /* Windows MSVC compiler */
+		#define __func__ __FUNCTION__
+	#elif __GNUC__ >= 2 /* GCC or clang */
 		#define __func__ __FUNCTION__
 	#else
 		#define __func__ "<unknown>"
-	#endif /* __GNUC__ */
-#endif /* __STDC_VERSION__ */
+	#endif
+#endif
 
 /* Different level of verbosity within logging */
 #define INFO 1u
@@ -44,13 +46,25 @@
 
 /*
  * Determine the depth of VICE's verbose logging output by obtaining the
- * integer value of the environment variable "VICE_LOG_LEVEL" - 1 for info,
- * 2 for trace, and 3 for debug.
+ * integer value of the environment variable "VICE_LOG_LEVEL"
+ *
+ * Returns
+ * =======
+ * 0 - no logging
+ * 1 - info logging
+ * 2 - trace logging
+ * 3 - debug logging
+ *
+ * See note at top of this file for details - other forms of logging always run
+ * regardless of the user's or developer's verbosity setting.
  */
-#define logging_level() ({ \
-	char *_loglevel = getenv("VICE_LOGGING_LEVEL"); \
-	_loglevel != NULL ? atoi(_loglevel) : 0; \
-})
+static inline unsigned short logging_level() {
+
+	char *_loglevel = getenv("VICE_LOGGING_LEVEL");
+	unsigned short result = _loglevel != NULL ? atoi(_loglevel) : 0;
+	return result;
+
+}
 
 /*
  * Prints a statement to stderr if and only if the loglevel is equal to 1

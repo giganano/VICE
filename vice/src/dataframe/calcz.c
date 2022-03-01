@@ -39,11 +39,12 @@ static double *Zscaled(FROMFILE *ff, unsigned int n_elements, char **elements,
 extern double *history_Z_element(FROMFILE *ff, char *element) {
 
 	/* Pull the mass of the element using fromfile_column */
-	char label[7 + strlen(element)];
+	char *label = (char *) malloc ((7 + strlen(element)) * sizeof(char));
 	strcpy(label, "mass(");
 	strcat(label, element);
 	strcat(label, ")\0");
 	double *element_mass = fromfile_column(ff, label);
+	free(label);
 	if (element_mass != NULL) {
 		/* Allocate memory and pull the ISM mass using fromfile_column */
 		unsigned long i;
@@ -85,11 +86,13 @@ extern double *tracers_Z_element(FROMFILE *ff, char *element) {
 	 * Unlike history outputs, tracer outputs have Z(x) directly in the file,
 	 * allowing lookup with fromfile_column directly.
 	 */
-	char label[4 + strlen(element)];
+	char *label = (char *) malloc ((4 + strlen(element)) * sizeof(char));
 	strcpy(label, "z(");
 	strcat(label, element);
 	strcat(label, ")\0");
-	return fromfile_column(ff, label);
+	double *result = fromfile_column(ff, label);
+	free(label);
+	return result;
 
 }
 
