@@ -14,7 +14,7 @@
 #include <math.h>
 #include "utils.h"
 #include "singlezone.h"
-#include "debug.h"
+// #include "debug.h"
 #include "multithread.h"
 
 /* Define the checksum function adopted in this implementation */
@@ -83,7 +83,7 @@ extern unsigned short openmp_linked(void) {
  */
 extern unsigned long choose(unsigned long a, unsigned long b) {
 
-	trace_print();
+	// trace_print();
 	unsigned long result;
 	if (a > b) {
 		/*
@@ -251,7 +251,7 @@ extern int gettimeofday(struct timeval *tp, struct timezone *tzp) {
  */
 extern void seed_random(void) {
 
-	trace_print();
+	// trace_print();
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	unsigned long time_in_microseconds = 1e6 * tv.tv_sec + tv.tv_usec;
@@ -277,7 +277,7 @@ extern void seed_random(void) {
  */
 extern double rand_range(double minimum, double maximum) {
 
-	trace_print();
+	// trace_print();
 	return minimum + (maximum - minimum) * ((double) rand() / RAND_MAX);
 
 }
@@ -503,7 +503,7 @@ extern double scale_metallicity(SINGLEZONE sz, unsigned long timestep) {
  */
 extern double *binspace(double start, double stop, unsigned long N) {
 
-	trace_print();
+	// trace_print();
 	double *arr = (double *) malloc ((N + 1l) * sizeof(double));
 	double dx = (stop - start) / N;
 	unsigned long i;
@@ -532,7 +532,7 @@ extern double *binspace(double start, double stop, unsigned long N) {
  */
 extern double *bin_centers(double *edges, unsigned long n_bins) {
 
-	trace_print();
+	// trace_print();
 	double *centers = (double *) malloc (n_bins * sizeof(double));
 	unsigned long i;
 	for (i = 0l; i < n_bins; i++) {
@@ -583,10 +583,10 @@ extern double sum(double *arr, unsigned long len) {
  */
 extern void set_char_p_value(char *dest, int *ords, int length) {
 
-	trace_print();
-	debug_print("Destination string address: %p\n", (void *) dest);
-	debug_print("String ordinals address: %p\n", (void *) ords);
-	debug_print("String length: %d\n", length);
+	// trace_print();
+	// debug_print("Destination string address: %p\n", (void *) dest);
+	// debug_print("String ordinals address: %p\n", (void *) ords);
+	// debug_print("String length: %d\n", length);
 
 	int i;
 	for (i = 0; i < length; i++) {
@@ -594,7 +594,7 @@ extern void set_char_p_value(char *dest, int *ords, int length) {
 	}
 
 	dest[length] = '\0'; 	/* null terminator */
-	debug_print("Destination string: %s\n", dest);
+	// debug_print("Destination string: %s\n", dest);
 
 }
 
@@ -615,7 +615,7 @@ extern void set_char_p_value(char *dest, int *ords, int length) {
  */
 extern double arrmax(double *arr, unsigned long length) {
 
-	trace_print();
+	// trace_print();
 	if (length >= 2) {
 		unsigned long i;
 		double max_ = arr[0] > arr[1] ? arr[0] : arr[1];

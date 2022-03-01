@@ -9,7 +9,7 @@
 #include "callback.h"
 #include "imf.h"
 #include "utils.h"
-#include "debug.h"
+// #include "debug.h"
 
 
 /*
@@ -28,7 +28,7 @@
  */
 extern double imf_evaluate(IMF_ imf, double m) {
 
-	trace_print();
+	// trace_print();
 	double result;
 
 	/* If the mass in the specified mass range */
@@ -49,7 +49,7 @@ extern double imf_evaluate(IMF_ imf, double m) {
 				break;
 
 			default: 	/* error handling */
-				warning_print("%s\n", "Unrecognized IMF!");
+				// warning_print("%s\n", "Unrecognized IMF!");
 				result = -1;
 				break;
 
@@ -60,7 +60,7 @@ extern double imf_evaluate(IMF_ imf, double m) {
 		return 0;
 	}
 
-	debug_print("IMF(%.5e) = %.5e\n", m, result);
+	// debug_print("IMF(%.5e) = %.5e\n", m, result);
 	return result;
 
 }
@@ -87,7 +87,7 @@ extern double imf_evaluate(IMF_ imf, double m) {
  */
 extern double salpeter55(double m) {
 
-	trace_print();
+	// trace_print();
 	double result;
 
 	if (m > 0) {
@@ -96,7 +96,7 @@ extern double salpeter55(double m) {
 		result = -1;
 	}
 
-	debug_print("salpeter55(%.5e) = %.5e\n", m, result);
+	// debug_print("salpeter55(%.5e) = %.5e\n", m, result);
 	return result;
 
 }
@@ -123,7 +123,7 @@ extern double salpeter55(double m) {
  */
 extern double kroupa01(double m) {
 
-	trace_print();
+	// trace_print();
 	double result;
 
 	if (0 < m && m < 0.08) {
@@ -147,7 +147,7 @@ extern double kroupa01(double m) {
 		result = -1;
 	}
 
-	debug_print("Kroupa01(%.5e) = %.5e\n", m, result);
+	// debug_print("Kroupa01(%.5e) = %.5e\n", m, result);
 	return result;
 
 }

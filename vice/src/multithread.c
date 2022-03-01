@@ -6,7 +6,7 @@
  */
 
 #include "multithread.h"
-#include "debug.h"
+// #include "debug.h"
 
 
 /*
@@ -29,18 +29,18 @@
  */
 extern unsigned short openmp_set_nthreads(unsigned short n) {
 
-	trace_print();
+	// trace_print();
 	#if defined(_OPENMP)
 		if (n) {
 			omp_set_num_threads(n);
-			debug_print("openMP enabled. NTHREADS = %u\n",
+			// debug_print("openMP enabled. NTHREADS = %u\n",
 				omp_get_max_threads());
 			return 0u;
 		} else {
-			error_print("%s\n", "Cannot assign 0 threads to process.");
+			// error_print("%s\n", "Cannot assign 0 threads to process.");
 		}
 	#else
-		debug_print("%s\n", "openMP not enabled.");
+		// debug_print("%s\n", "openMP not enabled.");
 		return n != 1u;
 	#endif
 
@@ -60,12 +60,12 @@ extern unsigned short openmp_set_nthreads(unsigned short n) {
  */
 extern unsigned short openmp_get_nthreads(void) {
 
-	trace_print();
+	// trace_print();
 	#if defined(_OPENMP)
-		debug_print("openMP enabled. NTHREADS = %u\n", omp_get_max_threads());
+		// debug_print("openMP enabled. NTHREADS = %u\n", omp_get_max_threads());
 		return omp_get_max_threads();
 	#else
-		debug_print("%s\n", "openMP not enabled.");
+		// debug_print("%s\n", "openMP not enabled.");
 		return 1u;
 	#endif
 
