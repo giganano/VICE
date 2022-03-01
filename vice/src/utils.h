@@ -132,7 +132,7 @@ extern short sign(double x);
  */
 extern unsigned long simple_hash(char *str);
 
-#if defined(WIN32)
+#if defined(_WIN32)
 /*
  * Implements the gettimeofday function on Windows which would otherwise be
  * available in the <sys/time.h> header on Unix.

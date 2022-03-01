@@ -2,7 +2,7 @@
  * This file implements pure utility functions.
  */
 
-#if defined(WIN32)
+#if defined(_WIN32)
 	#include <windows.h> /* automatically #include's <winsock2.h> */
 	#include <stdint.h> /* also available on Unix, but not necessary */
 #else
@@ -182,7 +182,7 @@ extern unsigned long simple_hash(char *str) {
 }
 
 
-#if defined(WIN32)
+#if defined(_WIN32)
 /*
  * Implements the gettimeofday function on Windows which would otherwise be
  * available in the <sys/time.h> header on Unix.

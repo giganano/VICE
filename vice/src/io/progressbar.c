@@ -2,7 +2,7 @@
  * This file implements a progressbar for VICE's verbose terminal output.
  */
 
-#if defined(WIN32)
+#if defined(_WIN32)
 	#include <windows.h>
 #else
 	#include <sys/ioctl.h>
@@ -10,7 +10,6 @@
 #endif
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
@@ -484,7 +483,7 @@ static unsigned short window_width(PROGRESSBAR pb) {
 		} else {}
 	} else {}
 
-	#if defined(WIN32)
+	#if defined(_WIN32)
 		/*
 		 * This is an implementation of the solution at https://stackoverflow.com/questions/6812224/getting-terminal-size-in-c-for-windows
 		 */
