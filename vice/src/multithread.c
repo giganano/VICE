@@ -34,7 +34,7 @@ extern unsigned short openmp_set_nthreads(unsigned short n) {
 		if (n) {
 			omp_set_num_threads(n);
 			// debug_print("openMP enabled. NTHREADS = %u\n",
-				omp_get_max_threads());
+			// 	omp_get_max_threads());
 			return 0u;
 		} else {
 			// error_print("%s\n", "Cannot assign 0 threads to process.");
