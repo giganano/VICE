@@ -11,7 +11,7 @@
 #include "../io.h"
 #include "../utils.h"
 #include "../multithread.h"
-// #include "../debug.h"
+#include "../debug.h"
 #include "singlezone.h"
 
 /* ---------- Static function comment headers not duplicated here ---------- */

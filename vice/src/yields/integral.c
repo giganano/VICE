@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include "../yields.h"
 #include "../utils.h"
-// #include "../debug.h"
+#include "../debug.h"
 
 /* ---------- static function comment headers not duplicated here ---------- */
 static double euler(INTEGRAL intgrl, unsigned long N);
@@ -51,7 +51,7 @@ extern unsigned short quad(INTEGRAL *intgrl) {
 	 * two iterations. Ensure that the number of bins is even.
 	 */
 
-	// trace_print();
+	trace_print();
 	unsigned long N = (*intgrl).Nmin / 2l;
 	if (N % 2l != 0l) N += 1l;
 
@@ -101,11 +101,11 @@ extern unsigned short quad(INTEGRAL *intgrl) {
 			intgrl -> error = 1;
 		}
 
-		// debug_print("absval(-1) = %lf\n", absval(-1.0));
-		// debug_print("old_int = %.5e\n", old_int);
-		// debug_print("new_int = %.5e\n", new_int);
-		// debug_print("error = %.5e\n", (*intgrl).error);
-		// debug_print("N = %lu\n", N);
+		debug_print("absval(-1) = %lf\n", absval(-1.0));
+		debug_print("old_int = %.5e\n", old_int);
+		debug_print("new_int = %.5e\n", new_int);
+		debug_print("error = %.5e\n", (*intgrl).error);
+		debug_print("N = %lu\n", N);
 
 		/* Store previous value and increment N */
 		old_int = new_int;
@@ -115,8 +115,8 @@ extern unsigned short quad(INTEGRAL *intgrl) {
 
 	intgrl -> result = new_int;
 	intgrl -> iters = N;
-	// debug_print("result = %.5e\n", (*intgrl).result);
-	// debug_print("iters = %lu\n", (*intgrl).iters);
+	debug_print("result = %.5e\n", (*intgrl).result);
+	debug_print("iters = %lu\n", (*intgrl).iters);
 	return ((*intgrl).error > (*intgrl).tolerance);
 
 }
@@ -140,7 +140,7 @@ extern unsigned short quad(INTEGRAL *intgrl) {
  */
 static double euler(INTEGRAL intgrl, unsigned long N) {
 
-	// trace_print();
+	trace_print();
 	double hN = (intgrl.b - intgrl.a) / N; /* the width of the bins */
 	/* Euler's method uses only the left edge of each bin */
 	double *x = binspace(intgrl.a, intgrl.b - hN, N - 1l);
@@ -153,7 +153,7 @@ static double euler(INTEGRAL intgrl, unsigned long N) {
 	unsigned long i;
 	for (i = 0l; i < N; i++) eval[i] = intgrl.func(x[i]);
 	double total = sum(eval, N);
-	// debug_print("total = %.5e\n", total);
+	debug_print("total = %.5e\n", total);
 	free(eval);
 	free(x);
 	return hN * total;
@@ -179,7 +179,7 @@ static double euler(INTEGRAL intgrl, unsigned long N) {
  */
 static double trapzd(INTEGRAL intgrl, unsigned long N) {
 
-	// trace_print();
+	trace_print();
 	double hN = (intgrl.b - intgrl.a) / N; /* width of each bin */
 	double *x = binspace(intgrl.a, intgrl.b, N);
 	double *eval = (double *) malloc ((N + 1l) * sizeof(double));
@@ -193,7 +193,7 @@ static double trapzd(INTEGRAL intgrl, unsigned long N) {
 	for (i = 0l; i <= N; i++) eval[i] = intgrl.func(x[i]);
 	double total = sum(eval, N + 1l);
 	total -= 0.5 * (eval[0] + eval[N]);
-	// debug_print("total = %.5e\n", total);
+	debug_print("total = %.5e\n", total);
 	free(x);
 	free(eval);
 	return hN * total;
@@ -219,7 +219,7 @@ static double trapzd(INTEGRAL intgrl, unsigned long N) {
  */
 static double midpt(INTEGRAL intgrl, unsigned long N) {
 
-	// trace_print();
+	trace_print();
 	double hN = (intgrl.b - intgrl.a) / N; 	/* width of each bin */
 	double *x = binspace(intgrl.a, intgrl.b, N);
 	double *mids = bin_centers(x, N);
@@ -232,7 +232,7 @@ static double midpt(INTEGRAL intgrl, unsigned long N) {
 	unsigned long i;
 	for (i = 0l; i < N; i++) eval[i] = intgrl.func(mids[i]);
 	double total = sum(eval, N);
-	// debug_print("total = %.5e\n", total);
+	debug_print("total = %.5e\n", total);
 	free(x);
 	free(mids);
 	free(eval);
