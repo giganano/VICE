@@ -15,6 +15,9 @@ macos.sh
 *.vice 
 *.DS_Store 
 
+# Ignore any .pyd files created during local development on Windows
+*.pyd
+
 # Ignore all figures 
 *.pdf 
 *.png 
