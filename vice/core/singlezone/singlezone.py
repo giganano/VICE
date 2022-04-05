@@ -339,6 +339,43 @@ class singlezone:
 		"""
 		return exc_value is None
 
+	def __getstate__(self):
+		return {
+			"name":				self.name,
+			"func":				self.func,
+			"mode":				self.mode,
+			"verbose":			self.verbose,
+			"nthreads":			self.nthreads,
+			"elements":			self.elements,
+			"IMF":				self.IMF,
+			"eta":				self.eta,
+			"enhancement":		self.enhancement,
+			"Zin":				self.Zin,
+			"recycling":		self.recycling,
+			"bins":				self.bins,
+			"delay":			self.delay,
+			"RIa":				self.RIa,
+			"Mg0":				self.Mg0,
+			"smoothing":		self.smoothing,
+			"tau_ia":			self.tau_ia,
+			"tau_star":			self.tau_star,
+			"dt":				self.dt,
+			"schmidt":			self.schmidt,
+			"MgSchmidt":		self.MgSchmidt,
+			"schmidt_index":	self.schmidt_index,
+			"m_upper":			self.m_upper,
+			"m_lower":			self.m_lower,
+			"postMS":			self.postMS,
+			"Z_solar":			self.Z_solar,
+			"agb_model":		self.agb_model
+		}
+
+	def __setstate__(self, state):
+		for attr in state[0].keys(): exec("self.%s = state[0][attr]" % (attr))
+
+	def __reduce__(self):
+		return (self.__class__, (), (self.__getstate__(), ))
+
 	def __zone_object_address(self):
 		"""
 		Returns the memory address of the SINGLEZONE struct in C. For usage
