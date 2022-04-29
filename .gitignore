@@ -49,6 +49,9 @@ examples/.ipynb_checkpoints/*.ipynb
 # h277 source files -> too large for GitHub 
 vice/toolkit/hydrodisk/data/h277/processor/*.fits 
 
+# h258 source files -> too large for GitHub
+vice/toolkit/hydrodisk/data/h258/processor/*.fits
+
 # Temporary h277 files 
 vice/toolkit/hydrodisk/data/h277/no_outer_disk/*.dat 
 

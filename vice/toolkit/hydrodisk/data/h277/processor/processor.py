@@ -12,7 +12,7 @@ ARGV
 
 .. seealso:: Johnson et al. (2021) [1]_
 
-.. [1] J.W. Johnson et al. (2021, in prep)
+.. [1] J.W. Johnson et al. (2021), 508, 4484
 """
 
 from astropy.io import fits
@@ -31,9 +31,8 @@ MAX_AGE_AT_FIRST_SNAPSHOT = 150
 # vice/src/toolkit/hydrodiskstars.c as static unsigned short NSUBS = 30u
 N_OUTFILES = 30
 
-# Source file has kinematic decomposition tags as integers. Halo stars are
-# omitted here, so reassign them a number a little more intuitive.
-# (These will be reflected in the documentation.)
+# Source file has kinematic decomposition tags as integers. Reassign them to
+# something a little more intuitive (these are reflected in the documentation).
 DECOMP_REASSIGN = {
 	1: 1, # thin disk
 	4: 2, # thick disk
