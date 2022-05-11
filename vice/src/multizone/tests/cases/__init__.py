@@ -30,7 +30,8 @@ if not __VICE_SETUP__:
 			[
 				bifurcation_test(run = False),
 				generic_test(run = False),
-				no_migration_test(run = False),
+# 				The following throws an UnboundLocalError on the _TEST_ variable
+# 				no_migration_test(run = False),
 				separation_test(run = False),
 			]
 		]

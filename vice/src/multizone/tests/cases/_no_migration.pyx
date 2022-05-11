@@ -47,7 +47,7 @@ cdef class no_migration:
 	A class intended to run unit tests for no migration multizone cases. These
 	are cases which should always produce no stellar migration between zones.
 	"""
-	
+
 	@unittest
 	def test_m_agb(self):
 		r"""

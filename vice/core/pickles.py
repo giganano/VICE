@@ -84,7 +84,7 @@ class jar:
 				raise TypeError("All keys must be of type str.")
 		else:
 			raise TypeError("Must be of type dict. Got: %s" % (type(objects)))
-		self.name = name
+		self.name = os.path.normpath(name)
 		self._default = default
 
 	@property
@@ -132,8 +132,12 @@ class jar:
 		x : ``jar``
 			An instance of this class
 		"""
-		if os.path.exists(self.name): os.system("rm -rf %s" % (self.name))
-		os.system("mkdir %s" % (self.name))
+		if os.path.exists(self.name):
+			if sys.platform in ["linux", "darwin"]:
+				os.system("rm -rf %s" % (self.name))
+			elif sys.platform == "win32":
+				os.system("rmdir /s/q %s" % (self.name))
+		os.makedirs(self.name)
 		old_path = os.getcwd()
 		os.chdir(self.name)
 		for i in self.objects.keys():
@@ -233,7 +237,7 @@ class pickled_object:
 
 	def __init__(self, obj, name = "object", default = None):
 		self._obj = obj
-		self.name = name
+		self.name = os.path.normpath(name)
 		self._default = default
 
 	@property
@@ -294,7 +298,10 @@ class pickled_object:
 		This will remove any file previously located at <self.name>.obj
 		"""
 		if os.path.exists("%s.obj" % (self.name)):
-			os.system("rm -f %s.obj" % (self.name))
+			if sys.platform in ["linux", "darwin"]:
+				os.system("rm -f %s.obj" % (self.name))
+			elif sys.platform == "win32":
+				os.system("del /f %s.obj" % (self.name))
 		else: pass
 		file = open("%s.obj" % (self.name), "wb")
 		if callable(self.obj):
