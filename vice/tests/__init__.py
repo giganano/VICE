@@ -52,11 +52,15 @@ This program will overwrite the VICE output at %s/test.vice. Proceed? \
 			while answer.lower() not in ["yes", "y", "no", "n"]:
 				answer = input("Please enter either 'y' or 'n': ")
 			if answer.lower() in ["yes", "y"]:
-				os.system("rm -rf %s/test.vice" % (os.getcwd()))
+# 				os.system("rm -rf %s/test.vice" % (os.getcwd()))
+				if sys.platform in ["linux", "darwin"]:
+					os.system("rm -rf %s/test.vice" % (os.getcwd()))
+				elif sys.platform == "win32":
+					os.system("rmdir /s/q %s\\test.vice" % (os.getcwd()))
 			else:
 				raise RuntimeError("Cancelling tests, ignore this error.")
 		else: pass
-		
+
 		header = "VICE Comprehensive Tests\n"
 		for i in range(len(header) - 1):
 			header += "="
