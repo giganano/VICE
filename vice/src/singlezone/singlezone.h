@@ -17,7 +17,7 @@ extern "C" {
  *
  * source: singlezone.c
  */
-extern long singlezone_address(SINGLEZONE *sz);
+extern unsigned long singlezone_address(SINGLEZONE *sz);
 
 /*
  * Runs the singlezone simulation under current user settings. Most of VICE is
