@@ -23,14 +23,14 @@ def no_migration_test():
 	No migration edge-case test on multizone object.
 	"""
 	global _TEST_
- 	_TEST_ = None
+	_TEST_ = None
 	msg = "vice.core.multizone edge case : no migration"
 	try:
 		_TEST_ = no_migration(n_zones = 5)
 # 		_TEST_.run()
 	except:
 		[msg, None]
- 	_TEST_.run()
+	_TEST_.run()
 	return [msg,
 		[
 			_TEST_.test_m_agb(),
