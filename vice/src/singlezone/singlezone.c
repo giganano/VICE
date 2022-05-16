@@ -30,9 +30,9 @@ static PROGRESSBAR *PB = NULL;
  *
  * header: singlezone.h
  */
-extern long singlezone_address(SINGLEZONE *sz) {
+extern unsigned long singlezone_address(SINGLEZONE *sz) {
 
-	return (long) ((void *) sz);
+	return (unsigned long) ((void *) sz);
 
 }
 
@@ -134,7 +134,7 @@ static unsigned short singlezone_timestepper(SINGLEZONE *sz) {
 	sz -> timestep++;
 
 	return (*sz).current_time >= (*sz).output_times[(*sz).n_outputs - 1l];
-	
+
 }
 
 

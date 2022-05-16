@@ -7,7 +7,7 @@ from .._fromfile import fromfile
 from .._base import base
 from ...singlezone import singlezone
 import numbers
-
+import os
 
 @moduletest
 def test():
@@ -35,12 +35,13 @@ def test_initialize():
 	def test():
 		singlezone.singlezone(name = "test").run(
 			[0.01 * i for i in range(1001)], overwrite = True)
-		with open("test.vice/mdf.out", 'r') as f:
+		with open(os.path.normpath("test.vice/mdf.out"), 'r') as f:
 			keys = [i.lower() for i in f.readline().split()[1:]]
 			f.close()
 		global _TEST_
 		try:
-			_TEST_ = fromfile(filename = "test.vice/mdf.out", labels = keys)
+			_TEST_ = fromfile(filename = os.path.normpath("test.vice/mdf.out"),
+					 labels = keys)
 		except:
 			return False
 		return isinstance(_TEST_, fromfile)
@@ -53,7 +54,7 @@ def test_getitem():
 	vice.core.dataframe.fromfile.__getitem__ unit test
 	"""
 	def test():
-		with open("test.vice/mdf.out", 'r') as f:
+		with open(os.path.normpath("test.vice/mdf.out"), 'r') as f:
 			keys = [i.lower() for i in f.readline().split()[1:]]
 			f.close()
 		try:
@@ -114,7 +115,7 @@ def test_keys():
 	vice.core.dataframe.fromfile.keys unit test
 	"""
 	def test():
-		with open("test.vice/mdf.out", 'r') as f:
+		with open(os.path.normpath("test.vice/mdf.out"), 'r') as f:
 			keys = [i.lower() for i in f.readline().split()[1:]]
 			f.close()
 		keys.append("test") # from the __setitem__ unit test

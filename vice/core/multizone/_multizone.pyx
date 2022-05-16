@@ -87,6 +87,7 @@ cdef class c_multizone:
 		self._mz = _multizone.multizone_initialize(n_zones)
 		self._zones = _zone_array.zone_array(n_zones)
 		for i in range(n_zones):
+			print(self._zones[i]._singlezone__zone_object_address())
 			_multizone.link_zone(
 				self._mz,
 				self._zones[i]._singlezone__zone_object_address(),
@@ -472,7 +473,10 @@ zone and at least one timestep larger than 1.""")
 		"""
 		if overwrite:
 			if os.path.exists("%s.vice" % (self.name)):
-				os.system("rm -rf %s.vice" % (self.name))
+				if sys.platform in ["linux", "darwin"]:
+					os.system("rm -rf %s.vice" % (self.name))
+				elif sys.platform == "win32":
+					os.system("rmdir /s/q %s.vice" % (self.name))
 			else:
 				pass
 			return True
@@ -492,7 +496,10 @@ leaving only the results of the current simulation.\nOutput directory: \
 					answer = input("Please enter either 'y' or 'n': ")
 
 				if answer.lower() in ["y", "yes"]:
-					os.system("rm -rf %s.vice" % (self.name))
+					if sys.platform in ["linux", "darwin"]:
+						os.system("rm -rf %s.vice" % (self.name))
+					elif sys.platform == "win32":
+						os.system("rmdir /s/q %s.vice" % (self.name))
 					return True
 				else:
 					return False
@@ -554,7 +561,7 @@ proceed faster or slower as a function of the timestep size."""
 						raise RuntimeError(errmsg)
 					else:
 						pass
-			
+
 				elif callable(self.migration.gas[i][j]):
 					arr = list(map(self.migration.gas[i][j], eval_times))
 					if _migration.setup_migration_element(self._mz[0],
@@ -861,7 +868,9 @@ its time of formation, must equal its zone of origin.""")
 		else:
 			# put multizone's name in front of each zone's name
 			for i in range(self._mz[0].mig[0].n_zones):
-				self._zones[i].name = "%s.vice/%s" % (self.name, names[i])
+# 				self._zones[i].name = "%s.vice/%s" % (self.name, names[i])
+				self._zones[i].name = os.path.join("%s.vice" % (self.name),
+												   str(names[i]))
 
 
 	def dealign_name_attributes(self):
@@ -870,7 +879,7 @@ its time of formation, must equal its zone of origin.""")
 		at the end of a multizone simulation.
 		"""
 		for i in range(self._mz[0].mig[0].n_zones):
-			self._zones[i].name = self._zones[i].name.split('/')[-1]
+			self._zones[i].name = os.path.split(self._zones[i].name)[-1]
 
 
 	def align_element_attributes(self):
@@ -955,7 +964,9 @@ its time of formation, must equal its zone of origin.""")
 				"hpt2000": _mlr.hpt2000_import,
 				"ka1997": _mlr.ka1997_import
 			}[mlr.setting]
-			path = "%ssrc/ssp/mlr/%s.dat" % (_DIRECTORY_, mlr.setting)
+# 			path = "%ssrc/ssp/mlr/%s.dat" % (_DIRECTORY_, mlr.setting)
+			path = os.path.join("%ssrc" % (_DIRECTORY_), "ssp", "mlr",
+					   "%s.dat" % (mlr.setting))
 			func(path.encode("latin-1"))
 		else: pass
 
@@ -999,18 +1010,20 @@ its time of formation, must equal its zone of origin.""")
 		}
 		attrs["zones"] = dict(zip(
 			list(range(self.n_zones)),
-			[self.zones[i].name.split('/')[-1] for i in range(self.n_zones)]
+			[os.path.split(self.zones[i].name)[-1] for i in range(self.n_zones)]
 		))
-		jar(attrs, name = "%s.vice/attributes" % (self.name)).close()
+		jar(attrs,
+			name = os.path.join("%s.vice" % (self.name), "attributes")).close()
 
 		# Save the migration parameters to a series of jars
 		jar({"stars": self.migration.stars},
-			name = "%s.vice/migration" % (self.name)).close()
+			name = os.path.join("%s.vice" % (self.name), "migration")).close()
 		for i in range(self.n_zones):
 			attrs = dict(zip(
 				[str(i) for i in range(self.n_zones)],
 				self.migration.gas[i].tolist()
 			))
 			jar(attrs,
-				name = "%s.vice/migration/gas%d" % (self.name, i)).close()
+				name = os.path.join("%s.vice" % (self.name), "migration",
+						"gas%d" % (i))).close()
 

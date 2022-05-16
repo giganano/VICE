@@ -19,6 +19,7 @@ from .._history import history
 import math as m
 import numbers
 import sys
+import os
 if sys.version_info[:2] == (2, 7):
 	strcomp = basestring
 elif sys.version_info[:2] >= (3, 5):
@@ -57,7 +58,8 @@ def test_initialize():
 			[0.01 * i for i in range(1001)], overwrite = True)
 		global _TEST_
 		try:
-			_TEST_ = history(filename = "test.vice/history.out",
+			_TEST_ = history(
+				filename = os.path.normpath("test.vice/history.out"),
 				adopted_solar_z = 0.014)
 		except:
 			return False

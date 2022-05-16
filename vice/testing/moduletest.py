@@ -29,7 +29,7 @@ class _moduletest:
 
 	r"""
 	**VICE Developer's Documentation**
-	
+
 	The base class for a module test in VICE, or stitching together a series
 	of unit tests.
 
@@ -106,6 +106,9 @@ class _moduletest:
 			The unittest or another moduletest object to add to this one.
 		"""
 		if isinstance(obj, _unittest) or isinstance(obj, _moduletest):
+# 			If there are issues with crashing, uncomment this line to
+# 			figure out where the problem is
+# 			print(obj)
 			self._unittests.append(obj)
 		elif obj is not None:
 			raise TypeError("""\

@@ -76,14 +76,14 @@ def test_masses():
 	vice.core.dataframe.ccsn_yield_table.masses unit test
 	"""
 	def test():
-		return (
+		return all((
 			isinstance(_TEST_NONISOTOPIC_.masses, tuple) and
 			all(map(lambda x: isinstance(x, numbers.Number),
 				_TEST_NONISOTOPIC_.masses)),
 			isinstance(_TEST_ISOTOPIC_.masses, tuple) and
 			all(map(lambda x: isinstance(x, numbers.Number),
 				_TEST_ISOTOPIC_.masses))
-		)
+		))
 	return ["vice.core.dataframe.ccsn_yield_table.masses", test]
 
 
