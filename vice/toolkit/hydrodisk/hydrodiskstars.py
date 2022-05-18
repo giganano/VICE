@@ -41,6 +41,12 @@ class hydrodiskstars:
 			object. Any more stellar populations than this would oversample
 			these data.
 
+	seed : int or ``None`` [default : ``None``]
+		The random number seed to use in importing and assigning analog
+		star particles.
+
+		.. versionadded: 1.X.0
+
 	mode : str [case-insensitive] or ``None`` [default : "diffusion"]
 		The attribute 'mode', initialized via keyword argument.
 
@@ -168,13 +174,14 @@ class hydrodiskstars:
 	.. [1] Christensen et al. (2012), MNRAS, 425, 3058
 	"""
 
-	def __init__(self, rad_bins, N = 1e5, mode = "diffusion"):
+	def __init__(self, rad_bins, N = 1e5, seed = None, mode = "diffusion"):
 		if not data._h277_exists():
 			print("VICE supplementary data required, downloading now.")
 			print("You will not need to repeat this process.")
 			data.download()
 		else: pass
-		self.__c_version = c_hydrodiskstars(rad_bins, N = N, mode = mode)
+		self.__c_version = c_hydrodiskstars(rad_bins, N = N, seed = seed,
+			mode = mode)
 
 	def __call__(self, zone, tform, time):
 		return self.__c_version.__call__(zone, tform, time)

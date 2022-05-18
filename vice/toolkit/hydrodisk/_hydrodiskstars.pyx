@@ -16,7 +16,7 @@ elif sys.version_info[:2] >= (3, 5):
 else:
 	_VERSION_ERROR_()
 # from libc.stdlib cimport srand
-from libc.stdlib cimport malloc, free
+from libc.stdlib cimport malloc, free, srand
 from libc.string cimport strcpy, strcmp, strlen
 from ...core._cutils cimport copy_pylist
 from ...core._cutils cimport set_string
@@ -40,17 +40,31 @@ cdef class c_hydrodiskstars:
 	documentation.
 	"""
 
-	def __cinit__(self, radbins, N = 1e5, mode = "diffusion", idcolumn = 0,
-		tformcolumn = 1, rformcolumn = 2, rfinalcolumn = 3, zformcolumn = 4,
-		zfinalcolumn = 5, v_radcolumn = 6, v_phicolumn = 7, v_zcolumn = 8,
-		decomp_column = 9):
+	def __cinit__(self, radbins, N = 1e5, seed = None, mode = "diffusion",
+		idcolumn = 0, tformcolumn = 1, rformcolumn = 2, rfinalcolumn = 3,
+		zformcolumn = 4, zfinalcolumn = 5, v_radcolumn = 6, v_phicolumn = 7,
+		v_zcolumn = 8, decomp_column = 9):
 
 		# allocate memory for hydrodiskstars object in C and import the data
 		self._hds = _hydrodiskstars.hydrodiskstars_initialize()
+		if seed is None:
+			_hydrodiskstars.seed_random()
+		elif isinstance(seed, numbers.Number):
+			if seed % 1 == 0:
+				if 0 <= seed < 2**32 - 1:
+					srand(<unsigned int> seed)
+				else:
+					raise ValueError("Invalid seed: %d" % (seed))
+			else:
+				raise ValueError("Seed must be an integer.")
+		else:
+			raise TypeError(
+				"Seed must be either NoneType or an integer. Got: %s" % (
+					type(seed)))
 		datafilestem = "%stoolkit/hydrodisk/data/h277/" % (_DIRECTORY_)
 		if isinstance(N, numbers.Number):
 			if N % 1 == 0:
-				_hydrodiskstars.seed_random()
+				# _hydrodiskstars.seed_random()
 				if N > _N_STAR_PARTICLES_:
 					N = _N_STAR_PARTICLES_
 					warnings.warn("""\
@@ -81,10 +95,10 @@ will oversample these data.""" % (_N_STAR_PARTICLES_), ScienceWarning)
 		self.radial_bins = radbins
 		self.mode = mode
 
-	def __init__(self, radbins, N = 1e5, mode = "linear", idcolumn = 0,
-		tformcolumn = 1, rformcolumn = 2, rfinalcolumn = 3, zformcolumn = 4,
-		zfinalcolumn = 5, v_radcolumn = 6, v_phicolumn = 7, v_zcolumn = 8,
-		decomp_column = 9):
+	def __init__(self, radbins, N = 1e5, seed = None, mode = "diffusion",
+		idcolumn = 0, tformcolumn = 1, rformcolumn = 2, rfinalcolumn = 3,
+		zformcolumn = 4, zfinalcolumn = 5, v_radcolumn = 6, v_phicolumn = 7,
+		v_zcolumn = 8, decomp_column = 9):
 		
 		self._analog_idx = -1l
 		self.__update_analog_data()
