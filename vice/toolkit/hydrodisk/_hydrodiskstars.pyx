@@ -51,7 +51,7 @@ cdef class c_hydrodiskstars:
 			_hydrodiskstars.seed_random()
 		elif isinstance(seed, numbers.Number):
 			if seed % 1 == 0:
-				if 0 <= seed < 2**32 - 1:
+				if 0 <= seed < 2**32:
 					srand(<unsigned int> seed)
 				else:
 					raise ValueError("Invalid seed: %d" % (seed))
