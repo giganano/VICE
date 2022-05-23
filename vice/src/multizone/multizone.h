@@ -20,8 +20,7 @@ extern "C" {
  *
  * source: multizone.c
  */
-extern void link_zone(MULTIZONE *mz, unsigned long address,
-	unsigned int zone_index);
+extern void link_zone(MULTIZONE *mz, char *address, unsigned int zone_index);
 
 /*
  * Runs the multizone simulation under current user settings.

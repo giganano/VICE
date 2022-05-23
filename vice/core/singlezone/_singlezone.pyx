@@ -49,7 +49,7 @@ else:
 	_VERSION_ERROR_()
 
 # C imports
-from libc.stdlib cimport malloc
+from libc.stdlib cimport malloc, free
 from libc.string cimport strlen
 from .._cutils cimport set_string
 from .._cutils cimport copy_pylist
@@ -182,7 +182,10 @@ cdef class c_singlezone:
 		"""
 		Returns the memory address of the associated SINGLEZONE struct in C.
 		"""
-		return _singlezone.singlezone_address(self._sz)
+		cdef char *address = _singlezone.singlezone_address(self._sz)
+		result = "".join([chr(address[i]) for i in range(strlen(address))])
+		free(address)
+		return result
 
 	@property
 	def name(self):

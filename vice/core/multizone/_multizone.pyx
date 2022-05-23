@@ -90,7 +90,8 @@ cdef class c_multizone:
 			print(self._zones[i]._singlezone__zone_object_address())
 			_multizone.link_zone(
 				self._mz,
-				self._zones[i]._singlezone__zone_object_address(),
+				self._zones[i]._singlezone__zone_object_address().encode(
+					"latin-1"),
 				i)
 		# import mass-lifetime relation data on this extension
 		# for i in ["vincenzo2016", "hpt2000", "ka1997"]:

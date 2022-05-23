@@ -9,7 +9,7 @@ extern "C" {
 #include "../objects.h"
 
 /*
- * Obtain the memory address of a singlezone object as a long.
+ * Obtain the memory address of a singlezone object as a string.
  *
  * Parameters
  * ==========
@@ -17,7 +17,7 @@ extern "C" {
  *
  * source: singlezone.c
  */
-extern unsigned long singlezone_address(SINGLEZONE *sz);
+extern char *singlezone_address(SINGLEZONE *sz);
 
 /*
  * Runs the singlezone simulation under current user settings. Most of VICE is

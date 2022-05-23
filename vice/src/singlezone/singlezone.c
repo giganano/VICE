@@ -22,7 +22,7 @@ static PROGRESSBAR *PB = NULL;
 
 
 /*
- * Obtain the memory address of a singlezone object as a long.
+ * Obtain the memory address of a singlezone object as a string.
  *
  * Parameters
  * ==========
@@ -30,9 +30,12 @@ static PROGRESSBAR *PB = NULL;
  *
  * header: singlezone.h
  */
-extern unsigned long singlezone_address(SINGLEZONE *sz) {
+extern char *singlezone_address(SINGLEZONE *sz) {
 
-	return (unsigned long) ((void *) sz);
+	char *address = (char *) malloc (100u * sizeof(char));
+	sprintf(address, "%p", (void *) sz);
+	strcat(address, "\0");
+	return address;
 
 }
 
