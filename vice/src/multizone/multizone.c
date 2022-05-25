@@ -3,6 +3,7 @@
  */
 
 #include <stdlib.h>
+#include <stdint.h>
 #include "../multizone.h"
 #include "../singlezone.h"
 #include "../tracer.h"
@@ -28,10 +29,11 @@ static void verbosity(MULTIZONE mz);
  *
  * header: multizone.h
  */
-extern void link_zone(MULTIZONE *mz, unsigned long address,
-	unsigned int zone_index) {
+extern void link_zone(MULTIZONE *mz, char *address, unsigned int zone_index) {
 
-	mz -> zones[zone_index] = (SINGLEZONE *) address;
+	unsigned long ul;
+	sscanf(address, "%lx", &ul);
+	mz -> zones[zone_index] = (SINGLEZONE *) (uintptr_t) ul;
 
 }
 
