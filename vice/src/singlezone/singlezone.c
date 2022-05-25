@@ -30,9 +30,9 @@ static PROGRESSBAR *PB = NULL;
  *
  * header: singlezone.h
  */
-extern unsigned long singlezone_address(SINGLEZONE *sz) {
+extern long singlezone_address(SINGLEZONE *sz) {
 
-	return (unsigned long) ((void *) sz);
+	return (long) ((void *) sz);
 
 }
 
