@@ -7,6 +7,7 @@ from ...dataframe import base as dataframe
 from ...singlezone import singlezone
 from ..output import output
 import os
+import shutil
 
 _OUTTIMES_ = [0.01 * i for i in range(1001)]
 
@@ -55,7 +56,7 @@ def test_zip():
 	vice.output.zip unittest
 	"""
 	def test():
-		if os.path.exists("test.vice"): os.system("rm -rf test.vice")
+		if os.path.exists("test.vice"): shutil.rmtree("test.vice")
 		try:
 			out = singlezone.singlezone(name = "test").run(_OUTTIMES_,
 				overwrite = True, capture = True)
@@ -72,12 +73,12 @@ def test_unzip():
 	vice.output.unzip unittest
 	"""
 	def test():
-		if os.path.exists("test.vice.zip"): os.system("rm -rf test.vice")
+		if os.path.exists("test.vice.zip"): shutil.rmtree("test.vice")
 		try:
 			singlezone.singlezone(name = "test").run(_OUTTIMES_,
 				overwrite = True)
 			output.zip("test")
-			os.system("rm -rf test.vice")
+			shutil.rmtree("test.vice")
 			output.unzip("test")
 		except:
 			return False

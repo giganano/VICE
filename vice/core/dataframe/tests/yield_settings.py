@@ -101,8 +101,7 @@ def test_save_defaults():
 			return True
 		status = "settings.config" in os.listdir("%syields/ccsne" % (
 			_DIRECTORY_))
-		if status: os.system("rm -f %syields/ccsne/settings.config" % (
-			_DIRECTORY_))
+		if status: os.remove("%syields/ccsne/settings.config" % (_DIRECTORY_))
 		return status
 	return ["vice.core.dataframe.yield_settings.save_defaults", test]
 

@@ -55,9 +55,9 @@ cdef class generic:
 		self.align_name_attributes()
 		self.prep(_TIMES_)
 		self.outfile_check(True)
-		os.system("mkdir %s.vice" % (self.name))
+		os.mkdir("%s.vice" % (self.name))
 		for i in range(self._mz[0].mig[0].n_zones):
-			os.system("mkdir %s.vice" % (self._zones[i].name))
+			os.mkdir("%s.vice" % (self._zones[i].name))
 		self.setup_migration()
 		_generic.multizone_setup(self._mz)
 		_generic.multizone_evolve_full(self._mz)

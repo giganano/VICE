@@ -20,6 +20,7 @@ import warnings
 import pickle
 import sys
 import os
+import shutil
 if sys.version_info[:2] == (2, 7):
 	strcomp = basestring
 elif sys.version_info[:2] >= (3, 5):
@@ -116,7 +117,7 @@ class jar:
 			self._name = value
 		else:
 			raise TypeError("Attribute 'name' must be of type str. Got: %s" % (
-				type(name)))
+				type(value)))
 
 	def close(self):
 		r"""
@@ -133,10 +134,7 @@ class jar:
 			An instance of this class
 		"""
 		if os.path.exists(self.name):
-			if sys.platform in ["linux", "darwin"]:
-				os.system("rm -rf %s" % (self.name))
-			elif sys.platform == "win32":
-				os.system("rmdir /s/q %s" % (self.name))
+			shutil.rmtree(self.name)
 		os.makedirs(self.name)
 		old_path = os.getcwd()
 		os.chdir(self.name)
@@ -298,10 +296,7 @@ class pickled_object:
 		This will remove any file previously located at <self.name>.obj
 		"""
 		if os.path.exists("%s.obj" % (self.name)):
-			if sys.platform in ["linux", "darwin"]:
-				os.system("rm -f %s.obj" % (self.name))
-			elif sys.platform == "win32":
-				os.system("del /f %s.obj" % (self.name))
+			os.remove("%s.obj" % (self.name))
 		else: pass
 		file = open("%s.obj" % (self.name), "wb")
 		if callable(self.obj):

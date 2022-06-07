@@ -40,6 +40,7 @@ import warnings
 import numbers
 import sys
 import os
+import shutil
 if sys.version_info[:2] == (2, 7):
 	strcomp = basestring
 	input = raw_input
@@ -368,7 +369,7 @@ a boolean. Got: %s""" % (type(value)))
 		Allowed Values
 		==============
 		Those in _RECOGNIZED_ELEMENTS_
-		
+
 		This setter function is less complicated than its length would
 		suggest. A lot of other attributes to the singlezone object are
 		dependent on the elements being simulated, and so are dependent on the
@@ -641,7 +642,7 @@ dataframe, it must take only strings as keys.""")
 					else:
 						raise TypeError("""Infall metallicity must be either \
 a numerical value or a callable function. Got: %s""" % (type(copy[i.lower()])))
-			
+
 			# any tracked elements missed by the passed value
 			for i in self.elements:
 				if i.lower() not in value.keys():
@@ -1278,11 +1279,11 @@ this version of VICE (%s). Instead, modify the yield settings for each \
 element individually at vice.yields.agb.settings. Functions of stellar mass \
 in solar masses and metallicity by mass (respectively) are also supported.
 """ % (version)
-			
+
 			# Change the settings if possible, if not just move on w/simulation
 			if isinstance(value, strcomp):
 				if value.lower() in agb._grid_reader._RECOGNIZED_STUDIES_:
-					
+
 					# Study keywords to full journal citations.
 					studies = {
 						"cristallo11": "Cristallo et al. (2011), ApJ, 197, 17",
@@ -1294,7 +1295,7 @@ in solar masses and metallicity by mass (respectively) are also supported.
 All elemental yields in the current simulation will be set to the table of \
 %s with linear interpolation between masses and metallicities on the grid.
 """ % (studies[value.lower()])
-					
+
 					self._agb_model = value.lower()
 					for i in self.elements:
 						agb.settings[i] = value.lower()
@@ -1333,7 +1334,7 @@ All elemental yields in the current simulation will be set to the table of \
 
 	# ------------------------ RUN THE SIMULATION ------------------------ #
 	def run(self, output_times, capture = False, overwrite = False):
-		
+
 		r"""
 		See docstring in singlezone.py.
 		"""
@@ -1545,7 +1546,7 @@ Specified output times denser are finer than the timestep size. This may \
 affect when output is written. Consider rerunning this simulation with \
 coarser output times.""", UserWarning)
 		else: pass
-		
+
 		return arr
 
 
@@ -1570,10 +1571,10 @@ coarser output times.""", UserWarning)
 		"""
 		if self.outfile_check(overwrite):
 			if os.path.exists("%s.vice" % (self.name)):
-				os.system("rm -rf %s.vice" % (self.name))
+				shutil.rmtree("%s.vice" % (self.name))
 			else: pass
 			# if not os.path.exists("%s.vice" % (self.name)):
-			os.system("mkdir %s.vice" % (self.name))
+			os.mkdir("%s.vice" % (self.name))
 			if not os.path.exists("%s.vice" % (self.name)):
 				raise RuntimeError("""\
 Invalid path: could not create output directory from name: %s.vice/""" % (
@@ -1604,7 +1605,7 @@ Invalid path: could not create output directory from name: %s.vice/""" % (
 		if overwrite:
 			return True
 		elif os.path.exists("%s.vice" % (self.name)):
-			
+
 			answer = input("""Output directory already exists. Overwriting \
 will delete all of its contents, leaving only the results of the current \
 simulation.\nOutput directory: %s.vice\nOverwite? (y | n) """ % (self.name))
@@ -1921,8 +1922,8 @@ timestepping.""" % (names[mlr.setting])
 
 		# Save a copy of each channel's current yield setting
 		if os.path.exists("%s.vice/yields" % (self.name)):
-			os.system("rm -rf %s.vice/yields" % (self.name))
-		os.system("mkdir %s.vice/yields" % (self.name))
+			shutil.rmtree(os.path.normpath("%s.vice/yields" % (self.name)))
+		os.mkdir(os.path.normpath("%s.vice/yields" % (self.name)))
 		ccsne_yields = dict(zip(
 			self.elements,
 			[ccsne.settings[i] for i in self.elements]

@@ -8,6 +8,7 @@ This file reads in the files of raw data from Gronow et al. (2021a, 2021b) [1]_
 
 import sys
 import os
+import shutil
 
 MODELS = {
 	"table1.dat": ["M08_03_001", "M08_03_01", "M08_03_3"],
@@ -34,7 +35,7 @@ def make_output_dirs():
 	os.chdir("..")
 	for filename in MODELS.keys():
 		for model in MODELS[filename]:
-			os.system("mkdir %s" % (model))
+			os.mkdir(model)
 	os.chdir("raw")
 
 
@@ -46,7 +47,7 @@ def remove_output_dirs():
 	os.chdir("..")
 	for filename in MODELS.keys():
 		for model in MODELS[filename]:
-			os.system("rm -rf %s" % (model))
+			shutil.rmtree(model)
 	os.chdir("raw")
 
 

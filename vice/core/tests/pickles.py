@@ -11,6 +11,7 @@ from ..pickles import pickled_object
 from ..pickles import jar
 import pickle
 import os
+import shutil
 
 
 @moduletest
@@ -55,7 +56,7 @@ class jar_tester(jar):
 			try:
 				self.close()
 			except:
-				os.system("rm -rf %s" % (self._name))
+				shutil.rmtree(self._name)
 				return False
 
 			x = True
@@ -71,7 +72,7 @@ class jar_tester(jar):
 					x = False
 					break
 
-			os.system("rm -rf %s" % (self._name))
+			shutil.rmtree(self._name)
 			return x
 
 		return ["vice.core.pickles.jar.close", test]
@@ -92,8 +93,8 @@ class jar_tester(jar):
 				"c": 		list(range(10))
 			}
 
-			if os.path.exists(self._name): os.system("rm -rf %s" % (self._name))
-			os.system("mkdir %s" % (self._name))
+			if os.path.exists(self._name): shutil.rmtree(self._name)
+			os.mkdir(self._name)
 			for i in test_.keys():
 				pickle.dump(test_[i], open("%s/%s.obj" % (self._name, i), "wb"))
 
@@ -103,7 +104,7 @@ class jar_tester(jar):
 			except:
 				return False
 			finally:
-				os.system("rm -rf %s" % (self._name))
+				shutil.rmtree(self._name)
 
 			return True
 
@@ -136,7 +137,7 @@ class pickled_object_tester(pickled_object):
 			except:
 				return False
 			finally:
-				os.system("rm -f %s" % (filename))
+				os.remove(filename)
 
 			self._obj = 3
 			try:
@@ -145,7 +146,7 @@ class pickled_object_tester(pickled_object):
 			except:
 				return False
 			finally:
-				os.system("rm -f %s" % (filename))
+				os.remove(filename)
 
 			self._obj = "string"
 			try:
@@ -154,7 +155,7 @@ class pickled_object_tester(pickled_object):
 			except:
 				return False
 			finally:
-				os.system("rm -f %s" % (filename))
+				os.remove(filename)
 
 			self._obj = list(range(10))
 			try:
@@ -163,7 +164,7 @@ class pickled_object_tester(pickled_object):
 			except:
 				return False
 			finally:
-				os.system("rm -f %s" % (filename))
+				os.remove(filename)
 
 			return True
 
@@ -186,7 +187,7 @@ class pickled_object_tester(pickled_object):
 			except:
 				return False
 			finally:
-				os.system("rm -f %s" % (filename))
+				os.remove(filename)
 
 			pickle.dump("string", open(filename, "wb"))
 			try:
@@ -194,7 +195,7 @@ class pickled_object_tester(pickled_object):
 			except:
 				return False
 			finally:
-				os.system("rm -f %s" % (filename))
+				os.remove(filename)
 
 			pickle.dump(list(range(10)), open(filename, "wb"))
 			try:
@@ -202,7 +203,7 @@ class pickled_object_tester(pickled_object):
 			except:
 				return False
 			finally:
-				os.system("rm -f %s" % (filename))
+				os.remove(filename)
 
 			return True
 

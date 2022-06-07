@@ -7,6 +7,7 @@ from ..._globals import _VERSION_ERROR_
 from ..._globals import _DIRECTORY_
 import sys
 import os
+import shutil
 if sys.version_info[:2] == (2, 7):
 	strcomp = basestring
 	input = raw_input
@@ -91,8 +92,8 @@ yield presets. Please choose an alternate name.""")
 			try:
 				# simply try to import the file
 				__import__(new_name)
-				os.system("cp %s.py %syields/presets/" % (new_name,
-					_DIRECTORY_))
+				shutil.copyfile("%s.py" % new_name,
+									os.path.normpath("%syields/presets/" % _DIRECTORY_))
 			except Exception as exc:
 				raise RuntimeError("""Could not import specified file. \
 Error message: %s""" % (str(exc)))
@@ -181,7 +182,7 @@ preset.""")
 				if ans.lower() in ["y", "yes"]:
 					os.chdir(src_path)
 					try:
-						os.system("rm -f %s" % (name))
+						os.remove(name)
 					except Exception as exc:
 						raise RuntimeError("""Could not uninstall yield file. \
 Error message: %s""" % (str(exc)))

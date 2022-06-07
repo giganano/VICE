@@ -22,6 +22,7 @@ import numbers
 import time
 import sys
 import os
+import shutil
 if sys.version_info[:2] == (2, 7):
 	strcomp = basestring
 	input = raw_input
@@ -87,7 +88,6 @@ cdef class c_multizone:
 		self._mz = _multizone.multizone_initialize(n_zones)
 		self._zones = _zone_array.zone_array(n_zones)
 		for i in range(n_zones):
-			print(self._zones[i]._singlezone__zone_object_address())
 			_multizone.link_zone(
 				self._mz,
 				self._zones[i]._singlezone__zone_object_address().encode(
@@ -369,9 +369,9 @@ migration.specs. Got: %s""" % (type(value)))
 		self.prep(output_times)
 		cdef int enrichment
 		if self.outfile_check(overwrite):
-			os.system("mkdir %s.vice" % (self.name))
+			os.mkdir("%s.vice" % (self.name))
 			for i in range(self._mz[0].mig[0].n_zones):
-				os.system("mkdir %s.vice" % (self._zones[i].name))
+				os.mkdir("%s.vice" % (self._zones[i].name))
 			self.setup_migration() # used to be in self.prep
 			start = time.time()
 
@@ -474,10 +474,7 @@ zone and at least one timestep larger than 1.""")
 		"""
 		if overwrite:
 			if os.path.exists("%s.vice" % (self.name)):
-				if sys.platform in ["linux", "darwin"]:
-					os.system("rm -rf %s.vice" % (self.name))
-				elif sys.platform == "win32":
-					os.system("rmdir /s/q %s.vice" % (self.name))
+				shutil.rmtree("%s.vice" % (self.name))
 			else:
 				pass
 			return True
@@ -497,10 +494,7 @@ leaving only the results of the current simulation.\nOutput directory: \
 					answer = input("Please enter either 'y' or 'n': ")
 
 				if answer.lower() in ["y", "yes"]:
-					if sys.platform in ["linux", "darwin"]:
-						os.system("rm -rf %s.vice" % (self.name))
-					elif sys.platform == "win32":
-						os.system("rmdir /s/q %s.vice" % (self.name))
+					shutil.rmtree("%s.vice" % (self.name))
 					return True
 				else:
 					return False

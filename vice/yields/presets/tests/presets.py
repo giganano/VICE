@@ -93,12 +93,13 @@ for i in vice._globals._RECOGNIZED_ELEMENTS_:
 	vice.yields.sneia.settings[i] = 0.001
 
 """
-	os.system("echo \'%s\' >> %s" % (cnt, filename))
+	with open(filename, "w") as f:
+		f.write(cnt)
 
 
 def remove_dummy_yield_file(filename = _DUMMY_FILENAME_):
 	"""
 	Remove the dummy yield file
 	"""
-	os.system("rm -f %s" % (filename))
+	os.remove(filename)
 

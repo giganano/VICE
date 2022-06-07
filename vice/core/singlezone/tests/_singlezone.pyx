@@ -10,6 +10,7 @@ from ....yields import agb
 from ....yields import ccsne
 from ....yields import sneia
 import os
+import shutil
 
 from libc.string cimport strcmp
 from . cimport _singlezone
@@ -683,7 +684,7 @@ cdef class singlezone_tester:
 			except:
 				return False
 			if os.path.exists("test.vice"):
-				os.system("rm -rf test.vice/")
+				shutil.rmtree("test.vice")
 				return True
 			else:
 				return False
@@ -810,9 +811,9 @@ cdef class singlezone_tester:
 			"""
 			self.name = "test"
 			if os.path.exists("%s.vice" % (self.name)):
-				os.system("rm -rf %s.vice" % (self.name))
+				shutil.rmtree("%s.vice" % (self.name))
 			else: pass
-			os.system("mkdir %s.vice" % (self.name))
+			os.mkdir("%s.vice" % (self.name))
 			try:
 				self.pickle()
 			except:
@@ -830,7 +831,7 @@ cdef class singlezone_tester:
 					self.elements) and
 				len(os.listdir("%s.vice/attributes" % (self.name))) == 28
 			)
-			os.system("rm -rf %s.vice" % (self.name))
+			shutil.rmtree("%s.vice" % (self.name))
 			return x
 		return ["vice.core.singlezone.pickle", test]
 

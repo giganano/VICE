@@ -365,7 +365,7 @@ def print_recognized_elements(args):
 def run_simulation(args):
 	r"""
 	Runs the simulation according to the arguments passed on the command line.
-	
+
 	Parameters
 	----------
 	args : argparse.Namespace
