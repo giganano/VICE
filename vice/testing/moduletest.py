@@ -108,7 +108,7 @@ class _moduletest:
 		if isinstance(obj, _unittest) or isinstance(obj, _moduletest):
 # 			If there are issues with crashing, uncomment this line to
 # 			figure out where the problem is
-			print(obj)
+# 			print(obj)
 			self._unittests.append(obj)
 		elif obj is not None:
 			raise TypeError("""\
