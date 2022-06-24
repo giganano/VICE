@@ -43,6 +43,7 @@ from . cimport _tracer
 from . cimport _zone_array
 from . cimport _multizone
 from . cimport _migration
+from libc.stdio cimport printf
 
 """
 NOTES
@@ -364,11 +365,15 @@ migration.specs. Got: %s""" % (type(value)))
 		"""
 		See docstring in python version of this class.
 		"""
+		print('set_nthreads')
 		set_nthreads(self.setup_nthreads)
+		print('align_name_attributes')
 		self.align_name_attributes()
+		print('prep')
 		self.prep(output_times)
 		cdef int enrichment
 		if self.outfile_check(overwrite):
+			print('outfile_check true')
 			os.mkdir("%s.vice" % (self.name))
 			for i in range(self._mz[0].mig[0].n_zones):
 				os.mkdir("%s.vice" % (self._zones[i].name))
@@ -396,10 +401,12 @@ migration.specs. Got: %s""" % (type(value)))
 				self._zones[i]._singlezone__c_version.pickle()
 			canceled = False
 		else:
+			print('outfile_check false')
 			_multizone.multizone_cancel(self._mz)
 			enrichment = 0
 			canceled = True
 
+		print('end if/else')
 		self.dealign_name_attributes()
 		stop = time.time()
 		if enrichment == 1:
@@ -450,11 +457,23 @@ zone and at least one timestep larger than 1.""")
 		self.align_element_attributes()
 		self.zone_alignment_warnings()
 		self.timestep_alignment_error()
+		print('for loop')
 		for i in range(self._mz[0].mig[0].n_zones):
+			print(i)
+			print('prep times')
 			times = self._zones[i]._singlezone__zone_prep(output_times)
-			self._mz[0].zones[i][0].output_times = copy_pylist(
-				times)
+			print('n_outputs')
 			self._mz[0].zones[i][0].n_outputs = <unsigned long> len(times)
+			print('manual copy')
+			self._mz[0].zones[i][0].output_times = <double *> malloc (
+				self._mz[0].zones[i][0].n_outputs * sizeof(double))
+			print('loop through times')
+			for j in range(self._mz[0].zones[i][0].n_outputs):
+				self._mz[0].zones[i][0].output_times[j] = times[j]
+# 			print('copy pylist to output_times')
+# 			self._mz[0].zones[i][0].output_times = <double *> copy_pylist(
+# 				times)
+		print('done')
 
 
 	def outfile_check(self, overwrite):

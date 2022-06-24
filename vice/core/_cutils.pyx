@@ -444,7 +444,7 @@ cdef void callback_1arg_setup(CALLBACK_1ARG *cb1, value) except *:
 		-	``value`` is neither a number nor callable
 		-	``value`` is callable and does not accept exactly one positional
 			argument
-			
+
 	.. seealso:: vice/core/callback.py
 	"""
 	if callable(value):
@@ -685,7 +685,7 @@ cdef double *copy_pylist(pylist) except *:
 			free(copy)
 			raise TypeError("Non-numerical value detected.")
 	return copy
-	
+
 
 cdef double **copy_2Dpylist(pylist) except *:
 	r"""

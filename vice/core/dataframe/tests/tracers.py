@@ -48,20 +48,26 @@ def test_initialize():
 	"""
 	from ...multizone import multizone
 	def test():
+		print('yield settings')
 		agb.settings.factory_settings()
 		ccsne.settings.factory_settings()
 		sneia.settings.factory_settings()
+		print('multizone setup')
 		mz = multizone(name = "test", n_zones = 3)
 		for i in mz.zones:
 			i.elements = _ELEMENTS_ + ["he"]
 			i.dt = 0.05
+		print('multizone run')
 		mz.run([0.05 * i for i in range(201)], overwrite = True)
+		print('multizone done')
 		global _TEST_
 		try:
+			print('tracers')
 			_TEST_ = tracers(filename = "test.vice/tracers.out",
 				adopted_solar_z = 0.014)
 		except:
 			return False
+		print('return')
 		return isinstance(_TEST_, tracers)
 	return ["vice.core.dataframe.tracers.__init__", test]
 
