@@ -214,7 +214,8 @@ extern void write_zone_history(SINGLEZONE sz, double mstar,
 		for (i = 0; i < sz.n_elements; i++) {
 			/* infall metallicity */
 			fprintf(sz.history_writer, "%e\t",
-				(*sz.elements[i]).Zin[sz.timestep]);
+				(*sz.elements[i]).Zin[sz.timestep] +
+				(*sz.elements[i]).primordial);
 		}
 		for (i = 0; i < sz.n_elements; i++) {
 			/* outflow metallicity = enhancement factor x ISM metallicity */

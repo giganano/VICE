@@ -85,13 +85,13 @@ Topic :: Scientific/Engineering :: Physics
 # ./docs/src/cover.tex
 MAJOR			= 1
 MINOR			= 3
-MICRO			= 0
-DEV				= None
+MICRO			= 1
+DEV				= 0
 ALPHA			= None
 BETA			= None
 RC				= None
 POST			= None
-ISRELEASED		= True
+ISRELEASED		= False
 VERSION			= "%d.%d.%d" % (MAJOR, MINOR, MICRO)
 if DEV is not None:
 	assert isinstance(DEV, int), "Invalid version information"

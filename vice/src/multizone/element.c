@@ -22,84 +22,103 @@
  */
 extern void update_elements(MULTIZONE *mz) {
 
-	unsigned int i, j;
-	for (i = 0u; i < (*(*mz).mig).n_zones; i++) {
-		SINGLEZONE *sz = mz -> zones[i];
-		for (j = 0u; j < (*(*mz).zones[i]).n_elements; j++) {
-			ELEMENT *e = sz -> elements[j];
-			/*
-			 * Instantaneous pieces that don't require tracer particles:
-			 *
-			 * Enrichment from core collapse supernovae
-			 * depletion from star formation
-			 * depletion from outflows
-			 * metal-rich infall
-			 */
-
-			e -> unretained = 0;
-			double m_cc = mdot_ccsne(*sz, *e) * (*sz).dt;
-			e -> mass += (*(*e).ccsne_yields).entrainment * m_cc;
-			e -> unretained += (1 - (*(*e).ccsne_yields).entrainment) * m_cc;
-
-			e -> mass -= (
-				(*(*sz).ism).star_formation_rate * (*sz).dt *
-				(*e).mass / (*(*sz).ism).mass
-			);
-			if (strcmp((*e).symbol, "he")) {
-				e -> mass -= (
-					(*(*sz).ism).enh[(*sz).timestep] * get_outflow_rate(*sz) *
-					(*sz).dt * (*e).mass / (*(*sz).ism).mass
-				);
-			} else {
-				e -> mass -= (
-					get_outflow_rate(*sz) * (*sz).dt * (*e).mass /
-					(*(*sz).ism).mass
-				);
-			}
-			e -> mass += (
-				(*(*sz).ism).infall_rate * (*sz).dt * (*e).Zin[(*sz).timestep]
-			);
-
-		}
-	}
-
 	/*
-	 * Non-instantaneous pieces that do require tracer particles:
+	 * Change Note: version 1.3.1
 	 *
-	 * Enrichment from AGB stars
-	 * Enrichment from SNe Ia
-	 * Re-enrichment from recycling
+	 * See corresponding change note in src/singlezone/element.c as the same
+	 * changes have been incorporated here.
 	 */
+
+	unsigned int i, j;
 	for (i = 0u; i < (*(*mz).zones[0]).n_elements; i++) {
 
-		/* AGB stars taking into account entrainment in the current zone */
-		double *agb = m_AGB_from_tracers(*mz, i);
-		for (j = 0u; j < (*(*mz).mig).n_zones; j++) {
-			ELEMENT *e = mz -> zones[j] -> elements[i];
-			e -> mass += (*(*e).agb_grid).entrainment * agb[j];
-			e -> unretained += (1 - (*(*e).agb_grid).entrainment) * agb[j];
-		}
-		free(agb);
-
-		/* SNe Ia taking into account entrainment in the current zone. */
+		/*
+		 * These enrichment channels which require tracer particles are written
+		 * such that they can be called once for each element and updated
+		 * in one foul swoop across all zones:
+		 *
+		 * Enrichment from SNe Ia
+		 * Enrichment from AGB stars
+		 * Re-enrichment from recycled stellar envelopes
+		 */
 		double *sneia = m_sneia_from_tracers(*mz, i);
+		double *agb = m_AGB_from_tracers(*mz, i);
+		double *recycled = recycled_mass(*mz, i);
+
 		for (j = 0u; j < (*(*mz).mig).n_zones; j++) {
+
+			/*
+			 * These instantaneous pieces don't require tracer particles and
+			 * can be taken straight from the birth zone:
+			 *
+			 * Enrichment from core collapse supernovae
+			 * Depletion from star formation
+			 * Depletion from outflows
+			 * Metal-rich infall (or anything present in primordial gas)
+			 */
+
+			SINGLEZONE sz = *(*mz).zones[j];
 			ELEMENT *e = mz -> zones[j] -> elements[i];
-			e -> mass += (*(*e).sneia_yields).entrainment * sneia[j];
-			e -> unretained += (1 -
-				(*(*e).sneia_yields).entrainment) * sneia[j];
+
+			double dm = 0;
+			double m_cc = mdot_ccsne(sz, *e) * sz.dt;
+			double m_ia = sneia[j];
+			double m_agb = agb[j];
+
+			/* 
+			 * Enrichment immediately lost to outflows. For the enrichment
+			 * channels requiring tracer particles, this uses the entrainment
+			 * fraction from the CURRENT zone as opposed to the BIRTH zone,
+			 * a choice which is likely more physical since whether or not, e.g.
+			 * a fluid element from a SN Ia or an AGB star is included in an
+			 * outflow likely has more to do with its current location than
+			 * where it was born.
+			 */
+			e -> unretained = 0;
+			e -> unretained += (1 - (*(*e).ccsne_yields).entrainment) * m_cc;
+			e -> unretained += (1 - (*(*e).sneia_yields).entrainment) * m_ia;
+			e -> unretained += (1 - (*(*e).agb_grid).entrainment) * m_agb;
+
+			/* Enrichment entrained within the ISM */
+			dm += (*(*e).ccsne_yields).entrainment * m_cc;
+			dm += (*(*e).sneia_yields).entrainment * m_ia;
+			dm += (*(*e).agb_grid).entrainment * m_agb;
+
+			/*
+			 * Subsequent terms in the enrichmen tequation - star formation and
+			 * outflows proceed at the abundance by mass Z in the current zone.
+			 */
+			double Z = (*e).mass / (*sz.ism).mass;
+			dm += recycled[j];
+			dm -= (*sz.ism).star_formation_rate * sz.dt * Z;
+			if (strcmp((*e).symbol, "he")) {
+				dm -= (
+					(*sz.ism).enh[sz.timestep] * get_outflow_rate(sz) *
+					sz.dt * Z
+				);
+			} else {
+				/* Don't eject helium at an enhanced abundance */
+				dm -= get_outflow_rate(sz) * sz.dt * Z;
+			}
+
+			if ((*sz.ism).infall_rate > 0) {
+				/*
+				 * Safeguard against the infall rate being set to NaN, see
+				 * comment on same if-statement in src/singlezone/element.c.
+				 */
+				double Zin = (*e).Zin[sz.timestep] + (*e).primordial;
+				dm += (*sz.ism).infall_rate * (sz).dt * Zin;
+			} else {}
+
+			e -> mass += dm;
+			update_element_mass_sanitycheck(e);
+
 		}
+
 		free(sneia);
+		free(agb);
+		free(recycled);
 
-		recycle_metals_from_tracers(mz, i);
-
-	}
-
-	/* sanity check each element in each zone */
-	for (i = 0u; i < (*(*mz).mig).n_zones; i++) {
-		for (j = 0u; j < (*(*mz).zones[i]).n_elements; j++) {
-			update_element_mass_sanitycheck(mz -> zones[i] -> elements[j]);
-		}
 	}
 
 }

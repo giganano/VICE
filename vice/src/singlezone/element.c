@@ -57,39 +57,68 @@ extern unsigned short malloc_Z(ELEMENT *e, unsigned long n_timesteps) {
 extern void update_element_mass(SINGLEZONE sz, ELEMENT *e) {
 
 	/*
+	 * Change Note: version 1.3.1
+	 *
+	 * Rather than updating the element mass directly, one single value for
+	 * the change is computed, and the total mass incremented at the end.
+	 * This ensures that changes to the mass do not impact subsequent updates.
+	 * Additionally, the increase in mass due to a species being present in
+	 * primordial gas has moved to this function from the update_gas_evolution
+	 * function in ism.c. This allows the element's mass to updated in one
+	 * call, rather than in multiple places.
+	 *
+	 * See also changes notes in ism.c, singlezone.c.
+	 */
+
+	/*
 	 * Pull the amount of mass produced by each enrichment channel, then add
 	 * the retained part to the ISM mass and the unretained part to the
 	 * instantaneous mass outflow.
 	 */
 
+	double dm = 0;
 	double m_cc = mdot_ccsne(sz, *e) * sz.dt;
 	double m_ia = mdot_sneia(sz, *e) * sz.dt;
 	double m_agb = m_AGB(sz, *e);
 
-	e -> mass += (*(*e).ccsne_yields).entrainment * m_cc;
-	e -> mass += (*(*e).sneia_yields).entrainment * m_ia;
-	e -> mass += (*(*e).agb_grid).entrainment * m_agb;
-
+	/* enrichment immediately lost to outflows */
 	e -> unretained = 0;
 	e -> unretained += (1 - (*(*e).ccsne_yields).entrainment) * m_cc;
 	e -> unretained += (1 - (*(*e).sneia_yields).entrainment) * m_ia;
 	e -> unretained += (1 - (*(*e).agb_grid).entrainment) * m_agb;
 
+	/* enrichment entrained within the ISM */
+	dm += (*(*e).ccsne_yields).entrainment * m_cc;
+	dm += (*(*e).sneia_yields).entrainment * m_ia;
+	dm += (*(*e).agb_grid).entrainment * m_agb;
 	
 	/*
-	 * Take care of subsequent terms in the enrichment equation.
+	 * Subsequent terms in the enrichment equation - star formation and
+	 * outflows proceed at the abundance by mass in the ISM Z.
 	 */
-	e -> mass += mass_recycled(sz, e);
-	e -> mass -= ((*sz.ism).star_formation_rate * sz.dt *
-		(*e).mass / (*sz.ism).mass);
-	/* don't eject helium at an enhanced metallicity */
+	double Z = (*e).mass / (*sz.ism).mass;
+	dm += mass_recycled(sz, e);
+	dm -= (*sz.ism).star_formation_rate * sz.dt * Z;
 	if (strcmp((*e).symbol, "he")) {
-		e -> mass -= ((*sz.ism).enh[sz.timestep] * get_outflow_rate(sz) *
-			sz.dt / (*sz.ism).mass * (*e).mass);
+		dm -= (*sz.ism).enh[sz.timestep] * get_outflow_rate(sz) * sz.dt * Z;
 	} else {
-		e -> mass -= get_outflow_rate(sz) * sz.dt / (*sz.ism).mass * (*e).mass;
+		/* Don't eject helium at an enhanced metallicity */
+		dm -= get_outflow_rate(sz) * sz.dt * Z;
 	}
-	e -> mass += (*sz.ism).infall_rate * sz.dt * (*e).Zin[sz.timestep];
+	if ((*sz.ism).infall_rate > 0) {
+		/*
+		 * Seemingly unnecessary, this if statement is a safeguard against
+		 * cases where the infall rate has been temporarily set to NaN, as in
+		 * the first timestep in gas or star formation modes where the infall
+		 * rate is not yet known. This is however taken into account by
+		 * updating the gas supply before the elements when NOT running in
+		 * infall mode, and vice versa when in infall mode.
+		 */
+ 		double Zin = (*e).Zin[sz.timestep] + (*e).primordial;
+	 	dm += (*sz.ism).infall_rate * sz.dt * Zin;
+	} else {}
+
+	e -> mass += dm;
 	update_element_mass_sanitycheck(e);
 
 }
