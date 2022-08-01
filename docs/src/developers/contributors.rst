@@ -8,7 +8,7 @@ James W. Johnson
 ----------------
 | **Lead Developer** and **License Owner** (Spring 2018 - Present)
 | Email: giganano9@gmail.com johnson.7419@buckeyemail.osu.edu
-| Webiste: https://sites.google.com/view/jameswjohnson/
+| Webiste: https://jamesjohnson.space
 | The Ohio State University Department of Astronomy
 | 140 W. 18th Ave., Columbus, OH, 43204
 
@@ -20,11 +20,11 @@ Emily J. Griffith
 | The Ohio State University Department of Astronomy
 | 140 W. 18th Ave., Columbus, OH, 43204
 
-John W. Bredall
----------------
+Ari Bredall
+-----------
 | **Contributing Developer** (Fall 2021 - Present)
 | Email: bredall.1@buckeyemail.osu.edu
-| Website: https://u.osu.edu/jbredall/
+| Website: https://abredall.github.io/
 | The Ohio State University Department of Astronomy
 | 140 W. 18th Ave., Columbus, OH, 43204
 
@@ -35,12 +35,12 @@ David H. Weinberg
 | The Ohio State University Department of Astronomy
 | 140 W. 18th Ave., Columbus, OH, 43204
 
-Fiorenzo Vincenzo
------------------
-| **Advising Developer** (Spring 2019 - Present)
-| Website: https://ccapp.osu.edu/people/vincenzo.3
-| The Ohio State University Center for Cosmology and Astroparticle Physics
-| 191 West Woodruff Ave., Columbus, OH, 43210
+Jennifer A. Johnson
+-------------------
+| **Advising Developer** (Summer 2020 - Present)
+| Website: http://www.astronomy.ohio-state.edu/~jaj/
+| The Ohio State University Department of Astronomy
+| 140 W. 18th Ave., Columbus, OH, 43204
 
 Jonathan C. Bird
 ----------------
@@ -49,9 +49,9 @@ Jonathan C. Bird
 | Vanderbilt University Department of Physics & Astronomy
 | 6301 Stevenson Center, 2301 Vanderbilt Place, Nasvhille, TN 37235
 
-Jennifer A. Johnson
--------------------
-| **Advising Developer** (Summer 2020 - Present)
-| Website: http://www.astronomy.ohio-state.edu/~jaj/
-| The Ohio State University Department of Astronomy
-| 140 W. 18th Ave., Columbus, OH, 43204
+Fiorenzo Vincenzo
+-----------------
+| **Advising Developer** (Spring 2019 - Summer 2021)
+| Website: https://www.hull.ac.uk/staff-directory/fiorenzo-vincenzo
+| The Ohio State University Center for Cosmology and Astroparticle Physics
+| 191 West Woodruff Ave., Columbus, OH, 43210

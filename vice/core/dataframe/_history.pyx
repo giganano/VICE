@@ -108,6 +108,15 @@ cdef class history(fromfile):
 
 			.. math:: [M/H] = \log_{10}\left(\frac{Z}{Z_\odot}\right)
 
+		.. versionadded:: 1.3.1
+
+			In previous versions, the primordial abundance by mass was included
+			in the numerical calculation of the inflow metallicity, but was not
+			recorded in the output. That is, an inflow metallicity of zero for
+			helium meant that the inflow metallicity was the primordial value.
+			In this patch, this book-keeping is adjusted to account for this,
+			and outputs will reflect a non-zero abundance in primordial gas.
+
 	Functions
 	---------
 	- keys
