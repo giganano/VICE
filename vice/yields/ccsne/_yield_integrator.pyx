@@ -74,6 +74,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		Keywords and their Associated Studies:
 
 			- "LC18": Limongi & Chieffi (2018) [1]_
+			- "LC18M": Limongi & Chieffi (2018) (forced explosions)
 			- "S16/W18": Sukhbold et al. (2016) [2]_ (W18 explosion engine)
 			- "S16/W18F": Sukhbold et al. (2016) (W18 engine, forced explosions)
 			- "S16/N20": Sukhbold et al. (2016) (N20 explosion engine)
@@ -99,7 +100,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 
 		Keywords and their Associated Metallicities:
 
-			- "LC18": [M/H] = -3, -2, -1, 0
+			- "LC18\*": [M/H] = -3, -2, -1, 0
 			- "S16/\*": [M/H] = 0
 			- "CL13": [M/H] = 0
 			- "NKT13": [M/H] = -inf, -1.15, -0.54, -0.24, 0.15, 0.55
@@ -112,7 +113,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 
 		Keywords and their Associated Rotational Velocities:
 
-			- "LC18": v = 0, 150, 300
+			- "LC18\*": v = 0, 150, 300
 			- "S16/\*": v = 0
 			- "CL13": v = 0, 300
 			- "NKT13": v = 0
@@ -243,8 +244,9 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 		- 	Numerical quadrature did not converge within the maximum number
 			of allowed quadrature bins to within the specified tolerance.
 		- 	``explodability`` is not ``None`` and ``study == "LC18"``,
-			``"S16/N20"``, ``"S16/W18"``. The mass yields these studies report
-			are already under a given model for the black hole landscape.
+			``"LC18M"``, ``"S16/N20"``, ``"S16/W18"``. The mass yields these
+			studies report are already under a given model for the black hole
+			landscape.
 		- 	``wind = False`` and ``study`` is anything other than
 			LC18 or S16. These are the only studies for which wind yields were
 			reported separate from explosive yields.
@@ -277,7 +279,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	simply set to zero to calculate a gross yield.
 
 	If a study does not report wind yields, or doesn't separate them from the
-	explosive yields (i.e. anything other than LC18 or S16/* yield sets), then
+	explosive yields (i.e. anything other than LC18* or S16/* yield sets), then
 	:math:`w_x` = 0 everywhere by definition. In these cases, VICE weights the
 	term correcting for the birth abundance :math:`Z_{x,\text{prog}}m` by the
 	explodability :math:`E(m)` for net yield calculations. Because high mass
@@ -386,9 +388,12 @@ smaller than maximum number of bins.""")
 		isotopes = []
 		for ISO in _RECOGNIZED_ISOTOPES_:
 			ELE = ''.join([c for c in ISO if not c.isdigit()])
-			if (ELE == element
+			if (ELE == element.lower()
 				or (element == "fe" and ISO == "ni56")
-				or (element == "mg" and ISO == "al26")):
+				or (element == "mg" and ISO == "al26")
+			) and not ((element == "ni" and ISO == "ni56")
+				or (element == "al" and ISO == "al26")
+			):
 				isotopes.append(ISO)
 		total = 0
 		var = 0
@@ -423,7 +428,9 @@ smaller than maximum number of bins.""")
 	elif callable(explodability):
 		exp_cb = callback1_nan_inf(explodability)
 		callback_1arg_setup(explodability_cb, exp_cb)
-		if study.upper() in ["LC18", "S16/N20", "S16/W18"]: warnings.warn("""\
+		if study.upper() in [
+			"LC18", "LC18M", "S16/N20", "S16/W18"
+		]: warnings.warn("""\
 The %s yields are already reported under a given black hole landscape. Stellar \
 explodability is over-specified in this calculation.""" % (
 			_NAMES_[study.upper()]), ScienceWarning)
@@ -473,6 +480,7 @@ object. Got: %s""" % (type(explodability)))
 	"""
 	upper_mass_limits = {
 		"LC18":			120,
+		"LC18M":			120,
 		"CL13": 		120,
 		"CL04": 		35,
 		"WW95": 		40,
@@ -492,7 +500,7 @@ Got: %g Msun""" % (
 	else:
 		pass
 
-	if ( study.upper() in ["CL04", "CL13", "LC18"] and
+	if ( study.upper() in ["CL04", "CL13", "LC18", "LC18M"] and
 		24 <= atomic_number[element.lower()] <= 28 ):
 		warnings.warn("""The %s study published only the results which \
 adopted a fixed yield of nickel-56, and these are the yields which are
@@ -503,7 +511,8 @@ these yields of iron peak elements.""" % (_NAMES_[study.upper()]),
 		pass
 
 	if (not wind and
-		study.upper() not in ["LC18", "S16/N20", "S16/W18", "S16/W18F"]):
+		study.upper() not in ["LC18", "LC18M", "S16/N20", "S16/W18", "S16/W18F"]
+	):
 		warnings.warn("""The %s study did not separate wind and explosive \
 yields (or did not report wind yields), publishing only the total yields. \
 For this reason, this calculation can only run including the wind yield.""" % (
@@ -544,7 +553,9 @@ own discretion by modifying their CCSN yield settings directly.""" % (
 					_DIRECTORY_, study.upper(), MoverHstr),
 				isotope.lower(), is_isotope)
 		_yield_integrator.set_Z_progenitor(zprog)
-		if study.upper() not in ["S16/W18", "S16/W18F", "S16/N20", "LC18"]:
+		if study.upper() not in [
+			"S16/W18", "S16/W18F", "S16/N20", "LC18", "LC18M"
+		]:
 			_yield_integrator.weight_initial_by_explodability(1)
 		else:
 			_yield_integrator.weight_initial_by_explodability(0)

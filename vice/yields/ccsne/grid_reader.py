@@ -48,6 +48,7 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 		Keywords and their Associated Studies:
 
 			- "LC18": Limongi & Chieffi (2018) [1]_
+			- "LC18M": Limongi & Chieffi (2018) (forced explosions)
 			- "S16/W18": Sukhbold et al. (2016) [2]_ (W18 explosion engine)
 			- "S16/W18F": Sukhbold et al. (2016) (W18 engine, forced explosions)
 			- "S16/N20": Sukhbold et al. (2016) (N20 explosion engine)
@@ -64,6 +65,7 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 		Keywords and their Associated Metallicities:
 
 			- "LC18": [M/H] = -3, -2, -1, 0
+			- "LC18M": [M/H] = -3, -2, -1, 0
 			- "S16/\*": [M/H] = 0
 			- "CL13": [M/H] = 0
 			- "NKT13": [M/H] = -inf, -1.15, -0.54, -0.24, 0.15, 0.55
@@ -77,6 +79,7 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 		Keywords and their Associated Rotational Velocities:
 
 			- "LC18": v = 0, 150, 300
+			- "LC18M": v = 0, 150, 300
 			- "S16/\*": v = 0
 			- "CL13": v = 0, 300
 			- "NKT13": v = 0
@@ -249,7 +252,7 @@ their own discretion by modifying their CCSN yield settings directly.""" % (
 		for i in range(len(grid)):
 			for j in range(1, len(grid[i])):
 				grid[i][j] += wind_grid[i][j]
-	elif study.upper() not in ["LC18", "S16/W18", "S16/N20", "S16/W18F"]:
+	elif study.upper() not in ["LC18", "LC18M", "S16/W18", "S16/N20", "S16/W18F"]:
 		warnings.warn("""The %s study did not separate the yields from the \
 wind and the explosion, publishing only the total yields from both. For this \
 reason, this function cannot separate the wind yields from this table.""" % (
