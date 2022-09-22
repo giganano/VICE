@@ -49,7 +49,7 @@ def sfrburst(t):
 	if t < 5:
 		return 100
 	else:
-		return 100 + 50 * np.exp(-(t - 5) / 2)
+		return 100 + 50 * math.exp(-(t - 5) / 2)
 
 
 class helium_smoothsfh_generator(generator):
