@@ -592,6 +592,23 @@ typedef struct hydrodiskstars {
 } HYDRODISKSTARS;
 
 
+typedef struct matrix {
+
+	/*
+	 * This struct holds the data associated with a matrix.
+	 *
+	 * matrix: the matrix itself
+	 * n_rows: the number of rows in the matrix
+	 * n_cols: the number of columns in the matrix
+	 */
+
+	double **matrix;
+	unsigned short n_rows;
+	unsigned short n_cols;
+
+} MATRIX;
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
