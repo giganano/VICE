@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include "../multithread.h"
 #include "../objects.h"
 #include "../debug.h"
 #include "matrix.h"
@@ -13,6 +14,53 @@ static MATRIX *matrix_minor(MATRIX m, unsigned short axis[2]);
 static MATRIX *matrix_adjoint(MATRIX m);
 static MATRIX *matrix_cofactors(MATRIX m);
 static MATRIX *matrix_transpose(MATRIX m);
+
+
+/*
+ * Multiply two matrices.
+ *
+ * Parameters
+ * ==========
+ * m1: 		The first matrix in the multiplication.
+ * m2:		The second matrix in the multiplication.
+ *
+ * Returns
+ * =======
+ * A pointer to the resultant matrix c, defined as c_ij = \sum_k m1_ik * m2_kj
+ *
+ * header: matrix.h
+ */
+extern MATRIX *matrix_multiply(MATRIX m1, MATRIX m2) {
+
+	if (m1.n_cols != m2.n_rows) {
+		fatal_print("%s\n",
+			"Matrix dimensions incompatible for multiplication.");
+	} else {
+		MATRIX *result = matrix_initialize(m1.n_rows, m2.n_cols);
+		unsigned short i, j, k;
+		for (i = 0u; i < (*result).n_rows; i++) {
+			/*
+			 * Parallelization goes over not the rows but the columns of the
+			 * second matrix in the operation. This implementation is chosen
+			 * because in practice, the first matrix will most often be a row
+			 * vector quantifying the difference between a model prediction and
+			 * a datum, whereas the second will be the covariance matrix of the
+			 * datum. If the first vector is a row vector, there would be no
+			 * parallelization anyway.
+			 */
+			#if defined(_OPENMP)
+				#pragma omp parallel for
+			#endif
+			for (j = 0u; j < (*result).n_cols; j++) {
+				for (k = 0u; k < m1.n_cols; k++) {
+					result -> matrix[i][j] += m1.matrix[i][k] * m2.matrix[k][j];
+				}
+			}
+		}
+		return result;
+	}
+
+}
 
 
 /*
@@ -150,6 +198,9 @@ static MATRIX *matrix_cofactors(MATRIX m) {
 	if (det) {
 		MATRIX *adjoint = matrix_initialize(m.n_rows, m.n_rows);
 		unsigned short i, j;
+		#if defined(_OPENMP)
+			#pragma omp parallel for
+		#endif
 		for (i = 0u; i < m.n_rows; i++) {
 			for (j = 0u; j < m.n_cols; j++) {
 				unsigned short axis[2] = {i, j};

@@ -7,6 +7,22 @@ extern "C" {
 #endif /* __cplusplus */
 
 /*
+ * Multiply two matrices.
+ *
+ * Parameters
+ * ==========
+ * m1: 		The first matrix in the multiplication.
+ * m2:		The second matrix in the multiplication.
+ *
+ * Returns
+ * =======
+ * A pointer to the resultant matrix c, defined as c_ij = \sum_k m1_ik * m2_kj
+ *
+ * source: matrix.c
+ */
+extern MATRIX *matrix_multiply(MATRIX m1, MATRIX m2);
+
+/*
  * Invert a square matrix.
  *
  * Parameters
