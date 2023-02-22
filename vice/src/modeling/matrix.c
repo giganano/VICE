@@ -4,16 +4,15 @@
 
 #include <stdlib.h>
 #include <math.h>
-#include "../multithread.h"
 #include "../objects.h"
 #include "../debug.h"
 #include "matrix.h"
 
 /* ---------- Static function comment headers not duplicated here ---------- */
-static MATRIX *matrix_minor(MATRIX m, unsigned short axis[2]);
-static MATRIX *matrix_adjoint(MATRIX m);
-static MATRIX *matrix_cofactors(MATRIX m);
-static MATRIX *matrix_transpose(MATRIX m);
+static MATRIX *matrix_minor(MATRIX m, unsigned short axis[2], MATRIX *result);
+static MATRIX *matrix_adjoint(MATRIX m, MATRIX *result);
+static MATRIX *matrix_cofactors(MATRIX m, MATRIX *result);
+static void matrix_reset(MATRIX *m);
 
 
 /*
@@ -23,34 +22,31 @@ static MATRIX *matrix_transpose(MATRIX m);
  * ==========
  * m1: 		The first matrix in the multiplication.
  * m2:		The second matrix in the multiplication.
+ * result:	A pointer to an already-initialized MATRIX object to store the
+ * 			resultant matrix, if applicable. If NULL, memory will be allocated
+ * 			automatically.
  *
  * Returns
  * =======
  * A pointer to the resultant matrix c, defined as c_ij = \sum_k m1_ik * m2_kj
  *
+ * If a pointer is provided for the resultant matrix, this will be the same
+ * memory address as the input, unless the determinant is zero.
+ *
  * header: matrix.h
  */
-extern MATRIX *matrix_multiply(MATRIX m1, MATRIX m2) {
+extern MATRIX *matrix_multiply(MATRIX m1, MATRIX m2, MATRIX *result) {
 
-	if (m1.n_cols != m2.n_rows) {
-		fatal_print("%s\n",
-			"Matrix dimensions incompatible for multiplication.");
-	} else {
-		MATRIX *result = matrix_initialize(m1.n_rows, m2.n_cols);
+	if (m1.n_cols == m2.n_rows) {
+		if (result == NULL) {
+			result = matrix_initialize(m1.n_rows, m2.n_cols);
+		} else {
+			result -> n_rows = m1.n_rows;
+			result -> n_cols = m2.n_cols;
+			matrix_reset(result);
+		}
 		unsigned short i, j, k;
 		for (i = 0u; i < (*result).n_rows; i++) {
-			/*
-			 * Parallelization goes over not the rows but the columns of the
-			 * second matrix in the operation. This implementation is chosen
-			 * because in practice, the first matrix will most often be a row
-			 * vector quantifying the difference between a model prediction and
-			 * a datum, whereas the second will be the covariance matrix of the
-			 * datum. If the first vector is a row vector, there would be no
-			 * parallelization anyway.
-			 */
-			#if defined(_OPENMP)
-				#pragma omp parallel for
-			#endif
 			for (j = 0u; j < (*result).n_cols; j++) {
 				for (k = 0u; k < m1.n_cols; k++) {
 					result -> matrix[i][j] += m1.matrix[i][k] * m2.matrix[k][j];
@@ -58,6 +54,9 @@ extern MATRIX *matrix_multiply(MATRIX m1, MATRIX m2) {
 			}
 		}
 		return result;
+	} else {
+		fatal_print("%s\n",
+			"Matrix dimensions incompatible for multiplication.");
 	}
 
 }
@@ -69,6 +68,9 @@ extern MATRIX *matrix_multiply(MATRIX m1, MATRIX m2) {
  * Parameters
  * ==========
  * m: 		The input matrix.
+ * result:	A pointer to an already-initialized MATRIX object to store the
+ * 			inverse matrix, if applicable. If NULL, memory will be allocated
+ * 			automatically.
  *
  * Returns
  * =======
@@ -76,23 +78,62 @@ extern MATRIX *matrix_multiply(MATRIX m1, MATRIX m2) {
  * where I is the identity matrix. NULL if the determinant of the input matrix
  * is zero.
  *
+ * If a pointer is provided for the resultant matrix, this will be the same
+ * memory address as the input, unless the determinant is zero.
+ *
  * header: matrix.h
  */
-extern MATRIX *matrix_invert(MATRIX m) {
+extern MATRIX *matrix_invert(MATRIX m, MATRIX *result) {
 
 	double det = matrix_determinant(m);
 	if (det) {
-		MATRIX *adjoint = matrix_adjoint(m);
+		result = matrix_adjoint(m, result);
 		unsigned short i, j;
 		for (i = 0u; i < m.n_rows; i++) {
-			for (j = 0u; j < m.n_cols; j++) {
-				adjoint -> matrix[i][j] /= det;
-			}
+			for (j = 0u; j < m.n_cols; j++) result -> matrix[i][j] /= det;
 		}
-		return adjoint;
+		return result;
 	} else {
 		return NULL;
 	}
+
+}
+
+
+/*
+ * Transpose a matrix.
+ *
+ * Parameters
+ * ==========
+ * m: 		The input matrix itself.
+ * result:	A pointer to an already-initialized MATRIX object to store the
+ * 			transpose, if applicable. If NULL, memory will be allocated
+ * 			automatically.
+ *
+ * Returns
+ * =======
+ * The transpose, defined as M_ij^T = M_ji.
+ *
+ * If a pointer is provided for the resultant matrix, this will be the same
+ * memory address as the input.
+ *
+ * header: matrix.h
+ */
+extern MATRIX *matrix_transpose(MATRIX m, MATRIX *result) {
+
+	if (result == NULL) {
+		result = matrix_initialize(m.n_rows, m.n_cols);
+	} else {
+		result -> n_rows = m.n_cols;
+		result -> n_cols = m.n_rows;
+		matrix_reset(result);
+	}
+	unsigned short i, j;
+	for (i = 0u; i < m.n_rows; i++) {
+		for (j = 0u; j < m.n_cols; j++) result -> matrix[j][i] = m.matrix[i][j];
+	}
+
+	return result;
 
 }
 
@@ -116,10 +157,7 @@ extern MATRIX *matrix_invert(MATRIX m) {
  */
 extern double matrix_determinant(MATRIX m) {
 
-	if (m.n_rows != m.n_cols) {
-		fatal_print("%s\n",
-			"Cannot compute the determinant of a non-square matrix.");
-	} else {
+	if (m.n_rows == m.n_cols) {
 		if (m.n_rows == 1u) {
 			/* Additional failsafe base case -- a 1x1 matrix */
 			return m.matrix[0][0];
@@ -135,13 +173,17 @@ extern double matrix_determinant(MATRIX m) {
 			unsigned short i;
 			for (i = 0u; i < m.n_cols; i++) {
 				unsigned short axis[2] = {0, i};
-				MATRIX *minor = matrix_minor(m, axis);
+				MATRIX *minor = matrix_minor(m, axis, NULL);
 				result += pow(-1, i) * m.matrix[0][i] * matrix_determinant(
 					*minor);
 				matrix_free(minor);
 			}
 			return result;
 		}
+
+	} else {
+		fatal_print("%s\n",
+			"Cannot compute the determinant of a non-square matrix.");
 	}
 
 }
@@ -153,30 +195,35 @@ extern double matrix_determinant(MATRIX m) {
  * Parameters
  * ==========
  * m: 		The input matrix itself.
+ * result:	A pointer to an already-initialized MATRIX object to store the
+ * 			adjoint matrix, if applicable. If NULL, memory will be allocated
+ * 			automatically.
  *
  * Returns
  * =======
- * The adjoint, defined as the transpose of the matrix of cofactors.
+ * The adjoint, defined as the transpose of the matrix of cofactors. NULL if
+ * the determinant of the input matrix is zero.
+ *
+ * If a pointer is provided for the resultant matrix, this will be the same
+ * memory address as the input, unless the determinant is zero.
  *
  * Notes
  * =====
  * Some textbooks and authors use the term adjugate instead of adjoint. Though
- * we use the term adjoint here, they refer to the same thing. NULL if the
- * determinant of the input matrix is zero.
+ * we use the term adjoint here, they refer to the same thing. 
  */
-static MATRIX *matrix_adjoint(MATRIX m) {
+static MATRIX *matrix_adjoint(MATRIX m, MATRIX *result) {
 
-	MATRIX *cofactors = matrix_cofactors(m);
+	MATRIX *cofactors = matrix_cofactors(m, NULL);
 	if (cofactors == NULL) {
 		return NULL;
 	} else {
-		MATRIX *adjoint = matrix_transpose(*cofactors);
+		result = matrix_transpose(*cofactors, result);
 		matrix_free(cofactors);
-		return adjoint;
+		return result;
 	}
 
 }
-
 
 
 /*
@@ -185,60 +232,44 @@ static MATRIX *matrix_adjoint(MATRIX m) {
  * Parameters
  * ==========
  * m: 		The input matrix itself.
+ * result:	A pointer to an already-initialized MATRIX object to store the
+ * 			cofactors matrix, if applicable. If NULL, memory will be allocated
+ * 			automatically.
  *
  * Returns
  * =======
  * The matrix of cofactors, defined as A_ij = (-1)^(i + j) det(m_ij) where m_ij
  * is the ij'th minor of m. NULL if the determinant of the input matrix is
  * zero.
+ *
+ * If a pointer is provided for the resultant matrix, this will be the same
+ * memory address as the input.
  */
-static MATRIX *matrix_cofactors(MATRIX m) {
+static MATRIX *matrix_cofactors(MATRIX m, MATRIX *result) {
 
 	double det = matrix_determinant(m);
 	if (det) {
-		MATRIX *adjoint = matrix_initialize(m.n_rows, m.n_rows);
+		if (result == NULL) {
+			result = matrix_initialize(m.n_rows, m.n_cols);
+		} else {
+			result -> n_rows = m.n_rows;
+			result -> n_cols = m.n_cols;
+			matrix_reset(result);
+		}
 		unsigned short i, j;
-		#if defined(_OPENMP)
-			#pragma omp parallel for
-		#endif
 		for (i = 0u; i < m.n_rows; i++) {
 			for (j = 0u; j < m.n_cols; j++) {
 				unsigned short axis[2] = {i, j};
-				MATRIX *minor = matrix_minor(m, axis);
-				adjoint -> matrix[i][j] = pow(-1, 
+				MATRIX *minor = matrix_minor(m, axis, NULL);
+				result -> matrix[i][j] = pow(-1,
 					i + j) * matrix_determinant(*minor);
 				matrix_free(minor);
 			}
 		}
-		return adjoint;
+		return result;
 	} else {
 		return NULL;
 	}
-
-}
-
-
-/*
- * Transpose a matrix.
- *
- * Parameters
- * ==========
- * m: 		The input matrix itself.
- *
- * Returns
- * =======
- * The transpose, defined as M_ij^T = M_ji.
- */
-static MATRIX *matrix_transpose(MATRIX m) {
-
-	MATRIX *transpose = matrix_initialize(m.n_cols, m.n_rows);
-	unsigned short i, j;
-	for (i = 0u; i < m.n_rows; i++) {
-		for (j = 0u; j < m.n_cols; j++) {
-			transpose -> matrix[j][i] = m.matrix[i][j];
-		}
-	}
-	return transpose;
 
 }
 
@@ -251,22 +282,34 @@ static MATRIX *matrix_transpose(MATRIX m) {
  * m: 		The input matrix itself.
  * axis: 	Which minor to obtain. axis[0] refers to the row and axis[1] to the
  * 			column to omit from the minor.
+ * result:	A pointer to an already-initialized MATRIX object to store the
+ * 			minor, if applicable. If NULL, memory will be allocated
+ * 			automatically.
  *
  * Returns
  * =======
  * If m is an NxN matrix, the returned matrix is the corresponding (N-1)x(N-1)
  * minor with the specified row and column omitted from the original.
+ *
+ * If a pointer is provided for the resultant matrix, this will be the same
+ * memory address as the input.
  */
-static MATRIX *matrix_minor(MATRIX m, unsigned short axis[2]) {
+static MATRIX *matrix_minor(MATRIX m, unsigned short axis[2], MATRIX *result) {
 
-	MATRIX *minor = matrix_initialize(m.n_rows - 1u, m.n_rows - 1u);
+	if (result == NULL) {
+		result = matrix_initialize(m.n_rows - 1u, m.n_rows - 1u);
+	} else {
+		result -> n_rows = m.n_rows - 1u;
+		result -> n_cols = m.n_cols - 1u;
+		matrix_reset(result);
+	}
 	unsigned short i, n1 = 0u;
 	for (i = 0u; i < m.n_rows; i++) {
 		if (i != axis[0]) {
-			unsigned short j, n2 = 0;
+			unsigned short j, n2 = 0u;
 			for (j = 0u; j < m.n_cols; j++) {
 				if (j != axis[1]) {
-					minor -> matrix[n1][n2] = m.matrix[i][j];
+					result -> matrix[n1][n2] = m.matrix[i][j];
 					n2++;
 				} else {}
 			}
@@ -274,7 +317,29 @@ static MATRIX *matrix_minor(MATRIX m, unsigned short axis[2]) {
 		} else {}
 	}
 
-	return minor;
+	return result;
+
+}
+
+
+/*
+ * Set all elements of a matrix equal to zero.
+ */
+static void matrix_reset(MATRIX *m) {
+
+	unsigned short i;
+	if (m -> matrix != NULL) {
+		free(m -> matrix);
+		m -> matrix = (double **) malloc ((*m).n_rows * sizeof(double *));
+	}
+	for (i = 0u; i < (*m).n_rows; i++) {
+		if (m -> matrix[i] != NULL) {
+			free(m -> matrix[i]);
+			m -> matrix[i] = (double *) malloc ((*m).n_cols * sizeof(double));
+		}
+		unsigned short j;
+		for (j = 0u; j < (*m).n_cols; j++) m -> matrix[i][j] = 0.0;
+	}
 
 }
 

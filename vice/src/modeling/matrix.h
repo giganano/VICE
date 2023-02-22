@@ -13,14 +13,20 @@ extern "C" {
  * ==========
  * m1: 		The first matrix in the multiplication.
  * m2:		The second matrix in the multiplication.
+ * result:	A pointer to an already-initialized MATRIX object to store the
+ * 			resultant matrix, if applicable. If NULL, memory will be allocated
+ * 			automatically.
  *
  * Returns
  * =======
  * A pointer to the resultant matrix c, defined as c_ij = \sum_k m1_ik * m2_kj
  *
+ * If a pointer is provided for the resultant matrix, this will be the same
+ * memory address as the input, unless the determinant is zero.
+ *
  * source: matrix.c
  */
-extern MATRIX *matrix_multiply(MATRIX m1, MATRIX m2);
+extern MATRIX *matrix_multiply(MATRIX m1, MATRIX m2, MATRIX *result);
 
 /*
  * Invert a square matrix.
@@ -28,6 +34,9 @@ extern MATRIX *matrix_multiply(MATRIX m1, MATRIX m2);
  * Parameters
  * ==========
  * m: 		The input matrix.
+ * result:	A pointer to an already-initialized MATRIX object to store the
+ * 			inverse matrix, if applicable. If NULL, memory will be allocated
+ * 			automatically.
  *
  * Returns
  * =======
@@ -35,9 +44,33 @@ extern MATRIX *matrix_multiply(MATRIX m1, MATRIX m2);
  * where I is the identity matrix. NULL if the determinant of the input matrix
  * is zero.
  *
+ * If a pointer is provided for the resultant matrix, this will be the same
+ * memory address as the input, unless the determinant is zero.
+ *
  * source: matrix.c
  */
-extern MATRIX *matrix_invert(MATRIX m);
+extern MATRIX *matrix_invert(MATRIX m, MATRIX *result);
+
+/*
+ * Transpose a matrix.
+ *
+ * Parameters
+ * ==========
+ * m: 		The input matrix itself.
+ * result:	A pointer to an already-initialized MATRIX object to store the
+ * 			transpose, if applicable. If NULL, memory will be allocated
+ * 			automatically.
+ *
+ * Returns
+ * =======
+ * The transpose, defined as M_ij^T = M_ji.
+ *
+ * If a pointer is provided for the resultant matrix, this will be the same
+ * memory address as the input.
+ *
+ * source: matrix.c
+ */
+extern MATRIX *matrix_transpose(MATRIX m, MATRIX *result);
 
 /*
  * Compute the determinant of a square matrix.
