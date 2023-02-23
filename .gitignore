@@ -108,6 +108,7 @@ vice/core/ssp/tests/_crf.c
 vice/core/ssp/tests/_msmf.c
 vice/core/ssp/tests/_remnants.c
 vice/core/tests/_cutils.c
+vice/modeling/_matrix.c
 vice/src/io/tests/_agb.c
 vice/src/io/tests/_ccsne.c
 vice/src/io/tests/_sneia.c
@@ -132,3 +133,5 @@ vice/yields/agb/_grid_reader.c
 vice/yields/ccsne/_yield_integrator.c
 vice/yields/sneia/_yield_lookup.c
 vice/yields/tests/_integral.c
+
+
