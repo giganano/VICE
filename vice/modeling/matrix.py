@@ -266,3 +266,56 @@ Number of rows and columns must be an integer. Got: %s""" % (type(n)))
 		"""
 		return super().inverse()
 
+
+	def transpose(self):
+		r"""
+		Compute the transpose of a matrix.
+
+		**Signature**: x.tranpsose()
+
+		Parameters
+		----------
+		x : ``matrix``
+			An instance of this class.
+
+		Returns
+		-------
+		trans : ``matrix``
+			The transpose of ``x``, defined as :math:`x_ij^T = x_ji`.
+
+		Example Code
+		------------
+		>>> from vice.modeling import matrix
+		>>> import numpy as np
+		>>> example = matrix.zeroes(5, 2)
+		>>> for i in range(example.n_rows):
+		>>>     for j in range(example.n_cols):
+		>>>         example[i, j] = 10 * np.random.rand()
+		>>> example
+		matrix([9.49e-01    4.66e-01]
+		       [8.03e+00    3.99e+00]
+		       [8.58e-01    5.35e+00]
+		       [9.48e+00    7.49e+00]
+		       [2.01e+00    3.10e-01])
+		>>> example.transpose()
+		matrix([9.49e-01    8.03e+00    8.58e-01    9.48e+00    2.01e+00]
+		       [4.66e-01    3.99e+00    5.35e+00    7.49e+00    3.10e-01])
+		>>> matrix.identity(4).transpose()
+		matrix([1.00e+00    0.00e+00    0.00e+00    0.00e+00]
+		       [0.00e+00    1.00e+00    0.00e+00    0.00e+00]
+		       [0.00e+00    0.00e+00    1.00e+00    0.00e+00]
+		       [0.00e+00    0.00e+00    0.00e+00    1.00e+00])
+		>>> example = matrix.zeroes(2, 3)
+		>>> for i in range(example.n_rows):
+		>>>     for j in range(example.n_cols):
+		>>>         example[i, j] = 10 * np.random.rand()
+		>>> example
+		matrix([3.15e+00    4.50e+00    1.29e+00]
+		       [5.20e+00    4.62e+00    9.36e+00])
+		>>> example.transpose()
+		matrix([3.15e+00    5.20e+00]
+		       [4.50e+00    4.62e+00]
+		       [1.29e+00    9.36e+00])
+		"""
+		return super().transpose()
+

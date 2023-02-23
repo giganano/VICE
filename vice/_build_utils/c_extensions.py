@@ -325,6 +325,10 @@ _CFILES_ = {
 		"./vice/src/objects/callback_2arg.c",
 		"./vice/src/objects/imf.c"
 	],
+	"vice.modeling._matrix": [
+		"./vice/src/objects/matrix.c",
+		"./vice/src/modeling/matrix.c"
+	],
 	"vice.src.io.tests._agb": [
 		"./vice/src/io/tests/agb.c",
 		"./vice/src/io/agb.c",

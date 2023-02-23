@@ -323,21 +323,18 @@ static MATRIX *matrix_minor(MATRIX m, unsigned short axis[2], MATRIX *result) {
 
 
 /*
- * Set all elements of a matrix equal to zero.
+ * Set all elements of a matrix equal to zero. Reallocates memory for the
+ * matrix pointer to safeguard against segmentation faults.
  */
 static void matrix_reset(MATRIX *m) {
 
 	unsigned short i;
-	if (m -> matrix != NULL) {
-		free(m -> matrix);
-		m -> matrix = (double **) malloc ((*m).n_rows * sizeof(double *));
-	}
+	m -> matrix = (double **) realloc (m -> matrix,
+		(*m).n_rows * sizeof(double *));
 	for (i = 0u; i < (*m).n_rows; i++) {
-		if (m -> matrix[i] != NULL) {
-			free(m -> matrix[i]);
-			m -> matrix[i] = (double *) malloc ((*m).n_cols * sizeof(double));
-		}
 		unsigned short j;
+		m -> matrix[i] = (double *) realloc (m -> matrix[i],
+			(*m).n_cols * sizeof(double));
 		for (j = 0u; j < (*m).n_cols; j++) m -> matrix[i][j] = 0.0;
 	}
 
