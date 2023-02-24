@@ -1,4 +1,5 @@
 
+__all__ = ["matrix"]
 from ._matrix import c_matrix
 import numbers
 try:

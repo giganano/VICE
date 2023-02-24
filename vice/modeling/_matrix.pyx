@@ -96,21 +96,6 @@ Index out of bounds for matrix with %d columns: %d""" % (self.n_cols, key[1]))
 			return
 
 
-	def __mul__(self, other):
-		if not isinstance(self, c_matrix): 
-			# allows commutativity -> other must be a c_matrix if this
-			# function is getting called at all.
-			return other.__mul__(self)
-		elif isinstance(other, c_matrix):
-			return self.__multiply_matrix__(other)
-		elif isinstance(other, numbers.Number):
-			return self.__multiply_scalar__(float(other))
-		else:
-			raise TypeError("""\
-Matrix multiplication only possible with scalar or another matrix. \
-Got: %s""" % (type(other)))
-
-
 	def __eq__(self, other):
 		if isinstance(other, c_matrix):
 			if self.n_cols == other.n_cols and self.n_rows == other.n_rows:
@@ -125,6 +110,21 @@ Got: %s""" % (type(other)))
 				return False
 		else:
 			return False
+
+
+	def __mul__(self, other):
+		if not isinstance(self, c_matrix): 
+			# allows commutativity for scalar multiplication -> other must be a
+			# c_matrix if this function is getting called at all.
+			return other.__mul__(self)
+		elif isinstance(other, c_matrix):
+			return self.__multiply_matrix__(other)
+		elif isinstance(other, numbers.Number):
+			return self.__multiply_scalar__(float(other))
+		else:
+			raise TypeError("""\
+Matrix multiplication only possible with scalar or another matrix. \
+Got: %s""" % (type(other)))
 
 
 	def __multiply_matrix__(self, c_matrix other):

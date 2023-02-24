@@ -16,8 +16,9 @@ except NameError:
 
 if not __VICE_SETUP__:
 
-	__all__ = ["matrix"]
+	__all__ = ["matrix", "test"]
 	from .matrix import matrix
+	from .tests import test
 
 else:
 	pass
