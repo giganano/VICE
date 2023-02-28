@@ -151,6 +151,16 @@ class build_ext(_build_ext):
 		link_args = []
 		if "VICE_ENABLE_OPENMP" in os.environ.keys():
 			if os.environ["VICE_ENABLE_OPENMP"] == "true":
+				if sys.platform == "darwin":
+					# find the OpenMP header and library files by brute force
+					# on Mac OS -> this should get around issues with linking
+					# through -Xpreprocessor or -Xclang by specifying the
+					# locations of the files directly.
+					openmp.find_openmp_darwin()
+					for ext in self.extensions:
+						ext.library_dirs.append(os.environ["LIBOMP_LIBRARY_DIR"])
+						ext.include_dirs.append(os.environ["LIBOMP_INCLUDE_DIR"])
+				else: pass
 				if "CC" in os.environ.keys():
 					# Some steps here duplicated because this environment
 					# variable may be set without invoking ``setup.py openmp``.
@@ -417,6 +427,74 @@ Sorry, this operating system is not supported.""")
 					contains_version_number |= is_version_number(word)
 			if recognized and contains_version_number: return compiler
 			return False
+
+
+	@staticmethod
+	def find_openmp_darwin():
+		r"""
+		Determine the path to the OpenMP library and header files on Mac OS
+		using Homebrew.
+
+		Notes
+		-----
+		This function first runs ``brew`` to determine if Homebrew is
+		installed, and the users who have not done so will be directed
+		accordingly. It then runs ``brew list libomp`` to list the files
+		associated with OpenMP, if any. If the necessary header and library
+		files are found, their directories are assigned to the environment
+		variables ``LIBOMP_INCLUDE_DIR`` and ``LIBOMP_LIBRARY_DIR`` to then
+		be included in the call to ``build_extensions``. IF the OpenMP files
+		are not found, then the user is directed to run ``brew install libomp``
+		or ``brew reinstall libomp`` before reattempting their VICE
+		installation.
+		"""
+		kwargs = {
+			"stdout": PIPE,
+			"stderr": PIPE,
+			"shell": True,
+			"text": True
+		}
+		with Popen("brew", **kwargs) as proc:
+			out, err = proc.communicate()
+			if err != "" and "command not found" in err:
+				raise RuntimeError("""\
+It appears that Homebrew is not installed. Please install Homebrew by \
+following the instructions at https://brew.sh/ and then install OpenMP \
+by running
+
+$ brew install libomp
+
+from your Unix command line before reattempting your VICE installation.""")
+			else: pass
+
+		with Popen("brew list libomp", **kwargs) as proc:
+			out, err = proc.communicate()
+			out = out.split('\n')
+			if (any([_.endswith("omp.h") for _ in out]) and 
+				any([_.endswith("libomp.dylib") for _ in out])):
+				# found header and library files to link
+				idx = 0
+				while not out[idx].endswith("omp.h"): idx += 1
+				os.environ["LIBOMP_INCLUDE_DIR"] = os.sep.join(
+					out[idx].split(os.sep)[:-1])
+				idx = 0
+				while not out[idx].endswith("libomp.dylib"): idx += 1
+				os.environ["LIBOMP_LIBRARY_DIR"] = os.sep.join(
+					out[idx].split(os.sep)[:-1])
+			else:
+				raise RuntimeError("""\
+Homebrew is installed, but the OpenMP header and library files were not found. \
+If you have not installed OpenMP, please run
+
+$ brew install libomp
+
+from your Unix command line. If you have installed OpenMP, please reinstall it \
+by running
+
+$ brew reinstall libomp
+
+and then reattempting your VICE installation. If you continue to have trouble \
+linking VICE with OpenMP, then please open an issue at %s.""" % (bugs_url))
 
 
 def find_extensions(path = './vice'):
