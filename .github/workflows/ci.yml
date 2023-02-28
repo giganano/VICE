@@ -29,8 +29,6 @@ jobs:
 
     env:
       COMPILER: ${{ matrix.compiler }}
-      CFLAGS: "-fPIC -Wsign-conversion -Wsign-compare"
-      LINKFLAGS: ""
 
     steps:
         # Extend the environment variables for subsequent steps if necessary
@@ -39,11 +37,8 @@ jobs:
         run: |
           if [[ $OSTYPE == *"darwin"* ]] ; then
             brew install libomp
-            echo "CFLAGS=$CFLAGS -Xpreprocessor -fopenmp" >> $GITHUB_ENV
-            echo "LINKFLAGS=$LINKFLAGS -lomp" >> $GITHUB_ENV
-          elif [[ $OSTYPE == *"linux-gnu"* ]] ; then
-            echo "CFLAGS=$CFLAGS -fopenmp" >> $GITHUB_ENV
           fi
+          echo "OPENMP=true" >> $GITHUB_ENV
 
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -69,14 +64,11 @@ jobs:
           echo "PYTHON VERSION: " `python --version`
           echo "MAKE: " `which make`
           echo "MAKE VERSION: " `make --version`
-          echo "CFLAGS: " $CFLAGS
-          echo "LINKFLAGS: " $LINKFLAGS
 
       - name: Compile and Install
         shell: bash
         run: |
-          make CC=$COMPILER CFLAGS="$CFLAGS" LINKFLAGS="$LINKFLAGS"
-          if [[ $CFLAGS == *"-fopenmp"* ]] ; then
+          if [[ $OPENMP == "true" ]] ; then
             python setup.py build install openmp -c $COMPILER 2> err.out
           else
             python setup.py build install 2> err.out
@@ -97,7 +89,7 @@ jobs:
         shell: bash
         run: |
           make tests
-          if [[ $CFLAGS == *"-fopenmp"* ]] ; then
+          if [[ $OPENMP == "true" ]] ; then
             LOGFILE=$(ls ./vice | grep .log)
             mv ./vice/$LOGFILE ./vice/openmp_$LOGFILE
           fi
