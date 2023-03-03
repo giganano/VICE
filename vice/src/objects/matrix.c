@@ -8,8 +8,13 @@
 
 
 /*
- * Allocate memory for an return a pointer to a MATRIX object.
+ * Allocate memory for and return a pointer to a MATRIX object.
  * Automatically initializes all matrix elements to zero.
+ *
+ * Parameters
+ * ==========
+ * n_rows: 		The number of rows in the desired matrix.
+ * n_cols: 		The number of columns in the desired matrix.
  *
  * header: matrix.h
  */

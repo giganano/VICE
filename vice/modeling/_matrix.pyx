@@ -3,7 +3,9 @@
 from ..core._pyutils import copy_array_like_object
 import numbers
 
-from libc.stdlib cimport free
+from libc.stdlib cimport malloc, free
+from libc.string cimport strcat, strlen
+from libc.stdio cimport sprintf
 from ..core.objects cimport _matrix
 from . cimport _matrix
 
@@ -145,6 +147,20 @@ Other: %d rows, %d columns.""" % (
 			for j in range(self.n_cols):
 				result[i, j] = other * self._m[0].matrix[i][j]
 		return result
+
+
+	def __address(self):
+		r"""
+		Obtain the address of the matrix pointer in C as a string. Used in the
+		process of linking covariances matrices to their respective data
+		vectors.
+		"""
+		cdef char *address = <char *> malloc (100 * sizeof(char))
+		sprintf(address, "%p", <void *> self._m)
+		strcat(address, "\0")
+		pycopy = "".join(chr(address[i]) for i in range(strlen(address)))
+		free(address)
+		return pycopy
 
 
 	@property

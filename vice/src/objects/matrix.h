@@ -7,10 +7,15 @@ extern "C" {
 #endif /* __cplusplus */
 
 /*
- * Allocate memory for an return a pointer to a MATRIX object.
+ * Allocate memory for and return a pointer to a MATRIX object.
  * Automatically initializes all matrix elements to zero.
  *
- * source: matrix.c
+ * Parameters
+ * ==========
+ * n_rows: 		The number of rows in the desired matrix.
+ * n_cols: 		The number of columns in the desired matrix.
+ *
+ * header: matrix.h
  */
 extern MATRIX *matrix_initialize(unsigned short n_rows, unsigned short n_cols);
 

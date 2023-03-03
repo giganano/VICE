@@ -99,6 +99,29 @@ class matrix(c_matrix):
 	1.0
 	"""
 
+	def __address(self):
+		r"""
+		Obtain the address of the matrix data stored in C as a string. Used in
+		the process of linking covariance matrices to their respective data
+		vectors.
+
+		.. warning:: User access of this function is strongly discouraged.
+		"""
+		return super().__address()
+
+	def __enter__(self):
+		"""
+		Opens a with statement
+		"""
+		return self
+
+
+	def __exit__(self, exc_type, exc_value, exc_tb):
+		"""
+		Raises all exceptions inside with statements
+		"""
+		return exc_value is None
+
 	@classmethod
 	def zeroes(cls, n_rows, n_cols):
 		r"""

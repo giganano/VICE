@@ -609,6 +609,41 @@ typedef struct matrix {
 } MATRIX;
 
 
+typedef struct datum {
+
+	/*
+	 * This struct holds the data associated with a datum in the observed space,
+	 * which may be purely chemical space, or may include age information. This
+	 * object is a pointer type compatible with the MATRIX object for ease of
+	 * passing data to matrix algebra routines. In practice, at least one of
+	 * n_rows or n_cols will be equal to 1, and VICE's python API stores
+	 * everything user-facing as a row-vector. The python API also does not
+	 * provide access to invcov as this data can already be accessed via
+	 * datum.cov.inverse().
+	 *
+	 * matrix: The datum itself as a vector
+	 * n_rows: The number of rows in the data vector
+	 * n_cols: The number of columns in the data vector
+	 * labels: Strings denoting the quantities stored by the data vector in
+	 * 		the order they appear.
+	 * cov: The covariance matrix of the datum, which must be square and of the
+	 * 		appropriate dimensionality.
+	 * invcov: The inverse of the covariance matrix. Every time the covariance
+	 * 		matrix is updated, this object's memory will be freed and the
+	 * 		pointer assigned to NULL as a means of determining if the matrix
+	 * 		must be reinverted at any given time.
+	 */
+
+	double **data;
+	unsigned short n_rows;
+	unsigned short n_cols;
+	char **labels;
+	MATRIX *cov;
+	MATRIX *invcov;
+
+} DATUM;
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
