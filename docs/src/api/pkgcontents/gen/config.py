@@ -63,6 +63,7 @@ _CONFIG_ = {
 			vice.multizone,
 			vice.milkyway,
 			vice.migration,
+			vice.modeling,
 			vice.history,
 			vice.mdf,
 			vice.output,
@@ -286,6 +287,49 @@ _CONFIG_ = {
 	vice.core.dataframe.yield_settings.save_defaults: {
 		"filename": 	"vice.core.dataframe.yield_settings.save_defaults.rst",
 		"header": 		"vice.core.dataframe.yield_settings.save_defaults",
+		"subs": 		[]
+	},
+	vice.modeling: {
+		"filename": 	"vice.modeling.rst",
+		"header": 		"vice.modeling",
+		"subs": 		[
+			vice.modeling.matrix
+		]
+	},
+	vice.modeling.matrix: {
+		"filename": 	"vice.modeling.matrix.rst",
+		"header": 		"vice.modeling.matrix",
+		"subs": 		[
+			vice.modeling.matrix.zeroes,
+			vice.modeling.matrix.identity,
+			vice.modeling.matrix.determinant,
+			vice.modeling.matrix.inverse,
+			vice.modeling.matrix.transpose
+		]
+	},
+	vice.modeling.matrix.zeroes: {
+		"filename": 	"vice.modeling.matrix.zeroes.rst",
+		"header": 		"vice.modeling.matrix.zeroes",
+		"subs": 		[]
+	},
+	vice.modeling.matrix.identity: {
+		"filename": 	"vice.modeling.matrix.identity.rst",
+		"header": 		"vice.modeling.matrix.identity",
+		"subs": 		[]
+	},
+	vice.modeling.matrix.determinant: {
+		"filename": 	"vice.modeling.matrix.determinant.rst",
+		"header": 		"vice.modeling.matrix.determinant",
+		"subs": 		[]
+	},
+	vice.modeling.matrix.inverse: {
+		"filename": 	"vice.modeling.matrix.inverse.rst",
+		"header": 		"vice.modeling.matrix.inverse",
+		"subs": 		[]
+	},
+	vice.modeling.matrix.transpose: {
+		"filename": 	"vice.modeling.matrix.transpose.rst",
+		"header": 		"vice.modeling.matrix.transpose",
 		"subs": 		[]
 	},
 	vice.mlr: {

@@ -2,10 +2,6 @@
 __all__ = ["matrix"]
 from ._matrix import c_matrix
 import numbers
-try:
-	import numpy as np
-except (ModuleNotFoundError, ImportError):
-	pass
 import sys
 
 class matrix(c_matrix):
@@ -19,7 +15,7 @@ class matrix(c_matrix):
 	----------
 	arr : ``array-like``
 		The matrix itself, type-casting a 2-dimensional array into a matrix.
-		Must be rectangular (i.e., each "row," or element on the second axis,
+		Must be rectangular (i.e., each "row," or element on the first axis,
 		must be the same length as all of the others). Each element must be a
 		numerical value.
 
@@ -42,12 +38,73 @@ class matrix(c_matrix):
 		Compute the determinant of the matrix.
 	inverse : [instancemethod]
 		Compute the inverse of the matrix.
+	transpose : [instancemethod]
+		Compute the transpose of the matrix.
+
+	Example Code
+	------------
+	>>> from vice.modeling import matrix
+	>>> import numpy as np
+
+	Simple matrices, such as those full of zeroes or the square identity
+	matrix which can act as starting points in constructing more complex
+	matrices, can be obtained using the ``matrix.zeroes`` and
+	``matrix.identity`` classmethods:
+
+	>>> example = matrix.zeroes(2, 3) # 2 rows by 3 columns
+	>>> example
+	matrix([0.00e+00    0.00e+00    0.00e+00]
+	       [0.00e+00    0.00e+00    0.00e+00])
+	>>> example = matrix.identity(5) # 5x5 square identity matrix
+	>>> example
+	matrix([1.00e+00    0.00e+00    0.00e+00    0.00e+00    0.00e+00]
+	       [0.00e+00    1.00e+00    0.00e+00    0.00e+00    0.00e+00]
+	       [0.00e+00    0.00e+00    1.00e+00    0.00e+00    0.00e+00]
+	       [0.00e+00    0.00e+00    0.00e+00    1.00e+00    0.00e+00]
+	       [0.00e+00    0.00e+00    0.00e+00    0.00e+00    1.00e+00])
+
+	Indexing and item assignment proceed with two integers ``i`` and ``j``,
+	separated by a comma, to obtain or modify the matrix element :math:`x_{ij}`:
+
+	>>> example = matrix.identity(5)
+	>>> example[0, 0]
+	1.0
+	>>> example[0, 1]
+	0.0
+	>>> example[2, 0] = np.pi
+	>>> example[2, 0]
+	3.141592653589793
+	>>> example
+	matrix([1.00e+00    0.00e+00    0.00e+00    0.00e+00    0.00e+00]
+	       [0.00e+00    1.00e+00    0.00e+00    0.00e+00    0.00e+00]
+	       [3.14e+00    0.00e+00    1.00e+00    0.00e+00    0.00e+00]
+	       [0.00e+00    0.00e+00    0.00e+00    1.00e+00    0.00e+00]
+	       [0.00e+00    0.00e+00    0.00e+00    0.00e+00    1.00e+00])
+
+	Determinants of square matrices can be computed with ``x.determinant`` for
+	a matrix ``x``:
+
+	>>> example = matrix.zeroes(4, 4)
+	>>> for i in range(example.n_rows):
+	>>>     for j in range(example.n_cols):
+	>>>         example[i, j] = 10 * np.random.rand()
+	>>> example
+	matrix([3.25e-01    8.87e+00    4.08e+00    5.92e+00]
+	       [7.68e+00    8.14e+00    2.28e+00    9.67e+00]
+	       [9.87e+00    4.52e+00    2.77e+00    4.38e+00]
+	       [3.79e+00    9.90e+00    6.06e+00    6.33e+00])
+	>>> example.determinant()
+	-215.20245282995597
+	>>> matrix.identity(5).determinant()
+	1.0
 	"""
 
 	@classmethod
 	def zeroes(cls, n_rows, n_cols):
 		r"""
 		Obtain a matrix of the specified size with every entry set to zero.
+
+		**Signature**: vice.modeling.matrix.zeroes(n_rows, n_cols)
 
 		Parameters
 		----------
@@ -77,6 +134,9 @@ class matrix(c_matrix):
 		matrix([0.00e+00    0.00e+00    0.00e+00]
 		       [0.00e+00    0.00e+00    0.00e+00]
 		       [0.00e+00    0.00e+00    0.00e+00])
+		>>> for i in range(example.n_rows):
+		>>>     for j in range(example.n_cols):
+		>>>         assert example[i, j] == 0
 		>>> matrix.zeroes(5, 2)
 		matrix([0.00e+00    0.00e+00]
 		       [0.00e+00    0.00e+00]
@@ -101,6 +161,8 @@ Matrix dimensions must be integers. Got: (%s, %s)""" % (type(n_rows),
 	def identity(cls, n):
 		r"""
 		Obtain the identity matrix.
+
+		**Signature**: vice.modeling.matrix.identity(n)
 
 		Parameters
 		----------
@@ -127,6 +189,9 @@ Matrix dimensions must be integers. Got: (%s, %s)""" % (type(n_rows),
 		matrix([1.00e+00    0.00e+00    0.00e+00]
 		       [0.00e+00    1.00e+00    0.00e+00]
 		       [0.00e+00    0.00e+00    1.00e+00])
+		>>> for i in range(example.n_rows):
+		>>>     for j in range(example.n_cols):
+		>>>         assert example[i, j] == int(i == j)
 		>>> matrix.identity(2)
 		matrix([1.00e+00    0.00e+00]
 		       [0.00e+00    1.00e+00])
@@ -282,7 +347,7 @@ Number of rows and columns must be an integer. Got: %s""" % (type(n)))
 		Returns
 		-------
 		trans : ``matrix``
-			The transpose of ``x``, defined as :math:`x_ij^T = x_ji`.
+			The transpose of ``x``, defined as :math:`x_{ij}^T = x_{ji}`.
 
 		Example Code
 		------------
