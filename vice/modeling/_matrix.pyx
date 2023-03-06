@@ -25,6 +25,12 @@ cdef class matrix:
 		must be the same length as all of the others). Each element must be a
 		numerical value.
 
+	.. note::
+
+		Once a matrix object has been created, its size cannot be changed.
+		If a change in size is necessary, please create a new matrix
+		object.
+
 	Attributes
 	----------
 	n_rows : ``int``
@@ -33,6 +39,12 @@ cdef class matrix:
 	n_cols : ``int``
 		The number of columns in the matrix (i.e., the number of elements along
 		the second axis).
+
+	Indexing and Item Assignment
+	----------------------------
+	Both proceed with two integers separated by a comma (e.g.,
+	``mat[0, 0]``, ``mat[1, 0] = 0.8``), and the assigned value must be a
+	real number. Negative indices are not supported.
 
 	Functions
 	---------
