@@ -7,6 +7,50 @@ extern "C" {
 #endif /* __cplusplus */
 
 /*
+ * Add two matrices.
+ *
+ * Parameters
+ * ==========
+ * m1: 			The first of the two input matrices
+ * m2: 			The second of the two input matrices
+ * result: 		A pointer to an already-initialized MATRIX object to store the
+ * 				resultant matrix, if applicable. If NULL, memory will be
+ * 				allocated automatically.
+ *
+ * Returns
+ * =======
+ * A matrix M such that M_ij = m1_ij + m2_ij.
+ *
+ * If a pointer is provided for the resultant matrix, this will be the same
+ * memory address as the input.
+ *
+ * source: matric.c
+ */
+extern MATRIX *matrix_add(MATRIX m1, MATRIX m2, MATRIX *result);
+
+/*
+ * Subtract two matrices.
+ *
+ * Parameters
+ * ==========
+ * m1: 			The first of the two input matrices
+ * m2: 			The second of the two input matrices
+ * result: 		A pointer to an already-initialized MATRIX object to store the
+ * 				resultant matrix, if applicable. If NULL, memory will be
+ * 				allocated automatically.
+ *
+ * Returns
+ * =======
+ * A matrix M such that M_ij = m1_ij - m2_ij.
+ *
+ * If a pointer is provided for the resultant matrix, this will be the same
+ * memory address as the input.
+ *
+ * source: matrix.c
+ */
+extern MATRIX *matrix_subtract(MATRIX m1, MATRIX m2, MATRIX *result);
+
+/*
  * Multiply two matrices.
  *
  * Parameters

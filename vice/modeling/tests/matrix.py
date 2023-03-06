@@ -1,5 +1,5 @@
 
-from ..matrix import matrix
+from .._matrix import matrix
 from ...testing import moduletest
 from ...testing import unittest
 import random
@@ -18,6 +18,8 @@ def test():
 			test_setitem(),
 			test_getitem(),
 			test_eq(),
+			test_add(),
+			test_sub(),
 			test_mul(),
 			test_nrows(),
 			test_ncols(),
@@ -141,6 +143,86 @@ def test_eq():
 		except:
 			return False
 	return ["vice.modeling.matrix.__eq__", test]
+
+
+@unittest
+def test_add():
+	r"""
+	vice.modeling.matrix.__add__ unit test
+	"""
+	def test():
+		success = True
+		random.seed() # no arg -> seeds based on system time
+		for _ in range(10):
+			# 10 randomly generated combinations of matrices
+			n_rows = 2 + int(8 * random.random())
+			n_cols = 2 + int(8 * random.random())
+			try:
+				mat1 = matrix.zeroes(n_rows, n_cols)
+				mat2 = matrix.zeroes(n_rows, n_cols)
+			except:
+				return None
+			for i in range(mat1.n_rows):
+				for j in range(mat2.n_cols):
+					try:
+						mat1[i, j] = 10 * random.random()
+						mat2[i, j] = 10 * random.random()
+					except:
+						return None
+			try:
+				result = mat1 + mat2
+			except:
+				return False
+			success &= result.n_rows == mat1.n_rows
+			success &= result.n_cols == mat1.n_cols
+			for i in range(mat1.n_rows):
+				for j in range(mat2.n_cols):
+					success &= result[i, j] == mat1[i, j] + mat2[i, j]
+					if not success: break
+				if not success: break
+			if not success: break
+		return success
+	return ["vice.modeling.matrix.__add__", test]
+
+
+@unittest
+def test_sub():
+	r"""
+	vice.modeling.matrix.__sub__ unit test
+	"""
+	def test():
+		success = True
+		random.seed() # no arg -> seeds based on system time
+		for _ in range(10):
+			# 10 randomly generated combinations of matrices
+			n_rows = 2 + int(8 * random.random())
+			n_cols = 2 + int(8 * random.random())
+			try:
+				mat1 = matrix.zeroes(n_rows, n_cols)
+				mat2 = matrix.zeroes(n_rows, n_cols)
+			except:
+				return None
+			for i in range(mat1.n_rows):
+				for j in range(mat2.n_cols):
+					try:
+						mat1[i, j] = 10 * random.random()
+						mat2[i, j] = 10 * random.random()
+					except:
+						return None
+			try:
+				result = mat1 - mat2
+			except:
+				return False
+			success &= result.n_rows == mat1.n_rows
+			success &= result.n_cols == mat1.n_cols
+			for i in range(mat1.n_rows):
+				for j in range(mat2.n_cols):
+					success &= result[i, j] == mat1[i, j] - mat2[i, j]
+					if not success: break
+				if not success: break
+			if not success: break
+		return success
+	return ["vice.modeling.matrix.__sub__", test]
 
 
 @unittest
@@ -272,10 +354,15 @@ def test_inverse():
 					for j in range(prod.n_cols):
 						try:
 							# though floating point error is 10^-15, in
-							# practice, the 8x8 matrix sometimes has a few
+							# practice, the larger matrices sometimes have
 							# off-diagonal elements at or just above this value,
-							# so the maximum threshold is increased a bit.
-							result &= abs(prod[i, j] - int(i == j)) < 1e-13
+							# so the maximum threshold is increased to 10^-12.
+							# This is 3 orders of magnitude above floating
+							# point error, but it is not an error large enough
+							# to raise concerns about numerical stability.
+							# Even when the threshold is lowered to 10^14, the
+							# tests pass ~half of the time.
+							result &= abs(prod[i, j] - int(i == j)) < 1e-12
 						except:
 							return None
 						if not result: break

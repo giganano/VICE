@@ -9,10 +9,118 @@
 #include "matrix.h"
 
 /* ---------- Static function comment headers not duplicated here ---------- */
+static MATRIX *matrix_unary_minus(MATRIX m1, MATRIX *result);
 static MATRIX *matrix_minor(MATRIX m, unsigned short axis[2], MATRIX *result);
 static MATRIX *matrix_adjoint(MATRIX m, MATRIX *result);
 static MATRIX *matrix_cofactors(MATRIX m, MATRIX *result);
 static void matrix_reset(MATRIX *m);
+
+
+/*
+ * Add two matrices.
+ *
+ * Parameters
+ * ==========
+ * m1: 			The first of the two input matrices
+ * m2: 			The second of the two input matrices
+ * result: 		A pointer to an already-initialized MATRIX object to store the
+ * 				resultant matrix, if applicable. If NULL, memory will be
+ * 				allocated automatically.
+ *
+ * Returns
+ * =======
+ * A matrix M such that M_ij = m1_ij + m2_ij.
+ *
+ * If a pointer is provided for the resultant matrix, this will be the same
+ * memory address as the input.
+ *
+ * header: matrix.h
+ */
+extern MATRIX *matrix_add(MATRIX m1, MATRIX m2, MATRIX *result) {
+
+	if (m1.n_rows == m2.n_rows && m1.n_cols == m2.n_cols) {
+		if (result == NULL) {
+			result = matrix_initialize(m1.n_rows, m1.n_cols);
+		} else {
+			result -> n_rows = m1.n_rows;
+			result -> n_cols = m1.n_cols;
+		}
+		unsigned short i, j;
+		for (i = 0u; i < m1.n_rows; i++) {
+			for (j = 0u; j < m1.n_cols; j++) {
+				result -> matrix[i][j] = m1.matrix[i][j] + m2.matrix[i][j];
+			}
+		}
+		return result;
+	} else {
+		fatal_print("%s\n",
+			"Matrix dimensions incompatible for addition.");
+	}
+
+}
+
+
+/*
+ * Subtract two matrices.
+ *
+ * Parameters
+ * ==========
+ * m1: 			The first of the two input matrices
+ * m2: 			The second of the two input matrices
+ * result: 		A pointer to an already-initialized MATRIX object to store the
+ * 				resultant matrix, if applicable. If NULL, memory will be
+ * 				allocated automatically.
+ *
+ * Returns
+ * =======
+ * A matrix M such that M_ij = m1_ij - m2_ij.
+ *
+ * If a pointer is provided for the resultant matrix, this will be the same
+ * memory address as the input.
+ *
+ * header: matrix.h
+ */
+extern MATRIX *matrix_subtract(MATRIX m1, MATRIX m2, MATRIX *result) {
+
+	return matrix_add(m1, *matrix_unary_minus(m2, result), result);
+
+}
+
+
+/*
+ * Take the unary negative of a matrix by multiplying M_ij by -1 for all ij.
+ *
+ * Parameters
+ * ==========
+ * m1: 			The original matrix
+ * result: 		A pointer to an already-initialized MATRIX object to store the
+ * 				resultant data, if applicable. If NULL, memory will be
+ * 				allocated automatically.
+ *
+ * Returns
+ * =======
+ * A matrix M such that M_ij = -1 * m1_ij.
+ *
+ * If a pointer is provided for the resultant matrix, this will be the same
+ * memory address as the input.
+ */
+static MATRIX *matrix_unary_minus(MATRIX m1, MATRIX *result) {
+
+	if (result == NULL) {
+		result = matrix_initialize(m1.n_rows, m1.n_cols);
+	} else {
+		result -> n_rows = m1.n_rows;
+		result -> n_cols = m1.n_cols;
+	}
+	unsigned short i, j;
+	for (i = 0u; i < m1.n_rows; i++) {
+		for (j = 0u; j < m1.n_cols; j++) {
+			result -> matrix[i][j] = -m1.matrix[i][j];
+		}
+	}
+	return result;
+
+}
 
 
 /*

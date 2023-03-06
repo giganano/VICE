@@ -300,12 +300,24 @@ _CONFIG_ = {
 		"filename": 	"vice.modeling.matrix.rst",
 		"header": 		"vice.modeling.matrix",
 		"subs": 		[
+			vice.modeling.matrix.n_rows,
+			vice.modeling.matrix.n_cols,
 			vice.modeling.matrix.zeroes,
 			vice.modeling.matrix.identity,
 			vice.modeling.matrix.determinant,
 			vice.modeling.matrix.inverse,
 			vice.modeling.matrix.transpose
 		]
+	},
+	vice.modeling.matrix.n_rows: {
+		"filename": 	"vice.modeling.matrix.n_rows.rst",
+		"header": 		"vice.modeling.matrix.n_rows",
+		"subs": 		[]
+	},
+	vice.modeling.matrix.n_cols: {
+		"filename": 	"vice.modeling.matrix.n_cols.rst",
+		"header": 		"vice.modeling.matrix.n_cols",
+		"subs": 		[]
 	},
 	vice.modeling.matrix.zeroes: {
 		"filename": 	"vice.modeling.matrix.zeroes.rst",
