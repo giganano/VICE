@@ -28,7 +28,7 @@ vice/modeling/*.c
 # Ignore locally compiled documentation 
 docs/vice.pdf 
 docs/src/_build/* 
-docs/src/api/pkgcontents/*.rst 
+docs/src/api/pkgcontents/vice.*.rst 
 
 # source installation artifacts 
 vice.egg-info/* 
@@ -109,6 +109,8 @@ vice/core/ssp/tests/_msmf.c
 vice/core/ssp/tests/_remnants.c
 vice/core/tests/_cutils.c
 vice/modeling/_matrix.c
+vice/modeling/_vector.c
+vice/modeling/_datum.c
 vice/src/io/tests/_agb.c
 vice/src/io/tests/_ccsne.c
 vice/src/io/tests/_sneia.c

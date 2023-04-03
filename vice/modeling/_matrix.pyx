@@ -17,13 +17,18 @@ cdef class matrix:
 
 	**Signature**: vice.modeling.matrix(arr)
 
+	.. versionadded:: 1.X.0
+
+	.. seealso:: vice.modeling.vector
+
 	Parameters
 	----------
 	arr : ``array-like``
 		The matrix itself, type-casting a 2-dimensional array into a matrix.
 		Must be rectangular (i.e., each "row," or element on the first axis,
 		must be the same length as all of the others). Each element must be a
-		numerical value.
+		numerical value. If the matrix is to have only one row, a 1-dimensional
+		array can also be passed for this parameter.
 
 	.. note::
 
@@ -99,9 +104,9 @@ cdef class matrix:
 	       [0.00e+00    0.00e+00    0.00e+00    1.00e+00    0.00e+00]
 	       [0.00e+00    0.00e+00    0.00e+00    0.00e+00    1.00e+00])
 
-	Equivalence comparison returns ``True`` if the matrices have the same
-	dimensions and each component passes an equivalence comparison (i.e.,
-	:math:`A_{ij} = B_{ij}` for all :math:`i` and :math:`j`):
+	Equivalence comparison returns ``True`` if and only if the matrices have
+	the same dimensions and each component passes an equivalence comparison
+	(i.e., :math:`A_{ij} = B_{ij}` for all :math:`i` and :math:`j`):
 
 	>>> example = matrix.identity(5)
 	>>> for i in range(5):
@@ -275,13 +280,28 @@ cdef class matrix:
 		discouraged.
 		"""
 		msg = """\
-Matrix must be a square 2-dimensional array-like object containing only \
-numerical values.\
-"""
+Matrix or vector must be a 1-dimensional or square 2-dimensional array-like \
+object containing only numerical values."""
 		try:
 			obj = copy_array_like_object(obj)
 		except TypeError:
 			raise TypeError(msg)
+
+		# determine if this is a 1-d or 2-d object. If it's 1-d, make it 2-d
+		# by making it the 0'th element of a list and use the same
+		# functionality as implemented for the 2-d objects.
+		is2d = True
+		for i in range(len(obj)): is2d &= hasattr(obj[i], "__getitem__")
+		if not is2d:
+			if all([isinstance(_, numbers.Number) for _ in obj]):
+				obj = [obj]
+			else:
+				raise TypeError("""\
+Matrix or vector must contain only numerical values.""")
+		else: pass
+
+		# if it's a 1-D array, simply make it 2-D and use same functionality
+		# if all([isinstance(_, numbers.Number) for _ in obj]): obj = [obj]
 		for i in range(len(obj)):
 			try:
 				obj[i] = copy_array_like_object(obj[i])
@@ -303,6 +323,8 @@ numerical values.\
 		Initialize a matrix by type-casting a 2-dimensional array-like object.
 		See help(vice.modeling.matrix) for more information.
 		"""
+		# simply make 1-D arrays 2-D
+		if all([isinstance(_, numbers.Number) for _ in obj]): obj = [obj]
 		for i in range(self.n_rows):
 			for j in range(self.n_cols):
 				self._m[0].matrix[i][j] = <double> obj[i][j]
@@ -398,8 +420,9 @@ Index out of bounds for matrix with %d columns: %d""" % (self.n_cols, key[1]))
 
 	def __eq__(self, other):
 		r"""
-		Equivalence comparison between two matrix objects. Returns true if
-		they are of the same size and store the same values.
+		Equivalence comparison between two matrix objects. Returns True if they
+		are of the same size and each component-wise pair of elements passes
+		the '==' equivalence test.
 		"""
 		if isinstance(other, matrix):
 			if self.n_cols == other.n_cols and self.n_rows == other.n_rows:
@@ -480,10 +503,10 @@ Other: %d rows, %d columns.""" % (
 		"""
 		if not isinstance(self, matrix): 
 			# allows commutativity for scalar multiplication -> other must be a
-			# matrix if this function is getting called at all.
+			# matrix if this condition evaluated to True.
 			return other.__mul__(self)
 		elif isinstance(other, matrix):
-			return self.__mul_matrix__(other)
+			return self.__mul_matrices__(other)
 		elif isinstance(other, numbers.Number):
 			return self.__mul_scalar__(float(other))
 		else:
@@ -492,7 +515,7 @@ Matrix multiplication only possible with scalar or another matrix. \
 Got: %s""" % (type(other)))
 
 
-	def __mul_matrix__(self, matrix other):
+	def __mul_matrices__(self, matrix other):
 		r"""
 		See matrix.__mul__.
 		"""
@@ -616,7 +639,10 @@ Other: %d rows, %d columns.""" % (
 		Raises
 		------
 		* TypeError
-			- One or both of ``n_rows`` and ``n_cols`` are not integers.
+			- One or both of ``n_rows`` and ``n_cols`` are not numerical values.
+		* ValueError
+			- ``n_rows`` and ``n_cols`` are numerical, but one or both are
+			  positive integers.
 
 		Example Code
 		------------
@@ -640,12 +666,18 @@ Other: %d rows, %d columns.""" % (
 		       [0.00e+00    0.00e+00    0.00e+00    0.00e+00]
 		       [0.00e+00    0.00e+00    0.00e+00    0.00e+00])
 		"""
-		if (isinstance(n_rows, numbers.Number) and n_rows % 1 == 0 and
-			isinstance(n_cols, numbers.Number) and n_cols % 1 == 0):
-			return cls(int(n_rows) * [int(n_cols) * [0.]])
+		if (isinstance(n_rows, numbers.Number) and
+			isinstance(n_cols, numbers.Number)):
+			if (n_rows % 1 == 0 and n_rows > 0 and
+				n_cols % 1 == 0 and n_cols > 0):
+				return cls(int(n_rows) * [int(n_cols) * [0.]])
+			else:
+				raise ValueError("""\
+Matrix dimensions must be positive integers. Got: (%s, %s)""" % (n_rows,
+					n_cols))
 		else:
 			raise TypeError("""\
-Matrix dimensions must be integers. Got: (%s, %s)""" % (type(n_rows),
+Matrix dimensions must be positive integers. Got: (%s, %s)""" % (type(n_rows),
 				type(n_cols)))
 
 

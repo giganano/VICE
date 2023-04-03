@@ -329,6 +329,10 @@ _CFILES_ = {
 		"./vice/src/objects/matrix.c",
 		"./vice/src/modeling/matrix.c"
 	],
+	"vice.modeling._vector": [
+		"./vice/src/objects/matrix.c",
+		"./vice/src/modeling/matrix.c"
+	],
 	"vice.modeling._datum": [
 		"./vice/src/objects/datum.c",
 		"./vice/src/objects/matrix.c",

@@ -293,7 +293,8 @@ _CONFIG_ = {
 		"filename": 	"vice.modeling.rst",
 		"header": 		"vice.modeling",
 		"subs": 		[
-			vice.modeling.matrix
+			vice.modeling.matrix,
+			vice.modeling.vector
 		]
 	},
 	vice.modeling.matrix: {
@@ -342,6 +343,30 @@ _CONFIG_ = {
 	vice.modeling.matrix.transpose: {
 		"filename": 	"vice.modeling.matrix.transpose.rst",
 		"header": 		"vice.modeling.matrix.transpose",
+		"subs": 		[]
+	},
+	vice.modeling.vector: {
+		"filename": 	"vice.modeling.vector.rst",
+		"header": 		"vice.modeling.vector",
+		"subs": 		[
+			vice.modeling.vector.dim,
+			vice.modeling.vector.zeroes,
+			vice.modeling.vector.transpose
+		]
+	},
+	vice.modeling.vector.dim: {
+		"filename": 	"vice.modeling.vector.dim.rst",
+		"header": 		"vice.modeling.vector.dim",
+		"subs": 		[]
+	},
+	vice.modeling.vector.zeroes: {
+		"filename": 	"vice.modeling.vector.zeroes.rst",
+		"header": 		"vice.modeling.vector.zeroes",
+		"subs": 		[]
+	},
+	vice.modeling.vector.transpose: {
+		"filename": 	"vice.modeling.vector.transpose.rst",
+		"header": 		"vice.modeling.vector.transpose",
 		"subs": 		[]
 	},
 	vice.mlr: {
