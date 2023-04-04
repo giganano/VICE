@@ -665,6 +665,17 @@ typedef struct datum {
 } DATUM;
 
 
+typedef struct track {
+
+	double **data;
+	unsigned short n_rows;
+	unsigned short n_cols;
+	double *weights;
+	char **labels;
+
+} TRACK;
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
