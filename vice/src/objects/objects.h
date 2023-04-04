@@ -609,6 +609,28 @@ typedef struct matrix {
 } MATRIX;
 
 
+typedef struct covariance_matrix {
+
+	/*
+	 * This struct holds the data associated with a covariance matrix. This
+	 * object is a pointer type compatible with the MATRIX object for ease of
+	 * passing data to matrix algebra routines. In practice, n_rows and n_cols
+	 * must be equal, and VICE's python API enforces this.
+	 *
+	 * matrix: The matrix itself
+	 * n_rows: The number of rows in the matrix
+	 * n_cols: The number of columns in the matrix. Equal to n_rows for this
+	 * 		particular matrix type.
+	 */
+
+	double **matrix;
+	unsigned short n_rows;
+	unsigned short n_cols;
+	MATRIX *inv;
+
+} COVARIANCE_MATRIX;
+
+
 typedef struct datum {
 
 	/*
@@ -638,8 +660,7 @@ typedef struct datum {
 	unsigned short n_rows;
 	unsigned short n_cols;
 	char **labels;
-	MATRIX *cov;
-	MATRIX *invcov;
+	COVARIANCE_MATRIX *cov;
 
 } DATUM;
 

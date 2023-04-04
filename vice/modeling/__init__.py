@@ -20,7 +20,8 @@ except NameError:
 
 if not __VICE_SETUP__:
 
-	__all__ = ["matrix", "vector", "test"]
+	__all__ = ["datum", "matrix", "vector", "test"]
+	from ._datum import datum
 	from ._matrix import matrix
 	from ._vector import vector
 	from .tests import test

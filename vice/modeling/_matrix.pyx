@@ -363,9 +363,13 @@ Matrix or vector must contain only numerical values.""")
 			else:
 				rep += "["
 			for j in range(self.n_cols):
-				rep += "%.2e" % (self._m[0].matrix[i][j])
-				if j != self.n_cols - 1: rep += "\t"
-			rep += "]"
+				# Look for '-' char as opposed to < 0 b/c -0 fails that test
+				if str(self._m[0].matrix[i][j]).startswith("-"):
+					rep += "%.2e" % (self._m[0].matrix[i][j])
+				else:
+					rep += " %.2e" % (self._m[0].matrix[i][j])
+				if j != self.n_cols - 1: rep += "    "
+			rep += " ]"
 			if i != self.n_rows - 1: rep += "\n"
 		rep += ")"
 		return rep

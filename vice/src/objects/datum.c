@@ -29,7 +29,6 @@ extern DATUM *datum_initialize(unsigned short dim) {
 	unsigned short i;
 	for (i = 0u; i < dim; i++) d -> labels[i] = NULL;
 	d -> cov = NULL; /* to be assigned in python */
-	d -> invcov = NULL;
 	return d;
 
 }
@@ -62,7 +61,6 @@ extern void datum_free(DATUM *d) {
 		free(d -> labels);
 		d -> labels = NULL;
 		// if (d -> cov != NULL) matrix_free(d -> cov); // abort trap on exit
-		if (d -> invcov != NULL) matrix_free(d -> invcov);
 		matrix_free( (MATRIX *) d);
 
 	} else {}
@@ -86,7 +84,7 @@ extern void link_cov_matrix(DATUM *d, char *address) {
 
 	unsigned long ul;
 	sscanf(address, "%lx", &ul);
-	d -> cov = (MATRIX *) (uintptr_t) ul;
+	d -> cov = (COVARIANCE_MATRIX *) (uintptr_t) ul;
 
 }
 

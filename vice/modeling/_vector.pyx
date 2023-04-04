@@ -167,6 +167,13 @@ values.""")
 		return self.dim
 
 
+	def __iter__(self):
+		r"""
+		Iterates through each vector component
+		"""
+		for i in range(self.dim): yield self[i]
+
+
 	def __repr__(self):
 		r"""
 		Returns a string representation of the vector.
