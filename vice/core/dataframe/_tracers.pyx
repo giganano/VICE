@@ -175,25 +175,25 @@ cdef class tracers(history):
 			else: continue
 		return tuple(elements[:])
 
-	def __subget__str(self, key):
+	def _subget__str(self, key):
 		# see docstring of subroutines for further info
 		if key.lower().startswith("z(") and key.endswith(')'):
-			return self.__subget__str_z(key)
+			return self._subget__str_z(key)
 		elif key.lower() == "y":
-			return self.__subget__str_y(key)
+			return self._subget__str_y(key)
 		elif key.lower() == "z":
-			return self.__subget__str_ztot(key)
+			return self._subget__str_ztot(key)
 		elif key.lower() == "[m/h]":
-			return self.__subget__str_logztot(key)
+			return self._subget__str_logztot(key)
 		elif key.lower() == "age":
-			return self.__subget__str_age(key)
+			return self._subget__str_age(key)
 		elif key.startswith('[') and key.endswith(']') and '/' in key:
-			return self.__subget__str_logzratio(key)
+			return self._subget__str_logzratio(key)
 		else:
 			# No error yet, other possibilities in super's __getitem__
-			return super().__subget__str(key)
+			return super()._subget__str(key)
 
-	def __subget__str_z(self, key):
+	def _subget__str_z(self, key):
 		"""
 		Performs the __getitem__ operation when the key is of type str and is
 		requesting a metallicity by mass Z of a given element.
@@ -216,7 +216,7 @@ cdef class tracers(history):
 			raise KeyError("Element not tracked by simulation: %s" % (
 				element))
 
-	def __subget__str_ztot(self, key):
+	def _subget__str_ztot(self, key):
 		"""
 		Performs the __getitem__ operation when the key is of type str and is
 		requesting the total metallicity by mass Z
@@ -231,7 +231,7 @@ cdef class tracers(history):
 		else:
 			raise SystemError("Internal Error")
 
-	def __subget__str_logztot(self, key):
+	def _subget__str_logztot(self, key):
 		"""
 		Performs the __getitem__ operation when the key is of type str and is
 		requesting the log of the total metallicity by mass [M/H].
@@ -246,7 +246,7 @@ cdef class tracers(history):
 		else:
 			raise SystemError("Internal Error")
 
-	def __subget__str_age(self, key):
+	def _subget__str_age(self, key):
 		"""
 		Performs the __getitem__ operation when the key is of type str and is
 		requesting the age of the star particles.
@@ -260,7 +260,7 @@ cdef class tracers(history):
 		else:
 			raise SystemError("Internal Error")
 
-	def __subget__str_logzratio(self, key):
+	def _subget__str_logzratio(self, key):
 		"""
 		Performs the __getitem__ operation when the key is of type str and is
 		requesting an abundance ratio [x/Y].
@@ -285,7 +285,7 @@ cdef class tracers(history):
 		else:
 			raise KeyError("Unrecognized dataframe key: %s" % (key))
 
-	def __subget__int(self, key):
+	def _subget__int(self, key):
 		"""
 		Performs the __getitem__ operation when the key is of type int.
 		"""

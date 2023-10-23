@@ -120,7 +120,11 @@ def test_todict():
 	vice.core.dataframe.ccsn_yield_table.todict unit test
 	"""
 	def test():
-		return (isinstance(_TEST_NONISOTOPIC_.todict(), dict) and
-			isinstance(_TEST_ISOTOPIC_.todict(), dict))
+		try:
+			success = isinstance(_TEST_NONISOTOPIC_.todict(), dict)
+			success &= isinstance(_TEST_ISOTOPIC_.todict(), dict)
+		except:
+			return False
+		return success
 	return ["vice.core.dataframe.ccsn_yield_table.todict", test]
 

@@ -131,15 +131,15 @@ Got: %s""" % (type(frame)))
 		In this case, the returned value will also be a dataframe.
 		"""
 		if isinstance(key, strcomp): # index via column label
-			return self.__subget__str(key)
+			return self._subget__str(key)
 		elif isinstance(key, numbers.Number): # index via row number
-			return self.__subget__number(key)
+			return self._subget__number(key)
 		else:
 			raise IndexError("""Only integers and strings are valid indeces. \
 Got: %s""" % (type(key)))
 
 
-	def __subget__str(self, key):
+	def _subget__str(self, key):
 		"""
 		Performs the __getitem__ operation when the key is a string.
 		"""
@@ -149,7 +149,7 @@ Got: %s""" % (type(key)))
 			raise KeyError("Unrecognized dataframe key: %s" % (key))
 
 
-	def __subget__number(self, key):
+	def _subget__number(self, key):
 		"""
 		Performs the __getitem__ operation when the key is a number
 		"""

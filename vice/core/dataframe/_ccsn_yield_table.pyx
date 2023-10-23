@@ -136,7 +136,7 @@ cdef class ccsn_yield_table(base):
 		return rep
 
 
-	def __subget__str(self, key):
+	def _subget__str(self, key):
 		"""
 		Override the base __getitem__ functionality for isotope lookup
 		"""
@@ -150,7 +150,7 @@ cdef class ccsn_yield_table(base):
 			raise TypeError("This yields dataframe is not isotopic.")
 
 
-	def __subget__number(self, key):
+	def _subget__number(self, key):
 		"""
 		Override the base __getitem__ functionality for stellar mass lookup
 		"""
