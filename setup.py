@@ -323,7 +323,7 @@ def setup_package():
 		scripts = ["bin/%s" % (i) for i in os.listdir("./bin/")],
 		ext_modules = find_extensions(),
 		include_dirs = include_dirs,
-		setup_requires = [
+		setup_requires = [ # versions reflected in .github/workflows/ci.yml
 			"setuptools>=18.0", # automatically handles Cython extensions
 			"Cython>=3.0"
 		],

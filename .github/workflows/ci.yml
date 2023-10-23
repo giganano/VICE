@@ -42,11 +42,13 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      # compile-time dependency versions reflect those in setup.py
       - name: Install Dependencies
         shell: bash
         run: |
           python -m pip install --upgrade pip
-          python -m pip install cython>=0.29.21
+          python -m pip install setuptools>=18.0
+          python -m pip install Cython>=3.0
 
       - name: Display Environment Variables
         shell: bash
