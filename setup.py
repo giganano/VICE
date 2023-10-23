@@ -27,8 +27,8 @@ Raises
 	- The name of the extension to reinstall is invalid
 """
 
-# this version requires python >= 3.6.0
-MIN_PYTHON_VERSION = "3.6.0"
+# this version requires python >= 3.8.0
+MIN_PYTHON_VERSION = "3.8.0"
 import sys
 import os
 if sys.version_info[:] < tuple(
@@ -66,11 +66,11 @@ Programming Language :: C
 Programming Language :: Cython
 Programming Language :: Python
 Programming Language :: Python :: 3
-Programming Language :: Python :: 3.6
-Programming Language :: Python :: 3.7
 Programming Language :: Python :: 3.8
 Programming Language :: Python :: 3.9
 Programming Language :: Python :: 3.10
+Programming Language :: Python :: 3.11
+Programming Language :: Python :: 3.12
 Programming Language :: Python :: 3 :: Only
 Programming Language :: Python :: Implementation :: CPython
 Topic :: Scientific/Engineering
@@ -325,9 +325,9 @@ def setup_package():
 		include_dirs = include_dirs,
 		setup_requires = [
 			"setuptools>=18.0", # automatically handles Cython extensions
-			"Cython>=0.29.0"
+			"Cython>=3.0"
 		],
-		python_requires=">=3.6,<4",
+		python_requires=">=3.8,<4",
 		zip_safe = False,
 		verbose = "-q" not in sys.argv and "--quiet" not in sys.argv
 	)
