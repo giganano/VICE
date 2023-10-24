@@ -65,7 +65,7 @@ jobs:
         shell: bash
         run: |
           make CC=$COMPILER
-          python setup.py build install --quiet
+          python -m pip install . -v
           make clean
 
       - name: Tests
