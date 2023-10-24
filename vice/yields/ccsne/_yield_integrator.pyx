@@ -303,7 +303,10 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	.. versionadded:: 1.3.1
 		Prior versions did not subtract the remnant mass from the initial
 		mass of the star for calculating net yields. This is a small correction
-		for metals but is more noticeable for helium.
+		for metals but is more noticeable for helium. In this version, only the
+		simplified remnant mass model is adopted whereby massive stars of all
+		masses produce a 1.44 :math:`M_\odot` white dwarf. We plan to expand
+		upon these options for remnant mass models in future versions.
 
 
 	Example Code
