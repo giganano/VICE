@@ -169,14 +169,14 @@ length the file dimension. File dimension: %d. Got: %d""" % (
 		Can be indexed via both str and int, allow negative indexing as well
 		"""
 		if isinstance(key, strcomp):
-			return self.__subget__str(key)
+			return self._subget__str(key)
 		elif isinstance(key, numbers.Number):
-			return self.__subget__number(key)
+			return self._subget__number(key)
 		else:
 			raise KeyError("""Dataframe key must be of type str or int. \
 Got: %s""" % (type(key)))
 
-	def __subget__str(self, key):
+	def _subget__str(self, key):
 		"""
 		Performs the __getitem__ operation when the key is of type str
 		"""
@@ -196,7 +196,7 @@ Got: %s""" % (type(key)))
 		else:
 			raise KeyError("All keys and labels must be ascii.")
 
-	def __subget__number(self, key):
+	def _subget__number(self, key):
 		"""
 		Performs the __getitem__ operation when the key is of type int
 		"""

@@ -23,7 +23,6 @@ do not want to use the binary using the ``--no-binary`` flag:
 
 	$ python -m pip install vice [--user] --no-binary :all:
 
-
 The option ``:all:`` above tells ``pip`` to install all of the packages in the
 current call to ``pip install`` without binaries; when installing multiple
 packages, this value can be specified as a comma-separated list.
@@ -46,21 +45,25 @@ specifying the version number:
 
 	$ python -m pip install vice==<version number> [...]
 
+.. _windows_note:
+
 Designed for systems with a Unix kernel, VICE does not function within a
 windows environment.
 Windows users should therefore install VICE within the
 `Windows Subsystem for Linux (WSL)`__.
-Provided that the call to ``pip`` is ran from within WSL, the pre-compiled
-binary installer from PyPI_ should install VICE properly.
+We emphasize that the Anaconda prompt provided for Windows is **not** a true
+Unix kernel, and therefore will fail to install and run VICE properly.
+As long as the call to ``pip`` is ran from within WSL, the proper pre-compiled
+binary for Linux systems provided on PyPI_ should install successfully.
 A `manual installation`__ on a windows machine must also be ran within
-WSL.
+WSL and cannot be conducted with the Anaconda prompt.
 
 __ WSL_
 __ `Manual Installation`_
 .. _WSL: https://docs.microsoft.com/en-us/windows/wsl/install-win10
 
 For the current version, we provide pre-compiled binaries for Python_ versions
-3.6-3.10 on computers with an x86_64 CPU architecture running Mac OS and Linux
+3.7-3.10 on computers with an x86_64 CPU architecture running Mac OS and Linux
 operating systems.
 We do not provide pre-compiled binaries for CPU architectures other than x86_64.
 This includes Linux computers with Aarch64 hardware as well as the new ARM64
@@ -159,13 +162,13 @@ While VICE does not have any primary run-time dependencies, there are a few
 common compile-time dependencies that must be satisfied to install from source.
 They are as follows:
 
-1. Python_ >= 3.6
+1. Python_ >= 3.7
 
 2. setuptools_ >= 18.0
 
 3. Make_ >= 3.81
 
-4. gcc_ >= 4.6 or clang_ >= 3.6.0
+4. gcc_ >= 4.6 or clang_ >= 3.6
 
 On Mac OS X and Linux architectures, it is likely that Make_ and one of gcc_
 or clang_ come pre-installed. Users may install with alternative C compilers
@@ -323,11 +326,15 @@ __ issues_
 
 Running the setup.py File Failed
 --------------------------------
-`Did you run it for multiple versions of python simultaneously?`__
-Alternatively,
-`did you run a parallelized installation using the gcc C compiler?`__
-If neither is the case, please open an issue `here`__.
 
+`Did you attempt your installation on Windows without using WSL?`__
+If not, `did you attempt the installation for multiple versions of python
+simultaneously?`__
+Alternatively, `did you run a parallelized installation using the gcc C
+compiler?`__
+If none of these solutions apply to your case, please open an issue `here`__.
+
+__ windows_note_
 __ gcc_parallel_note_
 __ simultaneous_note_
 __ issues_

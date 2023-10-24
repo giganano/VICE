@@ -3,6 +3,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include "../multizone.h"
 #include "../singlezone.h"
 #include "../tracer.h"
@@ -193,8 +194,26 @@ extern void multizone_evolve_full(MULTIZONE *mz) {
  */
 static unsigned short multizone_timestepper(MULTIZONE *mz) {
 
-	update_zone_evolution(mz);
-	update_elements(mz);
+	/*
+	 * Change Note: version 1.3.1
+	 *
+	 * See corresponding change note in the singlezone_timestepper function
+	 * in src/singlezone/singlezone.c as the same changes have been
+	 * incorporated here.
+	 *
+	 * Additionally, version 1.3.1 asserts that all multizone models must run
+	 * in the same mode as a consequence of how this change is applied to
+	 * multi-zone models. This is taken into account in the form of a
+	 * Runtime Error raised in Python in vice/core/multizone/_multizone.pyx.
+	 */
+
+	if (strcmp((*(*(*mz).zones[0]).ism).mode, "ifr")) {
+		update_zone_evolution(mz);
+		update_elements(mz);
+	} else {
+		update_elements(mz);
+		update_zone_evolution(mz);
+	}
 
 	/*
 	 * Now each element and the ISM in each zone are at the next timestep.

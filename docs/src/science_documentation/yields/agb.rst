@@ -52,10 +52,10 @@ some characteristic mass in order to suppress these numerical artifacts.
 In this version of VICE, users can choose between the following
 nucleosynthesis studies:
 
-	- Cristallo et al. (2011, 2015) [7]_ [8]_
-	- Karakas (2010) [9]_
-	- Ventura et al. (2013) [10]_
-	- Karakas & Lugaro (2016) [11]_; Karakas et al. (2018) [12]_
+	- Cristallo et al. (2011, 2015) [8]_ [9]_
+	- Karakas (2010) [10]_
+	- Ventura et al. (2013) [11]_
+	- Karakas & Lugaro (2016) [12]_; Karakas et al. (2018) [13]_
 
 Users can also read these tables in with the ``vice.yields.agb.grid`` function.
 
@@ -64,9 +64,9 @@ Relevant Source Code:
 	- ``vice/src/singlezone/agb.c``
 	- ``vice/yields/agb/_grid_reader.pyx``
 
-.. [7] Cristallo et al. (2011), ApJS, 197, 17
-.. [8] Cristallo et al. (2015), ApJS, 219, 40
-.. [9] Karakas (2010), MNRAS, 403, 1413
-.. [10] Ventura et al. (2013), MNRAS, 431, 3642
-.. [11] Karakas & Lugaro (2016), ApJ, 825, 26
-.. [12] Karakas et al. (2018), MNRAS, 477, 421
+.. [8] Cristallo et al. (2011), ApJS, 197, 17
+.. [9] Cristallo et al. (2015), ApJS, 219, 40
+.. [10] Karakas (2010), MNRAS, 403, 1413
+.. [11] Ventura et al. (2013), MNRAS, 431, 3642
+.. [12] Karakas & Lugaro (2016), ApJ, 825, 26
+.. [13] Karakas et al. (2018), MNRAS, 477, 421

@@ -4,11 +4,12 @@ Core Collapse Supernovae
 Because core collapse supernovae (CCSNe) are assumed to occur simultaneously
 with the formation of their progenitor stars [2]_, :math:`y_x^\text{CC}`
 represents the total yield from all CCSNe associated with a single stellar
-population. Letting :math:`m_x` denote the net mass of some element :math:`x`
-present in the CCSN ejecta, the yield at a given metallicity is defined by:
+population. Letting :math:`m_x` denote the mass of some element :math:`x`
+present in the CCSN ejecta from a progenitor of initial mass :math:`m`, the
+yield at a given metallicity is defined by:
 
 .. math:: y_x^\text{CC} \equiv \frac{
-	\int_{l_\text{CC}}^u (E(m)m_x + w_x - Z_{x,\text{prog}} m)
+	\int_{l_\text{CC}}^u (E(m)m_x + w_x - Z_{x,\text{prog}} (m - m_\text{rem}))
 	\frac{dN}{dm} dm
 	}{
 	\int_l^u m \frac{dN}{dm} dm
@@ -17,16 +18,21 @@ present in the CCSN ejecta, the yield at a given metallicity is defined by:
 where the numerator is taken from the minimum mass for a CCSN explosion
 :math:`l_\text{CC}` to the upper mass limit of star formation :math:`u`, but
 the denominator is over the entire mass range of star formation, and
-:math:`dN/dm` is the stellar initial mass function (IMF). This equation is
-nothing more or less than the mathematical statement of "production divided
-by total initial mass."
+:math:`dN/dm` is the stellar initial mass function (IMF).
+The constant ``CC_MIN_STELLAR_MASS`` declares :math:`l_\text{CC} = 8 M_\odot`
+in ``vice/src/ccsne.h``.
+This equation is nothing more or less than the mathematical statement of "metal
+production divided by total initial mass of stars."
 :math:`E(m)` denotes the *explodability*: the fraction of star of mass
 :math:`m` which explode as a CCSN. :math:`w_x` denotes the mass yield of the
-element :math:`x` due to winds at a mass :math:`m`, and the corrective term
-:math:`Z_{x,\text{prog}} m` accounts for the birth abundances of the star to
-compute a *net* rather than a *gross* yield. The constant
-``CC_MIN_STELLAR_MASS`` declares :math:`l_\text{CC} = 8 M_\odot` in
-``vice/src/ccsne.h``.
+element :math:`x` due to stellar winds at a mass :math:`m`, and the corrective
+term :math:`Z_{x,\text{prog}} (m - m_\text{rem})` accounts for the mass of the
+element :math:`x` in the ejecta that was present at birth, converting the
+quantity from a *gross* yield to a *net* yield.
+In the current version of VICE, :math:`m_\text{rem}` is assumed to always be a
+1.44 :math:`M_\odot` black hole for massive stars based on Weinberg, Andrews
+& Freudenburg (2017) [6]_; additional, more realistic initial-final remnant
+mass relations are currently being incorporated into the code base.
 
 In practice, supernova nucleosynthesis studies determine the value of
 :math:`m_x` for of order 10 values of :math:`m` at a given metallicity and
@@ -110,4 +116,6 @@ Relevant Source Code:
 .. [4] Kroupa (2001), MNRAS, 231, 322
 
 .. [5] Salpeter (1955), ApJ, 121, 161
+
+.. [6] Weinberg, Andrews & Freudenburg (2017), ApJ, 837, 183
 

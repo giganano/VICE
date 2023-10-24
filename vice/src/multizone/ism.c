@@ -28,6 +28,13 @@
 extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 
 	/*
+	 * Change Note: version 1.3.1
+	 *
+	 * See corresponding change note in src/singlezone/ism.c as the same
+	 * changes have been incorporated here.
+	 */
+
+	/*
 	 * The relation between star formation rate, infall rate, gas supply,
 	 * timestep size, outflow rate, recycling rate, and star formation
 	 * efficiency timescale:
@@ -46,18 +53,6 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 	for (i = 0; i < (*(*mz).mig).n_zones; i++) {
 		SINGLEZONE *sz = mz -> zones[i];
 
-		/*
-		 * Change Note: version 1.3.0
-		 *
-		 * Primordial inflow added prior to updating parameters in infall mode
-		 * as before, but now after updating in star formation and gas modes.
-		 * In practice, this caused models to miss one timestep's worth of
-		 * primordial inflow at the very beginning due to the temporary
-		 * assignment of the infall rate to NaN. This change ensures that the
-		 * infall rate will not be NaN by the time primordial_inflow is called
-		 * after one timestep has passed.
-		 */
-
 		switch (checksum((*(*sz).ism).mode)) {
 
 			case GAS:
@@ -70,11 +65,9 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 						- mass_recycled[i]) / (*sz).dt +
 					(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz)
 				);
-				primordial_inflow(sz);
 				break;
 
 			case IFR:
-				primordial_inflow(sz);
 				sz -> ism -> mass += (
 					((*(*sz).ism).infall_rate -
 						(*(*sz).ism).star_formation_rate -
@@ -96,7 +89,6 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 					(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz)
 				);
 				sz -> ism -> mass += dMg;
-				primordial_inflow(sz);
 				break;
 
 			default:

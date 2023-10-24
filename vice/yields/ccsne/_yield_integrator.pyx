@@ -258,7 +258,8 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	This function evaluates the solution to the following equation:
 
 	.. math:: y_x^\text{CC} = \frac{
-		\int_8^u (E(m)m_x + w_x - Z_{x,\text{prog}}m) \frac{dN}{dm} dm
+		\int_8^u (E(m)m_x + w_x - Z_{x,\text{prog}}(m - m_\text{rem}(m)))
+		\frac{dN}{dm} dm
 		}{
 		\int_l^u m \frac{dN}{dm} dm
 		}
@@ -266,11 +267,20 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	where :math:`E(m)` is the stellar explodability for progenitors of initial
 	mass :math:`m`, :math:`m_x` is the mass of the element :math:`x` produced
 	in the explosion, :math:`w_x` is the mass of the element :math:`x` ejected
-	in the wind, :math:`dN/dm` is the assumed stellar IMF, and
-	:math:`Z_{x,\text{prog}}` is the abundance by mass of the element :math:`x`
-	in the CCSN progenitor stars, whose values are stored in VICE's internal
-	data. If the keyword arg ``net = False``, :math:`Z_{x,\text{prog}}` is
-	simply set to zero to calculate a gross yield.
+	in the wind, :math:`dN/dm` is the assumed stellar IMF, :math:`m_\text{rem}`
+	is the mass of the remnant left behind by a star of initial mass :math:`m`,
+	and :math:`Z_{x,\text{prog}}` is the abundance by mass of the element
+	:math:`x` in the CCSN progenitor stars, whose values are stored in VICE's
+	internal data. If the keyword arg ``net = False``, :math:`Z_{x,\text{prog}}`
+	is simply set to zero to calculate a gross yield. Remnant masses are
+	computed according to the parametrization in Weinberg, Andrews &
+	Freudenburg (2017 [11]_; based on Kalirai et al. 2008 [12]_) where
+	:math:`m \geq 8 M_\odot` stars leave behind a 1.44 :math:`M_\odot` remnant.
+	Although there is debate surrounding the details of the initial-final
+	remnant mass relation, Weinberg, Andrews & Freudenburg (2017) demonstrate
+	that the details of how stellar envelopes are returned to the ISM is a
+	small correction in chemical evolution models, indicating that these
+	effects should not significantly impact conclusions.
 
 	If a study does not report wind yields, or doesn't separate them from the
 	explosive yields (i.e. anything other than LC18 or S16/* yield sets), then
@@ -289,6 +299,15 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	notes in the ``vice.yields.ccsne`` docstring for details on the studies to
 	which VICE applies a treatment of radioactive isotopes in its built-in
 	tables.
+
+	.. versionadded:: 1.3.1
+		Prior versions did not subtract the remnant mass from the initial
+		mass of the star for calculating net yields. This is a small correction
+		for metals but is more noticeable for helium. In this version, only the
+		simplified remnant mass model is adopted whereby massive stars of all
+		masses produce a 1.44 :math:`M_\odot` white dwarf. We plan to expand
+		upon these options for remnant mass models in future versions.
+
 
 	Example Code
 	------------
@@ -312,6 +331,8 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 	.. [9] Salpeter (1955), ApJ, 121, 161
 	.. [10] Press, Teukolsky, Vetterling & Flannery (2007), Numerical Recipes,
 		Cambridge University Press
+	.. [11] Weinberg, Andrews & Freudenburg (2017), ApJ, 837, 183
+	.. [12] Kalirai et al. (2008), ApJ, 676, 594
 	"""
 
 	# Type checking errors

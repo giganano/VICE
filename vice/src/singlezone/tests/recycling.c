@@ -83,21 +83,18 @@ extern unsigned short max_age_ssp_test_mass_recycled(SINGLEZONE *sz) {
 extern unsigned short zero_age_ssp_test_mass_recycled(SINGLEZONE *sz) {
 
 	unsigned short i, status = 1u;
+	double sfr = (*(*sz).ism).star_formation_history[(*sz).timestep - 1ul];
 	for (i = 0u; i < (*sz).n_elements; i++) {
-		double recycled = (
-			(*(*sz).ism).star_formation_rate * (*sz).dt *
-			(*(*sz).elements[i]).Z[(*sz).timestep] *
-			(*(*sz).ssp).crf[1]
-		);
-		double percent_difference = absval(
-			(recycled - mass_recycled(*sz, (*sz).elements[i])) /
-			mass_recycled(*sz, (*sz).elements[i])
-		);
-		status &= percent_difference < 1e-12;
+		/*
+		 * The only stellar population to have formed is zero metallicity, so
+		 * there shouldn't be any recycled metals...
+		 */
+		status &= mass_recycled(*sz, (*sz).elements[i]) == 0;
 		if (!status) break;
 	}
+	/* ... but there is recycled gas. */
 	status &= mass_recycled(*sz, NULL) == (
-		(*(*sz).ism).star_formation_rate * (*sz).dt * (*(*sz).ssp).crf[1]
+		sfr * (*sz).dt * ((*(*sz).ssp).crf[2] - (*(*sz).ssp).crf[1])
 	);
 	return status;
 

@@ -4,6 +4,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include <stdio.h>
 #include <math.h>
 #include "../singlezone.h"
@@ -111,17 +112,32 @@ extern void singlezone_evolve_no_setup_no_clean(SINGLEZONE *sz) {
 static unsigned short singlezone_timestepper(SINGLEZONE *sz) {
 
 	/*
+	 * Change Note: version 1.3.1
+	 *
+	 * update_gas_evolution is called before updating element masses in gas
+	 * and star formation modes, but after updating element masses in infall
+	 * mode. In practice this ensures that there are no timesteps worth of
+	 * accretion of primordial gas missed and that there are no numerical
+	 * artifacts if there are sudden changes in the star formation rate.
+	 * This is largely in response to moving the addition of mass due to
+	 * metal-rich infall to the update_element_mass function.
+	 *
+	 * See also change notes in ism.c, element.c.
+	 */
+
+	/*
 	 * Timestep number and current time get moved LAST. This is taken into
 	 * account in each of the following subroutines.
 	 */
 	unsigned int i;
-	update_gas_evolution(sz);
+	if (strcmp((*(*sz).ism).mode, "ifr")) update_gas_evolution(sz);
 	for (i = 0; i < (*sz).n_elements; i++) {
 		update_element_mass(*sz, (*sz).elements[i]);
 		/* Now the ISM and this element are at the next timestep */
 		sz -> elements[i] -> Z[(*sz).timestep + 1l] = (
 			(*(*sz).elements[i]).mass / (*(*sz).ism).mass);
 	}
+	if (!strcmp((*(*sz).ism).mode, "ifr")) update_gas_evolution(sz);
 	update_MDF(sz);
 
 	sz -> current_time += (*sz).dt;

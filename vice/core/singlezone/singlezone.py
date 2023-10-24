@@ -935,6 +935,25 @@ ran.""" % (i, j), UserWarning)
 		passed, allowing real numbers and functions to be assigned on an
 		element-by-element basis.
 
+		This attribute quantifies only the metallicity of gas inflow *in excess*
+		of that which is produced by the big bang. For example, even when this
+		attribute is set to 0 for helium, its abundance by mass in accreting
+		gas will still be given by ``vice.primordial["he"]``. If the element in
+		question was not produced during big bang nucleosynthesis (i.e.
+		``vice.primordial["x"] = 0`` for some element "x"), then the same
+		numerical solution applies and this attribute quantifies the total
+		abundance by mass in the inflow.
+
+		.. versionadded:: 1.3.1
+
+			In previous versions, the primordial abundance by mass of each
+			element was included in the numerical calculation of the inflow
+			metallicity but was not recorded in the output. That is, an inflow
+			metallicity of zero for helium meant that its abundance in
+			infalling gas was exactly the primordial abundance. With this
+			patch, this book-keeping is adjusted to account for this, and
+			outputs will reflect a non-zero abundance in primordial gas.
+
 		.. tip::
 
 			The easiest way to switch this attribute to a dataframe is by

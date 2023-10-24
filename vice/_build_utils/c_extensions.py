@@ -512,6 +512,7 @@ _CFILES_ = {
 		"./vice/src/objects/callback_1arg.c",
 		"./vice/src/objects/integral.c",
 		"./vice/src/objects/imf.c",
+		"./vice/src/ssp/remnants.c",
 		"./vice/src/io/ccsne.c",
 		"./vice/src/io/utils.c",
 		"./vice/src"
