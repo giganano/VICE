@@ -108,6 +108,15 @@ cdef class history(fromfile):
 
 			.. math:: [M/H] = \log_{10}\left(\frac{Z}{Z_\odot}\right)
 
+		.. versionadded:: 1.3.1
+
+			In previous versions, the primordial abundance by mass was included
+			in the numerical calculation of the inflow metallicity, but was not
+			recorded in the output. That is, an inflow metallicity of zero for
+			helium meant that the inflow metallicity was the primordial value.
+			In this patch, this book-keeping is adjusted to account for this,
+			and outputs will reflect a non-zero abundance in primordial gas.
+
 	Functions
 	---------
 	- keys
@@ -237,35 +246,35 @@ cdef class history(fromfile):
 		scaled total ISM metallicity.
 		"""
 		if isinstance(key, strcomp):
-			return self.__subget__str(key)
+			return self._subget__str(key)
 		elif isinstance(key, numbers.Number) and key % 1 == 0:
-			return self.__subget__int(key)
+			return self._subget__int(key)
 		else:
 			# No error yet, other possibilities in super's __getitem__
 			return super().__getitem__(key)
 
-	def __subget__str(self, key):
+	def _subget__str(self, key):
 		"""
 		Performs the __getitem__ operation when the key is of type str
 		"""
 		# See docstrings of subroutines for further info
 		if key.lower().startswith("z(") and key.endswith(')'):
-			return self.__subget__str_z(key)
+			return self._subget__str_z(key)
 		elif key.lower() == "y":
-			return self.__subget__str_y(key)
+			return self._subget__str_y(key)
 		elif key.lower() == "z":
-			return self.__subget__str_ztot(key)
+			return self._subget__str_ztot(key)
 		elif key.lower() == "[m/h]":
-			return self.__subget__str_logztot(key)
+			return self._subget__str_logztot(key)
 		elif key.startswith('[') and key.endswith(']') and '/' in key:
-			return self.__subget__str_logzratio(key)
+			return self._subget__str_logzratio(key)
 		elif key.lower() == "lookback":
-			return self.__subget__str_lookback(key)
+			return self._subget__str_lookback(key)
 		else:
 			# No error yet, other possibilities in super's __getitem__
-			return super().__subget__str(key)
+			return super()._subget__str(key)
 
-	def __subget__str_z(self, key):
+	def _subget__str_z(self, key):
 		"""
 		Performs the __getitem__ operation when the key is of type str and is
 		requesting a metallicity by mass Z of a given element.
@@ -285,14 +294,14 @@ cdef class history(fromfile):
 			raise KeyError("Element not tracked by simulation: %s" % (
 				element))
 
-	def __subget__str_y(self, key):
+	def _subget__str_y(self, key):
 		"""
 		Performs the __getitem__ operation when the key is of type str and is
 		requesting the helium mass fraction Y.
 		"""
-		return self.__subget__str_z("z(he)")
+		return self._subget__str_z("z(he)")
 
-	def __subget__str_ztot(self, key):
+	def _subget__str_ztot(self, key):
 		"""
 		Performs the __getitem__ operation when the key is of type str and is
 		requesting the total metallicity by mass Z
@@ -307,7 +316,7 @@ cdef class history(fromfile):
 		else:
 			raise SystemError("Internal Error")
 
-	def __subget__str_logztot(self, key):
+	def _subget__str_logztot(self, key):
 		"""
 		Performs the __getitem__ operation when the key is of type str and is
 		requesting the log of the total metallicity by mass [M/H].
@@ -322,7 +331,7 @@ cdef class history(fromfile):
 		else:
 			raise SystemError("Internal Error")
 
-	def __subget__str_logzratio(self, key):
+	def _subget__str_logzratio(self, key):
 		"""
 		Performs the __getitem__ operation when the key is of type str and is
 		requesting a logarithmic abundance ratio [X/Y]. This is generalized to
@@ -348,7 +357,7 @@ cdef class history(fromfile):
 		else:
 			raise KeyError("Unrecognized dataframe key: %s" % (key))
 
-	def __subget__str_lookback(self, key):
+	def _subget__str_lookback(self, key):
 		"""
 		Performs the __getitem__ operation when the key is of type str and is
 		requesting the lookback time.
@@ -362,7 +371,7 @@ cdef class history(fromfile):
 		else:
 			raise SystemError("Internal Error")
 
-	def __subget__int(self, key):
+	def _subget__int(self, key):
 		"""
 		Performs the __getitem__ operation when the key is of type int.
 		"""

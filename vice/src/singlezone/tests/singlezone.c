@@ -4,6 +4,7 @@
  */
 
 #include "../singlezone.h"
+#include "../../utils.h"
 
 /*
  * Performs the quiescence edge-case test on the singlezone_stellar_mass
@@ -67,11 +68,13 @@ extern unsigned short max_age_ssp_test_singlezone_stellar_mass(SINGLEZONE *sz) {
  */
 extern unsigned short zero_age_ssp_test_singlezone_stellar_mass(SINGLEZONE *sz) {
 
-	/*
-	 * The stellar mass calculation doesn't take into account stars currently
-	 * formation, so this should be zero.
-	 */
-	return singlezone_stellar_mass(*sz) == 0;
+	/* In detail, the single episode of star formation is one timestep ago. */
+	double mass = (*(*sz).ism).star_formation_history[(*sz).timestep - 1ul];
+	mass *= (*sz).dt;
+	mass *= (1 - (*(*sz).ssp).crf[1]);
+	double percent_difference = absval(
+		singlezone_stellar_mass(*sz) - mass) / mass;
+	return percent_difference < 1e-12;
 
 }
 

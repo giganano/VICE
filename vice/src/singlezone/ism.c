@@ -104,6 +104,18 @@ extern unsigned short setup_gas_evolution(SINGLEZONE *sz) {
 extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
 
 	/*
+	 * Change Note: version 1.3.1
+	 *
+	 * Primordial inflow is moved from this function to update_element_mass
+	 * in element.c. In practice, the previous implementation led to
+	 * underestimated helium production by adding new helium to the ISM,
+	 * causing more to be ejected due to an overestimed abundance in the gas
+	 * phase.
+	 *
+	 * See also change notes in singlezone.c, element.c.
+	 */
+
+	/*
 	 * The relation between star formation rate, infall rate, gas supply,
 	 * timestep size, outflow rate, recycling rate, and star formation
 	 * efficiency timescale:
@@ -116,18 +128,6 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
 	 * gas supply so that there isn't a 1-timestep delay or advance in the
 	 * amount of helium added
 	 */
-
-	/*
-	 * Change Note: version 1.3.0
-	 *
-	 * Primordial inflow added prior to updating parameters in infall mode as
-	 * before, but now after updating in star formation and gas modes. In
-	 * practice, this caused models to miss one timestep's worth of primordial
-	 * inflow at the very beginning due to the temporary assignment of the
-	 * infall rate to NaN. This change ensures that the infall rate will not be
-	 * NaN by the time primordial_inflow is called after one timestep has
-	 * passed.
-	 */
 	switch (checksum((*(*sz).ism).mode)) {
 
 		case GAS:
@@ -139,11 +139,9 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
 					mass_recycled(*sz, NULL)) / (*sz).dt +
 				(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz)
 			);
-			primordial_inflow(sz);
 			break;
 
 		case IFR:
-			primordial_inflow(sz);
 			sz -> ism -> mass += (
 				((*(*sz).ism).infall_rate - (*(*sz).ism).star_formation_rate -
 					get_outflow_rate(*sz)) * (*sz).dt + mass_recycled(*sz, NULL)
@@ -163,7 +161,6 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
 				(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz)
 			);
 			sz -> ism -> mass += dMg;
-			primordial_inflow(sz);
 			break;
 
 		default:
@@ -308,30 +305,6 @@ extern void update_gas_evolution_sanitycheck(SINGLEZONE *sz) {
 	
 	if ((*(*sz).ism).infall_rate < 0) {
 		sz -> ism -> infall_rate = 0;
-	} else {}
-
-}
-
-
-/*
- * Takes into account each element's primordial abundance in the inflow
- *
- * Parameters
- * ==========
- * sz: 		A pointer to the singlezone object for this simulation
- *
- * header: ism.h
- */
-extern void primordial_inflow(SINGLEZONE *sz) {
-
-	if (!isnan((*(*sz).ism).infall_rate)) {
-		unsigned int i;
-		for (i = 0; i < (*sz).n_elements; i++) {
-			sz -> elements[i] -> mass += (
-				(*(*sz).ism).infall_rate * (*sz).dt *
-				(*(*sz).elements[i]).primordial
-			);
-		}
 	} else {}
 
 }

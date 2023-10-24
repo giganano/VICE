@@ -664,7 +664,8 @@ simulation was ran.""" % (i, j), UserWarning)
 		r"""
 		Run the simulation.
 
-		**Signature**: x.run(output_times, capture = False, overwrite = False)
+		**Signature**: x.run(output_times, capture = False, overwrite = False,
+			pickle = True)
 
 		Parameters
 		----------

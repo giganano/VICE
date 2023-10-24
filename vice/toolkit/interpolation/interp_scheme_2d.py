@@ -17,7 +17,7 @@ class interp_scheme_2d(c_interp_scheme_2d):
 
 	Parameters
 	----------
-	xccords : array-like
+	xcoords : array-like
 		The attribute ``xcoords``. See below.
 	ycoords : array-like
 		The attribute ``ycoords``. See below.

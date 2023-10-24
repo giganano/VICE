@@ -25,7 +25,7 @@ Intuitively, the SN Ia yield is thus specified by the mass yield of a single
 SN Ia explosion and the number of SN Ia events that occur per unit solar
 mass formed.
 
-Maoz & Mannucci (2012) [6]_ found that :math:`N_\text{Ia}/M_\star` =
+Maoz & Mannucci (2012) [7]_ found that :math:`N_\text{Ia}/M_\star` =
 :math:`(2 \pm 1) \times 10^{-3} M_\odot^{-1}`. That is, on average,
 approximately 500 :math:`M_\odot` of stars must form for a given stellar
 population to produce a single SN Ia.
@@ -49,4 +49,4 @@ Relevant Source Code:
 
 	- ``vice/yields/sneia/_yield_lookup.pyx``
 
-.. [6] Maoz & Mannucci (2012), PASA, 29, 447
+.. [7] Maoz & Mannucci (2012), PASA, 29, 447

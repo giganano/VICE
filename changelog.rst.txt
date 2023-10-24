@@ -1,4 +1,29 @@
 
+1.3.1
+=====
+- ``vice.multizone``
+	Enforces each zone to run in the same mode (related to the handling of
+	inflow metallicites; see below).
+
+- ``vice.singlezone`` and ``vice.multizone``
+	- Handles non-zero inflow metallicities in a more stable way. Unit tests
+	  search for numerical artifacts in "sudden event" evolutionary histories
+	  exhibiting bursts in star formation.
+
+	- Includes primordial metallicity component in the reported total abundance
+	  in accreting gas at each timestep.
+
+- ``vice.dataframe``
+	Fixed issues with inheritance structure affecting recent versions of
+	python (3.11 and 3.12)
+
+- ``vice.yields.ccsne.fractional``
+	- Subtracts the remnant mass from the initial mass in computing net yields
+	  from the tables containing gross yields. A small correction for metals,
+	  the difference is significant for helium.
+
+- Fixed callback objects to be compatible with Cython>=3.0.
+
 1.3.0
 =====
 - ``vice.mlr``

@@ -34,7 +34,7 @@ def cumulative_return_fraction(age, IMF = "kroupa", m_upper = 100,
 	the birst metallicity of the stars.
 
 	**Signature**: vice.cumulative_return_fraction(age, IMF = "kroupa",
-	m_upper = 100, m_lower = 0.08, postMS = 0.01)
+	m_upper = 100, m_lower = 0.08, postMS = 0.1)
 
 	Parameters
 	----------

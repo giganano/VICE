@@ -391,6 +391,7 @@ zone and at least one timestep larger than 1.""")
 		self.align_element_attributes()
 		self.zone_alignment_warnings()
 		self.timestep_alignment_error()
+		self.mode_alignment_error()
 		for i in range(self._mz[0].mig[0].n_zones):
 			times = self._zones[i]._singlezone__zone_prep(output_times)
 			self._mz[0].zones[i][0].output_times = copy_pylist(
@@ -888,6 +889,17 @@ its time of formation, must equal its zone of origin.""")
 			raise RuntimeError("Timestep size not uniform across zones.")
 		else:
 			pass
+
+
+	def mode_alignment_error(self):
+		r"""
+		Raises a Runtime Error if each zones are not all running in the same
+		mode.
+		"""
+		if len(dict.fromkeys([self._zones[i].mode for i in range(
+			self._mz[0].mig[0].n_zones)])) > 1:
+			raise RuntimeError("All zones must run in the same mode.")
+		else: pass
 
 
 	def import_mlr_data(self):
