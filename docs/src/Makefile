@@ -26,6 +26,8 @@ api:
 srcclean:
 	@ echo Cleaning docs/src/
 	@ $(MAKE) -C api/ clean
+	@ rm -f index.rst
+	@ rm -f cover.tex
 	@ $(MAKE) clean
 
 
