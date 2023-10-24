@@ -1,3 +1,20 @@
+# This workflow is designed to pre-compile VICE for distribution across all
+# versions of python supported by the code base. In the current version,
+# however, we simply provide a source distribution will be compiled on each
+# user's system. Previous versions had provided pre-compiled binaries, and the
+# workflow code which produced those wheels is preserved here. The comments
+# from the top of this workflow from this previous distribution strategy are
+# copied below. As such, this workflow is generally not invoked; instead we
+# dispatch the sdist.yml workflow to create the source distribution.
+#
+# We elect to provide only a source distribution because, with the limited
+# architecture available through GitHub actions for Mac OS, it is likely that
+# many end user's of VICE will have to compile in place anyway. This will only
+# become more the case in the near future when users will compile it to enable
+# multithreading, which will require an in-place compilation.
+#
+# Previous Notes on Distribution Strategy:
+# ----------------------------------------
 # This workflow pre-compiles VICE for distribution across all versions of
 # python supported by the code base. Requiring a 64-bit system architecture,
 # we pre-compile for x86_64 hardware on both Mac OS and Linux. As of yet,
@@ -9,7 +26,7 @@
 # 
 # At present, GitHub actions does not support a build matrix for jobs that
 # call a reusable workflow, so the Mac OS and manylinux jobs here implement
-# the workaround from the following URL: 
+# the workaround from the following URL:
 # 
 # https://github.community/t/reusable-workflow-with-strategy-matrix/205676/8
 
