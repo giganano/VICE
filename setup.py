@@ -86,12 +86,12 @@ Topic :: Scientific/Engineering :: Physics
 MAJOR			= 1
 MINOR			= 3
 MICRO			= 1
-DEV				= 0
+DEV				= None
 ALPHA			= None
 BETA			= None
 RC				= None
 POST			= None
-ISRELEASED		= False
+ISRELEASED		= True
 VERSION			= "%d.%d.%d" % (MAJOR, MINOR, MICRO)
 if DEV is not None:
 	assert isinstance(DEV, int), "Invalid version information"
