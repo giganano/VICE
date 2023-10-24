@@ -4,9 +4,9 @@
 Installing VICE
 +++++++++++++++
 
-On PyPI_ we provide pre-compiled binary installers and source distributions for
-released versions of VICE.
-To install the latest version, we recommend simply running
+The simplest method to install VICE is to pull the source distribution from
+PyPI_.
+To install the latest version, simply run
 
 ::
 
@@ -16,34 +16,37 @@ from the command line.
 Users should add the ``--user`` flag if they do not have administrative
 privileges on their current machine; this will install VICE to their
 ``~/.local`` directory.
-To compile and install VICE from source using PyPI_, simply specify that you
-do not want to use the binary using the ``--no-binary`` flag:
 
-::
-
-	$ python -m pip install vice [--user] --no-binary :all:
-
-The option ``:all:`` above tells ``pip`` to install all of the packages in the
-current call to ``pip install`` without binaries; when installing multiple
-packages, this value can be specified as a comma-separated list.
-Further details on the ``--no-binary`` option can be found in the associated
-`documentation`__ for the ``pip install`` command.
-Rather than downloading a pre-compiled binary, ``pip`` will download the source
-distribution provided on PyPI_ and compile and install VICE on your machine.
-``pip`` should also conduct an installation using the source distribution
-automatically in the event that a pre-compiled binary is unavailable for a
-user's operating system and CPU architecture.
-
-__ pipinstalldocs_
-.. _pipinstalldocs: https://pip.pypa.io/en/stable/cli/pip_install/
 .. _PyPI: https://pypi.org/project/vice/
 
-Additionally, previous versions available on PyPI can be installed by simply
-specifying the version number:
+Previous versions available on PyPI can be installed by simply specifying the
+version number:
 
 ::
 
 	$ python -m pip install vice==<version number> [...]
+
+To speed up the installation process, users can tell ``pip`` to parallelize
+compiling VICE across some number of cores using the ``--global-option``
+command.
+For example, to spread compilation across four cores:
+
+::
+
+	$ python -m pip install vice --global-option="build" --global-option="-j4"
+
+Invoking ``--global-option`` uses legacy behavior for ``pip`` and will generate
+warning messages to that effect.
+``pip >= 24.0`` will enforce the behavior change.
+Future versions of VICE will implement a more standard installation process;
+our developers are currently in the process of migrating VICE from the
+previously standard ``setup.py`` method to the new ``pyproject.toml`` standard
+introduced by `PEP 517`__.
+In the meantime, if a parallelized installation is required, we ask that users
+simply downgrade (if necessary) to ``pip <= 24.0`` and proceed accordingly.
+
+__ pep517_
+.. _pep517: https://peps.python.org/pep-0517/
 
 .. _windows_note:
 
@@ -62,16 +65,10 @@ __ WSL_
 __ `Manual Installation`_
 .. _WSL: https://docs.microsoft.com/en-us/windows/wsl/install-win10
 
-For the current version, we provide pre-compiled binaries for Python_ versions
-3.7-3.10 on computers with an x86_64 CPU architecture running Mac OS and Linux
-operating systems.
-We do not provide pre-compiled binaries for CPU architectures other than x86_64.
-This includes Linux computers with Aarch64 hardware as well as the new ARM64
-Apple Silicon computers (i.e. the M1 chip).
-At present, the developers do not have the resources necessary to pre-compile
-VICE for these machines, we apologize for the inconvenience.
-Although VICE can be installed and ran on 32-bit hardware (e.g. i686 CPUs), we
-strongly discourage running VICE on such machines.
+Although VICE can in principle be installed and ran on 32-bit hardware (e.g.
+i686 CPUs), we strongly discourage running VICE on such machines.
+Many of VICE's unit tests, including those which run sanity checks on its
+calculations, fail on these machines.
 
 Users who have or would like to modify VICE's source code must conduct a
 `manual installation`__.
@@ -84,17 +81,14 @@ __ `Manual Installation`_
 __ repo_
 .. _repo: https://github.com/giganano/VICE.git
 
-Although it is generally not advised to mix package managers, this is not a
+Although it is generally not advisable to mix package managers, this is not a
 concern for VICE.
-At present, a pre-compiled installation of VICE is not available through
-conda_, though users who typically install their python packages and manage
-their computing environments with conda_ can safely conduct their installation
-of VICE using ``pip``.
-`As noted below`__, VICE has no run-time dependencies, meaning that there is
-no environment that would need solved in the event the installation were
-conducted using conda_.
-In this case, the package manager would simply see that the list of
-dependencies is empty, then download the pre-compiled binary and install it.
+We do not provide VICE distributions through conda_, though users who typically
+install their python packages and manage their computing environments with
+conda_ can safely conduct their installation using ``pip``.
+`As noted below`__, VICE has no run-time dependencies, meaning that there is no
+environment that would need to be solved in the event the installation were
+conducted with conda_.
 
 __ `Dependencies`_
 .. _conda: https://docs.conda.io/en/latest/
@@ -158,26 +152,25 @@ If you have already modified VICE's source code or plan to do so, we encourage
 you to reach out to one of our :ref:`developers <contributors>` - we'd be happy
 to consult with you to help VICE meet your needs!
 
-While VICE does not have any primary run-time dependencies, there are a few
-common compile-time dependencies that must be satisfied to install from source.
+Though VICE does not have any run-time dependencies, there are a few
+compile-time dependencies that must be satisfied to install from source.
 They are as follows:
 
-1. Python_ >= 3.7
+1. Python_ >= 3.8
 
 2. setuptools_ >= 18.0
 
-3. Make_ >= 3.81
+3. gcc_ >= 4.6 or clang_ >= 3.6
 
-4. gcc_ >= 4.6 or clang_ >= 3.6
-
-On Mac OS X and Linux architectures, it is likely that Make_ and one of gcc_
-or clang_ come pre-installed. Users may install with alternative C compilers
-if they so choose, but VICE is tested with only gcc_ and clang_.
+On Mac OS X and Linux architectures, it is likely that one of gcc_ or clang_
+come pre-installed.
+Users may install with alternative C compilers if they so choose, but VICE is
+tested with only gcc_ and clang_.
 While a sizable portion of VICE's source code is written in Cython_ and
-requires Cython_ >= 0.29.0 to compile, this should be handled automatically by
+requires Cython_ >= 3.0 to compile, this should be handled automatically by
 setuptools_.
-Nonetheless, it is always an easy option to install it manually via
-``python -m pip install Cython>=0.29.0``.
+Nonetheless, it is trivial to install it manually via
+``python -m pip install Cython>=3.0``.
 
 .. _Cython: https://pypi.org/project/Cython/
 .. _Python: https://www.python.org/downloads/
@@ -201,30 +194,21 @@ To then compile and install VICE, simply run:
 
 ::
 
-	$ make
-	$ python setup.py build install [--user]
+	$ python -m pip install .
 
-This will compile the source code under a directory named ``build``, and
-subsequently install to the appropriate ``site-packages`` directory once
-completed.
 Users who do not have administrator's privileges on the system they're
 conducting the installation should add the ``--user`` command-line argument,
 which will conduct a local installation.
+A parallelized build using the ``--global-option`` legacy behavior as described
+above is also available when installing manually.
 
-Following the installation, running VICE's unit tests (if desired) and
-cleaning the source tree can be achieved with
+Following the installation, if desired, VICE's unit tests can be run with
 
 ::
 
 	$ make tests
-	$ make clean
 
-Please note that users installing VICE to multiple versions of python will
-likely have to run ``make clean`` between runs of the setup.py file.
-The command ``make tests`` runs the unit tests in the current environment's
-default version of python.
-If a specific version of python is required, the tests can be ran from
-within the interpreter itself easily:
+This can also be achieved from within python itself:
 
 .. code:: python
 
@@ -237,53 +221,53 @@ would like help getting started, usage guidelines can be found
 :ref:`here <getting_started>`.
 
 
-Additional Compile Options
---------------------------
-VICE affords users flexibility in specifying how they'd like to compile from
-source.
+.. Additional Compile Options
+.. --------------------------
+.. VICE affords users flexibility in specifying how they'd like to compile from
+.. source.
 
-1. Parallelization
-	Users may spread out the job of compiling VICE across multiple cores via
-	the ``[-j N]`` command-line argument.
-	For example,
+.. 1. Parallelization
+.. 	Users may spread out the job of compiling VICE across multiple cores via
+.. 	the ``[-j N]`` command-line argument.
+.. 	For example,
 
-	::
+	.. ::
 
-		$ python setup.py build -j 2 install [--user]
+.. 		$ python setup.py build -j 2 install [--user]
 
-	will compile all extensions using 2 cores.
-	**Warning**: See `note`__ below regarding parallel installations with the
-	gcc_ C compiler.
+.. 	will compile all extensions using 2 cores.
+.. 	**Warning**: See `note`__ below regarding parallel installations with the
+.. 	gcc_ C compiler.
 
-__ gcc_parallel_note_
+.. .. __ gcc_parallel_note_
 
-2. Suppress verbose output
-	Users may suppress the printing of compiler commands to the consoler with
-	the ``[-q --quiet]`` command-line argument.
-	For example, when running
+.. 2. Suppress verbose output
+.. 	Users may suppress the printing of compiler commands to the consoler with
+.. 	the ``[-q --quiet]`` command-line argument.
+.. 	For example, when running
 
-	::
+	.. ::
 
-		$ python setup.py build --quiet install [--user]
+.. 		$ python setup.py build --quiet install [--user]
 
-	the only lines printed to the console by the setup.py file will say that
-	specific extensions are being cythonized.
+.. 	the only lines printed to the console by the setup.py file will say that
+.. 	specific extensions are being cythonized.
 
-3. Individual extensions
-	If VICE's source code has already been compiled and is located in the
-	``build`` directory, then the entire code base does not need to be
-	re-compiled every time a small modification is made.
-	The name of the extension, which can be determined via the relative path
-	to the file, is all that is required.
-	For example, the ``vice.singlezone`` object is linked to VICE's C library
-	in the file ``vice/core/singlezone/_singlezone.pyx``, so the name of its
-	extension is ``vice.core.singlezone._singlezone``.
-	To recompile this extension only and reinstall with all previously
-	compiled extensions, simply run
+.. 3. Individual extensions
+.. 	If VICE's source code has already been compiled and is located in the
+.. 	``build`` directory, then the entire code base does not need to be
+.. 	re-compiled every time a small modification is made.
+.. 	The name of the extension, which can be determined via the relative path
+.. 	to the file, is all that is required.
+.. 	For example, the ``vice.singlezone`` object is linked to VICE's C library
+.. 	in the file ``vice/core/singlezone/_singlezone.pyx``, so the name of its
+.. 	extension is ``vice.core.singlezone._singlezone``.
+.. 	To recompile this extension only and reinstall with all previously
+.. 	compiled extensions, simply run
 
-	::
+	.. ::
 
-		$ python setup.py build ext=vice.core.singlezone._singlezone install [--user]
+.. 		$ python setup.py build ext=vice.core.singlezone._singlezone install [--user]
 
 
 Things to Avoid
@@ -292,9 +276,9 @@ Things to Avoid
 .. _gcc_parallel_note:
 
 1. Parallelization with the gcc_ compiler
-	Users manually installing VICE with the gcc_ C compiler should omit the
-	``[-j N]`` command-line argument from their call to VICE's ``setup.py``
-	file (see `Additional Compile Options`_ above).
+	Users manually installing VICE with the gcc_ C compiler should avoid
+	parallelized installations with ``pip``'s ``--global-option`` legacy
+	behavior.
 	In practice, the developer's find that gcc_ is not able to successfully
 	complete compiling VICE across multiple cores.
 	This should be a non-issue for those running Mac OS, as gcc_ must be
@@ -306,7 +290,8 @@ Things to Avoid
 2. Simultaneous installations
 	Users manually installing VICE from source for multiple versions of python
 	should not run the setup.py file in separate terminals simultaneously; this
-	will cause one of the builds to fail.
+	will cause one of the builds to fail as they will attempt to write to files
+	of the same name.
 	Likewise, users should not run the tests for multiple versions of python
 	simultaneously; this will almost certainly cause a ``segmentation fault``.
 
@@ -335,8 +320,8 @@ compiler?`__
 If none of these solutions apply to your case, please open an issue `here`__.
 
 __ windows_note_
-__ gcc_parallel_note_
 __ simultaneous_note_
+__ gcc_parallel_note_
 __ issues_
 
 
@@ -407,30 +392,16 @@ If this does not fix the issue, please open an issue `here`__.
 __ pathvariables_
 __ issues_
 
-An alternative workaround to this issue is to create an alias for ``vice`` by
-adding the following line to
-
-
 Compiler Failure
 ----------------
 This is usually an indication that the build should not be ran on multiple
 cores, which `is usually the case with the gcc C compiler`__.
-First run ``make clean``, and subsequently ``make``. Then replace your
-previous command to run the setup.py file with:
+If you're installing VICE with ``pip``, simply restart the process without
+invoking a parallelized installation.
+If you're installing manually from source, first run ``make clean``, and then
+restart the process outlined above.
 
-::
-
-	$ python setup.py build install [--user] [--quiet]
-
-If you were not installing VICE on multiple cores to begin with, try
-installing without the ``build`` directive:
-
-::
-
-	$ python setup.py install [--user] [--quiet]
-
-If neither of these recommendations fix your problem, please open an issue
-`here`__.
+If compiler failures persist, please open an issue `here`__.
 
 __ gcc_parallel_note_
 __ issues_
@@ -450,9 +421,11 @@ first by running
 
 before the ``pip uninstall vice`` command.
 
-If you have installed from source, uninstalling requires a couple of steps.
-First, you must find the path to the directory that it was installed to. This
-can be done by launching python and running the following two lines:
+If you have installed from source, it is likely that ``pip uninstall vice``
+can still achieve the same effect.
+Uninstalling manually requires a couple of steps.
+First, you must identify the path to the directory that it was installed to.
+This can be done by launching python and running the following two lines:
 
 .. code:: python
 
