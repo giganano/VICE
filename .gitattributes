@@ -1,6 +1,3 @@
-# Set default behavior to automatically normalize line endings.
-* text=auto
-
 # Source files
 *.py		text	diff=Python		linguist-language=Python
 *.pyx		text	diff=Cython		linguist-language=Cython
