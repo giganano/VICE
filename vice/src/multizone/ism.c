@@ -9,6 +9,7 @@
 #include "../utils.h"
 #include "../ism.h"
 #include "ism.h"
+#include "migration.h"
 
 
 /*
@@ -43,6 +44,7 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 	
 	unsigned int i;
 	double *mass_recycled = gas_recycled_in_zones(*mz);
+	double *migration_deltas = migration_gas_changes_by_zone(*mz);
 	for (i = 0; i < (*(*mz).mig).n_zones; i++) {
 		SINGLEZONE *sz = mz -> zones[i];
 
@@ -56,6 +58,12 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 		 * assignment of the infall rate to NaN. This change ensures that the
 		 * infall rate will not be NaN by the time primordial_inflow is called
 		 * after one timestep has passed.
+		 *
+		 * Change Note: version 1.3.2
+		 *
+		 * The mass added to the ISM by migration is now taken into account when
+		 * computing the infall rate in gas and star formation mode. This small
+		 * correction was previously unaccounted for.
 		 */
 
 		switch (checksum((*(*sz).ism).mode)) {
@@ -67,7 +75,7 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 				);
 				sz -> ism -> infall_rate = (
 					((*(*sz).ism).mass - (*(*sz).ism).specified[(*sz).timestep]
-						- mass_recycled[i]) / (*sz).dt +
+						- mass_recycled[i] - migration_deltas[i]) / (*sz).dt +
 					(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz)
 				);
 				primordial_inflow(sz);
@@ -92,7 +100,7 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 					*(*sz).ism).specified[(*sz).timestep + 1l];
 				double dMg = get_ism_mass_SFRmode(*sz, 0u) - (*(*sz).ism).mass;
 				sz -> ism -> infall_rate = (
-					(dMg - mass_recycled[i]) / (*sz).dt +
+					(dMg - mass_recycled[i] - migration_deltas[i]) / (*sz).dt +
 					(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz)
 				);
 				sz -> ism -> mass += dMg;
