@@ -72,6 +72,8 @@ stars : <function>
 	Read in stellar population abundances from a multizone simulation output.
 toolkit : <module>
 	Generally useful utilities.
+_dev : <module>
+	Developer's tools.
 
 Built-In Dataframes
 -------------------
@@ -125,6 +127,7 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 			"elements",
 			"yields",
 			"_globals",
+			"_dev",
 			"toolkit",
 			"ScienceWarning",
 			"VisibleRuntimeWarning",
@@ -155,6 +158,7 @@ exit the VICE source tree and relaunch your python interpreter from there. \
 			from . import yields
 			from . import toolkit
 			from .tests import test
+			from . import _dev
 			__all__.extend(core.__all__)
 		except (ImportError, ModuleNotFoundError):
 			raise ImportError("""\

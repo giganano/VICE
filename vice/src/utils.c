@@ -10,6 +10,7 @@
 #include <time.h>
 #include "utils.h"
 #include "singlezone.h"
+#include "debug.h"
 
 /* Define the checksum function adopted in this implementation */
 unsigned long (*checksum)(char *) = &simple_hash;
@@ -36,6 +37,8 @@ unsigned long (*checksum)(char *) = &simple_hash;
  */
 extern unsigned long choose(unsigned long a, unsigned long b) {
 
+	trace_print();
+	unsigned long result;
 	if (a > b) {
 		/*
 		 * a choose b = (a(a - 1)(a - 2)...(a - b + 1)) / b!
@@ -50,10 +53,12 @@ extern unsigned long choose(unsigned long a, unsigned long b) {
 			x--;
 			y--;
 		}
-		return numerator / denominator;
+		result = numerator / denominator;
 	} else {
-		return (a == b);
+		result = (unsigned long) (a == b);
 	}
+
+	return result;
 
 }
 
@@ -119,6 +124,7 @@ extern short sign(double x) {
  */
 extern unsigned long simple_hash(char *str) {
 
+	// trace_print(); // significant slowdown
 	unsigned long h = 0l;
 	unsigned long i;
 	for (i = 0l; i < strlen(str); i++) {
@@ -147,6 +153,7 @@ extern unsigned long simple_hash(char *str) {
  */
 extern void seed_random(void) {
 
+	trace_print();
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	unsigned long time_in_microseconds = 1e6 * tv.tv_sec + tv.tv_usec;
@@ -172,6 +179,7 @@ extern void seed_random(void) {
  */
 extern double rand_range(double minimum, double maximum) {
 
+	trace_print();
 	return minimum + (maximum - minimum) * ((double) rand() / RAND_MAX);
 
 }
@@ -199,6 +207,8 @@ extern double rand_range(double minimum, double maximum) {
  */
 extern double interpolate(double x1, double x2, double y1, double y2,
 	double x) {
+
+	// trace_print(); // significant slowdown
 
 	/* Can be derived from the point-slope form of a line */
 	return (y2 - y1) / (x2 - x1) * (x - x1) + y1;
@@ -231,6 +241,8 @@ extern double interpolate(double x1, double x2, double y1, double y2,
  */
 extern double interpolate2D(double x[2], double y[2], double f[2][2],
 	double x0, double y0) {
+
+	// trace_print(); // significant slowdown
 
 	/*
 	 * By implementing this is a chain of two 1-D interpolations,
@@ -270,6 +282,8 @@ extern double interpolate2D(double x[2], double y[2], double f[2][2],
 extern double interpolate_sqrt(double x1, double x2, double y1, double y2,
 	double x) {
 
+	// trace_print(); // significant slowdown
+
 	return (y2 - y1) * sqrt( (x - x1) / (x2 - x1) ) + y1;
 
 }
@@ -299,6 +313,8 @@ extern double interpolate_sqrt(double x1, double x2, double y1, double y2,
  */
 extern long get_bin_number(double *binspace, unsigned long num_bins,
 	double value) {
+
+	// trace_print(); // significant slowdown
 
 	/*
 	 * Notes
@@ -351,6 +367,8 @@ extern long get_bin_number(double *binspace, unsigned long num_bins,
  */
 extern double scale_metallicity(SINGLEZONE sz, unsigned long timestep) {
 
+	// trace_print(); // significant slowdown
+
 	unsigned int i;
 	double solar_by_element = 0, z_by_element = 0;
 
@@ -387,6 +405,7 @@ extern double scale_metallicity(SINGLEZONE sz, unsigned long timestep) {
  */
 extern double *binspace(double start, double stop, unsigned long N) {
 
+	trace_print();
 	double *arr = (double *) malloc ((N + 1l) * sizeof(double));
 	double dx = (stop - start) / N;
 	unsigned long i;
@@ -417,6 +436,7 @@ extern double *binspace(double start, double stop, unsigned long N) {
  */
 extern double *bin_centers(double *edges, unsigned long n_bins) {
 
+	trace_print();
 	double *centers = (double *) malloc (n_bins * sizeof(double));
 	unsigned long i;
 	for (i = 0l; i < n_bins; i++) {
@@ -443,6 +463,8 @@ extern double *bin_centers(double *edges, unsigned long n_bins) {
  */
 extern double sum(double *arr, unsigned long len) {
 
+	// trace_print(); // significant slowdown
+
 	unsigned long i;
 	double s = 0;
 	for (i = 0l; i < len; i++) {
@@ -467,11 +489,18 @@ extern double sum(double *arr, unsigned long len) {
  */
 extern void set_char_p_value(char *dest, int *ords, int length) {
 
+	trace_print();
+	debug_print("Destination string address: %p\n", (void *) dest);
+	debug_print("String ordinals address: %p\n", (void *) ords);
+	debug_print("String length: %d\n", length);
+
 	int i;
 	for (i = 0; i < length; i++) {
 		dest[i] = ords[i];
 	}
+
 	dest[length] = '\0'; 	/* null terminator */
+	debug_print("Destination string: %s\n", dest);
 
 }
 
@@ -492,6 +521,7 @@ extern void set_char_p_value(char *dest, int *ords, int length) {
  */
 extern double max(double *arr, unsigned long length) {
 
+	trace_print();
 	if (length >= 2) {
 		unsigned long i;
 		double max_ = arr[0] > arr[1] ? arr[0] : arr[1];

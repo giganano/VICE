@@ -269,6 +269,8 @@ would like help getting started, usage guidelines can be found
 
 .. 		$ python setup.py build ext=vice.core.singlezone._singlezone install [--user]
 
+=======
+>>>>>>> development
 
 Things to Avoid
 ---------------

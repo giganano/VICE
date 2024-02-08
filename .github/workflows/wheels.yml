@@ -50,7 +50,7 @@ jobs:
     uses: giganano/VICE/.github/workflows/bdist_macos.yml@main
     with:
       python-versions: >-
-        ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        ["3.7", "3.8", "3.9", "3.10"]
       wheel-name: macos_x86_64
 
   ##### manylinux2014 distribution on x86_64 hardware #####
@@ -58,7 +58,7 @@ jobs:
     uses: giganano/VICE/.github/workflows/bdist_linux.yml@main
     with:
       python-versions: >-
-        ["cp36-cp36m", "cp37-cp37m", "cp38-cp38", "cp39-cp39", "cp310-cp310"]
+        ["cp37-cp37m", "cp38-cp38", "cp39-cp39", "cp310-cp310"]
       wheel-name: manylinux2014_x86_64
       image: docker://quay.io/pypa/manylinux2014_x86_64
 
@@ -67,7 +67,7 @@ jobs:
     uses: giganano/VICE/.github/workflows/bdist_linux.yml@main
     with:
       python-versions: >-
-        ["cp36-cp36m", "cp37-cp37m", "cp38-cp38", "cp39-cp39", "cp310-cp310"]
+        ["cp37-cp37m", "cp38-cp38", "cp39-cp39", "cp310-cp310"]
       wheel-name: manylinux_2_24_x86_64
       image: docker://quay.io/pypa/manylinux_2_24_x86_64
 
