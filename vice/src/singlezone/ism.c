@@ -151,11 +151,9 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
 					mass_recycled(*sz, NULL)) / (*sz).dt +
 				(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz)
 			);
-			primordial_inflow(sz);
 			break;
 
 		case IFR:
-			primordial_inflow(sz);
 			sz -> ism -> mass += (
 				((*(*sz).ism).infall_rate - (*(*sz).ism).star_formation_rate -
 					get_outflow_rate(*sz)) * (*sz).dt + mass_recycled(*sz, NULL)
@@ -175,7 +173,6 @@ extern unsigned short update_gas_evolution(SINGLEZONE *sz) {
 				(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz)
 			);
 			sz -> ism -> mass += dMg;
-			primordial_inflow(sz);
 			break;
 
 		default:

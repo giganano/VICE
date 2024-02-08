@@ -85,11 +85,9 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 						- mass_recycled[i] - migration_deltas[i]) / (*sz).dt +
 					(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz)
 				);
-				primordial_inflow(sz);
 				break;
 
 			case IFR:
-				primordial_inflow(sz);
 				sz -> ism -> mass += (
 					((*(*sz).ism).infall_rate -
 						(*(*sz).ism).star_formation_rate -
@@ -111,7 +109,6 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 					(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz)
 				);
 				sz -> ism -> mass += dMg;
-				primordial_inflow(sz);
 				break;
 
 			default:
