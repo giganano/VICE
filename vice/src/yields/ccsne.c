@@ -12,6 +12,7 @@
 #include "../utils.h"
 #include "../ccsne.h"
 #include "../stats.h"
+#include "../ssp.h"
 #include "../debug.h"
 #include "ccsne.h"
 
@@ -247,9 +248,21 @@ static double interpolate_yield(double m) {
 
 		/*
 		 * The corrective term to subtract that accounts for initial abundances
-		 * in calculating net yields
+		 * in calculating net yields.
+		 *
+		 * Change Note: version 1.3.1
+		 * ==========================
+		 * Prior versions did not subtract the remnant mass from the initial
+		 * mass. This is a small correction for metals, but it is more
+		 * noticeable for helium due to its high abundances.
+		 *
+		 * In detail this remnant mass is always 1.44 Msun at the mass range of
+		 * interest here (M > * Msun progenitors), but we call the function
+		 * anyway in the interest of readability since this is not a
+		 * rate-limiting addition to this calculation and is more resistent to
+		 * future bugs if the remnant mass parametrization changes.
 		 */
-		double initial = Z_PROGENITOR * m;
+		double initial = Z_PROGENITOR * (m - Kalirai08_remnant_mass(m));
 		if (WEIGHT_INITIAL) initial *= callback_1arg_evaluate(
 			*EXPLODABILITY, m);
 

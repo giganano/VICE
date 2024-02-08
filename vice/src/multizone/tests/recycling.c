@@ -56,7 +56,11 @@ extern unsigned short no_migration_test_recycle_metals_from_tracers(
 	unsigned short status = 1u;
 	for (j = 0u; j < (*(*mz).zones[0]).n_elements; j++) {
 		/* This must only be called once per element -> outermost for-loop */
-		recycle_metals_from_tracers(mz, j);
+		double *recycled = recycled_mass(*mz, j);
+		for (i = 0u; i < (*(*mz).mig).n_zones; i++) {
+			mz -> zones[i] -> elements[j] -> mass += recycled[i];
+		}
+		free(recycled);
 		for (i = 0u; i < (*(*mz).mig).n_zones; i++) {
 			actual[i][j] *= -1;
 			actual[i][j] += (*(*(*mz).zones[i]).elements[j]).mass;
@@ -123,7 +127,11 @@ extern unsigned short separation_test_recycle_metals_from_tracers(
 	unsigned short status = 1u;
 	for (j = 0u; j < (*(*mz).zones[0]).n_elements; j++) {
 		/* This must be called only once per element -> outermost for-loop */
-		recycle_metals_from_tracers(mz, j);
+		double *actual = recycled_mass(*mz, j);
+		for (i = 0u; i < (*(*mz).mig).n_zones; i++) {
+			mz -> zones[i] -> elements[j] -> mass += actual[i];
+		}
+		free(actual);
 		for (i = 0u; i < (*(*mz).mig).n_zones; i++) {
 			recycled[i][j] *= -1;
 			recycled[i][j] += (*(*(*mz).zones[i]).elements[j]).mass;

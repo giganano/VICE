@@ -11,6 +11,7 @@ if not __VICE_SETUP__:
 	from ....testing import moduletest
 	from . import _singlezone
 	from . import trials
+	from . import sanitychecks
 	from .from_output import test_from_output
 	from ....src.singlezone.tests import test as src_test
 
@@ -24,6 +25,7 @@ if not __VICE_SETUP__:
 				test_from_output(),
 				_singlezone.test(run = False),
 				trials.test(run = False),
+				sanitychecks.test(run = False),
 				src_test(run = False)
 			]
 		]

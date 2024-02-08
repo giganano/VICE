@@ -29,6 +29,13 @@
 extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 
 	/*
+	 * Change Note: version 1.3.1
+	 *
+	 * See corresponding change note in src/singlezone/ism.c as the same
+	 * changes have been incorporated here.
+	 */
+
+	/*
 	 * The relation between star formation rate, infall rate, gas supply,
 	 * timestep size, outflow rate, recycling rate, and star formation
 	 * efficiency timescale:
@@ -78,11 +85,9 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 						- mass_recycled[i] - migration_deltas[i]) / (*sz).dt +
 					(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz)
 				);
-				primordial_inflow(sz);
 				break;
 
 			case IFR:
-				primordial_inflow(sz);
 				sz -> ism -> mass += (
 					((*(*sz).ism).infall_rate -
 						(*(*sz).ism).star_formation_rate -
@@ -104,7 +109,6 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 					(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz)
 				);
 				sz -> ism -> mass += dMg;
-				primordial_inflow(sz);
 				break;
 
 			default:

@@ -98,16 +98,26 @@ extern unsigned short max_age_ssp_test_update_gas_evolution(SINGLEZONE *sz) {
  */
 extern unsigned short zero_age_ssp_test_update_gas_evolution(SINGLEZONE *sz) {
 
-	unsigned short status = (*(*sz).ism).star_formation_rate > 0;
+	unsigned short status = (*(*sz).ism).star_formation_rate == 0;
+	status &= (*(*sz).ism).star_formation_history[(*sz).timestep - 1ul] > 0;
 	if (status) {
 		/*
 		 * Recalculate the ISM mass and compare based on a maximum percent
-		 * difference to account for round-off error. With star formation at
-		 * the timestep immediately following the end of the simulation, there
-		 * is only the infall.
+		 * difference to account for round-off error. There is one timestep's
+		 * worth of star formation and outflows that must be taken into
+		 * account since the episode of star formation isn't at the exact
+		 * last timestep in detail.
 		 */
 		double ism_mass = (INITIAL_ISM_MASS +
 			(*sz).current_time * (*(*sz).ism).infall_rate
+		);
+		ism_mass -= (
+			(*(*sz).ism).star_formation_history[(*sz).timestep - 1ul] *
+			(1 - (*(*sz).ssp).crf[1]) * (*sz).dt
+		);
+		ism_mass -= (
+			(*(*sz).ism).star_formation_history[(*sz).timestep - 1ul] *
+			(*(*sz).ism).eta[(*sz).timestep - 1ul] * (*sz).dt
 		);
 		double percent_difference = absval(
 			((*(*sz).ism).mass - ism_mass) / (*(*sz).ism).mass

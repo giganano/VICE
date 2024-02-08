@@ -11,18 +11,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu-latest", "macos-10.15"]
+        os: ["ubuntu-latest", "macos-latest"]
         compiler: [gcc-10, clang]
         python-version:
-          - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
+          - "3.11"
+          - "3.12"
 
         exclude:
 
           # Mac OS builds run with clang only
-          - os: "macos-10.15"
+          - os: "macos-latest"
             compiler: gcc-10
 
           # Ubuntu builds run with gcc only
@@ -41,11 +42,13 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      # compile-time dependency versions reflect those in setup.py
       - name: Install Dependencies
         shell: bash
         run: |
           python -m pip install --upgrade pip
-          python -m pip install cython>=0.29.21
+          python -m pip install setuptools>=18.0
+          python -m pip install Cython>=3.0
 
       - name: Display Environment Variables
         shell: bash
@@ -62,7 +65,7 @@ jobs:
         shell: bash
         run: |
           make CC=$COMPILER
-          python setup.py build install --quiet
+          python -m pip install . -v
           make clean
 
       - name: Tests

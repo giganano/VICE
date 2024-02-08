@@ -86,17 +86,6 @@ extern double get_ism_mass_SFRmode(SINGLEZONE sz, unsigned short setup);
 extern void update_gas_evolution_sanitycheck(SINGLEZONE *sz);
 
 /*
- * Takes into account each element's primordial abundance in the inflow
- *
- * Parameters
- * ==========
- * sz: 		A pointer to the singlezone object for this simulation
- *
- * source: ism.c
- */
-extern void primordial_inflow(SINGLEZONE *sz);
-
-/*
  * Determine the ISM mass outflow rate in a singlezone simulation.
  *
  * Parameters

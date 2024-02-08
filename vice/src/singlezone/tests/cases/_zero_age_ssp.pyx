@@ -35,7 +35,7 @@ def tau_star(t):
 	The attribute tau_star as a function of time for the fiducial zero age SSP
 	edge-case test.
 	"""
-	if t > _TIMES_[-1]:
+	if t == _TIMES_[-1]:
 		return 2
 	else:
 		return float("inf")
