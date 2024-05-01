@@ -99,7 +99,8 @@ extern void update_element_mass(SINGLEZONE sz, ELEMENT *e) {
 	double Z = (*e).mass / (*sz.ism).mass;
 	dm += mass_recycled(sz, e);
 	dm -= (*sz.ism).star_formation_rate * sz.dt * Z;
-	if (strcmp((*e).symbol, "he")) {
+	// if (strcmp((*e).symbol, "he")) {
+	if (strcmp((*e).symbol, "he") && strcmp((*e).symbol, "au")) {
 		dm -= (*sz.ism).enh[sz.timestep] * get_outflow_rate(sz) * sz.dt * Z;
 	} else {
 		/* Don't eject helium at an enhanced metallicity */
