@@ -39,7 +39,7 @@ else: pass
 # are met anyway.
 mpl.rcParams["font.family"] = "serif"
 mpl.rcParams["text.usetex"] = True
-mpl.rcParams["text.latex.preamble"] = [r"\usepackage{amsmath}"]
+mpl.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
 mpl.rcParams["errorbar.capsize"] = 5
 mpl.rcParams["axes.linewidth"] = 2
 mpl.rcParams["xtick.major.size"] = 16
