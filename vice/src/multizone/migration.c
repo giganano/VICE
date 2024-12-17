@@ -244,8 +244,8 @@ extern double *migration_gas_changes_by_zone(MULTIZONE mz) {
 		deltas[i] = 0;
 		unsigned int j;
 		/* changes[i][i] = 0 for all i's (see get_changes below). */
-		for (j = 0u; j < (*mz.mig).n_zones; j++) deltas[i] += changes[i][j];
-		for (j = 0u; j < (*mz.mig).n_zones; j++) deltas[i] -= changes[j][i];
+		for (j = 0u; j < (*mz.mig).n_zones; j++) deltas[i] += changes[j][i];
+		for (j = 0u; j < (*mz.mig).n_zones; j++) deltas[i] -= changes[i][j];
 	}
 
 	return deltas;
