@@ -33,6 +33,7 @@ cdef extern from "../../src/singlezone.h":
 	void singlezone_free(SINGLEZONE *sz)
 	long singlezone_address(SINGLEZONE *sz)
 	unsigned short singlezone_evolve(SINGLEZONE *sz)
+	double **singlezone_ismonly(SINGLEZONE *sz)
 	void singlezone_cancel(SINGLEZONE *sz)
 	unsigned long n_timesteps(SINGLEZONE sz)
 

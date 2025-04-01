@@ -35,6 +35,8 @@ extern long singlezone_address(SINGLEZONE *sz);
  */
 extern unsigned short singlezone_evolve(SINGLEZONE *sz);
 
+extern double **singlezone_ismonly(SINGLEZONE *sz);
+
 /*
  * Evolves a singlezone simulation under current user settings, but does not
  * write the MDF output or normalization.

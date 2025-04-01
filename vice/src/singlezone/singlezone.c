@@ -65,6 +65,44 @@ extern unsigned short singlezone_evolve(SINGLEZONE *sz) {
 
 
 /*
+ * Time, infall rate, star formation rate, ISM mass, stellar mass (in that
+ * order) at each timestep.
+ */
+extern double **singlezone_ismonly(SINGLEZONE *sz) {
+
+	if (setup_CRF(sz)) return NULL;
+	if (setup_gas_evolution(sz)) return NULL;
+	sz -> timestep = 0ul;
+
+	unsigned long N = n_timesteps(*sz);
+	double **results = (double **) malloc (N * sizeof(double *));
+	for (unsigned long i = 0ul; i < N; i++) {
+		results[i] = (double *) malloc (5 * sizeof(double));
+	}
+
+	unsigned long n = 0ul;
+	while ((*sz).current_time <= (*sz).output_times[(*sz).n_outputs - 1l]) {
+		if ((*sz).current_time >= (*sz).output_times[n] ||
+			2 * (*sz).output_times[n] < 2 * (*sz).current_time + (*sz).dt) {
+			results[n][0] = (*sz).current_time;
+			results[n][1] = (*(*sz).ism).infall_rate;
+			results[n][2] = (*(*sz).ism).star_formation_rate;
+			results[n][3] = (*(*sz).ism).mass;
+			results[n][4] = singlezone_stellar_mass(*sz);
+			n++;
+		}
+		update_gas_evolution(sz);
+		sz -> current_time += (*sz).dt;
+		sz -> timestep++;
+	}
+
+	singlezone_clean(sz);
+	return results;
+
+}
+
+
+/*
  * Evolves a singlezone simulation under current user settings, but does not
  * write the MDF output or normalization.
  *

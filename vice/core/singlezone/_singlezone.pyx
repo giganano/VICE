@@ -49,7 +49,7 @@ else:
 	_VERSION_ERROR_()
 
 # C imports
-from libc.stdlib cimport malloc
+from libc.stdlib cimport malloc, free
 from libc.string cimport strlen
 from .._cutils cimport set_string
 from .._cutils cimport copy_pylist
@@ -1297,15 +1297,37 @@ All elemental yields in the current simulation will be set to the table of \
 
 
 	# ------------------------ RUN THE SIMULATION ------------------------ #
-	def run(self, output_times, capture = False, overwrite = False):
+	def run(self, output_times, capture = False, overwrite = False,
+		ism_only = False):
 		
 		r"""
 		See docstring in singlezone.py.
 		"""
 
-		output_times = self.prep(output_times)
+		output_times = self.prep(output_times, ism_only = ism_only)
+		self._sz[0].output_times = copy_pylist(output_times)
+		self._sz[0].n_outputs = len(output_times)
 		cdef int enrichment
-		if self.open_output_dir(overwrite):
+		cdef double **ism_evol
+		if ism_only:
+			ism_evol = _singlezone.singlezone_ismonly(self._sz)
+			if ism_evol == NULL: raise SystemError("Internal Error.")
+			n = len(output_times)
+			time = [ism_evol[i][0] for i in range(n)]
+			ifr = [ism_evol[i][1] for i in range(n)]
+			sfr = [ism_evol[i][2] for i in range(n)]
+			mass = [ism_evol[i][3] for i in range(n)]
+			mstar = [ism_evol[i][4] for i in range(n)]
+			result = base({
+					"time": time,
+					"ifr": ifr,
+					"sfr": sfr,
+					"mgas": mass,
+					"mstar": mstar
+				})
+			free(ism_evol)
+			return result
+		elif self.open_output_dir(overwrite):
 
 			# warn the user about r-process elements, bad solar calibrations,
 			# and mass-lifetime relation effects
@@ -1318,8 +1340,6 @@ All elemental yields in the current simulation will be set to the table of \
 			_mlr.set_mlr_hashcode(_mlr._mlr_linker.__NAMES__[mlr.setting])
 
 			# just do it #nike
-			self._sz[0].output_times = copy_pylist(output_times)
-			self._sz[0].n_outputs = len(output_times)
 			enrichment = _singlezone.singlezone_evolve(self._sz)
 
 			# save yield settings and attributes, free mass-lifetime data
@@ -1327,6 +1347,8 @@ All elemental yields in the current simulation will be set to the table of \
 			self.free_mlr_data()
 
 		else:
+			free(self._sz[0].output_times)
+			self._sz[0].n_outputs = 0
 			_singlezone.singlezone_cancel(self._sz)
 			enrichment = 0
 
@@ -1343,7 +1365,7 @@ All elemental yields in the current simulation will be set to the table of \
 			pass
 
 
-	def prep(self, output_times):
+	def prep(self, output_times, ism_only = False):
 		"""
 		Prepares the simulation to be ran based on the current settings.
 
@@ -1368,7 +1390,7 @@ All elemental yields in the current simulation will be set to the table of \
 			self._imf = callback1_nan_inf_positive(self._imf)
 		else: pass
 		setup_imf(self._sz[0].ssp[0].imf, self._imf)
-		self.setup_elements()
+		if not ism_only: self.setup_elements()
 
 		"""
 		Construct the array of times at which the simulation will evaluate,

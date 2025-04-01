@@ -1704,7 +1704,8 @@ ran.""" % (i, j), UserWarning)
 	def agb_model(self, value):
 		self.__c_version.agb_model = value
 
-	def run(self, output_times, capture = False, overwrite = False):
+	def run(self, output_times, capture = False, overwrite = False,
+		ism_only = True):
 		r"""
 		Run the simulation.
 
@@ -1795,5 +1796,5 @@ ran.""" % (i, j), UserWarning)
 		>>> sz.run(outtimes)
 		"""
 		return self.__c_version.run(output_times, capture = capture,
-			overwrite = overwrite)
+			overwrite = overwrite, ism_only = ism_only)
 
