@@ -660,7 +660,7 @@ simulation was ran.""" % (i, j), UserWarning)
 		self.__c_version.simple = value
 
 	def run(self, output_times, capture = False, overwrite = False,
-		pickle = True):
+		pickle = True, ism_only = False):
 		r"""
 		Run the simulation.
 
@@ -758,5 +758,5 @@ simulation was ran.""" % (i, j), UserWarning)
 		>>> mz.run(outtimes)
 		"""
 		return self.__c_version.run(output_times, capture = capture,
-			overwrite = overwrite, pickle = pickle)
+			overwrite = overwrite, pickle = pickle, ism_only = ism_only)
 

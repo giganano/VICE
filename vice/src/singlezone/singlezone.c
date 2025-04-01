@@ -84,13 +84,14 @@ extern double **singlezone_ismonly(SINGLEZONE *sz) {
 	while ((*sz).current_time <= (*sz).output_times[(*sz).n_outputs - 1l]) {
 		if ((*sz).current_time >= (*sz).output_times[n] ||
 			2 * (*sz).output_times[n] < 2 * (*sz).current_time + (*sz).dt) {
+			// Factors of 1.0e-9 convert Msun/Gyr -> Msun/yr
 			results[n][0] = (*sz).current_time;
-			results[n][1] = (*(*sz).ism).infall_rate;
-			results[n][2] = (*(*sz).ism).star_formation_rate;
+			results[n][1] = (*(*sz).ism).infall_rate * 1.0e-9;
+			results[n][2] = (*(*sz).ism).star_formation_rate * 1.0e-9; 
 			results[n][3] = (*(*sz).ism).mass;
 			results[n][4] = singlezone_stellar_mass(*sz);
 			n++;
-		}
+		} else {}
 		update_gas_evolution(sz);
 		sz -> current_time += (*sz).dt;
 		sz -> timestep++;

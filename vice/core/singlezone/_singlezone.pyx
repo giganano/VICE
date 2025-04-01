@@ -1307,37 +1307,39 @@ All elemental yields in the current simulation will be set to the table of \
 		output_times = self.prep(output_times, ism_only = ism_only)
 		self._sz[0].output_times = copy_pylist(output_times)
 		self._sz[0].n_outputs = len(output_times)
+
+		# take the current mass-lifetime relation setting
+		self.mlr_warnings()
+		self.import_mlr_data()
+		_mlr.set_mlr_hashcode(_mlr._mlr_linker.__NAMES__[mlr.setting])
+
 		cdef int enrichment
-		cdef double **ism_evol
+		cdef double **ism_evol # for dry runs of ISM only
+
 		if ism_only:
 			ism_evol = _singlezone.singlezone_ismonly(self._sz)
-			if ism_evol == NULL: raise SystemError("Internal Error.")
+			if ism_evol is NULL: raise SystemError("Internal Error.")
 			n = len(output_times)
 			time = [ism_evol[i][0] for i in range(n)]
 			ifr = [ism_evol[i][1] for i in range(n)]
 			sfr = [ism_evol[i][2] for i in range(n)]
-			mass = [ism_evol[i][3] for i in range(n)]
+			mgas = [ism_evol[i][3] for i in range(n)]
 			mstar = [ism_evol[i][4] for i in range(n)]
 			result = base({
-					"time": time,
-					"ifr": ifr,
-					"sfr": sfr,
-					"mgas": mass,
-					"mstar": mstar
-				})
+				"time": time,
+				"ifr": ifr,
+				"sfr": sfr,
+				"mgas": mgas,
+				"mstar": mstar
+			})
 			free(ism_evol)
+			self.free_mlr_data()
 			return result
 		elif self.open_output_dir(overwrite):
 
-			# warn the user about r-process elements, bad solar calibrations,
-			# and mass-lifetime relation effects
+			# warn the user about r-process elements and bad solar calibrations
 			self.nsns_warning()
 			self.solar_z_warning()
-			self.mlr_warnings()
-
-			# take the current mass-lifetime relation setting
-			self.import_mlr_data()
-			_mlr.set_mlr_hashcode(_mlr._mlr_linker.__NAMES__[mlr.setting])
 
 			# just do it #nike
 			enrichment = _singlezone.singlezone_evolve(self._sz)

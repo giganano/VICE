@@ -8,6 +8,7 @@
 #include "../singlezone.h"
 #include "../tracer.h"
 #include "../utils.h"
+#include "../ssp.h"
 #include "../io.h"
 #include "multizone.h"
 #include "tracer.h"
@@ -91,6 +92,62 @@ extern unsigned short multizone_evolve(MULTIZONE *mz) {
 	multizone_clean(mz);
 	if ((*mz).verbose) printf("Finished.\n");
 	return x;
+
+}
+
+
+extern double ***multizone_ismonly(MULTIZONE *mz) {
+
+	for (unsigned int i = 0u; i < (*(*mz).mig).n_zones; i++) {
+		if (setup_CRF((*mz).zones[i])) return NULL;
+		if (setup_gas_evolution((*mz).zones[i])) return NULL;
+	}
+
+	/*
+	 * TODO: find a better way to handle the difference between NULL for an
+	 * internal error and NULL for a bad migration matrix.
+	 */
+	if (migration_matrix_sanitycheck((*(*mz).mig).gas_migration,
+		n_timesteps((*(*mz).zones[0])), (*(*mz).mig).n_zones)) return NULL;
+
+	unsigned long N = n_timesteps(*(*mz).zones[0]);
+	double ***results = (double ***) malloc (
+		(*(*mz).mig).n_zones * sizeof(double **));
+	for (unsigned int i = 0u; i < (*(*mz).mig).n_zones; i++) {
+		results[i] = (double **) malloc (N * sizeof(double *));
+		for (unsigned long j; j < N; j++) {
+			results[i][j] = (double *) malloc (5 * sizeof(double));
+		}
+	}
+
+	unsigned long n = 0ul;
+	SINGLEZONE *zone_zero = mz -> zones[0];
+	while ((*zone_zero).current_time <=
+		(*zone_zero).output_times[(*zone_zero).n_outputs - 1l]) {
+		for (unsigned int i = 0u; i < (*(*mz).mig).n_zones; i++) {
+			double *migration_deltas = migration_gas_changes_by_zone(*mz);
+			SINGLEZONE *sz = mz -> zones[i];
+			if ((*sz).current_time >= (*sz).output_times[n] ||
+				2 * (*sz).output_times[n] < 2 * (*sz).current_time * (*sz).dt) {
+				results[i][n][0] = (*sz).current_time;
+				results[i][n][1] = (*(*sz).ism).infall_rate;
+				if (strcmp((*(*sz).ism).mode, "ifr")) {
+					results[i][n][1] -= migration_deltas[i] / (*sz).dt;
+				} else {}
+				results[i][n][1] *= 1.0e-9;
+				results[i][n][2] = (*(*sz).ism).star_formation_rate * 1.0e9;
+				results[i][n][3] = (*(*sz).ism).mass;
+				results[i][n][4] = singlezone_stellar_mass(*sz);
+				n++;
+			} else {}
+			update_gas_evolution(sz);
+			sz -> current_time += (*sz).dt;
+			sz -> timestep++;
+		}
+	}
+
+	multizone_clean(mz);
+	return results;
 
 }
 

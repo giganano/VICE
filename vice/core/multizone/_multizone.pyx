@@ -9,6 +9,7 @@ from ...toolkit.hydrodisk import hydrodiskstars
 from ..dataframe._builtin_dataframes import atomic_number
 from ..dataframe._builtin_dataframes import solar_z
 from ..dataframe._builtin_dataframes import sources
+from ..dataframe import base
 from ..outputs import output
 from ...yields import agb
 from ...yields import ccsne
@@ -34,6 +35,7 @@ from libc.string cimport strlen
 from .._cutils cimport set_string
 from .._cutils cimport copy_pylist
 from ..objects cimport _singlezone
+from ..objects cimport _multizone
 from ..objects._tracer cimport TRACER
 from .. cimport _mlr
 from . cimport _hydrodiskstars
@@ -303,29 +305,53 @@ migration.specs. Got: %s""" % (type(value)))
 
 
 	def run(self, output_times, capture = False, overwrite = False,
-		pickle = True):
+		pickle = True, ism_only = False):
 		"""
 		See docstring in python version of this class.
 		"""
-		self.align_name_attributes()
-		self.prep(output_times)
+		if not ism_only: self.align_name_attributes()
+		self.prep(output_times, ism_only = ism_only)
+
+		# take the current mass-lifetime relation setting
+		self._zones[0]._singlezone__c_version.mlr_warnings()
+		self.import_mlr_data()
+		_mlr.set_mlr_hashcode(_mlr._mlr_linker.__NAMES__[mlr.setting])
+
 		cdef int enrichment
-		if self.outfile_check(overwrite):
+		cdef double ***ism_evol
+		if ism_only:
+			self.setup_gas_migration()
+			ism_evol = _multizone.multizone_ismonly(self._mz)
+			# TODO: Handle different error codes returned by this function
+			if ism_evol is NULL: raise SystemError("Internal Error.")
+			n = len(output_times)
+			result = {}
+			for i in range(len(self.n_zones)):
+				time_ = [ism_evol[i][j][0] for j in range(n)]
+				ifr = [ism_evol[i][j][1] for j in range(n)]
+				sfr = [ism_evol[i][j][2] for j in range(n)]
+				mgas = [ism_evol[i][j][3] for j in range(n)]
+				mstar = [ism_evol[i][j][4] for j in range(n)]
+				result[self.zones[i].name] = base({
+					"time": time_,
+					"ifr": ifr,
+					"sfr": sfr,
+					"mgas": mgas,
+					"mstar": mstar
+				})
+			free(ism_evol)
+			self.free_mlr_data()
+			return base(result)
+		elif self.outfile_check(overwrite):
 			os.system("mkdir %s.vice" % (self.name))
 			for i in range(self._mz[0].mig[0].n_zones):
 				os.system("mkdir %s.vice" % (self._zones[i].name))
 			self.setup_migration() # used to be in self.prep
 			start = time.time()
 
-			# warn the user about r-process elements, bad solar calibrations,
-			# and mass-lifetime relation effects
+			# warn the user about r-process elements and bad solar calibrations
 			self._zones[0]._singlezone__c_version.nsns_warning()
 			self._zones[0]._singlezone__c_version.solar_z_warning()
-			self._zones[0]._singlezone__c_version.mlr_warnings()
-
-			# take the current mass-lifetime relation setting
-			self.import_mlr_data()
-			_mlr.set_mlr_hashcode(_mlr._mlr_linker.__NAMES__[mlr.setting])
 
 			# just do it #nike
 			enrichment = _multizone.multizone_evolve(self._mz)
@@ -369,7 +395,7 @@ zone and at least one timestep larger than 1.""")
 
 
 
-	def prep(self, output_times):
+	def prep(self, output_times, ism_only = False):
 		"""
 		Prepares the simulation to be ran based on the current settings.
 
@@ -388,12 +414,13 @@ zone and at least one timestep larger than 1.""")
 		It must go setup calls, then for loop, then migration setup. Anything
 		else messes with attributes and causes values to be reset
 		"""
-		self.align_element_attributes()
+		if not ism_only: self.align_element_attributes()
 		self.zone_alignment_warnings()
 		self.timestep_alignment_error()
 		self.mode_alignment_error()
 		for i in range(self._mz[0].mig[0].n_zones):
-			times = self._zones[i]._singlezone__zone_prep(output_times)
+			times = self._zones[i]._singlezone__zone_prep(output_times,
+				ism_only = ism_only)
 			self._mz[0].zones[i][0].output_times = copy_pylist(
 				times)
 			self._mz[0].zones[i][0].n_outputs = len(times)
