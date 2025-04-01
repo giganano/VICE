@@ -103,7 +103,7 @@ jobs:
           name: manylinux_2_24_x86_64
 
       - name: Upload Files
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: wheels
           path: |
