@@ -35,6 +35,28 @@ extern long singlezone_address(SINGLEZONE *sz);
  */
 extern unsigned short singlezone_evolve(SINGLEZONE *sz);
 
+/*
+ * Evolve a singlezone model under the current settings but ignore enrichment
+ * and return only relevant quantities for the ISM.
+ *
+ * Parameters
+ * ==========
+ * sz: 		A pointer to the singlezone object to run.
+ *
+ * Returns
+ * =======
+ * A 2-D double pointer, indexed as ``results[timestep][idx]`` where
+ * ``timestep`` is the N'th timestep, and idx maps to a specific quantity as
+ * such:
+ *
+ * 0: Time since the start of the model in Gyr
+ * 1: Accretion rate in Msun/yr
+ * 2: Star formation rate in Msun/yr
+ * 3: ISM mass in Msun
+ * 4: Stellar mass in Msun, accounting for recycled stellar envelopes
+ *
+ * source: singlezone.c
+ */
 extern double **singlezone_ismonly(SINGLEZONE *sz);
 
 /*

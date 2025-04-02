@@ -96,6 +96,35 @@ extern unsigned short multizone_evolve(MULTIZONE *mz) {
 }
 
 
+/*
+ * Evolve a multizone model under the current settings but ignore enrichment
+ * and return only the relevant quantities for the ISM.
+ *
+ * Parameters
+ * ==========
+ * mz: 		A pointer to the multizone model to run.
+ *
+ * Returns
+ * =======
+ * A 3-D double pointer, indexed as ``results[zone][timestep][idx]`` where
+ * ``zone`` refers to the N'th zone and ``timestep`` refers to the N'th
+ * timestep. ``idx`` maps to a specific quantity as such:
+ *
+ * 0: Time since the start of the model in Gyr
+ * 1: Accretion rate in Msun/yr
+ * 2: Star formation rate in Msun/yr
+ * 3: ISM mass in Msun
+ * 4: Stellar mass in Msun, accounting for recycled stellar envelopes
+ *
+ * Notes
+ * =====
+ * This method of evolving the multizone model does not take into account
+ * stellar migration due to the computational overhead with fine timestepping
+ * or many stellar populations for timestep. It does, however, take into
+ * account gas mixing.
+ *
+ * header: multizone.h
+ */
 extern double ***multizone_ismonly(MULTIZONE *mz) {
 
 	for (unsigned int i = 0u; i < (*(*mz).mig).n_zones; i++) {
