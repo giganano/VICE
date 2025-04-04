@@ -144,7 +144,7 @@ extern double ***multizone_ismonly(MULTIZONE *mz) {
 		(*(*mz).mig).n_zones * sizeof(double **));
 	for (unsigned int i = 0u; i < (*(*mz).mig).n_zones; i++) {
 		results[i] = (double **) malloc (N * sizeof(double *));
-		for (unsigned long j; j < N; j++) {
+		for (unsigned long j = 0u; j < N; j++) {
 			results[i][j] = (double *) malloc (5 * sizeof(double));
 		}
 	}
@@ -170,6 +170,14 @@ extern double ***multizone_ismonly(MULTIZONE *mz) {
 				n++;
 			} else {}
 			update_gas_evolution(sz);
+			sz -> ism -> mass += migration_deltas[i];
+			if (strcmp((*(*sz).ism).mode, "ifr")) {
+				sz -> ism -> infall_rate -= migration_deltas[i] / (*sz).dt;
+			} else {
+				sz -> ism -> mass += migration_deltas[i];
+				sz -> ism -> star_formation_rate = ((*(*sz).ism).mass /
+					get_SFE_timescale(*sz, 0u));
+			}
 			sz -> current_time += (*sz).dt;
 			sz -> timestep++;
 		}

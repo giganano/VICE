@@ -335,7 +335,7 @@ class singlezone:
 		"""
 		return self.__c_version.object_address()
 
-	def __zone_prep(self, output_times):
+	def __zone_prep(self, output_times, ism_only = False):
 		"""
 		Runs the setup functions to prep a singlezone object for simulation.
 		For usage in preparation of multizone simulations; usage of this
@@ -355,7 +355,7 @@ class singlezone:
 		======
 		Exceptions raised by subroutines
 		"""
-		return self.__c_version.prep(output_times)
+		return self.__c_version.prep(output_times, ism_only = ism_only)
 
 	@classmethod
 	def from_output(cls, arg):
