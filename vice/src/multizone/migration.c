@@ -315,6 +315,16 @@ static unsigned short gas_migration_from_callbacks(MULTIZONE *mz) {
  */
 extern double *migration_gas_changes_by_zone(MULTIZONE mz) {
 
+	/*
+	 * Change Note: version X.Y.Z
+	 *
+	 * This function was patched in this release. The changes in the deltas
+	 * computed in the for-loop below previously had ``+= changes[i][j]'' and
+	 * ``-= changes[j][i]'', which adds the sinks and subtracts the sources.
+	 * By flipping which ones are added and subtracted, this function adds the
+	 * sources and subtracts the sinks, as it should.
+	 */
+
 	double **changes = get_changes(mz, -1);
 	double *deltas = (double *) malloc ((*mz.mig).n_zones * sizeof(double));
 	unsigned int i;
@@ -329,8 +339,8 @@ extern double *migration_gas_changes_by_zone(MULTIZONE mz) {
 		deltas[i] = 0;
 		unsigned int j;
 		/* changes[i][i] = 0 for all i's (see get_changes below). */
-		for (j = 0u; j < (*mz.mig).n_zones; j++) deltas[i] += changes[i][j];
-		for (j = 0u; j < (*mz.mig).n_zones; j++) deltas[i] -= changes[j][i];
+		for (j = 0u; j < (*mz.mig).n_zones; j++) deltas[i] += changes[j][i];
+		for (j = 0u; j < (*mz.mig).n_zones; j++) deltas[i] -= changes[i][j];
 	}
 
 	return deltas;

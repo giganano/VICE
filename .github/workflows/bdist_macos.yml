@@ -78,7 +78,7 @@ jobs:
           make clean
 
       - name: Upload Wheel
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.wheel-name }}
           path: ./dist/*.whl

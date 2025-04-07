@@ -75,7 +75,7 @@ jobs:
 
       # Tests leave behind a test_<platform>_<version>.log file under ./vice
       - name: Upload Test Log
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: testlogs
           path: ./vice/*.log
