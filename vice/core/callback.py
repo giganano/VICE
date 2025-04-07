@@ -19,6 +19,8 @@ no_inf : ``decorator``
 	Forces a function to return 0 if it returns ``inf``.
 positive : ``decorator``
 	Forces a function to return 1e-12 if it returns a negative or zero value.
+fraction : ``decorator``
+	Forces a function to return a value between 0 and 1.
 callback1 : ``object``
 	The base class for functions of one numerical value.
 	__call__ function has ``numerical`` decorator.
@@ -53,6 +55,12 @@ callback2_nan_inf_positive : ``callback2``
 	A derived class for functions accepting two numerical values.
 	__call__ function has ``numerical``, ``no_nan``, ``no_inf``, and
 	``positive`` decorators.
+callback_kwargs : ``object``
+	The base class for functions accepting keyword arguments only.
+	__call__ function has ``numerical`` decorator.
+callback_kwargs_fraction : ``callback_kwargs``
+	A derived class for functions accepting keyword arguments only.
+	__call__ function has ``numerical`` and ``fraction`` decorators.
 
 Notes
 -----
@@ -76,6 +84,7 @@ import functools
 import math as m
 import warnings
 import numbers
+import inspect
 
 
 def numerical(function):
@@ -163,6 +172,35 @@ Function %s evaluated to non-positive value at %s. Suppressing ArithmeticError \
 by returning 1e-12. Checking simulation output for numerical consistency is \
 advised.""" % (str(function), str(args)), ScienceWarning)
 			return 1e-12
+		else:
+			return y
+	return wrapper
+
+
+def fraction(function):
+	r"""
+	Type : ``decorator``
+
+	.. warning:: User access to this decorator is discouraged.
+
+	Raises a ``ScienceWarning`` and return 0 when a function returns a negative
+	value, and 1 when a function returns something greater than 1.
+	"""
+	@functools.wraps(function)
+	def wrapper(*args):
+		y = function(*args)
+		if y < 0:
+			warnings.warn("""\
+Function %s evaluated to a negative value at %s. Suppressing ArithmeticError \
+by returning 0. Checking simulation output for numerical consistency is \
+advised.""", str(function), str(args), ScienceWarning)
+			return 0
+		elif y > 1:
+			warnings.warn("""\
+Function %s evalued to a value greater than 1 at %s. Suppressing \
+ArithmeticError by returning 1. Checking simulation output for numerical \
+consistency is advised.""", str(function), str(args), ScienceWarning)
+			return 1
 		else:
 			return y
 	return wrapper
@@ -449,4 +487,75 @@ class callback2_nan_inf_positive(callback2):
 	@numerical
 	def __call__(self, x, y):
 		return self._function(x, y)
+
+
+class callback_kwargs:
+
+	r"""
+	The base class of the callback object for keyword arguments only.
+	__call__ function has the ``numerical`` decorator.
+
+	.. warning:: User access of this class is discouraged.
+
+	Parameters
+	----------
+	function : <function>
+		The attribute ``function``.
+
+	Attributes
+	----------
+	function : <function>
+		The mathematical function which takes some number of keyword arguments.
+	"""
+
+	def __init__(self, function):
+		self.function = function
+
+	@numerical
+	def __call__(self, **kwargs):
+		return self._function(**kwargs)
+
+	@property
+	def function(self):
+		r"""
+		Type : <function>
+
+		The function to call, passed by the user. Will defaut to some failsafe
+		value in the event that the function returns a forbidden value. In
+		the cases implemented in the current version of VICE, forbidden values
+		generally refer to anything outside the interval [0, 1].
+		"""
+		return self._function
+
+	@function.setter
+	def function(self, value):
+		if callable(value):
+			sig = inspect.signature(value)
+			for i in sig.parameters.keys():
+				can_be_keyword = sig.parameters[i].kind in [
+					sig.parameters[i].POSITIONAL_OR_KEYWORD,
+					sig.parameters[i].KEYWORD_ONLY,
+					sig.parameters[i].VAR_KEYWORD]
+				if not can_be_keyword: raise TypeError("""\
+Function must not require any positional arguments.""")
+		else:
+			raise TypeError("Must be a callable object. Got: %s" % (
+				type(value)))
+
+
+class callback_kwargs_fraction(callback_kwargs):
+
+	r"""
+	A derived class of the callback object for keyword arguments only.
+	__call__ function has the ``numerical`` and ``fraction`` decorators.
+
+	.. warning:: User access of this class is discouraged.
+
+	.. seealso:: ``callback1``
+	"""
+
+	@fraction
+	@numerical
+	def __call__(self, **kwargs):
+		return self._function(**kwargs)
 
