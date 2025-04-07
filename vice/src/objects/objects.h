@@ -332,7 +332,7 @@ typedef struct callback_current_state {
 	 * for parameters which may be either a real number or a function.
 	 */
 
-	double (*callback)(double, CURRENT_STATE *);
+	double (*callback)(CURRENT_STATE *, void *);
 	void *user_func;
 
 } CALLBACK_CURRENT_STATE;
