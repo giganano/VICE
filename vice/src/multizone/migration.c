@@ -273,12 +273,13 @@ extern void migrate(MULTIZONE *mz) {
 
 static unsigned short gas_migration_from_callbacks(MULTIZONE *mz) {
 
+	unsigned short return_value = 0u;
 	unsigned long timestep = mz -> zones[0] -> timestep;
 	double ***migmat = mz -> mig -> gas_migration;
 	for (unsigned int i = 0u; i < (*(*mz).mig).n_zones; i++) {
 		for (unsigned int j = 0u; j < (*(*mz).mig).n_zones; j++) {
 			if (i == j) continue;
-			if ((*(*mz).mig).callback_objects[i][j] != NULL) {
+			if ((*(*(*mz).mig).callback_objects[i][j]).user_func != NULL) {
 				CURRENT_STATE *cs = singlezone_current_state(*(*mz).zones[i]);
 				migmat[timestep][i][j] = callback_current_state_evaluate(
 					*((CALLBACK_CURRENT_STATE *)
@@ -290,10 +291,12 @@ static unsigned short gas_migration_from_callbacks(MULTIZONE *mz) {
 					setenv("VICE_BAD_GASMIGRATION_TIMESTEP", _timestep, 0);
 					if (migmat[timestep][i][j] < 0) migmat[timestep][i][j] = 0;
 					if (migmat[timestep][i][j] > 1) migmat[timestep][i][j] = 1;
+					return_value = 2u;
 				} else {}
 			} else {}
 		}
 	}
+	return return_value;
 
 }
 

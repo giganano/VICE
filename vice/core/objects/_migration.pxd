@@ -2,6 +2,7 @@
 
 from __future__ import absolute_import
 from libc.stdio cimport FILE
+from ._callback_current_state cimport CALLBACK_CURRENT_STATE
 from . cimport _tracer
 from . cimport _multizone
 
@@ -15,7 +16,7 @@ cdef extern from "../../src/objects.h":
 		double ***gas_migration
 		_tracer.TRACER **tracers
 		FILE *tracers_output
-		void ***callback_objects
+		CALLBACK_CURRENT_STATE ***callback_objects
 
 
 cdef extern from "../../src/objects/migration.h":

@@ -9,6 +9,7 @@ from ...toolkit.hydrodisk import hydrodiskstars
 from ..dataframe._builtin_dataframes import atomic_number
 from ..dataframe._builtin_dataframes import solar_z
 from ..dataframe._builtin_dataframes import sources
+from ..callback import callback_kwargs_fraction
 from ..outputs import output
 from ...yields import agb
 from ...yields import ccsne
@@ -33,6 +34,7 @@ from libc.stdlib cimport malloc, free
 from libc.string cimport strlen
 from .._cutils cimport set_string
 from .._cutils cimport copy_pylist
+from .._cutils cimport callback_current_state_setup
 from ..objects cimport _singlezone
 from ..objects._tracer cimport TRACER
 from .. cimport _mlr
@@ -499,15 +501,19 @@ proceed faster or slower as a function of the timestep size."""
 						pass
 			
 				elif callable(self.migration.gas[i][j]):
-					# do something different here if running in callback mode
-					arr = list(map(self.migration.gas[i][j], eval_times))
-					if _migration.setup_migration_element(self._mz,
-						i, j, copy_pylist(arr)):
-
-						_multizone.multizone_cancel(self._mz)
-						raise RuntimeError(errmsg)
+					if self.migration.gas.callback:
+						callback_current_state_setup(
+							self._mz[0].mig[0].callback_objects[i][j],
+							callback_kwargs_fraction(self.migration.gas[i][j])
+						)
 					else:
-						pass
+						arr = list(map(self.migration.gas[i][j], eval_times))
+						if _migration.setup_migration_element(self._mz,
+							i, j, copy_pylist(arr)):
+							_multizone.multizone_cancel(self._mz)
+							raise RuntimeError(errmsg)
+						else:
+							pass
 				else:
 					raise SystemError("Internal Error")
 

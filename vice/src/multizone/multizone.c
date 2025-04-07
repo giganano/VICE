@@ -306,23 +306,29 @@ extern unsigned short multizone_setup(MULTIZONE *mz) {
 extern void multizone_clean(MULTIZONE *mz) {
 
 	/* clean each singlezone object */
-	unsigned int i;
-	for (i = 0; i < (*(*mz).mig).n_zones; i++) {
+	for (unsigned int i = 0; i < (*(*mz).mig).n_zones; i++) {
 		singlezone_close_files(mz -> zones[i]);
 		singlezone_clean(mz -> zones[i]);
 	}
 
 	/* free up each tracer and set the pointer to NULL again */
-	unsigned long j;
-	for (j = 0l; j < (*(*mz).mig).tracer_count; j++) {
+	for (unsigned long j = 0l; j < (*(*mz).mig).tracer_count; j++) {
 		tracer_free(mz -> mig -> tracers[j]);
 	}
 	free(mz -> mig -> tracers);
 	mz -> mig -> tracers = NULL;
 
-	/* free up the migration matrix */
+	/* free up the migration matrix and set callback objects back to NULL */
 	free(mz -> mig -> gas_migration);
 	mz -> mig -> gas_migration = NULL;
+	for (unsigned int i = 0u; i < (*(*mz).mig).n_zones; i++) {
+		for (unsigned int j = 0u; j < (*(*mz).mig).n_zones; j++) {
+			if ((*(*mz).mig).callback_objects[i][j] != NULL) {
+				callback_current_state_free(mz -> mig -> callback_objects[i][j]);
+				mz -> mig -> callback_objects[i][j] = NULL;
+			} else {}
+		}
+	}
 
 }
 

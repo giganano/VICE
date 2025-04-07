@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include "../migration.h"
 #include "objects.h"
+#include "callback_current_state.h"
 #include "migration.h"
 
 
@@ -27,13 +28,13 @@ extern MIGRATION *migration_initialize(unsigned int n) {
 	mig -> gas_migration = NULL;
 	mig -> tracers = NULL;
 	mig -> tracers_output = NULL;
-	mig -> callback_objects = (void ***) malloc (
-		(*mig).n_zones * sizeof(void **));
+	mig -> callback_objects = (CALLBACK_CURRENT_STATE ***) malloc (
+		(*mig).n_zones * sizeof(CALLBACK_CURRENT_STATE **));
 	for (unsigned int i = 0u; i < (*mig).n_zones; i++) {
-		mig -> callback_objects[i] = (void **) malloc (
-			(*mig).n_zones * sizeof(void *));
+		mig -> callback_objects[i] = (CALLBACK_CURRENT_STATE **) malloc (
+			(*mig).n_zones * sizeof(CALLBACK_CURRENT_STATE *));
 		for (unsigned int j = 0u; j < (*mig).n_zones; j++) {
-			mig -> callback_objects[i][j] = NULL;
+			mig -> callback_objects[i][j] = callback_current_state_initialize();
 		}
 	}
 	return mig;
@@ -71,10 +72,12 @@ extern void migration_free(MIGRATION *mig) {
 
 		if ((*mig).callback_objects != NULL) {
 			for (unsigned int i = 0u; i < (*mig).n_zones; i++) {
-				if ((*mig).callback_objects[i] != NULL) {
-					free(mig -> callback_objects[i]);
-					mig -> callback_objects[i] = NULL;
-				} else {}
+				for (unsigned int j = 0u; j < (*mig).n_zones; j++) {
+					if ((*mig).callback_objects[i] != NULL) {
+						callback_current_state_free(
+							mig -> callback_objects[i][j]);
+					} else {}
+				}
 			}
 			free(mig -> callback_objects);
 			mig -> callback_objects = NULL;

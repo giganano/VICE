@@ -520,7 +520,7 @@ typedef struct migration {
 	double ***gas_migration;
 	TRACER **tracers;
 	FILE *tracers_output;
-	void ***callback_objects;
+	CALLBACK_CURRENT_STATE ***callback_objects;
 
 } MIGRATION;
 
