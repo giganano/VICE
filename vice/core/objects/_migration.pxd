@@ -8,12 +8,14 @@ from . cimport _multizone
 
 cdef extern from "../../src/objects.h":
 	ctypedef struct MIGRATION:
+		unsigned short callback_gas_migration
 		unsigned int n_zones
 		unsigned int n_tracers
 		unsigned long tracer_count
 		double ***gas_migration
 		_tracer.TRACER **tracers
 		FILE *tracers_output
+		void ***callback_objects
 
 
 cdef extern from "../../src/objects/migration.h":

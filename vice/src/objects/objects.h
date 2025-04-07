@@ -498,19 +498,29 @@ typedef struct migration {
 	/*
 	 * This struct encodes migration settings for multizone simulations
 	 *
+	 * callback_gas_migration: A boolean integer. If 0, VICE will pre-compute
+	 * 		mixing fractions before integration. If 1, VICE will construct a
+	 * 		callback object to ask the user for the mixing fractions as the
+	 * 		model timesteps.
 	 * n_zones: The number of zones in the simulation
 	 * n_tracers: The number of tracer particles per zone per timestep
 	 * tracer_count: The number of active tracer particles
 	 * gas_migration: The migration matrix associated with the ISM gas
 	 * tracers: Pointers to the tracer particles themselves
+	 * callback_objects: The callback objects themselves, for when
+	 * 		``callback_gas_migration == 1u``, organized with the same indexing
+	 * 		scheme as ``gas_migration`` itself (i.e., ij'th element describes
+	 * 		migration from i'th zone to j'th zone).
 	 */
 
+	unsigned short callback_gas_migration;
 	unsigned int n_zones;
 	unsigned int n_tracers;
 	unsigned long tracer_count;
 	double ***gas_migration;
 	TRACER **tracers;
 	FILE *tracers_output;
+	void ***callback_objects;
 
 } MIGRATION;
 

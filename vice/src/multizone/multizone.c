@@ -268,6 +268,18 @@ extern unsigned short multizone_setup(MULTIZONE *mz) {
 		if (singlezone_setup(mz -> zones[i])) return 1;
 	}
 
+	unsigned long n = n_timesteps(*(*mz).zones[0]);
+	for (unsigned long i = 0ul; i < n; i++) {
+		if (migration_matrix_sanitycheck((*(*mz).mig).gas_migration[i],
+			(*(*mz).mig).n_zones)) {
+			return 2u;
+		} else {}
+	}
+
+	mz -> mig -> tracer_count = 0ul;
+	return 0u;
+
+	#if 0
 	if (migration_matrix_sanitycheck((*(*mz).mig).gas_migration,
 		n_timesteps((*(*mz).zones[0])), (*(*mz).mig).n_zones)) {
 		return 2;
@@ -275,6 +287,7 @@ extern unsigned short multizone_setup(MULTIZONE *mz) {
 		mz -> mig -> tracer_count = 0l;
 		return 0;
 	}
+	#endif
 
 }
 

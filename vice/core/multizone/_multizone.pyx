@@ -490,8 +490,7 @@ proceed faster or slower as a function of the timestep size."""
 				"""
 				if isinstance(self.migration.gas[i][j], numbers.Number):
 					arr = length * [self.migration.gas[i][j]]
-					if _migration.setup_migration_element(self._mz[0],
-						self._mz[0].mig[0].gas_migration,
+					if _migration.setup_migration_element(self._mz,
 						i, j, copy_pylist(arr)):
 
 						_multizone.multizone_cancel(self._mz)
@@ -500,9 +499,9 @@ proceed faster or slower as a function of the timestep size."""
 						pass
 			
 				elif callable(self.migration.gas[i][j]):
+					# do something different here if running in callback mode
 					arr = list(map(self.migration.gas[i][j], eval_times))
-					if _migration.setup_migration_element(self._mz[0],
-						self._mz[0].mig[0].gas_migration,
+					if _migration.setup_migration_element(self._mz,
 						i, j, copy_pylist(arr)):
 
 						_multizone.multizone_cancel(self._mz)

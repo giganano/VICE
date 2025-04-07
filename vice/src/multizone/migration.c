@@ -4,14 +4,20 @@
  */
 
 #include <stdlib.h>
+#include <math.h>
 #include "../migration.h"
 #include "../singlezone/singlezone.h"
+#include "../singlezone/ism.h"
+#include "../callback.h"
 #include "../utils.h"
 #include "migration.h"
 
 /* ---------- Static function comment headers not duplicated here ---------- */
-static unsigned short normalize_migration_element(MULTIZONE mz,
-	double ***migration_matrix, unsigned int row, unsigned int column);
+// static unsigned short normalize_migration_element(MULTIZONE mz,
+// 	double ***migration_matrix, unsigned int row, unsigned int column);
+static unsigned short normalize_migration_element(MULTIZONE *mz,
+	unsigned int row, unsigned int column, unsigned long timestep);
+static unsigned short gas_migration_from_callbacks(MULTIZONE *mz);
 static void migrate_tracer(MULTIZONE mz, TRACER *t);
 static void migrate_gas_element(MULTIZONE *mz, int index);
 static void migration_sanity_check(MULTIZONE *mz);
@@ -19,6 +25,18 @@ static double **setup_changes(unsigned int n_zones);
 static double **get_changes(MULTIZONE mz, int index);
 
 
+extern unsigned short migration_matrix_sanitycheck(double **matrix,
+	unsigned int n_zones) {
+
+	for (unsigned int i = 0u; i < n_zones; i++) {
+		if (sum(matrix[i], n_zones) > 1) return 1u;
+	}
+	return 0u;
+
+}
+
+
+#if 0
 /*
  * Performs a sanity check on a given migration matrix by making sure the sum
  * of migration probabilities out of a given zone at all times is <= 1.
@@ -59,6 +77,7 @@ extern unsigned short migration_matrix_sanitycheck(double ***migration_matrix,
 	return 0;
 
 }
+#endif
 
 
 /*
@@ -100,6 +119,28 @@ extern void malloc_gas_migration(MULTIZONE *mz) {
 }
 
 
+extern unsigned short setup_migration_element(MULTIZONE *mz, unsigned int row,
+	unsigned short column, double *arr) {
+
+	unsigned long length = n_timesteps(*(*mz).zones[0]);
+	if (row == column) {
+		for (unsigned long i = 0ul; i < length; i++) {
+			mz -> mig -> gas_migration[i][row][column] = 0.0;
+		}
+		return 0u;
+	} else {
+		unsigned short return_value = 0u;
+		for (unsigned long i = 0ul; i < length; i++) {
+			mz -> mig -> gas_migration[i][row][column] = arr[i];
+			return_value |= normalize_migration_element(mz, row, column, i);
+		}
+		return return_value;
+	}
+
+}
+
+
+#if 0
 /*
  * Sets up an element of the migration matrix at each timestep that it has
  * memory allocated for.
@@ -142,8 +183,22 @@ extern unsigned short setup_migration_element(MULTIZONE mz,
 	}
 
 }
+#endif
 
 
+static unsigned short normalize_migration_element(MULTIZONE *mz,
+	unsigned int row, unsigned int column, unsigned long timestep) {
+
+	double ***migmat = mz -> mig -> gas_migration;
+	migmat[timestep][row][column] *= (*(*mz).zones[0]).dt;
+	migmat[timestep][row][column] /= NORMALIZATION_TIME_INTERVAL;
+	return (migmat[timestep][row][column] < 0 ||
+		migmat[timestep][row][column] > 1);
+
+}
+
+
+#if 0
 /*
  * Normalize an element of the migration matrix such based on the timestep
  * size. Multiplies the ij'th element by the timestep size over the
@@ -183,6 +238,7 @@ static unsigned short normalize_migration_element(MULTIZONE mz,
 	return 0;
 
 }
+#endif
 
 
 /*
@@ -197,6 +253,8 @@ static unsigned short normalize_migration_element(MULTIZONE mz,
  */
 extern void migrate(MULTIZONE *mz) {
 
+	if ((*(*mz).mig).callback_gas_migration) gas_migration_from_callbacks(mz);
+
 	/* Migrate gas and all elements between zones */
 	int i;
 	for (i = -1; i < (signed) (*(*mz).zones[0]).n_elements; i++) {
@@ -209,6 +267,33 @@ extern void migrate(MULTIZONE *mz) {
 		migrate_tracer(*mz, mz -> mig -> tracers[j]);
 	}
 	migration_sanity_check(mz); 	/* sanity check the migration */
+
+}
+
+
+static unsigned short gas_migration_from_callbacks(MULTIZONE *mz) {
+
+	unsigned long timestep = mz -> zones[0] -> timestep;
+	double ***migmat = mz -> mig -> gas_migration;
+	for (unsigned int i = 0u; i < (*(*mz).mig).n_zones; i++) {
+		for (unsigned int j = 0u; j < (*(*mz).mig).n_zones; j++) {
+			if (i == j) continue;
+			if ((*(*mz).mig).callback_objects[i][j] != NULL) {
+				CURRENT_STATE *cs = singlezone_current_state(*(*mz).zones[i]);
+				migmat[timestep][i][j] = callback_current_state_evaluate(
+					*((CALLBACK_CURRENT_STATE *)
+						(*(*mz).mig).callback_objects[i][j]),
+					*cs);
+				if (normalize_migration_element(mz, i, j, timestep)) {
+					char _timestep[10];
+					sprintf(_timestep, "%lu", timestep);
+					setenv("VICE_BAD_GASMIGRATION_TIMESTEP", _timestep, 0);
+					if (migmat[timestep][i][j] < 0) migmat[timestep][i][j] = 0;
+					if (migmat[timestep][i][j] > 1) migmat[timestep][i][j] = 1;
+				} else {}
+			} else {}
+		}
+	}
 
 }
 
