@@ -18,6 +18,7 @@ cdef class mig_matrix:
 cdef class mig_matrix_row:
 	cdef int _size
 	cdef object _row
+	cdef unsigned short _callback
 
 
 cdef class mig_specs:

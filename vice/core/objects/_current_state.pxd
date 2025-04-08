@@ -3,6 +3,7 @@
 
 cdef extern from "../../src/objects.h":
 	ctypedef struct CURRENT_STATE:
+		double time
 		double mgas
 		double star_formation_rate
 		double infall_rate

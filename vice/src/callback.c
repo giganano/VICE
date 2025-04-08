@@ -78,7 +78,7 @@ extern double callback_current_state_evaluate(CALLBACK_CURRENT_STATE cbcs,
 	CURRENT_STATE cs) {
 
 	if (cbcs.user_func != NULL) {
-		return cbcs.callback(&cs, cbcs.user_func);
+		return cbcs.callback(cs, cbcs.user_func);
 	} else {
 		return 0;
 	}

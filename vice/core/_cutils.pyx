@@ -465,7 +465,7 @@ cdef void callback_current_state_setup(CALLBACK_CURRENT_STATE *cbcs,
 			type(value)))
 
 
-cdef double callback_1arg(double x, void *f):
+cdef double callback_1arg(double x, void *f) except *:
 	r"""
 	Call a function of one numerical value defined in Python from C.
 
@@ -496,7 +496,7 @@ cdef double callback_1arg(double x, void *f):
 	return <double> (<object> f)(x)
 
 
-cdef double callback_2arg(double x, double y, void *f):
+cdef double callback_2arg(double x, double y, void *f) except *:
 	r"""
 	Call a function of two numerical values defined in Python from C.
 
@@ -528,7 +528,7 @@ cdef double callback_2arg(double x, double y, void *f):
 	return <double> (<object> f)(x, y)
 
 
-cdef double callback_current_state(CURRENT_STATE *cs, void *f):
+cdef double callback_current_state(CURRENT_STATE cs, void *f) except *:
 	r"""
 	Call a function that evaluates based on the current state of the ISM,
 	which is implemented by the user in Python, from VICE's C backend.
@@ -553,15 +553,16 @@ cdef double callback_current_state(CURRENT_STATE *cs, void *f):
 	.. seealso:: vice/core/callback.py
 	"""
 	kwargs = {
-		"mgas": cs[0].mgas,
-		"sfr": cs[0].star_formation_rate,
-		"ifr": cs[0].infall_rate,
-		"ofr": cs[0].outflow_rate
+		"time": cs.time,
+		"mgas": cs.mgas,
+		"sfr": cs.star_formation_rate,
+		"ifr": cs.infall_rate,
+		"ofr": cs.outflow_rate
 	}
-	for i in range(cs[0].n_elements):
-		elem = "".join([chr(cs[0].symbols[i][j]) for j in range(
-			strlen(cs[0].symbols[i]))])
-		kwargs["z(%s)" % (elem)] = cs[0].Z[i]
+	for i in range(cs.n_elements):
+		elem = "".join([chr(cs.symbols[i][j]) for j in range(
+			strlen(cs.symbols[i]))])
+		kwargs["z(%s)" % (elem)] = cs.Z[i]
 	return (<object> f)(**kwargs)
 
 

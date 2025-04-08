@@ -424,6 +424,7 @@ Got: %s""" % (type(key)))
 	@callback.setter
 	def callback(self, value):
 		if isinstance(value, bool):
+			for i in range(self.size): self._rows[i].callback = value
 			self._callback = <unsigned short> value
 		else:
 			raise TypeError("Expected a boolean value. Got: %s" % (type(value)))
@@ -548,9 +549,10 @@ cdef class mig_matrix_row:
 		array([0, 0, 0])
 	"""
 
-	def __init__(self, size):
+	def __init__(self, size, callback = False):
 		self.size = size # type checking in setter routine
 		self._row = self.size * [0.]
+		self.callback = callback
 
 	def __getitem__(self, key):
 		key = key_check(key, self.size)
@@ -577,9 +579,17 @@ cdef class mig_matrix_row:
 				"""
 				self._row[key] = float(value)
 			elif callable(value):
-				_pyutils.args(value, """Functional element of migration \
-matrix must accept only one numerical parameter.""")
-				self._row[key] = value
+				if self.callback:
+					if _pyutils.arg_count(value) == 0:
+						self._row[key] = value
+					else:
+						raise TypeError("""\
+In callback mode, the function describing gas migration must accept no \
+positional arguments (keyword arguments only).""")
+				else:
+					_pyutils.args(value, """Functional element of migration \
+	matrix must accept only one numerical parameter.""")
+					self._row[key] = value
 			else:
 				raise TypeError("""Migration matrix element must be either a \
 real number or a callable function. Got: %s""" % (type(value)))
@@ -627,6 +637,26 @@ interpretable as an integer. Got: %g""" % (value))
 		else:
 			raise TypeError("""Attribute 'size' must be an integer. \
 Got: %s""" % (type(value)))
+
+	@property
+	def callback(self):
+		r"""
+		Type : ``bool`` [default: False]
+
+		If ``True``, VICE will call a user-defined callable object (be it a
+		class or a function) with the current ISM state in order to determine
+		the mixing fractions as the model integrates. If ``False``, the mixing
+		fractions will be computed as a function of time (and time only) prior
+		to starting the timestepping algorithm.
+		"""
+		return bool(self._callback)
+
+	@callback.setter
+	def callback(self, value):
+		if isinstance(value, bool):
+			self._callback = <unsigned short> value
+		else:
+			raise TypeError("Expected a boolean. Got: %s" % (type(value)))
 
 	def tolist(self):
 		r"""

@@ -435,6 +435,7 @@ extern CURRENT_STATE *singlezone_current_state(SINGLEZONE sz) {
 	 */
 
 	CURRENT_STATE *cs = current_state_initialize(sz.n_elements);
+	cs -> time = sz.current_time;
 	cs -> mgas = sz.ism -> mass;
 	cs -> star_formation_rate = sz.ism -> star_formation_rate / 1E9;
 	cs -> infall_rate = sz.ism -> infall_rate / 1E9;

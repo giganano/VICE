@@ -49,9 +49,9 @@ cdef void callback_1arg_setup(CALLBACK_1ARG *cb1, value) except *
 cdef void callback_2arg_setup(CALLBACK_2ARG *cb2, value) except *
 cdef void callback_current_state_setup(CALLBACK_CURRENT_STATE *cbcs,
 	value) except *
-cdef double callback_1arg(double x, void *f)
-cdef double callback_2arg(double x, double y, void *f)
-cdef double callback_current_state(CURRENT_STATE *cs, void *f)
+cdef double callback_1arg(double x, void *f) except *
+cdef double callback_2arg(double x, double y, void *f) except *
+cdef double callback_current_state(CURRENT_STATE cs, void *f) except *
 cdef void setup_imf(IMF_ *imf, IMF) except *
 cdef void set_string(char *dest, pystr) except *
 cdef int *ordinals(pystr) except *

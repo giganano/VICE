@@ -97,8 +97,8 @@ def numerical(function):
 	non-numerical value.
 	"""
 	@functools.wraps(function)
-	def wrapper(*args):
-		y = function(*args)
+	def wrapper(*args, **kwargs):
+		y = function(*args, **kwargs)
 		if isinstance(y, numbers.Number):
 			return float(y)
 		else:
@@ -119,8 +119,8 @@ def no_nan(function):
 	Raises a ``ScienceWarning`` and returns 0 when a function returns ``NaN``.
 	"""
 	@functools.wraps(function)
-	def wrapper(*args):
-		y = function(*args)
+	def wrapper(*args, **kwargs):
+		y = function(*args, **kwargs)
 		if m.isnan(y):
 			warnings.warn("""\
 Function %s evaluated to NaN at %s. Suppressing ArithmeticError by returning \
@@ -141,8 +141,8 @@ def no_inf(function):
 	Raises a ``ScienceWarning`` and returns 0 when a function returns ``inf``.
 	"""
 	@functools.wraps(function)
-	def wrapper(*args):
-		y = function(*args)
+	def wrapper(*args, **kwargs):
+		y = function(*args, **kwargs)
 		if m.isinf(y):
 			warnings.warn("""\
 Function %s evaluated to inf at %s. Suppressing ArithmeticError by returning \
@@ -164,8 +164,8 @@ def positive(function):
 	a negative or zero value.
 	"""
 	@functools.wraps(function)
-	def wrapper(*args):
-		y = function(*args)
+	def wrapper(*args, **kwargs):
+		y = function(*args, **kwargs)
 		if y <= 0:
 			warnings.warn("""\
 Function %s evaluated to non-positive value at %s. Suppressing ArithmeticError \
@@ -187,8 +187,8 @@ def fraction(function):
 	value, and 1 when a function returns something greater than 1.
 	"""
 	@functools.wraps(function)
-	def wrapper(*args):
-		y = function(*args)
+	def wrapper(*args, **kwargs):
+		y = function(*args, **kwargs)
 		if y < 0:
 			warnings.warn("""\
 Function %s evaluated to a negative value at %s. Suppressing ArithmeticError \
@@ -538,6 +538,7 @@ class callback_kwargs:
 					sig.parameters[i].VAR_KEYWORD]
 				if not can_be_keyword: raise TypeError("""\
 Function must not require any positional arguments.""")
+			self._function = value
 		else:
 			raise TypeError("Must be a callable object. Got: %s" % (
 				type(value)))

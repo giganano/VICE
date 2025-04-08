@@ -344,6 +344,12 @@ migration.specs. Got: %s""" % (type(value)))
 			canceled = True
 
 		self.dealign_name_attributes()
+		for i in range(self._mz[0].mig[0].n_zones):
+			for j in range(self._mz[0].mig[0].n_zones):
+				if isinstance(self.migration.gas[i][j],
+					callback_kwargs_fraction):
+					self.migration.gas[i][j] = self.migration.gas[i][j].function
+				else: pass
 		stop = time.time()
 		if enrichment == 1:
 			_multizone.multizone_cancel(self._mz)
@@ -465,6 +471,7 @@ leaving only the results of the current simulation.\nOutput directory: \
 			:: 	one of the migration specifications produces a value that is
 				not between 0 and 1 at any timestep.
 		"""
+		self._mz[0].mig[0].callback_gas_migration = self.migration.gas.callback
 		_migration.malloc_gas_migration(self._mz)
 		cdef long length = 10l + long(
 			self._mz[0].zones[0].output_times[
@@ -502,10 +509,11 @@ proceed faster or slower as a function of the timestep size."""
 			
 				elif callable(self.migration.gas[i][j]):
 					if self.migration.gas.callback:
+						self.migration.gas[i][j] = callback_kwargs_fraction(
+							self.migration.gas[i][j])
 						callback_current_state_setup(
 							self._mz[0].mig[0].callback_objects[i][j],
-							callback_kwargs_fraction(self.migration.gas[i][j])
-						)
+							self.migration.gas[i][j])
 					else:
 						arr = list(map(self.migration.gas[i][j], eval_times))
 						if _migration.setup_migration_element(self._mz,

@@ -303,6 +303,7 @@ typedef struct current_state {
 	 * Z: A pointer to each element's abundance by mass.
 	 */
 
+	double time;
 	double mgas;
 	double star_formation_rate;
 	double infall_rate;
@@ -332,7 +333,7 @@ typedef struct callback_current_state {
 	 * for parameters which may be either a real number or a function.
 	 */
 
-	double (*callback)(CURRENT_STATE *, void *);
+	double (*callback)(CURRENT_STATE, void *);
 	void *user_func;
 
 } CALLBACK_CURRENT_STATE;
