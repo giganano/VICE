@@ -3,7 +3,7 @@
 
 cdef extern from "../../src/objects.h":
 	ctypedef struct CALLBACK_1ARG:
-		double (*callback)(double, void *)
+		double (*callback)(double, void *) except *
 		double assumed_constant
 		void *user_func
 

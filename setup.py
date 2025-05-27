@@ -672,7 +672,7 @@ def setup_package():
 			"setuptools>=18.0", # automatically handles Cython extensions
 			"Cython>=0.29.0"
 		],
-		python_requires=">=3.7.*, <4",
+		python_requires=">=3.8,<4",
 		zip_safe = False,
 		verbose = "-q" not in sys.argv and "--quiet" not in sys.argv
 	)

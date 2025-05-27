@@ -503,7 +503,7 @@ arguments.""")
 			type(value)))
 
 
-cdef double callback_1arg(double x, void *f):
+cdef double callback_1arg(double x, void *f) except *:
 	r"""
 	Call a function of one numerical value defined in Python from C.
 
@@ -534,7 +534,7 @@ cdef double callback_1arg(double x, void *f):
 	return <double> (<object> f)(x)
 
 
-cdef double callback_2arg(double x, double y, void *f):
+cdef double callback_2arg(double x, double y, void *f) except *:
 	r"""
 	Call a function of two numerical values defined in Python from C.
 
