@@ -345,7 +345,7 @@ class singlezone:
 			"func":				self.func,
 			"mode":				self.mode,
 			"verbose":			self.verbose,
-			"nthreads":			self.nthreads,
+			# "nthreads":			self.nthreads,
 			"elements":			self.elements,
 			"IMF":				self.IMF,
 			"eta":				self.eta,
