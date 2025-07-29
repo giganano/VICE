@@ -1588,10 +1588,14 @@ simulation.\nOutput directory: %s.vice\nOverwite? (y | n) """ % (self.name))
 		"""
 		Setup each element's AGB grid, CCSNe yield grid, and SNe Ia yield
 		"""
+		from ...elements import nonmetals
+		_nonmetals = nonmetals()
 		self._callback_cc = self._sz[0].n_elements * [None]
 		self._callback_ia = self._sz[0].n_elements * [None]
 		self._callback_agb = self._sz[0].n_elements * [None]
 		for i in range(self._sz[0].n_elements):
+			self._sz[0].elements[i][0].nonmetal = <unsigned short> int(
+				self.elements[i] in _nonmetals)
 			self._sz[0].elements[i][0].solar = solar_z[self.elements[i]]
 			self._sz[0].elements[i][0].primordial = primordial[self.elements[i]]
 			self._sz[0].elements[i][0].agb_grid[0].entrainment = (

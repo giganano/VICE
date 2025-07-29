@@ -71,6 +71,15 @@ extern void update_element_mass(SINGLEZONE sz, ELEMENT *e) {
 	 */
 
 	/*
+	 * Change Note: version 1.X.0
+	 *
+	 * Previous versions of the code had a direct call to strcmp with the
+	 * symbol of the element and "he" to avoid ejecting helium at an enhanced
+	 * metallicity. Now, this function checks for elements that are flagged
+	 * as "nonmetals."
+	 */
+
+	/*
 	 * Pull the amount of mass produced by each enrichment channel, then add
 	 * the retained part to the ISM mass and the unretained part to the
 	 * instantaneous mass outflow.
@@ -99,10 +108,10 @@ extern void update_element_mass(SINGLEZONE sz, ELEMENT *e) {
 	double Z = (*e).mass / (*sz.ism).mass;
 	dm += mass_recycled(sz, e);
 	dm -= (*sz.ism).star_formation_rate * sz.dt * Z;
-	if (strcmp((*e).symbol, "he")) {
+	if (!(*e).nonmetal) {
 		dm -= (*sz.ism).enh[sz.timestep] * get_outflow_rate(sz) * sz.dt * Z;
 	} else {
-		/* Don't eject helium at an enhanced metallicity */
+		/* Don't eject nonmetals at an enhanced metallicity */
 		dm -= get_outflow_rate(sz) * sz.dt * Z;
 	}
 	if ((*sz.ism).infall_rate > 0) {

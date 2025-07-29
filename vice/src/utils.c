@@ -378,8 +378,8 @@ extern double scale_metallicity(SINGLEZONE sz, unsigned long timestep) {
 	 * current simulation.
 	 */
 	for (i = 0; i < sz.n_elements; i++) {
-		/* Don't count helium as a metal */
-		if (strcmp((*sz.elements[i]).symbol, "he")) {
+		/* Don't count nonmetals */
+		if (!(*sz.elements[i]).nonmetal) {
 			solar_by_element += (*sz.elements[i]).solar;
 			z_by_element += (*sz.elements[i]).Z[timestep];
 		} else {}

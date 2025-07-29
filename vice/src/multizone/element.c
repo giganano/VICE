@@ -29,6 +29,13 @@ extern void update_elements(MULTIZONE *mz) {
 	 * changes have been incorporated here.
 	 */
 
+	/*
+	 * Change Note: version 1.X.0
+	 *
+	 * See corresponding change note in src/singlezone/element.c as the same
+	 * changes have been incorporated here.
+	 */
+
 	unsigned int i, j;
 	for (i = 0u; i < (*(*mz).zones[0]).n_elements; i++) {
 
@@ -91,13 +98,13 @@ extern void update_elements(MULTIZONE *mz) {
 			double Z = (*e).mass / (*sz.ism).mass;
 			dm += recycled[j];
 			dm -= (*sz.ism).star_formation_rate * sz.dt * Z;
-			if (strcmp((*e).symbol, "he")) {
+			if (!(*e).nonmetal) {
 				dm -= (
 					(*sz.ism).enh[sz.timestep] * get_outflow_rate(sz) *
 					sz.dt * Z
 				);
 			} else {
-				/* Don't eject helium at an enhanced abundance */
+				/* Don't eject nonmetals at an enhanced abundance */
 				dm -= get_outflow_rate(sz) * sz.dt * Z;
 			}
 

@@ -5,6 +5,7 @@ This file implements the primordial built-in dataframe
 from __future__ import absolute_import
 from ...._globals import _RECOGNIZED_ELEMENTS_
 from .._elemental_settings import elemental_settings
+import numbers
 
 
 class primordial(elemental_settings):
@@ -73,10 +74,18 @@ class primordial(elemental_settings):
 
 	def __setitem__(self, key, value):
 		r"""
-		Override the __setitem__ function to throw a TypeError whenever this
-		function is called.
+		Extend the inherited __setitem__ function to enforce the stored value be
+		between 0 and 1.
 		"""
-		raise TypeError("This dataframe does not support item assignment.")
+		if isinstance(value, numbers.Number):
+			if 0 <= value <= 1:
+				super().__setitem__(key, value)
+			else:
+				raise ValueError("""\
+Primordial abundance must be between 0 and 1. Got: %e""" % (value))
+		else:
+			raise TypeError("""\
+Primordial abundance must be a numerical value. Got: %s""" % (type(value)))
 
 
 primordial = primordial()
