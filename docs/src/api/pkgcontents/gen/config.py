@@ -840,6 +840,7 @@ _CONFIG_ = {
 		"header": 		"vice.elements",
 		"subs": 		[
 			vice.elements.recognized,
+			vice.elements.destroyed_by_stars,
 			vice.elements.nonmetals,
 			vice.elements.element,
 			vice.elements.yields
@@ -848,6 +849,11 @@ _CONFIG_ = {
 	vice.elements.recognized: {
 		"filename": 	"vice.elements.recognized.rst",
 		"header": 		"vice.elements.recognized",
+		"subs": 		[]
+	},
+	vice.elements.destroyed_by_stars: {
+		"filename": 	"vice.elements.destroyed_by_stars.rst",
+		"header": 		"vice.elements.destroyed_by_stars",
 		"subs": 		[]
 	},
 	vice.elements.nonmetals: {

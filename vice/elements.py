@@ -75,7 +75,7 @@ through VICE's namespace. For example:
 from __future__ import absolute_import
 
 # __all__ extended at the end of this module out of necessity
-__all__ = ["nonmetals", "recognized", "test"]
+__all__ = ["destroyed_by_stars", "nonmetals", "recognized", "test"]
 
 from ._globals import _RECOGNIZED_ELEMENTS_
 from ._globals import _VERSION_ERROR_
@@ -194,7 +194,8 @@ def nonmetals(*args):
 	-------
 	elements : ``list``
 		A list of ``str`` objects denoting the symbols of elements that will be
-		modeled by VICE as non-metals under the current setting.
+		modeled by VICE as non-metals under the current setting. Only returned if
+		``*args`` is empty.
 
 	Notes
 	-----
@@ -223,7 +224,7 @@ def nonmetals(*args):
 		for item in args:
 			if isinstance(item, strcomp):
 				if item not in recognized:
-					raise ValueError("Unrecognized elements: %s" % (item))
+					raise ValueError("Unrecognized element: %s" % (item))
 				else: pass
 			else:
 				raise TypeError("Element must be of type str. Got: %s" % (
@@ -233,6 +234,60 @@ def nonmetals(*args):
 		os.environ["VICE_NONMETALS"] = new_setting
 	else:
 		return os.environ["VICE_NONMETALS"].split(',')
+
+
+def destroyed_by_stars(*args):
+	r"""
+	Read or assign the current global setting regarding which elements are
+	destroyed by stars. VICE will shut off the recycling of these elements from
+	stellar populations, zero-ing out this component of their enrichment rates.
+
+	Parameters
+	----------
+	args : ``str`` or ``None``
+		Symbols of elements that are to be modeled as destroyed by stars. If none
+		are specified, then the current list of elements that will be modeled as
+		such is returned. If a single ``None`` value is specified, then no elements
+		will be modeled as such.
+
+	Returned
+	--------
+	elements : ``list``
+		A list of ``str`` objects denoting the symbols of elements that will be
+		modeled by VICE with no recycling from stars. Only returned if ``*args`` is
+		empty.
+
+	Example Code
+	------------
+	>>> import vice
+	>>> vice.elements.destroyed_by_stars() # the current setting
+	[]
+	>>> vice.elements.destroyed_by_stars("au", "ne") # include gold and neon
+	>>> vice.elements.destroyed_by_stars()
+	["au", "ne"]
+	>>> vice.elements.destroyed_by_stars(None) # no elements destroyed by stars
+	>>> vice.elements.destroyed_by_stars()
+	[]
+	"""
+	if len(args) == 1 and args[0] == None:
+		os.environ["VICE_DESTROYED_BY_STARS"] = ""
+	elif len(args):
+		for item in args:
+			if isinstance(item, strcomp):
+				if item not in recognized:
+					raise ValueError("Unrecognized element: %s" % (item))
+				else: pass
+			else:
+				raise TypeError("Element must be of type str. Got: %s" % (
+					type(item)))
+		new_setting = "%s" % (args[0].lower())
+		for item in args[1:]: new_setting += ",%s" % (item.lower())
+		os.environ["VICE_DESTROYED_BY_STARS"] = new_setting
+	else:
+		if len(os.environ["VICE_DESTROYED_BY_STARS"]) == 0:
+			return []
+		else:
+			return os.environ["VICE_DESTROYED_BY_STARS"].split(',')
 
 
 # Give vice.elements.recognized a special docstring for documentation
@@ -784,6 +839,7 @@ class yields:
 
 
 recognized = _recognized(_RECOGNIZED_ELEMENTS_)
+destroyed_by_stars(None)
 nonmetals("he")
 
 

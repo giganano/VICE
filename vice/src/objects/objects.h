@@ -228,6 +228,7 @@ typedef struct element {
 	CHANNEL **channels;
 	unsigned short n_channels;
 	unsigned short nonmetal;
+	unsigned short destroyed_by_stars;
 	char *symbol;
 	double *Z;
 	double *Zin;
