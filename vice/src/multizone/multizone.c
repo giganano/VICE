@@ -208,11 +208,13 @@ static unsigned short multizone_timestepper(MULTIZONE *mz) {
 	 */
 
 	if (strcmp((*(*(*mz).zones[0]).ism).mode, "ifr")) {
+		migrate(mz);
 		update_zone_evolution(mz);
 		update_elements(mz);
 	} else {
 		update_elements(mz);
 		update_zone_evolution(mz);
+		migrate(mz);
 	}
 
 	/*
@@ -235,7 +237,6 @@ static unsigned short multizone_timestepper(MULTIZONE *mz) {
 	 * Migrating gas and stars before injecting tracers ensures that stars
 	 * will never migrate the timestep they're born.
 	 */
-	migrate(mz);
 	inject_tracers(mz);
 	for (i = 0; i < (*(*mz).mig).n_zones; i++) {
 		mz -> zones[i] -> current_time += (*(*mz).zones[i]).dt;
