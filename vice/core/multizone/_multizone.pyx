@@ -464,7 +464,7 @@ leaving only the results of the current simulation.\nOutput directory: \
 				not between 0 and 1 at any timestep.
 		"""
 		_migration.malloc_gas_migration(self._mz)
-		cdef long length = 10l + long(
+		cdef long length = 10l + <long> (
 			self._mz[0].zones[0].output_times[
 				self._mz[0].zones[0].n_outputs - 1l] /
 			self._mz[0].zones[0].dt
