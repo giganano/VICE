@@ -82,21 +82,21 @@ class discovery:
 		for root, dirs, files in os.walk(kwargs["include_dirs"][0]):
 			for d in dirs:
 				kwargs["include_dirs"].append("%s/%s" % (root, d))
-		if openmp.link_openmp():
-			# more compiler flags necessary if enabling multithreading
-			compile_args, link_args = openmp.compiler_flags()
-			kwargs["extra_compile_args"] = []
-			kwargs["extra_link_args"] = []
-			if openmp.compiler().startswith("clang"):
-				# openmp.compiler() finds the necessary library and include
-				# directory directly for clang. This is not necessary for gcc
-				# because it comes with OpenMP comes with OpenMP linked out of
-				# the box.
-				libomp_include, libomp_library = openmp.find_openmp_clang()
-				kwargs["include_dirs"].append(libomp_include)
-				kwargs["library_dirs"].append(libomp_library)
-			else: pass
-		else: pass
+		# if openmp.link_openmp():
+		# 	# more compiler flags necessary if enabling multithreading
+		# 	compile_args, link_args = openmp.compiler_flags()
+		# 	kwargs["extra_compile_args"] = []
+		# 	kwargs["extra_link_args"] = []
+		# 	if openmp.compiler().startswith("clang"):
+		# 		# openmp.compiler() finds the necessary library and include
+		# 		# directory directly for clang. This is not necessary for gcc
+		# 		# because it comes with OpenMP comes with OpenMP linked out of
+		# 		# the box.
+		# 		libomp_include, libomp_library = openmp.find_openmp_clang()
+		# 		kwargs["include_dirs"].append(libomp_include)
+		# 		kwargs["library_dirs"].append(libomp_library)
+		# 	else: pass
+		# else: pass
 
 		extensions = []
 		names = discovery.get_extensions(path = path)
