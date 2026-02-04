@@ -270,11 +270,11 @@ listing for extension %s: %s""" % (name, item))
 		return data
 
 
-class openmp(Command):
+class openmp:
 
 	r"""
-	A ``setuptools`` command that links VICE with the OpenMP library at compile
-	time to enable parallel processing.
+	A class that links VICE with the OpenMP library at compile time, if
+	requested by the user.
 	"""
 
 	_SUPPORTED_COMPILERS_ = {"gcc", "clang"}
