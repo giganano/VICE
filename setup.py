@@ -209,7 +209,6 @@ listing for extension %s: %s""" % (name, item))
 		return extensions
 
 
-
 	@staticmethod
 	def packages(path = "./vice"):
 		r"""
