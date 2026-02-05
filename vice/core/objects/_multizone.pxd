@@ -1,3 +1,9 @@
+# cython: language_level = 3, boundscheck = False
+#
+# This file is part of the VICE package.
+# Copyright (C) 2019 James W. Johnson (giganano9@gmail.com)
+# License: MIT License. See LICENSE in top-level directory
+# at https://github.com/giganano/VICE.git.
 
 from __future__ import absolute_import
 from ..singlezone cimport _singlezone
@@ -11,6 +17,8 @@ cdef extern from "../../src/objects.h":
 		_migration.MIGRATION *mig
 		unsigned short verbose
 		unsigned short simple
+		unsigned short nthreads
+		unsigned short setup_nthreads
 
 
 cdef extern from "../../src/multizone/multizone.h":

@@ -64,6 +64,15 @@ class singlezone:
 
 		.. versionadded:: 1.1.0
 
+	nthreads : ``int``
+		The number of OpenMP threads to use in the integration. This requires
+		linking to the OpenMP library at compile-time when installing VICE.
+		Without this step, multithreaded calculations are unavailable. To
+		enable this functionality, follow the steps described under "Enable
+		Multithreading" in VICE's :red:`installation instructions <install>`.
+
+		.. versionadded:: 1.X.0
+
 	elements : ``tuple`` [default : ("fe", "sr", "o")]
 		A tuple of strings holding the symbols of the elements to be
 		simulated.
@@ -220,6 +229,7 @@ class singlezone:
 			func -----------> <function _DEFAULT_FUNC_ at 0x112180ae8>
 			mode -----------> ifr
 			verbose --------> False
+			nthreads -------> 1
 			elements -------> ('fe', 'sr', 'o')
 			IMF ------------> kroupa
 			eta ------------> 2.5
@@ -269,6 +279,7 @@ class singlezone:
 			"func": 			self.func,
 			"mode":				self.mode,
 			"verbose": 			self.verbose,
+			"nthreads": 		self.nthreads,
 			"elements":			self.elements,
 			"IMF": 				self.IMF,
 			"eta": 				self.eta,
@@ -418,6 +429,7 @@ class singlezone:
 				func -----------> <function _DEFAULT_FUNC_ at 0x10d0c8e18>
 				mode -----------> ifr
 				verbose --------> False
+				nthreads -------> 1
 				elements -------> ('fe', 'sr', 'o')
 				IMF ------------> kroupa
 				eta ------------> 2.5
@@ -670,6 +682,27 @@ ran.""" % (i, j), UserWarning)
 	@verbose.setter
 	def verbose(self, value):
 		self.__c_version.verbose = value
+
+	@property
+	def nthreads(self):
+		r"""
+		Type : ``int``
+
+		Default : 1
+
+		.. versionadded :: 1.X.0
+
+		The number of OpenMP threads to use in this calculation. This requires
+		linking VICE to the OpenMP library at compile time when installing.
+		Without this step, multithreaded calculations are unavailable. To
+		enable this functionality, follow the steps described under "Enable
+		Multithreading" in VICE's :ref:`installation instructions <install>`.
+		"""
+		return self.__c_version.nthreads
+
+	@nthreads.setter
+	def nthreads(self, value):
+		self.__c_version.nthreads = value
 
 	@property
 	def elements(self):

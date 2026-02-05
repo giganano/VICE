@@ -51,6 +51,7 @@ from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext as _build_ext
 from subprocess import Popen, PIPE
 import json
+import sys
 import os
 if os.name != "posix": raise OSError("""\
 Sorry, Windows is not supported. Please install and run VICE from within the \
@@ -97,8 +98,8 @@ class discovery:
 		if openmp.link_openmp():
 			# more compiler flags necessary if enabling multithreading
 			compile_args, link_args = openmp.compiler_flags()
-			kwargs["extra_compile_args"] = []
-			kwargs["extra_link_args"] = []
+			kwargs["extra_compile_args"].extend(compile_args)
+			kwargs["extra_link_args"].extend(link_args)
 			if openmp.compiler().startswith("clang"):
 				# openmp.compiler() finds the necessary library and include
 				# directory directly for clang. This is not necessary for gcc
@@ -284,7 +285,7 @@ class openmp:
 	_GCC_OPENMP_LINK_FLAGS_ = ["-fopenmp"]
 
 	@staticmethod
-	def comiler_flags():
+	def compiler_flags():
 		r"""
 		Determine the flags to pass to the C compiler for both compiling and
 		linking. Returns the compiler and linker args, in that order, as lists
@@ -498,7 +499,7 @@ then please open an issue at https://github.com/giganano/VICE/issues."""
 					idx = -1
 					for i in range(len(out)):
 						if out[i].endswith("libomp.dylib"):
-							idx = -1
+							idx = i
 							break
 						else: continue
 					if idx == -1: raise RuntimeError(msg)

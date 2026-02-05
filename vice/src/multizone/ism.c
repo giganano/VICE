@@ -1,4 +1,9 @@
 /*
+ * This file is part of the VICE package.
+ * Copyright (C) 2019 James W. Johnson (giganano9@gmail.com)
+ * License: MIT License. See LICENSE in top-level directory
+ * at: https://github.com/giganano/VICE.git.
+ *
  * This file implements the time evolution of an interstellar medium (ISM)
  * in VICE's multizone simulations.
  */
@@ -6,6 +11,7 @@
 #include <stdlib.h>
 #include "../multizone.h"
 #include "../singlezone.h"
+#include "../multithread.h"
 #include "../utils.h"
 #include "../ism.h"
 #include "ism.h"
@@ -50,8 +56,12 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 	 */
 	
 	unsigned int i;
+	unsigned short retval = 0u;
 	double *mass_recycled = gas_recycled_in_zones(*mz);
 	double *migration_deltas = migration_gas_changes_by_zone(*mz);
+	#if defined(_OPENMP)
+		#pragma omp parallel for num_threads((*mz).nthreads)
+	#endif
 	for (i = 0; i < (*(*mz).mig).n_zones; i++) {
 		SINGLEZONE *sz = mz -> zones[i];
 
@@ -113,7 +123,8 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 
 			default:
 				free(mass_recycled);
-				return 1;
+				retval = 1u;
+				break;
 
 		}
 
@@ -124,7 +135,7 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 	}
 
 	free(mass_recycled);
-	return 0;
+	return retval;
 
 }
 

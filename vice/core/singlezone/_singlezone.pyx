@@ -51,6 +51,7 @@ else:
 # C imports
 from libc.stdlib cimport malloc
 from libc.string cimport strlen
+from .._cutils cimport set_nthreads
 from .._cutils cimport set_string
 from .._cutils cimport copy_pylist
 from .._cutils cimport setup_imf
@@ -110,6 +111,7 @@ cdef class c_singlezone:
 		func = _DEFAULT_FUNC_,
 		mode = "ifr",
 		verbose = False,
+		nthreads = 1,
 		elements = ("fe", "sr", "o"),
 		IMF = "kroupa",
 		eta = 2.5,
@@ -145,6 +147,7 @@ cdef class c_singlezone:
 		self.func = func
 		self.mode = mode
 		self.verbose = verbose
+		self.nthreads = nthreads
 		self.elements = elements
 		self.IMF = IMF
 		self.eta = eta
@@ -323,6 +326,30 @@ a boolean. Got: %s""" % (type(value)))
 					strlen(self._sz[0].elements[i][0].symbol))]
 			)
 		return tuple(elements[:])
+
+	@property
+	def nthreads(self):
+		# docstring in python version
+		return int(self._sz[0].nthreads)
+
+	@nthreads.setter
+	def nthreads(self, value):
+		r"""
+		The number of OpenMP threads to use in this calculation.
+
+		Allowed Types
+		=============
+		int
+
+		Allowed Values
+		==============
+		Postitive definite
+
+		The ``set_nthreads`` function in the vice.core._cutils extension
+		does all of the error handling here.
+		"""
+		set_nthreads(value)
+		self._sz[0].nthreads = <unsigned short> value
 
 	@elements.setter
 	def elements(self, value):

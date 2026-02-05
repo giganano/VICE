@@ -1,4 +1,9 @@
 /*
+ * This file is part of the VICE package.
+ * Copyright (C) 2019 James W. Johnson (giganano9@gmail.com)
+ * License: MIT License. See LICENSE in top-level directory
+ * at: https://github.com/giganano/VICE.git.
+ *
  * All of VICE's objects are declared in this header.
  */
 
@@ -390,6 +395,8 @@ typedef struct singlezone {
 	 * n_elements: The number of elements to track
 	 * verbose: boolean int describing whether or not to print the time as the
 	 * 		simulation evolves
+	 * nthreads : The number of OpenMP threads to use, if it was linked at
+	 * 		compile time.
 	 * elements: The yield information for each element
 	 * ism: The time evolution information for the interstellar medium (ISM)
 	 * mdf: The stellar metallicity distribution function (MDF) information
@@ -407,6 +414,7 @@ typedef struct singlezone {
 	double Z_solar;
 	unsigned int n_elements;
 	unsigned short verbose;
+	unsigned short nthreads;
 	ELEMENT **elements;
 	ISM *ism;
 	MDF *mdf;
@@ -473,6 +481,10 @@ typedef struct multizone {
 	 * mig: The migration settings for this simulation
 	 * verbose: boolean int describing whether or not to print the time as the
 	 * 		simulation evolves
+	 * nthreads : The number of OpenMP threads to use while integrating the
+	 * 		model.
+	 * setup_nthreads : The number of OpenMP threads to use in setting up the
+	 * 		model's integration.
 	 */
 
 	char *name;
@@ -480,6 +492,8 @@ typedef struct multizone {
 	MIGRATION *mig;
 	unsigned short verbose;
 	unsigned short simple;
+	unsigned short nthreads;
+	unsigned short setup_nthreads;
 
 } MULTIZONE;
 

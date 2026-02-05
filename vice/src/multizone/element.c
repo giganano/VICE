@@ -1,4 +1,9 @@
 /*
+ * This file is part of the VICE package.
+ * Copyright (C) 2019 James W. Johnson (giganano9@gmail.com)
+ * License: MIT License. See LICENSE in top-level directory
+ * at: https://github.com/giganano/VICE.git.
+ *
  * This file implements the functionality of the element object in multizone
  * simulations.
  */
@@ -7,6 +12,7 @@
 #include <string.h>
 #include "../multizone.h"
 #include "../singlezone.h"
+#include "../multithread.h"
 #include "element.h"
 
 
@@ -30,6 +36,9 @@ extern void update_elements(MULTIZONE *mz) {
 	 */
 
 	unsigned int i, j;
+	#if defined(_OPENMP)
+		#pragma omp parallel for num_threads((*mz).nthreads)
+	#endif
 	for (i = 0u; i < (*(*mz).zones[0]).n_elements; i++) {
 
 		/*
