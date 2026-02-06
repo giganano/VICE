@@ -4,6 +4,7 @@
 		"./vice/src/objects/callback_1arg.c",
 		"./vice/src/objects/callback_2arg.c",
 		"./vice/src/io/progressbar.c",
+		"./vice/src/multithread.c",
 		"./vice/src/utils.c"
 	],
 	"vice.core._mlr": [
@@ -472,6 +473,7 @@
 		"./vice/src/objects/hydrodiskstars.c",
 		"./vice/src/toolkit/hydrodiskstars.c",
 		"./vice/src/io/utils.c",
+		"./vice/src/multithread.c",
 		"./vice/src/utils.c"
 	],
 	"vice.toolkit.interpolation._interp_scheme_1d": [
