@@ -14,6 +14,8 @@ _CFILES_ = {
 	"vice.core._cutils": [
 		"./vice/src/objects/callback_1arg.c",
 		"./vice/src/objects/callback_2arg.c",
+		"./vice/src/objects/callback_current_state.c",
+		"./vice/src/objects/current_state.c",
 		"./vice/src/io/progressbar.c",
 		"./vice/src/utils.c"
 	],
