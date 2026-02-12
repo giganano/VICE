@@ -8,6 +8,7 @@ cdef extern from "../../src/ccsne.h":
 	ctypedef struct CCSNE_YIELD_SPECS:
 		CALLBACK_1ARG *yield_
 		double entrainment
+		unsigned short active
 
 
 cdef extern from "../../src/ccsne.h":

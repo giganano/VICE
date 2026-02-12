@@ -133,11 +133,14 @@ typedef struct asymptotic_giant_branch_star_yield_grid {
 	 * interpolator: The mass-metallicity interpolation grid
 	 * entrainment: The fraction of this element's yields that get mixed
 	 * 		with the ISM.
+	 * active: A boolean int describing whether or not this enrichment channel
+	 * 		is included in this model or not.
 	 */
 
 	CALLBACK_2ARG *custom_yield;
 	INTERP_SCHEME_2D *interpolator;
 	double entrainment;
+	unsigned short active;
 
 } AGB_YIELD_GRID;
 
@@ -152,10 +155,13 @@ typedef struct ccsne_yield_specs {
 	 * 		Both functional values and constant values are stored there.
 	 * entrainment: The fraction of the nucleosynthetic yield that is
 	 * 		captured and retained by the interstellar medium
+	 * active: A boolean int describing whether or not this enrichment channel
+	 * 		is included in this model or not.
 	 */
 
 	CALLBACK_1ARG *yield_;
 	double entrainment;
+	unsigned short active;
 
 } CCSNE_YIELD_SPECS;
 
@@ -175,6 +181,8 @@ typedef struct sneia_yield_specs {
 	 * t_d: The minimum delay time on SNe Ia in Gyr.
 	 * entrainment: The fraction of the nucleosynthetic yield that is
 	 * 		captured and retained by the interstellar medium
+	 * active: A boolean int describing whether or not this enrichment channel
+	 * 		is included in this model or not.
 	 */
 
 	CALLBACK_1ARG *yield_;
@@ -183,12 +191,12 @@ typedef struct sneia_yield_specs {
 	double tau_ia;
 	double t_d;
 	double entrainment;
-
+	unsigned short active;
 
 } SNEIA_YIELD_SPECS;
 
 
-typedef struct arbitrary_channel {
+typedef struct channel {
 
 	/*
 	 * This struct holds the information and yield specifications for
@@ -199,6 +207,8 @@ typedef struct arbitrary_channel {
 	 * 		sampled.
 	 * rate: The delay-time distribution of the channel: its rate following the
 	 * 		formation of a simple stellar population.
+	 * entrainment: The f raction of the nucleosynthetic yield that is
+	 * 		captured and retained by the interstellar medium.
 	 */
 
 	CALLBACK_1ARG *yield_;

@@ -1,4 +1,9 @@
 /*
+ * This file is part of the VICE package.
+ * Copyright (C) 2019 James W. Johnson (giganano9@gmail.com)
+ * License: MIT License. See LICENSE in top-level directory
+ * at: https://github.com/giganano/VICE.git.
+ *
  * This file implements enrichment from an arbitrary, custom enrichment
  * channel parameterized by the user in VICE singlezone simulations.
  */
@@ -25,23 +30,30 @@
  * The time-derivative of the arbitrary enrichment channels mass enrichment
  * term
  *
+ * Notes
+ * =====
+ * This function also adds the unretained mass from each additional enrichment
+ * channel to the outflow, following the built-in AGB star, CCSN, and SN Ia
+ * enrichment channels.
+ *
  * header: channel.h
  */
-extern double mdot(SINGLEZONE sz, ELEMENT e) {
+extern double mdot_channels(SINGLEZONE sz, ELEMENT *e) {
 
-	unsigned short i;
-	double mdot_ = 0;
-	for (i = 0lu; i < e.n_channels; i++) {
-		unsigned long j;
-		for (j = 0l; j < sz.timestep; j++) {
-			/* Entrainment to be handled in vice/src/singlezone/element.c */
-			mdot_ += (get_yield((*e.channels[i]), scale_metallicity(sz, j)) *
+	double mdot = 0;
+	for (unsigned short i = 0u; i < (*e).n_channels; i++) {
+		for (unsigned long j = 0ul; j < sz.timestep; j++) {
+			double production_rate = (
+				get_channel_yield((*(*e).channels[i]), scale_metallicity(sz, j)) *
 				(*sz.ism).star_formation_history[j] *
-				(*e.channels[i]).rate[sz.timestep - j]
+				(*(*e).channels[i]).rate[sz.timestep - j]
 			);
+			mdot += production_rate * (*(*e).channels[i]).entrainment;
+			e -> unretained += production_rate * sz.dt * (
+				1 - (*(*e).channels[i]).entrainment);
 		}
 	}
-	return mdot_;
+	return mdot;
 
 }
 
@@ -62,7 +74,7 @@ extern double mdot(SINGLEZONE sz, ELEMENT e) {
  *
  * header: channel.h
  */
-extern double get_yield(CHANNEL ch, double Z) {
+extern double get_channel_yield(CHANNEL ch, double Z) {
 
 	return callback_1arg_evaluate(*ch.yield_, Z);
 
@@ -80,19 +92,11 @@ extern double get_yield(CHANNEL ch, double Z) {
  *
  * header: channel.h
  */
-extern void normalize_rates(ELEMENT *e, unsigned long length) {
+extern void normalize_channel_rates(CHANNEL *ch, unsigned long length) {
 
-	unsigned short i;
-	for (i = 0u; i < (*e).n_channels; i++) {
-		unsigned long j;
-		double sum = 0;
-		for (j = 0lu; j < length; j++) {
-			sum += (*(*e).channels[i]).rate[j];
-		}
-		for (j = 0lu; j < length; j++) {
-			e -> channels[i] -> rate[j] /= sum;
-		}
-	}
+	double sum = 0;
+	for (unsigned long i = 0ul; i < length; i++) sum += (*ch).rate[i];
+	for (unsigned long i = 0ul; i < length; i++) ch -> rate[i] /= sum;
 
 }
 

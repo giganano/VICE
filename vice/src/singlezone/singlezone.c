@@ -259,6 +259,14 @@ extern void singlezone_clean(SINGLEZONE *sz) {
 		sz -> elements[i] -> Z = NULL;
 		sz -> elements[i] -> Zin = NULL;
 		sz -> elements[i] -> sneia_yields -> RIa = NULL;
+		if ((*(*sz).elements[i]).n_channels) {
+			for (unsigned short j = 0u; j < (*(*sz).elements[i]).n_channels; j++) {
+				channel_free(sz -> elements[i] -> channels[j]);
+			}
+			free(sz -> elements[i] -> channels);
+			sz -> elements[i] -> channels = NULL;
+			sz -> elements[i] -> n_channels = 0u;
+		} else {}
 	}
 	free(sz -> ism -> specified);
 	free(sz -> ism -> star_formation_history);
@@ -329,6 +337,14 @@ extern void singlezone_cancel(SINGLEZONE *sz) {
 		if ((*(*(*(*sz).elements[i]).agb_grid).interpolator).zcoords != NULL) {
 			free(sz -> elements[i] -> agb_grid -> interpolator -> zcoords);
 			sz -> elements[i] -> agb_grid -> interpolator -> zcoords = NULL;
+		} else {}
+		if ((*(*sz).elements[i]).n_channels) {
+			for (unsigned short j = 0u; j < (*(*sz).elements[i]).n_channels; j++) {
+				channel_free(sz -> elements[i] -> channels[j]);
+			}
+			free(sz -> elements[i] -> channels);
+			sz -> elements[i] -> channels = NULL;
+			sz -> elements[i] -> n_channels = 0u;
 		} else {}
 	}
 

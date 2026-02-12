@@ -281,6 +281,7 @@ class singlezone:
 			"verbose": 			self.verbose,
 			"nthreads": 		self.nthreads,
 			"elements":			self.elements,
+			"channels":			self.channels,
 			"IMF": 				self.IMF,
 			"eta": 				self.eta,
 			"enhancement":		self.enhancement,
@@ -762,6 +763,26 @@ ran.""" % (i, j), UserWarning)
 	@elements.setter
 	def elements(self, value):
 		self.__c_version.elements = value
+
+	@property
+	def channels(self):
+		r"""
+		Type : ``set``
+
+		Default : ``{"agb", "ccsne", "sneia"}``
+
+		.. versionadded:: 1.X.0
+
+		The enrichment channels to be included in this model. Omitting a given
+		channel is functionally equivalent to setting all of the yields from
+		that channel to zero. However, omitting it entirely eliminates the
+		computational overhead.
+		"""
+		return self.__c_version.channels
+
+	@channels.setter
+	def channels(self, value):
+		self.__c_version.channels = value
 
 	@property
 	def IMF(self):

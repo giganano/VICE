@@ -17,6 +17,7 @@ except NameError:
 
 if not __VICE_SETUP__:
 	__all__ = [
+		"channel",
 		"dataframe",
 		"singlezone",
 		"mirror",
@@ -25,6 +26,7 @@ if not __VICE_SETUP__:
 	]
 
 	import warnings
+	from .channel import channel
 	from .singlezone import singlezone
 	from .mirror import mirror
 	from .mlr import mlr
