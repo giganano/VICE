@@ -31,28 +31,35 @@ extern double *m_AGB_from_tracers(MULTIZONE mz, unsigned short index) {
 
 	unsigned long i, timestep = (*mz.zones[0]).timestep;
 	double *mass = (double *) malloc ((*mz.mig).n_zones * sizeof(double));
-	for (i = 0l; i < (*mz.mig).n_zones; i++) {
-		mass[i] = 0;
-	}
+	for (i = 0l; i < (*mz.mig).n_zones; i++) mass[i] = 0;
 	for (i = 0l; i < (*mz.mig).tracer_count; i++) {
 		/*
 		 * Get the tracer particle's current zone and metallicity. Use the SSP
 		 * evolutionary parameters from the zone in which the tracer particle
 		 * was born.
 		 *
-		 * n: The number of timesteps ago the tracer particle formed.
+		 * If the tracer particle came from a zone where the SN Ia channel is
+		 * inactive, then its yield should be skipped.
 		 */
-		TRACER *t = mz.mig -> tracers[i];
-		SINGLEZONE *sz = mz.zones[(*t).zone_current];
-		SSP *ssp = mz.zones[(*t).zone_origin] -> ssp;
-		double Z = tracer_metallicity(mz, *t);
-		unsigned long n = timestep - (*t).timestep_origin;
-		mass[(*t).zone_current] += (
-			get_AGB_yield( *(*mz.zones[(*t).zone_origin]).elements[index],
-				Z, dying_star_mass(n * (*sz).dt, (*ssp).postMS, Z)) *
-			(*t).mass *
-			((*ssp).msmf[n] - (*ssp).msmf[n + 1l])
+		TRACER t = *(*mz.mig).tracers[i];
+		AGB_YIELD_GRID agb = *(
+			(*(*mz.zones[t.zone_origin]).elements[index]).agb_grid
 		);
+		if (agb.active) {
+			SINGLEZONE *sz = mz.zones[t.zone_current];
+			SSP *ssp = (*mz.zones[t.zone_origin]).ssp;
+			double Z = tracer_metallicity(mz, t);
+			unsigned long n = timestep - t.timestep_origin;
+			mass[t.zone_current] += (
+				get_AGB_yield(
+					*(*mz.zones[t.zone_origin]).elements[index],
+					Z,
+					dying_star_mass(n * (*sz).dt, (*ssp).postMS, Z)) *
+				t.mass *
+				((*ssp).msmf[n] - (*ssp).msmf[n + 1l])
+			);
+		} else {}
+
 	}
 	return mass;
 
