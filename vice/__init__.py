@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+#
+# This file is part of the VICE package.
+# Copyright (C) 2019 James W. Johnson (giganano9@gmail.com).
+# License: MIT License. See LICENSE in top-level directory
+# at: https://github.com/giganano/VICE.git.
 r"""
 VICE: Versatile Integrator for Chemical Evolution
 
@@ -107,61 +113,41 @@ try:
 except NameError:
 	ModuleNotFoundError = ImportError
 
-if __VICE_SETUP__:
-	from .src import *
-	_LONG_DESCRIPTION_ = __doc__
-else:
-	if "vice" in os.listdir(os.getcwd()):
+if not __VICE_SETUP__:
+
+	__author__ = "James W. Johnson <giganano9@gmail.com>"
+	__all__ = [
+		"__author__",
+		"__version__",
+		"milkyway",
+		"elements",
+		"yields",
+		"_globals",
+		"_dev",
+		"toolkit",
+		"ScienceWarning",
+		"VisibleRuntimeWarning",
+		"VisibleDeprecationWarning"
+	]
+
+	try:
+		from .version import version
+		__version__ = str(version)
+		from .milkyway import milkyway
+		from . import milkyway
+		from .core import *
+		from .core.dataframe import base as dataframe
+		from ._globals import ScienceWarning
+		from ._globals import VisibleRuntimeWarning
+		from ._globals import VisibleDeprecationWarning
+		from . import elements
+		from . import yields
+		from . import toolkit
+		from .tests import test
+		from . import _dev
+		__all__.extend(core.__all__)
+	except (ImportError, ModuleNotFoundError):
 		raise ImportError("""\
-Error importing VICE. VICE is a pre-compiled package and cannot be ran from \
-its source directory, because the compiled objects are not stored here. Please \
-exit the VICE source tree and relaunch your python interpreter from there. \
-""")
-	else:
-
-		__author__ = "James W. Johnson <giganano9@gmail.com>"
-		__all__ = [
-			"__author__",
-			"__version__",
-			"milkyway",
-			"elements",
-			"yields",
-			"_globals",
-			"_dev",
-			"toolkit",
-			"ScienceWarning",
-			"VisibleRuntimeWarning",
-			"VisibleDeprecationWarning"
-		]
-
-		try:
-			from .version import version
-			__version__ = str(version)
-			if not version.isreleased:
-				warnings.warn("Using un-released version of VICE", UserWarning)
-			else:
-				prerelease = False
-				for item in [version.dev, version.alpha, version.beta,
-					version.rc]:
-					prerelease |= item is not None
-					if prerelease: break
-				if prerelease: warnings.warn("Using a pre-release of VICE",
-					UserWarning)
-			from .milkyway import milkyway
-			from . import milkyway
-			from .core import *
-			from .core.dataframe import base as dataframe
-			from ._globals import ScienceWarning
-			from ._globals import VisibleRuntimeWarning
-			from ._globals import VisibleDeprecationWarning
-			from . import elements
-			from . import yields
-			from . import toolkit
-			from .tests import test
-			from . import _dev
-			__all__.extend(core.__all__)
-		except (ImportError, ModuleNotFoundError):
-			raise ImportError("""\
 Error importing VICE. If you conducted this installation with pip, it is \
 likely there is not a binary installer for this operating system and \
 version of python. \

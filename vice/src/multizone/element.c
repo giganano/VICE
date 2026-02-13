@@ -1,4 +1,9 @@
 /*
+ * This file is part of the VICE package.
+ * Copyright (C) 2019 James W. Johnson (giganano9@gmail.com)
+ * License: MIT License. See LICENSE in top-level directory
+ * at: https://github.com/giganano/VICE.git.
+ *
  * This file implements the functionality of the element object in multizone
  * simulations.
  */
@@ -7,6 +12,7 @@
 #include <string.h>
 #include "../multizone.h"
 #include "../singlezone.h"
+#include "../multithread.h"
 #include "element.h"
 
 
@@ -29,8 +35,10 @@ extern void update_elements(MULTIZONE *mz) {
 	 * changes have been incorporated here.
 	 */
 
-	unsigned int i, j;
-	for (i = 0u; i < (*(*mz).zones[0]).n_elements; i++) {
+	#if defined(_OPENMP)
+		#pragma omp parallel for num_threads((*mz).nthreads)
+	#endif
+	for (unsigned int i = 0u; i < (*(*mz).zones[0]).n_elements; i++) {
 
 		/*
 		 * These enrichment channels which require tracer particles are written
@@ -45,7 +53,12 @@ extern void update_elements(MULTIZONE *mz) {
 		double *agb = m_AGB_from_tracers(*mz, i);
 		double *recycled = recycled_mass(*mz, i);
 
-		for (j = 0u; j < (*(*mz).mig).n_zones; j++) {
+		for (unsigned int j = 0u; j < (*(*mz).mig).n_zones; j++) {
+			mz -> zones[j] -> elements[i] -> unretained = 0;
+		}
+		double *m_channels = m_channels_from_tracers(mz, i);
+
+		for (unsigned int j = 0u; j < (*(*mz).mig).n_zones; j++) {
 
 			/*
 			 * These instantaneous pieces don't require tracer particles and
@@ -74,7 +87,6 @@ extern void update_elements(MULTIZONE *mz) {
 			 * outflow likely has more to do with its current location than
 			 * where it was born.
 			 */
-			e -> unretained = 0;
 			e -> unretained += (1 - (*(*e).ccsne_yields).entrainment) * m_cc;
 			e -> unretained += (1 - (*(*e).sneia_yields).entrainment) * m_ia;
 			e -> unretained += (1 - (*(*e).agb_grid).entrainment) * m_agb;
@@ -83,6 +95,7 @@ extern void update_elements(MULTIZONE *mz) {
 			dm += (*(*e).ccsne_yields).entrainment * m_cc;
 			dm += (*(*e).sneia_yields).entrainment * m_ia;
 			dm += (*(*e).agb_grid).entrainment * m_agb;
+			dm += m_channels[j];
 
 			/*
 			 * Subsequent terms in the enrichmen tequation - star formation and
@@ -118,6 +131,7 @@ extern void update_elements(MULTIZONE *mz) {
 		free(sneia);
 		free(agb);
 		free(recycled);
+		free(m_channels);
 
 	}
 

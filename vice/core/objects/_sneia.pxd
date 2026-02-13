@@ -13,6 +13,7 @@ cdef extern from "../../src/objects.h":
 		double tau_ia
 		double t_d
 		double entrainment
+		unsigned short active
 
 
 cdef extern from "../../src/sneia.h":

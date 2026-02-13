@@ -32,6 +32,7 @@
 extern double mdot_ccsne(SINGLEZONE sz, ELEMENT e) {
 	
 	/* Entrainment is handled in vice/src/singlezone/element.c */
+	if (!(*e.ccsne_yields).active) return 0;
 	return (get_cc_yield(e, scale_metallicity(sz, sz.timestep)) *
 		(*sz.ism).star_formation_rate);
 

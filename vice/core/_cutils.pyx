@@ -1,4 +1,9 @@
 # cython: language_level = 3, boundscheck = False
+#
+# This file is part of the VICE package.
+# Copyright (C) 2019 James W. Johnson (giganano9@gmail.com)
+# License: MIT License. See LICENSE in top-level directory
+# at https://github.com/giganano/VICE.git.
 r"""
 C Utilities
 ===========
@@ -352,6 +357,67 @@ Value out of bounds for progressbar of maximum value %d: %d""" % (
 		.. note:: This method is equivalent to ``x.update(x.current)``.
 		"""
 		_cutils.progressbar_refresh(self._pb)
+
+
+def _openmp_linked():
+	r"""
+	Returns ``True`` if the current installation was linked with OpenMP at
+	compile-time. Returns ``False`` otherwise.
+	"""
+	return bool(_cutils.openmp_linked())
+
+
+cdef void set_nthreads(n) except *:
+	r"""
+	Set the number of threads used in multithreaded portions of VICE's backend.
+
+	Parameters
+	----------
+	n : ``int``
+		The number of threads to spread the calculation across.
+
+	Raises
+	------
+	* RuntimeWarning
+		- The user has not gone through the necessary steps to enable
+		  multiprocessing within VICE, which requires linking to the OpenMP
+		  library at compile time.
+	* ValueError
+		- ``n`` is numerical but not a positive definite integer.
+	* TypeError
+		- ``n`` is not a numerical data type.
+	"""
+	if isinstance(n, numbers.Number):
+		if n % 1 == 0 and n > 0:
+			if _cutils.openmp_set_nthreads(<unsigned short> n):
+				raise RuntimeError("""\
+This installation of VICE was not linked with the OpenMP library at compile \
+time, rendering multithreading unavailable. To make use of these features, \
+follow the instructions under "Enable Multithreading" at \
+https://vice-astro.readthedocs.io/en/latest/install.html.""")
+			else: pass
+		else:
+			raise ValueError("""\
+Number of threads must be a positive definite integer. Got: %g""" % (n))
+	else:
+		raise TypeError("""\
+Number of threads must be a positive definite integer. Got: %s""" % (type(n)))
+
+
+cdef unsigned short get_nthreads() except *:
+	r"""
+	Determine the number of threads used in multithreaded portions of VICE's
+	backend.
+
+	Returns
+	-------
+	n : ``int``
+		The number of threads the calculations will be spread across.
+
+		.. note:: This number can be assigned by calling the ``set_nthreads``
+			function in the vice.core._cutils extension.
+	"""
+	return int(_cutils.openmp_get_nthreads())
 
 
 cdef void callback_1arg_setup(CALLBACK_1ARG *cb1, value) except *:

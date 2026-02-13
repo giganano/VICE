@@ -1,4 +1,9 @@
 /*
+ * This file is part of the VICE package.
+ * Copyright (C) 2019 James W. Johnson (giganano9@gmail.com)
+ * License: MIT License. See LICENSE in top-level directory
+ * at: https://github.com/giganano/VICE.git.
+ *
  * All of VICE's objects are declared in this header.
  */
 
@@ -128,11 +133,14 @@ typedef struct asymptotic_giant_branch_star_yield_grid {
 	 * interpolator: The mass-metallicity interpolation grid
 	 * entrainment: The fraction of this element's yields that get mixed
 	 * 		with the ISM.
+	 * active: A boolean int describing whether or not this enrichment channel
+	 * 		is included in this model or not.
 	 */
 
 	CALLBACK_2ARG *custom_yield;
 	INTERP_SCHEME_2D *interpolator;
 	double entrainment;
+	unsigned short active;
 
 } AGB_YIELD_GRID;
 
@@ -147,10 +155,13 @@ typedef struct ccsne_yield_specs {
 	 * 		Both functional values and constant values are stored there.
 	 * entrainment: The fraction of the nucleosynthetic yield that is
 	 * 		captured and retained by the interstellar medium
+	 * active: A boolean int describing whether or not this enrichment channel
+	 * 		is included in this model or not.
 	 */
 
 	CALLBACK_1ARG *yield_;
 	double entrainment;
+	unsigned short active;
 
 } CCSNE_YIELD_SPECS;
 
@@ -170,6 +181,8 @@ typedef struct sneia_yield_specs {
 	 * t_d: The minimum delay time on SNe Ia in Gyr.
 	 * entrainment: The fraction of the nucleosynthetic yield that is
 	 * 		captured and retained by the interstellar medium
+	 * active: A boolean int describing whether or not this enrichment channel
+	 * 		is included in this model or not.
 	 */
 
 	CALLBACK_1ARG *yield_;
@@ -178,12 +191,12 @@ typedef struct sneia_yield_specs {
 	double tau_ia;
 	double t_d;
 	double entrainment;
-
+	unsigned short active;
 
 } SNEIA_YIELD_SPECS;
 
 
-typedef struct arbitrary_channel {
+typedef struct channel {
 
 	/*
 	 * This struct holds the information and yield specifications for
@@ -194,6 +207,8 @@ typedef struct arbitrary_channel {
 	 * 		sampled.
 	 * rate: The delay-time distribution of the channel: its rate following the
 	 * 		formation of a simple stellar population.
+	 * entrainment: The f raction of the nucleosynthetic yield that is
+	 * 		captured and retained by the interstellar medium.
 	 */
 
 	CALLBACK_1ARG *yield_;
@@ -443,6 +458,8 @@ typedef struct singlezone {
 	 * n_elements: The number of elements to track
 	 * verbose: boolean int describing whether or not to print the time as the
 	 * 		simulation evolves
+	 * nthreads : The number of OpenMP threads to use, if it was linked at
+	 * 		compile time.
 	 * elements: The yield information for each element
 	 * ism: The time evolution information for the interstellar medium (ISM)
 	 * mdf: The stellar metallicity distribution function (MDF) information
@@ -460,6 +477,7 @@ typedef struct singlezone {
 	double Z_solar;
 	unsigned int n_elements;
 	unsigned short verbose;
+	unsigned short nthreads;
 	ELEMENT **elements;
 	ISM *ism;
 	MDF *mdf;
@@ -536,6 +554,10 @@ typedef struct multizone {
 	 * mig: The migration settings for this simulation
 	 * verbose: boolean int describing whether or not to print the time as the
 	 * 		simulation evolves
+	 * nthreads : The number of OpenMP threads to use while integrating the
+	 * 		model.
+	 * setup_nthreads : The number of OpenMP threads to use in setting up the
+	 * 		model's integration.
 	 */
 
 	char *name;
@@ -543,6 +565,8 @@ typedef struct multizone {
 	MIGRATION *mig;
 	unsigned short verbose;
 	unsigned short simple;
+	unsigned short nthreads;
+	unsigned short setup_nthreads;
 
 } MULTIZONE;
 

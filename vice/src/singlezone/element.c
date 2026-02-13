@@ -91,6 +91,7 @@ extern void update_element_mass(SINGLEZONE sz, ELEMENT *e) {
 	dm += (*(*e).ccsne_yields).entrainment * m_cc;
 	dm += (*(*e).sneia_yields).entrainment * m_ia;
 	dm += (*(*e).agb_grid).entrainment * m_agb;
+	dm += mdot_channels(sz, e) * sz.dt; /* also handles unretained mass */
 	
 	/*
 	 * Subsequent terms in the enrichment equation - star formation and

@@ -11,6 +11,7 @@ cdef extern from "../../src/objects.h":
 		CALLBACK_2ARG *custom_yield
 		INTERP_SCHEME_2D *interpolator
 		double entrainment
+		unsigned short active
 
 
 cdef extern from "../../src/agb.h":

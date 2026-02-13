@@ -32,6 +32,7 @@ else:
 	_VERSION_ERROR_()
 from libc.stdlib cimport malloc, free
 from libc.string cimport strlen
+from .._cutils cimport set_nthreads
 from .._cutils cimport set_string
 from .._cutils cimport copy_pylist
 from .._cutils cimport callback_current_state_setup
@@ -79,7 +80,9 @@ cdef class c_multizone:
 		name = "multizonemodel",
 		n_stars = 1,
 		simple = False,
-		verbose = False):
+		verbose = False,
+		nthreads = 1,
+		setup_nthreads = 1):
 
 		assert isinstance(n_zones, int), "Internal Error"
 		assert n_zones > 0, "Internal Error"
@@ -106,7 +109,9 @@ cdef class c_multizone:
 		name = "multizonemodel",
 		n_stars = 1,
 		simple = False,
-		verbose = False):
+		verbose = False,
+		nthreads = 1,
+		setup_nthreads = 1):
 
 		assert isinstance(n_zones, int), "Internal Error"
 		assert n_zones > 0, "Internal Error"
@@ -115,6 +120,8 @@ cdef class c_multizone:
 		self.n_tracers = n_stars
 		self.simple = simple
 		self.verbose = verbose
+		self.nthreads = nthreads
+		self.setup_nthreads = setup_nthreads
 
 	def __dealloc__(self):
 		_multizone.multizone_free(self._mz)
@@ -303,12 +310,58 @@ number of zones. Got: %d. Required: %d.""" % (value.gas.size, self.n_zones))
 			raise TypeError("""Attribute 'migration' must be of type \
 migration.specs. Got: %s""" % (type(value)))
 
+	@property
+	def nthreads(self):
+		# docstring in python version
+		return self._mz[0].nthreads
+
+	@nthreads.setter
+	def nthreads(self, value):
+		r"""
+		The number of OpenMP threads to use in model integration.
+
+		Allowed Types
+		=============
+		int
+
+		Allowed Values
+		==============
+		Positive definite
+		"""
+		# let the _cutils.set_nthreads function do the error handling
+		set_nthreads(value)
+		self._mz[0].nthreads = <unsigned short> value
+		for zone in self._zones: zone.nthreads = value
+
+	@property
+	def setup_nthreads(self):
+		# docstring in python version
+		return self._mz[0].setup_nthreads
+
+	@setup_nthreads.setter
+	def setup_nthreads(self, value):
+		r"""
+		The number of OpenMP threads to use in setting up the model integration.
+
+		Allowed Types
+		=============
+		int
+
+		Allowed Values
+		==============
+		Positive definite
+		"""
+		# let the _cutils.set_nthreads function do the error handling
+		set_nthreads(value)
+		self._mz[0].setup_nthreads = <unsigned short> value
+
 
 	def run(self, output_times, capture = False, overwrite = False,
 		pickle = True):
 		"""
 		See docstring in python version of this class.
 		"""
+		set_nthreads(self.setup_nthreads)
 		self.align_name_attributes()
 		self.prep(output_times)
 		cdef int enrichment
@@ -330,6 +383,7 @@ migration.specs. Got: %s""" % (type(value)))
 			_mlr.set_mlr_hashcode(_mlr._mlr_linker.__NAMES__[mlr.setting])
 
 			# just do it #nike
+			set_nthreads(self.nthreads)
 			enrichment = _multizone.multizone_evolve(self._mz)
 			if pickle: self.pickle()
 			self.free_mlr_data()
@@ -473,7 +527,7 @@ leaving only the results of the current simulation.\nOutput directory: \
 		"""
 		self._mz[0].mig[0].callback_gas_migration = self.migration.gas.callback
 		_migration.malloc_gas_migration(self._mz)
-		cdef long length = 10l + long(
+		cdef long length = 10l + <long> (
 			self._mz[0].zones[0].output_times[
 				self._mz[0].zones[0].n_outputs - 1l] /
 			self._mz[0].zones[0].dt

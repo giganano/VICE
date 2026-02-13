@@ -1,360 +1,517 @@
+#!/usr/bin/env python
+#
+# This file is part of the VICE package.
+# Copyright (C) 2019 James W. Johnson (giganano9@gmail.com)
+# License: MIT License. See LICENSE in top-level directory
+# at https://github.com/giganano/VICE.git.
 r"""
-VICE setup.py file
+This setup script should not be called directly. Instead, one should run
 
-If building VICE from source, first run ``make`` in this directory before
-running this file. This file should then be ran with the following rule:
+$ python -m pip install [--editable] .
 
-python setup.py build [-j N] install [--user] [-q --quiet] [distutils]
-	[ext=ext1] [ext=ext2] [ext=ext3] [...]
+which will invoke the ``pyproject.toml`` file in this directory, which in turn
+runs this script as needed.
 
-Install Options
----------------
--j N        : Run build in parallel across N cores
---user      : Install to ~/.local directory
--q --quiet  : Run the installation non-verbosely
-ext=        : Build and install specific extension
+How to Link OpenMP
+------------------
+A few simple steps can link VICE with the OpenMP library to enable
+multithreading. If you are a Mac OS user, you should first install OpenMP using
+Homebrew (see https://vice-astro.readthedocs.io/en/latest/install.html for
+guidance). Then, simply assign the environment variable
 
-Individual extensions should be rebuilt and reinstalled only after the entire
-body of VICE has been installed. This allows slight modifications to be
-installed with ease.
+$ export VICE_ENABLE_OPENMP=true
 
-After running this file, ``make clean`` will remove all of the Cython and
-compiler outputs from the source tree.
+and run the ``pip install`` command above as usual.
 
-Raises
-------
-* RuntimeError
-	- The name of the extension to reinstall is invalid
+For Developers
+--------------
+VICE developers can set an environment variable that allows individual
+extensions to be recompiled without recompiling the whole package. This
+approach can minimize compile time when working on modifications that get
+compiled into only one or a few Cython extensions, since recompiling all
+extensions can take several minutes. To specify these extensions, simply
+specify a comma-separated list of the extension names to be recompiled as an
+environment variable named ``VICE_SETUP_EXTENSIONS``. For example:
+
+$ export VICE_SETUP_EXTENSIONS=vice.core.ssp._ssp
+
+or
+
+$ export VICE_SETUP_EXTENSIONS=vice.core.ssp._ssp,vice.core._cutils
+
+To disable this behavior, simply remove the environment variable:
+
+$ unset VICE_SETUP_EXTENSIONS
+
+If the source file to a given extension is not found, a ``RuntimeError``
+will be raised.
 """
 
-# this version requires python >= 3.8.0
-MIN_PYTHON_VERSION = "3.8.0"
+from setuptools import setup, Extension
+from setuptools.command.build_ext import build_ext as _build_ext
+from subprocess import Popen, PIPE
+import json
 import sys
 import os
-if sys.version_info[:] < tuple(
-	[int(_) for _ in MIN_PYTHON_VERSION.split('.')]):
-	raise RuntimeError("""This version of VICE requires python >= %s. \
-Current version: %d.%d.%d.""" % (MIN_PYTHON_VERSION, sys.version_info.major,
-	sys.version_info.minor, sys.version_info.micro))
-try:
-	ModuleNotFoundError
-except NameError:
-	ModuleNotFoundError = ImportError
-from setuptools import setup, Extension
-
-# partial import
-import builtins
-builtins.__VICE_SETUP__ = True
-import vice
-
-# ---------------------------- PACKAGE METADATA ---------------------------- #
-package_name = "vice"
-repo_url = "https://github.com/giganano/VICE.git"
-pypi_url = "https://pypi.org/project/vice/"
-docs_url = "https://vice-astro.readthedocs.io/"
-bugs_url = "https://github.com/giganano/VICE/issues"
-
-CLASSIFIERS = """\
-Development Status :: 5 - Production/Stable
-Intended Audience :: Science/Research
-License :: OSI Approved :: MIT License
-Natural Language :: English
-Operating System :: MacOS
-Operating System :: POSIX
-Operating System :: Unix
-Programming Language :: C
-Programming Language :: Cython
-Programming Language :: Python
-Programming Language :: Python :: 3
-Programming Language :: Python :: 3.8
-Programming Language :: Python :: 3.9
-Programming Language :: Python :: 3.10
-Programming Language :: Python :: 3.11
-Programming Language :: Python :: 3.12
-Programming Language :: Python :: 3 :: Only
-Programming Language :: Python :: Implementation :: CPython
-Topic :: Scientific/Engineering
-Topic :: Scientific/Engineering :: Astronomy
-Topic :: Scientific/Engineering :: Physics
-"""
-
-# Version info
-# Note that only one of DEV, ALPHA, BETA, RC, and POST can be anything other
-# than None, in which case it must be an ``int``.
-# Changes to these numbers also require changes to ./docs/src/index.rst and
-# ./docs/src/cover.tex
-MAJOR			= 1
-MINOR			= 4
-MICRO			= 0
-DEV				= 0
-ALPHA			= None
-BETA			= None
-RC				= None
-POST			= None
-ISRELEASED		= False
-VERSION			= "%d.%d.%d" % (MAJOR, MINOR, MICRO)
-if DEV is not None:
-	assert isinstance(DEV, int), "Invalid version information"
-	VERSION += ".dev%d" % (DEV)
-elif ALPHA is not None:
-	assert isinstance(ALPHA, int), "Invalid version information"
-	VERSION += "a%d" % (ALPHA)
-elif BETA is not None:
-	assert isinstance(BETA, int), "Invalid version information"
-	VERSION += "b%d" % (BETA)
-elif RC is not None:
-	assert isinstance(RC, int), "Invalid version information"
-	VERSION += "rc%d" % (RC)
-elif POST is not None:
-	assert isinstance(POST, int), "Invalid version information"
-	VERSION += ".post%d" % (POST)
-else: pass
+if os.name != "posix": raise OSError("""\
+Sorry, Windows is not supported. Please install and run VICE from within the \
+Windows Subsystem for Linux.""")
 
 
-def find_extensions(path = './vice'):
+class discovery:
+
 	r"""
-	Finds each extension to install
-
-	.. tip:: Install a specific with the ext=<name of extension> command-line
-		argument at runtime.
-
-	Parameters
-	----------
-	path : str [default : './vice']
-		The path to the package directory
-
-	Returns
-	-------
-	exts : list
-		A list of ``Extension`` objects to build.
-
-	Raises
-	------
-	* RuntimeError
-		- Invalid extension (file not found)
+	A class that traverses the VICE source tree and compiles the required or
+	specified Cython extensions. The function ``build_extensions`` should be
+	called as the "main" method of this class.
 	"""
-	specified = list(filter(lambda x: x.startswith("ext="), sys.argv))
-	extensions = []
-	if len(specified):
-		# The user has specified a specific extension(s)
-		for i in specified:
-			ext = i.split('=')[1] # The name of the extension
-			src = "./%s.pyx" % (ext.replace('.', '/'))
-			if os.path.exists(src):
-				# The associated source files in the C library
-				src_files = [src] + vice.find_c_extensions(ext)
-				extensions.append(Extension(ext, src_files,
-					extra_compile_args = ["-Wno-unreachable-code"]
-				))
-				sys.argv.remove(i) # get rid of this for setup install
-			else:
-				raise RuntimeError("Source file for extension not found: %s" % (
-					ext))
-	else:
-		# User hasn't specified any extensions -> install all of them
-		for root, dirs, files in os.walk(path):
-			for i in files:
-				if i.endswith(".pyx"):
-					# The name of the extension
-					name = "%s.%s" % (root[2:].replace('/', '.'),
-						i.split('.')[0])
-					# The source files in the C library
-					src_files = ["%s/%s" % (root[2:], i)]
-					src_files += vice.find_c_extensions(name)
-					extensions.append(Extension(name, src_files,
-						extra_compile_args = ["-Wno-unreachable-code"]
-					))
-				else: continue
-	return extensions
+
+	@staticmethod
+	def build_extensions(path = './vice'):
+		r"""
+		Constructs each of the Cython ``Extension`` objects to be compiled.
+
+		Parameters
+		----------
+		path : str [default : './vice']
+			The path to the package directory
+
+		Returns
+		-------
+		exts : list
+			A list of ``Extension`` objects to build.
+
+		Raises
+		------
+		* RuntimeError
+			- Invalid extension (file not found)
+		"""
+		kwargs = {
+			"include_dirs": ["%s/src" % (path)],
+			"library_dirs": [],
+			"extra_compile_args": ["-Wno-unreachable-code"],
+			"extra_link_args": []
+		}
+		for root, dirs, files in os.walk(kwargs["include_dirs"][0]):
+			for d in dirs:
+				kwargs["include_dirs"].append("%s/%s" % (root, d))
+		if openmp.link_openmp():
+			# more compiler flags necessary if enabling multithreading
+			compile_args, link_args = openmp.compiler_flags()
+			kwargs["extra_compile_args"].extend(compile_args)
+			kwargs["extra_link_args"].extend(link_args)
+			if openmp.compiler().startswith("clang"):
+				# openmp.compiler() finds the necessary library and include
+				# directory directly for clang. This is not necessary for gcc
+				# because it comes with OpenMP comes with OpenMP linked out of
+				# the box.
+				libomp_include, libomp_library = openmp.find_openmp_clang()
+				kwargs["include_dirs"].append(libomp_include)
+				kwargs["library_dirs"].append(libomp_library)
+			else: pass
+		else: pass
+
+		extensions = []
+		names = discovery.get_extensions(path = path)
+		for name in names:
+			srcfile = "%s.pyx" % (name.replace('.', '/'))
+			extensions.append(
+				Extension(name, [srcfile] + discovery.get_c_srcfiles(
+					name, path = path), **kwargs)
+			)
+		return extensions
 
 
-def find_packages(path = './vice'):
-	r"""
-	Finds each subpackage given the presence of an __init__.py file
+	@staticmethod
+	def get_extensions(path = "./vice"):
+		r"""
+		Determine the names of the extensions to compile.
 
-	Parameters
-	----------
-	path : str [default : './vice']
-		The path to the package directory
-	
-	Returns
-	-------
-	pkgs : list
-		The names of all sub-packages, determined from the names of
-		directories containing an __init__.py file.
-	"""
-	packages = []
-	for root, dirs, files in os.walk(path):
-		if "__init__.py" in files:
-			packages.append(root[2:].replace('/', '.'))
+		.. tip::
+
+			You can specify specific packages to install by setting the
+			environment variable ``VICE_SETUP_EXTENSIONS`` to a comma-separated
+			list of the extension names to be recompiled. All others will be
+			skipped.
+
+		Parameters
+		----------
+		path : ``str`` [default : "./vice"]
+			The path to the package directory.
+
+		Returns
+		-------
+		extensions : ``list``
+			All of the names of individual Cython extensions, as a list of
+			strings.
+
+		Raises
+		------
+		* RuntimeError
+			- The user specified an extension to be compiled whose source
+			  file was not found.
+		"""
+		env_variable = "VICE_SETUP_EXTENSIONS"
+		if env_variable in os.environ.keys():
+			extensions = os.environ[env_variable].split(',')
+			for ext in extensions:
+				srcfilename = "%s.pyx" % (ext.replace('.', '/'))
+				if not os.path.exists(srcfilename): raise RuntimeError("""\
+Source file not found for extension: %s""" % (ext))
 		else:
-			continue
-	return packages
+			extensions = []
+			for root, dirs, files in os.walk(path):
+				for f in files:
+					if f.endswith(".pyx"):
+						name = "%s.%s" % (root[2:].replace('/', '.'),
+							f.split('.')[0])
+						extensions.append(name)
+					else: pass
+		return extensions
 
 
-def find_package_data():
-	r"""
-	Finds the data files to install based on a given extension
+	@staticmethod
+	def get_c_srcfiles(name, path = "./vice"):
+		r"""
+		Find the paths to the C files required for the specified extension
+		based on the mapping in vice/_build_utils/c_extensions.json.
 
-	Extensions
-	----------
-	.dat : files holding built-in data
-	"""
-	packages = find_packages()
-	data = {}
-	data_extensions = [".dat"]
-	for i in packages:
-		data[i] = []
-		for j in os.listdir(i.replace('.', '/')):
-			# look at each files extension
-			for k in data_extensions:
-				if j.endswith(k):
-					data[i].append(j)
+		Parameters
+		----------
+		name : ``str``
+			The name of the extension to compile.
+
+		Returns
+		-------
+		ext : ``list``
+			A list of the relative paths to all C extensions.
+
+		Notes
+		-----
+		If the extension does not have an entry in the c_extensions.json file,
+		VICE will compile it along with ALL C files in it's C library, omitting
+		those under a directory named "tests" if "tests" is not in the name of
+		the extension itself.
+		"""
+		extensions = []
+		mapping = json.load(
+			open("%s/_build_utils/c_extensions.json" % (path), 'r'))
+		if name in mapping.keys():
+			for item in mapping[name]:
+				if os.path.exists(item) and item.endswith(".c"):
+					extensions.append(item)
+				elif os.path.isdir(item):
+					for i in os.listdir(item):
+						if i.endswith(".c"): extensions.append("%s/%s" % (
+							item, i))
 				else:
-					continue
-	return data
+					raise SystemError("""Internal Error. Invalid C source code \
+listing for extension %s: %s""" % (name, item))
+		else:
+			csrctree = "%s/src" % (path)
+			for root, dirs, files in os.walk(csrctree):
+				for i in files:
+					if i.endswith(".c"):
+						if "tests" in root and "tests" not in name:
+							continue
+						else:
+							extensions.append(
+								("%s/%s" % (root, i)).replace(os.getcwd(), '.')
+							)
+					else: pass
+		return extensions
 
 
-def write_version_info(filename = "./vice/version_breakdown.py"):
+	@staticmethod
+	def packages(path = "./vice"):
+		r"""
+		Finds each subpackage given the presence of an __init__.py file
+
+		Parameters
+		----------
+		path : str [default : './vice']
+			The path to the package directory
+
+		Returns
+		-------
+		pkgs : list
+			The names of all sub-packages, determined from the names of
+			directories containing an __init__.py file.
+		"""
+		packages = []
+		for root, dirs, files in os.walk(path):
+			if "__init__.py" in files:
+				packages.append(root[2:].replace('/', '.'))
+			else:
+				continue
+		return packages
+
+
+	@staticmethod
+	def data(path = "./vice"):
+		r"""
+		Finds the data files to install based on a given extension
+
+		Extensions
+		----------
+		.dat : files holding built-in data
+		"""
+		packages = discovery.packages(path = path)
+		data = {}
+		data_extensions = [".dat"]
+		for i in packages:
+			data[i] = []
+			for j in os.listdir(i.replace('.', '/')):
+				# look at each files extension
+				for k in data_extensions:
+					if j.endswith(k):
+						data[i].append(j)
+					else:
+						continue
+		return data
+
+
+class openmp:
+
 	r"""
-	Writes the version info to disk within the source tree
-
-	Parameters
-	----------
-	filename : str [default : "./vice/version_breakdown.py"]
-		The file to write the version info to.
-
-	.. note:: vice/version.py depends on the file produced by this function.
+	A class that links VICE with the OpenMP library at compile time, if
+	requested by the user.
 	"""
-	cnt = """\
-# This file is generated from vice setup.py %(version)s
 
-MAJOR = %(major)d
-MINOR = %(minor)d
-MICRO = %(micro)d
-DEV = %(dev)s
-ALPHA = %(alpha)s
-BETA = %(beta)s
-RC = %(rc)s
-POST = %(post)s
-ISRELEASED = %(isreleased)s
-MIN_PYTHON_VERSION = \"%(minversion)s\"
-"""
-	with open(filename, 'w') as f:
-		try:
-			f.write(cnt % {
-					"version":		VERSION,
-					"major":		MAJOR,
-					"minor":		MINOR,
-					"micro":		MICRO,
-					"dev":			str(DEV),
-					"alpha":		str(ALPHA),
-					"beta":			str(BETA),
-					"rc":			str(RC),
-					"post":			str(POST),
-					"isreleased":	str(ISRELEASED),
-					"minversion":	MIN_PYTHON_VERSION
-				})
-		finally:
-			f.close()
+	_SUPPORTED_COMPILERS_ = {"gcc", "clang"}
+	_CLANG_OPENMP_COMPILE_FLAGS_ = ["-Xpreprocessor", "-fopenmp"]
+	_CLANG_OPENMP_LINK_FLAGS_ = ["-Xpreprocessor", "fopenmp", "-lomp"]
+	_GCC_OPENMP_COMPILE_FLAGS_ = ["-fopenmp"]
+	_GCC_OPENMP_LINK_FLAGS_ = ["-fopenmp"]
+
+	@staticmethod
+	def compiler_flags():
+		r"""
+		Determine the flags to pass to the C compiler for both compiling and
+		linking. Returns the compiler and linker args, in that order, as lists
+		of strings, which will be empty in the event that multithreading is not
+		to be enabled.
+		"""
+		compile_args = []
+		link_args = []
+		if openmp.link_openmp():
+			compiler = openmp.compiler()
+			if compiler.startswith("clang"):
+				compile_args.extend(openmp._CLANG_OPENMP_COMPILE_FLAGS_)
+				link_args.extend(openmp._CLANG_OPENMP_LINK_FLAGS_)
+			else:
+				compile_args.extend(openmp._GCC_OPENMP_COMPILE_FLAGS_)
+				link_args.extend(openmp._GCC_OPENMP_LINK_FLAGS_)
+		else: pass
+		return [compile_args, link_args]
 
 
-def set_path_variable(filename = "~/.bash_profile"):
-	r"""
-	Permanently adds ~/.local/bin/ to the user's $PATH for local
-	installations (i.e. with [--user] directive).
+	@staticmethod
+	def compiler():
+		r"""
+		Determine the compiler to be used. Responds to a user specification
+		through the environment variable ``CC`` and assumes the system default
+		(i.e., clang for Mac OS, gcc for Linux) if no such environment variable
+		is found. Returns the appropriate compile name as a string.
+		"""
+		if "CC" in os.environ.keys():
+			check = openmp.check_compiler(os.environ["CC"])
+			if check:
+				return os.environ["CC"]
+			elif check is None:
+				raise RuntimeError("""\
+Compiler from environment variable \"CC\" is not recognized: %s. \
+Must be either gcc or clang.""" % (os.environ["CC"]))
+			else:
+				raise RuntimeError("""\
+Unsupported compiler from environment variable \"CC\": %s. \
+Must be either gcc or clang.""" % (os.environ["CC"]))
+		else:
+			# assume system default
+			if sys.platform == "darwin":
+				return "clang"
+			else:
+				return "gcc"
 
-	Parameters
-	----------
-	filename : str [default : "~/.bash_profile"]
-		The filename to put the PATH modification in.
-	"""
-	if ("--user" in sys.argv and "%s/.local/bin" % (os.environ["HOME"]) not in
-		os.environ["PATH"].split(':')):
-		cnt = """\
-
-# This line added by vice setup.py %(version)s
-export PATH=$HOME/.local/bin:$PATH
-
-"""
-		cmd = "echo \'%s\' >> %s" % (cnt % {"version": VERSION}, filename)
-		os.system(cmd)
-	else:
-		pass
-
-
-def setup_package():
-	r"""
-	Build and install VICE.
-	"""
-	src_path = os.path.dirname(os.path.abspath(sys.argv[0]))
-	old_path = os.getcwd()
-	os.chdir(src_path)
-	sys.path.insert(0, src_path)
-
-	# directories with .h header files, req'd by setup
-	include_dirs = []
-	for root, dirs, files in os.walk("./vice/src"):
-		if "__pycache__" not in root: include_dirs.append(root)
-
-	# Keywords to the setup() call
-	metadata = dict(
-		name = package_name,
-		version = VERSION,
-		author = "James W. Johnson",
-		author_email = "giganano9@gmail.com",
-		maintainer = "James W. Johnson",
-		maintainer_email = "giganano9@gmail.com",
-		url = repo_url,
-		project_urls = {
-			"Bug Tracker": bugs_url,
-			"Documentation": docs_url,
-			"Source Code": repo_url
-		},
-		description = "Galactic Chemical Evolution Integrator",
-		long_description = vice._LONG_DESCRIPTION_,
-		classifiers = CLASSIFIERS.split('\n'),
-		license = "MIT",
-		platforms = ["Linux", "Mac OS X", "Unix"],
-		keywords = ["galaxies", "simulations", "abundances"],
-		provides = [package_name],
-		packages = find_packages(),
-		package_data = find_package_data(),
-		scripts = ["bin/%s" % (i) for i in os.listdir("./bin/")],
-		ext_modules = find_extensions(),
-		include_dirs = include_dirs,
-		setup_requires = [ # versions reflected in .github/workflows/ci.yml
-			"setuptools>=18.0", # automatically handles Cython extensions
-			"Cython>=3.0"
-		],
-		python_requires=">=3.8,<4",
-		zip_safe = False,
-		verbose = "-q" not in sys.argv and "--quiet" not in sys.argv
-	)
-
-	try:
-		write_version_info() 	# Write the version file
-		setup(**metadata)
-		set_path_variable()
-	finally:
-		del sys.path[0]
-		os.chdir(old_path)
-	return
+	@staticmethod
+	def link_openmp():
+		r"""
+		Determine if the current installation is to be linked with OpenMP or
+		not based on the presence and value of the environment variable
+		``VICE_ENABLE_OPENMP``. Returns the corresponding boolean value.
+		"""
+		return ("VICE_ENABLE_OPENMP" in os.environ.keys() and
+			os.environ["VICE_ENABLE_OPENMP"].lower() == "true")
 
 
-if __name__ == "__main__":
-	setup_package()
-	del builtins.__VICE_SETUP__
+	@staticmethod
+	def check_compiler(compiler):
+		r"""
+		Determine which compiler was specified and whether or not it is
+		supported.
 
-	# tell them if dill isn't installed if they're doing a source install
-	try:
-		import dill
-	except (ImportError, ModuleNotFoundError):
-		print("""\
-===============================================================================
-Package 'dill' not found. This package is required for encoding functional
-attributes with VICE outputs. It is recommended that VICE users install this
-package to make use of these features. This can be done via 'pip install dill'.
-===============================================================================\
-""")
+		Parameters
+		----------
+		compiler : ``str``
+			The compiler that the user has specified.
+
+		Returns
+		-------
+		allowed : ``bool``
+			``True`` if the compiler is supported and installation can proceed
+			and ``False`` otherwise. If the specified compiler is recognized
+			but not found on the user's system, or some error arises in trying
+			to call on it with the ``which`` BASH command or with the
+			``--version`` flag, then a value of ``None`` will be returned.
+		"""
+		assert isinstance(compiler, str), "Internal Error."
+		allowed_compiler = False
+		for test in openmp._SUPPORTED_COMPILERS_:
+			# use startswith as opposed to == to catch, e.g., "gcc-10"
+			allowed_compiler |= compiler.startswith(test)
+		if not allowed_compiler: return False
+		kwargs = {
+			"stdout": PIPE,
+			"stderr": PIPE,
+			"shell": True,
+			"text": True
+		}
+
+		# first check if the system even recognizes the compiler
+		with Popen("which %s" % (compiler), **kwargs) as proc:
+			out, err = proc.communicate()
+			if sys.platform == "darwin":
+				if out == "" and err == "": return None
+			else:
+				if "no %s" % (compiler) in err: return None
+
+		# Now check that ``compiler --version`` runs properly and has either
+		# "gcc" or "clang" along with a version number.
+		def is_version_number(word):
+			r"""
+			Determine if a string could be interpreted as a version number of
+			a stable release of a compiler by determining if it is composed of
+			digits separated by decimals. Returns the corresponding boolean
+			value.
+			"""
+			assert isinstance(word, str), "Internal Error."
+			if '.' in word:
+				_is_version_number = True
+				for item in word.split('.'): _is_version_number &= item.isdigit()
+				return _is_version_number
+			else:
+				return False
+
+		with Popen("%s --version" % (compiler), **kwargs) as proc:
+			out, err = proc.communicate()
+			# should catch all typos that didn't already cause an error
+			if err != "" and "command not found" in err: return None
+			# should catch anything that isn't a command-line entry
+			if err != "" and "illegal" in err: return None
+
+			recognized = False
+			has_version_number = False
+			for word in out.split():
+				for test in openmp._SUPPORTED_COMPILERS_:
+					if word.startswith(test):
+						compiler = word
+						recognized = True
+					else: pass
+					has_version_number &= is_version_number(word)
+			return recognized and has_version_number
+
+	@staticmethod
+	def find_openmp_clang():
+		r"""
+		Determine the path to the OpenMP library, header files, and linker
+		file on Mac OS using Homebrew.
+
+		Returns
+		-------
+		libomp_include_dir : ``str``
+			The absolute path to the directory containing the omp.h header file.
+		libomp_library_dir: ``str``
+			The absolute path to the directory containing the libomp.dylib
+			library for linking at compile time.
+
+		Notes
+		-----
+		This function first runs ``brew`` to determine if Homebrew is installed.
+		Users who have not done so will be directed accordingly. It then runs
+		``brew list libomp`` to list the files associated with OpenMP, if any.
+		If the necessary files are found, their directories are returned as
+		strings. If the OpenMP files are not found, then the user is directed
+		to run ``brew install libomp`` or ``brew reinstall libomp`` before
+		reattempting their VICE installation.
+		"""
+		kwargs = {
+			"stdout": PIPE,
+			"stderr": PIPE,
+			"shell": True,
+			"text": True
+		}
+
+		with Popen("brew", **kwargs) as proc:
+			out, err = proc.communicate()
+			if err != "" and "command not found" in err: raise RuntimeError("""\
+It appears that Homebrew is either not installed or not on your PATH. Please \
+install Homebrew by following the instructions at https://brew.sh/ and then \
+install OpenMP by running
+
+$ brew install libomp
+
+from your Unix command line before reattempting your VICE installation.""")
+
+		with Popen("brew list libomp", **kwargs) as proc:
+			msg = """\
+Homebrew is installed, but the OpenMP header and library files were not found. \
+To install OpenMP, please run
+
+$ brew install libomp
+
+from your Unix command line. If you have installed OpenMP, try reinstalling it \
+by running
+
+$ brew reinstall libomp
+
+and then reattempt your VICE installation. If this does not solve your issue, \
+then you may need to update to a newer version of Homebrew (see \
+https://brew.sh/). If you continue to have trouble linking VICE with OpenMP, \
+then please open an issue at https://github.com/giganano/VICE/issues."""
+
+			out, err = proc.communicate()
+			if err.startswith("Error:"):
+				raise RuntimeError(msg)
+			else:
+				out = out.split("\n")
+				if (any([_.endswith("omp.h") for _ in out]) and
+					any([_.endswith("libomp.dylib") for _ in out])):
+					# found header and library files
+					idx = -1
+					for i in range(len(out)):
+						if out[i].endswith("omp.h"):
+							idx = i
+							break
+						else: continue
+					if idx == -1: raise RuntimeError(msg)
+					libomp_include_dir = os.sep.join(
+						out[idx].split(os.sep)[:-1])
+					idx = -1
+					for i in range(len(out)):
+						if out[i].endswith("libomp.dylib"):
+							idx = i
+							break
+						else: continue
+					if idx == -1: raise RuntimeError(msg)
+					libomp_library_dir = os.sep.join(
+						out[idx].split(os.sep)[:-1])
+					return [libomp_include_dir, libomp_library_dir]
+				else:
+					return RuntimeError(msg)
+
+
+if __name__ == "__main__": setup(
+	ext_modules = discovery.build_extensions(),
+	packages = discovery.packages(),
+	package_data = discovery.data())
 

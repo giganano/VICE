@@ -64,6 +64,15 @@ class singlezone:
 
 		.. versionadded:: 1.1.0
 
+	nthreads : ``int``
+		The number of OpenMP threads to use in the integration. This requires
+		linking to the OpenMP library at compile-time when installing VICE.
+		Without this step, multithreaded calculations are unavailable. To
+		enable this functionality, follow the steps described under "Enable
+		Multithreading" in VICE's :red:`installation instructions <install>`.
+
+		.. versionadded:: 1.X.0
+
 	elements : ``tuple`` [default : ("fe", "sr", "o")]
 		A tuple of strings holding the symbols of the elements to be
 		simulated.
@@ -220,6 +229,7 @@ class singlezone:
 			func -----------> <function _DEFAULT_FUNC_ at 0x112180ae8>
 			mode -----------> ifr
 			verbose --------> False
+			nthreads -------> 1
 			elements -------> ('fe', 'sr', 'o')
 			IMF ------------> kroupa
 			eta ------------> 2.5
@@ -269,7 +279,9 @@ class singlezone:
 			"func": 			self.func,
 			"mode":				self.mode,
 			"verbose": 			self.verbose,
+			"nthreads": 		self.nthreads,
 			"elements":			self.elements,
+			"channels":			self.channels,
 			"IMF": 				self.IMF,
 			"eta": 				self.eta,
 			"enhancement":		self.enhancement,
@@ -418,6 +430,7 @@ class singlezone:
 				func -----------> <function _DEFAULT_FUNC_ at 0x10d0c8e18>
 				mode -----------> ifr
 				verbose --------> False
+				nthreads -------> 1
 				elements -------> ('fe', 'sr', 'o')
 				IMF ------------> kroupa
 				eta ------------> 2.5
@@ -672,6 +685,27 @@ ran.""" % (i, j), UserWarning)
 		self.__c_version.verbose = value
 
 	@property
+	def nthreads(self):
+		r"""
+		Type : ``int``
+
+		Default : 1
+
+		.. versionadded :: 1.X.0
+
+		The number of OpenMP threads to use in this calculation. This requires
+		linking VICE to the OpenMP library at compile time when installing.
+		Without this step, multithreaded calculations are unavailable. To
+		enable this functionality, follow the steps described under "Enable
+		Multithreading" in VICE's :ref:`installation instructions <install>`.
+		"""
+		return self.__c_version.nthreads
+
+	@nthreads.setter
+	def nthreads(self, value):
+		self.__c_version.nthreads = value
+
+	@property
 	def elements(self):
 		r"""
 		Type : tuple [elements of type str [case-insensitive]]
@@ -729,6 +763,26 @@ ran.""" % (i, j), UserWarning)
 	@elements.setter
 	def elements(self, value):
 		self.__c_version.elements = value
+
+	@property
+	def channels(self):
+		r"""
+		Type : ``set``
+
+		Default : ``{"agb", "ccsne", "sneia"}``
+
+		.. versionadded:: 1.X.0
+
+		The enrichment channels to be included in this model. Omitting a given
+		channel is functionally equivalent to setting all of the yields from
+		that channel to zero. However, omitting it entirely eliminates the
+		computational overhead.
+		"""
+		return self.__c_version.channels
+
+	@channels.setter
+	def channels(self, value):
+		self.__c_version.channels = value
 
 	@property
 	def IMF(self):

@@ -13,5 +13,5 @@ cdef extern from "../../src/objects.h":
 cdef extern from "../../src/channel.h":
 	CHANNEL *channel_initialize()
 	void channel_free(CHANNEL *ch)
-	void normalize_rates(ELEMENT *e, unsigned long length)
+	void normalize_channel_rates(ELEMENT *e, unsigned long length)
 
