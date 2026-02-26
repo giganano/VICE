@@ -31,8 +31,18 @@
  */
 extern double mass_recycled(SINGLEZONE sz, ELEMENT *e) {
 
+	/*
+	 * Change Note: version 1.X.0
+	 *
+	 * From this version forward, there is an additional if statement at the
+	 * beginning to check if the element is destroyed by stars. If so, it returns
+	 * a value of zero before any of the remaining conditional blocks might run.
+	 */
+
+	if (e != NULL && (*e).destroyed_by_stars) {
+		return 0;
 	/* ----------------------- Continuous recycling ----------------------- */
-	if ((*sz.ssp).continuous) {
+	} else if ((*sz.ssp).continuous) {
 		unsigned long i;
 		double mass = 0;
 		/* From each previous timestep, there's a dCRF contribution */

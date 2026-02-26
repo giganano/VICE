@@ -17,6 +17,8 @@ cdef extern from "../../src/objects.h":
 		SNEIA_YIELD_SPECS *sneia_yields
 		CHANNEL **channels
 		unsigned short n_channels
+		unsigned short nonmetal
+		unsigned short destroyed_by_stars
 		char *symbol
 		double *Z
 		double *Zin

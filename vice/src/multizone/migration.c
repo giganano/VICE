@@ -316,7 +316,7 @@ static unsigned short gas_migration_from_callbacks(MULTIZONE *mz) {
  *
  * header: migration.h
  */
-extern double *migration_gas_changes_by_zone(MULTIZONE mz) {
+extern double *migration_changes_by_zone(MULTIZONE mz, int index) {
 
 	/*
 	 * Change Note: version X.Y.Z
@@ -328,7 +328,7 @@ extern double *migration_gas_changes_by_zone(MULTIZONE mz) {
 	 * sources and subtracts the sinks, as it should.
 	 */
 
-	double **changes = get_changes(mz, -1);
+	double **changes = get_changes(mz, index);
 	double *deltas = (double *) malloc ((*mz.mig).n_zones * sizeof(double));
 	unsigned int i;
 	for (i = 0u; i < (*mz.mig).n_zones; i++) {

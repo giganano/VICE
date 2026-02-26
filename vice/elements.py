@@ -75,7 +75,7 @@ through VICE's namespace. For example:
 from __future__ import absolute_import
 
 # __all__ extended at the end of this module out of necessity
-__all__ = ["recognized", "test"]
+__all__ = ["destroyed_by_stars", "nonmetals", "recognized", "test"]
 
 from ._globals import _RECOGNIZED_ELEMENTS_
 from ._globals import _VERSION_ERROR_
@@ -176,6 +176,118 @@ _FULL_NAMES_ = {
 	"pb":		"lead",
 	"bi": 		"bismuth"
 }
+
+
+def nonmetals(*args):
+	r"""
+	Read or assign the current global setting regarding which elements are to
+	be treated as non-metals.
+
+	Parameters
+	----------
+	args : ``str``
+		Symbols of elements that are to be modeled as non-metals. If none are
+		specified, the current list of elements that will be modeled as non-metals
+		is returned.
+
+	Returns
+	-------
+	elements : ``list``
+		A list of ``str`` objects denoting the symbols of elements that will be
+		modeled by VICE as non-metals under the current setting. Only returned if
+		``*args`` is empty.
+
+	Notes
+	-----
+	There are two key aspects to being a "non-metal" that influence how VICE
+	models chemical enrichment.
+
+		1. Elements tagged as "non-metals" are omitted in determining the
+		overall metallicity.
+
+		2. Elements tagged as "non-metals" are always ejected from the ISM at
+		their current abundance by mass. They are unaffected by enhancement factors.
+
+	Example Code
+	------------
+	>>> import vice
+	>>> vice.elements.nonmetals() # the current setting
+	['he']
+	>>> vice.elements.nonmetals("he", "au") # include gold as a non-metal
+	>>> vice.elements.nonmetals()
+	['he', 'au']
+	>>> vice.elements.nonmetals("he") # back to the original setting
+	>>> vice.elements.nonmetals()
+	['he']
+	"""
+	if len(args):
+		for item in args:
+			if isinstance(item, strcomp):
+				if item not in recognized:
+					raise ValueError("Unrecognized element: %s" % (item))
+				else: pass
+			else:
+				raise TypeError("Element must be of type str. Got: %s" % (
+					type(item)))
+		new_setting = "%s" % (args[0].lower())
+		for item in args[1:]: new_setting += ",%s" % (item.lower())
+		os.environ["VICE_NONMETALS"] = new_setting
+	else:
+		return os.environ["VICE_NONMETALS"].split(',')
+
+
+def destroyed_by_stars(*args):
+	r"""
+	Read or assign the current global setting regarding which elements are
+	destroyed by stars. VICE will shut off the recycling of these elements from
+	stellar populations, zero-ing out this component of their enrichment rates.
+
+	Parameters
+	----------
+	args : ``str`` or ``None``
+		Symbols of elements that are to be modeled as destroyed by stars. If none
+		are specified, then the current list of elements that will be modeled as
+		such is returned. If a single ``None`` value is specified, then no elements
+		will be modeled as such.
+
+	Returned
+	--------
+	elements : ``list``
+		A list of ``str`` objects denoting the symbols of elements that will be
+		modeled by VICE with no recycling from stars. Only returned if ``*args`` is
+		empty.
+
+	Example Code
+	------------
+	>>> import vice
+	>>> vice.elements.destroyed_by_stars() # the current setting
+	[]
+	>>> vice.elements.destroyed_by_stars("au", "ne") # include gold and neon
+	>>> vice.elements.destroyed_by_stars()
+	["au", "ne"]
+	>>> vice.elements.destroyed_by_stars(None) # no elements destroyed by stars
+	>>> vice.elements.destroyed_by_stars()
+	[]
+	"""
+	if len(args) == 1 and args[0] == None:
+		os.environ["VICE_DESTROYED_BY_STARS"] = ""
+	elif len(args):
+		for item in args:
+			if isinstance(item, strcomp):
+				if item not in recognized:
+					raise ValueError("Unrecognized element: %s" % (item))
+				else: pass
+			else:
+				raise TypeError("Element must be of type str. Got: %s" % (
+					type(item)))
+		new_setting = "%s" % (args[0].lower())
+		for item in args[1:]: new_setting += ",%s" % (item.lower())
+		os.environ["VICE_DESTROYED_BY_STARS"] = new_setting
+	else:
+		if len(os.environ["VICE_DESTROYED_BY_STARS"]) == 0:
+			return []
+		else:
+			return os.environ["VICE_DESTROYED_BY_STARS"].split(',')
 
 
 # Give vice.elements.recognized a special docstring for documentation
@@ -727,6 +839,8 @@ class yields:
 
 
 recognized = _recognized(_RECOGNIZED_ELEMENTS_)
+destroyed_by_stars(None)
+nonmetals("he")
 
 
 __all__.extend([i.capitalize() for i in recognized])

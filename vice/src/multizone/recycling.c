@@ -35,6 +35,13 @@
 extern double *recycled_mass(MULTIZONE mz, unsigned int index) {
 
 	/*
+	 * Change Note: version 1.X.0
+	 *
+	 * See the corresponding change note in src/singlezone/recycling.c as
+	 * the same changes have been incorporated here.
+	 */
+
+	/*
 	 * Look at each tracer particle and allow each that was born in a zone
 	 * with continuous recycling to enrich its current zone via continuous
 	 * recycling, regardless of the current zone's recycling prescription.
@@ -46,6 +53,7 @@ extern double *recycled_mass(MULTIZONE mz, unsigned int index) {
 	unsigned long i;
 	double *recycled = (double *) malloc ((*mz.mig).n_zones * sizeof(double));
 	for (i = 0ul; i < (*mz.mig).n_zones; i++) recycled[i] = 0;
+	if ((*(*mz.zones[0]).elements[index]).destroyed_by_stars) return recycled;
 	for (i = 0ul; i < (*mz.mig).tracer_count; i++) {
 		TRACER *t = mz.mig -> tracers[i];
 		SSP *ssp = mz.zones[(*t).zone_origin] -> ssp;

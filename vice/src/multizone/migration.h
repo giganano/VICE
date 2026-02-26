@@ -28,6 +28,8 @@ extern void migrate(MULTIZONE *mz);
  * Parameters
  * ==========
  * mz:		The multizone object for the current simulation.
+ * index: 	The index of the element to migrate between zones
+ * 			-1 for the gas reservoir itself
  *
  * Returns
  * =======
@@ -36,7 +38,7 @@ extern void migrate(MULTIZONE *mz);
  *
  * source: migration.c
  */
-extern double *migration_gas_changes_by_zone(MULTIZONE mz);
+extern double *migration_changes_by_zone(MULTIZONE mz, int index);
 
 #if 0
 /*

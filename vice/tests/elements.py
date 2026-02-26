@@ -11,6 +11,7 @@ from ..testing import unittest
 from .. import elements
 import numbers
 import sys
+import os
 if sys.version_info[:2] == (2, 7):
 	strcomp = basestring
 elif sys.version_info[:2] >= (3, 5):
@@ -27,6 +28,8 @@ def test():
 	return ["vice.elements",
 		[
 			test_element(),
+			test_destroyed_by_stars(),
+			test_nonmetals(),
 			test_yields()
 		]
 	]
@@ -58,6 +61,54 @@ def test_element():
 			return False
 		return True
 	return ["vice.elements.element", test]
+
+
+@unittest
+def test_destroyed_by_stars():
+	r"""
+	vice.elements.destroyed_by_stars unittest
+	"""
+	def test():
+		try:
+			assert os.environ["VICE_DESTROYED_BY_STARS"] == ""
+			assert elements.destroyed_by_stars() == []
+			elements.destroyed_by_stars("au")
+			assert os.environ["VICE_DESTROYED_BY_STARS"] == "au"
+			assert elements.destroyed_by_stars() == ["au"]
+			elements.destroyed_by_stars("au", "ag", "ne")
+			assert os.environ["VICE_DESTROYED_BY_STARS"] == "au,ag,ne"
+			assert elements.destroyed_by_stars() == ["au", "ag", "ne"]
+			elements.destroyed_by_stars(None)
+			assert os.environ["VICE_DESTROYED_BY_STARS"] == ""
+			assert elements.destroyed_by_stars() == []
+		except:
+			return False
+		return True
+	return ["vice.elements.destroyed_by_stars", test]
+
+
+@unittest
+def test_nonmetals():
+	r"""
+	vice.elements.nonmetals unittest
+	"""
+	def test():
+		try:
+			assert os.environ["VICE_NONMETALS"] == "he"
+			assert elements.nonmetals() == ["he"]
+			elements.nonmetals("he", "au", "ne")
+			assert os.environ["VICE_NONMETALS"] == "he,au,ne"
+			assert elements.nonmetals() == ["he", "au", "ne"]
+			elements.nonmetals("he", "au")
+			assert os.environ["VICE_NONMETALS"] == "he,au"
+			assert elements.nonmetals() == ["he", "au"]
+			elements.nonmetals("he")
+			assert os.environ["VICE_NONMETALS"] == "he"
+			assert elements.nonmetals() == ["he"]
+		except:
+			return False
+		return True
+	return ["vice.elements.nonmetals", test]
 
 
 @unittest

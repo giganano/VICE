@@ -104,13 +104,13 @@ extern void update_elements(MULTIZONE *mz) {
 			double Z = (*e).mass / (*sz.ism).mass;
 			dm += recycled[j];
 			dm -= (*sz.ism).star_formation_rate * sz.dt * Z;
-			if (strcmp((*e).symbol, "he")) {
+			if (!(*e).nonmetal) {
 				dm -= (
 					(*sz.ism).enh[sz.timestep] * get_outflow_rate(sz) *
 					sz.dt * Z
 				);
 			} else {
-				/* Don't eject helium at an enhanced abundance */
+				/* Don't eject nonmetals at an enhanced abundance */
 				dm -= get_outflow_rate(sz) * sz.dt * Z;
 			}
 
