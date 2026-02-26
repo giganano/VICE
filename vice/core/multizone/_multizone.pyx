@@ -9,6 +9,7 @@ from ...toolkit.hydrodisk import hydrodiskstars
 from ..dataframe._builtin_dataframes import atomic_number
 from ..dataframe._builtin_dataframes import solar_z
 from ..dataframe._builtin_dataframes import sources
+from ..callback import callback_kwargs_fraction
 from ..outputs import output
 from ...yields import agb
 from ...yields import ccsne
@@ -34,6 +35,7 @@ from libc.string cimport strlen
 from .._cutils cimport set_nthreads
 from .._cutils cimport set_string
 from .._cutils cimport copy_pylist
+from .._cutils cimport callback_current_state_setup
 from ..objects cimport _singlezone
 from ..objects._tracer cimport TRACER
 from .. cimport _mlr
@@ -396,6 +398,12 @@ migration.specs. Got: %s""" % (type(value)))
 			canceled = True
 
 		self.dealign_name_attributes()
+		for i in range(self._mz[0].mig[0].n_zones):
+			for j in range(self._mz[0].mig[0].n_zones):
+				if isinstance(self.migration.gas[i][j],
+					callback_kwargs_fraction):
+					self.migration.gas[i][j] = self.migration.gas[i][j].function
+				else: pass
 		stop = time.time()
 		if enrichment == 1:
 			_multizone.multizone_cancel(self._mz)
@@ -517,6 +525,7 @@ leaving only the results of the current simulation.\nOutput directory: \
 			:: 	one of the migration specifications produces a value that is
 				not between 0 and 1 at any timestep.
 		"""
+		self._mz[0].mig[0].callback_gas_migration = self.migration.gas.callback
 		_migration.malloc_gas_migration(self._mz)
 		cdef long length = 10l + <long> (
 			self._mz[0].zones[0].output_times[
@@ -544,8 +553,7 @@ proceed faster or slower as a function of the timestep size."""
 				"""
 				if isinstance(self.migration.gas[i][j], numbers.Number):
 					arr = length * [self.migration.gas[i][j]]
-					if _migration.setup_migration_element(self._mz[0],
-						self._mz[0].mig[0].gas_migration,
+					if _migration.setup_migration_element(self._mz,
 						i, j, copy_pylist(arr)):
 
 						_multizone.multizone_cancel(self._mz)
@@ -554,15 +562,20 @@ proceed faster or slower as a function of the timestep size."""
 						pass
 			
 				elif callable(self.migration.gas[i][j]):
-					arr = list(map(self.migration.gas[i][j], eval_times))
-					if _migration.setup_migration_element(self._mz[0],
-						self._mz[0].mig[0].gas_migration,
-						i, j, copy_pylist(arr)):
-
-						_multizone.multizone_cancel(self._mz)
-						raise RuntimeError(errmsg)
+					if self.migration.gas.callback:
+						self.migration.gas[i][j] = callback_kwargs_fraction(
+							self.migration.gas[i][j])
+						callback_current_state_setup(
+							self._mz[0].mig[0].callback_objects[i][j],
+							self.migration.gas[i][j])
 					else:
-						pass
+						arr = list(map(self.migration.gas[i][j], eval_times))
+						if _migration.setup_migration_element(self._mz,
+							i, j, copy_pylist(arr)):
+							_multizone.multizone_cancel(self._mz)
+							raise RuntimeError(errmsg)
+						else:
+							pass
 				else:
 					raise SystemError("Internal Error")
 

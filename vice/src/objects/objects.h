@@ -301,6 +301,59 @@ typedef struct interstellar_medium {
 } ISM;
 
 
+typedef struct current_state {
+
+	/*
+	 * An object describing the current state of the ISM. The primary
+	 * purpose of this object is to hand the information to the user, who
+	 * will then make a calculation in real time to be incorporated into the
+	 * evolution at the current timestep.
+	 *
+	 * mgas: The current total mass of the ISM in Msun.
+	 * star_formation_rate: The current star formation rate in Msun/yr.
+	 * infall_rate: The current infall rate in Msun/yr.
+	 * outflow_rate: The current outflow rate in Msun/yr.
+	 * n_elements: The number of elements tracked in the model.
+	 * symbols: The symbols of each element on the periodic table (lower-case).
+	 * Z: A pointer to each element's abundance by mass.
+	 */
+
+	double time;
+	double mgas;
+	double star_formation_rate;
+	double infall_rate;
+	double outflow_rate;
+	unsigned short n_elements;
+	char **symbols;
+	double *Z;
+
+} CURRENT_STATE;
+
+
+typedef struct callback_current_state {
+
+	/*
+	 * An object whose sole purpose is to call a python function via cython.
+	 *
+	 * callback: A function pointer to a cdef double function which will
+	 * 		return the value returned by the python function itself
+	 * assumed_constant: A value to return in the case that the user has not
+	 * 		specified a function.
+	 * user_func: A void pointer to the PyObject corresponding to the user's
+	 * 		function defined in python
+	 *
+	 * Notes
+	 * =====
+	 * The attribute assumed_constant allows a callback function to be adopted
+	 * for parameters which may be either a real number or a function.
+	 */
+
+	double (*callback)(CURRENT_STATE, void *);
+	void *user_func;
+
+} CALLBACK_CURRENT_STATE;
+
+
 typedef struct metallicity_distribution_function {
 
 	/*
@@ -464,19 +517,29 @@ typedef struct migration {
 	/*
 	 * This struct encodes migration settings for multizone simulations
 	 *
+	 * callback_gas_migration: A boolean integer. If 0, VICE will pre-compute
+	 * 		mixing fractions before integration. If 1, VICE will construct a
+	 * 		callback object to ask the user for the mixing fractions as the
+	 * 		model timesteps.
 	 * n_zones: The number of zones in the simulation
 	 * n_tracers: The number of tracer particles per zone per timestep
 	 * tracer_count: The number of active tracer particles
 	 * gas_migration: The migration matrix associated with the ISM gas
 	 * tracers: Pointers to the tracer particles themselves
+	 * callback_objects: The callback objects themselves, for when
+	 * 		``callback_gas_migration == 1u``, organized with the same indexing
+	 * 		scheme as ``gas_migration`` itself (i.e., ij'th element describes
+	 * 		migration from i'th zone to j'th zone).
 	 */
 
+	unsigned short callback_gas_migration;
 	unsigned int n_zones;
 	unsigned int n_tracers;
 	unsigned long tracer_count;
 	double ***gas_migration;
 	TRACER **tracers;
 	FILE *tracers_output;
+	CALLBACK_CURRENT_STATE ***callback_objects;
 
 } MIGRATION;
 

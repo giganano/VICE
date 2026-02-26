@@ -41,6 +41,25 @@ extern double callback_1arg_evaluate(CALLBACK_1ARG cb1, double x);
  */
 extern double callback_2arg_evaluate(CALLBACK_2ARG cb2, double x, double y);
 
+/*
+ * Evaluate a callback function based on the current state of the ISM.
+ *
+ * Parameters
+ * ==========
+ * cbcs: 		The callback object
+ * cs: 			The CURRENT_STATE object storing the relevant information
+ * 				on the ISM at the current timestep.
+ *
+ * Returns
+ * =======
+ * f(cs), where ``f`` is the function passed from python and ``cs`` is the
+ * CURRENT_STATE object.
+ *
+ * source: callback.c
+ */
+extern double callback_current_state_evaluate(CALLBACK_CURRENT_STATE cbcs,
+	CURRENT_STATE cs);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -219,7 +219,7 @@ def args(func, errmsg):
 
 def arg_count(func):
 	r"""
-	Determine the number of positional arguments accepted by a given python
+	Determine the minimum number of arguments required by a given python
 	function.
 
 	Parameters
@@ -242,7 +242,19 @@ def arg_count(func):
 		n = 0
 		sig = inspect.signature(func)
 		for i in sig.parameters.keys():
-			n += int(sig.parameters[i].default == inspect._empty)
+			n += int(
+				(
+					sig.parameters[i].kind in
+					[sig.parameters[i].POSITIONAL_ONLY,
+					sig.parameters[i].VAR_POSITIONAL]
+				) or (
+					sig.parameters[i].kind in
+					[sig.parameters[i].POSITIONAL_OR_KEYWORD,
+					sig.parameters[i].KEYWORD_ONLY] and
+					sig.parameters[i].default == inspect._empty
+				)
+			)
+			# n += int(sig.parameters[i].default == inspect._empty)
 		return n
 	else:
 		raise TypeError("Must be a callable object. Got: %s" % (type(func)))

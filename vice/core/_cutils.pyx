@@ -502,7 +502,36 @@ arguments.""")
 			type(value)))
 
 
-cdef double callback_1arg(double x, void *f):
+cdef void callback_current_state_setup(CALLBACK_CURRENT_STATE *cbcs,
+	value) except *:
+	r"""
+	Setup a callback object for a python function that evaluates based on
+	the current state of the ISM.
+
+	Parameters
+	----------
+	cbcs : CALLBACK_CURRENT_STATE *
+		A pointer to the callback objct for the function.
+	value : <function>
+		The python function to store as a callback object. Must accept
+		keyword-only arguments.
+
+	Raises
+	------
+	* TypeError
+		- 	``value`` is not a callable object.
+
+	.. seealso:: vice/core/callback.py
+	"""
+	if callable(value):
+		cbcs[0].callback = &callback_current_state
+		cbcs[0].user_func = <void *> value
+	else:
+		raise TypeError("Function must be a callable object. Got: %s" % (
+			type(value)))
+
+
+cdef double callback_1arg(double x, void *f) except *:
 	r"""
 	Call a function of one numerical value defined in Python from C.
 
@@ -533,7 +562,7 @@ cdef double callback_1arg(double x, void *f):
 	return <double> (<object> f)(x)
 
 
-cdef double callback_2arg(double x, double y, void *f):
+cdef double callback_2arg(double x, double y, void *f) except *:
 	r"""
 	Call a function of two numerical values defined in Python from C.
 
@@ -563,6 +592,44 @@ cdef double callback_2arg(double x, double y, void *f):
 	"""
 	# pythonic callback objects handle errors
 	return <double> (<object> f)(x, y)
+
+
+cdef double callback_current_state(CURRENT_STATE cs, void *f) except *:
+	r"""
+	Call a function that evaluates based on the current state of the ISM,
+	which is implemented by the user in Python, from VICE's C backend.
+
+	Parameters
+	----------
+	cs : CALLBACK *cs
+		A pointer to the CURRENT_STATE object created in the C backend.
+
+	Returns
+	-------
+	result : a real number
+		f(**kwargs), where ``kwargs`` is a dictionary whose parameters
+		describe the current ISM state.
+
+	Raises
+	------
+	* ScienceWarning
+		- 	A non-numerical value is returned from the function, forcing it
+			toassume a default value of zero.
+
+	.. seealso:: vice/core/callback.py
+	"""
+	kwargs = {
+		"time": cs.time,
+		"mgas": cs.mgas,
+		"sfr": cs.star_formation_rate,
+		"ifr": cs.infall_rate,
+		"ofr": cs.outflow_rate
+	}
+	for i in range(cs.n_elements):
+		elem = "".join([chr(cs.symbols[i][j]) for j in range(
+			strlen(cs.symbols[i]))])
+		kwargs["z(%s)" % (elem)] = cs.Z[i]
+	return (<object> f)(**kwargs)
 
 
 cdef void setup_imf(IMF_ *imf, IMF) except *:

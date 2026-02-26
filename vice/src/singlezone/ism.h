@@ -124,6 +124,22 @@ extern double get_outflow_rate(SINGLEZONE sz);
  */
 extern double *singlezone_unretained(SINGLEZONE sz);
 
+/*
+ * Obtain a pointer to a CURRENT_STATE object with data copied over from a
+ * SINGLEZONE object.
+ *
+ * Parameters
+ * ==========
+ * sz: The singlezone object whose data is to be copied over.
+ *
+ * Returns
+ * =======
+ * cs: a pointer to the CURRENT_STATE object.
+ *
+ * source: ism.c
+ */
+extern CURRENT_STATE *singlezone_current_state(SINGLEZONE sz);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

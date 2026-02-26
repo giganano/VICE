@@ -2,18 +2,21 @@
 
 from __future__ import absolute_import
 from libc.stdio cimport FILE
+from ._callback_current_state cimport CALLBACK_CURRENT_STATE
 from . cimport _tracer
 from . cimport _multizone
 
 
 cdef extern from "../../src/objects.h":
 	ctypedef struct MIGRATION:
+		unsigned short callback_gas_migration
 		unsigned int n_zones
 		unsigned int n_tracers
 		unsigned long tracer_count
 		double ***gas_migration
 		_tracer.TRACER **tracers
 		FILE *tracers_output
+		CALLBACK_CURRENT_STATE ***callback_objects
 
 
 cdef extern from "../../src/objects/migration.h":
