@@ -30,7 +30,9 @@
  */
 extern double m_AGB(SINGLEZONE sz, ELEMENT e) {
 
-	if (sz.timestep == 0l) {
+	if (!(*e.agb_grid).active) {
+		return 0;
+	} else if (sz.timestep == 0l) {
 		return 0; /* No star's yet */
 	} else {
 		unsigned long i;

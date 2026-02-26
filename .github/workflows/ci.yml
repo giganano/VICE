@@ -1,3 +1,8 @@
+# This file is part of the VICE package.
+# Copyright (C) 2019 James W. Johnson (giganano9@gmail.com).
+# License: MIT License. See LICENSE in top-level directory
+# at: https://github.com/giganano/VICE.git.
+#
 # This workflow conducts CI testing across all of VICE's branches.
 
 name: GitHub CI
@@ -14,11 +19,11 @@ jobs:
         os: ["ubuntu-latest", "macos-latest"]
         compiler: [gcc-10, clang]
         python-version:
-          - "3.8"
-          - "3.9"
           - "3.10"
           - "3.11"
           - "3.12"
+          - "3.13"
+          - "3.14"
 
         exclude:
 
@@ -64,21 +69,12 @@ jobs:
       - name: Compile and Install
         shell: bash
         run: |
-          make CC=$COMPILER
           python -m pip install . -v
-          make clean
 
       - name: Tests
         shell: bash
         run: |
           make tests
-
-      # Tests leave behind a test_<platform>_<version>.log file under ./vice
-      - name: Upload Test Log
-        uses: actions/upload-artifact@v4
-        with:
-          name: testlogs
-          path: ./vice/*.log
 
       - name: Clean Source Tree
         shell: bash

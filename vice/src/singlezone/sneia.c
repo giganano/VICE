@@ -34,6 +34,7 @@ static double RIa_builtin(ELEMENT e, double time);
  */
 extern double mdot_sneia(SINGLEZONE sz, ELEMENT e) {
 
+	if (!(*e.sneia_yields).active) return 0;
 	unsigned long i;
 	double mdotia = 0;
 	for (i = 0l; i < sz.timestep; i++) {

@@ -40,6 +40,7 @@ extern void migrate(MULTIZONE *mz);
  */
 extern double *migration_changes_by_zone(MULTIZONE mz, int index);
 
+#if 0
 /*
  * Performs a sanity check on a given migration matrix by making sure the sum
  * of migration probabilities out of a given zone at all times is <= 1.
@@ -58,6 +59,10 @@ extern double *migration_changes_by_zone(MULTIZONE mz, int index);
  */
 extern unsigned short migration_matrix_sanitycheck(double ***migration_matrix,
 	unsigned long n_times, unsigned int n_zones);
+#endif
+
+extern unsigned short migration_matrix_sanitycheck(double **matrix,
+	unsigned int n_zones);
 
 /*
  * Allocates memory for the gas migration matrix.
@@ -70,6 +75,7 @@ extern unsigned short migration_matrix_sanitycheck(double ***migration_matrix,
  */
 extern void malloc_gas_migration(MULTIZONE *mz);
 
+#if 0
 /*
  * Sets up an element of the migration matrix at each timestep that it has
  * memory allocated for.
@@ -92,6 +98,10 @@ extern void malloc_gas_migration(MULTIZONE *mz);
 extern unsigned short setup_migration_element(MULTIZONE mz,
 	double ***migration_matrix, unsigned int row, unsigned int column,
 	double *arr);
+#endif
+
+extern unsigned short setup_migration_element(MULTIZONE *mz, unsigned int row,
+	unsigned short column, double *arr);
 
 #ifdef __cplusplus
 }

@@ -1,4 +1,9 @@
 /*
+ * This file is part of the VICE package.
+ * Copyright (C) 2019 James W. Johnson (giganano9@gmail.com)
+ * License: MIT License. See LICENSE in top-level directory
+ * at: https://github.com/giganano/VICE.git.
+ *
  * This file implements the time evolution of a singlezone simulation using
  * VICE's singlezone object.
  */
@@ -8,6 +13,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "../singlezone.h"
+#include "../multithread.h"
 #include "../ssp.h"
 #include "../io.h"
 #include "singlezone.h"
@@ -131,6 +137,9 @@ static unsigned short singlezone_timestepper(SINGLEZONE *sz) {
 	 */
 	unsigned int i;
 	if (strcmp((*(*sz).ism).mode, "ifr")) update_gas_evolution(sz);
+	#if defined (_OPENMP)
+		#pragma omp parallel for num_threads((*sz).nthreads)
+	#endif
 	for (i = 0; i < (*sz).n_elements; i++) {
 		update_element_mass(*sz, (*sz).elements[i]);
 		/* Now the ISM and this element are at the next timestep */
@@ -192,13 +201,17 @@ extern unsigned short singlezone_setup(SINGLEZONE *sz) {
 	if (setup_MDF(sz)) return 1u;
 	if (setup_RIa(sz)) return 1u;
 	if (setup_gas_evolution(sz)) return 1u;
+	unsigned short retval = 0u;
 	unsigned int i;
+	#if defined(_OPENMP)
+		#pragma omp parallel for num_threads((*sz).nthreads)
+	#endif
 	for (i = 0u; i < (*sz).n_elements; i++) {
 		/*
 		 * The singlezone object always allocates memory for 10 timesteps
 		 * beyond the ending time as a safeguard against memory errors.
 		 */
-		if (malloc_Z(sz -> elements[i], n_timesteps(*sz))) return 1u;
+		if (malloc_Z(sz -> elements[i], n_timesteps(*sz))) retval = 1u;
 		sz -> elements[i] -> mass = (
 			(*(*sz).elements[i]).primordial * (*(*sz).ism).mass
 		);
@@ -207,7 +220,7 @@ extern unsigned short singlezone_setup(SINGLEZONE *sz) {
 		);
 	}
 
-	return 0u;
+	return retval;
 
 }
 
@@ -228,6 +241,9 @@ extern unsigned short singlezone_setup(SINGLEZONE *sz) {
 extern void singlezone_clean(SINGLEZONE *sz) {
 
 	unsigned int i;
+	#if defined(_OPENMP)
+		#pragma omp parallel for num_threads((*sz).nthreads)
+	#endif
 	for (i = 0; i < (*sz).n_elements; i++) {
 		if ((*(*(*(*sz).elements[i]).agb_grid).interpolator).zcoords != NULL) {
 			free(sz -> elements[i] -> agb_grid -> interpolator -> xcoords);
@@ -243,6 +259,14 @@ extern void singlezone_clean(SINGLEZONE *sz) {
 		sz -> elements[i] -> Z = NULL;
 		sz -> elements[i] -> Zin = NULL;
 		sz -> elements[i] -> sneia_yields -> RIa = NULL;
+		if ((*(*sz).elements[i]).n_channels) {
+			for (unsigned short j = 0u; j < (*(*sz).elements[i]).n_channels; j++) {
+				channel_free(sz -> elements[i] -> channels[j]);
+			}
+			free(sz -> elements[i] -> channels);
+			sz -> elements[i] -> channels = NULL;
+			sz -> elements[i] -> n_channels = 0u;
+		} else {}
 	}
 	free(sz -> ism -> specified);
 	free(sz -> ism -> star_formation_history);
@@ -290,6 +314,9 @@ extern void singlezone_cancel(SINGLEZONE *sz) {
 	 */
 
 	unsigned int i;
+	#if defined(_OPENMP)
+		#pragma omp parallel for num_threads((*sz).nthreads)
+	#endif
 	for (i = 0; i < (*sz).n_elements; i++) {
 		if ((*(*sz).elements[i]).Zin != NULL) {
 			free(sz -> elements[i] -> Zin);
@@ -310,6 +337,14 @@ extern void singlezone_cancel(SINGLEZONE *sz) {
 		if ((*(*(*(*sz).elements[i]).agb_grid).interpolator).zcoords != NULL) {
 			free(sz -> elements[i] -> agb_grid -> interpolator -> zcoords);
 			sz -> elements[i] -> agb_grid -> interpolator -> zcoords = NULL;
+		} else {}
+		if ((*(*sz).elements[i]).n_channels) {
+			for (unsigned short j = 0u; j < (*(*sz).elements[i]).n_channels; j++) {
+				channel_free(sz -> elements[i] -> channels[j]);
+			}
+			free(sz -> elements[i] -> channels);
+			sz -> elements[i] -> channels = NULL;
+			sz -> elements[i] -> n_channels = 0u;
 		} else {}
 	}
 

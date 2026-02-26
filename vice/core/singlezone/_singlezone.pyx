@@ -27,6 +27,7 @@ from ..dataframe import atomic_number
 from ..dataframe import primordial
 from ..dataframe import solar_z
 from ..dataframe import sources
+from ..channel import channel
 from ..dataframe import base
 from ..outputs import output
 from ..pickles import jar
@@ -51,6 +52,7 @@ else:
 # C imports
 from libc.stdlib cimport malloc
 from libc.string cimport strlen
+from .._cutils cimport set_nthreads
 from .._cutils cimport set_string
 from .._cutils cimport copy_pylist
 from .._cutils cimport setup_imf
@@ -110,7 +112,9 @@ cdef class c_singlezone:
 		func = _DEFAULT_FUNC_,
 		mode = "ifr",
 		verbose = False,
+		nthreads = 1,
 		elements = ("fe", "sr", "o"),
+		channels = {"agb", "ccsne", "sneia"},
 		IMF = "kroupa",
 		eta = 2.5,
 		enhancement = 1,
@@ -145,7 +149,9 @@ cdef class c_singlezone:
 		self.func = func
 		self.mode = mode
 		self.verbose = verbose
+		self.nthreads = nthreads
 		self.elements = elements
+		self.channels = channels
 		self.IMF = IMF
 		self.eta = eta
 		self.enhancement = enhancement
@@ -314,6 +320,30 @@ Got: %s""" % (type(value)))
 a boolean. Got: %s""" % (type(value)))
 
 	@property
+	def nthreads(self):
+		# docstring in python version
+		return int(self._sz[0].nthreads)
+
+	@nthreads.setter
+	def nthreads(self, value):
+		r"""
+		The number of OpenMP threads to use in this calculation.
+
+		Allowed Types
+		=============
+		int
+
+		Allowed Values
+		==============
+		Postitive definite
+
+		The ``set_nthreads`` function in the vice.core._cutils extension
+		does all of the error handling here.
+		"""
+		set_nthreads(value)
+		self._sz[0].nthreads = <unsigned short> value
+
+	@property
 	def elements(self):
 		# docstring in python version
 		elements = self._sz[0].n_elements * [None]
@@ -439,6 +469,47 @@ Got: %s""" % (type(
 		else:
 			# object just now being initialized
 			pass
+
+	@property
+	def channels(self):
+		# docstring in python version
+		return self._channels
+
+	@channels.setter
+	def channels(self, value):
+		"""
+		Enrichment channels to include in this model
+
+		Allowed Types
+		=============
+		array-like or ``set`` (stored as a ``set``)
+
+		Allowed Values
+		==============
+		The strings "agb", "ccsne", and "sneia" (case-insensitive) to denote
+		built-in enrichment channels. Can also be of type ``vice.channel`` for
+		custom enrichment channels.
+		"""
+		ch = []
+		if isinstance(value, set):
+			value = list(value)
+		else:
+			value = _pyutils.copy_array_like_object(value)
+		for item in value:
+			if isinstance(item, strcomp):
+				if item.lower() in ["agb", "ccsne", "sneia"]:
+					ch.append(item.lower())
+				else:
+					raise ValueError("""\
+Unrecognized built-in enrichment channel: %s""" % (item))
+			elif isinstance(item, channel):
+				ch.append(item)
+			else:
+				raise TypeError("""\
+Enrichment channel must be either of type string (\"agb\", \"ccsne\", or \
+\"sneia\" for built-in channels) or an instance of the vice.channel class. \
+Got: %s""" % (type(item)))
+		self._channels = set(ch)
 
 	@property
 	def IMF(self):
@@ -1369,6 +1440,7 @@ All elemental yields in the current simulation will be set to the table of \
 		else: pass
 		setup_imf(self._sz[0].ssp[0].imf, self._imf)
 		self.setup_elements()
+		self.setup_channels()
 
 		"""
 		Construct the array of times at which the simulation will evaluate,
@@ -1656,6 +1728,61 @@ timestepping.""", VisibleRuntimeWarning)
 					agb.settings[self.elements[i]])
 				_agb.import_agb_grid(self._sz[0].elements[i],
 					agbfile.encode("latin-1"))
+
+
+	def setup_channels(self):
+		r"""
+		Setup custom enrichment channels that the user is including in this
+		integration.
+		"""
+		# first handle the built-in channels
+		cdef ELEMENT *e
+		for i in range(self._sz[0].n_elements):
+			e = self._sz[0].elements[i]
+			e[0].agb_grid[0].active = <unsigned short> (
+				"agb" in self.channels)
+			e[0].ccsne_yields[0].active = <unsigned short> (
+				"ccsne" in self.channels)
+			e[0].sneia_yields[0].active = <unsigned short> (
+				"sneia" in self.channels)
+
+		# now handle custom channels
+		cdef CHANNEL *ch
+		custom = []
+		for chan in self.channels:
+			if isinstance(chan, channel): custom.append(chan)
+		for i in range(self._sz[0].n_elements):
+			self._sz[0].elements[i][0].n_channels = len(custom)
+			if len(custom):
+				self._sz[0].elements[i][0].channels = <CHANNEL **> malloc (
+					len(custom) * sizeof(CHANNEL *))
+			else:
+				self._sz[0].elements[i][0].channels = NULL
+		if len(custom):
+			self._callback_custom = len(custom) * [None]
+			times = _pyutils.range_(0, _sneia.RIA_MAX_EVAL_TIME, self.dt)
+			for j in range(len(custom)):
+				self._callback_custom[j] = self._sz[0].n_elements * [None]
+				rates = [custom[j].dtd(t) for t in times]
+				if any([m.isnan(r) or m.isinf(r) or r < 0 for r in rates]):
+					raise ArithmeticError("""\
+Delay-time distribution from custom enrichment channel %s evaluated to a \
+negative, inf, or nan value for at least one timestep.""")
+				else: pass
+				for i in range(self._sz[0].n_elements):
+					self._sz[0].elements[i][0].channels[j] = channel_initialize()
+					ch = self._sz[0].elements[i][0].channels[j]
+					if callable(custom[j].yields[self.elements[i]]):
+						self._callback_custom[j][i] = callback1_nan_inf(
+							custom[j].yields[self.elements[i]])
+						callback_1arg_setup(ch[0].yield_,
+							self._callback_custom[j][i])
+					else:
+						callback_1arg_setup(ch[0].yield_,
+							custom[j].yields[self.elements[i]])
+					ch[0].rate = copy_pylist(rates)
+					normalize_channel_rates(ch, <unsigned long> len(rates))
+					ch[0].entrainment = 1 # TODO: make this adjustable
 
 
 	def set_ria(self):

@@ -1,9 +1,16 @@
 # cython: language_level = 3, boundscheck = False
+#
+# This file is part of the VICE package.
+# Copyright (C) 2019 James W. Johnson (giganano9@gmail.com)
+# License: MIT License. See LICENSE in top-level directory
+# at https://github.com/giganano/VICE.git.
 
 from __future__ import absolute_import
 from .objects._imf cimport IMF_
 from .objects._callback_1arg cimport CALLBACK_1ARG
 from .objects._callback_2arg cimport CALLBACK_2ARG
+from .objects._current_state cimport CURRENT_STATE
+from .objects._callback_current_state cimport CALLBACK_CURRENT_STATE
 
 cdef extern from "../src/io/progressbar.h":
 	ctypedef struct PROGRESSBAR:
@@ -31,6 +38,12 @@ cdef class progressbar:
 	cdef PROGRESSBAR *_pb
 
 
+cdef extern from "../src/multithread.h":
+	unsigned short openmp_set_nthreads(unsigned short n)
+	unsigned short openmp_get_nthreads()
+	unsigned short openmp_linked()
+
+
 cdef extern from "../src/utils.h":
 	double *binspace(double start, double stop, long N)
 	void set_char_p_value(char *dest, int *ords, int length)
@@ -43,10 +56,15 @@ cdef extern from "../src/objects.h":
 	void callback_2arg_free(CALLBACK_2ARG *cb2)
 
 
+cdef void set_nthreads(n) except *
+cdef unsigned short get_nthreads() except *
 cdef void callback_1arg_setup(CALLBACK_1ARG *cb1, value) except *
 cdef void callback_2arg_setup(CALLBACK_2ARG *cb2, value) except *
-cdef double callback_1arg(double x, void *f)
-cdef double callback_2arg(double x, double y, void *f)
+cdef void callback_current_state_setup(CALLBACK_CURRENT_STATE *cbcs,
+	value) except *
+cdef double callback_1arg(double x, void *f) except *
+cdef double callback_2arg(double x, double y, void *f) except *
+cdef double callback_current_state(CURRENT_STATE cs, void *f) except *
 cdef void setup_imf(IMF_ *imf, IMF) except *
 cdef void set_string(char *dest, pystr) except *
 cdef int *ordinals(pystr) except *

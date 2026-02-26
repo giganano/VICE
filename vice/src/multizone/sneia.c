@@ -32,17 +32,24 @@ extern double *m_sneia_from_tracers(MULTIZONE mz, unsigned short index) {
 		mass[i] = 0;
 	}
 	for (i = 0l; i < (*mz.mig).tracer_count; i++) {
-		TRACER *t = mz.mig -> tracers[i];
+		/*
+		 * Pull yield information from the zone this particle originated.
+		 *
+		 * If the tracer particle came from a zone where the SN Ia channel is
+		 * inactive, then its yield should be skipped.
+		 */
+		TRACER t = *(*mz.mig).tracers[i];
 		SNEIA_YIELD_SPECS sneia = *(
-			mz.zones[(*t).zone_origin] -> elements[index] -> sneia_yields
+			mz.zones[t.zone_origin] -> elements[index] -> sneia_yields
 		);
-		/* pull yield information from the zone this particle originated */
-		mass[(*t).zone_current] += (
-			get_ia_yield(*(*mz.zones[(*t).zone_origin]).elements[index],
-				tracer_metallicity(mz, *t)) *
-			(*t).mass *
-			sneia.RIa[timestep - (*t).timestep_origin]
-		);
+		if (sneia.active) {
+			mass[t.zone_current] += (
+				get_ia_yield(*(*mz.zones[t.zone_origin]).elements[index],
+					tracer_metallicity(mz, t)) *
+				t.mass *
+				sneia.RIa[timestep - t.timestep_origin]
+			);
+		} else {}
 	}
 	return mass;
 

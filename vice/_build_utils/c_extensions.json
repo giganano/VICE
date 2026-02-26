@@ -1,20 +1,12 @@
-r"""
-This file implements a mapping between the Cython extensions and the necessary
-C code needed to properly compile. This is used to speed up the compile time
-of VICE by excluding unnecessary code for individual extensions.
 
-Notes
------
-In practice, these lists of C source code files are largely determined by
-recompiling individual extensions with pieces of the C library and ensuring
-that "import vice" does not produce an ImportError.
-"""
-
-_CFILES_ = {
+{
 	"vice.core._cutils": [
 		"./vice/src/objects/callback_1arg.c",
 		"./vice/src/objects/callback_2arg.c",
+		"./vice/src/objects/callback_current_state.c",
+		"./vice/src/objects/current_state.c",
 		"./vice/src/io/progressbar.c",
+		"./vice/src/multithread.c",
 		"./vice/src/utils.c"
 	],
 	"vice.core._mlr": [
@@ -483,6 +475,7 @@ _CFILES_ = {
 		"./vice/src/objects/hydrodiskstars.c",
 		"./vice/src/toolkit/hydrodiskstars.c",
 		"./vice/src/io/utils.c",
+		"./vice/src/multithread.c",
 		"./vice/src/utils.c"
 	],
 	"vice.toolkit.interpolation._interp_scheme_1d": [
@@ -527,7 +520,5 @@ _CFILES_ = {
 		"./vice/src/objects/integral.c",
 		"./vice/src/utils.c"
 	]
-
 }
-
 

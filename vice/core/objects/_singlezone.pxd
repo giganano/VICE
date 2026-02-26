@@ -1,4 +1,9 @@
 # cython: language_level = 3, boundscheck = False
+#
+# This file is part of the VICE package.
+# Copyright (C) 2019 James W. Johnson (giganano9@gmail.com)
+# License: MIT License. See LICENSE in top-level directory
+# at https://github.com/giganano/VICE.git.
 
 from __future__ import absolute_import
 from libc.stdio cimport FILE
@@ -20,6 +25,7 @@ cdef extern from "../../src/objects.h":
 		double Z_solar
 		unsigned int n_elements
 		unsigned short verbose
+		unsigned short nthreads
 		ELEMENT **elements
 		ISM *ism
 		MDF *mdf

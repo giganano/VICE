@@ -4,7 +4,9 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
+#include "../objects/current_state.h"
 #include "../singlezone.h"
 #include "../callback.h"
 #include "../ssp.h"
@@ -405,6 +407,43 @@ extern double *singlezone_unretained(SINGLEZONE sz) {
 		unretained[i] = (*sz.elements[i]).unretained / sz.dt;
 	}
 	return unretained;
+
+}
+
+
+/*
+ * Obtain a pointer to a CURRENT_STATE object with data copied over from a
+ * SINGLEZONE object.
+ *
+ * Parameters
+ * ==========
+ * sz: The singlezone object whose data is to be copied over.
+ *
+ * Returns
+ * =======
+ * cs: a pointer to the CURRENT_STATE object.
+ *
+ * header: ism.h
+ */
+extern CURRENT_STATE *singlezone_current_state(SINGLEZONE sz) {
+
+	/*
+	 * Factors of 1E9 in star formation and infall rates convert from
+	 * Msun/Gyr to Msun/yr, in keeping with the rest of VICE's unit convention.
+	 * Internal rates are always in Msun/Gyr, but user-facing rates are in
+	 * Msun/yr.
+	 */
+
+	CURRENT_STATE *cs = current_state_initialize(sz.n_elements);
+	cs -> time = sz.current_time;
+	cs -> mgas = sz.ism -> mass;
+	cs -> star_formation_rate = sz.ism -> star_formation_rate / 1E9;
+	cs -> infall_rate = sz.ism -> infall_rate / 1E9;
+	for (unsigned short i = 0u; i < sz.n_elements; i++) {
+		strcpy(cs -> symbols[i], sz.elements[i] -> symbol);
+		cs -> Z[i] = sz.elements[i] -> mass / sz.ism -> mass;
+	}
+	return cs;
 
 }
 

@@ -22,9 +22,15 @@ extern "C" {
  * The time-derivative of the arbitrary enrichment channels mass enrichment
  * term
  *
+ * Notes
+ * =====
+ * This function also adds the unretained mass from each additional enrichment
+ * channel to the outflow, following the built-in AGB star, CCSN, and SN Ia
+ * enrichment channels.
+ *
  * source: channel.c
  */
-extern double mdot(SINGLEZONE sz, ELEMENT e);
+extern double mdot_channels(SINGLEZONE sz, ELEMENT *e);
 
 /*
  * Obtain the IMF-integrated fractional mass yield of a given element from
@@ -42,7 +48,7 @@ extern double mdot(SINGLEZONE sz, ELEMENT e);
  *
  * source: channel.c
  */
-extern double get_yield(CHANNEL ch, double Z);
+extern double get_channel_yield(CHANNEL ch, double Z);
 
 /*
  * Normalize the rate once it is set according to an arbitrary normalization
@@ -55,7 +61,7 @@ extern double get_yield(CHANNEL ch, double Z);
  *
  * source: channel.c
  */
-extern void normalize_rates(ELEMENT *e, unsigned long length);
+extern void normalize_channel_rates(CHANNEL *ch, unsigned long length);
 
 #ifdef __cplusplus
 }

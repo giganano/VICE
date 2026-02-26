@@ -1,4 +1,9 @@
 /*
+ * This file is part of the VICE package.
+ * Copyright (C) 2019 James W. Johnson (giganano9@gmail.com)
+ * License: MIT License. See LICENSE in top-level directory
+ * at: https://github.com/giganano/VICE.git.
+ *
  * All of VICE's objects are declared in this header.
  */
 
@@ -128,11 +133,14 @@ typedef struct asymptotic_giant_branch_star_yield_grid {
 	 * interpolator: The mass-metallicity interpolation grid
 	 * entrainment: The fraction of this element's yields that get mixed
 	 * 		with the ISM.
+	 * active: A boolean int describing whether or not this enrichment channel
+	 * 		is included in this model or not.
 	 */
 
 	CALLBACK_2ARG *custom_yield;
 	INTERP_SCHEME_2D *interpolator;
 	double entrainment;
+	unsigned short active;
 
 } AGB_YIELD_GRID;
 
@@ -147,10 +155,13 @@ typedef struct ccsne_yield_specs {
 	 * 		Both functional values and constant values are stored there.
 	 * entrainment: The fraction of the nucleosynthetic yield that is
 	 * 		captured and retained by the interstellar medium
+	 * active: A boolean int describing whether or not this enrichment channel
+	 * 		is included in this model or not.
 	 */
 
 	CALLBACK_1ARG *yield_;
 	double entrainment;
+	unsigned short active;
 
 } CCSNE_YIELD_SPECS;
 
@@ -170,6 +181,8 @@ typedef struct sneia_yield_specs {
 	 * t_d: The minimum delay time on SNe Ia in Gyr.
 	 * entrainment: The fraction of the nucleosynthetic yield that is
 	 * 		captured and retained by the interstellar medium
+	 * active: A boolean int describing whether or not this enrichment channel
+	 * 		is included in this model or not.
 	 */
 
 	CALLBACK_1ARG *yield_;
@@ -178,12 +191,12 @@ typedef struct sneia_yield_specs {
 	double tau_ia;
 	double t_d;
 	double entrainment;
-
+	unsigned short active;
 
 } SNEIA_YIELD_SPECS;
 
 
-typedef struct arbitrary_channel {
+typedef struct channel {
 
 	/*
 	 * This struct holds the information and yield specifications for
@@ -194,6 +207,8 @@ typedef struct arbitrary_channel {
 	 * 		sampled.
 	 * rate: The delay-time distribution of the channel: its rate following the
 	 * 		formation of a simple stellar population.
+	 * entrainment: The f raction of the nucleosynthetic yield that is
+	 * 		captured and retained by the interstellar medium.
 	 */
 
 	CALLBACK_1ARG *yield_;
@@ -286,6 +301,59 @@ typedef struct interstellar_medium {
 	int schmidt;
 
 } ISM;
+
+
+typedef struct current_state {
+
+	/*
+	 * An object describing the current state of the ISM. The primary
+	 * purpose of this object is to hand the information to the user, who
+	 * will then make a calculation in real time to be incorporated into the
+	 * evolution at the current timestep.
+	 *
+	 * mgas: The current total mass of the ISM in Msun.
+	 * star_formation_rate: The current star formation rate in Msun/yr.
+	 * infall_rate: The current infall rate in Msun/yr.
+	 * outflow_rate: The current outflow rate in Msun/yr.
+	 * n_elements: The number of elements tracked in the model.
+	 * symbols: The symbols of each element on the periodic table (lower-case).
+	 * Z: A pointer to each element's abundance by mass.
+	 */
+
+	double time;
+	double mgas;
+	double star_formation_rate;
+	double infall_rate;
+	double outflow_rate;
+	unsigned short n_elements;
+	char **symbols;
+	double *Z;
+
+} CURRENT_STATE;
+
+
+typedef struct callback_current_state {
+
+	/*
+	 * An object whose sole purpose is to call a python function via cython.
+	 *
+	 * callback: A function pointer to a cdef double function which will
+	 * 		return the value returned by the python function itself
+	 * assumed_constant: A value to return in the case that the user has not
+	 * 		specified a function.
+	 * user_func: A void pointer to the PyObject corresponding to the user's
+	 * 		function defined in python
+	 *
+	 * Notes
+	 * =====
+	 * The attribute assumed_constant allows a callback function to be adopted
+	 * for parameters which may be either a real number or a function.
+	 */
+
+	double (*callback)(CURRENT_STATE, void *);
+	void *user_func;
+
+} CALLBACK_CURRENT_STATE;
 
 
 typedef struct metallicity_distribution_function {
@@ -392,6 +460,8 @@ typedef struct singlezone {
 	 * n_elements: The number of elements to track
 	 * verbose: boolean int describing whether or not to print the time as the
 	 * 		simulation evolves
+	 * nthreads : The number of OpenMP threads to use, if it was linked at
+	 * 		compile time.
 	 * elements: The yield information for each element
 	 * ism: The time evolution information for the interstellar medium (ISM)
 	 * mdf: The stellar metallicity distribution function (MDF) information
@@ -409,6 +479,7 @@ typedef struct singlezone {
 	double Z_solar;
 	unsigned int n_elements;
 	unsigned short verbose;
+	unsigned short nthreads;
 	ELEMENT **elements;
 	ISM *ism;
 	MDF *mdf;
@@ -448,19 +519,29 @@ typedef struct migration {
 	/*
 	 * This struct encodes migration settings for multizone simulations
 	 *
+	 * callback_gas_migration: A boolean integer. If 0, VICE will pre-compute
+	 * 		mixing fractions before integration. If 1, VICE will construct a
+	 * 		callback object to ask the user for the mixing fractions as the
+	 * 		model timesteps.
 	 * n_zones: The number of zones in the simulation
 	 * n_tracers: The number of tracer particles per zone per timestep
 	 * tracer_count: The number of active tracer particles
 	 * gas_migration: The migration matrix associated with the ISM gas
 	 * tracers: Pointers to the tracer particles themselves
+	 * callback_objects: The callback objects themselves, for when
+	 * 		``callback_gas_migration == 1u``, organized with the same indexing
+	 * 		scheme as ``gas_migration`` itself (i.e., ij'th element describes
+	 * 		migration from i'th zone to j'th zone).
 	 */
 
+	unsigned short callback_gas_migration;
 	unsigned int n_zones;
 	unsigned int n_tracers;
 	unsigned long tracer_count;
 	double ***gas_migration;
 	TRACER **tracers;
 	FILE *tracers_output;
+	CALLBACK_CURRENT_STATE ***callback_objects;
 
 } MIGRATION;
 
@@ -475,6 +556,10 @@ typedef struct multizone {
 	 * mig: The migration settings for this simulation
 	 * verbose: boolean int describing whether or not to print the time as the
 	 * 		simulation evolves
+	 * nthreads : The number of OpenMP threads to use while integrating the
+	 * 		model.
+	 * setup_nthreads : The number of OpenMP threads to use in setting up the
+	 * 		model's integration.
 	 */
 
 	char *name;
@@ -482,6 +567,8 @@ typedef struct multizone {
 	MIGRATION *mig;
 	unsigned short verbose;
 	unsigned short simple;
+	unsigned short nthreads;
+	unsigned short setup_nthreads;
 
 } MULTIZONE;
 
