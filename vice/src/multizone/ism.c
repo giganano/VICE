@@ -54,15 +54,11 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 	 * gas supply so that there isn't a 1-timestep delay or advance in the
 	 * amount of helium added
 	 */
-	
-	unsigned int i;
+
 	unsigned short retval = 0u;
 	double *mass_recycled = gas_recycled_in_zones(*mz);
 	double *migration_deltas = migration_gas_changes_by_zone(*mz);
-	#if defined(_OPENMP)
-		#pragma omp parallel for num_threads((*mz).nthreads)
-	#endif
-	for (i = 0; i < (*(*mz).mig).n_zones; i++) {
+	for (unsigned int i = 0u; i < (*(*mz).mig).n_zones; i++) {
 		SINGLEZONE *sz = mz -> zones[i];
 
 		/*
@@ -122,7 +118,6 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 				break;
 
 			default:
-				free(mass_recycled);
 				retval = 1u;
 				break;
 
