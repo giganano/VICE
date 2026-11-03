@@ -17,6 +17,12 @@ the following explosion models presented in their journal publication:
 	- 300-3-c3-1
 	- 300-5-c3-1
 
+These models are named for the initial central density, the metallicity of the
+progenitor relative to solar, the flame shape, and the initial carbon-to-oxygen
+ratio, in that order. For example, the "300-1-c3-1" model refers to one with a 
+central density of :math:`\rho_C=3\times10^9\,{\rm g}\,{\rm cm}^3`, a 
+metallicity of :math:`Z_\odot`, a c3 flame, and a C/O ratio of 1.
+
 .. tip:: By importing this module, the user does not sacrifice the ability to
 	specify their yield settings directly.
 

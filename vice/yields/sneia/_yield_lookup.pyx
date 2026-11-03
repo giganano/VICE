@@ -17,7 +17,7 @@ elif sys.version_info[:2] >= (3, 5):
 else:
 	_VERSION_ERROR_()
 
-_RECOGNIZED_STUDIES_ = ["seitenzahl13", "iwamoto99", "gronow21"]
+_RECOGNIZED_STUDIES_ = ["seitenzahl13", "iwamoto99", "gronow21", "leung18"]
 from ._yield_lookup cimport single_ia_mass_yield_lookup
 
 
@@ -44,6 +44,7 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 			- "seitenzahl13" : Seitenzahl et al. (2013) [1]_
 			- "iwamoto99" : Iwamoto et al. (1999) [2]_
 			- "gronow21" : Gronow et al. (2021a, b) [3]_ [4]_
+			- "leung18" : Leung & Nomoto (2018) [5]_
 
 	model : ``str`` [case-insensitive] [default : N1]
 		A keyword denoting the explosion model from the associated study to
@@ -66,6 +67,7 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 				| 	M10_05_001, M10_05_01, M10_05_1, M10_05_3,
 				| 	M10_10_001, M10_10_01, M10_10_1, M10_10_3,
 				| 	M11_05_001, M11_05_01, M11_05_1, M11_05_3
+			- "leung18" : 300-0-c3-1, 300-1-c3-1, 300-3-c3-1, 300-5-c3-1
 
 	Returns
 	-------
@@ -89,9 +91,11 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 	The data stored in this module are reported for each corresponding study
 	*as published*. The Seitenzahl et al. (2013) and Gronow et al. (2021a, b)
 	models reported mass yields after complete decay of all radioactive
-	nuclides with half-lives less than 2 Gyr, and the Iwamoto et al. (1999)
-	study fully decayed *all* unstable isotopes; any additional treatment for
-	radioactive isotopes is thus unnecessary.
+	nuclides with half-lives less than 2 Gyr, the Leung & Nomoto (2018) models
+	study reported mass yields after the decay of the "short-lived" radioactive
+	isotopes, and the Iwamoto et al. (1999) study fully decayed *all* unstable 
+	isotopes; any additional treatment for radioactive isotopes is thus 
+	unnecessary.
 
 	The Gronow et al. (2021a, b) models are named for the mass of the
 	carbon-oxygen core, the mass of the helium shell, and the metallicity of
@@ -99,6 +103,13 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 	For example, the "M09_05_01" model refers to one with a 0.9 :math:`M_\odot`
 	carbon-oxygen core and a 0.05 :math:`M_\odot` helium shell produced by a
 	star that was initially at a metallicity of 0.1 :math:`Z_\odot`.
+	
+	The Leung & Nomoto (2018) models are named for the initial central density, 
+	the metallicity of the progenitor relative to solar, the flame shape, and 
+	the initial carbon-to-oxygen ratio, in that order. For example, the 
+	"300-1-c3-1" model refers to one with a central density of 
+	:math:`\rho_C=3\times10^9\,{\rm g}\,{\rm cm}^3`, a 
+	metallicity of :math:`Z_\odot`, a c3 flame, and a C/O ratio of 1.
 
 	Example Code
 	------------
@@ -124,11 +135,13 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 		- vice.yields.sneia.gronow21
 		- vice.yields.sneia.iwamoto99
 		- vice.yields.sneia.seitenzahl13
+		- vice.yields.sneia.leung2018
 
 	.. [1] Seitenzahl et al. (2013), MNRAS, 429, 1156
 	.. [2] Iwamoto et al. (1999), ApJ, 124, 439
 	.. [3] Gronow et al. (2021a), A&A, 649, 155
 	.. [4] Gronow et al. (2021b), arxiv:2103.14050
+	.. [5] Leung & Nomoto (2018), ApJ, 861, 143
 	"""
 
 	# Type check errors ---> element, study, and model must be of type string
@@ -150,7 +163,8 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 		"seitenzahl13": "Seitenzahl et al. (2013), MNRAS, 429, 1156",
 		"iwamoto99": 	"Iwamoto et al. (1999), ApJ, 124, 439",
 		"gronow21": 	"""\
-Gronow et al. (2021a, b), a:A&A, 649, 155, b:arxiv:2103.14050"""
+Gronow et al. (2021a, b), a:A&A, 649, 155, b:arxiv:2103.14050""",
+		"leung18": 	"Leung & Nomoto (2018), ApJ, 861, 143"
 	}
 
 	# Models from their study keywords
@@ -170,7 +184,9 @@ Gronow et al. (2021a, b), a:A&A, 649, 155, b:arxiv:2103.14050"""
 							"M10_03_001", "M10_03_01", "M10_03_1", "M10_03_3",
 							"M10_05_001", "M10_05_01", "M10_05_1", "M10_05_3",
 							"M10_10_001", "M10_10_01", "M10_10_1", "M10_10_3",
-							"M11_05_001", "M11_05_01", "M11_05_1", "M11_05_3"]
+							"M11_05_001", "M11_05_01", "M11_05_1", "M11_05_3"],
+		"leung18":			["300-0-c3-1", "300-1-c3-1", "300-3-c3-1", 
+							"300-5-c3-1"],
 	}
 
 	# Value check errors
@@ -221,6 +237,7 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 			- "seitenzahl13" : Seitenzahl et al. (2013) [1]_
 			- "iwamoto99" : Iwamoto et al. (1999), [2]_
 			- "gronow21" : Gronow et al. (2021a, b) [3]_ [4]_
+			- "leung18": Leung & Nomoto (2018) [5]_
 
 	model : ``str`` [case-insensitive] [default : "N1"]
 		The model from the associated study to adopt.
@@ -242,13 +259,14 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 				| 	M10_05_001, M10_05_01, M10_05_1, M10_05_3,
 				| 	M10_10_001, M10_10_01, M10_10_1, M10_10_3,
 				| 	M11_05_001, M11_05_01, M11_05_1, M11_05_3
+			- "leung18" : 300-0-c3-1, 300-1-c3-1, 300-3-c3-1, 300-5-c3-1
 
 	n : real number [default : 2.2e-03]
 		The average number of type Ia supernovae produced per unit stellar
 		mass formed :math:`N_\text{Ia}/M_\star` in :math:`M_\odot^{-1}`.
 
 		.. note:: The default value for this parameter is adopted from
-			Maoz & Mannucci (2012) [5]_.
+			Maoz & Mannucci (2012) [6]_.
 
 	Returns
 	-------
@@ -285,9 +303,11 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 	The data stored in this module are reported for each corresponding study
 	*as published*. The Seitenzahl et al. (2013) and Gronow et al. (2021a, b)
 	models reported mass yields after complete decay of all radioactive
-	nuclides with half-lives less than 2 Gyr, and the Iwamoto et al. (1999)
-	study fully decayed *all* unstable isotopes; any additional treatment for
-	radioactive isotopes is thus unnecessary.
+	nuclides with half-lives less than 2 Gyr, the Leung & Nomoto (2018) models
+	study reported mass yields after the decay of the "short-lived" radioactive
+	isotopes, and the Iwamoto et al. (1999) study fully decayed *all* unstable 
+	isotopes; any additional treatment for radioactive isotopes is thus 
+	unnecessary.
 
 	The Gronow et al. (2021a, b) models are named for the mass of the
 	carbon-oxygen core, the mass of the helium shell, and the metallicity of
@@ -295,6 +315,13 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 	For example, the "M09_05_01" model refers to one with a 0.9 :math:`M_\odot`
 	carbon-oxygen core and a 0.05 :math:`M_\odot` helium shell produced by a
 	star that was initially at a metallicity of 0.1 :math:`Z_\odot`.
+	
+	The Leung & Nomoto (2018) models are named for the initial central density, 
+	the metallicity of the progenitor relative to solar, the flame shape, and 
+	the initial carbon-to-oxygen ratio, in that order. For example, the 
+	"300-1-c3-1" model refers to one with a central density of 
+	:math:`\rho_C=3\times10^9\,{\rm g}\,{\rm cm}^3`, a 
+	metallicity of :math:`Z_\odot`, a c3 flame, and a C/O ratio of 1.
 
 	Example Code
 	------------
@@ -322,12 +349,14 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 		- vice.yields.sneia.gronow21
 		- vice.yields.sneia.iwamoto99
 		- vice.yields.sneia.seitenzahl13
+		- vice.yields.sneia.leung18
 
 	.. [1] Seitenzahl et al. (2013), MNRAS, 429, 1156
 	.. [2] Iwamoto et al. (1999), ApJ, 124, 439
 	.. [3] Gronow et al. (2021a), A&A, 649, 155
 	.. [4] Gronow et al. (2021b), arxiv:2103.14050
-	.. [5] Maoz & Mannucci (2012), PASA, 29, 447
+	.. [5] Leung & Nomoto (2018), ApJ, 861, 143
+	.. [6] Maoz & Mannucci (2012), PASA, 29, 447
 	"""
 
 	# n must be a non-negative real number
