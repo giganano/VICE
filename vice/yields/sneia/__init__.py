@@ -7,6 +7,7 @@ This package provides tables from the following nucleosynthetic yield studies:
 	- Seitenzahl et al. (2013) [1]_
 	- Iwamoto et al. (1999) [2]_
 	- Gronow et al. (2021a, b) [3]_ [4]_
+	- Leung & Nomoto (2018) [5]_
 
 Contents
 --------
@@ -43,6 +44,7 @@ isotopes is thus unnecessary.
 .. [2] Iwamoto et al. (1999), ApJ, 124, 439
 .. [3] Gronow et al. (2021a), A&A, 649, 155
 .. [4] Gronow et al. (2021b), arxiv:2103.14050
+.. [5] Leung & Nomoto (2018), ApJ, 861, 143
 """
 
 from __future__ import absolute_import
