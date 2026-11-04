@@ -67,7 +67,7 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 				| 	M10_05_001, M10_05_01, M10_05_1, M10_05_3,
 				| 	M10_10_001, M10_10_01, M10_10_1, M10_10_3,
 				| 	M11_05_001, M11_05_01, M11_05_1, M11_05_3
-			- "leung18" : 300-0-c3-1, 300-1-c3-1, 300-3-c3-1, 300-5-c3-1
+			- "leung18" : 300-0-C3-1, 300-1-C3-1, 300-3-C3-1, 300-5-C3-1
 
 	Returns
 	-------
@@ -107,7 +107,7 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 	The Leung & Nomoto (2018) models are named for the initial central density, 
 	the metallicity of the progenitor relative to solar, the flame shape, and 
 	the initial carbon-to-oxygen ratio, in that order. For example, the 
-	"300-1-c3-1" model refers to one with a central density of 
+	"300-1-C3-1" model refers to one with a central density of 
 	:math:`\rho_C=3\times10^9\,{\rm g}\,{\rm cm}^3`, a 
 	metallicity of :math:`Z_\odot`, a c3 flame, and a C/O ratio of 1.
 
@@ -185,8 +185,8 @@ Gronow et al. (2021a, b), a:A&A, 649, 155, b:arxiv:2103.14050""",
 							"M10_05_001", "M10_05_01", "M10_05_1", "M10_05_3",
 							"M10_10_001", "M10_10_01", "M10_10_1", "M10_10_3",
 							"M11_05_001", "M11_05_01", "M11_05_1", "M11_05_3"],
-		"leung18":			["300-0-c3-1", "300-1-c3-1", "300-3-c3-1", 
-							"300-5-c3-1"],
+		"leung18":			["300-0-C3-1", "300-1-C3-1", "300-3-C3-1", 
+							"300-5-C3-1"],
 	}
 
 	# Value check errors
@@ -259,7 +259,7 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 				| 	M10_05_001, M10_05_01, M10_05_1, M10_05_3,
 				| 	M10_10_001, M10_10_01, M10_10_1, M10_10_3,
 				| 	M11_05_001, M11_05_01, M11_05_1, M11_05_3
-			- "leung18" : 300-0-c3-1, 300-1-c3-1, 300-3-c3-1, 300-5-c3-1
+			- "leung18" : 300-0-C3-1, 300-1-C3-1, 300-3-C3-1, 300-5-C3-1
 
 	n : real number [default : 2.2e-03]
 		The average number of type Ia supernovae produced per unit stellar
@@ -319,7 +319,7 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 	The Leung & Nomoto (2018) models are named for the initial central density, 
 	the metallicity of the progenitor relative to solar, the flame shape, and 
 	the initial carbon-to-oxygen ratio, in that order. For example, the 
-	"300-1-c3-1" model refers to one with a central density of 
+	"300-1-C3-1" model refers to one with a central density of 
 	:math:`\rho_C=3\times10^9\,{\rm g}\,{\rm cm}^3`, a 
 	metallicity of :math:`Z_\odot`, a c3 flame, and a C/O ratio of 1.
 

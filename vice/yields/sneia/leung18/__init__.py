@@ -12,14 +12,14 @@ study reports yields for near-Chandrasekhar Mass progenitors (1.3-1.38
 We provide type Ia supernova yields from the Leung & Nomoto (2018) study under
 the following explosion models presented in their journal publication:
 
-	- 300-0-c3-1
-	- 300-1-c3-1
-	- 300-3-c3-1
-	- 300-5-c3-1
+	- 300-0-C3-1
+	- 300-1-C3-1
+	- 300-3-C3-1
+	- 300-5-C3-1
 
 These models are named for the initial central density, the metallicity of the
 progenitor relative to solar, the flame shape, and the initial carbon-to-oxygen
-ratio, in that order. For example, the "300-1-c3-1" model refers to one with a 
+ratio, in that order. For example, the "300-1-C3-1" model refers to one with a 
 central density of :math:`\rho_C=3\times10^9\,{\rm g}\,{\rm cm}^3`, a 
 metallicity of :math:`Z_\odot`, a c3 flame, and a C/O ratio of 1.
 
@@ -78,10 +78,10 @@ if not __VICE_SETUP__:
 		study under the following explosion models presented in their
 		journal publication:
 
-			- 300-0-c3-1
-			- 300-1-c3-1
-			- 300-3-c3-1
-			- 300-5-c3-1
+			- 300-0-C3-1
+			- 300-1-C3-1
+			- 300-3-C3-1
+			- 300-5-C3-1
 
 		Example Code
 		------------
@@ -109,11 +109,11 @@ if not __VICE_SETUP__:
 			raise TypeError("Got an unexpected keyword argument 'study'.")
 		else:
 			# Override the default, which is for Seitenzahl et al. (2013) yields
-			if "model" not in kwargs.keys(): kwargs["model"] = "300-1-c3-1"
+			if "model" not in kwargs.keys(): kwargs["model"] = "300-1-C3-1"
 			for i in _RECOGNIZED_ELEMENTS_:
 				__settings[i] = __fractional(i, study = "leung18", **kwargs)
 
-	if not __VICE_DOCS__: set_params(model = "300-1-c3-1")
+	if not __VICE_DOCS__: set_params(model = "300-1-C3-1")
 
 else:
 	pass

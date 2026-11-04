@@ -21,6 +21,9 @@ settings : dataframe
 gronow21 : yield preset
 	Sets the yields according to one of the models published in the Gronow et
 	al. (2021a, b) studies.
+leung18 : yield preset
+	Sets the yields according to one of the models published in the Leung & 
+	Nomoto (2018) study.
 seitenzahl13 : yield preset
 	Sets the yields according to one of the models published in the Seitenzahl
 	et al. (2013) study.
@@ -35,10 +38,12 @@ Notes
 -----
 The data stored in this module are reported for each corresponding study
 *as published*. The Seitenzahl et al. (2013) and Gronow et al. (2021a, b)
-models reported mass yields after complete decay of all radioactive nuclides
-with half-lives less than 2 Gyr, and the Iwamoto et al. (1999) study fully
-decayed *all* unstable isotopes; any additional treatment for radioactive
-isotopes is thus unnecessary.
+models reported mass yields after complete decay of all radioactive
+nuclides with half-lives less than 2 Gyr, the Leung & Nomoto (2018) models
+study reported mass yields after the decay of the "short-lived" radioactive
+isotopes, and the Iwamoto et al. (1999) study fully decayed *all* unstable 
+isotopes; any additional treatment for radioactive isotopes is thus 
+unnecessary.
 
 .. [1] Seitenzahl et al. (2013), MNRAS, 429, 1156
 .. [2] Iwamoto et al. (1999), ApJ, 124, 439
