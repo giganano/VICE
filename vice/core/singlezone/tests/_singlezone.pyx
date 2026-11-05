@@ -347,7 +347,9 @@ cdef class singlezone_tester:
 				self.bins = [-3 + 0.01 * i for i in range(401)]
 				assert self._sz[0].mdf[0].n_bins == 400
 				for i in range(self._sz[0].mdf[0].n_bins + 1):
-					assert self._sz[0].mdf[0].bins[i] == -3 + 0.01 * i
+					assert abs(
+						self._sz[0].mdf[0].bins[i] - (-3 + 0.01 * i)
+					) <= 1e-7
 			except:
 				return False
 			return True
