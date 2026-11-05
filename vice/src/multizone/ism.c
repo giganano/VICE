@@ -51,7 +51,7 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 	
 	unsigned int i;
 	double *mass_recycled = gas_recycled_in_zones(*mz);
-	double *migration_deltas = migration_gas_changes_by_zone(*mz);
+	// double *migration_deltas = migration_changes_by_zone(*mz, -1);
 	for (i = 0; i < (*(*mz).mig).n_zones; i++) {
 		SINGLEZONE *sz = mz -> zones[i];
 
@@ -82,7 +82,8 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 				);
 				sz -> ism -> infall_rate = (
 					((*(*sz).ism).mass - (*(*sz).ism).specified[(*sz).timestep]
-						- mass_recycled[i] - migration_deltas[i]) / (*sz).dt +
+						// - mass_recycled[i] - migration_deltas[i]) / (*sz).dt +
+						- mass_recycled[i]) / (*sz).dt +
 					(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz)
 				);
 				break;
@@ -105,7 +106,8 @@ extern unsigned short update_zone_evolution(MULTIZONE *mz) {
 					*(*sz).ism).specified[(*sz).timestep + 1l];
 				double dMg = get_ism_mass_SFRmode(*sz, 0u) - (*(*sz).ism).mass;
 				sz -> ism -> infall_rate = (
-					(dMg - mass_recycled[i] - migration_deltas[i]) / (*sz).dt +
+					// (dMg - mass_recycled[i] - migration_deltas[i]) / (*sz).dt +
+					(dMg - mass_recycled[i]) / (*sz).dt +
 					(*(*sz).ism).star_formation_rate + get_outflow_rate(*sz)
 				);
 				sz -> ism -> mass += dMg;
