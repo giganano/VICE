@@ -21,6 +21,7 @@
  */
 extern double callback_1arg_evaluate(CALLBACK_1ARG cb1, double x) {
 
+	// trace_print(); // significant slowdown
 	if (cb1.user_func != NULL) {
 		return cb1.callback(x, cb1.user_func);
 	} else {
@@ -47,6 +48,7 @@ extern double callback_1arg_evaluate(CALLBACK_1ARG cb1, double x) {
  */
 extern double callback_2arg_evaluate(CALLBACK_2ARG cb2, double x, double y) {
 
+	// trace_print(); // significant slowdown
 	if (cb2.user_func != NULL) {
 		return cb2.callback(x, y, cb2.user_func);
 	} else {

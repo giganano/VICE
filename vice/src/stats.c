@@ -3,6 +3,7 @@
 #include <math.h>
 #include "stats.h"
 #include "utils.h"
+#include "debug.h"
 
 
 /*
@@ -26,6 +27,11 @@
 extern double *convert_to_PDF(double *dist, double *bins,
 	unsigned long n_bins) {
 
+	trace_print();
+	debug_print("Distribution address: %p\n", (void *) dist);
+	debug_print("Bins address: %p\n", (void *) bins);
+	debug_print("n_bins = %lu\n", n_bins);
+
 	/* Allocate memory; start counting at zero */
 	double sum = 0, *pdf = (double *) malloc (n_bins * sizeof(double));
 	unsigned long i;
@@ -39,6 +45,9 @@ extern double *convert_to_PDF(double *dist, double *bins,
 	for (i = 0l; i < n_bins; i++) {
 		pdf[i] = dist[i] / sum;
 	}
+
+	debug_print("sum = %.5e\n", sum);
+	debug_print("PDF address: %p\n", pdf);
 
 	return pdf;
 

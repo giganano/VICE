@@ -214,6 +214,56 @@ extern void migrate(MULTIZONE *mz) {
 
 
 /*
+ * Compute the net change in the ISM mass for all zones due solely to gas
+ * migration.
+ *
+ * Parameters
+ * ==========
+ * mz:		The multizone object for the current simulation.
+ *
+ * Returns
+ * =======
+ * deltas: a pointer to the array of doubles describing, component-wise, the
+ * net change in each zone's mass.
+ *
+ * header: migration.h
+ */
+extern double *migration_changes_by_zone(MULTIZONE mz, int index) {
+
+	/*
+	 * Change Note: version X.Y.Z
+	 *
+	 * This function was patched in this release. The changes in the deltas
+	 * computed in the for-loop below previously had ``+= changes[i][j]'' and
+	 * ``-= changes[j][i]'', which adds the sinks and subtracts the sources.
+	 * By flipping which ones are added and subtracted, this function adds the
+	 * sources and subtracts the sinks, as it should.
+	 */
+
+	double **changes = get_changes(mz, index);
+	double *deltas = (double *) malloc ((*mz.mig).n_zones * sizeof(double));
+	unsigned int i;
+	for (i = 0u; i < (*mz.mig).n_zones; i++) {
+		/*
+		 * The changes array is indexed such that the ij'th component holds the
+		 * amount of mass that migrates from zone i into zone j. In other words,
+		 * the i'th column (i.e. the first axis of indexing) describes the
+		 * amount that zone i loses, while the i'th row (the second axis of
+		 * indexing) describes the amount that zone i gains.
+		 */
+		deltas[i] = 0;
+		unsigned int j;
+		/* changes[i][i] = 0 for all i's (see get_changes below). */
+		for (j = 0u; j < (*mz.mig).n_zones; j++) deltas[i] += changes[j][i];
+		for (j = 0u; j < (*mz.mig).n_zones; j++) deltas[i] -= changes[i][j];
+	}
+
+	return deltas;
+
+}
+
+
+/*
  * Updates a tracer particle's current zone number based on the zone_history
  * array at the next timestep.
  *

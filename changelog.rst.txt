@@ -1,4 +1,15 @@
 
+1.3.2
+=====
+
+Patches
+-------
+- Add support for Python 3.13, 3.14, and 3.15
+
+- Fixed type-casting issue causing compile-time errors with Cython>=3.0
+
+- Ported install scripts from old setup.py to new pyproject.toml format
+
 1.3.1
 =====
 - ``vice.multizone``

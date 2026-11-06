@@ -13,6 +13,7 @@
 #include "progressbar.h"
 #include "../utils.h"
 #include "../io.h"
+#include "../debug.h"
 
 /* ---------- Static function comment headers not duplicated here ---------- */
 static void progressbar_print(PROGRESSBAR *pb);
@@ -35,6 +36,9 @@ static unsigned short n_digits(double value);
  */
 extern PROGRESSBAR *progressbar_initialize(unsigned long maxval) {
 
+	trace_print();
+	debug_print("maxval = %lu\n", maxval);
+
 	PROGRESSBAR *pb = (PROGRESSBAR *) malloc (sizeof(PROGRESSBAR));
 	pb -> left_hand_side = NULL;
 	pb -> right_hand_side = NULL;
@@ -48,6 +52,7 @@ extern PROGRESSBAR *progressbar_initialize(unsigned long maxval) {
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	pb -> start_time = (unsigned) (tv.tv_sec * 1000l + tv.tv_usec / 1000l);
+	debug_print("Progressbar address: %p\n", (void *) pb);
 
 	return pb;
 
@@ -60,6 +65,9 @@ extern PROGRESSBAR *progressbar_initialize(unsigned long maxval) {
  * header: progressbar.h
  */
 extern void progressbar_free(PROGRESSBAR *pb) {
+
+	trace_print();
+	debug_print("Progressbar address: %p\n", (void *) pb);
 
 	if (pb != NULL) {
 
@@ -94,17 +102,20 @@ extern void progressbar_free(PROGRESSBAR *pb) {
  */
 extern void progressbar_set_left_hand_side(PROGRESSBAR *pb, char *value) {
 
+	trace_print();
 	if ((*pb).left_hand_side != NULL) {
 		free(pb -> left_hand_side);
 		pb -> left_hand_side = NULL;
 	} else {}
 	if (value != NULL) {
+		debug_print("value = %s\n", value);
 		pb -> left_hand_side = (char *) malloc ((strlen(value) + 1u) *
 			sizeof(char));
 		strcpy(pb -> left_hand_side, value);
 		pb -> left_hand_side[strlen(value)] = '\0';
 		if (!(*pb).custom_left_hand_side) pb -> custom_left_hand_side = 1u;
 	} else {
+		debug_print("%s\n", "value is NULL");
 		if ((*pb).custom_left_hand_side) pb -> custom_left_hand_side = 0u;
 	}
 
@@ -124,17 +135,20 @@ extern void progressbar_set_left_hand_side(PROGRESSBAR *pb, char *value) {
  */
 extern void progressbar_set_right_hand_side(PROGRESSBAR *pb, char *value) {
 
+	trace_print();
 	if ((*pb).right_hand_side != NULL) {
 		free(pb -> right_hand_side);
 		pb -> right_hand_side = NULL;
 	} else {}
 	if (value != NULL) {
+		debug_print("value = %s\n", value);
 		pb -> right_hand_side = (char *) malloc ((strlen(value) + 1u) *
 			sizeof(char));
 		strcpy(pb -> right_hand_side, value);
 		pb -> right_hand_side[strlen(value)] = '\0';
 		if (!(*pb).custom_right_hand_side) pb -> custom_right_hand_side = 1u;
 	} else {
+		debug_print("%s\n", "value is NULL");
 		if ((*pb).custom_right_hand_side) pb -> custom_right_hand_side = 0u;
 	}
 
@@ -152,6 +166,8 @@ extern void progressbar_set_right_hand_side(PROGRESSBAR *pb, char *value) {
  */
 extern void progressbar_start(PROGRESSBAR *pb) {
 
+	trace_print();
+	debug_print("Progressbar address: %p\n", (void *) pb);
 	progressbar_update(pb, 0ul);
 	progressbar_print(pb);
 
@@ -170,6 +186,8 @@ extern void progressbar_start(PROGRESSBAR *pb) {
  */
 extern void progressbar_finish(PROGRESSBAR *pb) {
 
+	trace_print();
+	debug_print("Progressbar address: %p\n", (void *) pb);
 	progressbar_update(pb, (*pb).maxval);
 	if (!(*pb).testing) printf("\n");
 	fflush(stdout);
@@ -198,6 +216,10 @@ extern void progressbar_finish(PROGRESSBAR *pb) {
  */
 extern void progressbar_update(PROGRESSBAR *pb, unsigned long value) {
 
+	trace_print();
+	debug_print("Progressbar address: %p\n", (void *) pb);
+	debug_print("value = %lu\n", value);
+
 	/* No need to make sure an unsigned number is positive */
 	if (value <= (*pb).maxval) pb -> current = value;
 	progressbar_print(pb);
@@ -217,6 +239,8 @@ extern void progressbar_update(PROGRESSBAR *pb, unsigned long value) {
  */
 extern void progressbar_refresh(PROGRESSBAR *pb) {
 
+	trace_print();
+	debug_print("Progressbar address: %p\n", (void *) pb);
 	progressbar_print(pb);
 
 }
@@ -236,6 +260,9 @@ extern void progressbar_refresh(PROGRESSBAR *pb) {
  * header: progressbar.h
  */
 extern char *progressbar_string(PROGRESSBAR *pb) {
+
+	trace_print();
+	debug_print("Progressbar address: %p\n", (void *) pb);
 
 	/* how many characters fit on one line in the terminal */
 	unsigned short n_cols = window_width(*pb);
@@ -284,6 +311,7 @@ extern char *progressbar_string(PROGRESSBAR *pb) {
 		current[0] = '\0';
 	}
 
+	debug_print("current = %s\n", current);
 	return current;
 
 }
@@ -303,6 +331,8 @@ extern char *progressbar_string(PROGRESSBAR *pb) {
  */
 static void progressbar_print(PROGRESSBAR *pb) {
 
+	trace_print();
+	debug_print("Progressbar address: %p\n", (void *) pb);
 	char *current = progressbar_string(pb);
 	if (!(*pb).testing) printf("\r%s", current); /* don't print if testing */
 	free(current);
@@ -320,6 +350,9 @@ static void progressbar_print(PROGRESSBAR *pb) {
  * pb: 		A pointer to the progressbar to assign the strings for.
  */
 static void progressbar_set_strings(PROGRESSBAR *pb) {
+
+	trace_print();
+	debug_print("Progressbar address: %p\n", (void *) pb);
 
 	if (!(*pb).custom_left_hand_side) {
 		/*
@@ -375,11 +408,14 @@ static void progressbar_set_strings(PROGRESSBAR *pb) {
  */
 static unsigned long progressbar_eta(PROGRESSBAR pb) {
 
+	trace_print();
+
 	/* get time elapsed in milliseconds */
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	unsigned long elapsed = (unsigned) (tv.tv_sec * 1000l + tv.tv_usec / 1000l);
 	elapsed -= pb.start_time;
+	debug_print("elapsed = %lu\n", elapsed);
 
 	if (pb.current && elapsed) {
 		double frac;
@@ -402,10 +438,13 @@ static unsigned long progressbar_eta(PROGRESSBAR pb) {
 
 		}
 
-		return prefactor * elapsed / 1000l;
+		unsigned long result = prefactor * elapsed / 1000l;
+		debug_print("result = %lu\n", result);
+		return result;
 
 	} else {
 		/* Not yet enough information with which to calculate an ETA. */
+		debug_print("%s\n", "result = 0");
 		return 0u;
 	}
 
@@ -423,6 +462,7 @@ static unsigned long progressbar_eta(PROGRESSBAR pb) {
  */
 static unsigned short window_width(PROGRESSBAR pb) {
 
+	trace_print();
 	if (pb.testing) {
 		/*
 		 * GitHub actions has a different ioctl than a Mac OS or Linux desktop,
@@ -433,7 +473,10 @@ static unsigned short window_width(PROGRESSBAR pb) {
 		 */
 		char *github_actions = getenv("GITHUB_ACTIONS");
 		if (github_actions != NULL) {
-			if (!strcmp(github_actions, "true")) return 100u;
+			if (!strcmp(github_actions, "true")) {
+				debug_print("%s\n", "Within GitHub Actions.");
+				return 100u;
+			} else {}
 		} else {}
 	} else {}
 
@@ -443,6 +486,7 @@ static unsigned short window_width(PROGRESSBAR pb) {
 	 */
 	struct winsize w;
 	ioctl(0, TIOCGWINSZ, &w);
+	debug_print("Window width = %u\n", w.ws_col - 1u);
 	return w.ws_col - 1u;
 
 }
@@ -458,6 +502,8 @@ static unsigned short window_width(PROGRESSBAR pb) {
  */
 static char *format_time(unsigned long seconds) {
 
+	trace_print();
+	debug_print("seconds = %lu\n", seconds);
 	unsigned long days = seconds / (24l * 3600l);
 	seconds %= 24l * 3600l;
 	unsigned short hours = seconds / 3600l;
@@ -475,6 +521,7 @@ static char *format_time(unsigned long seconds) {
 		eta = (char *) malloc (10u * sizeof(char));
 		sprintf(eta, "%02uh%02um%02lds", hours, minutes, seconds);
 	}
+	debug_print("eta = %s\n", eta);
 	return eta;
 
 }
@@ -485,7 +532,11 @@ static char *format_time(unsigned long seconds) {
  */
 static unsigned short n_digits(double value) {
 
-	return 1u + (unsigned short) log10(absval(value));
+	trace_print();
+	debug_print("value = %.5e\n", value);
+	unsigned short result = 1u + (unsigned short) log10(absval(value));
+	debug_print("result = %u\n", result);
+	return result;
 
 }
 

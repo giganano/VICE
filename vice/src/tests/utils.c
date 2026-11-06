@@ -90,7 +90,14 @@ static unsigned long factorial(unsigned short n) {
  */
 extern unsigned short test_absval(void) {
 
-	return absval(-1) > 0 && absval(1) > 0;
+	unsigned short i, status = 1u;
+	for (i = 0ul; i < 10000u; i++) {
+		double value = rand_range(-TEST_RANDOM_RANGE_MAX,
+			TEST_RANDOM_RANGE_MAX);
+		status &= absval(value) > 0;
+		if (!status) break;
+	}
+	return status;
 
 }
 

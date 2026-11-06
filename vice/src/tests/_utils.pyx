@@ -2,7 +2,7 @@
 
 from __future__ import absolute_import
 __all__ = [
-	"test_all",
+	"test",
 	"test_choose_operation",
 	"test_absolute_value",
 	"test_sign_function",

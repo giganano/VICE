@@ -22,6 +22,25 @@ extern "C" {
 extern void migrate(MULTIZONE *mz);
 
 /*
+ * Compute the net change in the ISM mass for all zones due solely to gas
+ * migration.
+ *
+ * Parameters
+ * ==========
+ * mz:		The multizone object for the current simulation.
+ * index: 	The index of the element to migrate between zones
+ * 			-1 for the gas reservoir itself
+ *
+ * Returns
+ * =======
+ * deltas: a pointer to the array of doubles describing, component-wise, the
+ * net change in each zone's mass.
+ *
+ * source: migration.c
+ */
+extern double *migration_changes_by_zone(MULTIZONE mz, int index);
+
+/*
  * Performs a sanity check on a given migration matrix by making sure the sum
  * of migration probabilities out of a given zone at all times is <= 1.
  *

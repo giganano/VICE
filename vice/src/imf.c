@@ -9,6 +9,7 @@
 #include "callback.h"
 #include "imf.h"
 #include "utils.h"
+#include "debug.h"
 
 
 /*
@@ -27,22 +28,30 @@
  */
 extern double imf_evaluate(IMF_ imf, double m) {
 
+	trace_print();
+	double result;
+
 	/* If the mass in the specified mass range */
 	if (imf.m_lower <= m && m <= imf.m_upper) {
 
 		switch(checksum(imf.spec)) {
 
 			case SALPETER:
-				return salpeter55(m);
+				result = salpeter55(m);
+				break;
 
 			case KROUPA:
-				return kroupa01(m);
+				result = kroupa01(m);
+				break;
 
 			case CUSTOM:
-				return callback_1arg_evaluate(*imf.custom_imf, m);
+				result = callback_1arg_evaluate(*imf.custom_imf, m);
+				break;
 
 			default: 	/* error handling */
-				return -1;
+				warning_print("%s\n", "Unrecognized IMF!");
+				result = -1;
+				break;
 
 		}
 
@@ -50,6 +59,9 @@ extern double imf_evaluate(IMF_ imf, double m) {
 		/* not in the specified mass range for star formation */
 		return 0;
 	}
+
+	debug_print("IMF(%.5e) = %.5e\n", m, result);
+	return result;
 
 }
 
@@ -75,11 +87,17 @@ extern double imf_evaluate(IMF_ imf, double m) {
  */
 extern double salpeter55(double m) {
 
+	trace_print();
+	double result;
+
 	if (m > 0) {
-		return pow(m, -2.35);
+		result = pow(m, -2.35);
 	} else {
-		return -1;
+		result = -1;
 	}
+
+	debug_print("salpeter55(%.5e) = %.5e\n", m, result);
+	return result;
 
 }
 
@@ -105,26 +123,32 @@ extern double salpeter55(double m) {
  */
 extern double kroupa01(double m) {
 
+	trace_print();
+	double result;
+
 	if (0 < m && m < 0.08) {
-		return pow(m, -0.3);
+		result = pow(m, -0.3);
 	} else if (0.08 <= m && m <= 0.5) {
 		/*
 		 * Need to make sure kroupa01(0.08) = kroupa01(0.0799999999...)
 		 *
 		 * Xm^-1.3 = m^-0.3 at m = 0.08 => X = 0.08
 		 */
-		return 0.08 * pow(m, -1.3);
+		result = 0.08 * pow(m, -1.3);
 	} else if (m > 0.5) {
 		/*
 		 * Need to make sure kroupa01(0.5) = kroupa01(0.49999999....)
 		 *
 		 * Ym^-2.3 = Xm^-1.3 at m = 0.05 => Y = 0.08(0.5) = 0.04
 		 */
-		return 0.04 * pow(m, -2.3);
+		result = 0.04 * pow(m, -2.3);
 	} else {
 		/* m < 0, return -1 for ValueError */
-		return -1;
+		result = -1;
 	}
+
+	debug_print("Kroupa01(%.5e) = %.5e\n", m, result);
+	return result;
 
 }
 
