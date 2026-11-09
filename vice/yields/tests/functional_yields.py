@@ -82,6 +82,12 @@ def equivalence_test():
 	equivalence test for functional yields.
 	"""
 	def test():
+		ccsne.settings['o'] = _CCSN_YIELD_O_
+		ccsne.settings['fe'] = _CCSN_YIELD_FE_
+		ccsne.settings['sr'] = _CCSN_YIELD_SR_
+		sneia.settings['o'] = _SNIA_YIELD_O_
+		sneia.settings['fe'] = _SNIA_YIELD_FE_
+		sneia.settings['sr'] = _SNIA_YIELD_SR_
 		agb.settings['o'] = "cristallo11"
 		agb.settings['fe'] = "cristallo11"
 		agb.settings['sr'] = "cristallo11"
