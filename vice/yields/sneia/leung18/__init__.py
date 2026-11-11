@@ -13,7 +13,10 @@ We provide type Ia supernova yields from the Leung & Nomoto (2018) study under
 the following explosion models presented in their journal publication:
 
 	- 300-0-C3-1
+	- 300-0.1-C3-1
+	- 300-0.5-C3-1
 	- 300-1-C3-1
+	- 300-2-C3-1
 	- 300-3-C3-1
 	- 300-5-C3-1
 
@@ -79,7 +82,10 @@ if not __VICE_SETUP__:
 		journal publication:
 
 			- 300-0-C3-1
+			- 300-0.1-C3-1
+			- 300-0.5-C3-1
 			- 300-1-C3-1
+			- 300-2-C3-1
 			- 300-3-C3-1
 			- 300-5-C3-1
 

@@ -46,6 +46,9 @@ examples/.ipynb_checkpoints/*.ipynb
 # pyenv local files 
 .python-version 
 
+# vscode files
+.vscode
+
 # h277 source files -> too large for GitHub 
 vice/toolkit/hydrodisk/data/h277/processor/*.fits 
 

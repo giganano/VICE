@@ -3,7 +3,7 @@ SUBDIRS := $(filter-out __pycache__/, $(wildcard */))
 
 .PHONY: clean
 clean:
-	@ echo Cleaning vice/yields/sneia/leung18/300-1-c3-1/
+	@ echo Cleaning vice/yields/sneia/leung18/300-1-C3-1/
 	@ if [ -d "__pycache__" ] ; then \
 		rm -rf __pycache__ ; \
 	fi
