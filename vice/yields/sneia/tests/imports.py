@@ -16,7 +16,9 @@ def test():
 		[
 			test_iwamoto99_import(),
 			test_seitenzahl13_import(),
-			test_gronow21_import()
+			test_gronow21_import(),
+			test_leung18_import(),
+			test_wanajo14_import()
 		]
 	]
 
@@ -62,4 +64,32 @@ def test_gronow21_import():
 			return False
 		return True
 	return ["vice.yields.sneia.gronow21", test]
+
+
+@unittest
+def test_leung18_import():
+	r"""
+	from vice.yields.sneia import leung18 unit test
+	"""
+	def test():
+		try:
+			from .. import leung18
+		except:
+			return False
+		return True
+	return ["vice.yields.sneia.leung18", test]
+
+
+@unittest
+def test_wanajo14_import():
+	r"""
+	from vice.yields.sneia import wanajo14 unit test
+	"""
+	def test():
+		try:
+			from .. import wanajo14
+		except:
+			return False
+		return True
+	return ["vice.yields.sneia.wanajo14", test]
 

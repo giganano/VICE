@@ -34,6 +34,14 @@ if not __VICE_SETUP__:
 			from .. import gronow21
 			tests.append(gronow21.test(run = False))
 		except: pass
+		try:
+			from .. import leung18
+			tests.append(leung18.test(run = False))
+		except: pass
+		try:
+			from .. import wanajo14
+			tests.append(wanajo14.test(run = False))
+		except: pass
 		return ["vice.yields.sneia", tests]
 
 else:
