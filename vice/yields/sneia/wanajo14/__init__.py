@@ -102,11 +102,13 @@ if not __VICE_SETUP__:
 			raise TypeError("Got an unexpected keyword argument 'study'.")
 		else:
 			# Override the default, which is for Seitenzahl et al. (2013) yields
-			if "model" not in kwargs.keys(): kwargs["model"] = "NS1P3-NS1P3"
+			if "model" not in kwargs.keys(): kwargs["model"] = "NS1.3-NS1.3"
+			# Override the default production efficiency, which is for SNe Ia
+			if "n" not in kwargs.keys(): kwargs["n"] = 1e-5
 			for i in _RECOGNIZED_ELEMENTS_:
 				__settings[i] = __fractional(i, study = "wanajo14", **kwargs)
 
-	if not __VICE_DOCS__: set_params(model = "NS1P3-NS1P3")
+	if not __VICE_DOCS__: set_params(model = "NS1.3-NS1.3")
 
 else:
 	pass
