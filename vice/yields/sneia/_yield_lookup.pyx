@@ -7,9 +7,11 @@ from __future__ import absolute_import
 from ..._globals import _RECOGNIZED_ELEMENTS_
 from ..._globals import _DIRECTORY_
 from ..._globals import _VERSION_ERROR_
+from ..._globals import ScienceWarning
 import numbers
 import sys
 import os
+import warnings
 if sys.version_info[:2] == (2, 7):
 	strcomp = basestring
 elif sys.version_info[:2] >= (3, 5):
@@ -17,7 +19,9 @@ elif sys.version_info[:2] >= (3, 5):
 else:
 	_VERSION_ERROR_()
 
-_RECOGNIZED_STUDIES_ = ["seitenzahl13", "iwamoto99", "gronow21", "leung18"]
+_RECOGNIZED_STUDIES_ = [
+	"seitenzahl13", "iwamoto99", "gronow21", "leung18", "wanajo14"
+]
 from ._yield_lookup cimport single_ia_mass_yield_lookup
 
 
@@ -45,6 +49,7 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 			- "iwamoto99" : Iwamoto et al. (1999) [2]_
 			- "gronow21" : Gronow et al. (2021a, b) [3]_ [4]_
 			- "leung18" : Leung & Nomoto (2018) [5]_
+			- "wanajo14" : Wanajo et al. (2014) [6]_
 
 	model : ``str`` [case-insensitive] [default : N1]
 		A keyword denoting the explosion model from the associated study to
@@ -69,6 +74,7 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 				| 	M11_05_001, M11_05_01, M11_05_1, M11_05_3
 			- "leung18" : 300-0-C3-1, 300-0.1-C3-1, 300-0.5-C3-1, 300-1-C3-1, 
 					300-2-C3-1, 300-3-C3-1, 300-5-C3-1
+			- "wanajo14" : NS1.3-NS1.3
 
 	Returns
 	-------
@@ -86,6 +92,10 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 			particular study.
 	* IOError [Occurs only if VICE's file structure has been modified]
 		- 	The data file is not found.
+	* ScienceWarning
+		-   The wanajo14 study is adopted, overwriting the SN Ia channel with
+			binary neutron star merger yields (VICE does not currently support
+			SN Ia and BNS channels simultaneously).
 
 	Notes
 	-----
@@ -112,6 +122,14 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 	:math:`\rho_C=3\times10^9\,{\rm g}\,{\rm cm}^3`, a 
 	metallicity of :math:`Z_\odot`, a c3 flame, and a C/O ratio of 1.
 
+	The Wanajo et al. (2014) model reports **r**-process yields from a binary
+	neutron star merger. As VICE does not currently support a delayed **r**-
+	process channel, these yields are included as part of the SN Ia channel
+	so that a delay-time distribution can be specified. Users who wish to
+	compare element ratios between SN Ia and BNS products (e.g., [Eu/Fe])
+	must run two different models, adopting the Wanajo et al. (2014) yields
+	for one and their SN Ia yield of choice for the other.
+
 	Example Code
 	------------
 	>>> import vice
@@ -129,6 +147,9 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 	0.001058
 	>>> vice.yields.sneia.single("co", study = "gronow21", model = "M09_05_001")
 	0.0001572
+	>>> vice.yields.sneia.fractional("mn", study = "leung18", 
+		model = "300-1-C3-1")
+	2.101e-05
 
 	.. seealso::
 
@@ -136,13 +157,15 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 		- vice.yields.sneia.gronow21
 		- vice.yields.sneia.iwamoto99
 		- vice.yields.sneia.seitenzahl13
-		- vice.yields.sneia.leung2018
+		- vice.yields.sneia.leung18
+		- vice.yields.sneia.wanajo14
 
 	.. [1] Seitenzahl et al. (2013), MNRAS, 429, 1156
 	.. [2] Iwamoto et al. (1999), ApJ, 124, 439
 	.. [3] Gronow et al. (2021a), A&A, 649, 155
 	.. [4] Gronow et al. (2021b), arxiv:2103.14050
 	.. [5] Leung & Nomoto (2018), ApJ, 861, 143
+	.. [6] Wanajo et al. (2014), ApJL, 789, L39
 	"""
 
 	# Type check errors ---> element, study, and model must be of type string
@@ -165,7 +188,8 @@ def single_detonation(element, study = "seitenzahl13", model = "N1"):
 		"iwamoto99": 	"Iwamoto et al. (1999), ApJ, 124, 439",
 		"gronow21": 	"""\
 Gronow et al. (2021a, b), a:A&A, 649, 155, b:arxiv:2103.14050""",
-		"leung18": 	"Leung & Nomoto (2018), ApJ, 861, 143"
+		"leung18": 	"Leung & Nomoto (2018), ApJ, 861, 143",
+		"wanajo14": "Wanajo et al. (2014), ApJL, 789, L39",
 	}
 
 	# Models from their study keywords
@@ -189,6 +213,7 @@ Gronow et al. (2021a, b), a:A&A, 649, 155, b:arxiv:2103.14050""",
 		"leung18":			["300-0-C3-1", "300-0.1-C3-1", "300-0.5-C3-1", 
 							"300-2-C3-1", "300-1-C3-1", "300-3-C3-1", 
 							"300-5-C3-1"],
+		"wanajo14":			["NS1.3-NS1.3"],
 	}
 
 	# Value check errors
@@ -201,6 +226,23 @@ Gronow et al. (2021a, b), a:A&A, 649, 155, b:arxiv:2103.14050""",
 			studies[study.lower()], recognized_models[study.lower()]))
 	else:
 		pass
+
+	"""
+	Science Warnings
+	================
+	The Wanajo et al. (2014) yields are for r-process production from a
+	binary neutron star merger. Because VICE does not support a delayed
+	r-process channel, these yields are stored under the vice.yields.sneia
+	module (for now). A user who wishes to compare element ratios between
+	SN Ia and binary neutron star merger products (e.g., [Eu/Fe]) must run
+	two separate models.
+	"""
+	if study.lower() == "wanajo14":
+		warnings.warn("""\
+The wanajo14 yields are for the r-process from binary neutron star mergers.
+Any SN Ia yields will be over-written. VICE does not currently support both
+SN Ia and delayed r-process yields simultaneously.""",
+		ScienceWarning)
 
 	# Get the full path to the yield file
 	if '.' in model:
@@ -240,6 +282,7 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 			- "iwamoto99" : Iwamoto et al. (1999), [2]_
 			- "gronow21" : Gronow et al. (2021a, b) [3]_ [4]_
 			- "leung18": Leung & Nomoto (2018) [5]_
+			- "wanajo14": Wanajo et al. (2014) [6]_
 
 	model : ``str`` [case-insensitive] [default : "N1"]
 		The model from the associated study to adopt.
@@ -263,13 +306,14 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 				| 	M11_05_001, M11_05_01, M11_05_1, M11_05_3
 			- "leung18" : 300-0-C3-1, 300-0.1-C3-1, 300-0.5-C3-1, 300-1-C3-1, 
 					300-2-C3-1, 300-3-C3-1, 300-5-C3-1
+			- "wanajo14" : NS1.3-NS1.3
 
 	n : real number [default : 2.2e-03]
 		The average number of type Ia supernovae produced per unit stellar
 		mass formed :math:`N_\text{Ia}/M_\star` in :math:`M_\odot^{-1}`.
 
 		.. note:: The default value for this parameter is adopted from
-			Maoz & Mannucci (2012) [6]_.
+			Maoz & Mannucci (2012) [7]_.
 
 	Returns
 	-------
@@ -293,6 +337,10 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 	* IOError [Occurs only if VICE's file structure has been modified]
 		- 	The parameters passed to this function are allowed but the data
 			file is not found.
+	* ScienceWarning
+		-   The wanajo14 study is adopted, overwriting the SN Ia channel with
+			binary neutron star merger yields (VICE does not currently support
+			SN Ia and BNS channels simultaneously).
 
 	Notes
 	-----
@@ -326,6 +374,14 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 	:math:`\rho_C=3\times10^9\,{\rm g}\,{\rm cm}^3`, a 
 	metallicity of :math:`Z_\odot`, a c3 flame, and a C/O ratio of 1.
 
+	The Wanajo et al. (2014) model reports **r**-process yields from a binary
+	neutron star merger. As VICE does not currently support a delayed **r**-
+	process channel, these yields are included as part of the SN Ia channel
+	so that a delay-time distribution can be specified. Users who wish to
+	compare element ratios between SN Ia and BNS products (e.g., [Eu/Fe])
+	must run two different models, adopting the Wanajo et al. (2014) yields
+	for one and their SN Ia yield of choice for the other.
+
 	Example Code
 	------------
 	>>> import vice
@@ -345,6 +401,9 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 	>>> vice.yields.sneia.fractional("co", study = "gronow21",
 		model = "M09_05_001")
 	3.4584000000000003e-07
+	>>> vice.yields.sneia.fractional("mn", study = "leung18", 
+		model = "300-1-C3-1")
+	2.101e-05
 
 	.. seealso::
 
@@ -359,7 +418,8 @@ def integrated_yield(element, study = "seitenzahl13", model = "N1",
 	.. [3] Gronow et al. (2021a), A&A, 649, 155
 	.. [4] Gronow et al. (2021b), arxiv:2103.14050
 	.. [5] Leung & Nomoto (2018), ApJ, 861, 143
-	.. [6] Maoz & Mannucci (2012), PASA, 29, 447
+	.. [6] Wanajo et al. (2014), ApJL, 789, L39
+	.. [7] Maoz & Mannucci (2012), PASA, 29, 447
 	"""
 
 	# n must be a non-negative real number

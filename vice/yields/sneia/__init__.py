@@ -8,6 +8,7 @@ This package provides tables from the following nucleosynthetic yield studies:
 	- Iwamoto et al. (1999) [2]_
 	- Gronow et al. (2021a, b) [3]_ [4]_
 	- Leung & Nomoto (2018) [5]_
+	- Wanajo et al. (2014) [6]_
 
 Contents
 --------
@@ -30,6 +31,9 @@ seitenzahl13 : yield preset
 iwamoto99 : yield preset
 	Sets the yields according to one of the models published in the Iwamoto et
 	al. (1999) study.
+wanajo14 : yield preset
+	Sets the yields for the r-process according to the binary neutron star
+	merger model published in the Wanajo et al. (2014) study.
 
 .. versionadded:: 1.3.0
 	The "gronow21" yield model was introduced in version 1.3.0.
@@ -50,6 +54,7 @@ unnecessary.
 .. [3] Gronow et al. (2021a), A&A, 649, 155
 .. [4] Gronow et al. (2021b), arxiv:2103.14050
 .. [5] Leung & Nomoto (2018), ApJ, 861, 143
+.. [6] Wanajo et al. (2014), ApJL, 789, L39
 """
 
 from __future__ import absolute_import
