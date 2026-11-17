@@ -1,7 +1,7 @@
 r"""
 Leung & Nomoto (2018), ApJ, 861, 143 Type Ia supernova (SN Ia) yields
 
-**Signature**: from vice.yields.sneia import leung2018
+**Signature**: from vice.yields.sneia import leung18
 
 Importing this module will automatically set the SN Ia yield settings for all
 elements to the delay-time distribution integrated yields calculated with the
@@ -92,18 +92,18 @@ if not __VICE_SETUP__:
 		Example Code
 		------------
 		>>> import vice
-		>>> from vice.yields.sneia import iwamoto99
+		>>> from vice.yields.sneia import leung18
 		>>> vice.yields.sneia.settings['fe']
-		0.001705352
-		>>> iwamoto99.set_params(n = 1.5e-3)
+		0.0018907988035200003
+		>>> leung18.set_params(n = 1.5e-3)
 		>>> vice.yields.sneia.settings['fe']
-		0.00116274
-		>>> iwamoto99.set_params(n = 1.8e-3, model = "CDD1")
+		0.0012891810024
+		>>> leung18.set_params(n = 1.8e-3, model = "300-0.1-C3-1")
 		>>> vice.yields.sneia.settings['fe']
-		0.0011663333999999998
-		>>> iwamoto99.set_params(model = "cdd2")
+		0.0015041304024119998
+		>>> leung18.set_params(model = "300-3-C3-1")
 		>>> vice.yields.sneia.settings['fe']
-		0.001835812
+		0.0016964596046199999
 
 		.. seealso::
 			- vice.yields.sneia.fractional
