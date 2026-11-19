@@ -16,6 +16,7 @@ def test():
 			"m_lower": 0.3,
 			"m_upper": 40,
 			"MoverH": 0.15,
+			"rotation": 400,
 			"IMF": "salpeter"
 		}
 		try:
