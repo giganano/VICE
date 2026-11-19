@@ -129,7 +129,7 @@ if not __VICE_SETUP__:
 			else:
 				pass
 			for i in _RECOGNIZED_ELEMENTS_:
-				__settings[i] = __fractional(i, study = "NKT13", **kwargs)[0]
+				__settings[i] = __fractional(i, study = "NTT15", **kwargs)[0]
 
 	if not __VICE_DOCS__: set_params(
 		m_lower = 25, m_upper = 50, MoverH = 0.15, rotation = 200, Nmax = 1e5
