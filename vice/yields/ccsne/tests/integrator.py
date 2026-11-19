@@ -27,7 +27,8 @@ _UPPER_ = {
 	"WW95": 		40,
 	"S16/W18": 		120,
 	"S16/W18F": 	120,
-	"S16/N20": 		120
+	"S16/N20": 		120,
+	"NTT15":		50,
 }
 
 # IMFs to test the integrations on

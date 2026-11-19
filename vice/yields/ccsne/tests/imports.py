@@ -26,6 +26,7 @@ def test():
 			test_CL13_import(),
 			test_CL04_import(),
 			test_WW95_import(),
+			test_NTT15_import(),
 		]
 	]
 
@@ -154,4 +155,18 @@ def test_WW95_import():
 			return False
 		return True
 	return ["vice.yields.ccsne.WW95", test]
+
+
+@unittest
+def test_NTT15_import():
+	r"""
+	from vice.yields.ccsne import NTT15 unit test
+	"""
+	def test():
+		try:
+			from .. import NTT15
+		except:
+			return False
+		return True
+	return ["vice.yields.ccsne.NTT15", test]
 

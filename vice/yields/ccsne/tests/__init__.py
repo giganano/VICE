@@ -66,6 +66,11 @@ if not __VICE_SETUP__:
 			tests.append(WW95.test(run = False))
 		except:
 			tests.append(unittest("vice.yields.ccsne.WW95", lambda: None))
+		try:
+			from .. import NTT15
+			tests.append(NTT15.test(run = False))
+		except:
+			tests.append(unittest("vice.yields.ccsne.NTT15", lambda: None))
 		tests.append(integrator.test(run = False))
 		return ["vice.yields.ccsne", tests]
 
