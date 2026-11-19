@@ -53,6 +53,7 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 			- "NKT13": Nomoto, Kobayashi & Tominaga (2013) [4]_
 			- "CL04": Chieffi & Limongi (2004) [5]_
 			- "WW95": Woosley & Weaver (1995) [6]_
+			- "NTT15": Nishimura, Takiwaki, & Thielemann (2015) [7]_
 
 	MoverH : real number [default : 0]
 		The total metallicity [M/H] = :math:`\log_{10}(Z/Z_\odot)` of the
@@ -67,6 +68,7 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 			- "NKT13": [M/H] = -inf, -1.15, -0.54, -0.24, 0.15, 0.55
 			- "CL04": [M/H] = -inf, -4, -2, -1, -0.37, 0.15
 			- "WW95": [M/H] = -inf, -4, -2, -1, 0
+			- "NTT15": [M/H] = 0.15
 
 	rotation : real number [default : 0]
 		The rotational velocity of the exploding stars in km/s. There are only
@@ -80,6 +82,7 @@ def table(element, study = "LC18", MoverH = 0, rotation = 0, wind = True,
 			- "NKT13": v = 0
 			- "CL04": v = 0
 			- "WW95": v = 0
+			- "NTT15": v = 200, 400, 800
 
 	wind : bool [default : ``True``]
 		If True, the stellar wind contribution to the yield will be included

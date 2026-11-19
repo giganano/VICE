@@ -77,6 +77,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			- "NKT13": Nomoto, Kobayashi & Tominaga (2013) [4]_
 			- "CL04": Chieffi & Limongi (2004) [5]_
 			- "WW95": Woosley & Weaver (1995) [6]_
+			- "NTT15": Nishimura, Takiwaki, & Thielemann (2015) [7]_
 
 		.. note:: The S16/W18F yields force a supernova explosion in the
 			progenitors which otherwise did not explode in the S16/W18 set,
@@ -101,6 +102,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			- "NKT13": [M/H] = -inf, -1.15, -0.54, -0.24, 0.15, 0.55
 			- "CL04": [M/H] = -inf, -4, -2, -1, -0.37, 0.15
 			- "WW95": [M/H] = -inf, -4, -2, -1, 0
+			- "NTT15": [M/H] = 0.15
 
 	rotation : real number [default : 0]
 		The rotational velocity of the exploding stars in km/s. There are only
@@ -114,6 +116,7 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			- "NKT13": v = 0
 			- "CL04": v = 0
 			- "WW95": v = 0
+			- "NTT15": v = 200, 400, 800
 
 	explodability : <function> or ``None`` [default : ``None``]
 		Stellar explodability as a function of mass. This function is expected
@@ -252,6 +255,10 @@ def integrate(element, study = "LC18", MoverH = 0, rotation = 0,
 			Tominaga (2013) study reported net yields in their model core
 			collapse supernova ejeta. VICE can only calculate net yields in
 			this instance.
+		-	``study == NTT15``. The Nishimura, Takiwaki, & Thielemann (2015)
+			reported magneto-rotational supernova yields, not CCSN yields,
+			for only a single 25 Msun model. Any extrapolation to a broader
+			mass range goes beyond the scope of this study.
 
 	Notes
 	-----
@@ -439,6 +446,10 @@ object. Got: %s""" % (type(explodability)))
 	anything other than Limongi & Chieffi (2018) or Sukhbold et al. (2016),
 	that can't be done, because these are the only studies that published
 	separate wind and explosive yields.
+
+	6) The Nishimura, Takiwaki, & Thielemann (2015) study reported magneto-
+	rotational supernova yields for only a single 25 Msun model. Warn the user 
+	when adopting these yields.
 	"""
 	upper_mass_limits = {
 		"LC18":			120,
@@ -448,7 +459,8 @@ object. Got: %s""" % (type(explodability)))
 		"NKT13": 		300 if MoverH == -float("inf") else 40,
 		"S16/W18": 		120,
 		"S16/W18F": 	120,
-		"S16/N20":		120
+		"S16/N20":		120,
+		"NTT15":		50,
 	}
 
 	if m_upper > upper_mass_limits[study.upper()]:
@@ -479,6 +491,12 @@ For this reason, this calculation can only run including the wind yield.""" % (
 			_NAMES_[study.upper()]), ScienceWarning)
 	else:
 		pass
+
+	if study.upper() == "NTT15":
+		warnings.warn("""The %s study reported yields from a magneto-rotational
+supernova from a single 25 Msun model. Care should be used when extrapolating
+these yields to a broad range of masses.""" % _NAMES_[study.upper()], 
+			ScienceWarning)
 
 	path = "%syields/ccsne/%s/FeH%s/v%d/" % (_DIRECTORY_,
 		study.upper(),

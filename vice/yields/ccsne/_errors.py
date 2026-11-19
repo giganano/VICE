@@ -23,7 +23,7 @@ else:
 # Recognized methods of numerical quadrature and yield studies
 _RECOGNIZED_METHODS_ = tuple(["simpson", "midpoint", "trapezoid", "euler"])
 _RECOGNIZED_STUDIES_ = tuple(["WW95", "LC18", "CL13", "CL04", "NKT13",
-	"S16/W18", "S16/W18F", "S16/N20"])
+	"S16/W18", "S16/W18F", "S16/N20", "NTT15"])
 
 # Keywords and their associated studies
 _NAMES_ = {
@@ -34,7 +34,8 @@ _NAMES_ = {
 	"WW95": 	"Woosley & Weaver (1995) ApJ, 101, 181",
 	"S16/W18": 	"Sukhbold et al. (2016), ApJ, 821, 38 (W18 explosion engine)",
 	"S16/W18F": "Sukhbold et al. (2016), ApJ, 821, 38 (W18 engine, forced)",
-	"S16/N20": 	"Sukhbold et al. (2016), ApJ, 821, 38 (N20 explosion engine)"
+	"S16/N20": 	"Sukhbold et al. (2016), ApJ, 821, 38 (N20 explosion engine)",
+	"NTT15":	"Nishimura, Takiwaki, & Thielemann (2015), ApJ, 810, 109"
 }
 
 # Keywords and their associated metallicities
@@ -46,7 +47,8 @@ _MOVERH_ = {
 	"WW95": 		[-float("inf"), -4, -2, -1, 0],
 	"S16/W18": 		[0],
 	"S16/W18F": 	[0],
-	"S16/N20":		[0]
+	"S16/N20":		[0],
+	"NTT15":		[0.15]
 }
 
 # Keywords and their associated rotational velocities
@@ -58,7 +60,8 @@ _ROTATION_ = {
 	"WW95": 		[0],
 	"S16/W18": 		[0],
 	"S16/W18F": 	[0],
-	"S16/N20":		[0]
+	"S16/N20":		[0],
+	"NTT15":		[200, 400, 800]
 }
 
 

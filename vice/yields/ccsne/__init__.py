@@ -10,6 +10,7 @@ This package provides tables from the following nucleosynthetic yield studies:
 	- Nomoto, Kobayashi & Tominaga (2013) [4]_
 	- Chieffi & Limongi (2004) [5]_
 	- Woosley & Weaver (1995) [6]_
+	- Nishimura, Takiwaki, & Thielemann (2015) [7]_
 
 Contents
 --------
@@ -36,6 +37,9 @@ CL04 : module
 	Sets yields according to the Chieffi & Limongi (2004) study.
 WW95 : module
 	Sets yields according to the Woosley & Weaver (1995) study.
+NTT15 : module
+	Sets yields for magneto-rotational supernovae only according to the
+	Nishimura, Takiwaki, & Thielemann (2015) study.
 
 Notes
 -----
@@ -54,6 +58,7 @@ radioactive isotopes have been decayed, so no further treatment is necessary.
 .. [4] Nomoto, Kobayashi & Tominaga (2013), ARA&A, 51, 457
 .. [5] Chieffi & Limongi (2004), ApJ, 608, 405
 .. [6] Woosley & Weaver (1995), ApJ, 101, 181
+.. [7] Nishimura, Takiwaki, & Thielemann (2015), ApJ, 810, 109
 """
 
 from __future__ import absolute_import
